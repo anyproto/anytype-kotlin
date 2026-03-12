@@ -137,12 +137,12 @@ fun ObjectState.DataView.Collection.getObjectOrderIds(currentViewerId: String): 
 /**
  * Transforms a filter by applying the appropriate relation format.
  *
- * For DATE formats: adds the relationFormat to the filter
- * For OBJECT formats: adds the relationFormat AND normalizes EQUAL condition to IN
+ * For DATE formats: adds the relationFormat to the filter.
+ * For OBJECT formats: adds the relationFormat and normalizes EQUAL condition to IN.
  *
- * @param filter The filter to transform
- * @param format The relation format to apply (null means no transformation)
- * @return The transformed filter, or the original if format is null or not DATE/OBJECT
+ * @param filter the filter to transform.
+ * @param format the relation format to apply (null means no transformation).
+ * @return the transformed filter, or the original if format is null or not DATE/OBJECT.
  */
 private fun transformFilterWithFormat(filter: DVFilter, format: RelationFormat?): DVFilter {
     return when (format) {
@@ -164,10 +164,23 @@ private fun transformFilterWithFormat(filter: DVFilter, format: RelationFormat?)
     }
 }
 
+/**
+ * Updates each filter's `relationFormat` using the actual format from [storeOfRelations].
+ *
+ * For advanced (grouped) filters, recurses into `nestedFilters` so that nested children
+ * at any depth also receive the correct format. This is critical for DATE and OBJECT filters
+ * inside filter groups — without the correct format, downstream checks like
+ * `isSupportedForSubscription` may incorrectly discard valid filters.
+ */
 suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOfRelations): List<DVFilter> {
     return map { filter ->
-        val relation = storeOfRelations.getByKey(filter.relation)
-        transformFilterWithFormat(filter, relation?.format)
+        if (filter.isAdvanced()) {
+            val updatedNested = filter.nestedFilters.updateFormatForSubscription(storeOfRelations)
+            filter.copy(nestedFilters = updatedNested)
+        } else {
+            val relation = storeOfRelations.getByKey(filter.relation)
+            transformFilterWithFormat(filter, relation?.format)
+        }
     }
 }
 
@@ -175,8 +188,8 @@ suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOf
  * Filters relations, keeping those that are not hidden or have a key matching
  * one of the provided essential keys.
  *
- * @param essentialKeys A set of relation keys to always include, regardless of their
- *                      'isHidden' status. Defaults to NAME and DONE.
+ * @param essentialKeys a set of relation keys to always include, regardless of their
+ *   'isHidden' status. Defaults to NAME and DONE.
  */
 fun List<SimpleRelationView>.filterVisible(
     essentialKeys: Set<String> = setOf(Relations.NAME, Relations.DONE)
@@ -493,11 +506,11 @@ suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
 /**
  * Resolves the object type and template for the active viewer.
  *
- * @param activeView The viewer to resolve type/template for
- * @param storeOfObjectTypes Store to look up type information
- * @param onDeletedTypeDetected Callback invoked (asynchronously) when the viewer references
- *                              a deleted type ID. Use this to trigger cleanup of the viewer.
- * @return Pair of (ObjectType, TemplateId) or (null, null) if type is deleted/not found
+ * @param activeView the viewer to resolve type/template for.
+ * @param storeOfObjectTypes store to look up type information.
+ * @param onDeletedTypeDetected callback invoked (asynchronously) when the viewer references
+ *   a deleted type ID. Use this to trigger cleanup of the viewer.
+ * @return pair of (ObjectType, TemplateId) or (null, null) if type is deleted/not found.
  */
 suspend fun resolveTypeAndActiveViewTemplate(
     activeView: DVViewer,
@@ -533,14 +546,15 @@ suspend fun resolveTypeAndActiveViewTemplate(
 
 /**
  * Resolves template for creating objects in a View of an Objects with Layouts: SET or OBJECT_TYPE.
- * Template resolution priority:
- * 1. Check Viewer's defaultTemplate first
- * 2. If viewer template is null/empty, check setOfObject's defaultTemplateId
- * 3. If both are null/empty, return null (no template for object creation)
  *
- * @param viewer The viewer from which to check for template
- * @param setOfObject The DataView setOf object containing the default template
- * @return Template ID if found, null if both viewer and setOfObject's templates are empty
+ * Template resolution priority:
+ * 1. Check Viewer's defaultTemplate first.
+ * 2. If viewer template is null/empty, check setOfObject's defaultTemplateId.
+ * 3. If both are null/empty, return null (no template for object creation).
+ *
+ * @param viewer the viewer from which to check for template.
+ * @param setOfObject the DataView setOf object containing the default template.
+ * @return template ID if found, null if both viewer and setOfObject's templates are empty.
  */
 fun resolveTemplateForDataViewObject(
     viewer: Block.Content.DataView.Viewer,

@@ -2125,4 +2125,21 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="save">Simpan</string>
     <string name="you_dont_have_any_spaces_yet">Kamu belum punya ruang</string>
     <string name="loading_channels">Memuat saluran</string>
+    <!-- OS Widgets -->
+    <string name="os_widget_spaces_title">Ruang</string>
+    <string name="os_widget_spaces_description">Akses cepat ke ruang sematanmu</string>
+    <string name="os_widget_create_object_title">Objek Baru</string>
+    <string name="os_widget_create_object_description">Buat objek dengan tipe terpilih</string>
+    <string name="os_widget_space_shortcut_title">Pintasan Ruang</string>
+    <string name="os_widget_space_shortcut_description">Buka ruang secara langsung</string>
+    <string name="os_widget_object_shortcut_title">Pintasan Objek</string>
+    <string name="os_widget_object_shortcut_description">Buka objek secara langsung</string>
+    <string name="os_widget_not_configured">Ketuk untuk mengatur</string>
+    <string name="os_widget_tap_to_create">Ketuk untuk membuat</string>
+    <string name="os_widget_open_app_to_see_spaces">Ruang yang kamu sematkan akan muncul di sini</string>
+    <string name="os_widget_no_items">Tidak ada item</string>
+    <string name="no_spaces_available">Tidak ada ruang tersedia</string>
+    <string name="select_view">Pilih tampilan</string>
+    <string name="os_widget_data_view_title">Tampilan Data</string>
+    <string name="os_widget_data_view_description">Tampilkan item dari Set atau Koleksi</string>
 </resources>

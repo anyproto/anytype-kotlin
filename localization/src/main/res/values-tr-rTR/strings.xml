@@ -2140,4 +2140,21 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="save">Kaydet</string>
     <string name="you_dont_have_any_spaces_yet">Henüz hiçbir alana sahip değilsin</string>
     <string name="loading_channels">Kanallar yükleniyor</string>
+    <!-- OS Widgets -->
+    <string name="os_widget_spaces_title">Alanlar</string>
+    <string name="os_widget_spaces_description">Sabitlenmiş alanlarına hızlı erişim</string>
+    <string name="os_widget_create_object_title">Yeni Nesne</string>
+    <string name="os_widget_create_object_description">Seçilen türde nesne oluştur</string>
+    <string name="os_widget_space_shortcut_title">Alan Kısayolu</string>
+    <string name="os_widget_space_shortcut_description">Doğrudan bir alanı aç</string>
+    <string name="os_widget_object_shortcut_title">Nesne Kısayolu</string>
+    <string name="os_widget_object_shortcut_description">Doğrudan bir nesneyi aç</string>
+    <string name="os_widget_not_configured">Yapılandırmak için dokun</string>
+    <string name="os_widget_tap_to_create">Oluşturmak için dokun</string>
+    <string name="os_widget_open_app_to_see_spaces">Sabitlediğin alanlar burada görünecek</string>
+    <string name="os_widget_no_items">Öğe yok</string>
+    <string name="no_spaces_available">Mevcut alan yok</string>
+    <string name="select_view">Görünüm seç</string>
+    <string name="os_widget_data_view_title">Veri Görünümü</string>
+    <string name="os_widget_data_view_description">Bir Set veya Koleksiyondaki öğeleri görüntüle</string>
 </resources>

@@ -352,7 +352,7 @@
     <string name="hint_add_description">Beschreibung hinzufügen</string>
     <string name="dv_filter_checkbox_checked">Ausgewählt</string>
     <string name="dv_filter_checkbox_not_checked">Nicht ausgewählt</string>
-    <string name="advanced_filter_title">Advanced filter</string>
+    <string name="advanced_filter_title">Erweiterter Filter</string>
     <string name="advanced_filter_description">Editing is available on Desktop</string>
     <string name="paste_or_type_a_url">URL einfügen oder eingeben</string>
     <string name="callout">Textbox</string>
@@ -2140,4 +2140,21 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="save">Speichern</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
     <string name="loading_channels">Loading channels</string>
+    <!-- OS Widgets -->
+    <string name="os_widget_spaces_title">Spaces</string>
+    <string name="os_widget_spaces_description">Quick access to your pinned spaces</string>
+    <string name="os_widget_create_object_title">Neues Objekt</string>
+    <string name="os_widget_create_object_description">Create object of chosen type</string>
+    <string name="os_widget_space_shortcut_title">Space Shortcut</string>
+    <string name="os_widget_space_shortcut_description">Open a space directly</string>
+    <string name="os_widget_object_shortcut_title">Object Shortcut</string>
+    <string name="os_widget_object_shortcut_description">Open an object directly</string>
+    <string name="os_widget_not_configured">Tap to configure</string>
+    <string name="os_widget_tap_to_create">Tap to create</string>
+    <string name="os_widget_open_app_to_see_spaces">Your pinned spaces will appear here</string>
+    <string name="os_widget_no_items">No items</string>
+    <string name="no_spaces_available">No spaces available</string>
+    <string name="select_view">Select view</string>
+    <string name="os_widget_data_view_title">Data View</string>
+    <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
 </resources>

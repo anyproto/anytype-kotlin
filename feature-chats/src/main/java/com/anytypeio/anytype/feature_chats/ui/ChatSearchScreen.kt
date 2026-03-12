@@ -246,7 +246,7 @@ fun ChatSearchBar(
                 painter = painterResource(
                     id = R.drawable.ic_search_close_18
                 ),
-                contentDescription = "Close search",
+                contentDescription = stringResource(R.string.chats_search_close_content_description),
                 modifier = Modifier.size(18.dp)
             )
         }

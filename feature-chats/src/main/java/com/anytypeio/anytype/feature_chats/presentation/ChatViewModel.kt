@@ -194,7 +194,12 @@ class ChatViewModel @Inject constructor(
     init {
         Timber.d("DROID-2966 init")
 
-        chatSearchDelegate.initSearchDelegate(viewModelScope)
+        chatSearchDelegate.initSearchDelegate(
+            scope = viewModelScope,
+            onScrollToMessage = { messageId ->
+                chatContainer.onLoadToReply(replyMessage = messageId)
+            }
+        )
         (chatSearchDelegate as? ChatSearchDelegate.Default)?.setChatParams(
             space = vmParams.space,
             chat = vmParams.ctx

@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.ChatMessageSearchResult
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.SearchChatMessages
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
@@ -27,15 +26,18 @@ interface ChatSearchDelegate {
     fun onSearchNextResult()
     fun onSearchPreviousResult()
     fun onSearchDismissed()
-    fun initSearchDelegate(scope: CoroutineScope)
+    fun initSearchDelegate(
+        scope: CoroutineScope,
+        onScrollToMessage: suspend (Id) -> Unit
+    )
 
     class Default @Inject constructor(
         private val searchChatMessages: SearchChatMessages,
-        private val chatContainer: ChatContainer,
         private val dispatchers: AppCoroutineDispatchers
     ) : ChatSearchDelegate {
 
         private lateinit var scope: CoroutineScope
+        private lateinit var onScrollToMessage: suspend (Id) -> Unit
         private var searchJob: Job? = null
         private var space: SpaceId = SpaceId("")
         private var chat: Id = ""
@@ -43,8 +45,12 @@ interface ChatSearchDelegate {
         private val _chatSearchState = MutableStateFlow<ChatSearchState>(ChatSearchState.Idle)
         override val chatSearchState: StateFlow<ChatSearchState> = _chatSearchState
 
-        override fun initSearchDelegate(scope: CoroutineScope) {
+        override fun initSearchDelegate(
+            scope: CoroutineScope,
+            onScrollToMessage: suspend (Id) -> Unit
+        ) {
             this.scope = scope
+            this.onScrollToMessage = onScrollToMessage
         }
 
         fun setChatParams(space: SpaceId, chat: Id) {
@@ -121,13 +127,11 @@ interface ChatSearchDelegate {
             if (current !is ChatSearchState.Active) return
             val result = current.results.getOrNull(index) ?: return
 
-            _chatSearchState.value = current.copy(
-                currentIndex = index,
-                isResultsListVisible = false
-            )
+            // Dismiss search and scroll to the selected message
+            _chatSearchState.value = ChatSearchState.Idle
 
             scope.launch {
-                chatContainer.onLoadToReply(replyMessage = result.messageId)
+                onScrollToMessage(result.messageId)
             }
         }
 
@@ -148,7 +152,7 @@ interface ChatSearchDelegate {
             _chatSearchState.value = current.copy(currentIndex = newIndex)
 
             scope.launch {
-                chatContainer.onLoadToReply(replyMessage = result.messageId)
+                onScrollToMessage(result.messageId)
             }
         }
 
@@ -163,7 +167,7 @@ interface ChatSearchDelegate {
             _chatSearchState.value = current.copy(currentIndex = newIndex)
 
             scope.launch {
-                chatContainer.onLoadToReply(replyMessage = result.messageId)
+                onScrollToMessage(result.messageId)
             }
         }
 
@@ -171,9 +175,6 @@ interface ChatSearchDelegate {
             Timber.d("ChatSearch: onSearchDismissed")
             searchJob?.cancel()
             _chatSearchState.value = ChatSearchState.Idle
-            scope.launch {
-                chatContainer.onLoadChatTail(null)
-            }
         }
 
         companion object {

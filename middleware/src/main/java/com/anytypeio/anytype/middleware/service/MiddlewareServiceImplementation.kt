@@ -2541,6 +2541,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun chatSearch(request: Rpc.Chat.Search.Request): Rpc.Chat.Search.Response {
+        val encoded = Service.chatSearch(
+            Rpc.Chat.Search.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.Search.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.Search.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun chatReadMessages(request: Rpc.Chat.ReadMessages.Request): Rpc.Chat.ReadMessages.Response {
         val encoded = Service.chatReadMessages(
             Rpc.Chat.ReadMessages.Request.ADAPTER.encode(request)

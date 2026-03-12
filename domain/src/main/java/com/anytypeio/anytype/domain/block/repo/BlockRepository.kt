@@ -532,6 +532,7 @@ interface BlockRepository {
     suspend fun unsubscribeChat(chat: Id)
     suspend fun subscribeToMessagePreviews(subscription: Id): List<Chat.Preview>
     suspend fun unsubscribeFromMessagePreviews(subscription: Id)
+    suspend fun searchChatMessages(command: Command.ChatCommand.SearchMessages): Command.ChatCommand.SearchMessages.Response
     suspend fun setSpaceChatsNotifications(command: Command.SpaceChatsNotifications.SetForceModeIds): Payload
     suspend fun resetSpaceChatsNotifications(command: Command.SpaceChatsNotifications.ResetIds): Payload
 

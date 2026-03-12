@@ -1139,6 +1139,12 @@ class BlockDataRepository(
         return remote.getChatMessagesByIds(command)
     }
 
+    override suspend fun searchChatMessages(
+        command: Command.ChatCommand.SearchMessages
+    ): Command.ChatCommand.SearchMessages.Response {
+        return remote.searchChatMessages(command)
+    }
+
     override suspend fun subscribeLastChatMessages(
         command: Command.ChatCommand.SubscribeLastMessages
     ): Command.ChatCommand.SubscribeLastMessages.Response {

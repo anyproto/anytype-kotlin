@@ -41,6 +41,7 @@ import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.ChatMessageSearchResult
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.isValidObject
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
@@ -3009,6 +3010,41 @@ class Middleware @Inject constructor(
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatReadAll(request) }
         logResponseIfDebug(response, time)
+    }
+
+    @Throws
+    fun chatSearch(command: Command.ChatCommand.SearchMessages): Command.ChatCommand.SearchMessages.Response {
+        val request = Rpc.Chat.Search.Request(
+            spaceId = command.space.id,
+            chatId = command.chat,
+            fullText = command.query,
+            offset = command.offset,
+            limit = command.limit,
+            sorts = listOf(
+                anytype.model.Search.Message.Sort(
+                    key = anytype.model.Search.Message.Sort.Key.ORDER_ID,
+                    type = anytype.model.Search.Message.Sort.Type.Desc
+                )
+            )
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatSearch(request) }
+        logResponseIfDebug(response, time)
+        return Command.ChatCommand.SearchMessages.Response(
+            results = response.results.mapNotNull { result ->
+                val message = result.message ?: return@mapNotNull null
+                ChatMessageSearchResult(
+                    chatId = result.chatId,
+                    messageId = result.messageId,
+                    score = result.score,
+                    highlight = result.highlight,
+                    highlightRanges = result.highlightRanges.map { range ->
+                        range.from..range.to
+                    },
+                    message = message.core()
+                )
+            }
+        )
     }
 
     @Throws

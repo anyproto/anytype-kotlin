@@ -2483,5 +2483,6 @@ Please provide specific details of your needs here.</string>
     <string name="select_view">Select view</string>
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
+    <string name="chats_search_close_content_description">Close search</string>
 
 </resources>

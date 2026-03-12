@@ -10,6 +10,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -65,6 +66,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.FragmentResultContract
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatObjectIcon
+import com.anytypeio.anytype.feature_chats.presentation.ChatSearchState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.ANYTYPE_PREFIX
@@ -73,6 +75,7 @@ import com.anytypeio.anytype.feature_chats.tools.LinkDetector.MAILTO_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.TEL_PREFIX
 import com.anytypeio.anytype.feature_chats.ui.ChatInfoScreenState
 import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
+import com.anytypeio.anytype.feature_chats.ui.ChatSearchScreen
 import com.anytypeio.anytype.feature_chats.ui.ChatTopToolbar
 import com.anytypeio.anytype.feature_chats.ui.EditChatInfoScreen
 import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
@@ -138,6 +141,9 @@ class ChatFragment : Fragment() {
 
             ErrorScreen()
 
+            val chatSearchState = vm.chatSearchState.collectAsStateWithLifecycle().value
+
+            Box(modifier = Modifier.fillMaxSize()) {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 containerColor = Color.Transparent,
@@ -158,7 +164,8 @@ class ChatFragment : Fragment() {
                         onPin = vm::onPinChatAsWidget,
                         onCopyLink = vm::onCopyChatLink,
                         onMoveToBin = vm::onMoveToBin,
-                        onNotificationSettingChanged = vm::onNotificationSettingChanged
+                        onNotificationSettingChanged = vm::onNotificationSettingChanged,
+                        onSearchClick = vm::onSearchTriggered
                     )
                 }
             ) { paddingValues ->
@@ -226,6 +233,19 @@ class ChatFragment : Fragment() {
                     }
                 )
             }
+
+            // Search overlay
+            if (chatSearchState is ChatSearchState.Active && chatSearchState.isResultsListVisible) {
+                ChatSearchScreen(
+                    state = chatSearchState,
+                    onQueryChanged = vm::onSearchQueryChanged,
+                    onResultSelected = vm::onSearchResultSelected,
+                    onDismiss = vm::onSearchDismissed,
+                    resolveMemberName = vm::resolveMemberName,
+                    resolveMemberAvatar = vm::resolveMemberAvatar
+                )
+            }
+            } // close Box
 
             if (showNotificationPermissionDialog) {
                 val launcher = rememberLauncherForActivityResult(
@@ -675,7 +695,11 @@ class ChatFragment : Fragment() {
             onHideQrCodeScreen = vm::onHideQRCodeScreen
         )
         BackHandler {
-            vm.onBackButtonPressed(isExitingVault = popUpToVault)
+            if (vm.chatSearchState.value is ChatSearchState.Active) {
+                vm.onSearchDismissed()
+            } else {
+                vm.onBackButtonPressed(isExitingVault = popUpToVault)
+            }
         }
         //DROID-3943 Temporarily disabled
 //        LaunchedEffect(Unit) {

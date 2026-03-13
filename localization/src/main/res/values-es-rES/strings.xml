@@ -2156,5 +2156,5 @@ En concreto,
     <string name="select_view">Seleccionar vista</string>
     <string name="os_widget_data_view_title">Vista de datos</string>
     <string name="os_widget_data_view_description">Muestra elementos de un conjunto o colección</string>
-    <string name="chats_search_close_content_description">Close search</string>
+    <string name="chats_search_close_content_description">Cierra la búsqueda</string>
 </resources>

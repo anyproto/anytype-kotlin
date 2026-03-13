@@ -1108,6 +1108,12 @@ class BlockMiddleware(
         return middleware.chatGetMessagesByIds(command)
     }
 
+    override suspend fun searchChatMessages(
+        command: Command.ChatCommand.SearchMessages
+    ): Command.ChatCommand.SearchMessages.Response {
+        return middleware.chatSearch(command)
+    }
+
     override suspend fun subscribeLastChatMessages(
         command: Command.ChatCommand.SubscribeLastMessages
     ): Command.ChatCommand.SubscribeLastMessages.Response {

@@ -71,7 +71,8 @@ class ChatViewModelFactory @Inject constructor(
     private val setObjectDetails: SetObjectDetails,
     private val setSpaceDetails: SetSpaceDetails,
     private val setChatNotificationMode: SetChatNotificationMode,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val chatSearchDelegate: ChatSearchDelegate
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -108,6 +109,7 @@ class ChatViewModelFactory @Inject constructor(
         setObjectDetails = setObjectDetails,
         setSpaceDetails = setSpaceDetails,
         setChatNotificationMode = setChatNotificationMode,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        chatSearchDelegate = chatSearchDelegate
     ) as T
 }

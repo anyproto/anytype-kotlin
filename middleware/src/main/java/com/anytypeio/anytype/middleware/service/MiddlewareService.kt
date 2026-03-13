@@ -656,6 +656,7 @@ interface MiddlewareService {
     fun chatSubscribeToMessagePreviews(request: Rpc.Chat.SubscribeToMessagePreviews.Request): Rpc.Chat.SubscribeToMessagePreviews.Response
     fun chatUnsubscribeToMessagePreviews(request: Rpc.Chat.UnsubscribeFromMessagePreviews.Request): Rpc.Chat.UnsubscribeFromMessagePreviews.Response
     fun chatReadAll(request: Rpc.Chat.ReadAll.Request): Rpc.Chat.ReadAll.Response
+    fun chatSearch(request: Rpc.Chat.Search.Request): Rpc.Chat.Search.Response
 
     //endregion
 

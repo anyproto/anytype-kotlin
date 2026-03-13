@@ -57,7 +57,8 @@ fun BoxScope.ChatMenu(
     onEditInfoClick: () -> Unit,
     onNotificationSettingChanged: (NotificationSetting) -> Unit,
     onPinClick: () -> Unit,
-    onMoveToBinClick: () -> Unit
+    onMoveToBinClick: () -> Unit,
+    onSearchClick: () -> Unit
 ) {
     var notificationsExpanded by remember { mutableStateOf(false) }
     val chevronRotation by animateFloatAsState(
@@ -85,6 +86,18 @@ fun BoxScope.ChatMenu(
             onDismissRequest = onDismissRequest,
             properties = PopupProperties(focusable = false)
         ) {
+            // Search
+            DropdownMenuItem(
+                content = {
+                    ChatMenuItemContent(
+                        text = stringResource(com.anytypeio.anytype.localization.R.string.search),
+                        iconRes = com.anytypeio.anytype.core_ui.R.drawable.ic_search_18
+                    )
+                },
+                onClick = { onSearchClick() }
+            )
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+
 //            // Properties
 //            DropdownMenuItem(
 //                content = {
@@ -280,7 +293,8 @@ fun ChatMenuPreview() {
             onEditInfoClick = {},
             onNotificationSettingChanged = {},
             onPinClick = {},
-            onMoveToBinClick = {}
+            onMoveToBinClick = {},
+            onSearchClick = {}
         )
     }
 }

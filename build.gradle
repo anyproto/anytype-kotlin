@@ -12,9 +12,6 @@ plugins {
     alias(libs.plugins.licensee) apply false
 }
 
-import com.android.build.gradle.LibraryPlugin
-import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
-
 // SDK and application configuration from gradle.properties
 ext.compile_sdk = Integer.parseInt(project.findProperty("sdk.compile") ?: "35")
 ext.target_sdk = Integer.parseInt(project.findProperty("sdk.target") ?: "35")
@@ -33,64 +30,69 @@ ext.sentryApiKey = apiKeysProperties["sentry_dsn"] ?: ""
 
 def testDebugAll = tasks.create("testDebugAll")
 
-//https://www.droidcon.com/2022/03/11/reducing-gradle-boilerplate-in-multi-module-android-projects/
-subprojects { sub ->
-    project.plugins.whenPluginAdded { plugin ->
-        if (plugin instanceof LibraryPlugin) {
+// Standard configuration for all subprojects
+subprojects {
+    // Apply to all Android modules (Apps and Libraries)
+    pluginManager.withPlugin("com.android.base") {
+        android {
+            def config = rootProject.extensions.getByName("ext")
+            compileSdk = config["compile_sdk"]
 
-            android {
-                def config = rootProject.extensions.getByName("ext")
-                compileSdk = config["compile_sdk"]
+            defaultConfig {
+                minSdk = config["min_sdk"]
+                targetSdk = config["target_sdk"]
+                testInstrumentationRunner = config["test_runner"]
+            }
 
-                defaultConfig {
-                    minSdk = config["min_sdk"]
-                    targetSdk = config["target_sdk"]
-                    testInstrumentationRunner = config["test_runner"]
-                }
+            buildFeatures {
+                buildConfig = true
+            }
 
-                buildFeatures {
-                    buildConfig = true
-                }
-
-                testOptions {
-                    unitTests {
-                        includeAndroidResources = true
-                    }
+            testOptions {
+                unitTests {
+                    includeAndroidResources = true
                 }
             }
-        }
-        if (plugin instanceof KotlinAndroidPluginWrapper) {
-            android {
-                compileOptions {
-                    sourceCompatibility = JavaVersion.VERSION_17
-                    targetCompatibility = JavaVersion.VERSION_17
-                }
 
-                kotlin {
-                    jvmToolchain(17)
-                }
+            compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_17
+                targetCompatibility = JavaVersion.VERSION_17
             }
         }
-
     }
     
+    // Set toolchain for ALL Kotlin tasks (Android and Pure JVM)
+    pluginManager.withPlugin("org.jetbrains.kotlin.android") {
+        kotlin {
+            jvmToolchain(17)
+        }
+    }
+
+    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+        kotlin {
+            jvmToolchain(17)
+        }
+    }
+    
+    // Legacy/alternative Kotlin plugin IDs
+    pluginManager.withPlugin("kotlin") {
+        kotlin {
+            jvmToolchain(17)
+        }
+    }
 
     plugins.withId("kotlin") {
         testDebugAll.dependsOn(tasks.named("test"))
     }
-    plugins.withId("com.android.library") {
-        project.apply from: "$rootDir/lint.gradle"
-        tasks.configureEach { task ->
-            if (task.name == "testDebugUnitTest") {
-                testDebugAll.dependsOn(task)
-            }
-        }
-    }
-    plugins.withId("com.android.application") {
-        project.apply from: "$rootDir/lint.gradle"
-        tasks.configureEach { task ->
-            if (task.name == "testDebugUnitTest") {
-                testDebugAll.dependsOn(task)
+    
+    // Common lint and test aggregation
+    [ "com.android.library", "com.android.application" ].each { pluginId ->
+        plugins.withId(pluginId) {
+            project.apply from: "$rootDir/lint.gradle"
+            tasks.configureEach { task ->
+                if (task.name == "testDebugUnitTest") {
+                    testDebugAll.dependsOn(task)
+                }
             }
         }
     }
@@ -103,10 +105,16 @@ tasks.register("clean", Delete) {
 tasks.register("installGitHooks", Exec) {
     group = "Build Setup"
     description = "Install local repository git hooks"
-    commandLine 'sh', '-c', 'git config core.hooksPath .githooks'
+    
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine 'cmd', '/c', 'git config core.hooksPath .githooks'
+    } else {
+        commandLine 'sh', '-c', 'git config core.hooksPath .githooks'
+    }
+    ignoreExitValue = true
 }
 
-// Make preBuild tasks depend on installGitHooks for automatic git hooks setup
+// Ensure Git hooks are installed before any build
 gradle.projectsEvaluated {
     subprojects { sub ->
         sub.tasks.matching { it.name == "preBuild" }.configureEach {

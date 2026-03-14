@@ -2142,4 +2142,5 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="select_view">Pilih tampilan</string>
     <string name="os_widget_data_view_title">Tampilan Data</string>
     <string name="os_widget_data_view_description">Tampilkan item dari Set atau Koleksi</string>
+    <string name="chats_search_close_content_description">Tutup pencarian</string>
 </resources>

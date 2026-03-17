@@ -696,6 +696,10 @@ fun ChatScreen(
                 && !chatSearchState.isResultsListVisible
 
             if (!isInlineSearchActive) {
+                val hasMentionsInGroupChat = counter.mentions > 0
+                    && spaceUxType != null
+                    && spaceUxType != SpaceUxType.ONE_TO_ONE
+
                 GoToMentionButton(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
@@ -704,10 +708,10 @@ fun ChatScreen(
                             bottom = if (jumpToBottomButtonEnabled) 60.dp else 0.dp
                         ),
                     onClick = onGoToMentionClicked,
-                    enabled = counter.mentions > 0 && spaceUxType != null && spaceUxType != SpaceUxType.ONE_TO_ONE
+                    enabled = hasMentionsInGroupChat
                 )
 
-                if (counter.mentions > 0 && spaceUxType != null && spaceUxType != SpaceUxType.ONE_TO_ONE) {
+                if (hasMentionsInGroupChat) {
                     Box(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
@@ -875,15 +879,15 @@ fun ChatScreen(
                 }
             }
 
-            // In-chat search navigation buttons
-            // Note: up/down are swapped because the chat list uses reverse layout
             if (chatSearchState is ChatSearchState.Active && !chatSearchState.isResultsListVisible) {
                 SearchNavigationButtons(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
                         .padding(end = 12.dp, bottom = 12.dp),
-                    onPreviousResult = onSearchNextResult,
-                    onNextResult = onSearchPreviousResult
+                    canNavigateUp = chatSearchState.currentIndex < chatSearchState.results.size - 1,
+                    canNavigateDown = chatSearchState.currentIndex > 0,
+                    onNavigateUp = onSearchNextResult,
+                    onNavigateDown = onSearchPreviousResult
                 )
             }
 

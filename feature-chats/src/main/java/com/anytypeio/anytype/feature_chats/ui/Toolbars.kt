@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -432,8 +433,10 @@ fun FloatingDateHeaderPreview() {
 @Composable
 fun SearchNavigationButtons(
     modifier: Modifier = Modifier,
-    onPreviousResult: () -> Unit,
-    onNextResult: () -> Unit
+    canNavigateUp: Boolean = true,
+    canNavigateDown: Boolean = true,
+    onNavigateUp: () -> Unit,
+    onNavigateDown: () -> Unit
 ) {
     androidx.compose.foundation.layout.Column(
         modifier = modifier,
@@ -444,12 +447,15 @@ fun SearchNavigationButtons(
                 .size(48.dp)
                 .clip(RoundedCornerShape(296.dp))
                 .background(color = colorResource(id = R.color.background_primary))
-                .clickable { onPreviousResult() },
+                .then(
+                    if (canNavigateUp) Modifier.clickable { onNavigateUp() } else Modifier
+                )
+                .alpha(if (canNavigateUp) 1f else 0.3f),
             contentAlignment = Alignment.Center
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_search_nav_up),
-                contentDescription = "Previous result",
+                contentDescription = "Navigate up",
                 modifier = Modifier.size(32.dp)
             )
         }
@@ -458,12 +464,15 @@ fun SearchNavigationButtons(
                 .size(48.dp)
                 .clip(RoundedCornerShape(296.dp))
                 .background(color = colorResource(id = R.color.background_primary))
-                .clickable { onNextResult() },
+                .then(
+                    if (canNavigateDown) Modifier.clickable { onNavigateDown() } else Modifier
+                )
+                .alpha(if (canNavigateDown) 1f else 0.3f),
             contentAlignment = Alignment.Center
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_search_nav_down),
-                contentDescription = "Next result",
+                contentDescription = "Navigate down",
                 modifier = Modifier.size(32.dp)
             )
         }

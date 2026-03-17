@@ -428,3 +428,44 @@ fun FloatingDateHeaderPreview() {
         text = "Today"
     )
 }
+
+@Composable
+fun SearchNavigationButtons(
+    modifier: Modifier = Modifier,
+    onPreviousResult: () -> Unit,
+    onNextResult: () -> Unit
+) {
+    androidx.compose.foundation.layout.Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(296.dp))
+                .background(color = colorResource(id = R.color.background_primary))
+                .clickable { onPreviousResult() },
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_search_nav_up),
+                contentDescription = "Previous result",
+                modifier = Modifier.size(32.dp)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(296.dp))
+                .background(color = colorResource(id = R.color.background_primary))
+                .clickable { onNextResult() },
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_search_nav_down),
+                contentDescription = "Next result",
+                modifier = Modifier.size(32.dp)
+            )
+        }
+    }
+}

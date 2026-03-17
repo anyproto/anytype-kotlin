@@ -150,7 +150,9 @@ fun ChatSearchBar(
     onDismiss: () -> Unit,
     focusRequester: FocusRequester = remember { FocusRequester() },
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
+    backgroundColorRes: Int = R.color.shape_transparent,
+    closeIconTintColorRes: Int? = null
 ) {
     Row(
         modifier = modifier
@@ -164,7 +166,7 @@ fun ChatSearchBar(
                 .weight(1f)
                 .height(48.dp)
                 .clip(RoundedCornerShape(296.dp))
-                .background(colorResource(R.color.shape_transparent))
+                .background(colorResource(backgroundColorRes))
                 .then(
                     if (onClick != null) {
                         Modifier.clickable { onClick() }
@@ -238,7 +240,7 @@ fun ChatSearchBar(
             modifier = Modifier
                 .size(48.dp)
                 .clip(RoundedCornerShape(296.dp))
-                .background(colorResource(R.color.shape_transparent))
+                .background(colorResource(backgroundColorRes))
                 .noRippleClickable { onDismiss() },
             contentAlignment = Alignment.Center
         ) {
@@ -247,7 +249,10 @@ fun ChatSearchBar(
                     id = R.drawable.ic_search_close_18
                 ),
                 contentDescription = stringResource(R.string.chats_search_close_content_description),
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(18.dp),
+                colorFilter = closeIconTintColorRes?.let {
+                    ColorFilter.tint(colorResource(it))
+                }
             )
         }
     }

@@ -230,7 +230,12 @@ class ChatFragment : Fragment() {
                             obj = attachment.obj,
                             space = space
                         )
-                    }
+                    },
+                    chatSearchState = chatSearchState,
+                    onSearchDismissed = vm::onSearchDismissed,
+                    onSearchBarTapped = vm::onSearchBarTapped,
+                    onSearchNextResult = vm::onSearchNextResult,
+                    onSearchPreviousResult = vm::onSearchPreviousResult
                 )
             }
 

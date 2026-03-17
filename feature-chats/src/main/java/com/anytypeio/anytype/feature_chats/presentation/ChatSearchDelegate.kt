@@ -128,8 +128,10 @@ interface ChatSearchDelegate {
             if (current !is ChatSearchState.Active) return
             val result = current.results.getOrNull(index) ?: return
 
-            // Dismiss search and scroll to the selected message
-            _chatSearchState.value = ChatSearchState.Idle
+            _chatSearchState.value = current.copy(
+                currentIndex = index,
+                isResultsListVisible = false
+            )
 
             scope.launch {
                 onScrollToMessage(result.messageId)

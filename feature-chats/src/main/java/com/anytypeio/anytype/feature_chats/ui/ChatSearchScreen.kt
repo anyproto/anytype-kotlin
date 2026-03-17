@@ -150,7 +150,9 @@ fun ChatSearchBar(
     onDismiss: () -> Unit,
     focusRequester: FocusRequester = remember { FocusRequester() },
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
+    backgroundColorRes: Int = R.color.shape_transparent,
+    closeIconTintColorRes: Int? = null
 ) {
     Row(
         modifier = modifier
@@ -164,7 +166,7 @@ fun ChatSearchBar(
                 .weight(1f)
                 .height(48.dp)
                 .clip(RoundedCornerShape(296.dp))
-                .background(colorResource(R.color.shape_transparent))
+                .background(colorResource(backgroundColorRes))
                 .then(
                     if (onClick != null) {
                         Modifier.clickable { onClick() }
@@ -238,7 +240,7 @@ fun ChatSearchBar(
             modifier = Modifier
                 .size(48.dp)
                 .clip(RoundedCornerShape(296.dp))
-                .background(colorResource(R.color.shape_transparent))
+                .background(colorResource(backgroundColorRes))
                 .noRippleClickable { onDismiss() },
             contentAlignment = Alignment.Center
         ) {
@@ -247,7 +249,10 @@ fun ChatSearchBar(
                     id = R.drawable.ic_search_close_18
                 ),
                 contentDescription = stringResource(R.string.chats_search_close_content_description),
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(18.dp),
+                colorFilter = closeIconTintColorRes?.let {
+                    ColorFilter.tint(colorResource(it))
+                }
             )
         }
     }
@@ -332,7 +337,10 @@ private fun ChatSearchResultItem(
             Spacer(modifier = Modifier.width(8.dp))
 
             Text(
-                text = formatSearchResultDate(result.message.createdAt),
+                text = formatSearchResultDate(
+                    timestampSeconds = result.message.createdAt,
+                    todayLabel = stringResource(com.anytypeio.anytype.localization.R.string.today)
+                ),
                 style = Relations2,
                 color = colorResource(R.color.text_secondary)
             )
@@ -370,7 +378,7 @@ private fun buildHighlightedText(
     }
 }
 
-private fun formatSearchResultDate(timestampSeconds: Long): String {
+private fun formatSearchResultDate(timestampSeconds: Long, todayLabel: String): String {
     if (timestampSeconds == 0L) return ""
     val messageTime = timestampSeconds * 1000
     val calendar = java.util.Calendar.getInstance().apply { timeInMillis = messageTime }
@@ -379,7 +387,7 @@ private fun formatSearchResultDate(timestampSeconds: Long): String {
     return when {
         calendar.get(java.util.Calendar.YEAR) == today.get(java.util.Calendar.YEAR) &&
             calendar.get(java.util.Calendar.DAY_OF_YEAR) == today.get(java.util.Calendar.DAY_OF_YEAR) -> {
-            "Today"
+            todayLabel
         }
         calendar.get(java.util.Calendar.YEAR) == today.get(java.util.Calendar.YEAR) &&
             today.get(java.util.Calendar.DAY_OF_YEAR) - calendar.get(java.util.Calendar.DAY_OF_YEAR) < 7 -> {

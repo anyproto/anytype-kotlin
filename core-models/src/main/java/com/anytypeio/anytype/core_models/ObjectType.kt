@@ -57,7 +57,8 @@ data class ObjectType(
         TAG(23),
         NOTIFICATION(24),
         MISSING_OBJECT(25),
-        DEVICES(26);
+        DEVICES(26),
+        DISCUSSION(27);
 
         fun isProfileOrParticipant() = this == PROFILE || this == PARTICIPANT
     }

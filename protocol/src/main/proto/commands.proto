@@ -2075,6 +2075,29 @@ message Rpc {
             }
         }
 
+        message DiscussionAdd {
+            message Request {
+                string objectId = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                string discussionId = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
         message BookmarkFetch {
             message Request {
                 string contextId = 1;
@@ -4079,10 +4102,13 @@ message Rpc {
                 anytype.model.Block.Position position = 3;  // position relatively to the dropTargetId simple block
                 anytype.model.Block.Content.File.Style style = 5;
                 repeated string localFilePaths = 4;
+                string spaceId = 6; // used when contextId is empty to identify target space
+                anytype.model.Block.Content.File.Type type = 7;
             }
             message Response {
                 Error error = 1;
                 ResponseEvent event = 2;
+                int64 filesCount = 3;
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -6834,6 +6860,7 @@ message Rpc {
                 message Response {
                     Error error = 1;
                     ResponseEvent event = 2;
+                    string filterId = 3; // ID of added filter
 
                     message Error {
                         Code code = 1;
@@ -6885,6 +6912,7 @@ message Rpc {
                 message Response {
                     Error error = 1;
                     ResponseEvent event = 2;
+                    string filterId = 3; // ID of new filter
 
                     message Error {
                         Code code = 1;
@@ -9070,6 +9098,29 @@ message Rpc {
             }
         }
 
+        message ReadReactions {
+            message Request {
+                string chatObjectId = 1;
+                string orderId = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
         message Search {
             message Request {
                 string spaceId = 1;
@@ -9090,6 +9141,52 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
+        message SetPinnedMessages {
+            message Request {
+                string chatObjectId = 1;
+                repeated string messageIds = 2;
+                bool pinned = 3;
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message GetPinnedMessages {
+            message Request {
+                string chatObjectId = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated model.ChatMessage messages = 2;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
                     }
                 }
             }

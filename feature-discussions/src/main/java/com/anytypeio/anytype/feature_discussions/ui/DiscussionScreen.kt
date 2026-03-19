@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.feature_discussions.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,6 +22,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -29,35 +33,44 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionHeader
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionInputMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 
@@ -68,6 +81,8 @@ fun DiscussionScreenWrapper(
 ) {
     val header = vm.header.collectAsStateWithLifecycle().value
     val messages = vm.messages.collectAsStateWithLifecycle().value
+    val inputMode = vm.inputMode.collectAsStateWithLifecycle().value
+    val clipboard = LocalClipboardManager.current
 
     var inputText by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
@@ -82,7 +97,12 @@ fun DiscussionScreenWrapper(
         onSendClicked = { text ->
             vm.onSendComment(text)
             inputText = TextFieldValue("")
-        }
+        },
+        inputMode = inputMode,
+        onReplyComment = { vm.onReplyComment(it) },
+        onReplyToReply = { vm.onReplyToReply(it) },
+        onCopyText = { clipboard.setText(AnnotatedString(it)) },
+        onClearReply = { vm.onClearReply() }
     )
 }
 
@@ -94,7 +114,12 @@ fun DiscussionScreen(
     onBackClicked: () -> Unit,
     inputText: TextFieldValue = TextFieldValue(""),
     onInputValueChange: (TextFieldValue) -> Unit = {},
-    onSendClicked: (String) -> Unit = {}
+    onSendClicked: (String) -> Unit = {},
+    inputMode: DiscussionInputMode = DiscussionInputMode.Default,
+    onReplyComment: (DiscussionView.Comment) -> Unit = {},
+    onReplyToReply: (DiscussionView.Reply) -> Unit = {},
+    onCopyText: (String) -> Unit = {},
+    onClearReply: () -> Unit = {}
 ) {
     Scaffold(
         containerColor = colorResource(id = R.color.background_primary),
@@ -107,21 +132,74 @@ fun DiscussionScreen(
             )
         },
         bottomBar = {
-            DiscussionCommentInput(
-                text = inputText,
-                onValueChange = onInputValueChange,
-                onSendClicked = onSendClicked,
+            Column(
                 modifier = Modifier
                     .imePadding()
                     .navigationBarsPadding()
-            )
+            ) {
+                if (inputMode is DiscussionInputMode.Reply) {
+                    DiscussionReplyBanner(
+                        mode = inputMode,
+                        onClearReply = onClearReply
+                    )
+                }
+                DiscussionCommentInput(
+                    text = inputText,
+                    onValueChange = onInputValueChange,
+                    onSendClicked = onSendClicked
+                )
+            }
         }
     ) { paddingValues ->
         DiscussionCommentList(
             comments = comments,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
+            onReplyComment = onReplyComment,
+            onReplyToReply = onReplyToReply,
+            onCopyText = onCopyText
+        )
+    }
+}
+
+@Composable
+fun DiscussionReplyBanner(
+    mode: DiscussionInputMode.Reply,
+    onClearReply: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(54.dp)
+            .background(colorResource(id = R.color.background_primary))
+    ) {
+        Text(
+            text = "Reply to ${mode.author}",
+            style = Caption1Medium,
+            color = colorResource(id = R.color.text_primary),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(start = 12.dp, top = 8.dp, end = 44.dp)
+        )
+        Text(
+            text = mode.text,
+            style = Caption1Regular,
+            color = colorResource(id = R.color.text_secondary),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(start = 12.dp, top = 28.dp, end = 44.dp)
+        )
+        Icon(
+            painter = painterResource(
+                id = com.anytypeio.anytype.feature_discussions.R.drawable.ic_chat_close_chat_box_reply
+            ),
+            contentDescription = "Clear reply",
+            tint = colorResource(id = R.color.glyph_active),
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 12.dp)
+                .clickable { onClearReply() }
         )
     }
 }
@@ -173,7 +251,10 @@ fun DiscussionTopBar(
 @Composable
 fun DiscussionCommentList(
     comments: List<DiscussionView>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onReplyComment: (DiscussionView.Comment) -> Unit = {},
+    onReplyToReply: (DiscussionView.Reply) -> Unit = {},
+    onCopyText: (String) -> Unit = {}
 ) {
     LazyColumn(
         modifier = modifier,
@@ -191,7 +272,11 @@ fun DiscussionCommentList(
         ) { item ->
             when (item) {
                 is DiscussionView.Comment -> {
-                    DiscussionCommentItem(comment = item)
+                    DiscussionCommentItem(
+                        comment = item,
+                        onReply = { onReplyComment(item) },
+                        onCopy = { onCopyText(item.content.msg) }
+                    )
                     HorizontalDivider(
                         color = colorResource(id = R.color.shape_primary),
                         thickness = 1.dp,
@@ -199,7 +284,11 @@ fun DiscussionCommentList(
                     )
                 }
                 is DiscussionView.Reply -> {
-                    DiscussionReplyItem(reply = item)
+                    DiscussionReplyItem(
+                        reply = item,
+                        onReply = { onReplyToReply(item) },
+                        onCopy = { onCopyText(item.content.msg) }
+                    )
                 }
                 is DiscussionView.DateSection -> {
                     DateSectionHeader(section = item)
@@ -209,84 +298,41 @@ fun DiscussionCommentList(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun DiscussionCommentItem(comment: DiscussionView.Comment) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-    ) {
-        // Author row: avatar + name + date
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            CommentAvatar(
-                avatar = comment.avatar,
-                size = 32
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = comment.author,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.Medium,
-                color = colorResource(id = R.color.text_primary),
-                modifier = Modifier.weight(1f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-            if (comment.formattedDate != null) {
-                Text(
-                    text = comment.formattedDate,
-                    fontSize = 13.sp,
-                    color = colorResource(id = R.color.text_secondary)
-                )
-            }
-        }
-        // Text content
-        if (comment.content.parts.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(6.dp))
-            RichTextContent(parts = comment.content.parts)
-        }
-        // Reactions
-        if (comment.reactions.isNotEmpty()) {
-            Spacer(modifier = Modifier.height(8.dp))
-            ReactionsRow(reactions = comment.reactions)
-        }
-    }
-}
+fun DiscussionCommentItem(
+    comment: DiscussionView.Comment,
+    onReply: () -> Unit = {},
+    onCopy: () -> Unit = {}
+) {
+    val haptic = LocalHapticFeedback.current
+    var showDropdownMenu by remember { mutableStateOf(false) }
 
-@Composable
-fun DiscussionReplyItem(reply: DiscussionView.Reply) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
-    ) {
-        // Vertical reply bar
-        Box(
+    Box {
+        Column(
             modifier = Modifier
-                .width(4.dp)
-                .height(48.dp)
-                .background(
-                    color = colorResource(id = R.color.shape_primary),
-                    shape = CircleShape
+                .fillMaxWidth()
+                .combinedClickable(
+                    onClick = {},
+                    onLongClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        showDropdownMenu = true
+                    }
                 )
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            // Author row
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            // Author row: avatar + name + date
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 CommentAvatar(
-                    avatar = reply.avatar,
-                    size = 24
+                    avatar = comment.avatar,
+                    size = 32
                 )
-                Spacer(modifier = Modifier.width(6.dp))
+                Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = reply.author,
+                    text = comment.author,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
                     color = colorResource(id = R.color.text_primary),
@@ -294,23 +340,194 @@ fun DiscussionReplyItem(reply: DiscussionView.Reply) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                if (reply.formattedDate != null) {
+                if (comment.formattedDate != null) {
                     Text(
-                        text = reply.formattedDate,
+                        text = comment.formattedDate,
                         fontSize = 13.sp,
                         color = colorResource(id = R.color.text_secondary)
                     )
                 }
             }
             // Text content
-            if (reply.content.parts.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
-                RichTextContent(parts = reply.content.parts)
+            if (comment.content.parts.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                RichTextContent(parts = comment.content.parts)
             }
             // Reactions
-            if (reply.reactions.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(6.dp))
-                ReactionsRow(reactions = reply.reactions)
+            if (comment.reactions.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(8.dp))
+                ReactionsRow(reactions = comment.reactions)
+            }
+        }
+        DropdownMenu(
+            expanded = showDropdownMenu,
+            onDismissRequest = { showDropdownMenu = false }
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = stringResource(id = com.anytypeio.anytype.localization.R.string.chats_reply),
+                        style = PreviewTitle1Regular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                },
+                onClick = {
+                    showDropdownMenu = false
+                    onReply()
+                },
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_dropdown_menu_reply),
+                        contentDescription = null,
+                        tint = colorResource(id = R.color.glyph_active)
+                    )
+                }
+            )
+            if (comment.content.msg.isNotEmpty()) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.copy_plain_text),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    },
+                    onClick = {
+                        showDropdownMenu = false
+                        onCopy()
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.glyph_active)
+                        )
+                    }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun DiscussionReplyItem(
+    reply: DiscussionView.Reply,
+    onReply: () -> Unit = {},
+    onCopy: () -> Unit = {}
+) {
+    val haptic = LocalHapticFeedback.current
+    var showDropdownMenu by remember { mutableStateOf(false) }
+
+    Box {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .combinedClickable(
+                    onClick = {},
+                    onLongClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        showDropdownMenu = true
+                    }
+                )
+                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
+        ) {
+            // Vertical reply bar
+            Box(
+                modifier = Modifier
+                    .width(4.dp)
+                    .height(48.dp)
+                    .background(
+                        color = colorResource(id = R.color.shape_primary),
+                        shape = CircleShape
+                    )
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                // Author row
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    CommentAvatar(
+                        avatar = reply.avatar,
+                        size = 24
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = reply.author,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = colorResource(id = R.color.text_primary),
+                        modifier = Modifier.weight(1f),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    if (reply.formattedDate != null) {
+                        Text(
+                            text = reply.formattedDate,
+                            fontSize = 13.sp,
+                            color = colorResource(id = R.color.text_secondary)
+                        )
+                    }
+                }
+                // Text content
+                if (reply.content.parts.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    RichTextContent(parts = reply.content.parts)
+                }
+                // Reactions
+                if (reply.reactions.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(6.dp))
+                    ReactionsRow(reactions = reply.reactions)
+                }
+            }
+        }
+        DropdownMenu(
+            expanded = showDropdownMenu,
+            onDismissRequest = { showDropdownMenu = false }
+        ) {
+            DropdownMenuItem(
+                text = {
+                    Text(
+                        text = stringResource(id = com.anytypeio.anytype.localization.R.string.chats_reply),
+                        style = PreviewTitle1Regular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                },
+                onClick = {
+                    showDropdownMenu = false
+                    onReply()
+                },
+                leadingIcon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_dropdown_menu_reply),
+                        contentDescription = null,
+                        tint = colorResource(id = R.color.glyph_active)
+                    )
+                }
+            )
+            if (reply.content.msg.isNotEmpty()) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.copy_plain_text),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    },
+                    onClick = {
+                        showDropdownMenu = false
+                        onCopy()
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.glyph_active)
+                        )
+                    }
+                )
             }
         }
     }

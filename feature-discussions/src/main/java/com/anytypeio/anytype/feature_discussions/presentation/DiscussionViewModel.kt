@@ -26,6 +26,15 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+sealed class DiscussionInputMode {
+    data object Default : DiscussionInputMode()
+    data class Reply(
+        val msg: Id,
+        val text: String,
+        val author: String
+    ) : DiscussionInputMode()
+}
+
 class DiscussionViewModel @Inject constructor(
     private val vmParams: Params,
     private val chatContainer: ChatContainer,
@@ -46,6 +55,8 @@ class DiscussionViewModel @Inject constructor(
     val isLoading: StateFlow<Boolean> = _isLoading
 
     private val dateFormatter = SimpleDateFormat("d MMMM yyyy")
+
+    val inputMode = MutableStateFlow<DiscussionInputMode>(DiscussionInputMode.Default)
 
     private var account: Id = ""
 
@@ -169,19 +180,42 @@ class DiscussionViewModel @Inject constructor(
             }
     }
 
+    fun onReplyComment(comment: DiscussionView.Comment) {
+        inputMode.value = DiscussionInputMode.Reply(
+            msg = comment.id,
+            text = comment.content.msg,
+            author = comment.author
+        )
+    }
+
+    fun onReplyToReply(reply: DiscussionView.Reply) {
+        inputMode.value = DiscussionInputMode.Reply(
+            msg = reply.id,
+            text = reply.content.msg,
+            author = reply.author
+        )
+    }
+
+    fun onClearReply() {
+        inputMode.value = DiscussionInputMode.Default
+    }
+
     fun onSendComment(text: String) {
         if (text.isBlank()) return
+        val mode = inputMode.value
         viewModelScope.launch {
             addChatMessage.async(
                 params = Command.ChatCommand.AddMessage(
                     chat = vmParams.ctx,
                     message = Chat.Message.new(
                         text = text.trim(),
-                        marks = emptyList()
+                        marks = emptyList(),
+                        replyToMessageId = if (mode is DiscussionInputMode.Reply) mode.msg else null
                     )
                 )
             ).onSuccess { (id, payload) ->
                 chatContainer.onPayload(payload)
+                inputMode.value = DiscussionInputMode.Default
             }.onFailure { e ->
                 Timber.e(e, "Failed to send comment")
             }

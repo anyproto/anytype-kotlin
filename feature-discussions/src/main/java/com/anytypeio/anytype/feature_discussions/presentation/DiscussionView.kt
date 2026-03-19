@@ -57,7 +57,7 @@ sealed interface DiscussionView {
 
     sealed class Avatar {
         data class Initials(val initial: String = "") : Avatar()
-        data class Image(val hash: Hash) : Avatar()
+        data class Image(val hash: Hash, val fallbackInitial: String = "") : Avatar()
     }
 }
 

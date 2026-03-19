@@ -52,6 +52,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionHeader
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
@@ -317,32 +321,43 @@ fun CommentAvatar(
     avatar: DiscussionView.Avatar,
     size: Int
 ) {
-    when (avatar) {
-        is DiscussionView.Avatar.Image -> {
+    Box(
+        modifier = Modifier
+            .size(size.dp)
+            .clip(CircleShape)
+            .background(
+                color = colorResource(id = R.color.text_tertiary),
+                shape = CircleShape
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = when (avatar) {
+                is DiscussionView.Avatar.Initials -> avatar.initial.ifEmpty {
+                    stringResource(id = com.anytypeio.anytype.localization.R.string.u)
+                }
+                is DiscussionView.Avatar.Image -> avatar.fallbackInitial.ifEmpty {
+                    stringResource(id = com.anytypeio.anytype.localization.R.string.u)
+                }
+            },
+            style = TextStyle(
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = colorResource(id = R.color.text_white)
+            )
+        )
+        if (avatar is DiscussionView.Avatar.Image) {
             AsyncImage(
-                model = avatar.hash,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(avatar.hash)
+                    .crossfade(true)
+                    .build(),
                 contentDescription = "Avatar",
                 modifier = Modifier
                     .size(size.dp)
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )
-        }
-        is DiscussionView.Avatar.Initials -> {
-            Box(
-                modifier = Modifier
-                    .size(size.dp)
-                    .clip(CircleShape)
-                    .background(colorResource(id = R.color.shape_transparent_secondary)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = avatar.initial,
-                    fontSize = (size / 2).sp,
-                    fontWeight = FontWeight.Medium,
-                    color = colorResource(id = R.color.text_secondary)
-                )
-            }
         }
     }
 }

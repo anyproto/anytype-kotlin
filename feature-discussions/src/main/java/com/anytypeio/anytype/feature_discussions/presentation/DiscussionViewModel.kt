@@ -91,7 +91,10 @@ class DiscussionViewModel @Inject constructor(
 
                         val avatar = member?.iconImage?.let { iconImage ->
                             if (iconImage.isNotEmpty()) {
-                                DiscussionView.Avatar.Image(iconImage)
+                                DiscussionView.Avatar.Image(
+                                    hash = iconImage,
+                                    fallbackInitial = member.name?.firstOrNull()?.uppercase().orEmpty()
+                                )
                             } else {
                                 DiscussionView.Avatar.Initials(
                                     initial = member.name?.firstOrNull()?.uppercase().orEmpty()

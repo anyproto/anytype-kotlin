@@ -1,0 +1,46 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    alias(libs.plugins.compose.compiler)
+}
+
+android {
+    buildFeatures {
+        compose true
+    }
+
+    namespace 'com.anytypeio.anytype.feature_discussions'
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
+
+dependencies {
+    implementation project(':domain')
+    implementation project(':core-ui')
+    implementation project(':analytics')
+    implementation project(':core-models')
+    implementation project(':core-utils')
+    implementation project(':localization')
+    implementation project(':presentation')
+
+    compileOnly libs.javaxInject
+
+    implementation libs.lifecycleViewModel
+    implementation libs.lifecycleRuntime
+
+    implementation libs.appcompat
+    implementation libs.compose
+    implementation libs.activityCompose
+    implementation libs.composeFoundation
+    implementation libs.composeToolingPreview
+    implementation libs.composeMaterial3
+    implementation libs.composeMaterial
+
+    implementation libs.coilCompose
+
+    debugImplementation libs.composeTooling
+
+    implementation libs.timber
+}

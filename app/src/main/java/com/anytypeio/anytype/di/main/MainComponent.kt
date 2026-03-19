@@ -29,6 +29,7 @@ import com.anytypeio.anytype.di.feature.SpaceTypesDependencies
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatComponentDependencies
+import com.anytypeio.anytype.di.feature.discussions.DiscussionComponentDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatReactionDependencies
 import com.anytypeio.anytype.di.feature.chats.SelectChatIconDependencies
 import com.anytypeio.anytype.di.feature.chats.SelectChatReactionDependencies
@@ -139,6 +140,7 @@ interface MainComponent :
     VaultComponentDependencies,
     AllContentDependencies,
     ChatComponentDependencies,
+    DiscussionComponentDependencies,
     SelectWidgetSourceDependencies,
     SelectWidgetTypeDependencies,
     LinkToObjectDependencies,
@@ -349,6 +351,11 @@ abstract class ComponentDependenciesModule {
     @Binds
     @IntoMap
     @ComponentDependenciesKey(ChatComponentDependencies::class)
+    abstract fun provideChatComponentDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(DiscussionComponentDependencies::class)
     abstract fun provideDiscussionComponentDependencies(component: MainComponent): ComponentDependencies
 
     @Binds

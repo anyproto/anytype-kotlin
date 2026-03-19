@@ -674,6 +674,18 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onBackButtonPressed() }
             .launchIn(lifecycleScope)
 
+        binding.discussionButton
+            .clicks()
+            .throttleFirst()
+            .onEach { vm.onDiscussionButtonClicked() }
+            .launchIn(lifecycleScope)
+
+        lifecycleScope.launch {
+            vm.discussionId.collect { id ->
+                binding.discussionButton.isVisible = id != null
+            }
+        }
+
         binding.markupToolbar
             .highlightClicks()
             .onEach { vm.onMarkupHighlightToggleClicked() }

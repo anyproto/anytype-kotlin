@@ -464,6 +464,8 @@ class EditorViewModel(
         )
     }
 
+    val discussionId = MutableStateFlow<Id?>(null)
+
     init {
         Timber.i("EditorViewModel, init")
         proceedWithObservingPermissions()
@@ -822,6 +824,8 @@ class EditorViewModel(
                     }
                 }
 
+                discussionId.value = currentObj?.getSingleValue<String>(Relations.DISCUSSION_ID)
+                    ?.takeIf { it.isNotEmpty() }
                 footers.value = getFooterState(root, currentObj)
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
                 Timber.d("Rendering starting...")
@@ -8087,6 +8091,22 @@ class EditorViewModel(
     fun onUpdateAppClick() {
         dispatch(command = Command.OpenAppStore)
     }
+    //endregion
+
+    //region DISCUSSION
+
+    fun onDiscussionButtonClicked() {
+        val id = discussionId.value ?: return
+        navigate(
+            EventWrapper(
+                AppNavigation.Command.OpenDiscussion(
+                    target = id,
+                    space = vmParams.space.id
+                )
+            )
+        )
+    }
+
     //endregion
 
     //region CALENDAR

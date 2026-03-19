@@ -81,6 +81,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.clipboard.Paste.Companion.DEFAULT_RANGE
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.discussions.AddDiscussion
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -366,7 +367,8 @@ class EditorViewModel(
     private val fieldParser : FieldParser,
     private val dateProvider: DateProvider,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val urlHelper: UrlHelper
+    private val urlHelper: UrlHelper,
+    private val addDiscussion: AddDiscussion
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -464,7 +466,13 @@ class EditorViewModel(
         )
     }
 
-    val discussionId = MutableStateFlow<Id?>(null)
+    val discussionButtonState = MutableStateFlow<DiscussionButtonState>(DiscussionButtonState.Hidden)
+
+    sealed class DiscussionButtonState {
+        data object Hidden : DiscussionButtonState()
+        data object Empty : DiscussionButtonState()
+        data class Comments(val discussionId: Id, val count: Int) : DiscussionButtonState()
+    }
 
     init {
         Timber.i("EditorViewModel, init")
@@ -824,8 +832,16 @@ class EditorViewModel(
                     }
                 }
 
-                discussionId.value = currentObj?.getSingleValue<String>(Relations.DISCUSSION_ID)
+                val existingDiscussionId = currentObj?.getSingleValue<String>(Relations.DISCUSSION_ID)
                     ?.takeIf { it.isNotEmpty() }
+                discussionButtonState.value = if (existingDiscussionId != null) {
+                    DiscussionButtonState.Comments(
+                        discussionId = existingDiscussionId,
+                        count = 5
+                    )
+                } else {
+                    DiscussionButtonState.Empty
+                }
                 footers.value = getFooterState(root, currentObj)
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
                 Timber.d("Rendering starting...")
@@ -8096,15 +8112,45 @@ class EditorViewModel(
     //region DISCUSSION
 
     fun onDiscussionButtonClicked() {
-        val id = discussionId.value ?: return
-        navigate(
-            EventWrapper(
-                AppNavigation.Command.OpenDiscussion(
-                    target = id,
-                    space = vmParams.space.id
+        when (val state = discussionButtonState.value) {
+            is DiscussionButtonState.Comments -> {
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenDiscussion(
+                            target = state.discussionId,
+                            space = vmParams.space.id
+                        )
+                    )
                 )
-            )
-        )
+            }
+            is DiscussionButtonState.Empty -> {
+                // No discussion yet — create one, then open
+                viewModelScope.launch {
+                    addDiscussion.async(context).fold(
+                        onSuccess = { discussionId ->
+                            discussionButtonState.value = DiscussionButtonState.Comments(
+                                discussionId = discussionId,
+                                count = 0
+                            )
+                            navigate(
+                                EventWrapper(
+                                    AppNavigation.Command.OpenDiscussion(
+                                        target = discussionId,
+                                        space = vmParams.space.id
+                                    )
+                                )
+                            )
+                        },
+                        onFailure = { e ->
+                            Timber.e(e, "Failed to create discussion")
+                        }
+                    )
+                }
+            }
+            is DiscussionButtonState.Hidden -> {
+                // Do nothing
+            }
+        }
     }
 
     //endregion

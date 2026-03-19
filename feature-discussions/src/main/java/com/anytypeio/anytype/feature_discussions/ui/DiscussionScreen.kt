@@ -7,11 +7,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -41,6 +45,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import com.anytypeio.anytype.core_ui.R
@@ -56,10 +65,20 @@ fun DiscussionScreenWrapper(
     val header = vm.header.collectAsStateWithLifecycle().value
     val messages = vm.messages.collectAsStateWithLifecycle().value
 
+    var inputText by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(""))
+    }
+
     DiscussionScreen(
         header = header,
         comments = messages,
-        onBackClicked = onBackClicked
+        onBackClicked = onBackClicked,
+        inputText = inputText,
+        onInputValueChange = { inputText = it },
+        onSendClicked = { text ->
+            vm.onSendComment(text)
+            inputText = TextFieldValue("")
+        }
     )
 }
 
@@ -68,14 +87,29 @@ fun DiscussionScreenWrapper(
 fun DiscussionScreen(
     header: DiscussionHeader,
     comments: List<DiscussionView>,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    inputText: TextFieldValue = TextFieldValue(""),
+    onInputValueChange: (TextFieldValue) -> Unit = {},
+    onSendClicked: (String) -> Unit = {}
 ) {
     Scaffold(
         containerColor = colorResource(id = R.color.background_primary),
+        contentWindowInsets = WindowInsets(0.dp),
         topBar = {
             DiscussionTopBar(
                 header = header,
-                onBackClicked = onBackClicked
+                onBackClicked = onBackClicked,
+                modifier = Modifier.statusBarsPadding()
+            )
+        },
+        bottomBar = {
+            DiscussionCommentInput(
+                text = inputText,
+                onValueChange = onInputValueChange,
+                onSendClicked = onSendClicked,
+                modifier = Modifier
+                    .imePadding()
+                    .navigationBarsPadding()
             )
         }
     ) { paddingValues ->
@@ -92,9 +126,11 @@ fun DiscussionScreen(
 @Composable
 fun DiscussionTopBar(
     header: DiscussionHeader,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     TopAppBar(
+        modifier = modifier,
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = colorResource(id = R.color.background_primary)
         ),

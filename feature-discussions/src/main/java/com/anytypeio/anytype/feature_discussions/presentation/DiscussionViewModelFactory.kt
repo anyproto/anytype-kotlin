@@ -15,7 +15,8 @@ class DiscussionViewModelFactory @Inject constructor(
     private val members: ActiveSpaceMemberSubscriptionContainer,
     private val getAccount: GetAccount,
     private val urlBuilder: UrlBuilder,
-    private val dispatchers: AppCoroutineDispatchers
+    private val dispatchers: AppCoroutineDispatchers,
+    private val addChatMessage: AddComment
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = DiscussionViewModel(
@@ -24,6 +25,7 @@ class DiscussionViewModelFactory @Inject constructor(
         members = members,
         getAccount = getAccount,
         urlBuilder = urlBuilder,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        addChatMessage = addChatMessage
     ) as T
 }

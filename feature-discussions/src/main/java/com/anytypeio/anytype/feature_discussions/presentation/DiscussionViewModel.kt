@@ -1,8 +1,11 @@
 package com.anytypeio.anytype.feature_discussions.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
@@ -29,7 +32,8 @@ class DiscussionViewModel @Inject constructor(
     private val members: ActiveSpaceMemberSubscriptionContainer,
     private val getAccount: GetAccount,
     private val urlBuilder: UrlBuilder,
-    private val dispatchers: AppCoroutineDispatchers
+    private val dispatchers: AppCoroutineDispatchers,
+    private val addChatMessage: AddComment
 ) : BaseViewModel() {
 
     private val _header = MutableStateFlow(DiscussionHeader())
@@ -160,6 +164,25 @@ class DiscussionViewModel @Inject constructor(
                 )
                 _isLoading.value = false
             }
+    }
+
+    fun onSendComment(text: String) {
+        if (text.isBlank()) return
+        viewModelScope.launch {
+            addChatMessage.async(
+                params = Command.ChatCommand.AddMessage(
+                    chat = vmParams.ctx,
+                    message = Chat.Message.new(
+                        text = text.trim(),
+                        marks = emptyList()
+                    )
+                )
+            ).onSuccess { (id, payload) ->
+                chatContainer.onPayload(payload)
+            }.onFailure { e ->
+                Timber.e(e, "Failed to send comment")
+            }
+        }
     }
 
     data class Params(

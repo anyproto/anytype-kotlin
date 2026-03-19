@@ -674,15 +674,29 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onBackButtonPressed() }
             .launchIn(lifecycleScope)
 
-        binding.discussionButton
-            .clicks()
-            .throttleFirst()
-            .onEach { vm.onDiscussionButtonClicked() }
-            .launchIn(lifecycleScope)
-
-        lifecycleScope.launch {
-            vm.discussionId.collect { id ->
-                binding.discussionButton.isVisible = id != null
+        binding.discussionButton.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val state = vm.discussionButtonState.collectAsStateWithLifecycle().value
+                when (state) {
+                    is EditorViewModel.DiscussionButtonState.Empty -> {
+                        com.anytypeio.anytype.feature_discussions.ui.DiscussionButton(
+                            hasComments = false,
+                            commentCount = 0,
+                            onClick = { vm.onDiscussionButtonClicked() }
+                        )
+                    }
+                    is EditorViewModel.DiscussionButtonState.Comments -> {
+                        com.anytypeio.anytype.feature_discussions.ui.DiscussionButton(
+                            hasComments = true,
+                            commentCount = state.count,
+                            onClick = { vm.onDiscussionButtonClicked() }
+                        )
+                    }
+                    is EditorViewModel.DiscussionButtonState.Hidden -> {
+                        // Render nothing
+                    }
+                }
             }
         }
 

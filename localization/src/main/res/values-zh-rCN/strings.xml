@@ -399,7 +399,7 @@
     <string name="content_desc_chat_button">聊天按钮</string>
     <string name="content_desc_search_button">搜索按钮</string>
     <string name="content_desc_add_doc_button">Add doc</string>
-    <string name="unsupported_block">不支持的数据块</string>
+    <string name="unsupported_block">不支持的块</string>
     <string name="new_relation">新建属性</string>
     <string name="copy_link">拷贝链接</string>
     <string name="edit_link">编辑链接</string>

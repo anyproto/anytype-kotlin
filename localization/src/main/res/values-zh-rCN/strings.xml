@@ -5,7 +5,7 @@
     <string name="library">文库</string>
     <string name="user_id">用户 ID</string>
     <string name="account_and_data"><![CDATA[账号与数据]]></string>
-    <string name="profile">概要</string>
+    <string name="profile">个人资料</string>
     <string name="personalization">个性化</string>
     <string name="appearance">外观</string>
     <string name="file_storage">文件存储</string>
@@ -16,7 +16,7 @@
     <string name="debug">调试</string>
     <string name="account">库</string>
     <string name="reset_account">重置库</string>
-    <string name="delete_account">删除文库</string>
+    <string name="delete_account">删除库</string>
     <string name="space_debug">空间调试</string>
     <string name="data">数据</string>
     <string name="mode">模式</string>
@@ -25,8 +25,8 @@
     <string name="access">访问</string>
     <string name="wallpaper">壁纸</string>
     <string name="tech_info">技术信息</string>
-    <string name="light">亮色</string>
-    <string name="dark">暗色</string>
+    <string name="light">浅色</string>
+    <string name="dark">深色</string>
     <string name="system">跟随系统</string>
     <string name="settings">设置</string>
     <string name="vault_settings_section_misc">其他</string>
@@ -34,7 +34,7 @@
     <string name="settings_application">应用</string>
     <string name="vault_key">库与密钥</string>
     <string name="have_you_back_up_your_recovery_phrase">您是否备份了密钥？</string>
-    <string name="you_will_need_to_sign_in">您将需要恢复短语才能进入您的文库。将其保存在安全的地方。如果您丢失了它，您将无法再进入您的文库。</string>
+    <string name="you_will_need_to_sign_in">您需要使用它进入库。请将其妥善保存。一旦丢失，您将无法再进入您的库。</string>
     <string name="about_help_and_community">帮助与社区</string>
     <string name="about_what_is_new">更新内容</string>
     <string name="about_anytype_community">Anytype 社区</string>
@@ -408,7 +408,7 @@
     <string name="user_settings_title">用户设置</string>
     <string name="default_object_type_title">默认对象类型</string>
     <string name="name_layout_basic">基本</string>
-    <string name="name_layout_profile">概要</string>
+    <string name="name_layout_profile">个人资料</string>
     <string name="name_layout_participant">Participant</string>
     <string name="name_layout_todo">任务</string>
     <string name="name_layout_set">集合</string>
@@ -429,10 +429,10 @@
     <string name="paste_from_clipboard">从剪贴板粘贴</string>
     <string name="create_object_with_name">创建对象 “%1$s”</string>
     <string name="layout_basic_name">基本</string>
-    <string name="layout_basic_description">画布区块的标准布局</string>
+    <string name="layout_basic_description">画布块的标准布局</string>
     <string name="layout_note_name">笔记</string>
     <string name="layout_note_description">专为快速捕捉想法而设计</string>
-    <string name="layout_profile_name">概要</string>
+    <string name="layout_profile_name">个人资料</string>
     <string name="layout_profile_description">公司、联系人、朋友和家人</string>
     <string name="layout_todo_name">任务</string>
     <string name="layout_todo_description">带复选框的操作重点布局</string>
@@ -466,7 +466,7 @@
     <string name="paste_link">链接</string>
     <string name="next">下一步</string>
     <string name="limit_object_types">限制对象类型</string>
-    <string name="deleted_account_msg">我们很遗憾看到您选择离开。一旦将删除此库的请求发出，您将有 30 天的时间取消此请求。在 30 天后，您的加密库数据将会被永久性地从备份节点移除。</string>
+    <string name="deleted_account_msg">很抱歉看到您离开。在您申请删除库后，您有 30 天的时间可以撤回该请求。30 天后，您加密的库数据将从备份节点中永久移除。</string>
     <string name="swipe_down_to_skip">向下滑动以跳过</string>
     <string name="show">显示</string>
     <string name="this_type_has_templates">此类型有 %1$d 个模板</string>
@@ -521,7 +521,7 @@
     <string name="block_data_view_content_description_no_source">该内联查询没有源</string>
     <string name="block_data_view_content_description_no_data">内联查询的源没有类型</string>
     <string name="object_search_recently_opened_section_title">最近打开的文档</string>
-    <string name="widget_source_anytype_library">Anytype 文库</string>
+    <string name="widget_source_anytype_library">Anytype 库</string>
     <string name="widget_source_default_lists">默认列表</string>
     <string name="widget_source_system">跟随系统</string>
     <string name="your_favorite_objects">您最喜欢的对象</string>
@@ -620,7 +620,7 @@
     <string name="other_settings">其他设置</string>
     <string name="your_page">您的公开页面</string>
     <string name="updates">更新</string>
-    <string name="recovery_phrase_text">您将需要短语才能登录。将其保存在安全的地方。如果您丢失了它，您将无法再访问您的库。</string>
+    <string name="recovery_phrase_text">登录时需要使用它。请妥善保存。一旦丢失，您将无法再访问您的库。</string>
     <string name="back_up_your_recovery_phrase">备份您的密钥</string>
     <string name="i_ve_written_it_down">我已经把它写下来</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
@@ -896,7 +896,7 @@
     <string name="bin">回收站</string>
     <string name="synced_files">清理文件</string>
     <string name="log_in">登录</string>
-    <string name="create_object_section_library">Anytype 文库</string>
+    <string name="create_object_section_library">Anytype 库</string>
     <string name="bin_empty_title">您的回收站是空的。</string>
     <string name="bin_empty_subtitle">看起来您已经整理得井井有条了！</string>
     <!--region SLASH WIDGET -->
@@ -1180,7 +1180,7 @@
     <string name="relation_origin_web_clipper">网页剪藏器</string>
     <string name="relation_origin_mobile_sharing_extension">手机共享扩展</string>
     <string name="relation_origin_use_case">使用案例</string>
-    <string name="relation_origin_library_installed">文库已安装</string>
+    <string name="relation_origin_library_installed">库已安装</string>
     <string name="relation_origin_bookmark">书签</string>
     <!--endregion-->
     <plurals name="backlinks_count">
@@ -1621,7 +1621,7 @@
     <string name="membership_error_button_text_action">联系我们</string>
     <string name="membership_error_button_text_dismiss">好的</string>
     <string name="error_login_network_id_mismatch">检测到网络 ID 不匹配。请验证您的网络配置。</string>
-    <string name="error_login_select_vault_error">选择库时出错</string>
+    <string name="error_login_select_vault_error">选择库时出错。</string>
     <string name="error_login_account_deleted_error">此账号已被删除。请尝试使用另一个账号或者创建一个新的。</string>
     <string name="error_login_account_need_update_error">无法获取账户信息。请将 Anytype 更新至最新版本。</string>
     <string name="error_wallet_setup">无法设置钱包。请检查设备存储空间后重试。</string>

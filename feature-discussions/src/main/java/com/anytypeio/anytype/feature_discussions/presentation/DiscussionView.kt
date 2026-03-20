@@ -31,8 +31,13 @@ sealed interface DiscussionView {
         val timestamp: Long,
         val formattedDate: String? = null,
         val reactions: List<Reaction> = emptyList(),
-        val avatar: Avatar = Avatar.Initials()
+        val avatar: Avatar = Avatar.Initials(),
+        val depth: Int = 1
     ) : DiscussionView
+
+    data class ReplyDivider(val replyId: String, val depth: Int = 1) : DiscussionView
+
+    data class ThreadDivider(val threadId: String) : DiscussionView
 
     data class Content(val msg: String, val parts: List<Part>) {
         data class Part(

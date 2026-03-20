@@ -266,6 +266,8 @@ fun DiscussionCommentList(
                 when (item) {
                     is DiscussionView.Comment -> item.id
                     is DiscussionView.Reply -> item.id
+                    is DiscussionView.ReplyDivider -> "reply-divider-${item.replyId}"
+                    is DiscussionView.ThreadDivider -> "thread-divider-${item.threadId}"
                     is DiscussionView.DateSection -> item.formattedDate
                 }
             }
@@ -277,17 +279,28 @@ fun DiscussionCommentList(
                         onReply = { onReplyComment(item) },
                         onCopy = { onCopyText(item.content.msg) }
                     )
-                    HorizontalDivider(
-                        color = colorResource(id = R.color.shape_primary),
-                        thickness = 1.dp,
-                        modifier = Modifier.padding(horizontal = 16.dp)
-                    )
                 }
                 is DiscussionView.Reply -> {
                     DiscussionReplyItem(
                         reply = item,
                         onReply = { onReplyToReply(item) },
                         onCopy = { onCopyText(item.content.msg) }
+                    )
+                }
+                is DiscussionView.ReplyDivider -> {
+                    HorizontalDivider(
+                        color = colorResource(id = R.color.shape_primary),
+                        thickness = 0.5.dp,
+                        modifier = Modifier.padding(
+                            start = (16 * item.depth + 16).dp,
+                            end = 16.dp
+                        )
+                    )
+                }
+                is DiscussionView.ThreadDivider -> {
+                    HorizontalDivider(
+                        color = colorResource(id = R.color.shape_primary),
+                        thickness = 1.dp
                     )
                 }
                 is DiscussionView.DateSection -> {
@@ -430,7 +443,12 @@ fun DiscussionReplyItem(
                         showDropdownMenu = true
                     }
                 )
-                .padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 4.dp)
+                .padding(
+                    start = (16 * reply.depth).dp,
+                    end = 16.dp,
+                    top = 4.dp,
+                    bottom = 4.dp
+                )
         ) {
             // Vertical reply bar
             Box(

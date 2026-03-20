@@ -172,9 +172,83 @@ class DiscussionViewModel @Inject constructor(
                     }
                 }
 
-                _messages.value = commentViews
+                // Thread-reordering: group replies under their parent comment
+
+                val replyToMap: Map<Id, Id?> = result.messages.associate {
+                    it.id to it.replyToMessageId
+                }
+
+                fun findThreadRoot(messageId: Id): Id {
+                    var current = messageId
+                    val visited = mutableSetOf<Id>()
+                    while (true) {
+                        val parentId = replyToMap[current]
+                        if (parentId.isNullOrEmpty() || !visited.add(current)) return current
+                        current = parentId
+                    }
+                }
+
+                fun depthOf(messageId: Id): Int {
+                    var current = messageId
+                    var depth = 0
+                    val visited = mutableSetOf<Id>()
+                    while (true) {
+                        val parentId = replyToMap[current]
+                        if (parentId.isNullOrEmpty() || !visited.add(current)) return depth
+                        depth++
+                        current = parentId
+                    }
+                }
+
+                val topLevelComments = mutableListOf<DiscussionView.Comment>()
+
+                for (view in commentViews) {
+                    when (view) {
+                        is DiscussionView.Comment -> topLevelComments.add(view)
+                        else -> { /* Reply, DateSection — handled below */ }
+                    }
+                }
+
+                // Build children lookup: parentId -> list of reply views sorted by timestamp
+                val childrenMap = mutableMapOf<Id, MutableList<DiscussionView.Reply>>()
+                for (view in commentViews) {
+                    if (view is DiscussionView.Reply) {
+                        val parentId = replyToMap[view.id]
+                        if (!parentId.isNullOrEmpty()) {
+                            childrenMap.getOrPut(parentId) { mutableListOf() }.add(view)
+                        }
+                    }
+                }
+                childrenMap.values.forEach { list -> list.sortBy { it.timestamp } }
+
+                // DFS traversal to produce tree-ordered replies with depth
+                fun collectReplies(parentId: Id): List<DiscussionView.Reply> = buildList {
+                    for (child in childrenMap[parentId].orEmpty()) {
+                        add(child.copy(depth = depthOf(child.id)))
+                        addAll(collectReplies(child.id))
+                    }
+                }
+
+                val reordered = buildList<DiscussionView> {
+                    for (comment in topLevelComments) {
+                        val replies = collectReplies(comment.id)
+                        add(comment.copy(replyCount = replies.size))
+                        replies.forEachIndexed { index, reply ->
+                            if (index > 0) {
+                                add(DiscussionView.ReplyDivider(
+                                    replyId = reply.id,
+                                    depth = reply.depth
+                                ))
+                            }
+                            add(reply)
+                        }
+                        add(DiscussionView.ThreadDivider(threadId = comment.id))
+                    }
+                }
+
+                _messages.value = reordered
                 _header.value = DiscussionHeader(
-                    commentCount = commentViews.size
+                    commentCount = reordered.size
                 )
                 _isLoading.value = false
             }

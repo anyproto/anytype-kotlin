@@ -4,12 +4,15 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +25,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -66,6 +70,7 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
@@ -289,17 +294,17 @@ fun DiscussionCommentList(
                 }
                 is DiscussionView.ReplyDivider -> {
                     HorizontalDivider(
-                        color = colorResource(id = R.color.shape_primary),
+                        color = colorResource(id = R.color.shape_secondary),
                         thickness = 0.5.dp,
                         modifier = Modifier.padding(
-                            start = (16 * item.depth + 16).dp,
+                            start = 24.dp,
                             end = 16.dp
                         )
                     )
                 }
                 is DiscussionView.ThreadDivider -> {
                     HorizontalDivider(
-                        color = colorResource(id = R.color.shape_primary),
+                        color = colorResource(id = R.color.shape_secondary),
                         thickness = 1.dp
                     )
                 }
@@ -343,11 +348,10 @@ fun DiscussionCommentItem(
                     avatar = comment.avatar,
                     size = 32
                 )
-                Spacer(modifier = Modifier.width(8.dp))
+                Spacer(modifier = Modifier.width(6.dp))
                 Text(
                     text = comment.author,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
+                    style = Caption1Medium,
                     color = colorResource(id = R.color.text_primary),
                     modifier = Modifier.weight(1f),
                     maxLines = 1,
@@ -356,15 +360,19 @@ fun DiscussionCommentItem(
                 if (comment.formattedDate != null) {
                     Text(
                         text = comment.formattedDate,
-                        fontSize = 13.sp,
+                        style = Caption1Regular,
                         color = colorResource(id = R.color.text_secondary)
                     )
                 }
             }
             // Text content
-            if (comment.content.parts.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(6.dp))
-                RichTextContent(parts = comment.content.parts)
+            if (comment.content.msg.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = comment.content.msg,
+                    style = BodyCallout,
+                    color = colorResource(id = R.color.text_primary)
+                )
             }
             // Reactions
             if (comment.reactions.isNotEmpty()) {
@@ -436,6 +444,7 @@ fun DiscussionReplyItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(IntrinsicSize.Min)
                 .combinedClickable(
                     onClick = {},
                     onLongClick = {
@@ -444,23 +453,23 @@ fun DiscussionReplyItem(
                     }
                 )
                 .padding(
-                    start = (16 * reply.depth).dp,
+                    start = 12.dp,
                     end = 16.dp,
-                    top = 4.dp,
-                    bottom = 4.dp
+                    top = 12.dp,
+                    bottom = 12.dp
                 )
         ) {
             // Vertical reply bar
             Box(
                 modifier = Modifier
                     .width(4.dp)
-                    .height(48.dp)
+                    .fillMaxHeight()
                     .background(
-                        color = colorResource(id = R.color.shape_primary),
-                        shape = CircleShape
+                        color = colorResource(id = R.color.shape_transparent_secondary),
+                        shape = RoundedCornerShape(4.dp)
                     )
             )
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(8.dp))
             Column(modifier = Modifier.weight(1f)) {
                 // Author row
                 Row(
@@ -469,13 +478,12 @@ fun DiscussionReplyItem(
                 ) {
                     CommentAvatar(
                         avatar = reply.avatar,
-                        size = 24
+                        size = 32
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
                         text = reply.author,
-                        fontSize = 13.sp,
-                        fontWeight = FontWeight.Medium,
+                        style = Caption1Medium,
                         color = colorResource(id = R.color.text_primary),
                         modifier = Modifier.weight(1f),
                         maxLines = 1,
@@ -484,19 +492,23 @@ fun DiscussionReplyItem(
                     if (reply.formattedDate != null) {
                         Text(
                             text = reply.formattedDate,
-                            fontSize = 13.sp,
+                            style = Caption1Regular,
                             color = colorResource(id = R.color.text_secondary)
                         )
                     }
                 }
                 // Text content
-                if (reply.content.parts.isNotEmpty()) {
+                if (reply.content.msg.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(4.dp))
-                    RichTextContent(parts = reply.content.parts)
+                    Text(
+                        text = reply.content.msg,
+                        style = BodyCallout,
+                        color = colorResource(id = R.color.text_primary)
+                    )
                 }
                 // Reactions
                 if (reply.reactions.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     ReactionsRow(reactions = reply.reactions)
                 }
             }
@@ -627,20 +639,25 @@ fun RichTextContent(parts: List<DiscussionView.Content.Part>) {
 
 @Composable
 fun ReactionsRow(reactions: List<DiscussionView.Reaction>) {
-    Row {
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         reactions.forEach { reaction ->
-            Box(
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .padding(end = 6.dp)
                     .background(
                         color = colorResource(id = R.color.shape_transparent_primary),
-                        shape = CircleShape
+                        shape = RoundedCornerShape(16.dp)
                     )
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .padding(horizontal = 8.dp, vertical = 5.dp)
             ) {
                 Text(
-                    text = "${reaction.emoji} ${reaction.count}",
-                    fontSize = 13.sp,
+                    text = reaction.emoji,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "${reaction.count}",
+                    style = Caption1Regular,
                     color = colorResource(id = R.color.text_primary)
                 )
             }

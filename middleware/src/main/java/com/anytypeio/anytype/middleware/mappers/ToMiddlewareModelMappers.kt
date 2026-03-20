@@ -513,6 +513,7 @@ fun ObjectType.Layout.toMiddlewareModel(): MOTypeLayout = when (this) {
     ObjectType.Layout.NOTIFICATION -> MOTypeLayout.notification
     ObjectType.Layout.MISSING_OBJECT -> MOTypeLayout.missingObject
     ObjectType.Layout.DEVICES -> MOTypeLayout.devices
+    ObjectType.Layout.DISCUSSION -> MOTypeLayout.discussion
 }
 
 fun Relation.Format.toMiddlewareModel(): MRelationFormat = when (this) {

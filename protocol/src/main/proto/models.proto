@@ -54,6 +54,7 @@ enum SmartBlockType {
     ChatObjectDeprecated = 0x219; // DEPRECATED Container for any-store based chats
     ChatDerivedObject = 0x220; // Any-store based object for chat
     AccountObject = 0x221; // Container for account data in tech space
+    DiscussionObject = 0x222; // Any-store based object for discussion
 }
 
 message Search {
@@ -859,6 +860,7 @@ message ObjectType {
         notification = 24;
         missingObject = 25;
         devices = 26;
+        discussion = 27;
     }
 }
 
@@ -1615,6 +1617,7 @@ message ChatState {
     UnreadState mentions = 2; // unread mentions
     string lastStateId = 3; // reflects the state of the chat db at the moment of sending response/event that includes this state
     int64 order = 4; // Order is serial number of this state. Client should apply chat state only if its order is greater than previously saved order
+    string unreadReactionOrderId = 5; // order id of the newest message with any unread reactions
 }
 
 message ChatMessage {
@@ -1635,6 +1638,10 @@ message ChatMessage {
     bool mentionRead = 12;
     bool hasMention = 14;
     bool synced = 13;
+    bool pinned = 15;
+    bool unreadReaction = 16;
+    repeated MessageBlock blocks = 17;  // Ordered list of content blocks
+
     message MessageContent {
         string text = 1;      // The text content of the message part
         Block.Content.Text.Style style = 2;    // The style/type of the message part
@@ -1658,6 +1665,39 @@ message ChatMessage {
         message IdentityList {
             repeated string ids = 1; // List of user IDs
         }
+    }
+
+    message MessageBlock {
+        oneof content {
+            MessageBlockText text = 1;
+            MessageBlockLink link = 2;
+            MessageBlockEmbed embed = 3;
+        }
+    }
+
+    message MessageBlockText {
+        string text = 1;
+        Block.Content.Text.Style style = 2;
+        repeated Block.Content.Text.Mark marks = 3;
+        bool checked = 4;
+        string lang = 5;
+    }
+
+    message MessageBlockLink {
+        string targetObjectId = 1;
+        LinkType type = 2;
+
+        enum LinkType {
+            Object = 0;
+            File = 1;
+            Image = 2;
+            Bookmark = 3;
+        }
+    }
+
+    message MessageBlockEmbed {
+        string text = 1;
+        Block.Content.Latex.Processor processor = 2;
     }
 }
 

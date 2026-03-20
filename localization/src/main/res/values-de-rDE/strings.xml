@@ -83,7 +83,7 @@
     <string name="deleted_account_danger_zone_msg">Sobald die Löschung deines Tresors angefordert wurde, hast du 30 Tage um diese Anfrage zu widerrufen. Nach 30 Tagen werden deine verschlüsselten Tresor-Daten dauerhaft aus dem Backup-Knoten entfernt. Du kannst dich danach nicht auf neuen Geräten bei Anytype anmelden.</string>
     <string name="danger_zone">Gefahrenbereich</string>
     <string name="snackbar_template_add">Neue Vorlage wurde zum Typ hinzugefügt</string>
-    <string name="template_name_prefill_title">Pre-fill name</string>
+    <string name="template_name_prefill_title">Namen vorausfüllen</string>
     <string name="settings_membership">Mitgliedschaft</string>
     <string name="multi_select_turn_into">Umwandeln in</string>
     <string name="multi_select_move_to">Verschieben nach</string>
@@ -566,7 +566,7 @@
     <string name="blank">Leer</string>
     <string name="templates_menu_default_for_view">Standard für diese Ansicht</string>
     <string name="templates_menu_edit">Vorlage bearbeiten</string>
-    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
+    <string name="template_title_prefix">Du bearbeitest ein Template von\u0020</string>
     <string name="templates_menu_duplicate">Duplizieren</string>
     <string name="templates_menu_delete">Löschen</string>
     <string name="unsupported">Nicht unterstützt</string>
@@ -765,7 +765,7 @@
     <!-- Object Type Deletion Confirmation -->
     <string name="move_type_to_bin_title">\"%s\" in den Papierkorb verschieben?</string>
     <string name="move_type_to_bin_description">Dieser Typ wird von einigen Objekten verwendet. Wählen Sie alles was Sie löschen möchten. Nicht ausgewählte Objekt bleiben bestehen, verlieren aber ihren zugeordneten Typ.</string>
-    <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
+    <string name="move_type_to_bin_no_objects">Keine Objekte dieses Typs vorhanden</string>
     <string name="move_type_to_bin_select_all">Alles auswählen</string>
     <string name="move_type_to_bin_to_bin">In den Papierkorb verschieben</string>
     <string name="shared">Geteilt</string>
@@ -853,7 +853,7 @@
     <string name="go_to_the_app">Zur App gehen</string>
     <string name="exiting_please_wait">Beenden... bitte warten</string>
     <string name="loading_please_wait">Wird geladen... bitte warten</string>
-    <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
+    <string name="embed_content_not_available">%1$s eingebettet. Dieser Inhalt ist mobil nicht verfügbar</string>
     <string name="embed_is_empty">%1$s embed is empty</string>
     <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
     <string name="open">Öffnen</string>
@@ -1964,7 +1964,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="onboarding_error_config_file_not_found">Konfigurationsdatei nicht gefunden. Bitte die App neu installieren.</string>
     <string name="onboarding_error_config_file_invalid">Ungültige Konfigurationsdatei. Bitte die App neu installieren.</string>
     <string name="onboarding_error_config_file_network_id_mismatch">Netzwerkkonfiguration stimmt nicht überein. Bitte überprüfe deine Netzwerkeinstellungen.</string>
-    <string name="onboarding_set_your_name_title">Add Your Name</string>
+    <string name="onboarding_set_your_name_title">Füge deinen Namen hinzu</string>
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>
     <string name="onboarding_email_add_title">Bleib auf dem Laufenden</string>
     <string name="onboarding_email_add_description">We’d love to share tips, tricks and product updates with you. Your email is never linked to your identity. We won’t share your data. Ever.</string>
@@ -2074,7 +2074,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="widgets_section_pinned">Angeheftet</string>
     <string name="widgets_section_unread">Ungelesen</string>
     <string name="widgets_section_object_types">Objekte</string>
-    <string name="widgets_section_recently_edited">Recently Edited</string>
+    <string name="widgets_section_recently_edited">Zuletzt bearbeitet</string>
     <string name="widgets_menu_new_object_type">Neu</string>
     <string name="widgets_menu_delete_object_type">Objekttyp löschen</string>
     <string name="widget_unpin_alert_description">Wir haben die Funktionsweise von Widgets überarbeitet, sodass dieses Widget nicht mehr unterstützt wird. Nach dem Löschen kann dieses Widget nicht wiederhergestellt werden.</string>
@@ -2102,7 +2102,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     </plurals>
     <string name="any_id_info_title">This is your ANY ID</string>
     <string name="any_id_info_description">Become a member to make your ID human-readable, so other members can easily find and connect with you.</string>
-    <string name="any_id_info_button">Explore plans</string>
+    <string name="any_id_info_button">Pläne erkunden</string>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Genehmigen</string>
     <string name="chats_warning_you_can_upload_only_10_files_at_a_time">Du kannst nur 10 Dateien auf einmal hochladen</string>
@@ -2131,7 +2131,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="sharing_no_objects_found">Keine Objekte gefunden</string>
     <string name="sharing_success">Success!</string>
     <string name="sharing_added_to_space">Content added to %1$s</string>
-    <string name="sharing_error">Something went wrong</string>
+    <string name="sharing_error">Etwas ist schiefgelaufen</string>
     <string name="sharing_send_to">An %1$s senden</string>
     <string name="sharing_send_to_multiple">Send to %1$d chats</string>
     <string name="sharing_selection_limit_reached">You can select up to %1$d destinations</string>
@@ -2149,13 +2149,13 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="os_widget_space_shortcut_description">Open a space directly</string>
     <string name="os_widget_object_shortcut_title">Object Shortcut</string>
     <string name="os_widget_object_shortcut_description">Open an object directly</string>
-    <string name="os_widget_not_configured">Tap to configure</string>
-    <string name="os_widget_tap_to_create">Tap to create</string>
+    <string name="os_widget_not_configured">Zum Bearbeiten tippen</string>
+    <string name="os_widget_tap_to_create">Zum Erstellen tippen</string>
     <string name="os_widget_open_app_to_see_spaces">Your pinned spaces will appear here</string>
     <string name="os_widget_no_items">No items</string>
     <string name="no_spaces_available">No spaces available</string>
     <string name="select_view">Select view</string>
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
-    <string name="chats_search_close_content_description">Close search</string>
+    <string name="chats_search_close_content_description">Suche schließen</string>
 </resources>

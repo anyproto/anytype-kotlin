@@ -113,17 +113,6 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
 
-##---------------Begin: proguard configuration for Google ML Kit ----------
-# R8 strips BarcodeScanning and internal classes because it cannot trace
-# the call through Compose's remember {} block. Confirmed via mapping.txt:
-#   com.google.mlkit.vision.barcode.BarcodeScanning -> R8$$REMOVED$$CLASS$$
-# Keep the public API, vision-common utilities, and both bundled/unbundled internals.
--keep class com.google.mlkit.vision.barcode.** { *; }
--keep class com.google.mlkit.vision.common.** { *; }
--keep class com.google.android.gms.internal.mlkit_vision_barcode.** { *; }
--keep class com.google.android.gms.internal.mlkit_vision_barcode_bundled.** { *; }
-##---------------End: proguard configuration for Google ML Kit ----------
-
 ##---------------Begin: proguard configuration for Dagger ComponentDependencies ----------
 # Prevent R8 from merging ComponentDependencies interfaces into their implementor.
 # These interfaces are used as map keys via @ComponentDependenciesKey; merging them

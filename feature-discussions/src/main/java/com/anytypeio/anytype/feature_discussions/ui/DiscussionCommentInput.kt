@@ -43,7 +43,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.views.ContentMiscChat
+import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 
 @Composable
 fun DiscussionCommentInput(
@@ -55,15 +55,16 @@ fun DiscussionCommentInput(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .background(colorResource(R.color.background_primary))
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        verticalAlignment = Alignment.Bottom
     ) {
         // Plus button
         Box(
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(colorResource(R.color.navigation_panel))
+                .background(colorResource(R.color.shape_transparent_primary))
                 .clickable { /* TODO: attachments */ },
             contentAlignment = Alignment.Center
         ) {
@@ -83,7 +84,7 @@ fun DiscussionCommentInput(
                 .weight(1f)
                 .height(40.dp)
                 .clip(RoundedCornerShape(20.dp))
-                .background(colorResource(R.color.navigation_panel)),
+                .background(colorResource(R.color.shape_transparent_primary)),
             contentAlignment = Alignment.CenterStart
         ) {
             CommentUserInput(
@@ -91,7 +92,7 @@ fun DiscussionCommentInput(
                 onValueChange = onValueChange,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 12.dp)
             )
         }
         // Send button
@@ -124,7 +125,7 @@ private fun CommentUserInput(
     BasicTextField(
         value = text,
         onValueChange = onValueChange,
-        textStyle = ContentMiscChat.copy(
+        textStyle = PreviewTitle1Regular.copy(
             color = colorResource(id = R.color.text_primary)
         ),
         modifier = modifier,
@@ -138,7 +139,7 @@ private fun CommentUserInput(
                     id = com.anytypeio.anytype.localization.R.string.discussion_leave_comment
                 ),
                 innerTextField = innerTextField,
-                textStyle = ContentMiscChat.copy(
+                textStyle = PreviewTitle1Regular.copy(
                     color = colorResource(R.color.text_tertiary)
                 )
             )

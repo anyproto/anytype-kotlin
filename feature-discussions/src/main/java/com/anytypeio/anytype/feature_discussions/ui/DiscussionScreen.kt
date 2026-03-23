@@ -135,10 +135,25 @@ fun DiscussionScreen(
                 onBackClicked = onBackClicked,
                 modifier = Modifier.statusBarsPadding()
             )
-        },
-        bottomBar = {
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            DiscussionCommentList(
+                comments = comments,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 60.dp),
+                onReplyComment = onReplyComment,
+                onReplyToReply = onReplyToReply,
+                onCopyText = onCopyText
+            )
             Column(
                 modifier = Modifier
+                    .align(Alignment.BottomCenter)
                     .imePadding()
                     .navigationBarsPadding()
             ) {
@@ -155,16 +170,6 @@ fun DiscussionScreen(
                 )
             }
         }
-    ) { paddingValues ->
-        DiscussionCommentList(
-            comments = comments,
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            onReplyComment = onReplyComment,
-            onReplyToReply = onReplyToReply,
-            onCopyText = onCopyText
-        )
     }
 }
 
@@ -235,18 +240,19 @@ fun DiscussionTopBar(
                 if (header.title.isNotEmpty()) {
                     Text(
                         text = header.title,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = colorResource(id = R.color.text_primary),
+                        style = Caption1Medium,
+                        color = colorResource(id = R.color.text_transparent_secondary),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
                 Text(
                     text = "${header.commentCount} ${stringResource(id = com.anytypeio.anytype.localization.R.string.discussion_comments)}",
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = colorResource(id = R.color.text_secondary)
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    lineHeight = 20.sp,
+                    letterSpacing = (-0.24).sp,
+                    color = colorResource(id = R.color.text_primary)
                 )
             }
         }
@@ -342,21 +348,26 @@ fun DiscussionCommentItem(
             // Author row: avatar + name + date
             Row(
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                CommentAvatar(
-                    avatar = comment.avatar,
-                    size = 32
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = comment.author,
-                    style = Caption1Medium,
-                    color = colorResource(id = R.color.text_primary),
-                    modifier = Modifier.weight(1f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.weight(1f, fill = false)
+                ) {
+                    CommentAvatar(
+                        avatar = comment.avatar,
+                        size = 32
+                    )
+                    Text(
+                        text = comment.author,
+                        style = Caption1Medium,
+                        color = colorResource(id = R.color.text_primary),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 if (comment.formattedDate != null) {
                     Text(
                         text = comment.formattedDate,
@@ -474,21 +485,26 @@ fun DiscussionReplyItem(
                 // Author row
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    CommentAvatar(
-                        avatar = reply.avatar,
-                        size = 32
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = reply.author,
-                        style = Caption1Medium,
-                        color = colorResource(id = R.color.text_primary),
-                        modifier = Modifier.weight(1f),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        modifier = Modifier.weight(1f, fill = false)
+                    ) {
+                        CommentAvatar(
+                            avatar = reply.avatar,
+                            size = 32
+                        )
+                        Text(
+                            text = reply.author,
+                            style = Caption1Medium,
+                            color = colorResource(id = R.color.text_primary),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                     if (reply.formattedDate != null) {
                         Text(
                             text = reply.formattedDate,

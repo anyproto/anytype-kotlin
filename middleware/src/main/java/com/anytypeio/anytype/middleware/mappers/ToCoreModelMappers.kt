@@ -757,6 +757,7 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.notification -> ObjectType.Layout.NOTIFICATION
     MOTypeLayout.missingObject -> ObjectType.Layout.MISSING_OBJECT
     MOTypeLayout.devices -> ObjectType.Layout.DEVICES
+    MOTypeLayout.discussion -> ObjectType.Layout.DISCUSSION
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {

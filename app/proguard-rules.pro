@@ -113,6 +113,14 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
 
+##---------------Begin: proguard configuration for Google ML Kit ----------
+# Prevent R8 from stripping ML Kit barcode scanning classes resolved via reflection.
+# See: https://stackoverflow.com/questions/64764385
+-keep class com.google.mlkit.vision.barcode.** { *; }
+-keep class com.google.mlkit.vision.common.** { *; }
+-keep class com.google.android.gms.internal.mlkit_vision_barcode.** { *; }
+##---------------End: proguard configuration for Google ML Kit ----------
+
 ##---------------Begin: proguard configuration for Dagger ComponentDependencies ----------
 # Prevent R8 from merging ComponentDependencies interfaces into their implementor.
 # These interfaces are used as map keys via @ComponentDependenciesKey; merging them

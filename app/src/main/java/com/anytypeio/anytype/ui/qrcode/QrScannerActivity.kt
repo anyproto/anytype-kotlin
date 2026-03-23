@@ -173,14 +173,32 @@ private fun CameraPreview(
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
     val barcodeScanner = remember {
-        BarcodeScanning.getClient()
+        try {
+            BarcodeScanning.getClient()
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to initialize barcode scanner")
+            null
+        }
     }
 
     DisposableEffect(Unit) {
         onDispose {
             cameraExecutor.shutdown()
-            barcodeScanner.close()
+            barcodeScanner?.close()
         }
+    }
+
+    if (barcodeScanner == null) {
+        Box(
+            modifier = modifier,
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = stringResource(R.string.barcode_scanner_unavailable),
+                color = Color.White
+            )
+        }
+        return
     }
 
     AndroidView(

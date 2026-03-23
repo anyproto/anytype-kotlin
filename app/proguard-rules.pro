@@ -114,12 +114,12 @@
 -dontwarn org.openjsse.net.ssl.OpenJSSE
 
 ##---------------Begin: proguard configuration for Google ML Kit ----------
-# R8 strips BarcodeScanning and internal classes because it cannot trace
-# the call through Compose's remember {} block. Confirmed via mapping.txt:
-#   com.google.mlkit.vision.barcode.BarcodeScanning -> R8$$REMOVED$$CLASS$$
-# Keep the public API, vision-common utilities, and both bundled/unbundled internals.
--keep class com.google.mlkit.vision.barcode.** { *; }
--keep class com.google.mlkit.vision.common.** { *; }
+# ML Kit uses reflection-based DI (Firebase ComponentRuntime) that R8 optimizations break:
+# - Class merging corrupts ExecutorSelector, causing MissingDependencyException at app startup
+# - Tree shaking removes BarcodeScanning entry point (not traced through Compose remember{})
+# ML Kit's bundled consumer rules are insufficient for proguard-android-optimize.txt.
+-keep class com.google.mlkit.** { *; }
+-keep class com.google.android.gms.internal.mlkit_common.** { *; }
 -keep class com.google.android.gms.internal.mlkit_vision_barcode.** { *; }
 -keep class com.google.android.gms.internal.mlkit_vision_barcode_bundled.** { *; }
 ##---------------End: proguard configuration for Google ML Kit ----------

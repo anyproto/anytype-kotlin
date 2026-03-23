@@ -7,7 +7,8 @@ import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.clipboard.BuildConfig.ANYTYPE_CLIPBOARD_URI
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -20,6 +21,7 @@ import org.robolectric.annotation.Config
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
 class AndroidClipboardTest {
@@ -28,7 +30,7 @@ class AndroidClipboardTest {
 
     private lateinit var cm: ClipboardManager
 
-    private val testDispatcher = StandardTestDispatcher()
+    private val testDispatcher = UnconfinedTestDispatcher()
 
     @Before
     fun setup() {
@@ -44,7 +46,7 @@ class AndroidClipboardTest {
     }
 
     @Test
-    fun `should put only text with anytype extras`() = runTest {
+    fun `should put only text with anytype extras`() = runTest(testDispatcher) {
         val text = MockDataFactory.randomString()
 
         clipboard.put(
@@ -71,7 +73,7 @@ class AndroidClipboardTest {
     }
 
     @Test
-    fun `should put text and ignore html with anytype extras`() = runTest {
+    fun `should put text and ignore html with anytype extras`() = runTest(testDispatcher) {
         val text = MockDataFactory.randomString()
         val html = MockDataFactory.randomString()
 
@@ -102,7 +104,7 @@ class AndroidClipboardTest {
     }
 
     @Test
-    fun `should put text and html as first item with anytype extras`() = runTest {
+    fun `should put text and html as first item with anytype extras`() = runTest(testDispatcher) {
         val text = MockDataFactory.randomString()
         val html = MockDataFactory.randomString()
 

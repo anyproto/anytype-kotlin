@@ -106,6 +106,7 @@ sealed class VaultCommand {
     data class ShowLeaveSpaceWarning(val space: Id) : VaultCommand()
     data class OpenSpaceSettings(val space: SpaceId) : VaultCommand()
     data object ScanQrCode : VaultCommand()
+    data object OpenSpaceListScreen : VaultCommand()
     data class NavigateToRequestJoinSpace(val link: String) : VaultCommand()
 
     sealed class Deeplink : VaultCommand() {
@@ -140,4 +141,5 @@ sealed class VaultErrors {
     data object QrScannerError : VaultErrors()
     data object QrCodeIsNotValid : VaultErrors()
     data object CameraPermissionDenied : VaultErrors()
+    data class SharedSpaceLimitReached(val limit: Int) : VaultErrors()
 }

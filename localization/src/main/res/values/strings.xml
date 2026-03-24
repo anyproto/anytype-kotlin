@@ -2355,6 +2355,11 @@ Please provide specific details of your needs here.</string>
     <string name="allow">Allow</string>
     <string name="attachment_image">Attachment image</string>
 
+    <!-- Shared Space Limit (DROID-4388) -->
+    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
+    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
+    <string name="vault_manage_channels">Manage Channels</string>
+
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Photos</string>
     <string name="attachment_menu_camera">Camera</string>

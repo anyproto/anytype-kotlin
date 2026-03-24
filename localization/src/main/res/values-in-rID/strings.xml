@@ -2014,6 +2014,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="vault_qr_invalid_description">Kode yang terpindai tidak sesuai dengan undangan mana pun. Silakan cek lalu coba lagi.</string>
     <string name="vault_qr_try_again">Coba lagi</string>
     <string name="camera_permission_required_title">Izin kamera diperlukan</string>
+    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
     <string name="camera_permission_rationale_message">Untuk memindai kode QR, Anytype memerlukan akses kameramu. Izin ini hanya digunakan untuk memindai kode QR.</string>
     <string name="camera_permission_settings_message">Untuk memindai kode QR, kamu harus mengizinkan akses kamera di setelan perangkatmu.</string>
     <string name="open_settings">Buka Setelan</string>

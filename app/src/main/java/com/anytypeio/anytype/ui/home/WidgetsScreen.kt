@@ -35,6 +35,7 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.OBJECT
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_RECENTLY_EDITED
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_SPACE_CHAT_ID
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_UNREAD
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_RECENTLY_EDITED_ID
@@ -256,7 +257,7 @@ fun WidgetsScreen(
 
             // Chat widget pinned at the top for single-chat spaces (CHAT, ONE_TO_ONE)
             if (chatWidget is WidgetView.SpaceChat) {
-                item(key = "space_chat_widget_top") {
+                item(key = WIDGET_SPACE_CHAT_ID) {
                     SpaceChatWidgetCard(
                         item = chatWidget,
                         mode = InteractionMode.Default,

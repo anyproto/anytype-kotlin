@@ -231,6 +231,7 @@ sealed class Widget {
             const val SECTION_OBJECT_TYPE = "object_type_section"
             const val SECTION_RECENTLY_EDITED = "recently_edited_section"
             const val OBJECT_TYPES_GROUP_ID = "object_types_group"
+            const val WIDGET_SPACE_CHAT_ID = "space_chat_widget_top"
             const val SOURCE_OTHER = "source_other"
 
             val SOURCE_KEYS = ObjectSearchConstants.defaultKeys

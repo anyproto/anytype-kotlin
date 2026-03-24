@@ -60,7 +60,7 @@ Add `CreateObjectByTypeAndTemplate` use case as a dependency. When `CreateObject
 
 ### 2.2 Navigation Result
 
-New sealed class emitted via `SharedFlow<CreateObjectNavigation>`:
+New sealed class emitted via `Channel(Channel.BUFFERED)` exposed as `Flow` via `receiveAsFlow()` (not `SharedFlow`, to avoid losing one-shot events during config changes):
 
 ```kotlin
 sealed class CreateObjectNavigation {
@@ -72,24 +72,44 @@ sealed class CreateObjectNavigation {
 
 Layout-to-destination mapping mirrors `CreateObjectFragment`'s existing logic:
 - `COLLECTION`, `SET` → `OpenSet`
-- `CHAT` → `OpenChat`
+- `CHAT`, `CHAT_DERIVED` → `OpenChat`
 - Everything else → `OpenEditor`
+
+**Dismiss behavior:** The bottom sheet auto-dismisses before navigation to avoid remaining visible on back press. On creation failure, an error state is shown within the bottom sheet with a retry option (matching the existing error/retry pattern in `NewCreateObjectViewModel`).
 
 ### 2.3 VmParams Expansion
 
-Add optional `typeKey: Key?` parameter for pre-selected type scenarios (OS widget deeplinks).
+Add optional `typeKey: TypeKey?` parameter for pre-selected type scenarios (OS widget deeplinks). Note: use `TypeKey` wrapper class (not the `Key` string typealias) to match `CreateObjectByTypeAndTemplate.Param`.
 
 When `typeKey` is provided, the VM skips the type list and immediately creates the object.
 
 ### 2.4 Dependencies
 
+The VM needs `CreateObjectByTypeAndTemplate`, `SpaceManager`, and `AppCoroutineDispatchers`. These are provided via a **Dagger module inside the component** (not via the dependencies interface), matching the existing pattern in `CreateObjectDI.kt` (lines 37-46) where use cases are instantiated per-screen from lower-level deps.
+
+New `CreateObjectFeatureModule` added to the component:
+
+```kotlin
+@Module
+object CreateObjectFeatureModule {
+    @Provides
+    @PerScreen
+    fun provideCreateObjectByTypeAndTemplate(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): CreateObjectByTypeAndTemplate = CreateObjectByTypeAndTemplate(repo, dispatchers)
+}
+```
+
 `CreateObjectFeatureDependencies` interface gains:
 
 ```kotlin
-fun createObjectByTypeAndTemplate(): CreateObjectByTypeAndTemplate
-fun spaceManager(): SpaceManager
-fun awaitAccountStartManager(): AwaitAccountStartManager
+fun blockRepository(): BlockRepository           // new — provided by MainComponent
+fun dispatchers(): AppCoroutineDispatchers        // new — provided by MainComponent
+fun spaceManager(): SpaceManager                  // new — provided by MainComponent
 ```
+
+`AwaitAccountStartManager` is **not** needed — the new VM is only used from within active screens where the account is already started. The OS widget deeplink path goes through `MainActivity` which already awaits account start before dispatching commands.
 
 ## Section 3: Call Site Migration
 
@@ -106,37 +126,57 @@ Each screen branches on the flag. The 8 call sites:
 | SpaceSettingsFragment | `app/.../ui/settings/space/SpaceSettingsFragment.kt` | `ObjectTypeSelectionFragment` | `CreateObjectBottomSheet` |
 | CreateObjectWidgetConfigActivity | `app/.../ui/oswidgets/CreateObjectWidgetConfigActivity.kt` | `ObjectTypeSelectionFragment` | `CreateObjectBottomSheet` |
 
+### Compose hosting approach — `CreateObjectDialogFragment` wrapper:
+
+Create a new `CreateObjectDialogFragment` (extends `BaseBottomSheetComposeFragment`) that:
+1. Hosts the `CreateObjectBottomSheet` composable
+2. Owns the `NewCreateObjectViewModel` (is the `ViewModelStoreOwner`)
+3. Injects via `ComponentManager.createObjectFeatureComponent`
+4. Releases the component in `onDestroy()`
+5. Communicates results back to the caller via `FragmentResult` API (`setFragmentResult`)
+
+This matches the existing pattern used by `ObjectTypeSelectionFragment` (which also extends a base compose fragment and is shown via `dialog.show(childFragmentManager, ...)`). All 8 call sites show this wrapper fragment the same way, regardless of whether the host is View-based or Compose-based.
+
 ### Migration pattern per call site:
 
 ```kotlin
 if (BuildConfig.USE_NEW_CREATE_OBJECT) {
-    // 1. Get/create CreateObjectFeatureComponent from ComponentManager
-    // 2. Show CreateObjectBottomSheet (Compose in ComposeView or existing Compose host)
-    // 3. Collect CreateObjectNavigation from VM → navigate to editor/set/chat
+    val dialog = CreateObjectDialogFragment.new(space = spaceId)
+    dialog.show(childFragmentManager, TAG)
+    // Listen for results via FragmentResultListener:
+    //   - CreateObjectNavigation → navigate to editor/set/chat
+    //   - CreateObjectAction (media) → handle camera/file picker
 } else {
     // Existing fragment-based flow (unchanged)
 }
 ```
 
-### MainActivity deeplink handling (2 call sites):
+### MainActivity deeplink handling (2 additional call sites):
 
-- `Command.OpenCreateNewType`: Branch on flag — new path launches bottom sheet with `VmParams(typeKey = typeKey)`
+These are distinct from the 8 UI call sites — they don't show a type picker. They directly create an object with a pre-known type.
+
+- `Command.OpenCreateNewType`: Branch on flag — new path instantiates `NewCreateObjectViewModel` with `VmParams(typeKey = typeKey)` for immediate creation, then navigates based on the result
 - `Command.Deeplink.OpenCreateObjectFromOsWidget`: Same branching
 
 ### Media actions forwarding:
 
-`SelectPhotos`, `TakePhoto`, `SelectFiles`, `AttachExistingObject` actions are forwarded from the bottom sheet to the calling screen via the action callback lambda. The calling screen handles them (camera intent, file picker, etc.).
+`SelectPhotos`, `TakePhoto`, `SelectFiles`, `AttachExistingObject` actions are forwarded from the dialog to the calling screen via `FragmentResult`. The calling screen handles them (camera intent, file picker, etc.).
 
 ### Out of scope:
 
 - `WidgetSourceTypeFragment` / `WidgetSourceTypeListener` — different use case (selecting widget source type, not creating objects)
+- `CollectionAddObjectTypeFragment` / `CollectionObjectTypeSelectionListener` — used by `ObjectSetFragment` for a different action (selecting a type for collection view filtering, not creating objects). Remains on the legacy path.
+- `AppDefaultObjectTypeFragment` — used by `SpaceSettingsFragment` for setting the default object type, not creating objects. Remains on the legacy path.
 
 ## Section 4: DI Changes
 
 ### CreateObjectFeatureComponent expansion:
 
 ```kotlin
-@Component(dependencies = [CreateObjectFeatureDependencies::class])
+@Component(
+    dependencies = [CreateObjectFeatureDependencies::class],
+    modules = [CreateObjectFeatureModule::class]
+)
 @PerScreen
 interface CreateObjectFeatureComponent {
     // Factory stays the same, VmParams expanded
@@ -145,15 +185,21 @@ interface CreateObjectFeatureComponent {
 interface CreateObjectFeatureDependencies : ComponentDependencies {
     fun storeOfObjectTypes(): StoreOfObjectTypes                    // existing
     fun spaceViewSubscription(): SpaceViewSubscriptionContainer     // existing
-    fun createObjectByTypeAndTemplate(): CreateObjectByTypeAndTemplate // new
-    fun spaceManager(): SpaceManager                                 // new
-    fun awaitAccountStartManager(): AwaitAccountStartManager         // new
+    fun blockRepository(): BlockRepository                          // new
+    fun dispatchers(): AppCoroutineDispatchers                      // new
+    fun spaceManager(): SpaceManager                                // new
 }
 ```
 
+All new dependencies (`BlockRepository`, `AppCoroutineDispatchers`, `SpaceManager`) are already provided by `MainComponent` and resolved via `findComponentDependencies()`.
+
 ### ComponentManager:
 
-Existing `createObjectFeatureComponent` entry unchanged structurally — `findComponentDependencies()` resolves new dependencies from `MainComponent` which already provides them.
+Existing `createObjectFeatureComponent` entry unchanged structurally — `findComponentDependencies()` resolves the new dependencies from `MainComponent`.
+
+### VM lifecycle and ownership:
+
+The `NewCreateObjectViewModel` is scoped to a new `CreateObjectDialogFragment` wrapper (see Section 3). The wrapper Fragment is the `ViewModelStoreOwner`. `ComponentManager.createObjectFeatureComponent.release()` is called in the wrapper's `onDestroy()`.
 
 ### No new components:
 
@@ -185,4 +231,8 @@ Expand `NewCreateObjectViewModelTest` to cover:
 ### Permanently retained:
 
 - `WidgetSourceTypeFragment` / `WidgetSourceTypeListener`
+- `CollectionAddObjectTypeFragment` / `CollectionObjectTypeSelectionListener`
+- `AppDefaultObjectTypeFragment`
 - `CreateObjectWidgetConfigDI` (OS widget config)
+
+Note: `ObjectTypeSelectionListener` interface is shared by some retained fragments. During cleanup, verify which listeners are still referenced before deleting.

@@ -108,7 +108,6 @@ object CreateObjectFeatureModule {
 fun blockRepository(): BlockRepository           // new — provided by MainComponent
 fun logger(): Logger                             // new — provided by MainComponent
 fun dispatchers(): AppCoroutineDispatchers        // new — provided by MainComponent
-fun spaceManager(): SpaceManager                  // new — provided by MainComponent
 ```
 
 `AwaitAccountStartManager` is **not** needed — the new VM is only used from within active screens where the account is already started. The OS widget deeplink path goes through `MainActivity` which already awaits account start before dispatching commands.

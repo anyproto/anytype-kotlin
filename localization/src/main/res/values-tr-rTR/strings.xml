@@ -2027,6 +2027,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="vault_qr_invalid_description">Taranan karekod geçerli bir davetiyeyle eşleşmiyor. Lütfen kontrol edin ve tekrar dene.</string>
     <string name="vault_qr_try_again">Tekrar deneyin</string>
     <string name="camera_permission_required_title">Kamera izni gerekli</string>
+    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
     <string name="camera_permission_rationale_message">Karekodları taramak için Anytype\'ın kamerana erişmesi gerekir. Bu izin yalnızca karekodları taramak için kullanılır.</string>
     <string name="camera_permission_settings_message">Karekodları taramak için cihaz ayarlarında kamera erişimine izin vermen gerekiyor.</string>
     <string name="open_settings">Ayarlar\'ı Aç</string>

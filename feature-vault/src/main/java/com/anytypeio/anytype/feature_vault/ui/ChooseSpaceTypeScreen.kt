@@ -1,27 +1,29 @@
 package com.anytypeio.anytype.feature_vault.ui
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.feature_vault.R
+import com.anytypeio.anytype.core_ui.R as CoreR
 
 @Composable
 fun CreateChannelDropdownMenu(
@@ -36,88 +38,77 @@ fun CreateChannelDropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(12.dp),
-        containerColor = colorResource(id = R.color.background_secondary)
+        containerColor = colorResource(id = CoreR.color.background_secondary),
+        tonalElevation = 8.dp,
+        offset = DpOffset(
+            x = 16.dp,
+            y = 8.dp
+        )
     ) {
         DropdownMenuItem(
             text = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .background(
-                                color = colorResource(id = R.color.palette_system_blue),
-                                shape = CircleShape
-                            )
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(id = R.string.vault_create_personal),
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                }
+                CreateChannelMenuItemContent(
+                    icon = CoreR.drawable.ic_space_type_private,
+                    text = stringResource(id = com.anytypeio.anytype.localization.R.string.vault_create_personal)
+                )
             },
-            onClick = onPersonalClicked
+            onClick = {
+                onPersonalClicked()
+                onDismiss()
+            }
         )
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            color = colorResource(id = R.color.shape_transparent_secondary)
-        )
+        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
         DropdownMenuItem(
             text = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .background(
-                                color = colorResource(id = R.color.palette_system_green),
-                                shape = CircleShape
-                            )
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(id = R.string.vault_create_group),
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                }
+                CreateChannelMenuItemContent(
+                    icon = CoreR.drawable.ic_space_type_space,
+                    text = stringResource(id = com.anytypeio.anytype.localization.R.string.vault_create_group)
+                )
             },
-            onClick = onGroupClicked
+            onClick = {
+                onGroupClicked()
+                onDismiss()
+            }
         )
-        HorizontalDivider(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            color = colorResource(id = R.color.shape_transparent_secondary)
-        )
+        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
         DropdownMenuItem(
             text = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .background(
-                                color = colorResource(id = R.color.palette_system_amber_125),
-                                shape = CircleShape
-                            )
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(id = R.string.vault_join_via_qr),
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                }
+                CreateChannelMenuItemContent(
+                    icon = CoreR.drawable.ic_join_via_qr_code_32,
+                    text = stringResource(id = com.anytypeio.anytype.localization.R.string.vault_join_via_qr)
+                )
             },
-            onClick = onJoinViaQrClicked
+            onClick = {
+                onJoinViaQrClicked()
+                onDismiss()
+            }
+        )
+    }
+}
+
+@Composable
+private fun CreateChannelMenuItemContent(
+    icon: Int,
+    text: String
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = text,
+            style = BodyRegular,
+            color = colorResource(CoreR.color.text_primary),
+            modifier = Modifier.weight(1f)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Image(
+            painter = painterResource(id = icon),
+            contentDescription = text,
+            colorFilter = ColorFilter.tint(colorResource(CoreR.color.text_primary)),
+            modifier = Modifier.size(24.dp)
         )
     }
 }

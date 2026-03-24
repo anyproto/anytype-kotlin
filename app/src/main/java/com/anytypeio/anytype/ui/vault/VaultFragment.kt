@@ -34,6 +34,7 @@ import com.anytypeio.anytype.feature_vault.presentation.VaultNavigation
 import com.anytypeio.anytype.feature_vault.presentation.VaultViewModel
 import com.anytypeio.anytype.feature_vault.presentation.VaultViewModelFactory
 import com.anytypeio.anytype.feature_vault.ui.AlertScreenModals
+import com.anytypeio.anytype.feature_vault.ui.SharedSpaceLimitModal
 import com.anytypeio.anytype.feature_vault.ui.VaultScreen
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
@@ -159,6 +160,15 @@ class VaultFragment : BaseComposeFragment() {
                             requireContext().openAppSettings()
                             vm.clearVaultError()
                         },
+                        onDismiss = vm::clearVaultError
+                    )
+                }
+
+                is VaultErrors.SharedSpaceLimitReached -> {
+                    SharedSpaceLimitModal(
+                        limit = vaultErrors.limit,
+                        onUpgradeClicked = vm::onSharedSpaceLimitUpgradeClicked,
+                        onManageChannelsClicked = vm::onManageChannelsClicked,
                         onDismiss = vm::clearVaultError
                     )
                 }
@@ -305,6 +315,14 @@ class VaultFragment : BaseComposeFragment() {
             
             VaultCommand.ScanQrCode -> {
                 handleCameraPermissionAndScan()
+            }
+
+            VaultCommand.OpenSpaceListScreen -> {
+                runCatching {
+                    findNavController().navigate(R.id.spaceListScreen)
+                }.onFailure {
+                    Timber.e(it, "Error while navigating to space list")
+                }
             }
             
             is VaultCommand.NavigateToRequestJoinSpace -> {

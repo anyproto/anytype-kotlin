@@ -96,8 +96,9 @@ object CreateObjectFeatureModule {
     @PerScreen
     fun provideCreateObjectByTypeAndTemplate(
         repo: BlockRepository,
+        logger: Logger,
         dispatchers: AppCoroutineDispatchers
-    ): CreateObjectByTypeAndTemplate = CreateObjectByTypeAndTemplate(repo, dispatchers)
+    ): CreateObjectByTypeAndTemplate = CreateObjectByTypeAndTemplate(repo, logger, dispatchers)
 }
 ```
 
@@ -105,6 +106,7 @@ object CreateObjectFeatureModule {
 
 ```kotlin
 fun blockRepository(): BlockRepository           // new — provided by MainComponent
+fun logger(): Logger                             // new — provided by MainComponent
 fun dispatchers(): AppCoroutineDispatchers        // new — provided by MainComponent
 fun spaceManager(): SpaceManager                  // new — provided by MainComponent
 ```
@@ -186,6 +188,7 @@ interface CreateObjectFeatureDependencies : ComponentDependencies {
     fun storeOfObjectTypes(): StoreOfObjectTypes                    // existing
     fun spaceViewSubscription(): SpaceViewSubscriptionContainer     // existing
     fun blockRepository(): BlockRepository                          // new
+    fun logger(): Logger                                            // new
     fun dispatchers(): AppCoroutineDispatchers                      // new
     fun spaceManager(): SpaceManager                                // new
 }

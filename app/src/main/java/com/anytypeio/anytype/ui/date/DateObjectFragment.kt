@@ -20,6 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -38,7 +39,11 @@ import com.anytypeio.anytype.feature_date.ui.DateMainScreen
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectCommand
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.chats.ChatFragment
+import com.anytypeio.anytype.ui.create.CreateObjectDialogFragment
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
@@ -70,6 +75,28 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        childFragmentManager.setFragmentResultListener(
+            CreateObjectDialogFragment.RESULT_KEY_NAVIGATION,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val navType = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_TYPE)
+            val id = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_ID) ?: return@setFragmentResultListener
+            val spaceStr = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_SPACE) ?: return@setFragmentResultListener
+            when (navType) {
+                "OpenEditor" -> findNavController().navigate(
+                    R.id.objectNavigation,
+                    EditorFragment.args(ctx = id, space = spaceStr)
+                )
+                "OpenSet" -> findNavController().navigate(
+                    R.id.dataViewNavigation,
+                    ObjectSetFragment.args(ctx = id, space = spaceStr)
+                )
+                "OpenChat" -> findNavController().navigate(
+                    R.id.chatScreen,
+                    ChatFragment.args(ctx = id, space = spaceStr)
+                )
+            }
+        }
         subscribe(vm.effects) { effect ->
             Timber.d("Received date effect: $effect")
             when (effect) {
@@ -175,8 +202,13 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     toast(effect.message)
                 }
                 DateObjectCommand.TypeSelectionScreen -> {
-                    val dialog = ObjectTypeSelectionFragment.new(space = space)
-                    dialog.show(childFragmentManager, null)
+                    if (BuildConfig.USE_NEW_CREATE_OBJECT) {
+                        val dialog = CreateObjectDialogFragment.new(space = space)
+                        dialog.show(childFragmentManager, CreateObjectDialogFragment.TAG)
+                    } else {
+                        val dialog = ObjectTypeSelectionFragment.new(space = space)
+                        dialog.show(childFragmentManager, null)
+                    }
                 }
                 is DateObjectCommand.NavigateToParticipant -> {
                     runCatching {

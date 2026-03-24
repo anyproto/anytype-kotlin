@@ -15,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -35,7 +36,11 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
+import com.anytypeio.anytype.ui.chats.ChatFragment
+import com.anytypeio.anytype.ui.create.CreateObjectDialogFragment
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
@@ -66,6 +71,28 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        childFragmentManager.setFragmentResultListener(
+            CreateObjectDialogFragment.RESULT_KEY_NAVIGATION,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val navType = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_TYPE)
+            val id = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_ID) ?: return@setFragmentResultListener
+            val spaceStr = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_SPACE) ?: return@setFragmentResultListener
+            when (navType) {
+                "OpenEditor" -> findNavController().navigate(
+                    R.id.objectNavigation,
+                    EditorFragment.args(ctx = id, space = spaceStr)
+                )
+                "OpenSet" -> findNavController().navigate(
+                    R.id.dataViewNavigation,
+                    ObjectSetFragment.args(ctx = id, space = spaceStr)
+                )
+                "OpenChat" -> findNavController().navigate(
+                    R.id.chatScreen,
+                    ChatFragment.args(ctx = id, space = spaceStr)
+                )
+            }
+        }
         subscribe(vm.commands) { command ->
             when (command) {
                 is AllContentViewModel.Command.ExitToSpaceHome -> {
@@ -250,8 +277,13 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     onGlobalSearchClicked = vm::onGlobalSearchClicked,
                     onAddDocClicked = vm::onAddDockClicked,
                     onCreateObjectLongClicked = {
-                        val dialog = ObjectTypeSelectionFragment.new(space = space)
-                        dialog.show(childFragmentManager, null)
+                        if (BuildConfig.USE_NEW_CREATE_OBJECT) {
+                            val dialog = CreateObjectDialogFragment.new(space = space)
+                            dialog.show(childFragmentManager, CreateObjectDialogFragment.TAG)
+                        } else {
+                            val dialog = ObjectTypeSelectionFragment.new(space = space)
+                            dialog.show(childFragmentManager, null)
+                        }
                     },
                     onBackClicked = vm::onBackClicked,
                     moveToBin = vm::proceedWithMoveToBin,

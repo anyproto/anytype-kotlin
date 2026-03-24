@@ -131,13 +131,12 @@ fun HomepagePickerContent(
         }
 
         LazyRow(
-            modifier = Modifier.fillMaxWidth()
-                .padding(start = 20.dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(
-                24.dp,
+                space = 24.dp,
                 alignment = Alignment.CenterHorizontally
             ),
-            contentPadding = PaddingValues(end = 24.dp)
+            contentPadding = PaddingValues(start = 24.dp, end = 24.dp)
         ) {
             items(types) { type ->
                 ChannelTypeCard(

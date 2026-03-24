@@ -48,7 +48,7 @@ fun CreateChannelDropdownMenu(
         DropdownMenuItem(
             text = {
                 CreateChannelMenuItemContent(
-                    icon = CoreR.drawable.ic_space_type_private,
+                    icon = CoreR.drawable.ci_person,
                     text = stringResource(id = com.anytypeio.anytype.localization.R.string.vault_create_personal)
                 )
             },
@@ -61,7 +61,7 @@ fun CreateChannelDropdownMenu(
         DropdownMenuItem(
             text = {
                 CreateChannelMenuItemContent(
-                    icon = CoreR.drawable.ic_space_type_space,
+                    icon = CoreR.drawable.ci_people,
                     text = stringResource(id = com.anytypeio.anytype.localization.R.string.vault_create_group)
                 )
             },
@@ -92,9 +92,7 @@ private fun CreateChannelMenuItemContent(
     text: String
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp),
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -103,12 +101,12 @@ private fun CreateChannelMenuItemContent(
             color = colorResource(CoreR.color.text_primary),
             modifier = Modifier.weight(1f)
         )
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(8.dp))
         Image(
             painter = painterResource(id = icon),
             contentDescription = text,
             colorFilter = ColorFilter.tint(colorResource(CoreR.color.text_primary)),
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.padding(end = 16.dp).size(24.dp)
         )
     }
 }

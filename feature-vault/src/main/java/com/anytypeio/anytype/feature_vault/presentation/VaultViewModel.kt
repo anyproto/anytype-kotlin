@@ -45,6 +45,7 @@ import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
 import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator.calculateChatNotificationState
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.`object`.resolveParticipantName
@@ -76,6 +77,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -773,11 +775,16 @@ class VaultViewModel(
         }
         viewModelScope.launch {
             showCreateChannelMenu.value = false
-            commands.emit(
-                VaultCommand.CreateNewSpace(
-                    channelType = ChannelCreationType.GROUP
+            val (count, limit) = getSharedSpaceLimitInfo()
+            if (limit > 0 && count >= limit) {
+                vaultErrors.value = VaultErrors.SharedSpaceLimitReached(limit = limit)
+            } else {
+                commands.emit(
+                    VaultCommand.CreateNewSpace(
+                        channelType = ChannelCreationType.GROUP
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -785,6 +792,30 @@ class VaultViewModel(
         viewModelScope.launch {
             showCreateChannelMenu.value = false
         }
+    }
+
+    fun onSharedSpaceLimitUpgradeClicked() {
+        viewModelScope.launch {
+            vaultErrors.value = VaultErrors.Hidden
+            commands.emit(VaultCommand.Deeplink.MembershipScreen(tierId = null))
+        }
+    }
+
+    fun onManageChannelsClicked() {
+        viewModelScope.launch {
+            vaultErrors.value = VaultErrors.Hidden
+            commands.emit(VaultCommand.OpenSpaceListScreen)
+        }
+    }
+
+    private suspend fun getSharedSpaceLimitInfo(): Pair<Int, Int> {
+        val countFlow = spaceViewSubscriptionContainer.sharedSpaceCount(
+            userPermissionProvider.all()
+        )
+        val limitFlow = profileContainer.observe().map {
+            it.getValue<Double?>(Relations.SHARED_SPACES_LIMIT)?.toInt() ?: 0
+        }
+        return combine(countFlow, limitFlow) { c, l -> c to l }.first()
     }
 
     fun onJoinViaQrClicked() {

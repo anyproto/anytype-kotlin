@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getSystemLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.core_models.ext.canCreateAdditionalChats
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.R
@@ -449,6 +450,7 @@ data class WidgetUiParams(
 data class WidgetSections(
     val pinnedWidgets: List<Widget>,
     val typeWidgets: List<Widget>,
+    val chatWidget: Widget.Chat? = null,
     val unreadWidget: Widget.UnreadChatList? = null,
     val recentlyEditedWidget: Widget.RecentlyEdited? = null,
     val binWidget: Widget.Bin? = null
@@ -516,9 +518,12 @@ suspend fun buildWidgetSections(
         null
     }
 
+    val chatWidget = buildChatWidget(spaceView = spaceView, state = state)
+
     return WidgetSections(
         pinnedWidgets = pinnedWidgets,
         typeWidgets = typeWidgets,
+        chatWidget = chatWidget,
         unreadWidget = unreadWidget,
         recentlyEditedWidget = recentlyEditedWidget,
         binWidget = binWidget
@@ -535,7 +540,7 @@ private fun buildChatWidget(
 ): Widget.Chat? {
     val spaceChatId = spaceView.chatId
     return if (!spaceChatId.isNullOrEmpty()
-        && spaceView.spaceUxType != SpaceUxType.CHAT
+        && !spaceView.spaceUxType.canCreateAdditionalChats
     ) {
         Widget.Chat(config = state.config)
     } else {

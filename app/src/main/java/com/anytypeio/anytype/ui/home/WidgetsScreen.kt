@@ -40,7 +40,9 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_RECENTLY_EDITED_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.extractWidgetId
+import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
+import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetElement
 import com.anytypeio.anytype.ui.widgets.types.ObjectTypesGroupWidgetCard
@@ -63,6 +65,7 @@ fun WidgetsScreen(
     val pinnedWidgets = viewModel.pinnedViews.collectAsState().value
     val typeWidgets = viewModel.typeViews.collectAsState().value
     val unreadWidget = viewModel.unreadView.collectAsState().value
+    val chatWidget = viewModel.chatView.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
     val recentlyEditedWidget = viewModel.recentlyEditedView.collectAsState().value
     val collapsedSections = viewModel.collapsedSections.collectAsState().value
@@ -250,6 +253,21 @@ fun WidgetsScreen(
             state = lazyListState,
             modifier = Modifier.fillMaxSize()
         ) {
+
+            // Chat widget pinned at the top for single-chat spaces (CHAT, ONE_TO_ONE)
+            if (chatWidget is WidgetView.SpaceChat) {
+                item(key = "space_chat_widget_top") {
+                    SpaceChatWidgetCard(
+                        item = chatWidget,
+                        mode = InteractionMode.Default,
+                        unReadMentionCount = chatWidget.unreadMentionCount,
+                        unReadMessageCount = chatWidget.unreadMessageCount,
+                        isMuted = chatWidget.isMuted,
+                        onWidgetClicked = viewModel::onSpaceChatWidgetClicked,
+                        onDropDownMenuAction = { }
+                    )
+                }
+            }
 
             val visibleSections = sectionConfig.getVisibleSections()
 

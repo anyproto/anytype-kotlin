@@ -351,7 +351,8 @@ class MainViewModel(
                 onFailure = { e -> Timber.e(e, "Error while checking auth status") },
                 onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
-                        commands.emit(Command.OpenCreateNewType(type))
+                        val space = spaceManager.get()
+                        commands.emit(Command.OpenCreateNewType(type = type, space = space))
                     }
                 }
             )
@@ -374,7 +375,7 @@ class MainViewModel(
                     .onSuccess { config ->
                         Timber.d("onCreateObjectFromWidget: switched to space $spaceId successfully, config=$config")
                         Timber.d("onCreateObjectFromWidget: emitting OpenCreateObjectFromOsWidget with typeKey=$typeKey")
-                        commands.emit(Command.Deeplink.OpenCreateObjectFromOsWidget(typeKey = typeKey))
+                        commands.emit(Command.Deeplink.OpenCreateObjectFromOsWidget(space = spaceId, typeKey = typeKey))
                     }
                     .onFailure { e ->
                         Timber.e(e, "onCreateObjectFromWidget: failed to switch space to $spaceId")
@@ -382,7 +383,7 @@ class MainViewModel(
                     }
             } else {
                 Timber.d("onCreateObjectFromWidget: already in space $spaceId, emitting create command")
-                commands.emit(Command.Deeplink.OpenCreateObjectFromOsWidget(typeKey = typeKey))
+                commands.emit(Command.Deeplink.OpenCreateObjectFromOsWidget(space = spaceId, typeKey = typeKey))
             }
         }
     }
@@ -895,7 +896,7 @@ class MainViewModel(
     sealed class Command {
         data class ShowDeletedAccountScreen(val deadline: Long) : Command()
         data object LogoutDueToAccountDeletion : Command()
-        class OpenCreateNewType(val type: Id) : Command()
+        class OpenCreateNewType(val type: Id, val space: Id) : Command()
         data class Error(val msg: String) : Command()
 
         data object Notifications : Command()
@@ -974,6 +975,7 @@ class MainViewModel(
              * Emitted by onCreateObjectFromWidget after successful space switch.
              */
             data class OpenCreateObjectFromOsWidget(
+                val space: Id,
                 val typeKey: String
             ) : Deeplink()
         }

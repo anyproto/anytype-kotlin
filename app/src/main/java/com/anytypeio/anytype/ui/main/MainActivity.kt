@@ -73,6 +73,7 @@ import com.anytypeio.anytype.presentation.sharing.SharingCommand
 import com.anytypeio.anytype.presentation.sharing.SharingViewModel
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
+import com.anytypeio.anytype.ui.create.CreateObjectDialogFragment
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
@@ -167,13 +168,21 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 navigator.logout()
                             }
                             is Command.OpenCreateNewType -> {
-                                findNavController(R.id.fragment)
-                                    .navigate(
-                                        R.id.action_global_createObjectFragment,
-                                        bundleOf(
-                                            CreateObjectFragment.TYPE_KEY to command.type
-                                        )
+                                if (BuildConfig.USE_NEW_CREATE_OBJECT) {
+                                    val dialog = CreateObjectDialogFragment.new(
+                                        space = command.space,
+                                        typeKey = command.type
                                     )
+                                    dialog.show(supportFragmentManager, CreateObjectDialogFragment.TAG)
+                                } else {
+                                    findNavController(R.id.fragment)
+                                        .navigate(
+                                            R.id.action_global_createObjectFragment,
+                                            bundleOf(
+                                                CreateObjectFragment.TYPE_KEY to command.type
+                                            )
+                                        )
+                                }
                             }
                             is Command.Error -> {
                                 toast(command.msg)
@@ -375,22 +384,60 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             is Command.Deeplink.OpenCreateObjectFromOsWidget -> {
                                 // Navigate to CreateObjectFragment (space already switched)
                                 Timber.d("Command.Deeplink.OpenCreateObjectFromOsWidget received: typeKey=${command.typeKey}")
-                                runCatching {
-                                    Timber.d("Navigating to CreateObjectFragment with typeKey=${command.typeKey}")
-                                    findNavController(R.id.fragment).navigate(
-                                        R.id.action_global_createObjectFragment,
-                                        bundleOf(
-                                            CreateObjectFragment.TYPE_KEY to command.typeKey
+                                if (BuildConfig.USE_NEW_CREATE_OBJECT) {
+                                    runCatching {
+                                        Timber.d("Showing CreateObjectDialogFragment with typeKey=${command.typeKey}")
+                                        val dialog = CreateObjectDialogFragment.new(
+                                            space = command.space,
+                                            typeKey = command.typeKey
                                         )
-                                    )
-                                    Timber.d("Navigation to CreateObjectFragment successful")
-                                }.onFailure {
-                                    Timber.e(it, "Error navigating to CreateObjectFragment from OS widget")
-                                    toast("Failed to create object")
+                                        dialog.show(supportFragmentManager, CreateObjectDialogFragment.TAG)
+                                    }.onFailure {
+                                        Timber.e(it, "Error showing CreateObjectDialogFragment from OS widget")
+                                        toast("Failed to create object")
+                                    }
+                                } else {
+                                    runCatching {
+                                        Timber.d("Navigating to CreateObjectFragment with typeKey=${command.typeKey}")
+                                        findNavController(R.id.fragment).navigate(
+                                            R.id.action_global_createObjectFragment,
+                                            bundleOf(
+                                                CreateObjectFragment.TYPE_KEY to command.typeKey
+                                            )
+                                        )
+                                        Timber.d("Navigation to CreateObjectFragment successful")
+                                    }.onFailure {
+                                        Timber.e(it, "Error navigating to CreateObjectFragment from OS widget")
+                                        toast("Failed to create object")
+                                    }
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
+        if (BuildConfig.USE_NEW_CREATE_OBJECT) {
+            supportFragmentManager.setFragmentResultListener(
+                CreateObjectDialogFragment.RESULT_KEY_NAVIGATION,
+                this
+            ) { _, bundle ->
+                val navType = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_TYPE)
+                val id = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_ID) ?: return@setFragmentResultListener
+                val space = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_SPACE) ?: return@setFragmentResultListener
+                when (navType) {
+                    "OpenEditor" -> findNavController(R.id.fragment).navigate(
+                        R.id.objectNavigation,
+                        EditorFragment.args(ctx = id, space = space)
+                    )
+                    "OpenSet" -> findNavController(R.id.fragment).navigate(
+                        R.id.dataViewNavigation,
+                        ObjectSetFragment.args(ctx = id, space = space)
+                    )
+                    "OpenChat" -> findNavController(R.id.fragment).navigate(
+                        R.id.chatScreen,
+                        ChatFragment.args(ctx = id, space = space)
+                    )
                 }
             }
         }

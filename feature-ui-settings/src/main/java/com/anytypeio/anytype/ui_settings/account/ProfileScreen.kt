@@ -560,6 +560,7 @@ fun BoxScope.ProfileTitleBlock(
             )
         }
         GlobalNameOrIdentity(
+            modifier = Modifier.padding(horizontal = 60.dp),
             globalName = globalName,
             identity = identity,
             onIdentityClicked = onIdentityClicked
@@ -743,6 +744,46 @@ fun AnyIdInfoSheet(
             )
         )
     }
+}
+
+@DefaultPreviews
+@Composable
+private fun ProfileSettingLongGlobalNamePreview() {
+    ProfileSettingsScreen(
+        onKeychainPhraseClicked = {},
+        onLogoutClicked = {},
+        isLogoutInProgress = false,
+        onNameChange = {},
+        onProfileIconClick = {},
+        account = AccountProfile.Data(
+            "Plucky Coyote",
+            icon = ProfileIconView.Placeholder("P"),
+            globalName = "полпчмолсчмодлимччмтоаиоорпвваролпсиисмроо.any",
+            identity = "hdjsakjflkjdshlfkdsjkhfjkasdhjkfhdskjhfjksdhakjfhsadjkhfkjlasdhjkfhjsdhfjkhsadj"
+        ),
+        onAppearanceClicked = {},
+        onDataManagementClicked = {},
+        onAboutClicked = {},
+        onSpacesClicked = {},
+        onMembershipClicked = {},
+        membershipStatus = MembershipStatus(
+            status = Membership.Status.STATUS_PENDING,
+            activeTier = TierId(1),
+            dateEnds = 0,
+            paymentMethod = MembershipPaymentMethod.METHOD_NONE,
+            anyName = "",
+            tiers = listOf(),
+            formattedDateEnds = ""
+        ),
+        showMembership = ShowMembership(true),
+        clearProfileImage = {},
+        onDebugClicked = {},
+        isDebugEnabled = false,
+        notificationsDisabled = false,
+        onOpenNotificationSettings = {},
+        onMySitesClicked = {},
+        onMiscSectionClicked = {}
+    )
 }
 
 @DefaultPreviews

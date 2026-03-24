@@ -12,7 +12,6 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import android.view.View
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.create.CreateObjectDialogFragment

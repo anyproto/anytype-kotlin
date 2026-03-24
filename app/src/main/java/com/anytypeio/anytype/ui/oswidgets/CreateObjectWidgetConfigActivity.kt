@@ -101,6 +101,9 @@ class CreateObjectWidgetConfigActivity : AppCompatActivity(), ObjectTypeSelectio
         )
     }
 
+    // Note: This call site intentionally stays on ObjectTypeSelectionFragment.
+    // The widget config activity selects a type for future creation (stored in preferences),
+    // it does not create an object immediately. See create-object-migration spec.
     private fun showTypeSelectionDialog(spaceId: String) {
         val dialog = ObjectTypeSelectionFragment.new(space = spaceId)
         dialog.show(supportFragmentManager, "object-type-selection")

@@ -2028,6 +2028,7 @@ Please provide specific details of your needs here.</string>
     <string name="vault_qr_invalid_description">Il codice QR scansionato non corrisponde a un invito valido. Si prega di controllare e riprovare.</string>
     <string name="vault_qr_try_again">Riprova</string>
     <string name="camera_permission_required_title">È necessaria l\'autorizzazione della fotocamera</string>
+    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
     <string name="camera_permission_rationale_message">Per scansionare i codici QR, Anytype deve avere accesso alla fotocamera. Questa autorizzazione viene utilizzata solo per la scansione dei codici QR.</string>
     <string name="camera_permission_settings_message">Per scansionare i codici QR, è necessario consentire l\'accesso alla fotocamera nelle impostazioni del dispositivo.</string>
     <string name="open_settings">Apri Impostazioni</string>

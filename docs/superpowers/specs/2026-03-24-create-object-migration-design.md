@@ -85,7 +85,7 @@ When `typeKey` is provided, the VM skips the type list and immediately creates t
 
 ### 2.4 Dependencies
 
-The VM needs `CreateObjectByTypeAndTemplate`, `SpaceManager`, and `AppCoroutineDispatchers`. These are provided via a **Dagger module inside the component** (not via the dependencies interface), matching the existing pattern in `CreateObjectDI.kt` (lines 37-46) where use cases are instantiated per-screen from lower-level deps.
+The VM needs `CreateObjectByTypeAndTemplate` and uses `vmParams.spaceId` directly (no `SpaceManager` needed). The use case is provided via a **Dagger module inside the component** (not via the dependencies interface), matching the existing pattern in `CreateObjectDI.kt` (lines 37-46) where use cases are instantiated per-screen from lower-level deps.
 
 New `CreateObjectFeatureModule` added to the component:
 
@@ -189,7 +189,6 @@ interface CreateObjectFeatureDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository                          // new
     fun logger(): Logger                                            // new
     fun dispatchers(): AppCoroutineDispatchers                      // new
-    fun spaceManager(): SpaceManager                                // new
 }
 ```
 

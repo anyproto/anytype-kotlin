@@ -2056,6 +2056,7 @@
     <string name="vault_qr_invalid_description">Отсканированный QR-код не совпадает с действительным приглашением. Пожалуйста, проверьте его и повторите попытку.</string>
     <string name="vault_qr_try_again">Попробуйте еще раз</string>
     <string name="camera_permission_required_title">Требуется доступ к камере</string>
+    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
     <string name="camera_permission_rationale_message">Для сканирования QR-кодов, Anytype необходим доступ к камере. Это разрешение используется только для сканирования QR-кодов.</string>
     <string name="camera_permission_settings_message">Чтобы сканировать QR-коды, необходимо разрешить доступ к камере в настройках устройства.</string>
     <string name="open_settings">Открыть настройки</string>

@@ -300,6 +300,7 @@ class HomeScreenViewModel(
     private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val unreadWidget = MutableStateFlow<Widget.UnreadChatList?>(null)
     private val recentlyEditedWidget = MutableStateFlow<Widget.RecentlyEdited?>(null)
+    private val chatWidget = MutableStateFlow<Widget.Chat?>(null)
     private val binWidget = MutableStateFlow<Widget.Bin?>(null)
 
     // Separate containers for pinned and type widgets
@@ -427,6 +428,22 @@ class HomeScreenViewModel(
                 flowOf(null)
             } else {
                 // Create container for recently edited widget
+                widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
+    // Exposed flow for chat widget
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val chatView: StateFlow<WidgetView?> = chatWidget
+        .flatMapLatest { widget ->
+            if (widget == null) {
+                flowOf(null)
+            } else {
                 widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
             }
         }
@@ -913,6 +930,7 @@ class HomeScreenViewModel(
                         typeWidgets.value = sections.typeWidgets
                     }
 
+                    chatWidget.value = sections.chatWidget
                     unreadWidget.value = sections.unreadWidget
                     recentlyEditedWidget.value = sections.recentlyEditedWidget
                     binWidget.value = sections.binWidget
@@ -926,6 +944,7 @@ class HomeScreenViewModel(
                         typeWidgets.value = emptyList()
                     }
 
+                    chatWidget.value = null
                     unreadWidget.value = null
                     recentlyEditedWidget.value = null
                     binWidget.value = null
@@ -1437,6 +1456,23 @@ class HomeScreenViewModel(
             Widget.Source.Other -> {
                 Timber.w("Skipping click on 'other' widget source")
             }
+        }
+    }
+
+    fun onSpaceChatWidgetClicked() {
+        Timber.d("onSpaceChatWidgetClicked")
+        viewModelScope.launch {
+            val currentSpaceView = _spaceViewState.value
+            if (currentSpaceView !is SpaceViewState.Success) {
+                Timber.w("onSpaceChatWidgetClicked: space view not ready, ignoring")
+                return@launch
+            }
+            val chatId = currentSpaceView.spaceChatId
+            if (chatId.isNullOrEmpty()) {
+                Timber.w("onSpaceChatWidgetClicked: chat not found")
+                return@launch
+            }
+            navigation(OpenChat(ctx = chatId, space = vmParams.spaceId.id))
         }
     }
 

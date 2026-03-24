@@ -2027,6 +2027,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="vault_qr_invalid_description">De gescande QR-code komt niet overeen met enige geldige uitnodiging. Controleer het en probeer het opnieuw.</string>
     <string name="vault_qr_try_again">Probeer opnieuw</string>
     <string name="camera_permission_required_title">Cameratoegang vereist</string>
+    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
     <string name="camera_permission_rationale_message">Om QR-codes te scannen, heeft Anytype toegang tot jouw camera nodig. Deze machtiging wordt alleen gebruikt voor het scannen van QR-codes.</string>
     <string name="camera_permission_settings_message">Om QR-codes te scannen moet je toegang tot de camera geven in de instellingen van jouw apparaat.</string>
     <string name="open_settings">Open instellingen</string>

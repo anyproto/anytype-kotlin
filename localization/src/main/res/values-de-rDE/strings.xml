@@ -2027,6 +2027,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="vault_qr_invalid_description">Der gescannte QR-Code entspricht keiner gültigen Einladung. Bitte überprüfe ihn und versuche es erneut.</string>
     <string name="vault_qr_try_again">Erneut versuchen</string>
     <string name="camera_permission_required_title">Kameraberechtigung erforderlich</string>
+    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
     <string name="camera_permission_rationale_message">Um QR-Codes zu scannen, benötigt Anytype Zugriff auf deine Kamera. Diese Berechtigung wird ausschließlich zum Scannen von QR-Codes verwendet.</string>
     <string name="camera_permission_settings_message">Um QR-Codes zu scannen, musst du den Kamerazugriff in den Geräteeinstellungen erlauben.</string>
     <string name="open_settings">Einstellungen öffnen</string>

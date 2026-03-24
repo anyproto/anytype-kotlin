@@ -519,6 +519,8 @@ suspend fun buildWidgetSections(
         null
     }
 
+    // Chat widget is always shown for single-chat spaces (CHAT, ONE_TO_ONE),
+    // independent of section visibility config.
     val chatWidget = buildChatWidget(spaceView = spaceView, state = state)
 
     return WidgetSections(
@@ -532,8 +534,8 @@ suspend fun buildWidgetSections(
 }
 
 /**
- * Builds the space chat widget for data spaces with chat.
- * Displayed separately at the top, above all sections.
+ * Builds the space chat widget for single-chat spaces (CHAT, ONE_TO_ONE).
+ * Displayed as a fixed, non-removable widget at the top, above all sections.
  */
 private fun buildChatWidget(
     spaceView: ObjectWrapper.SpaceView,

@@ -43,10 +43,10 @@ import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.extractWidgetId
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
-import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetElement
 import com.anytypeio.anytype.ui.widgets.types.ObjectTypesGroupWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.getPrettyName
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState

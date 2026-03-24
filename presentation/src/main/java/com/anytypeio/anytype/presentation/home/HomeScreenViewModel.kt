@@ -1460,22 +1460,19 @@ class HomeScreenViewModel(
     }
 
     fun onSpaceChatWidgetClicked() {
+        Timber.d("onSpaceChatWidgetClicked")
         viewModelScope.launch {
             val currentSpaceView = _spaceViewState.value
-            val (spaceUxType, spaceChatId) = when (currentSpaceView) {
-                is SpaceViewState.Success -> {
-                    currentSpaceView.spaceUxType to currentSpaceView.spaceChatId
-                }
-                else -> {
-                    SpaceUxType.DATA to null
-                }
+            if (currentSpaceView !is SpaceViewState.Success) {
+                Timber.w("onSpaceChatWidgetClicked: space view not ready, ignoring")
+                return@launch
             }
-            commands.emit(
-                Command.HandleChatSpaceBackNavigation(
-                    spaceUxType = spaceUxType,
-                    spaceChatId = spaceChatId
-                )
-            )
+            val chatId = currentSpaceView.spaceChatId
+            if (chatId.isNullOrEmpty()) {
+                Timber.w("onSpaceChatWidgetClicked: chat not found")
+                return@launch
+            }
+            navigation(OpenChat(ctx = chatId, space = vmParams.spaceId.id))
         }
     }
 

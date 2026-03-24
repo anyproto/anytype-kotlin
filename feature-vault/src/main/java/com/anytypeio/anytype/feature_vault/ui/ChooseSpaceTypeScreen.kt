@@ -1,182 +1,135 @@
 package com.anytypeio.anytype.feature_vault.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
-import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.feature_vault.R
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChooseSpaceTypeScreen(
-    showChats: Boolean = false,
-    onCreateChatClicked: () -> Unit,
-    onCreateSpaceClicked: () -> Unit,
-    onJoinViaQrClicked: () -> Unit = {},
-    onDismiss: () -> Unit = {}
+fun CreateChannelDropdownMenu(
+    expanded: Boolean,
+    onPersonalClicked: () -> Unit,
+    onGroupClicked: () -> Unit,
+    onJoinViaQrClicked: () -> Unit,
+    onDismiss: () -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = true
-    )
-
-    ModalBottomSheet(
-        modifier = Modifier
-            .fillMaxWidth(),
+    DropdownMenu(
+        modifier = Modifier.width(254.dp),
+        expanded = expanded,
         onDismissRequest = onDismiss,
-        sheetState = sheetState,
-        containerColor = Color.Transparent,
-        contentColor = Color.Transparent,
-        dragHandle = null,
+        shape = RoundedCornerShape(12.dp),
+        containerColor = colorResource(id = R.color.background_secondary)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
-                .background(
-                    shape = RoundedCornerShape(16.dp),
-                    color = colorResource(id = R.color.background_secondary)
-                )
-        ) {
-            Dragger(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 8.dp)
-            )
-
-            if (showChats) {
+        DropdownMenuItem(
+            text = {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(72.dp)
-                        .padding(horizontal = 16.dp)
-                        .noRippleThrottledClickable {
-                            onCreateChatClicked()
-                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_space_type_chat),
-                        contentDescription = "Create Chat",
-                        modifier = Modifier.size(56.dp)
+                    Spacer(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(
+                                color = colorResource(id = R.color.palette_system_blue),
+                                shape = CircleShape
+                            )
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
-                    Column {
-                        Text(
-                            text = stringResource(id = R.string.vault_create_chat),
-                            style = Title1,
-                            color = colorResource(id = R.color.text_primary)
-                        )
-                        Text(
-                            text = stringResource(id = R.string.vault_create_chat_description),
-                            style = Caption1Regular,
-                            color = colorResource(id = R.color.control_transparent_secondary),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(72.dp)
-                    .padding(horizontal = 16.dp)
-                    .noRippleThrottledClickable {
-                        onCreateSpaceClicked()
-                    },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_space_type_space),
-                    contentDescription = "Create Space",
-                    modifier = Modifier.size(56.dp)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(id = R.string.vault_create_space),
-                        style = Title1,
+                        text = stringResource(id = R.string.vault_create_personal),
+                        style = BodyRegular,
                         color = colorResource(id = R.color.text_primary)
                     )
+                }
+            },
+            onClick = onPersonalClicked
+        )
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            color = colorResource(id = R.color.shape_transparent_secondary)
+        )
+        DropdownMenuItem(
+            text = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(
+                                color = colorResource(id = R.color.palette_system_green),
+                                shape = CircleShape
+                            )
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(id = R.string.vault_create_space_description),
-                        style = Caption1Regular,
-                        color = colorResource(id = R.color.control_transparent_secondary),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        text = stringResource(id = R.string.vault_create_group),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
                     )
                 }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(72.dp)
-                    .padding(horizontal = 16.dp)
-                    .noRippleThrottledClickable {
-                        onJoinViaQrClicked()
-                    },
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_join_via_qr_code_32),
-                    contentDescription = "Join via QR Code",
-                    modifier = Modifier
-                        .size(56.dp)
-                        .background(
-                            shape = CircleShape, color =
-                                colorResource(id = R.color.shape_transparent_secondary)
-                        ),
-                    contentScale = ContentScale.Inside
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
+            },
+            onClick = onGroupClicked
+        )
+        HorizontalDivider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            color = colorResource(id = R.color.shape_transparent_secondary)
+        )
+        DropdownMenuItem(
+            text = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(
+                                color = colorResource(id = R.color.palette_system_amber_125),
+                                shape = CircleShape
+                            )
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = stringResource(id = R.string.vault_join_via_qr),
-                        style = Title1,
+                        style = BodyRegular,
                         color = colorResource(id = R.color.text_primary)
                     )
                 }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-        }
+            },
+            onClick = onJoinViaQrClicked
+        )
     }
 }
 
 @DefaultPreviews
 @Composable
-private fun ChooseSpaceTypeScreenPreview() {
-    ChooseSpaceTypeScreen(
-        showChats = true,
-        onCreateChatClicked = {},
-        onCreateSpaceClicked = {}
+private fun CreateChannelDropdownMenuPreview() {
+    CreateChannelDropdownMenu(
+        expanded = true,
+        onPersonalClicked = {},
+        onGroupClicked = {},
+        onJoinViaQrClicked = {},
+        onDismiss = {}
     )
 }

@@ -746,6 +746,10 @@ class BlockMiddleware(
         )
     }
 
+    override suspend fun setHomepage(command: Command.SetHomepage): Id {
+        return middleware.workspaceSetDashboard(command)
+    }
+
     override suspend fun deleteSpace(space: SpaceId) {
         middleware.spaceDelete(space)
     }

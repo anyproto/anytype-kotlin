@@ -74,7 +74,7 @@ fun CreateSpaceScreen(
     onSpaceIconRemoveClicked: () -> Unit,
     isLoading: State<Boolean>
 ) {
-    val isChatSpace = remember { spaceIconView is SpaceIconView.ChatSpace }
+    val isChatSpace = false
     var innerValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
     }
@@ -103,17 +103,12 @@ fun CreateSpaceScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(top = 16.dp)
         ) {
-            Header(isChatSpace = isChatSpace)
+            Header()
             Spacer(modifier = Modifier.height(8.dp))
             SpaceIcon(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 spaceIconView = when (spaceIconView) {
                     is SpaceIconView.DataSpace.Placeholder -> spaceIconView.copy(
-                        name = innerValue.text.ifEmpty {
-                            stringResource(id = R.string.u)
-                        }
-                    )
-                    is SpaceIconView.ChatSpace.Placeholder -> spaceIconView.copy(
                         name = innerValue.text.ifEmpty {
                             stringResource(id = R.string.u)
                         }
@@ -139,7 +134,7 @@ fun CreateSpaceScreen(
                     .wrapContentHeight()
             ) {
                 Text(
-                    text = if (isChatSpace) stringResource(id = R.string.create_space_chat_name) else stringResource(id = R.string.create_space_space_name),
+                    text = stringResource(id = R.string.create_space_space_name),
                     style = Caption1Medium,
                     color = colorResource(id = R.color.text_secondary)
                 )
@@ -210,7 +205,7 @@ fun CreateSpaceScreen(
 }
 
 @Composable
-fun Header(isChatSpace: Boolean = false) {
+fun Header() {
     Box(
         modifier = Modifier
             .height(48.dp)
@@ -218,7 +213,7 @@ fun Header(isChatSpace: Boolean = false) {
     ) {
         Text(
             modifier = Modifier.align(Alignment.Center),
-            text = stringResource(id = if (isChatSpace) R.string.create_chat else R.string.create_space),
+            text = stringResource(id = R.string.create_channel),
             style = Title1,
             color = colorResource(id = R.color.text_primary)
         )
@@ -269,8 +264,7 @@ fun SpaceIcon(
                     )
                 }
             }
-            if (spaceIconView is SpaceIconView.ChatSpace.Image
-                || spaceIconView is SpaceIconView.DataSpace.Image) {
+            if (spaceIconView is SpaceIconView.DataSpace.Image) {
                 Divider(
                     paddingStart = 0.dp,
                     paddingEnd = 0.dp,
@@ -336,7 +330,7 @@ fun UseCase() {
 fun CreateSpaceScreenPreview() {
     val state = remember { mutableStateOf(false) }
     CreateSpaceScreen(
-        spaceIconView = SpaceIconView.ChatSpace.Placeholder(
+        spaceIconView = SpaceIconView.DataSpace.Placeholder(
             color = SystemColor.RED,
             name = "My Space"
         ),

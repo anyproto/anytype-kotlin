@@ -66,6 +66,11 @@ enum class SpaceUxType(val code: Int) {
     ONE_TO_ONE(4)
 }
 
+enum class ChannelCreationType {
+    PERSONAL,
+    GROUP
+}
+
 sealed class SpaceInviteError : Exception() {
     class SpaceDeleted : SpaceInviteError()
     class InvalidInvite : SpaceInviteError()

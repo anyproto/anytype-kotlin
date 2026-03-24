@@ -1180,6 +1180,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun objectWorkspaceSetDashboard(request: Rpc.Object.WorkspaceSetDashboard.Request): Rpc.Object.WorkspaceSetDashboard.Response {
+        val encoded = Service.objectWorkspaceSetDashboard(
+            Rpc.Object.WorkspaceSetDashboard.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.WorkspaceSetDashboard.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.WorkspaceSetDashboard.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun objectShow(request: Rpc.Object.Show.Request): Rpc.Object.Show.Response {
         val encoded = Service.objectShow(Rpc.Object.Show.Request.ADAPTER.encode(request))
         val response = Rpc.Object.Show.Response.ADAPTER.decode(encoded)

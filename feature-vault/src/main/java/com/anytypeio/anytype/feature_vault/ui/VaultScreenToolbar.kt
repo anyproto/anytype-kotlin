@@ -48,8 +48,13 @@ fun VaultScreenTopToolbar(
     uiState: VaultUiState,
     showNotificationBadge: Boolean = false,
     showCreateSpaceBadge: Boolean = false,
+    showCreateChannelMenu: Boolean = false,
     onUpdateSearchQuery: (String) -> Unit,
-    onCreateSpaceClicked: () -> Unit,
+    onCreateChannelMenuClicked: () -> Unit,
+    onPersonalClicked: () -> Unit,
+    onGroupClicked: () -> Unit,
+    onJoinViaQrClicked: () -> Unit,
+    onCreateChannelMenuDismissed: () -> Unit,
     onSettingsClicked: () -> Unit,
 ) {
     when (uiState) {
@@ -63,7 +68,12 @@ fun VaultScreenTopToolbar(
                     profile = profile,
                     showNotificationBadge = showNotificationBadge,
                     showCreateSpaceBadge = showCreateSpaceBadge,
-                    onPlusClicked = onCreateSpaceClicked,
+                    showCreateChannelMenu = showCreateChannelMenu,
+                    onPlusClicked = onCreateChannelMenuClicked,
+                    onPersonalClicked = onPersonalClicked,
+                    onGroupClicked = onGroupClicked,
+                    onJoinViaQrClicked = onJoinViaQrClicked,
+                    onCreateChannelMenuDismissed = onCreateChannelMenuDismissed,
                     onSettingsClicked = onSettingsClicked,
                     isLoading = true
                 )
@@ -85,7 +95,12 @@ fun VaultScreenTopToolbar(
                     profile = profile,
                     showNotificationBadge = showNotificationBadge,
                     showCreateSpaceBadge = showCreateSpaceBadge,
-                    onPlusClicked = onCreateSpaceClicked,
+                    showCreateChannelMenu = showCreateChannelMenu,
+                    onPlusClicked = onCreateChannelMenuClicked,
+                    onPersonalClicked = onPersonalClicked,
+                    onGroupClicked = onGroupClicked,
+                    onJoinViaQrClicked = onJoinViaQrClicked,
+                    onCreateChannelMenuDismissed = onCreateChannelMenuDismissed,
                     onSettingsClicked = onSettingsClicked,
                     isLoading = false
                 )
@@ -106,7 +121,12 @@ fun VaultScreenToolbar(
     profile: AccountProfile,
     showNotificationBadge: Boolean = false,
     showCreateSpaceBadge: Boolean = false,
+    showCreateChannelMenu: Boolean = false,
     onPlusClicked: () -> Unit,
+    onPersonalClicked: () -> Unit = {},
+    onGroupClicked: () -> Unit = {},
+    onJoinViaQrClicked: () -> Unit = {},
+    onCreateChannelMenuDismissed: () -> Unit = {},
     onSettingsClicked: () -> Unit,
     isLoading: Boolean
 ) {
@@ -182,6 +202,13 @@ fun VaultScreenToolbar(
             ) {
                 CreateSpaceButtonWithBadge(
                     showBadge = showCreateSpaceBadge
+                )
+                CreateChannelDropdownMenu(
+                    expanded = showCreateChannelMenu,
+                    onPersonalClicked = onPersonalClicked,
+                    onGroupClicked = onGroupClicked,
+                    onJoinViaQrClicked = onJoinViaQrClicked,
+                    onDismiss = onCreateChannelMenuDismissed
                 )
             }
         }

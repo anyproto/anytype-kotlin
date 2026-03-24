@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.ChannelCreationType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.AccountProfile
@@ -131,7 +132,7 @@ class VaultViewModel(
 
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
-    val showChooseSpaceType = MutableStateFlow(false)
+    val showCreateChannelMenu = MutableStateFlow(false)
     val notificationError = MutableStateFlow<String?>(null)
     val vaultErrors = MutableStateFlow<VaultErrors>(VaultErrors.Hidden)
 
@@ -726,12 +727,12 @@ class VaultViewModel(
         }
     }
 
-    fun onChooseSpaceTypeClicked() {
+    fun onCreateChannelMenuClicked() {
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.chatScreenVaultCreateMenu
             )
-            showChooseSpaceType.value = true
+            showCreateChannelMenu.value = true
             if (showCreateSpaceBadge.value) {
                 // Mark the badge as seen when user clicks the create space button
                 setCreateSpaceBadgeSeen.async(Unit).fold(
@@ -748,47 +749,47 @@ class VaultViewModel(
         }
     }
 
-    fun onCreateSpaceClicked() {
+    fun onPersonalChannelClicked() {
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.chatClickVaultCreateMenuSpace
             )
         }
         viewModelScope.launch {
-            showChooseSpaceType.value = false
+            showCreateChannelMenu.value = false
             commands.emit(
                 VaultCommand.CreateNewSpace(
-                    spaceUxType = SpaceUxType.DATA // Default to DATA space type
+                    channelType = ChannelCreationType.PERSONAL
                 )
             )
         }
     }
 
-    fun onCreateChatClicked() {
+    fun onGroupChannelClicked() {
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.chatClickVaultCreateMenuChat
             )
         }
         viewModelScope.launch {
-            showChooseSpaceType.value = false
+            showCreateChannelMenu.value = false
             commands.emit(
                 VaultCommand.CreateNewSpace(
-                    spaceUxType = SpaceUxType.CHAT // Default to CHAT space type
+                    channelType = ChannelCreationType.GROUP
                 )
             )
         }
     }
 
-    fun onChooseSpaceTypeDismissed() {
+    fun onCreateChannelMenuDismissed() {
         viewModelScope.launch {
-            showChooseSpaceType.value = false
+            showCreateChannelMenu.value = false
         }
     }
 
     fun onJoinViaQrClicked() {
         viewModelScope.launch {
-            showChooseSpaceType.value = false
+            showCreateChannelMenu.value = false
             commands.emit(VaultCommand.ScanQrCode)
         }
     }

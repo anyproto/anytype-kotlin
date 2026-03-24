@@ -18,15 +18,13 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.multiplayer.ChannelCreationType
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
-import com.anytypeio.anytype.ui.chats.ChatFragment
-import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -40,7 +38,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
     private val vm by viewModels<CreateSpaceViewModel> { factory }
 
     private val args by navArgs<CreateSpaceFragmentArgs>()
-    val spaceUxType: SpaceUxType get() = args.spaceUxType
+    val channelType: ChannelCreationType get() = args.channelType
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
@@ -103,49 +101,21 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                     vm.commands.collect { command ->
                         Timber.d("Received command: $command")
                         when (command) {
-                            is CreateSpaceViewModel.Command.SwitchSpace -> {
+                            is CreateSpaceViewModel.Command.SwitchSpaceWithHomepagePicker -> {
                                 runCatching {
                                     findNavController().navigate(R.id.exitToVaultAction)
-                                    // For regular spaces, use existing navigation logic
                                     findNavController().navigate(
                                         R.id.actionOpenSpaceFromVault,
                                         args = WidgetsScreenFragment.args(
                                             space = command.space.id,
-                                            deeplink = null
-                                        )
-                                    )
-                                    command.startingObject
-                                        ?.takeIf { it.isNotEmpty() }
-                                        ?.let { startingObject ->
-                                            findNavController().navigate(
-                                                R.id.objectNavigation,
-                                                EditorFragment.args(
-                                                    ctx = startingObject,
-                                                    space = command.space.id
-                                                )
-                                            )
-                                        }
-                                }.onFailure {
-                                    Timber.e(
-                                        it,
-                                        "Error while exiting to vault or opening created space"
-                                    )
-                                }
-                            }
-                            is CreateSpaceViewModel.Command.SwitchSpaceChat -> {
-                                runCatching {
-                                    findNavController().navigate(R.id.exitToVaultAction)
-                                    findNavController().navigate(
-                                        R.id.actionOpenChatFromVault,
-                                        ChatFragment.args(
-                                            space = command.space.id,
-                                            ctx = command.chatId
+                                            deeplink = null,
+                                            showHomepagePicker = true
                                         )
                                     )
                                 }.onFailure {
                                     Timber.e(
                                         it,
-                                        "Error while exiting to vault or opening created chat space"
+                                        "Error while exiting to vault or opening homepage picker"
                                     )
                                 }
                             }
@@ -164,7 +134,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
 
     override fun injectDependencies() {
         val vmParams = CreateSpaceViewModel.VmParams(
-            spaceUxType = spaceUxType
+            channelType = channelType
         )
         componentManager().createSpaceComponent.get(vmParams).inject(this)
     }

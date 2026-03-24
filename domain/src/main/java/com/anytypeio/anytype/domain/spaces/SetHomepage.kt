@@ -1,0 +1,25 @@
+package com.anytypeio.anytype.domain.spaces
+
+import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.ResultInteractor
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import javax.inject.Inject
+
+class SetHomepage @Inject constructor(
+    dispatchers: AppCoroutineDispatchers,
+    private val repo: BlockRepository
+) : ResultInteractor<SetHomepage.Params, Id>(dispatchers.io) {
+
+    override suspend fun doWork(params: Params): Id {
+        return repo.setHomepage(
+            Command.SetHomepage(
+                contextId = params.spaceId,
+                objectId = params.objectId
+            )
+        )
+    }
+
+    data class Params(val spaceId: Id, val objectId: Id)
+}

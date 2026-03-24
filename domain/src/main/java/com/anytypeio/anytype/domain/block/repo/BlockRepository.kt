@@ -279,6 +279,8 @@ interface BlockRepository {
 
     suspend fun setSpaceDetails(space: SpaceId, details: Struct)
 
+    suspend fun setHomepage(command: Command.SetHomepage): Id
+
     suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload
 
     suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload

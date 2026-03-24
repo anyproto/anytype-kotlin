@@ -34,7 +34,6 @@ import com.anytypeio.anytype.feature_vault.presentation.VaultNavigation
 import com.anytypeio.anytype.feature_vault.presentation.VaultViewModel
 import com.anytypeio.anytype.feature_vault.presentation.VaultViewModelFactory
 import com.anytypeio.anytype.feature_vault.ui.AlertScreenModals
-import com.anytypeio.anytype.feature_vault.ui.ChooseSpaceTypeScreen
 import com.anytypeio.anytype.feature_vault.ui.VaultScreen
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
@@ -95,8 +94,13 @@ class VaultFragment : BaseComposeFragment() {
                 uiState = vm.uiState.collectAsStateWithLifecycle().value,
                 showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
                 showCreateSpaceBadge = vm.showCreateSpaceBadge.collectAsStateWithLifecycle().value,
+                showCreateChannelMenu = vm.showCreateChannelMenu.collectAsStateWithLifecycle().value,
                 onSpaceClicked = vm::onSpaceClicked,
-                onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
+                onCreateChannelMenuClicked = vm::onCreateChannelMenuClicked,
+                onPersonalClicked = vm::onPersonalChannelClicked,
+                onGroupClicked = vm::onGroupChannelClicked,
+                onJoinViaQrClicked = vm::onJoinViaQrClicked,
+                onCreateChannelMenuDismissed = vm::onCreateChannelMenuDismissed,
                 onSettingsClicked = vm::onSettingsClicked,
                 profile = vm.profileView.collectAsStateWithLifecycle().value,
                 onMuteSpace = onMuteSpace,
@@ -160,23 +164,7 @@ class VaultFragment : BaseComposeFragment() {
                 }
             }
 
-            if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
-                ChooseSpaceTypeScreen(
-                    showChats = true,
-                    onCreateChatClicked = {
-                        vm.onCreateChatClicked()
-                    },
-                    onCreateSpaceClicked = {
-                        vm.onCreateSpaceClicked()
-                    },
-                    onJoinViaQrClicked = {
-                        vm.onJoinViaQrClicked()
-                    },
-                    onDismiss = {
-                        vm.onChooseSpaceTypeDismissed()
-                    }
-                )
-            }
+            // Dropdown menu is now hosted inside VaultScreen / VaultScreenToolbar
         }
         LaunchedEffect(Unit) {
             vm.commands.collect { command -> proceed(command) }
@@ -225,7 +213,7 @@ class VaultFragment : BaseComposeFragment() {
                 runCatching {
                     findNavController().navigate(
                         R.id.createSpaceScreen,
-                        bundleOf("spaceUxType" to command.spaceUxType)
+                        bundleOf("channelType" to command.channelType)
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening create space screen from vault")

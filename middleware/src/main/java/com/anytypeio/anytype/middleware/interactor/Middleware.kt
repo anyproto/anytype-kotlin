@@ -2128,6 +2128,18 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun workspaceSetDashboard(command: Command.SetHomepage): Id {
+        val request = Rpc.Object.WorkspaceSetDashboard.Request(
+            contextId = command.contextId,
+            objectId = command.objectId
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectWorkspaceSetDashboard(request) }
+        logResponseIfDebug(response, time)
+        return response.objectId
+    }
+
+    @Throws(Exception::class)
     fun workspaceObjectListAdd(objects: List<Id>, space: Id): List<Id> {
         val request = Rpc.Workspace.Object.ListAdd.Request(
             objectIds = objects,

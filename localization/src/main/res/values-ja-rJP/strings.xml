@@ -2015,6 +2015,7 @@
     <string name="vault_qr_invalid_description">スキャンされたQRコードから有効な招待コードが見つかりませんでした。確認してもう一度お試しください。</string>
     <string name="vault_qr_try_again">もう一度実行</string>
     <string name="camera_permission_required_title">カメラへのアクセスが必要です</string>
+    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
     <string name="camera_permission_rationale_message">QRコードをスキャンするには、Anytypeがカメラにアクセスする必要があります。この許可はQRコードのスキャンにのみ使用されます。</string>
     <string name="camera_permission_settings_message">QRコードをスキャンするには、デバイス設定でカメラへのアクセスを許可する必要があります。</string>
     <string name="open_settings">設定を開く</string>

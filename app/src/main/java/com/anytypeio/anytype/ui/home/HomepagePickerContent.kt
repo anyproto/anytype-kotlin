@@ -84,7 +84,7 @@ fun HomepagePickerContent(
     onHomepageSelected: (HomepageType) -> Unit,
     onLaterClicked: () -> Unit
 ) {
-    var selectedType by remember { mutableStateOf(HomepageType.PAGE) }
+    var selectedType by remember { mutableStateOf(HomepageType.WIDGETS) }
 
     Column(
         modifier = Modifier

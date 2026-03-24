@@ -444,6 +444,7 @@ data class WidgetUiParams(
  *
  * @property pinnedWidgets Widgets from the pinned section (user-arranged widgets)
  * @property typeWidgets Widgets from the object type section
+ * @property chatWidget The space chat widget, pinned at the top for single-chat spaces (CHAT, ONE_TO_ONE)
  * @property unreadWidget The unread chat list widget, displayed separately at the top
  * @property recentlyEditedWidget The recently edited widget, displayed after objects section
  * @property binWidget The bin widget, displayed separately at the bottom

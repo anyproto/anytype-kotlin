@@ -35,13 +35,13 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.OBJECT
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_RECENTLY_EDITED
-import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_SPACE_CHAT_ID
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_UNREAD
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_SPACE_CHAT_ID
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_RECENTLY_EDITED_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.presentation.widgets.extractWidgetId
 import com.anytypeio.anytype.presentation.home.InteractionMode
+import com.anytypeio.anytype.presentation.widgets.extractWidgetId
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetElement
@@ -265,7 +265,7 @@ fun WidgetsScreen(
                         unReadMessageCount = chatWidget.unreadMessageCount,
                         isMuted = chatWidget.isMuted,
                         onWidgetClicked = viewModel::onSpaceChatWidgetClicked,
-                        onDropDownMenuAction = { }
+                        onDropDownMenuAction = { } // No-op: top-level chat widget has no configurable actions
                     )
                 }
             }

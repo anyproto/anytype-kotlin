@@ -113,6 +113,17 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
 
+##---------------Begin: proguard configuration for Google ML Kit ----------
+# ML Kit uses reflection-based DI (Firebase ComponentRuntime) that R8 optimizations break:
+# - Class merging corrupts ExecutorSelector, causing MissingDependencyException at app startup
+# - Tree shaking removes BarcodeScanning entry point (not traced through Compose remember{})
+# ML Kit's bundled consumer rules are insufficient for proguard-android-optimize.txt.
+-keep class com.google.mlkit.** { *; }
+-keep class com.google.android.gms.internal.mlkit_common.** { *; }
+-keep class com.google.android.gms.internal.mlkit_vision_barcode.** { *; }
+-keep class com.google.android.gms.internal.mlkit_vision_barcode_bundled.** { *; }
+##---------------End: proguard configuration for Google ML Kit ----------
+
 ##---------------Begin: proguard configuration for Dagger ComponentDependencies ----------
 # Prevent R8 from merging ComponentDependencies interfaces into their implementor.
 # These interfaces are used as map keys via @ComponentDependenciesKey; merging them

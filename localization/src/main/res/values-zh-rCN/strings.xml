@@ -2010,7 +2010,7 @@
     <string name="vault_qr_invalid_description">扫描的二维码与任何有效邀请不符。请检查后重试。</string>
     <string name="vault_qr_try_again">请再试一次</string>
     <string name="camera_permission_required_title">需要相机权限</string>
-    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
+    <string name="barcode_scanner_unavailable">此设备无法使用二维码扫描功能</string>
     <string name="camera_permission_rationale_message">若要扫描二维码，Anytype 需要访问您的相机。此权限仅用于扫描二维码。</string>
     <string name="camera_permission_settings_message">若要扫描二维码，您需要在设备设置中允许访问相机。</string>
     <string name="open_settings">打开设置</string>

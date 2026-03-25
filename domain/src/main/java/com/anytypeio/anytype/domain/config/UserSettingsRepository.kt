@@ -77,6 +77,7 @@ interface UserSettingsRepository {
 
     suspend fun getCompactModeEnabled(): Boolean
     suspend fun setCompactModeEnabled(enabled: Boolean)
+    fun observeCompactModeEnabled(): Flow<Boolean>
 
     suspend fun getInstalledAtDate(account: Account): Long?
     suspend fun setInstalledAtDate(account: Account, timestamp: Long)

@@ -191,13 +191,11 @@ class VaultViewModel(
     private val _uiState = MutableStateFlow<VaultUiState>(VaultUiState.Loading)
     val uiState: StateFlow<VaultUiState> = _uiState.asStateFlow()
 
-    private val _isCompactMode = MutableStateFlow(false)
-    val isCompactMode: StateFlow<Boolean> = _isCompactMode.asStateFlow()
+    val isCompactMode: StateFlow<Boolean> = userSettingsRepository
+        .observeCompactModeEnabled()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     init {
-        viewModelScope.launch {
-            _isCompactMode.value = userSettingsRepository.getCompactModeEnabled()
-        }
         Timber.i("VaultViewModel - init started")
         combine(
             combine(
@@ -297,9 +295,6 @@ class VaultViewModel(
 
     fun onStart() {
         Timber.i("VaultViewModel - onStart")
-        viewModelScope.launch {
-            _isCompactMode.value = userSettingsRepository.getCompactModeEnabled()
-        }
     }
 
     private fun updateNotificationBadgeState() {

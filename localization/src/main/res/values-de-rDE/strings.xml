@@ -14,6 +14,9 @@
     <string name="clear_file_cache">Dateicache leeren</string>
     <string name="debug_sync_report">Debug Sync Bericht</string>
     <string name="debug">Debug</string>
+    <string name="experimental_features">Experimentelle Funktionen</string>
+    <string name="experimental_features_compact_vault">Compact vault mode</string>
+    <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
     <string name="account">Tresor</string>
     <string name="reset_account">Tresor zurücksetzen</string>
     <string name="delete_account">Tresor löschen</string>

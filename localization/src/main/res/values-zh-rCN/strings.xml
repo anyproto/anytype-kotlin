@@ -451,8 +451,8 @@
     <string name="card">卡片</string>
     <string name="inline">内嵌</string>
     <string name="set_view">设置视图</string>
-    <string name="inline_set">内联查询</string>
-    <string name="inline_collection">内嵌合集</string>
+    <string name="inline_set">行内查询</string>
+    <string name="inline_collection">行内合集</string>
     <string name="fit_image">图像自适应</string>
     <string name="image_preview">图像预览</string>
     <string name="hide_icon">“隐藏”图标</string>
@@ -517,9 +517,9 @@
     <string name="my_types">我的类型</string>
     <string name="my_relations">我的属性</string>
     <string name="type_added">关联“%1$s”已添加到您的文库</string>
-    <string name="block_data_view_content_description_title">该内联查询的源查询名称</string>
-    <string name="block_data_view_content_description_no_source">该内联查询没有源</string>
-    <string name="block_data_view_content_description_no_data">内联查询的源没有类型</string>
+    <string name="block_data_view_content_description_title">该行内查询的源查询名称</string>
+    <string name="block_data_view_content_description_no_source">该行内查询没有源</string>
+    <string name="block_data_view_content_description_no_data">该行内查询的源没有类型</string>
     <string name="object_search_recently_opened_section_title">最近打开的文档</string>
     <string name="widget_source_anytype_library">Anytype 库</string>
     <string name="widget_source_default_lists">默认列表</string>
@@ -556,8 +556,8 @@
     <string name="file_delete_delete">删除</string>
     <string name="menu_type_change">更改类型</string>
     <string name="menu_type_open">打开类型</string>
-    <string name="menu_type_open_set">打开“%1$s”的查询</string>
-    <string name="menu_type_create_set">创建“%1$s”的查询</string>
+    <string name="menu_type_open_set">打开%1$s查询</string>
+    <string name="menu_type_create_set">创建%1$s查询</string>
     <string name="toast_active_view_delete">当前视图不能被删除</string>
     <string name="type_templates_widget_title">创建对象</string>
     <string name="view_layout_widget_title">布局</string>
@@ -1427,7 +1427,7 @@
     <string name="payments_card_text_2">解锁会员福利</string>
     <string name="payments_card_description_2">会员可以享受更高的备份存储和同步空间，可以邀请多位访客协作共享空间，并拥有 Anytype 网络上的独特身份。</string>
     <string name="payments_card_text_3">支持数字独立性</string>
-    <string name="payments_card_description_3">您的贡献支持我们这个团队并支持我们“由用户拥有的、安全和协作的数字环境”的愿景。</string>
+    <string name="payments_card_description_3">感谢您的贡献。这不仅是对团队的支持，更是对我们“构建安全、协作、由用户所有之数字网络”愿景的同行与认可。</string>
     <string name="payments_card_text_4">对连接的投资</string>
     <string name="payments_card_description_4">我们的网络的价值超过了其各部分的总和。您的会员资格维持了用于支撑这个网络增长的基础设施。</string>
     <string name="payments_tier_explorer">探索者</string>
@@ -1968,7 +1968,7 @@
     <string name="spaces_introduction_page1_title">想法需要对话</string>
     <string name="spaces_introduction_page1_description">Anytype 现已支持共享空间的实时聊天——让每一次所思所言，共同生长。</string>
     <string name="spaces_introduction_page2_title">您的保险库刚刚升级了</string>
-    <string name="spaces_introduction_page2_description">“空间”与“聊天”现已支持实时预览及动态更新——助您在一处掌握所有关键信息。</string>
+    <string name="spaces_introduction_page2_description">“空间”与“聊天”现已支持实时预览和动态更新——重要动态，一处尽览。</string>
     <string name="spaces_introduction_page3_title">不止于聊天的“聊天”</string>
     <string name="spaces_introduction_page3_description">分享灵感、上传文档、协同编辑——所有内容实时同步，畅行无阻。</string>
     <string name="spaces_introduction_page4_title">万物各就其位</string>
@@ -2076,7 +2076,7 @@
     <string name="space_settings_space_type_space_item_title">空间</string>
     <string name="space_settings_space_type_space_descr">高级数据管理集群。即将来临的多个主题聊天。适合较大的团队。</string>
     <string name="alert_change_space_type_title">要转换频道类型吗？</string>
-    <string name="alert_change_space_type_subtitle">在“空间”与“聊天”之间切换将显著改变您的使用体验。</string>
+    <string name="alert_change_space_type_subtitle">“空间”与“聊天”是两种截然不同的模式，切换后界面与交互将发生显著变化。</string>
     <string name="alert_change_space_type_button">是的，转换</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d 个新消息</item>

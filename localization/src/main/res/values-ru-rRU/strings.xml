@@ -14,6 +14,9 @@
     <string name="clear_file_cache">Очистить кэш-файлов</string>
     <string name="debug_sync_report">Отладочный отчет синхронизации</string>
     <string name="debug">Отладка</string>
+    <string name="experimental_features">Экспериментальные функции</string>
+    <string name="experimental_features_compact_vault">Compact vault mode</string>
+    <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
     <string name="account">Хранилище</string>
     <string name="reset_account">Сбросить хранилище</string>
     <string name="delete_account">Удалить хранилище</string>

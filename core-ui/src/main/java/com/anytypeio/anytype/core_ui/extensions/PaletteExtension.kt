@@ -57,25 +57,6 @@ fun Resources.light(
     ThemeColor.LIME -> getColor(R.color.palette_light_lime, null)
 }
 
-@ColorInt
-fun Resources.veryLight(
-    color: ThemeColor,
-    @ColorInt
-    default: Int? = null
-): Int = when (color) {
-    ThemeColor.DEFAULT -> default ?: getColor(R.color.palette_very_light_default, null)
-    ThemeColor.GREY -> getColor(R.color.palette_very_light_grey, null)
-    ThemeColor.YELLOW -> getColor(R.color.palette_very_light_yellow, null)
-    ThemeColor.ORANGE -> getColor(R.color.palette_very_light_orange, null)
-    ThemeColor.RED -> getColor(R.color.palette_very_light_red, null)
-    ThemeColor.PINK -> getColor(R.color.palette_very_light_pink, null)
-    ThemeColor.PURPLE -> getColor(R.color.palette_very_light_purple, null)
-    ThemeColor.BLUE -> getColor(R.color.palette_very_light_blue, null)
-    ThemeColor.ICE -> getColor(R.color.palette_very_light_ice, null)
-    ThemeColor.TEAL -> getColor(R.color.palette_very_light_teal, null)
-    ThemeColor.LIME -> getColor(R.color.palette_very_light_lime, null)
-}
-
 fun TextView.setTextColor(color: ThemeColor, defaultColor: Int = R.color.text_primary) {
     val default = context.getColor(defaultColor)
     if (color != ThemeColor.DEFAULT) {

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatEventChannel
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
@@ -58,4 +59,5 @@ interface DiscussionComponentDependencies : ComponentDependencies {
     fun logger(): Logger
     fun members(): ActiveSpaceMemberSubscriptionContainer
     fun storelessSubscriptionContainer(): StorelessSubscriptionContainer
+    fun dateProvider(): DateProvider
 }

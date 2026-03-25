@@ -162,7 +162,7 @@ private fun CommentHintDecorationBox(
         value = text,
         visualTransformation = VisualTransformation.None,
         innerTextField = innerTextField,
-        singleLine = true,
+        singleLine = false,
         enabled = true,
         placeholder = {
             Text(

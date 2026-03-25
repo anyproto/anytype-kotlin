@@ -466,7 +466,8 @@ class EditorViewModel(
         )
     }
 
-    val discussionButtonState = MutableStateFlow<DiscussionButtonState>(DiscussionButtonState.Hidden)
+    private val _discussionButtonState = MutableStateFlow<DiscussionButtonState>(DiscussionButtonState.Hidden)
+    val discussionButtonState: StateFlow<DiscussionButtonState> = _discussionButtonState
 
     sealed class DiscussionButtonState {
         data object Hidden : DiscussionButtonState()
@@ -834,7 +835,7 @@ class EditorViewModel(
 
                 val existingDiscussionId = currentObj?.getSingleValue<String>(Relations.DISCUSSION_ID)
                     ?.takeIf { it.isNotEmpty() }
-                discussionButtonState.value = if (existingDiscussionId != null) {
+                _discussionButtonState.value = if (existingDiscussionId != null) {
                     DiscussionButtonState.Comments(
                         discussionId = existingDiscussionId,
                         count = 5
@@ -8128,7 +8129,7 @@ class EditorViewModel(
                 viewModelScope.launch {
                     addDiscussion.async(context).fold(
                         onSuccess = { discussionId ->
-                            discussionButtonState.value = DiscussionButtonState.Comments(
+                            _discussionButtonState.value = DiscussionButtonState.Comments(
                                 discussionId = discussionId,
                                 count = 0
                             )

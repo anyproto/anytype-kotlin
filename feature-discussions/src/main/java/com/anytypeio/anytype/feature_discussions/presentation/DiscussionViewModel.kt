@@ -16,7 +16,7 @@ import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import java.text.SimpleDateFormat
+import com.anytypeio.anytype.domain.misc.DateProvider
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,7 +42,8 @@ class DiscussionViewModel @Inject constructor(
     private val getAccount: GetAccount,
     private val urlBuilder: UrlBuilder,
     private val dispatchers: AppCoroutineDispatchers,
-    private val addChatMessage: AddComment
+    private val addChatMessage: AddComment,
+    private val dateProvider: DateProvider
 ) : BaseViewModel() {
 
     private val _header = MutableStateFlow(DiscussionHeader())
@@ -54,7 +55,7 @@ class DiscussionViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val dateFormatter = SimpleDateFormat("d MMMM yyyy")
+    private val datePattern = "d MMMM yyyy"
 
     val inputMode = MutableStateFlow<DiscussionInputMode>(DiscussionInputMode.Default)
 
@@ -86,7 +87,10 @@ class DiscussionViewModel @Inject constructor(
             .collect { result ->
                 val commentViews = buildList {
                     result.messages.forEach { msg ->
-                        val formattedMsgDate = dateFormatter.format(msg.createdAt * 1000)
+                        val formattedMsgDate = dateProvider.formatToDateString(
+                            timestamp = msg.createdAt * 1000,
+                            pattern = datePattern
+                        )
 
                         val allMembers = members.get()
                         val member = allMembers.let { type ->

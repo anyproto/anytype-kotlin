@@ -498,6 +498,11 @@
         android:label="DebugScreen" />
 
     <dialog
+        android:id="@+id/experimentalFeaturesScreen"
+        android:name="com.anytypeio.anytype.ui.settings.ExperimentalFeaturesFragment"
+        android:label="ExperimentalFeaturesScreen" />
+
+    <dialog
         android:id="@+id/globalSearchScreen"
         android:name="com.anytypeio.anytype.ui.search.GlobalSearchFragment"
         android:label="GlobalSearchScreen" />

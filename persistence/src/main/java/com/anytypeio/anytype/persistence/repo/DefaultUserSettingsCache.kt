@@ -703,6 +703,16 @@ class DefaultUserSettingsCache(
             .apply()
     }
 
+    override suspend fun getCompactModeEnabled(): Boolean {
+        return prefs.getBoolean(COMPACT_MODE_ENABLED_KEY, false)
+    }
+
+    override suspend fun setCompactModeEnabled(enabled: Boolean) {
+        prefs.edit()
+            .putBoolean(COMPACT_MODE_ENABLED_KEY, enabled)
+            .apply()
+    }
+
     override suspend fun getInstalledAtDate(account: Account): Long? {
         return context.vaultPrefsStore
             .data
@@ -845,5 +855,6 @@ class DefaultUserSettingsCache(
         const val HAS_SEEN_CREATE_SPACE_BADGE_KEY = "prefs.device.has_seen_create_space_badge"
         const val RUN_PROFILER_ON_STARTUP_KEY = "prefs.device.run_profiler_on_startup"
         const val DEBUG_MENU_ENABLED_KEY = "prefs.device.debug_menu_enabled"
+        const val COMPACT_MODE_ENABLED_KEY = "prefs.device.compact_mode_enabled"
     }
 }

@@ -15,8 +15,8 @@
     <string name="debug_sync_report">Informe de sincronización de depuración</string>
     <string name="debug">Depurar</string>
     <string name="experimental_features">Funciones experimentales</string>
-    <string name="experimental_features_compact_vault">Compact vault mode</string>
-    <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
+    <string name="experimental_features_compact_vault">Modo de arca compacto</string>
+    <string name="experimental_features_compact_vault_description">No muestra en el arca la vista previa de mensajes de canales leídos</string>
     <string name="account">Arca</string>
     <string name="reset_account">Restablecer arca</string>
     <string name="delete_account">Eliminar arca</string>

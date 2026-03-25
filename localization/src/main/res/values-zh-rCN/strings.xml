@@ -14,6 +14,9 @@
     <string name="clear_file_cache">清除文件缓存</string>
     <string name="debug_sync_report">调试同步报告</string>
     <string name="debug">调试</string>
+    <string name="experimental_features">实验性功能</string>
+    <string name="experimental_features_compact_vault">Compact vault mode</string>
+    <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
     <string name="account">库</string>
     <string name="reset_account">重置库</string>
     <string name="delete_account">删除库</string>

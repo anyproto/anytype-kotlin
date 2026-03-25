@@ -28,6 +28,7 @@ import com.anytypeio.anytype.core_ui.R as CoreR
 @Composable
 fun CreateChannelDropdownMenu(
     expanded: Boolean,
+    isLocalOnly: Boolean = false,
     onPersonalClicked: () -> Unit,
     onGroupClicked: () -> Unit,
     onJoinViaQrClicked: () -> Unit,
@@ -57,32 +58,34 @@ fun CreateChannelDropdownMenu(
                 onDismiss()
             }
         )
-        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-        DropdownMenuItem(
-            text = {
-                CreateChannelMenuItemContent(
-                    icon = CoreR.drawable.ci_people,
-                    text = stringResource(id = com.anytypeio.anytype.localization.R.string.vault_create_group)
-                )
-            },
-            onClick = {
-                onGroupClicked()
-                onDismiss()
-            }
-        )
-        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-        DropdownMenuItem(
-            text = {
-                CreateChannelMenuItemContent(
-                    icon = CoreR.drawable.ic_join_via_qr_code_32,
-                    text = stringResource(id = com.anytypeio.anytype.localization.R.string.vault_join_via_qr)
-                )
-            },
-            onClick = {
-                onJoinViaQrClicked()
-                onDismiss()
-            }
-        )
+        if (!isLocalOnly) {
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            DropdownMenuItem(
+                text = {
+                    CreateChannelMenuItemContent(
+                        icon = CoreR.drawable.ci_people,
+                        text = stringResource(id = com.anytypeio.anytype.localization.R.string.vault_create_group)
+                    )
+                },
+                onClick = {
+                    onGroupClicked()
+                    onDismiss()
+                }
+            )
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            DropdownMenuItem(
+                text = {
+                    CreateChannelMenuItemContent(
+                        icon = CoreR.drawable.ic_join_via_qr_code_32,
+                        text = stringResource(id = com.anytypeio.anytype.localization.R.string.vault_join_via_qr)
+                    )
+                },
+                onClick = {
+                    onJoinViaQrClicked()
+                    onDismiss()
+                }
+            )
+        }
     }
 }
 

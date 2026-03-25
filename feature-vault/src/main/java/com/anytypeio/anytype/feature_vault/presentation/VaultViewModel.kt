@@ -8,6 +8,7 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -61,6 +62,7 @@ import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
 import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
@@ -128,7 +130,8 @@ class VaultViewModel(
     private val deepLinkResolver: DeepLinkResolver,
     private val configStorage: ConfigStorage,
     private val osWidgetSpacesSync: OsWidgetSpacesSync,
-    private val osWidgetDataViewSync: OsWidgetDataViewSync
+    private val osWidgetDataViewSync: OsWidgetDataViewSync,
+    private val networkModeProvider: NetworkModeProvider
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -143,6 +146,9 @@ class VaultViewModel(
 
     // Track whether to show the blue dot badge on "Create a new space" button
     val showCreateSpaceBadge = MutableStateFlow(false)
+
+    val isLocalOnly: Boolean
+        get() = networkModeProvider.get().networkMode == NetworkMode.LOCAL
 
     private val previewFlow: StateFlow<ChatPreviewContainer.PreviewState> =
         chatPreviewContainer.observePreviewsWithAttachments()

@@ -54,22 +54,22 @@ prepare_app_manifest_for_release_apk:
 
 
 # WORKTREE MANAGEMENT
-# wt-list              List all worktrees
-# wt-add B=<branch>    Add worktree for existing branch + copy configs
-# wt-new B=<branch>    Create new branch + worktree + copy configs
-# wt-rm  B=<branch>    Remove worktree
+# wtlist              List all worktrees
+# wtadd B=<branch>    Add worktree for existing branch + copy configs
+# wtnew B=<branch>    Create new branch + worktree + copy configs
+# wtrm  B=<branch>    Remove worktree
 
-wt-list:
+wtlist:
 	./scripts/wt.sh list
 
-wt-add:
-	@[ -n "$(B)" ] || (echo "Usage: make wt-add B=<branch>" && exit 1)
+wtadd:
+	@[ -n "$(B)" ] || (echo "Usage: make wtadd B=<branch>" && exit 1)
 	./scripts/wt.sh add $(B)
 
-wt-new:
-	@[ -n "$(B)" ] || (echo "Usage: make wt-new B=<branch>" && exit 1)
+wtnew:
+	@[ -n "$(B)" ] || (echo "Usage: make wtnew B=<branch>" && exit 1)
 	./scripts/wt.sh new $(B)
 
-wt-rm:
-	@[ -n "$(B)" ] || (echo "Usage: make wt-rm B=<branch>" && exit 1)
+wtrm:
+	@[ -n "$(B)" ] || (echo "Usage: make wtrm B=<branch>" && exit 1)
 	./scripts/wt.sh rm $(B)

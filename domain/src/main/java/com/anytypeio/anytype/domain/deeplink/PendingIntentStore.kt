@@ -34,4 +34,19 @@ class PendingIntentStore @Inject constructor() {
     fun clearOneToOneChatData() {
         oneToOneChatData = null
     }
+
+    // Push space entry tracking for diagnostic monitoring
+    data class PushSpaceEntry(val spaceId: String, val timestamp: Long)
+
+    private var pushSpaceEntry: PushSpaceEntry? = null
+
+    fun setPushSpaceEntry(spaceId: String) {
+        pushSpaceEntry = PushSpaceEntry(spaceId, System.currentTimeMillis())
+    }
+
+    fun getPushSpaceEntry(): PushSpaceEntry? = pushSpaceEntry
+
+    fun clearPushSpaceEntry() {
+        pushSpaceEntry = null
+    }
 } 

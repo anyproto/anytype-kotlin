@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_models.ui.WallpaperResult
 import com.anytypeio.anytype.core_models.ui.computeWallpaperResult
 import com.anytypeio.anytype.core_models.ui.spaceIcon
@@ -119,6 +120,8 @@ class MainViewModel(
     // Safety flag to ensure spaces introduction is only shown once per ViewModel lifecycle
     private var hasShownSpacesIntroductionInSession = false
 
+    private var spaceStatusMonitorJob: Job? = null
+
     val commands = MutableSharedFlow<Command>(replay = 0)
     val toasts = MutableSharedFlow<String>(replay = 0)
 
@@ -185,6 +188,22 @@ class MainViewModel(
                 )
             } else {
                 Timber.i("Startup profiler skipped")
+            }
+        }
+        // Cold start push monitoring: check if SplashViewModel signaled a push space entry
+        viewModelScope.launch {
+            awaitAccountStartManager.awaitStart().take(1).collect {
+                val pendingPush = pendingIntentStore.getPushSpaceEntry()
+                if (pendingPush != null) {
+                    pendingIntentStore.clearPushSpaceEntry()
+                    val elapsed = System.currentTimeMillis() - pendingPush.timestamp
+                    val remaining = PUSH_SPACE_STATUS_TIMEOUT - elapsed
+                    if (remaining > 0) {
+                        monitorSpaceLocalStatus(pendingPush.spaceId, remaining)
+                    } else {
+                        monitorSpaceLocalStatus(pendingPush.spaceId, 0)
+                    }
+                }
             }
         }
     }
@@ -762,6 +781,7 @@ class MainViewModel(
             if (spaceManager.get() != spaceId) {
                 spaceManager.set(spaceId)
                     .onSuccess {
+                        monitorSpaceLocalStatus(spaceId)
                         commands.emit(
                             Command.LaunchChat(
                                 space = spaceId,
@@ -776,6 +796,7 @@ class MainViewModel(
                         )
                     }
             } else {
+                monitorSpaceLocalStatus(spaceId)
                 commands.emit(
                     Command.LaunchChat(
                         space = spaceId,
@@ -875,6 +896,32 @@ class MainViewModel(
         showSpacesIntroduction.value = null
     }
 
+    private fun monitorSpaceLocalStatus(
+        spaceId: String,
+        delayMs: Long = PUSH_SPACE_STATUS_TIMEOUT
+    ) {
+        spaceStatusMonitorJob?.cancel()
+        spaceStatusMonitorJob = viewModelScope.launch {
+            delay(delayMs)
+            val view = spaceViews.get(SpaceId(spaceId))
+            val localStatus = view?.spaceLocalStatus
+            if (localStatus == SpaceStatus.LOADING) {
+                Timber.w(
+                    "PUSH_SPACE_STATUS: Space $spaceId local status still LOADING after ${PUSH_SPACE_STATUS_TIMEOUT / 1000}s"
+                )
+                commands.emit(
+                    Command.Snackbar(
+                        "Space local status is still LOADING after ${PUSH_SPACE_STATUS_TIMEOUT / 1000} seconds (push)"
+                    )
+                )
+            } else {
+                Timber.d(
+                    "PUSH_SPACE_STATUS: Space $spaceId local status is $localStatus (OK)"
+                )
+            }
+        }
+    }
+
     override fun onCleared() {
         // TODO: DROID-3763 - Disabled to test if appShutdown causes FD crashes on restore
         // The async fire-and-forget pattern may leave middleware in inconsistent state
@@ -897,6 +944,7 @@ class MainViewModel(
         data object LogoutDueToAccountDeletion : Command()
         class OpenCreateNewType(val type: Id) : Command()
         data class Error(val msg: String) : Command()
+        data class Snackbar(val msg: String) : Command()
 
         data object Notifications : Command()
         data object RequestNotificationPermission : Command()
@@ -982,5 +1030,6 @@ class MainViewModel(
     companion object {
         const val DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN = 200L
         const val NEW_DEEP_LINK_DELAY = 1000L
+        const val PUSH_SPACE_STATUS_TIMEOUT = 20_000L
     }
 }

@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
+import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.core_models.UrlBuilder
@@ -221,4 +222,5 @@ interface SplashDependencies : ComponentDependencies {
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
     fun eventProxy(): EventProxy
     fun deepLinkResolver(): DeepLinkResolver
+    fun pendingIntentStore(): PendingIntentStore
 }

@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.auth.interactor.MigrateAccount
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -68,7 +69,8 @@ class SplashViewModel(
     private val createObjectByTypeAndTemplate: CreateObjectByTypeAndTemplate,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val migration: MigrationHelperDelegate,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val pendingIntentStore: PendingIntentStore
 ) : ViewModel(),
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate,
     MigrationHelperDelegate by migration {
@@ -283,6 +285,7 @@ class SplashViewModel(
         viewModelScope.launch {
             spaceManager.set(space = space)
                 .onSuccess {
+                    pendingIntentStore.setPushSpaceEntry(space)
                     commands.emit(
                         Command.NavigateToChat(
                             space = space,

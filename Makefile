@@ -54,6 +54,10 @@ prepare_app_manifest_for_release_apk:
 
 
 # WORKTREE MANAGEMENT
+# wt-list              List all worktrees
+# wt-add B=<branch>    Add worktree for existing branch + copy configs
+# wt-new B=<branch>    Create new branch + worktree + copy configs
+# wt-rm  B=<branch>    Remove worktree
 
 wt-list:
 	./scripts/wt.sh list

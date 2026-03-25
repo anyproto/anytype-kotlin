@@ -55,21 +55,27 @@ prepare_app_manifest_for_release_apk:
 
 # WORKTREE MANAGEMENT
 # wtlist              List all worktrees
-# wtadd B=<branch>    Add worktree for existing branch + copy configs
-# wtnew B=<branch>    Create new branch + worktree + copy configs
-# wtrm  B=<branch>    Remove worktree
+# wtadd <branch>      Add worktree for existing branch + copy configs
+# wtnew <branch>      Create new branch + worktree + copy configs
+# wtrm  <branch>      Remove worktree
+
+# Capture positional arg for worktree commands (e.g. make wtnew mybranch)
+ifneq ($(filter wtadd wtnew wtrm,$(firstword $(MAKECMDGOALS))),)
+  WT_BRANCH := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  $(eval $(WT_BRANCH):;@:)
+endif
 
 wtlist:
 	./scripts/wt.sh list
 
 wtadd:
-	@[ -n "$(B)" ] || (echo "Usage: make wtadd B=<branch>" && exit 1)
-	./scripts/wt.sh add $(B)
+	@[ -n "$(WT_BRANCH)" ] || (echo "Usage: make wtadd <branch>" && exit 1)
+	./scripts/wt.sh add $(WT_BRANCH)
 
 wtnew:
-	@[ -n "$(B)" ] || (echo "Usage: make wtnew B=<branch>" && exit 1)
-	./scripts/wt.sh new $(B)
+	@[ -n "$(WT_BRANCH)" ] || (echo "Usage: make wtnew <branch>" && exit 1)
+	./scripts/wt.sh new $(WT_BRANCH)
 
 wtrm:
-	@[ -n "$(B)" ] || (echo "Usage: make wtrm B=<branch>" && exit 1)
-	./scripts/wt.sh rm $(B)
+	@[ -n "$(WT_BRANCH)" ] || (echo "Usage: make wtrm <branch>" && exit 1)
+	./scripts/wt.sh rm $(WT_BRANCH)

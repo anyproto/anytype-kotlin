@@ -14,6 +14,9 @@
     <string name="clear_file_cache">Ачысціць файлавы кэш</string>
     <string name="debug_sync_report">Адладкавая справаздача сінхранізацыі</string>
     <string name="debug">Адладка</string>
+    <string name="experimental_features">Experimental Features</string>
+    <string name="experimental_features_compact_vault">Compact vault mode</string>
+    <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
     <string name="account">Сховішча</string>
     <string name="reset_account">Скінуць сховішча</string>
     <string name="delete_account">Выдаліць сховішча</string>

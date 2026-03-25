@@ -14,6 +14,9 @@
     <string name="clear_file_cache">Limpar cache de arquivos</string>
     <string name="debug_sync_report">Relatório de Depuração de Sincronização</string>
     <string name="debug">Depuração</string>
+    <string name="experimental_features">Experimental Features</string>
+    <string name="experimental_features_compact_vault">Compact vault mode</string>
+    <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
     <string name="account">Cofre</string>
     <string name="reset_account">Redefinir o cofre</string>
     <string name="delete_account">Excluir cofre</string>

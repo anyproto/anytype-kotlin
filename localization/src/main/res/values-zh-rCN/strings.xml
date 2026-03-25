@@ -195,7 +195,7 @@
     <string name="empty_tap_to_create_new_block">空的。点击创建一个新块</string>
     <string name="untitled">无标题</string>
     <string name="untitled_set">未命名查询</string>
-    <string name="untitled_collection">无标题集合</string>
+    <string name="untitled_collection">未命名合集</string>
     <string name="archived">已归档</string>
     <string name="loading">载入中...</string>
     <string name="loading_wait">正在加载中，请稍候</string>
@@ -412,7 +412,7 @@
     <string name="name_layout_participant">Participant</string>
     <string name="name_layout_todo">任务</string>
     <string name="name_layout_set">集合</string>
-    <string name="name_layout_collection">集合</string>
+    <string name="name_layout_collection">合集</string>
     <string name="name_layout_note">笔记</string>
     <string name="name_type_note">笔记</string>
     <string name="name_type_note_icon">🗒</string>
@@ -452,7 +452,7 @@
     <string name="inline">内嵌</string>
     <string name="set_view">设置视图</string>
     <string name="inline_set">内联查询</string>
-    <string name="inline_collection">关联集合</string>
+    <string name="inline_collection">内嵌合集</string>
     <string name="fit_image">图像自适应</string>
     <string name="image_preview">图像预览</string>
     <string name="hide_icon">“隐藏”图标</string>
@@ -537,10 +537,10 @@
     <string name="set_no_items_title">无对象</string>
     <string name="set_no_items_description">创建第一个对象以继续</string>
     <string name="set_no_items_button">创建对象</string>
-    <string name="set_collection_view_not_present">视图不存在于查询或集合中，请重新创建对象</string>
-    <string name="menu_turn_to_collection">查询转换为集合</string>
+    <string name="set_collection_view_not_present">视图不存在于查询或合集中，请重新创建对象</string>
+    <string name="menu_turn_to_collection">将查询转换为合集</string>
     <string name="menu_change_query">更改查询</string>
-    <string name="collections">集合</string>
+    <string name="collections">合集</string>
     <string name="collection_widget_description">您的对象的集锦</string>
     <string name="no_type_named">没有名为 “%1$s” 的类型</string>
     <string name="try_to_create_new_one_or_search_for_something_else">试试创建一个新的或搜索其他内容</string>
@@ -739,7 +739,7 @@
     <string name="find_a_relation">查找属性</string>
     <string name="inbox">收集箱</string>
     <string name="unknown_type">未知类型</string>
-    <string name="collection">集合</string>
+    <string name="collection">合集</string>
     <string name="layout">布局</string>
     <string name="button_fields">属性</string>
     <string name="button_layout">布局</string>
@@ -1021,7 +1021,7 @@
     <string name="widget_type_compact_list_description">带有紧凑列表视图的小部件</string>
     <string name="widget_type_list">列表</string>
     <string name="widget_type_view">视图</string>
-    <string name="widget_type_view_description">带有查询或集合布局的小部件</string>
+    <string name="widget_type_view_description">带有查询或合集布局的小部件</string>
     <string name="widget_type_compact_list">紧凑列表</string>
     <string name="widget_change_source">更改来源</string>
     <string name="widget_change_type">更改小部件类型</string>
@@ -1291,7 +1291,7 @@
     <string name="multiplayer_change_to_request_confirmation">任何拥有链接的人都需要请求访问权限才能加入空间。</string>
     <string name="multiplayer_invite_link_copied">邀请链接已复制到剪贴板</string>
     <string name="link_copied">链接已复制到剪贴板</string>
-    <string name="remove_from_collection">与集合解除链接</string>
+    <string name="remove_from_collection">与合集解除链接</string>
     <string name="multiplayer_copy_link">拷贝链接</string>
     <string name="multiplayer_make_private">设为私有</string>
     <string name="multiplayer_join_a_space">加入空间</string>
@@ -2137,6 +2137,6 @@
     <string name="no_spaces_available">没有可选的空间</string>
     <string name="select_view">选择视图</string>
     <string name="os_widget_data_view_title">数据视图</string>
-    <string name="os_widget_data_view_description">从动态集或集合中显示项目</string>
+    <string name="os_widget_data_view_description">从动态集或合集中显示项目</string>
     <string name="chats_search_close_content_description">关闭搜索</string>
 </resources>

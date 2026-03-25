@@ -31,6 +31,7 @@ import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
 import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
@@ -70,7 +71,8 @@ class VaultViewModelFactory @Inject constructor(
     private val deepLinkResolver: DeepLinkResolver,
     private val configStorage: ConfigStorage,
     private val osWidgetSpacesSync: OsWidgetSpacesSync,
-    private val osWidgetDataViewSync: OsWidgetDataViewSync
+    private val osWidgetDataViewSync: OsWidgetDataViewSync,
+    private val networkModeProvider: NetworkModeProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -108,6 +110,7 @@ class VaultViewModelFactory @Inject constructor(
         deepLinkResolver = deepLinkResolver,
         configStorage = configStorage,
         osWidgetSpacesSync = osWidgetSpacesSync,
-        osWidgetDataViewSync = osWidgetDataViewSync
+        osWidgetDataViewSync = osWidgetDataViewSync,
+        networkModeProvider = networkModeProvider
     ) as T
 }

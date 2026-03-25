@@ -96,6 +96,7 @@ class VaultFragment : BaseComposeFragment() {
                 showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
                 showCreateSpaceBadge = vm.showCreateSpaceBadge.collectAsStateWithLifecycle().value,
                 showCreateChannelMenu = vm.showCreateChannelMenu.collectAsStateWithLifecycle().value,
+                isLocalOnly = vm.isLocalOnly,
                 onSpaceClicked = vm::onSpaceClicked,
                 onCreateChannelMenuClicked = vm::onCreateChannelMenuClicked,
                 onPersonalClicked = vm::onPersonalChannelClicked,

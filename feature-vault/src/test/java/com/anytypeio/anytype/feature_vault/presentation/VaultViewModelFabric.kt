@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -84,7 +85,8 @@ object VaultViewModelFabric {
         createSpace: CreateSpace = mock(),
         deepLinkResolver: DeepLinkResolver = mock(),
         osWidgetSpacesSync: OsWidgetSpacesSync = mock(),
-        osWidgetDataViewSync: OsWidgetDataViewSync = mock()
+        osWidgetDataViewSync: OsWidgetDataViewSync = mock(),
+        userSettingsRepository: UserSettingsRepository = mock()
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,
@@ -118,6 +120,7 @@ object VaultViewModelFabric {
         deepLinkResolver = deepLinkResolver,
         configStorage = configStorage,
         osWidgetSpacesSync = osWidgetSpacesSync,
-        osWidgetDataViewSync = osWidgetDataViewSync
+        osWidgetDataViewSync = osWidgetDataViewSync,
+        userSettingsRepository = userSettingsRepository
     )
 }

@@ -297,6 +297,9 @@ class VaultViewModel(
 
     fun onStart() {
         Timber.i("VaultViewModel - onStart")
+        viewModelScope.launch {
+            _isCompactMode.value = userSettingsRepository.getCompactModeEnabled()
+        }
     }
 
     private fun updateNotificationBadgeState() {

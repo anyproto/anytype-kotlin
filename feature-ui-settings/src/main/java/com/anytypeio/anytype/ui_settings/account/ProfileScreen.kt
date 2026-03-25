@@ -102,6 +102,7 @@ fun ProfileSettingsScreen(
     showMembership: ShowMembership?,
     clearProfileImage: () -> Unit,
     onDebugClicked: () -> Unit,
+    onExperimentalFeaturesClicked: () -> Unit,
     onMiscSectionClicked: () -> Unit,
     notificationsDisabled: Boolean,
     onOpenNotificationSettings: () -> Unit,
@@ -242,6 +243,16 @@ fun ProfileSettingsScreen(
                     image = R.drawable.ic_settings_debug,
                     text = stringResource(R.string.debug),
                     onClick = onDebugClicked
+                )
+            }
+            item {
+                Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+            }
+            item {
+                Option(
+                    image = R.drawable.ic_settings_debug,
+                    text = stringResource(R.string.experimental_features),
+                    onClick = onExperimentalFeaturesClicked
                 )
             }
         }
@@ -703,6 +714,7 @@ private fun ProfileSettingPreview() {
         showMembership = ShowMembership(true),
         clearProfileImage = {},
         onDebugClicked = {},
+        onExperimentalFeaturesClicked = {},
         isDebugEnabled = true,
         notificationsDisabled = true,
         onOpenNotificationSettings = {},
@@ -778,6 +790,7 @@ private fun ProfileSettingLongGlobalNamePreview() {
         showMembership = ShowMembership(true),
         clearProfileImage = {},
         onDebugClicked = {},
+        onExperimentalFeaturesClicked = {},
         isDebugEnabled = false,
         notificationsDisabled = false,
         onOpenNotificationSettings = {},

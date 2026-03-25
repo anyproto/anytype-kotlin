@@ -17,6 +17,9 @@
     <string name="clear_file_cache">Clear file cache</string>
     <string name="debug_sync_report">Debug Sync Report</string>
     <string name="debug">Debug</string>
+    <string name="experimental_features">Experimental Features</string>
+    <string name="experimental_features_compact_vault">Compact vault mode</string>
+    <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
     <string name="account">Vault</string>
     <string name="reset_account">Reset vault</string>
     <string name="delete_account">Delete vault</string>

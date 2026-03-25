@@ -48,7 +48,6 @@ licensee {
     }
     allowDependency("com.github.chrisbanes", "PhotoView", "2.3.0") {
         because("PhotoView is known to be licensed under the Apache-2.0 license (see https://github.com/chrisbanes/PhotoView/blob/master/LICENSE)")
-        license("Apache-2.0")
     }
 }
 

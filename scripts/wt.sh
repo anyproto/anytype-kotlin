@@ -42,6 +42,8 @@ copy_config() {
 
   for file in "${OPTIONAL_FILES[@]}"; do
     if [ -f "$REPO_ROOT/$file" ]; then
+      local target_dir="$target/$(dirname "$file")"
+      mkdir -p "$target_dir"
       cp -p "$REPO_ROOT/$file" "$target/$file"
       echo "  + Copied: $file"
     fi
@@ -59,7 +61,7 @@ cmd_list() {
 }
 
 cmd_add() {
-  local branch="${1:?Usage: $0 add <branch>}"
+  local branch="${1:?Usage: $0 add <branch>. Note: the local branch is kept; delete it manually if needed.}"
   local target="$WT_BASE/$branch"
 
   if [ -d "$target" ]; then
@@ -74,7 +76,7 @@ cmd_add() {
 }
 
 cmd_new() {
-  local branch="${1:?Usage: $0 new <new-branch>}"
+  local branch="${1:?Usage: $0 new <branch>}"
   local target="$WT_BASE/$branch"
 
   if [ -d "$target" ]; then
@@ -89,12 +91,13 @@ cmd_new() {
 }
 
 cmd_rm() {
-  local branch="${1:?Usage: $0 rm <worktree-name>}"
+  local branch="${1:?Usage: $0 rm <branch>}"
   git -C "$REPO_ROOT" worktree remove "$WT_BASE/$branch"
+  echo "Worktree removed: $WT_BASE/$branch"
 }
 
 cmd_path() {
-  local branch="${1:?Usage: $0 path <worktree-name>}"
+  local branch="${1:?Usage: $0 path <branch>}"
   echo "$WT_BASE/$branch"
 }
 
@@ -105,7 +108,7 @@ usage() {
   echo "  list              List all worktrees"
   echo "  add <branch>      Add worktree for existing branch + copy configs"
   echo "  new <branch>      Create new branch + worktree + copy configs"
-  echo "  rm  <branch>      Remove worktree"
+  echo "  rm  <branch>      Remove worktree (local branch is kept)"
   echo "  path <branch>     Print worktree path (for cd integration)"
 }
 

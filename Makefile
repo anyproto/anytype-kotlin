@@ -58,6 +58,9 @@ prepare_app_manifest_for_release_apk:
 # wtadd <branch>      Add worktree for existing branch + copy configs
 # wtnew <branch>      Create new branch + worktree + copy configs
 # wtrm  <branch>      Remove worktree
+# For shell navigation: cd $(./scripts/wt.sh path <branch>)
+
+.PHONY: wtlist wtadd wtnew wtrm
 
 # Capture positional arg for worktree commands (e.g. make wtnew mybranch)
 ifneq ($(filter wtadd wtnew wtrm,$(firstword $(MAKECMDGOALS))),)

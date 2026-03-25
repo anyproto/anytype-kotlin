@@ -182,15 +182,6 @@ class DiscussionViewModel @Inject constructor(
                     it.id to it.replyToMessageId
                 }
 
-                fun findThreadRoot(messageId: Id): Id {
-                    var current = messageId
-                    val visited = mutableSetOf<Id>()
-                    while (true) {
-                        val parentId = replyToMap[current]
-                        if (parentId.isNullOrEmpty() || !visited.add(current)) return current
-                        current = parentId
-                    }
-                }
 
                 fun depthOf(messageId: Id): Int {
                     var current = messageId

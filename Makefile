@@ -63,10 +63,13 @@ wt-list:
 	./scripts/wt.sh list
 
 wt-add:
+	@[ -n "$(B)" ] || (echo "Usage: make wt-add B=<branch>" && exit 1)
 	./scripts/wt.sh add $(B)
 
 wt-new:
+	@[ -n "$(B)" ] || (echo "Usage: make wt-new B=<branch>" && exit 1)
 	./scripts/wt.sh new $(B)
 
 wt-rm:
+	@[ -n "$(B)" ] || (echo "Usage: make wt-rm B=<branch>" && exit 1)
 	./scripts/wt.sh rm $(B)

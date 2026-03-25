@@ -51,3 +51,18 @@ update_mw_custom: download_mw_artefacts_custom
 
 prepare_app_manifest_for_release_apk:
 	./scripts/release/apk.sh
+
+
+# WORKTREE MANAGEMENT
+
+wt-list:
+	./scripts/wt.sh list
+
+wt-add:
+	./scripts/wt.sh add $(B)
+
+wt-new:
+	./scripts/wt.sh new $(B)
+
+wt-rm:
+	./scripts/wt.sh rm $(B)

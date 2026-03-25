@@ -5,7 +5,7 @@ import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import android.widget.TextView
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaPlaceholderBinding
-import com.anytypeio.anytype.core_ui.extensions.veryLight
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
@@ -85,7 +85,7 @@ abstract class MediaPlaceholder(
             res = itemView.resources
         )
         card.setCardBackgroundColor(
-            card.resources.veryLight(decorations.last().background, 0)
+            card.resources.light(decorations.last().background, 0)
         )
     }
 }

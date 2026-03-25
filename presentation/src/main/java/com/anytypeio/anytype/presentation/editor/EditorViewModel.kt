@@ -8144,6 +8144,7 @@ class EditorViewModel(
                         },
                         onFailure = { e ->
                             Timber.e(e, "Failed to create discussion")
+                            sendToast("Failed to create discussion")
                         }
                     )
                 }

@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -125,7 +126,8 @@ class VaultViewModel(
     private val deepLinkResolver: DeepLinkResolver,
     private val configStorage: ConfigStorage,
     private val osWidgetSpacesSync: OsWidgetSpacesSync,
-    private val osWidgetDataViewSync: OsWidgetDataViewSync
+    private val osWidgetDataViewSync: OsWidgetDataViewSync,
+    private val userSettingsRepository: UserSettingsRepository
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -189,7 +191,13 @@ class VaultViewModel(
     private val _uiState = MutableStateFlow<VaultUiState>(VaultUiState.Loading)
     val uiState: StateFlow<VaultUiState> = _uiState.asStateFlow()
 
+    private val _isCompactMode = MutableStateFlow(false)
+    val isCompactMode: StateFlow<Boolean> = _isCompactMode.asStateFlow()
+
     init {
+        viewModelScope.launch {
+            _isCompactMode.value = userSettingsRepository.getCompactModeEnabled()
+        }
         Timber.i("VaultViewModel - init started")
         combine(
             combine(

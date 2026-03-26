@@ -57,25 +57,6 @@ fun Resources.light(
     ThemeColor.LIME -> getColor(R.color.palette_light_lime, null)
 }
 
-@ColorInt
-fun Resources.veryLight(
-    color: ThemeColor,
-    @ColorInt
-    default: Int? = null
-): Int = when (color) {
-    ThemeColor.DEFAULT -> default ?: getColor(R.color.palette_very_light_default, null)
-    ThemeColor.GREY -> getColor(R.color.palette_very_light_grey, null)
-    ThemeColor.YELLOW -> getColor(R.color.palette_very_light_yellow, null)
-    ThemeColor.ORANGE -> getColor(R.color.palette_very_light_orange, null)
-    ThemeColor.RED -> getColor(R.color.palette_very_light_red, null)
-    ThemeColor.PINK -> getColor(R.color.palette_very_light_pink, null)
-    ThemeColor.PURPLE -> getColor(R.color.palette_very_light_purple, null)
-    ThemeColor.BLUE -> getColor(R.color.palette_very_light_blue, null)
-    ThemeColor.ICE -> getColor(R.color.palette_very_light_ice, null)
-    ThemeColor.TEAL -> getColor(R.color.palette_very_light_teal, null)
-    ThemeColor.LIME -> getColor(R.color.palette_very_light_lime, null)
-}
-
 fun TextView.setTextColor(color: ThemeColor, defaultColor: Int = R.color.text_primary) {
     val default = context.getColor(defaultColor)
     if (color != ThemeColor.DEFAULT) {
@@ -103,7 +84,7 @@ fun View.setBlockBackgroundColor(color: String?) {
     if (!color.isNullOrEmpty()) {
         val value = ThemeColor.values().find { value -> value.code == color }
         if (value != null && value != ThemeColor.DEFAULT) {
-            setBackgroundColor(resources.veryLight(value, 0))
+            setBackgroundColor(resources.light(value, 0))
         } else {
             background = null
         }
@@ -114,7 +95,7 @@ fun View.setBlockBackgroundColor(color: String?) {
 
 fun View.setBlockBackgroundColor(bg: ThemeColor) {
     if (bg != ThemeColor.DEFAULT) {
-        setBackgroundColor(resources.veryLight(bg, 0))
+        setBackgroundColor(resources.light(bg, 0))
     } else {
         background = null
     }
@@ -133,18 +114,18 @@ fun View.setBlockBackgroundTintColor(
         if (value != null && value != ThemeColor.DEFAULT) {
             DrawableCompat.setTint(
                 background,
-                resources.veryLight(value, 0)
+                resources.light(value, 0)
             )
         } else {
             DrawableCompat.setTint(
                 background,
-                resources.veryLight(default, 0)
+                resources.light(default, 0)
             )
         }
     } else {
         DrawableCompat.setTint(
             background,
-            resources.veryLight(default, 0)
+            resources.light(default, 0)
         )
     }
 }
@@ -158,7 +139,7 @@ fun View.setBlockBackgroundTintColor(
 ) {
     DrawableCompat.setTint(
         background,
-        resources.veryLight(color, default)
+        resources.light(color, default)
     )
 }
 

@@ -9,7 +9,7 @@ import android.text.Spanned
 import androidx.core.graphics.drawable.DrawableCompat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.Span
-import com.anytypeio.anytype.core_ui.extensions.veryLight
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_models.ThemeColor
 import timber.log.Timber
 
@@ -124,7 +124,7 @@ class HighlightDrawer(
         val value = ThemeColor.entries.find { value -> value.code == span.value }
         val default = resources.getColor(R.color.background_primary, null)
         val color = if (value != null && value != ThemeColor.DEFAULT) {
-            resources.veryLight(value, default)
+            resources.light(value, default)
         } else {
             default
         }

@@ -14,7 +14,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
-import com.anytypeio.anytype.core_ui.extensions.veryLight
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
 import com.anytypeio.anytype.features.editor.base.TestEditorFragment
@@ -453,10 +453,10 @@ class RelationBlockUITesting : EditorTestSetup() {
 
         with(R.id.recycler.rVMatcher()) {
             checkIsRecyclerSize(7)
-            onItem(2).checkHasBackgroundColor(resources.veryLight(background1))
-            onItem(3).checkHasBackgroundColor(resources.veryLight(background2))
-            onItem(4).checkHasBackgroundColor(resources.veryLight(background3))
-            onItem(5).checkHasBackgroundColor(resources.veryLight(background4))
+            onItem(2).checkHasBackgroundColor(resources.light(background1))
+            onItem(3).checkHasBackgroundColor(resources.light(background2))
+            onItem(4).checkHasBackgroundColor(resources.light(background3))
+            onItem(5).checkHasBackgroundColor(resources.light(background4))
             onItem(6).checkHasNoBackground()
         }
 

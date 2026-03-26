@@ -14,7 +14,7 @@ import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCodeSnippetBinding
-import com.anytypeio.anytype.core_ui.extensions.veryLight
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
@@ -254,7 +254,7 @@ class Code(
 
     private fun setBackgroundColor(background: ThemeColor) {
         if (background != ThemeColor.DEFAULT) {
-            (binding.content.background as? ColorDrawable)?.color = root.resources.veryLight(background, 0)
+            (binding.content.background as? ColorDrawable)?.color = root.resources.light(background, 0)
         } else {
             val defaultBackgroundColor =
                 content.context.resources.getColor(R.color.shape_tertiary, null)

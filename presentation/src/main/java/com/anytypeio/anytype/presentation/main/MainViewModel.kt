@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.core_models.ui.WallpaperResult
 import com.anytypeio.anytype.core_models.ui.computeWallpaperResult
 import com.anytypeio.anytype.core_models.ui.spaceIcon
@@ -201,7 +202,9 @@ class MainViewModel(
                     if (remaining > 0) {
                         monitorSpaceLocalStatus(pendingPush.spaceId, remaining)
                     } else {
-                        monitorSpaceLocalStatus(pendingPush.spaceId, 0)
+                        Timber.w(
+                            "PUSH_SPACE_STATUS: Cold start push monitoring skipped - ${-remaining}ms already elapsed past timeout"
+                        )
                     }
                 }
             }
@@ -904,16 +907,22 @@ class MainViewModel(
         spaceStatusMonitorJob = viewModelScope.launch {
             delay(delayMs)
             val view = spaceViews.get(SpaceId(spaceId))
-            val localStatus = view?.spaceLocalStatus
+            if (view == null) {
+                Timber.w("PUSH_SPACE_STATUS: Space $spaceId not found in subscription container")
+                return@launch
+            }
+            val localStatus = view.spaceLocalStatus
             if (localStatus == SpaceStatus.LOADING) {
                 Timber.w(
                     "PUSH_SPACE_STATUS: Space $spaceId local status still LOADING after ${PUSH_SPACE_STATUS_TIMEOUT / 1000}s"
                 )
-                commands.emit(
-                    Command.Snackbar(
-                        "Space local status is still LOADING after ${PUSH_SPACE_STATUS_TIMEOUT / 1000} seconds (push)"
+                if (BuildConfig.ENABLE_SPACE_PUSH_DIAGNOSTICS) {
+                    commands.emit(
+                        Command.Snackbar(
+                            "Space local status is still LOADING after ${PUSH_SPACE_STATUS_TIMEOUT / 1000} seconds (push)"
+                        )
                     )
-                )
+                }
             } else {
                 Timber.d(
                     "PUSH_SPACE_STATUS: Space $spaceId local status is $localStatus (OK)"

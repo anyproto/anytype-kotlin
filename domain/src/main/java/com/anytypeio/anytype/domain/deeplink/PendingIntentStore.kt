@@ -38,6 +38,7 @@ class PendingIntentStore @Inject constructor() {
     // Push space entry tracking for diagnostic monitoring
     data class PushSpaceEntry(val spaceId: String, val timestamp: Long)
 
+    @Volatile
     private var pushSpaceEntry: PushSpaceEntry? = null
 
     fun setPushSpaceEntry(spaceId: String) {

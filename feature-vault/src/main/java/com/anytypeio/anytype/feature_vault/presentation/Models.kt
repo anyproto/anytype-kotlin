@@ -8,7 +8,7 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.AttachmentPreview
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
-
+import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 import com.anytypeio.anytype.core_models.ui.WallpaperResult
 
 sealed class VaultSpaceView {
@@ -100,7 +100,10 @@ sealed class VaultUiState {
 sealed class VaultCommand {
     data class EnterSpaceHomeScreen(val space: Space) : VaultCommand()
     data class EnterSpaceLevelChat(val space: Space, val chat: Id) : VaultCommand()
-    data class CreateNewSpace(val channelType: ChannelCreationType) : VaultCommand()
+    data class CreateNewSpace(
+        val channelType: ChannelCreationType,
+        val selectedMembers: List<MemberItem> = emptyList()
+    ) : VaultCommand()
     data object OpenProfileSettings : VaultCommand()
     data class ShowDeleteSpaceWarning(val space: Id) : VaultCommand()
     data class ShowLeaveSpaceWarning(val space: Id) : VaultCommand()
@@ -143,3 +146,20 @@ sealed class VaultErrors {
     data object CameraPermissionDenied : VaultErrors()
     data class SharedSpaceLimitReached(val limit: Int) : VaultErrors()
 }
+
+sealed class SelectMembersUiState {
+    data object Loading : SelectMembersUiState()
+    data class Content(
+        val members: List<MemberItem>,
+        val searchQuery: String
+    ) : SelectMembersUiState()
+}
+
+data class MemberItem(
+    val identity: Id,
+    val name: String,
+    val globalName: String?,
+    val icon: SpaceMemberIconView,
+    val isSelected: Boolean,
+    val selectionOrder: Int? = null
+)

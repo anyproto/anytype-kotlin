@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.AccountProfile
 import com.anytypeio.anytype.core_models.ui.AttachmentPreview
+import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 import com.anytypeio.anytype.core_models.ui.computeWallpaperResult
 import com.anytypeio.anytype.core_models.ui.profileIcon
 import com.anytypeio.anytype.core_models.ui.spaceIcon
@@ -150,6 +151,11 @@ class VaultViewModel(
     val isLocalOnly: Boolean
         get() = networkModeProvider.get().networkMode == NetworkMode.LOCAL
 
+    // Select members state for group channel creation
+    val showSelectMembersSheet = MutableStateFlow(false)
+    private val _selectMembersSearchQuery = MutableStateFlow("")
+    private val _selectedMemberIds = MutableStateFlow<List<Id>>(emptyList())
+
     private val previewFlow: StateFlow<ChatPreviewContainer.PreviewState> =
         chatPreviewContainer.observePreviewsWithAttachments()
             .filterIsInstance<ChatPreviewContainer.PreviewState.Ready>() // wait until ready
@@ -197,6 +203,41 @@ class VaultViewModel(
 
     private val _uiState = MutableStateFlow<VaultUiState>(VaultUiState.Loading)
     val uiState: StateFlow<VaultUiState> = _uiState.asStateFlow()
+
+    val selectMembersUiState: StateFlow<SelectMembersUiState> = combine(
+        spaceFlow,
+        _selectMembersSearchQuery,
+        _selectedMemberIds
+    ) { spaces, query, selectedIds ->
+        val oneToOneSpaces = spaces.filter { space ->
+            space.spaceUxType == SpaceUxType.ONE_TO_ONE
+                && space.isActive
+                && !space.oneToOneIdentity.isNullOrEmpty()
+        }
+        val members = oneToOneSpaces
+            .filter { space ->
+                if (query.isBlank()) true
+                else space.name.orEmpty().contains(query, ignoreCase = true)
+            }
+            .mapNotNull { space ->
+                val identity = space.oneToOneIdentity ?: return@mapNotNull null
+                val name = space.name.orEmpty()
+                val icon = spaceViewToMemberIcon(space)
+                val selectedIndex = selectedIds.indexOf(identity)
+                MemberItem(
+                    identity = identity,
+                    name = name,
+                    globalName = null,
+                    icon = icon,
+                    isSelected = selectedIndex >= 0,
+                    selectionOrder = if (selectedIndex >= 0) selectedIndex + 1 else null
+                )
+            }
+        SelectMembersUiState.Content(
+            members = members,
+            searchQuery = query
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SelectMembersUiState.Loading)
 
     init {
         Timber.i("VaultViewModel - init started")
@@ -785,11 +826,22 @@ class VaultViewModel(
             if (limit > 0 && count >= limit) {
                 vaultErrors.value = VaultErrors.SharedSpaceLimitReached(limit = limit)
             } else {
-                commands.emit(
-                    VaultCommand.CreateNewSpace(
-                        channelType = ChannelCreationType.GROUP
+                val hasOneToOneParticipants = spaceFlow.value.any { space ->
+                    space.isOneToOneSpace
+                        && space.isActive
+                        && !space.oneToOneIdentity.isNullOrEmpty()
+                }
+                if (hasOneToOneParticipants) {
+                    _selectMembersSearchQuery.value = ""
+                    _selectedMemberIds.value = emptyList()
+                    showSelectMembersSheet.value = true
+                } else {
+                    commands.emit(
+                        VaultCommand.CreateNewSpace(
+                            channelType = ChannelCreationType.GROUP
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -798,6 +850,44 @@ class VaultViewModel(
         viewModelScope.launch {
             showCreateChannelMenu.value = false
         }
+    }
+
+    fun onSelectMembersSearchQueryChanged(query: String) {
+        _selectMembersSearchQuery.value = query
+    }
+
+    fun onMemberToggled(identity: Id) {
+        _selectedMemberIds.update { current ->
+            if (current.contains(identity)) {
+                current - identity
+            } else {
+                current + identity
+            }
+        }
+    }
+
+    fun onSelectMembersNext() {
+        viewModelScope.launch {
+            val state = selectMembersUiState.value
+            val selectedMembers = if (state is SelectMembersUiState.Content) {
+                state.members.filter { it.isSelected }
+            } else {
+                emptyList()
+            }
+            showSelectMembersSheet.value = false
+            commands.emit(
+                VaultCommand.CreateNewSpace(
+                    channelType = ChannelCreationType.GROUP,
+                    selectedMembers = selectedMembers
+                )
+            )
+        }
+    }
+
+    fun onSelectMembersDismissed() {
+        showSelectMembersSheet.value = false
+        _selectMembersSearchQuery.value = ""
+        _selectedMemberIds.value = emptyList()
     }
 
     fun onSharedSpaceLimitUpgradeClicked() {
@@ -811,6 +901,16 @@ class VaultViewModel(
         viewModelScope.launch {
             vaultErrors.value = VaultErrors.Hidden
             commands.emit(VaultCommand.OpenSpaceListScreen)
+        }
+    }
+
+    private fun spaceViewToMemberIcon(spaceView: ObjectWrapper.SpaceView): SpaceMemberIconView {
+        val icon = spaceView.iconImage
+        val name = spaceView.name.orEmpty()
+        return if (!icon.isNullOrEmpty()) {
+            SpaceMemberIconView.Image(url = urlBuilder.thumbnail(icon), name = name)
+        } else {
+            SpaceMemberIconView.Placeholder(name = name)
         }
     }
 

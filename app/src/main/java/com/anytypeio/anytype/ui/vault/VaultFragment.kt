@@ -34,6 +34,7 @@ import com.anytypeio.anytype.feature_vault.presentation.VaultNavigation
 import com.anytypeio.anytype.feature_vault.presentation.VaultViewModel
 import com.anytypeio.anytype.feature_vault.presentation.VaultViewModelFactory
 import com.anytypeio.anytype.feature_vault.ui.AlertScreenModals
+import com.anytypeio.anytype.feature_vault.ui.SelectMembersContent
 import com.anytypeio.anytype.feature_vault.ui.SharedSpaceLimitModal
 import com.anytypeio.anytype.feature_vault.ui.VaultScreen
 import com.anytypeio.anytype.ui.base.navigation
@@ -176,6 +177,17 @@ class VaultFragment : BaseComposeFragment() {
             }
 
             // Dropdown menu is now hosted inside VaultScreen / VaultScreenToolbar
+
+            val showSelectMembers = vm.showSelectMembersSheet.collectAsStateWithLifecycle().value
+            if (showSelectMembers) {
+                SelectMembersContent(
+                    uiState = vm.selectMembersUiState.collectAsStateWithLifecycle().value,
+                    onMemberToggled = vm::onMemberToggled,
+                    onSearchQueryChanged = vm::onSelectMembersSearchQueryChanged,
+                    onNext = vm::onSelectMembersNext,
+                    onDismissRequest = vm::onSelectMembersDismissed
+                )
+            }
         }
         LaunchedEffect(Unit) {
             vm.commands.collect { command -> proceed(command) }

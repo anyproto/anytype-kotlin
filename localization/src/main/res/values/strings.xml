@@ -2342,6 +2342,8 @@ Please provide specific details of your needs here.</string>
     
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Join via QR Code</string>
+    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_next">Next</string>
     <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
     <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
     <string name="vault_qr_invalid_title">Invalid QR code</string>

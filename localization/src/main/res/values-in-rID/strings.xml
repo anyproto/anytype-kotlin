@@ -15,8 +15,8 @@
     <string name="debug_sync_report">Laporan Sinkronisasi Debug</string>
     <string name="debug">Debug</string>
     <string name="experimental_features">Fitur Percobaan</string>
-    <string name="experimental_features_compact_vault">Compact vault mode</string>
-    <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
+    <string name="experimental_features_compact_vault">Mode brankas ringkas</string>
+    <string name="experimental_features_compact_vault_description">Sembunyikan pratinjau pesan untuk kanal yang sudah dibaca</string>
     <string name="account">Brankas</string>
     <string name="reset_account">Setel ulang brankas</string>
     <string name="delete_account">Hapus brankas</string>
@@ -2017,7 +2017,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="vault_qr_invalid_description">Kode yang terpindai tidak sesuai dengan undangan mana pun. Silakan cek lalu coba lagi.</string>
     <string name="vault_qr_try_again">Coba lagi</string>
     <string name="camera_permission_required_title">Izin kamera diperlukan</string>
-    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
+    <string name="barcode_scanner_unavailable">Pemindai QR tidak tersedia di perangkat ini</string>
     <string name="camera_permission_rationale_message">Untuk memindai kode QR, Anytype memerlukan akses kameramu. Izin ini hanya digunakan untuk memindai kode QR.</string>
     <string name="camera_permission_settings_message">Untuk memindai kode QR, kamu harus mengizinkan akses kamera di setelan perangkatmu.</string>
     <string name="open_settings">Buka Setelan</string>

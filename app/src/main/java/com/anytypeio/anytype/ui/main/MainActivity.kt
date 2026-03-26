@@ -178,6 +178,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             is Command.Error -> {
                                 toast(command.msg)
                             }
+                            is Command.Snackbar -> {
+                                findViewById<android.view.View>(android.R.id.content)
+                                    ?.showSnackbar(command.msg, Snackbar.LENGTH_LONG)
+                            }
                             is Command.Notifications -> {
                                 NotificationsFragment().show(supportFragmentManager, null)
                             }

@@ -137,7 +137,8 @@ class SplashViewModelTest {
             createObjectByTypeAndTemplate = createObjectByTypeAndTemplate,
             spaceViews = spaceViewSubscriptionContainer,
             migration = migrationHelperDelegate,
-            deepLinkResolver = mock()
+            deepLinkResolver = mock(),
+            pendingIntentStore = mock()
         )
     }
 

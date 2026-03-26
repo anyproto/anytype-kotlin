@@ -51,3 +51,34 @@ update_mw_custom: download_mw_artefacts_custom
 
 prepare_app_manifest_for_release_apk:
 	./scripts/release/apk.sh
+
+
+# WORKTREE MANAGEMENT
+# wtlist              List all worktrees
+# wtadd <branch>      Add worktree for existing branch + copy configs
+# wtnew <branch>      Create new branch + worktree + copy configs
+# wtrm  <branch>      Remove worktree
+# For shell navigation: cd $(./scripts/wt.sh path <branch>)
+
+.PHONY: wtlist wtadd wtnew wtrm
+
+# Capture positional arg for worktree commands (e.g. make wtnew mybranch)
+ifneq ($(filter wtadd wtnew wtrm,$(firstword $(MAKECMDGOALS))),)
+  WT_BRANCH := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  $(eval $(WT_BRANCH):;@:)
+endif
+
+wtlist:
+	./scripts/wt.sh list
+
+wtadd:
+	@[ -n "$(WT_BRANCH)" ] || (echo "Usage: make wtadd <branch>" && exit 1)
+	./scripts/wt.sh add $(WT_BRANCH)
+
+wtnew:
+	@[ -n "$(WT_BRANCH)" ] || (echo "Usage: make wtnew <branch>" && exit 1)
+	./scripts/wt.sh new $(WT_BRANCH)
+
+wtrm:
+	@[ -n "$(WT_BRANCH)" ] || (echo "Usage: make wtrm <branch>" && exit 1)
+	./scripts/wt.sh rm $(WT_BRANCH)

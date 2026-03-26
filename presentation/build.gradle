@@ -19,6 +19,7 @@ android {
         buildConfigField "boolean", "USE_SIMPLE_TABLES_IN_EDITOR_EDDITING", "true"
         buildConfigField "boolean", "ENABLE_VIEWS_MENU", "true"
         buildConfigField "boolean", "ENABLE_RELATIVE_DATES_IN_MENTIONS", "true"
+        buildConfigField "boolean", "ENABLE_SPACE_PUSH_DIAGNOSTICS", "true"
     }
     namespace 'com.anytypeio.anytype.presentation'
 

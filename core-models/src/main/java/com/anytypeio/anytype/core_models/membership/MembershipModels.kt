@@ -84,3 +84,9 @@ sealed class MembershipUpgradeReason {
     data object NumberOfSharedSpaces : MembershipUpgradeReason()
     data object StorageSpace : MembershipUpgradeReason()
 }
+
+data class MembershipFeatures(
+    val spaceWriters: Int = 0,
+    val spaceReaders: Int = 0,
+    val sharedSpaces: Int = 0
+)

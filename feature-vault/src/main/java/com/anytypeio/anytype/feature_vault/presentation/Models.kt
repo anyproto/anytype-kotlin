@@ -151,7 +151,8 @@ sealed class SelectMembersUiState {
     data object Loading : SelectMembersUiState()
     data class Content(
         val members: List<MemberItem>,
-        val searchQuery: String
+        val searchQuery: String,
+        val subtitle: String = ""
     ) : SelectMembersUiState()
 }
 

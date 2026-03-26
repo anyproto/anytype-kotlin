@@ -629,6 +629,9 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun membershipSubscribeToUpdates(request: Rpc.MembershipV2.SubscribeToUpdates.Request): Rpc.MembershipV2.SubscribeToUpdates.Response
+
+    @Throws(Exception::class)
+    fun membershipV2GetStatus(request: Rpc.MembershipV2.GetStatus.Request): Rpc.MembershipV2.GetStatus.Response
     //endregion
 
     //region VERSION HISTORY

@@ -83,7 +83,9 @@ fun SelectMembersContent(
                     shape = RoundedCornerShape(16.dp)
                 )
         ) {
+            val subtitle = (uiState as? SelectMembersUiState.Content)?.subtitle.orEmpty()
             SelectMembersTopBar(
+                subtitle = subtitle,
                 onBackClick = onDismissRequest,
                 onNextClick = onNext
             )
@@ -127,6 +129,7 @@ fun SelectMembersContent(
 
 @Composable
 private fun SelectMembersTopBar(
+    subtitle: String = "",
     onBackClick: () -> Unit,
     onNextClick: () -> Unit
 ) {
@@ -147,12 +150,23 @@ private fun SelectMembersTopBar(
             colorFilter = ColorFilter.tint(colorResource(id = CoreR.color.text_primary))
         )
 
-        Text(
-            text = stringResource(com.anytypeio.anytype.localization.R.string.channel_select_members_title),
-            style = Title1,
-            color = colorResource(id = CoreR.color.text_primary),
-            modifier = Modifier.align(Alignment.Center)
-        )
+        Column(
+            modifier = Modifier.align(Alignment.Center),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(com.anytypeio.anytype.localization.R.string.channel_select_members_title),
+                style = Title1,
+                color = colorResource(id = CoreR.color.text_primary)
+            )
+            if (subtitle.isNotEmpty()) {
+                Text(
+                    text = subtitle,
+                    style = Caption1Medium,
+                    color = colorResource(id = CoreR.color.text_secondary)
+                )
+            }
+        }
 
         Text(
             text = stringResource(com.anytypeio.anytype.localization.R.string.channel_next),

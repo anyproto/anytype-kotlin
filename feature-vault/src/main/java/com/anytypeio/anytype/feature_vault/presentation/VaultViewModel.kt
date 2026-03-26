@@ -63,7 +63,9 @@ import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.core_models.membership.MembershipFeatures
 import com.anytypeio.anytype.domain.network.NetworkModeProvider
+import com.anytypeio.anytype.domain.payments.GetMembershipFeatures
 import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
@@ -132,7 +134,8 @@ class VaultViewModel(
     private val configStorage: ConfigStorage,
     private val osWidgetSpacesSync: OsWidgetSpacesSync,
     private val osWidgetDataViewSync: OsWidgetDataViewSync,
-    private val networkModeProvider: NetworkModeProvider
+    private val networkModeProvider: NetworkModeProvider,
+    private val getMembershipFeatures: GetMembershipFeatures
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -155,6 +158,7 @@ class VaultViewModel(
     val showSelectMembersSheet = MutableStateFlow(false)
     private val _selectMembersSearchQuery = MutableStateFlow("")
     private val _selectedMemberIds = MutableStateFlow<List<Id>>(emptyList())
+    private val _membershipFeatures = MutableStateFlow(MembershipFeatures())
 
     private val previewFlow: StateFlow<ChatPreviewContainer.PreviewState> =
         chatPreviewContainer.observePreviewsWithAttachments()
@@ -207,8 +211,9 @@ class VaultViewModel(
     val selectMembersUiState: StateFlow<SelectMembersUiState> = combine(
         spaceFlow,
         _selectMembersSearchQuery,
-        _selectedMemberIds
-    ) { spaces, query, selectedIds ->
+        _selectedMemberIds,
+        _membershipFeatures
+    ) { spaces, query, selectedIds, features ->
         val oneToOneSpaces = spaces.filter { space ->
             space.spaceUxType == SpaceUxType.ONE_TO_ONE
                 && space.isActive
@@ -233,14 +238,26 @@ class VaultViewModel(
                     selectionOrder = if (selectedIndex >= 0) selectedIndex + 1 else null
                 )
             }
+        val subtitle = buildMembersSubtitle(
+            selectedCount = selectedIds.size,
+            writersLimit = features.spaceWriters,
+            readersLimit = features.spaceReaders
+        )
         SelectMembersUiState.Content(
             members = members,
-            searchQuery = query
+            searchQuery = query,
+            subtitle = subtitle
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SelectMembersUiState.Loading)
 
     init {
         Timber.i("VaultViewModel - init started")
+        viewModelScope.launch {
+            getMembershipFeatures.async(Unit).fold(
+                onSuccess = { features -> _membershipFeatures.value = features },
+                onFailure = { e -> Timber.e(e, "Failed to fetch membership features") }
+            )
+        }
         combine(
             combine(
                 previewFlow.filterIsInstance<ChatPreviewContainer.PreviewState.Ready>(),
@@ -912,6 +929,15 @@ class VaultViewModel(
         } else {
             SpaceMemberIconView.Placeholder(name = name)
         }
+    }
+
+    private fun buildMembersSubtitle(
+        selectedCount: Int,
+        writersLimit: Int,
+        readersLimit: Int
+    ): String {
+        if (writersLimit == 0 && readersLimit == 0) return ""
+        return "$selectedCount/$writersLimit editors, 0/$readersLimit viewers"
     }
 
     private suspend fun getSharedSpaceLimitInfo(): Pair<Int, Int> {

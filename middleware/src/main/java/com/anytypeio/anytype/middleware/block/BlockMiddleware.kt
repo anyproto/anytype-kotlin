@@ -38,6 +38,7 @@ import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipFeatures
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
@@ -1020,6 +1021,10 @@ class BlockMiddleware(
 
     override suspend fun membershipStatus(command: Command.Membership.GetStatus): Membership? {
         return middleware.membershipStatus(command)
+    }
+
+    override suspend fun membershipV2GetFeatures(): MembershipFeatures {
+        return middleware.membershipV2GetFeatures()
     }
 
     override suspend fun membershipIsNameValid(command: Command.Membership.IsNameValid) {

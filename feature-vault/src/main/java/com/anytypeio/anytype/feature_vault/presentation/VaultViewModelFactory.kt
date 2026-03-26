@@ -32,6 +32,7 @@ import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.network.NetworkModeProvider
+import com.anytypeio.anytype.domain.payments.GetMembershipFeatures
 import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
@@ -72,7 +73,8 @@ class VaultViewModelFactory @Inject constructor(
     private val configStorage: ConfigStorage,
     private val osWidgetSpacesSync: OsWidgetSpacesSync,
     private val osWidgetDataViewSync: OsWidgetDataViewSync,
-    private val networkModeProvider: NetworkModeProvider
+    private val networkModeProvider: NetworkModeProvider,
+    private val getMembershipFeatures: GetMembershipFeatures
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -111,6 +113,7 @@ class VaultViewModelFactory @Inject constructor(
         configStorage = configStorage,
         osWidgetSpacesSync = osWidgetSpacesSync,
         osWidgetDataViewSync = osWidgetDataViewSync,
-        networkModeProvider = networkModeProvider
+        networkModeProvider = networkModeProvider,
+        getMembershipFeatures = getMembershipFeatures
     ) as T
 }

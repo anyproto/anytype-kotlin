@@ -556,8 +556,6 @@
     <string name="file_delete_delete">刪除</string>
     <string name="menu_type_change">變更類型</string>
     <string name="menu_type_open">Open type</string>
-    <string name="menu_type_open_set">Open query of %1$s</string>
-    <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">當前檢視無法被刪除</string>
     <string name="type_templates_widget_title">建立物件</string>
     <string name="view_layout_widget_title">排版</string>

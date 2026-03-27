@@ -557,8 +557,6 @@
     <string name="file_delete_delete">Excluir</string>
     <string name="menu_type_change">Alterar tipo</string>
     <string name="menu_type_open">Abrir tipo</string>
-    <string name="menu_type_open_set">Abrir consulta de%1$s</string>
-    <string name="menu_type_create_set">Criar consulta de%1$s</string>
     <string name="toast_active_view_delete">A visualização atual não pode ser excluída</string>
     <string name="type_templates_widget_title">Criar objeto</string>
     <string name="view_layout_widget_title">Leiaute</string>

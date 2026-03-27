@@ -34,20 +34,18 @@ class EditorTouchProcessor(
     private var actionUpStartInMillis: Long = 0
     private var lastEvent: MotionEvent? = null
     private var isDragging: Boolean = false
+    private var dndTriggered: Boolean = false
+
+    private val dragSlop get() = touchSlop * DRAG_SLOP_MULTIPLIER
 
     private val dragAndDropTimeoutRunnable = Runnable {
-        val delta = if (moves.size > 1) abs(moves.last() - moves.first()) else 0f
-
-        if (!isDragging && delta <= touchSlop) {
-            Timber.d("Triggering drag due to long press without movement")
-            onDragAndDropTrigger(lastEvent)
-        } else if (isDragging) {
+        if (isDragging) {
             Timber.d("Triggering drag due to long press with movement")
+            dndTriggered = true
             onDragAndDropTrigger(lastEvent)
         } else {
-            Timber.d("Skipping drag trigger")
+            Timber.d("Long press without movement, selection will be handled on ACTION_UP")
         }
-
         moves.clear()
     }
 
@@ -60,6 +58,7 @@ class EditorTouchProcessor(
                 Timber.d("ACTION DOWN")
                 actionUpStartInMillis = SystemClock.elapsedRealtime()
                 isDragging = false
+                dndTriggered = false
                 moves.clear()
                 actionHandler.postDelayed(dragAndDropTimeoutRunnable, DND_TIMEOUT)
             }
@@ -71,8 +70,15 @@ class EditorTouchProcessor(
                 if (moves.size > 1) {
                     val delta = abs(moves.last() - moves.first())
                     Timber.d("ACTION MOVE DELTA: $delta")
-                    if (delta > touchSlop) {
+                    if (delta > dragSlop && !isDragging) {
                         isDragging = true
+                        val elapsed = actionUpStartInMillis.untilNow()
+                        if (elapsed >= LONG_PRESS_TIMEOUT && !dndTriggered) {
+                            Timber.d("Triggering drag: movement detected after long press")
+                            actionHandler.removeCallbacksAndMessages(null)
+                            dndTriggered = true
+                            onDragAndDropTrigger(event)
+                        }
                     }
                 }
             }
@@ -128,6 +134,7 @@ class EditorTouchProcessor(
     companion object {
         val LONG_PRESS_TIMEOUT: Long = android.view.ViewConfiguration.getLongPressTimeout().toLong()
         val DND_TIMEOUT: Long = 2 * LONG_PRESS_TIMEOUT
+        private const val DRAG_SLOP_MULTIPLIER = 2
     }
 
     private fun View.emulateHapticFeedback() {

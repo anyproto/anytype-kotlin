@@ -4357,16 +4357,20 @@ class EditorViewModel(
                 if (isObjectTemplate()) return
                 when (clicked.relation) {
                     is ObjectRelationView.ObjectType.Base -> {
-                        commands.postValue(
-                            EventWrapper(
-                                Command.OpenObjectTypeMenu(
-                                    listOf(
-                                        ObjectTypeMenuItem.OpenType,
-                                        ObjectTypeMenuItem.ChangeType
+                        if (mode == EditorMode.Edit) {
+                            commands.postValue(
+                                EventWrapper(
+                                    Command.OpenObjectTypeMenu(
+                                        listOf(
+                                            ObjectTypeMenuItem.OpenType,
+                                            ObjectTypeMenuItem.ChangeType
+                                        )
                                     )
                                 )
                             )
-                        )
+                        } else {
+                            onOpenTypeClicked()
+                        }
                     }
                     is ObjectRelationView.ObjectType.Deleted -> {
                         onChangeObjectTypeClicked()

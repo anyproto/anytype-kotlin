@@ -559,8 +559,6 @@
     <string name="file_delete_delete">Удалить</string>
     <string name="menu_type_change">Изменить тип</string>
     <string name="menu_type_open">Открыть тип</string>
-    <string name="menu_type_open_set">Открыть запрос из %1$s</string>
-    <string name="menu_type_create_set">Создать запрос из %1$s</string>
     <string name="toast_active_view_delete">Невозможно удалить текущий вид</string>
     <string name="type_templates_widget_title">Создать объект</string>
     <string name="view_layout_widget_title">Макет</string>

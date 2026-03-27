@@ -557,8 +557,6 @@
     <string name="file_delete_delete">Verwijder</string>
     <string name="menu_type_change">Verander type</string>
     <string name="menu_type_open">Open type </string>
-    <string name="menu_type_open_set">Open opdracht van %1$s</string>
-    <string name="menu_type_create_set">Maak opdracht van %1$s</string>
     <string name="toast_active_view_delete">De huidige weergave kan niet worden verwijderd</string>
     <string name="type_templates_widget_title">Maak object</string>
     <string name="view_layout_widget_title">Opmaak</string>

@@ -878,7 +878,13 @@ class VaultViewModel(
             if (current.contains(identity)) {
                 current - identity
             } else {
-                current + identity
+                val features = _membershipFeatures.value
+                val limit = features.spaceWriters + features.spaceReaders
+                if (limit > 0 && current.size >= limit) {
+                    current
+                } else {
+                    current + identity
+                }
             }
         }
     }
@@ -937,7 +943,9 @@ class VaultViewModel(
         readersLimit: Int
     ): String {
         if (writersLimit == 0 && readersLimit == 0) return ""
-        return "$selectedCount/$writersLimit editors, 0/$readersLimit viewers"
+        val editors = minOf(selectedCount, writersLimit)
+        val viewers = maxOf(selectedCount - writersLimit, 0)
+        return "$editors/$writersLimit editors, $viewers/$readersLimit viewers"
     }
 
     private suspend fun getSharedSpaceLimitInfo(): Pair<Int, Int> {

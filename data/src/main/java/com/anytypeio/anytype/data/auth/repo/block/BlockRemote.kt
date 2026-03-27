@@ -432,6 +432,8 @@ interface BlockRemote {
 
     suspend fun removeSpaceMembers(space: SpaceId, identities: List<Id>)
 
+    suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>)
+
     suspend fun changeSpaceMemberPermissions(
         space: SpaceId,
         identity: Id,

@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.media.UploadFile
+import com.anytypeio.anytype.domain.multiplayer.AddSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -61,6 +62,7 @@ class CreateSpaceViewModel(
     private val saveCurrentSpace: SaveCurrentSpace,
     private val makeSpaceShareable: MakeSpaceShareable,
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
+    private val addSpaceMembers: AddSpaceMembers,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val permissions: UserPermissionProvider,
     private val profileContainer: ProfileSubscriptionManager,
@@ -358,8 +360,8 @@ class CreateSpaceViewModel(
                     permissions = CHAT_SPACE_DEFAULT_PERMISSIONS
                 )
 
-                finishSpaceCreation(
-                    spaceId = spaceId.id,
+                proceedWithAddMembers(
+                    spaceId = spaceId,
                     startingObject = startingObject
                 )
             },
@@ -367,6 +369,33 @@ class CreateSpaceViewModel(
                 Timber.e(error, "Error while generating invite link")
                 onError(error)
             }
+        )
+    }
+
+    private suspend fun proceedWithAddMembers(
+        spaceId: SpaceId,
+        startingObject: Id?
+    ) {
+        val identities = vmParams.selectedMemberIdentities
+        if (identities.isNotEmpty()) {
+            addSpaceMembers.async(
+                AddSpaceMembers.Params(
+                    space = spaceId,
+                    identities = identities
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Successfully added ${identities.size} members to space")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Failed to add members to space")
+                    sendToast("Failed to add members")
+                }
+            )
+        }
+        finishSpaceCreation(
+            spaceId = spaceId.id,
+            startingObject = startingObject
         )
     }
 
@@ -382,6 +411,7 @@ class CreateSpaceViewModel(
         private val saveCurrentSpace: SaveCurrentSpace,
         private val makeSpaceShareable: MakeSpaceShareable,
         private val generateSpaceInviteLink: GenerateSpaceInviteLink,
+        private val addSpaceMembers: AddSpaceMembers,
         private val spaceViews: SpaceViewSubscriptionContainer,
         private val permissions: UserPermissionProvider,
         private val profileContainer: ProfileSubscriptionManager,
@@ -400,6 +430,7 @@ class CreateSpaceViewModel(
             saveCurrentSpace = saveCurrentSpace,
             makeSpaceShareable = makeSpaceShareable,
             generateSpaceInviteLink = generateSpaceInviteLink,
+            addSpaceMembers = addSpaceMembers,
             spaceViews = spaceViews,
             permissions = permissions,
             profileContainer = profileContainer,

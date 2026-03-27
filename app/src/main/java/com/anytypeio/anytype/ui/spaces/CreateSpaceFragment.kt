@@ -39,6 +39,8 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
 
     private val args by navArgs<CreateSpaceFragmentArgs>()
     val channelType: ChannelCreationType get() = args.channelType
+    val selectedMemberIdentities: List<String>
+        get() = args.selectedMemberIdentities?.toList() ?: emptyList()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
@@ -65,6 +67,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
 
                 CreateSpaceScreen(
                     spaceIconView = vm.spaceIconView.collectAsState().value,
+                    selectedMembers = vm.selectedMembersView.collectAsStateWithLifecycle().value,
                     onCreate = { name ->
                         vm.onCreateSpace(
                             name = name
@@ -134,7 +137,8 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
 
     override fun injectDependencies() {
         val vmParams = CreateSpaceViewModel.VmParams(
-            channelType = channelType
+            channelType = channelType,
+            selectedMemberIdentities = selectedMemberIdentities
         )
         componentManager().createSpaceComponent.get(vmParams).inject(this)
     }

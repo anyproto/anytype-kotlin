@@ -47,6 +47,8 @@ import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -83,6 +85,12 @@ fun SelectMembersContent(
                     shape = RoundedCornerShape(16.dp)
                 )
         ) {
+            Dragger(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 6.dp)
+            )
+
             val subtitle = (uiState as? SelectMembersUiState.Content)?.subtitle.orEmpty()
             SelectMembersTopBar(
                 subtitle = subtitle,
@@ -100,7 +108,7 @@ fun SelectMembersContent(
                         onQueryChanged = onSearchQueryChanged,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
+                            .padding(horizontal = 16.dp)
                     )
                     LazyColumn(
                         modifier = Modifier
@@ -221,7 +229,7 @@ private fun MemberRow(
         modifier = Modifier
             .fillMaxWidth()
             .height(72.dp)
-            .noRippleThrottledClickable(onClick = onToggle)
+            .noRippleClickable(onClick = onToggle)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

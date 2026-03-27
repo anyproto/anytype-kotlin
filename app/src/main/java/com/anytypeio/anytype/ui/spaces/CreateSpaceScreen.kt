@@ -6,16 +6,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -35,6 +39,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -49,9 +55,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import androidx.compose.ui.text.style.TextOverflow
+import coil3.compose.AsyncImage
+import coil3.request.ImageRequest
+import coil3.request.crossfade
 import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
+import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
+import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel.SpaceMemberView
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -63,12 +75,14 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 
 
 @Composable
 fun CreateSpaceScreen(
     spaceIconView: SpaceIconView,
+    selectedMembers: List<SpaceMemberView> = emptyList(),
     onCreate: (Name) -> Unit,
     onSpaceIconUploadClicked: () -> Unit,
     onSpaceIconRemoveClicked: () -> Unit,
@@ -178,6 +192,16 @@ fun CreateSpaceScreen(
                         )
                     }
                 )
+            }
+            if (selectedMembers.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(20.dp))
+                Section(
+                    title = stringResource(id = com.anytypeio.anytype.localization.R.string.multiplayer_members),
+                    textPaddingStart = 16.dp
+                )
+                selectedMembers.forEach { member ->
+                    SelectedMemberRow(member = member)
+                }
             }
         }
         ButtonOnboardingPrimaryLarge(
@@ -321,6 +345,56 @@ fun UseCase() {
             text = "Empty space",
             color = colorResource(id = R.color.text_primary),
             style = BodyRegular
+        )
+    }
+}
+
+@Composable
+private fun SelectedMemberRow(member: SpaceMemberView) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        when (val icon = member.icon) {
+            is SpaceMemberIconView.Placeholder -> {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(colorResource(id = R.color.shape_tertiary)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = icon.name.take(1).uppercase().ifEmpty { "U" },
+                        style = Title1,
+                        color = colorResource(id = R.color.glyph_active)
+                    )
+                }
+            }
+            is SpaceMemberIconView.Image -> {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(icon.url)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = icon.name,
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            text = member.name,
+            style = Title2,
+            color = colorResource(id = R.color.text_primary),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

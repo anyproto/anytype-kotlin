@@ -15,9 +15,12 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceCreationUseCase
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.multiplayer.ChannelCreationType
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
@@ -38,11 +41,13 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsShareSpaceNewLi
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -58,7 +63,8 @@ class CreateSpaceViewModel(
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val permissions: UserPermissionProvider,
-    private val profileContainer: ProfileSubscriptionManager
+    private val profileContainer: ProfileSubscriptionManager,
+    private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
     val isInProgress = MutableStateFlow(false)
@@ -79,6 +85,36 @@ class CreateSpaceViewModel(
     }
 
     val isDismissed = MutableStateFlow(false)
+
+    val selectedMembersView: StateFlow<List<SpaceMemberView>> = spaceViews.observe()
+        .map { spaces ->
+            val identities = vmParams.selectedMemberIdentities
+            if (identities.isEmpty()) return@map emptyList()
+            spaces
+                .filter { space ->
+                    space.spaceUxType == SpaceUxType.ONE_TO_ONE
+                        && space.oneToOneIdentity in identities
+                }
+                .mapNotNull { space ->
+                    val identity = space.oneToOneIdentity ?: return@mapNotNull null
+                    val name = space.name.orEmpty()
+                    val iconImage = space.iconImage
+                    val icon = if (!iconImage.isNullOrEmpty()) {
+                        SpaceMemberIconView.Image(
+                            url = urlBuilder.thumbnail(iconImage),
+                            name = name
+                        )
+                    } else {
+                        SpaceMemberIconView.Placeholder(name = name)
+                    }
+                    SpaceMemberView(
+                        identity = identity,
+                        name = name,
+                        icon = icon
+                    )
+                }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     /**
      * Group channels should be made shareable and have invite links created.
@@ -348,7 +384,8 @@ class CreateSpaceViewModel(
         private val generateSpaceInviteLink: GenerateSpaceInviteLink,
         private val spaceViews: SpaceViewSubscriptionContainer,
         private val permissions: UserPermissionProvider,
-        private val profileContainer: ProfileSubscriptionManager
+        private val profileContainer: ProfileSubscriptionManager,
+        private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -365,7 +402,8 @@ class CreateSpaceViewModel(
             generateSpaceInviteLink = generateSpaceInviteLink,
             spaceViews = spaceViews,
             permissions = permissions,
-            profileContainer = profileContainer
+            profileContainer = profileContainer,
+            urlBuilder = urlBuilder
         ) as T
     }
 
@@ -376,10 +414,17 @@ class CreateSpaceViewModel(
     }
 
     data class VmParams(
-        val channelType: ChannelCreationType
+        val channelType: ChannelCreationType,
+        val selectedMemberIdentities: List<String> = emptyList()
     )
 
     data class CreateSpaceError(val msg: String)
+
+    data class SpaceMemberView(
+        val identity: Id,
+        val name: String,
+        val icon: SpaceMemberIconView
+    )
 
     companion object {
         private val CHAT_SPACE_INVITE_TYPE = InviteType.WITHOUT_APPROVE

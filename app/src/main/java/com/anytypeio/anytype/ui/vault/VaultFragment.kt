@@ -236,7 +236,11 @@ class VaultFragment : BaseComposeFragment() {
                 runCatching {
                     findNavController().navigate(
                         R.id.createSpaceScreen,
-                        bundleOf("channelType" to command.channelType)
+                        bundleOf(
+                            "channelType" to command.channelType,
+                            "selectedMemberIdentities" to command.selectedMembers
+                                .map { it.identity }.toTypedArray()
+                        )
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening create space screen from vault")

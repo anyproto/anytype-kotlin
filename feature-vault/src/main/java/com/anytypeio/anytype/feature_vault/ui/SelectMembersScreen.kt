@@ -103,6 +103,7 @@ fun SelectMembersContent(
                     Box(modifier = Modifier.weight(1f))
                 }
                 is SelectMembersUiState.Content -> {
+                    Spacer(modifier = Modifier.height(8.dp))
                     DefaultSearchBar(
                         value = uiState.searchQuery,
                         onQueryChanged = onSearchQueryChanged,
@@ -110,6 +111,7 @@ fun SelectMembersContent(
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
                     LazyColumn(
                         modifier = Modifier
                             .weight(1f)

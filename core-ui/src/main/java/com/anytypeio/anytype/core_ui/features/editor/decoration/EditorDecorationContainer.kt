@@ -6,7 +6,7 @@ import android.util.AttributeSet
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.veryLight
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Decoration
 
 class EditorDecorationContainer @JvmOverloads constructor(
@@ -29,7 +29,7 @@ class EditorDecorationContainer @JvmOverloads constructor(
     private val calloutBackgroundOffset = resources.getDimension(R.dimen.callout_background_offset)
     private val calloutExtraSpaceBottom = resources.getDimension(R.dimen.callout_block_extra_space_bottom).toInt()
     private val totalCalloutOffset = totalGraphicOffset
-    private val defaultCalloutColor = resources.getColor(R.color.palette_very_light_grey, null)
+    private val defaultCalloutColor = resources.getColor(R.color.palette_light_grey, null)
 
     fun decorate(
         decorations: List<Decoration>,
@@ -74,7 +74,7 @@ class EditorDecorationContainer @JvmOverloads constructor(
                 addView(
                     DecorationWidget.Background(
                         context = context,
-                        background = resources.veryLight(decor.background, 0)
+                        background = resources.light(decor.background, 0)
                     ),
                     lp
                 )
@@ -128,7 +128,7 @@ class EditorDecorationContainer @JvmOverloads constructor(
                             addView(
                                 DecorationWidget.EndingCallout(
                                     context = context,
-                                    background = resources.veryLight(decor.background, defaultCalloutColor)
+                                    background = resources.light(decor.background, defaultCalloutColor)
                                 ),
                                 lp
                             )
@@ -136,7 +136,7 @@ class EditorDecorationContainer @JvmOverloads constructor(
                             addView(
                                 DecorationWidget.Background(
                                     context = context,
-                                    background = resources.veryLight(decor.background, defaultCalloutColor)
+                                    background = resources.light(decor.background, defaultCalloutColor)
                                 ),
                                 lp
                             )

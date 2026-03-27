@@ -557,8 +557,6 @@
     <string name="file_delete_delete">Löschen</string>
     <string name="menu_type_change">Typ ändern</string>
     <string name="menu_type_open">Typ öffnen</string>
-    <string name="menu_type_open_set">Abfrage von %1$s öffnen</string>
-    <string name="menu_type_create_set">Abfrage von %1$s erstellen</string>
     <string name="toast_active_view_delete">Aktuelle Ansicht kann nicht gelöscht werden</string>
     <string name="type_templates_widget_title">Objekt erstellen</string>
     <string name="view_layout_widget_title">Layout</string>

@@ -1464,8 +1464,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             anchor = anchor,
             items = command.items,
             onChangeTypeClicked = vm::onChangeObjectTypeClicked,
-            onOpenSetClicked = vm::proceedWithOpeningDataViewObject,
-            onCreateSetClicked = vm::onCreateNewSetForType,
             onOpenTypeClicked = vm::onOpenTypeClicked
         )
     }

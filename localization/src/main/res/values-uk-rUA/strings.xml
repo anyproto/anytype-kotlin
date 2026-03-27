@@ -559,8 +559,6 @@
     <string name="file_delete_delete">Видалити</string>
     <string name="menu_type_change">Змінити тип</string>
     <string name="menu_type_open">Open type</string>
-    <string name="menu_type_open_set">Open query of %1$s</string>
-    <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
     <string name="type_templates_widget_title">Створити об\'єкт</string>
     <string name="view_layout_widget_title">Макет</string>

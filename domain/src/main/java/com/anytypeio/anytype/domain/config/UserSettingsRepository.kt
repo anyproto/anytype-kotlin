@@ -75,6 +75,9 @@ interface UserSettingsRepository {
     suspend fun getDebugMenuEnabled(): Boolean
     suspend fun setDebugMenuEnabled(enabled: Boolean)
 
+    suspend fun getCompactModeEnabled(): Boolean
+    suspend fun setCompactModeEnabled(enabled: Boolean)
+
     suspend fun getInstalledAtDate(account: Account): Long?
     suspend fun setInstalledAtDate(account: Account, timestamp: Long)
     suspend fun getCurrentAppVersion(account: Account): String?

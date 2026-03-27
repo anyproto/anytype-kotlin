@@ -9,7 +9,7 @@ import androidx.core.view.marginStart
 import androidx.core.view.marginTop
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.veryLight
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecorationWidget
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -76,7 +76,7 @@ class EditorDecorationContainerTest {
         val color = child.background as ColorDrawable
 
         assertEquals(
-            expected = context.resources.getColor(R.color.palette_very_light_blue, null),
+            expected = context.resources.getColor(R.color.palette_light_blue, null),
             actual = color.color
         )
 
@@ -116,7 +116,7 @@ class EditorDecorationContainerTest {
         val color = child.background as ColorDrawable
 
         assertEquals(
-            expected = context.resources.veryLight(bg, 0),
+            expected = context.resources.light(bg, 0),
             actual = color.color
         )
 
@@ -164,7 +164,7 @@ class EditorDecorationContainerTest {
         val child2Background = child2.background as ColorDrawable
 
         assertEquals(
-            expected = context.resources.veryLight(bg1, 0),
+            expected = context.resources.light(bg1, 0),
             actual = child1Background.color
         )
 
@@ -174,7 +174,7 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.veryLight(bg2, 0),
+            expected = context.resources.light(bg2, 0),
             actual = child2Background.color
         )
 
@@ -233,7 +233,7 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.veryLight(bg2, 0),
+            expected = context.resources.light(bg2, 0),
             actual = child2Background.color
         )
 
@@ -297,7 +297,7 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.veryLight(bg2, 0),
+            expected = context.resources.light(bg2, 0),
             actual = child2Background.color
         )
 
@@ -358,7 +358,7 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.veryLight(bg1, 0),
+            expected = context.resources.light(bg1, 0),
             actual = child2Background.color
         )
 
@@ -423,7 +423,7 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.veryLight(bg1, 0),
+            expected = context.resources.light(bg1, 0),
             actual = (view1.background as ColorDrawable).color
         )
 
@@ -438,7 +438,7 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.veryLight(bg2, 0),
+            expected = context.resources.light(bg2, 0),
             actual = (view3.background as ColorDrawable).color
         )
 
@@ -449,7 +449,7 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.veryLight(bg3, 0),
+            expected = context.resources.light(bg3, 0),
             actual = (view4.background as ColorDrawable).color
         )
 
@@ -516,7 +516,7 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.veryLight(bg1, 0),
+            expected = context.resources.light(bg1, 0),
             actual = (view1.background as ColorDrawable).color
         )
 
@@ -535,7 +535,7 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.veryLight(bg2, 0),
+            expected = context.resources.light(bg2, 0),
             actual = (view3.background as ColorDrawable).color
         )
 
@@ -555,7 +555,7 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.veryLight(bg3, 0),
+            expected = context.resources.light(bg3, 0),
             actual = (view5.background as ColorDrawable).color
         )
     }
@@ -616,7 +616,7 @@ class EditorDecorationContainerTest {
         // Background and start offset of [A]
 
         assertEquals(
-            expected = context.resources.veryLight(bg1, 0),
+            expected = context.resources.light(bg1, 0),
             actual = (view1.background as ColorDrawable).color
         )
 
@@ -635,7 +635,7 @@ class EditorDecorationContainerTest {
         // Background and start offset of [B]
 
         assertEquals(
-            expected = context.resources.veryLight(bg2, 0),
+            expected = context.resources.light(bg2, 0),
             actual = (view3.background as ColorDrawable).color
         )
 
@@ -647,7 +647,7 @@ class EditorDecorationContainerTest {
         // Background and start offset of [C]
 
         assertEquals(
-            expected = context.resources.veryLight(bg3, 0),
+            expected = context.resources.light(bg3, 0),
             actual = (view4.background as ColorDrawable).color
         )
 
@@ -668,7 +668,7 @@ class EditorDecorationContainerTest {
         // Background and start offset of [D]
 
         assertEquals(
-            expected = context.resources.veryLight(bg4, 0),
+            expected = context.resources.light(bg4, 0),
             actual = (view6.background as ColorDrawable).color
         )
 
@@ -723,7 +723,7 @@ class EditorDecorationContainerTest {
         // Background and start offset of [A]
 
         assertEquals(
-            expected = context.resources.veryLight(bg1, 0),
+            expected = context.resources.light(bg1, 0),
             actual = (view1.background as ColorDrawable).color
         )
 
@@ -742,7 +742,7 @@ class EditorDecorationContainerTest {
         // Background and start offset of [D]
 
         assertEquals(
-            expected = context.resources.veryLight(bg2, 0),
+            expected = context.resources.light(bg2, 0),
             actual = (view3.background as ColorDrawable).color
         )
 
@@ -789,7 +789,7 @@ class EditorDecorationContainerTest {
         // Background of A and its offsets
 
         assertEquals(
-            expected = context.resources.veryLight(bg1, 0),
+            expected = context.resources.light(bg1, 0),
             actual = (view1.background as ColorDrawable).color
         )
 
@@ -879,7 +879,7 @@ class EditorDecorationContainerTest {
         // Background of A and its offsets
 
         assertEquals(
-            expected = context.resources.veryLight(bg1, 0),
+            expected = context.resources.light(bg1, 0),
             actual = (view1.background as ColorDrawable).color
         )
 
@@ -906,7 +906,7 @@ class EditorDecorationContainerTest {
         // Background of B and its offsets
 
         assertEquals(
-            expected = context.resources.veryLight(bg2, 0),
+            expected = context.resources.light(bg2, 0),
             actual = (view2.background as ColorDrawable).color
         )
 
@@ -966,7 +966,7 @@ class EditorDecorationContainerTest {
         // Background of A and its offsets
 
         assertEquals(
-            expected = context.resources.veryLight(bg1, 0),
+            expected = context.resources.light(bg1, 0),
             actual = (view1.background as ColorDrawable).color
         )
 
@@ -993,7 +993,7 @@ class EditorDecorationContainerTest {
         // Background of B and its offsets
 
         assertEquals(
-            expected = context.resources.veryLight(bg2, 0),
+            expected = context.resources.light(bg2, 0),
             actual = (view2.background as ColorDrawable).color
         )
 
@@ -1053,7 +1053,7 @@ class EditorDecorationContainerTest {
         // Background of A and its offsets
 
         assertEquals(
-            expected = context.resources.veryLight(bg1, 0),
+            expected = context.resources.light(bg1, 0),
             actual = (view1.background as ColorDrawable).color
         )
 
@@ -1080,7 +1080,7 @@ class EditorDecorationContainerTest {
         // Background of B and its offsets
 
         assertEquals(
-            expected = context.resources.veryLight(bg2, 0),
+            expected = context.resources.light(bg2, 0),
             actual = (view2.background as ColorDrawable).color
         )
 
@@ -1146,7 +1146,7 @@ class EditorDecorationContainerTest {
         // Background of A and its offsets
 
         assertEquals(
-            expected = context.resources.veryLight(bg1, 0),
+            expected = context.resources.light(bg1, 0),
             actual = (view1.background as GradientDrawable).color!!.defaultColor
         )
 
@@ -1173,7 +1173,7 @@ class EditorDecorationContainerTest {
         // Background of B and its offsets
 
         assertEquals(
-            expected = context.resources.veryLight(bg2, 0),
+            expected = context.resources.light(bg2, 0),
             actual = (view2.background as ColorDrawable).color
         )
 
@@ -1239,7 +1239,7 @@ class EditorDecorationContainerTest {
         // Background of A and its offsets
 
         assertEquals(
-            expected = context.resources.veryLight(bg1, 0),
+            expected = context.resources.light(bg1, 0),
             actual = (view1.background as GradientDrawable).color!!.defaultColor
         )
 

@@ -556,8 +556,6 @@
     <string name="file_delete_delete">Hapus</string>
     <string name="menu_type_change">Ubah tipe</string>
     <string name="menu_type_open">Buka tipe</string>
-    <string name="menu_type_open_set">Buka kueri dari %1$s</string>
-    <string name="menu_type_create_set">Buat kueri dari %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
     <string name="type_templates_widget_title">Buat objek</string>
     <string name="view_layout_widget_title">Tata letak</string>

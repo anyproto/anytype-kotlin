@@ -56,6 +56,7 @@ import com.anytypeio.anytype.di.feature.search.GlobalSearchDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
 import com.anytypeio.anytype.di.feature.settings.DebugDependencies
+import com.anytypeio.anytype.di.feature.settings.ExperimentalFeaturesDependencies
 import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
@@ -151,6 +152,7 @@ interface MainComponent :
     ParticipantComponentDependencies,
     EditTypePropertiesDependencies,
     DebugDependencies,
+    ExperimentalFeaturesDependencies,
     CreateObjectTypeDependencies,
     SpaceTypesDependencies,
     SpacePropertiesDependencies,
@@ -415,6 +417,11 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(DebugDependencies::class)
     abstract fun provideDebugDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(ExperimentalFeaturesDependencies::class)
+    abstract fun provideExperimentalFeaturesDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

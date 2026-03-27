@@ -155,7 +155,6 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.update
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateCursorAndEditMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateSelection
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateTableOfContentsViews
-import com.anytypeio.anytype.presentation.editor.editor.items
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.markup
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_PREFIX
@@ -4356,46 +4355,28 @@ class EditorViewModel(
             }
             is ListenerType.Relation.ObjectType -> {
                 if (isObjectTemplate()) return
-                when (val relation = clicked.relation) {
+                when (clicked.relation) {
                     is ObjectRelationView.ObjectType.Base -> {
-                        viewModelScope.launch {
-                            val params = FindObjectSetForType.Params(
-                                space = vmParams.space,
-                                type = relation.type,
-                                filters = ObjectSearchConstants.setsByObjectTypeFilters(
-                                    types = listOf(relation.type)
+                        if (mode == EditorMode.Edit) {
+                            commands.postValue(
+                                EventWrapper(
+                                    Command.OpenObjectTypeMenu(
+                                        listOf(
+                                            ObjectTypeMenuItem.OpenType,
+                                            ObjectTypeMenuItem.ChangeType
+                                        )
+                                    )
                                 )
                             )
-                            findObjectSetForType(params).process(
-                                failure = {
-                                    Timber.e(
-                                        it,
-                                        "Error search for a set for type ${relation.type}"
-                                    )
-                                },
-                                success = { response ->
-                                    val command = when (response) {
-                                        is FindObjectSetForType.Response.NotFound ->
-                                            Command.OpenObjectTypeMenu(listOf(ObjectTypeMenuItem.ChangeType))
-
-                                        is FindObjectSetForType.Response.Success ->
-                                            Command.OpenObjectTypeMenu(
-                                                clicked.items(
-                                                    set = response.obj.id,
-                                                    space = requireNotNull(response.obj.spaceId)
-                                                )
-                                            )
-                                    }
-                                    commands.postValue(EventWrapper(command))
-                                }
-                            )
+                        } else {
+                            onOpenTypeClicked()
                         }
                     }
                     is ObjectRelationView.ObjectType.Deleted -> {
-                        commands.postValue(EventWrapper(Command.OpenObjectTypeMenu(listOf(ObjectTypeMenuItem.ChangeType))))
+                        onChangeObjectTypeClicked()
                     }
                     else -> {
-                        Timber.e("Unexpected relation type: $relation")
+                        Timber.e("Unexpected relation type: ${clicked.relation}")
                     }
                 }
             }
@@ -6924,25 +6905,6 @@ class EditorViewModel(
         }
     }
     //endregion
-
-    fun onCreateNewSetForType(type: Id) {
-        viewModelScope.launch {
-            createObjectSet(
-                CreateObjectSet.Params(
-                    type = type,
-                    space = vmParams.space.id
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while creating a set of type: $type") },
-                success = { response ->
-                    proceedWithOpeningDataViewObject(
-                        target = response.target,
-                        space = vmParams.space
-                    )
-                }
-            )
-        }
-    }
 
     //region ADD URI OR OBJECT ID TO SELECTED TEXT
     fun proceedToCreateObjectAndAddToTextAsLink(name: String) {

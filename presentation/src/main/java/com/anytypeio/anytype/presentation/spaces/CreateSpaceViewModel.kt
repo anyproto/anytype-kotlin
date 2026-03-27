@@ -313,7 +313,8 @@ class CreateSpaceViewModel(
             },
             onFailure = { error ->
                 Timber.e(error, "Error while making space shareable")
-                onError(error)
+                sendToast("Failed to make space shareable")
+                finishSpaceCreation(spaceId = spaceId.id, startingObject = startingObject)
             }
         )
     }
@@ -367,7 +368,8 @@ class CreateSpaceViewModel(
             },
             onFailure = { error ->
                 Timber.e(error, "Error while generating invite link")
-                onError(error)
+                sendToast("Failed to generate invite link")
+                finishSpaceCreation(spaceId = spaceId.id, startingObject = startingObject)
             }
         )
     }

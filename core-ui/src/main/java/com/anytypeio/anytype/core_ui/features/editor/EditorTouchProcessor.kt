@@ -9,7 +9,6 @@ import android.text.style.ClickableSpan
 import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
-import com.anytypeio.anytype.core_ui.extensions.disable
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import timber.log.Timber
 import kotlin.math.abs
@@ -51,7 +50,8 @@ class EditorTouchProcessor(
 
     fun process(v: View, event: MotionEvent?): Boolean {
         event ?: return fallback(null)
-        lastEvent = event
+        lastEvent?.recycle()
+        lastEvent = MotionEvent.obtain(event)
 
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -77,6 +77,7 @@ class EditorTouchProcessor(
                             Timber.d("Triggering drag: movement detected after long press")
                             actionHandler.removeCallbacksAndMessages(null)
                             dndTriggered = true
+                            v.emulateHapticFeedback()
                             onDragAndDropTrigger(event)
                         }
                     }

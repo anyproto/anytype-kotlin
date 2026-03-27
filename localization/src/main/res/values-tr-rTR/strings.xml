@@ -557,8 +557,6 @@
     <string name="file_delete_delete">Sil</string>
     <string name="menu_type_change">Türü değiştir</string>
     <string name="menu_type_open">Tür aç</string>
-    <string name="menu_type_open_set">%1$s sorgusunu aç</string>
-    <string name="menu_type_create_set">%1$s sorgusunu oluştur</string>
     <string name="toast_active_view_delete">Mevcut görünüm silinemez</string>
     <string name="type_templates_widget_title">Nesne oluştur</string>
     <string name="view_layout_widget_title">Düzen</string>

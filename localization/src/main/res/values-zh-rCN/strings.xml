@@ -556,8 +556,6 @@
     <string name="file_delete_delete">删除</string>
     <string name="menu_type_change">更改类型</string>
     <string name="menu_type_open">打开类型</string>
-    <string name="menu_type_open_set">Open query of %1$s</string>
-    <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">当前视图不能被删除</string>
     <string name="type_templates_widget_title">创建对象</string>
     <string name="view_layout_widget_title">布局</string>

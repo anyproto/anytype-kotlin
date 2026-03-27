@@ -557,8 +557,6 @@
     <string name="file_delete_delete">Elimina</string>
     <string name="menu_type_change">Cambia tipo</string>
     <string name="menu_type_open">Apri tipo</string>
-    <string name="menu_type_open_set">Apri query di %1$s</string>
-    <string name="menu_type_create_set">Crea query di %1$s</string>
     <string name="toast_active_view_delete">La vista corrente non può essere eliminata</string>
     <string name="type_templates_widget_title">Crea oggetto</string>
     <string name="view_layout_widget_title">Disposizione</string>

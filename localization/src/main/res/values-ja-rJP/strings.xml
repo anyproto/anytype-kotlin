@@ -1733,6 +1733,9 @@
     <string name="main_navigation_content_desc_search_button">オブジェクト検索ボタン</string>
     <string name="main_navigation_content_desc_create_button">オブジェクト作成ボタン</string>
     <string name="chat">チャット</string>
+    <string name="discussion_comments">comments</string>
+    <string name="discussion_no_comments">No comments yet</string>
+    <string name="discussion_leave_comment">Leave a comment…</string>
     <string name="copy">コピー</string>
     <string name="copy_text">テキストをコピー</string>
     <string name="copy_plain_text">テキストをコピー</string>

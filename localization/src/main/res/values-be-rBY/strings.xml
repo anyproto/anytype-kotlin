@@ -1771,6 +1771,9 @@
     <string name="main_navigation_content_desc_search_button">Search objects button</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
     <string name="chat">Чат</string>
+    <string name="discussion_comments">comments</string>
+    <string name="discussion_no_comments">No comments yet</string>
+    <string name="discussion_leave_comment">Leave a comment…</string>
     <string name="copy">Капіяваць</string>
     <string name="copy_text">Copy Text</string>
     <string name="copy_plain_text">Copy Plain Text</string>

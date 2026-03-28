@@ -1774,6 +1774,9 @@
     <string name="main_navigation_content_desc_search_button">Кнопка поиска объектов</string>
     <string name="main_navigation_content_desc_create_button">Кнопка создания объекта</string>
     <string name="chat">Чат</string>
+    <string name="discussion_comments">comments</string>
+    <string name="discussion_no_comments">No comments yet</string>
+    <string name="discussion_leave_comment">Leave a comment…</string>
     <string name="copy">Копировать</string>
     <string name="copy_text">Скопировать текст</string>
     <string name="copy_plain_text">Копировать обычный текст</string>

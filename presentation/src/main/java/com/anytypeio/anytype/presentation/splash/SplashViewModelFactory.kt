@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
+import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -39,7 +40,8 @@ class SplashViewModelFactory @Inject constructor(
     private val createObjectByTypeAndTemplate: CreateObjectByTypeAndTemplate,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val migration: MigrationHelperDelegate,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val pendingIntentStore: PendingIntentStore
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -59,6 +61,7 @@ class SplashViewModelFactory @Inject constructor(
             createObjectByTypeAndTemplate = createObjectByTypeAndTemplate,
             spaceViews = spaceViews,
             migration = migration,
-            deepLinkResolver = deepLinkResolver
+            deepLinkResolver = deepLinkResolver,
+            pendingIntentStore = pendingIntentStore
         ) as T
 }

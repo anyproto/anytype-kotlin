@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetBackgroundBindin
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetBackgroundDefaultBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetColorBinding
 import com.anytypeio.anytype.core_ui.extensions.text
-import com.anytypeio.anytype.core_ui.extensions.veryLight
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 
@@ -42,7 +42,7 @@ abstract class DefaultMenuHolder(
     private fun Resources.getColor(item: SlashItem.Color): Int {
         return when (item) {
             is SlashItem.Color.Text -> text(item.themeColor)
-            is SlashItem.Color.Background -> veryLight(item.themeColor)
+            is SlashItem.Color.Background -> light(item.themeColor)
         }
     }
 

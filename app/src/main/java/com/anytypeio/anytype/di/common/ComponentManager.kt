@@ -91,6 +91,7 @@ import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationModule
 import com.anytypeio.anytype.di.feature.settings.DaggerAboutAppComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerDebugComponent
+import com.anytypeio.anytype.di.feature.settings.DaggerExperimentalFeaturesComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerFilesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerSpacesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
@@ -170,6 +171,12 @@ class ComponentManager(
 
     val debugComponent = Component {
         DaggerDebugComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val experimentalFeaturesComponent = Component {
+        DaggerExperimentalFeaturesComponent
             .factory()
             .create(findComponentDependencies())
     }

@@ -557,8 +557,6 @@
     <string name="file_delete_delete">Eliminar</string>
     <string name="menu_type_change">Cambiar tipo</string>
     <string name="menu_type_open">Abrir tipo</string>
-    <string name="menu_type_open_set">Abrir consulta de %1$s</string>
-    <string name="menu_type_create_set">Crear consulta de %1$s</string>
     <string name="toast_active_view_delete">No se puede eliminar la vista actual</string>
     <string name="type_templates_widget_title">Crear objeto</string>
     <string name="view_layout_widget_title">Diseño</string>

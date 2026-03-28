@@ -557,8 +557,6 @@
     <string name="file_delete_delete">Slett</string>
     <string name="menu_type_change">Endre type</string>
     <string name="menu_type_open">Open type</string>
-    <string name="menu_type_open_set">Open query of %1$s</string>
-    <string name="menu_type_create_set">Create query of %1$s</string>
     <string name="toast_active_view_delete">Gjeldende visning kan ikke slettes</string>
     <string name="type_templates_widget_title">Opprett objekt</string>
     <string name="view_layout_widget_title">Oppsett</string>

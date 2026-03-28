@@ -4,8 +4,6 @@ import android.content.Context
 import android.view.Gravity
 import android.view.View
 import android.widget.PopupMenu
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.presentation.editor.editor.ObjectTypeMenuItem
 
@@ -14,8 +12,6 @@ class ObjectTypePopupMenu(
     anchor: View,
     onChangeTypeClicked: () -> Unit,
     onOpenTypeClicked: () -> Unit,
-    onOpenSetClicked: (Id, SpaceId) -> Unit,
-    onCreateSetClicked: (Id) -> Unit,
     items: List<ObjectTypeMenuItem>
 ) : PopupMenu(context, anchor, Gravity.BOTTOM, 0, R.style.DefaultPopupMenuStyle) {
     init {
@@ -41,30 +37,6 @@ class ObjectTypePopupMenu(
                         res.getString(R.string.menu_type_open)
                     ).setOnMenuItemClickListener {
                         onOpenTypeClicked()
-                        true
-                    }
-                }
-                is ObjectTypeMenuItem.CreateSet -> {
-                    menu.add(
-                        0,
-                        R.id.menuCreateSet,
-                        index,
-                        res.getString(R.string.menu_type_create_set, objectTypeMenuItem.typeName)
-                    ).setOnMenuItemClickListener {
-                        onCreateSetClicked(objectTypeMenuItem.type)
-                        true
-                    }
-                }
-                is ObjectTypeMenuItem.OpenSet -> {
-                    menu.add(
-                        0,
-                        R.id.menuCreateSet,
-                        index,
-                        res.getString(R.string.menu_type_open_set, objectTypeMenuItem.typeName)
-                    ).setOnMenuItemClickListener {
-                        onOpenSetClicked(
-                            objectTypeMenuItem.set, SpaceId(objectTypeMenuItem.space)
-                        )
                         true
                     }
                 }

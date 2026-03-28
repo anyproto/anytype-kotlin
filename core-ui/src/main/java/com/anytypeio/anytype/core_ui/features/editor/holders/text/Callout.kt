@@ -127,7 +127,7 @@ class Callout(
         }
         binding.calloutCardContainer.setBlockBackgroundTintColor(
             color = last.background,
-            default = itemView.resources.getColor(R.color.palette_very_light_grey, null)
+            default = itemView.resources.getColor(R.color.palette_light_grey, null)
         )
         binding.selectionView.applySelectorOffset<FrameLayout.LayoutParams>(
             content = binding.calloutCardContainer,

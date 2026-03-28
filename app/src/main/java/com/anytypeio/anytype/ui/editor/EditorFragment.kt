@@ -674,6 +674,32 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onBackButtonPressed() }
             .launchIn(lifecycleScope)
 
+        binding.discussionButton.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val state = vm.discussionButtonState.collectAsStateWithLifecycle().value
+                when (state) {
+                    is EditorViewModel.DiscussionButtonState.Empty -> {
+                        com.anytypeio.anytype.feature_discussions.ui.DiscussionButton(
+                            hasComments = false,
+                            commentCount = 0,
+                            onClick = { vm.onDiscussionButtonClicked() }
+                        )
+                    }
+                    is EditorViewModel.DiscussionButtonState.Comments -> {
+                        com.anytypeio.anytype.feature_discussions.ui.DiscussionButton(
+                            hasComments = true,
+                            commentCount = state.count,
+                            onClick = { vm.onDiscussionButtonClicked() }
+                        )
+                    }
+                    is EditorViewModel.DiscussionButtonState.Hidden -> {
+                        // Render nothing
+                    }
+                }
+            }
+        }
+
         binding.markupToolbar
             .highlightClicks()
             .onEach { vm.onMarkupHighlightToggleClicked() }
@@ -1623,8 +1649,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             binding.placeholder.requestFocus()
             binding.placeholder.hideKeyboard()
             binding.bottomToolbarContainer.visible()
+            binding.discussionButton.visible()
         } else {
             binding.bottomToolbarContainer.gone()
+            binding.discussionButton.gone()
         }
 
         if (state.mainToolbar.isVisible) {

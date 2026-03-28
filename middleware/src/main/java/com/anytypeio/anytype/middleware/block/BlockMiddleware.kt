@@ -1078,6 +1078,10 @@ class BlockMiddleware(
         return middleware.objectTypesSetOrder(command)
     }
 
+    override suspend fun addDiscussion(objectId: Id): Id {
+        return middleware.objectDiscussionAdd(objectId)
+    }
+
     override suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Pair<Id, List<Event.Command.Chats>> {
         return middleware.chatAddMessage(command)
     }

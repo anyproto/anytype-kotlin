@@ -2024,6 +2024,9 @@ Please provide specific details of your needs here.</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
 
     <string name="chat">Chat</string>
+    <string name="discussion_comments">comments</string>
+    <string name="discussion_no_comments">No comments yet</string>
+    <string name="discussion_leave_comment">Leave a comment…</string>
     <string name="copy">Copy</string>
     <string name="copy_text">Copy Text</string>
     <string name="copy_plain_text">Copy Plain Text</string>

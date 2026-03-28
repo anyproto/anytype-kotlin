@@ -183,6 +183,11 @@
             app:popUpToInclusive="false" />
     </fragment>
 
+    <fragment
+        android:id="@+id/discussionScreen"
+        android:name="com.anytypeio.anytype.ui.discussions.DiscussionFragment"
+        android:label="Discussion" />
+
     <dialog
         android:id="@+id/selectChatReactionScreen"
         android:name="com.anytypeio.anytype.ui.chats.SelectChatReactionFragment"

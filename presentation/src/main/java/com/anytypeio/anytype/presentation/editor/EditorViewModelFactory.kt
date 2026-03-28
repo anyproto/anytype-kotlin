@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.discussions.AddDiscussion
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
@@ -105,7 +106,8 @@ open class EditorViewModelFactory @Inject constructor(
     private val fieldParser : FieldParser,
     private val dateProvider: DateProvider,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val urlHelper: UrlHelper
+    private val urlHelper: UrlHelper,
+    private val addDiscussion: AddDiscussion
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -159,7 +161,8 @@ open class EditorViewModelFactory @Inject constructor(
             fieldParser = fieldParser,
             dateProvider = dateProvider,
             spaceViews = spaceViews,
-            urlHelper = urlHelper
+            urlHelper = urlHelper,
+            addDiscussion = addDiscussion
         ) as T
     }
 }

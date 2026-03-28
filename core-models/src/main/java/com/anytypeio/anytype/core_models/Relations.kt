@@ -8,6 +8,7 @@ object Relations {
 
     const val ID = "id"
     const val CHAT_ID = "chatId"
+    const val DISCUSSION_ID = "discussionId"
     const val COVER = "cover"
     const val COVER_TYPE = "coverType"
     const val COVER_ID = "coverId"

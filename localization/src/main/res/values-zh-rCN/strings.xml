@@ -1728,6 +1728,9 @@
     <string name="main_navigation_content_desc_search_button">搜索对象按钮</string>
     <string name="main_navigation_content_desc_create_button">创建对象按钮</string>
     <string name="chat">聊天</string>
+    <string name="discussion_comments">comments</string>
+    <string name="discussion_no_comments">No comments yet</string>
+    <string name="discussion_leave_comment">Leave a comment…</string>
     <string name="copy">拷贝</string>
     <string name="copy_text">复制文本</string>
     <string name="copy_plain_text">复制纯文本</string>

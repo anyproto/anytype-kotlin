@@ -1742,6 +1742,9 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="main_navigation_content_desc_search_button">Bouton de recherche d\'objets</string>
     <string name="main_navigation_content_desc_create_button">Créer un bouton objet</string>
     <string name="chat">Messagerie</string>
+    <string name="discussion_comments">comments</string>
+    <string name="discussion_no_comments">No comments yet</string>
+    <string name="discussion_leave_comment">Leave a comment…</string>
     <string name="copy">Copier</string>
     <string name="copy_text">Copier le texte</string>
     <string name="copy_plain_text">Copier le texte brut</string>

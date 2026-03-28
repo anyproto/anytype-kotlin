@@ -1746,6 +1746,9 @@ Please provide specific details of your needs here.</string>
     <string name="main_navigation_content_desc_search_button">Pulsante cerca oggetti</string>
     <string name="main_navigation_content_desc_create_button">Pulsante crea oggetti</string>
     <string name="chat">Chat</string>
+    <string name="discussion_comments">comments</string>
+    <string name="discussion_no_comments">No comments yet</string>
+    <string name="discussion_leave_comment">Leave a comment…</string>
     <string name="copy">Copia</string>
     <string name="copy_text">Copia Testo</string>
     <string name="copy_plain_text">Copia Testo Semplice</string>

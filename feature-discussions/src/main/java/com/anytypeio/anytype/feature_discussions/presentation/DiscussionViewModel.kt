@@ -57,7 +57,8 @@ class DiscussionViewModel @Inject constructor(
 
     private val datePattern = "d MMMM yyyy"
 
-    val inputMode = MutableStateFlow<DiscussionInputMode>(DiscussionInputMode.Default)
+    private val _inputMode = MutableStateFlow<DiscussionInputMode>(DiscussionInputMode.Default)
+    val inputMode: StateFlow<DiscussionInputMode> = _inputMode
 
     private var account: Id = ""
 
@@ -200,7 +201,7 @@ class DiscussionViewModel @Inject constructor(
                 for (view in commentViews) {
                     when (view) {
                         is DiscussionView.Comment -> topLevelComments.add(view)
-                        else -> { /* Reply, DateSection — handled below */ }
+                        else -> { /* Reply — handled below */ }
                     }
                 }
 
@@ -243,14 +244,14 @@ class DiscussionViewModel @Inject constructor(
 
                 _messages.value = reordered
                 _header.value = DiscussionHeader(
-                    commentCount = reordered.size
+                    commentCount = topLevelComments.size
                 )
                 _isLoading.value = false
             }
     }
 
     fun onReplyComment(comment: DiscussionView.Comment) {
-        inputMode.value = DiscussionInputMode.Reply(
+        _inputMode.value = DiscussionInputMode.Reply(
             msg = comment.id,
             text = comment.content.msg,
             author = comment.author
@@ -258,7 +259,7 @@ class DiscussionViewModel @Inject constructor(
     }
 
     fun onReplyToReply(reply: DiscussionView.Reply) {
-        inputMode.value = DiscussionInputMode.Reply(
+        _inputMode.value = DiscussionInputMode.Reply(
             msg = reply.id,
             text = reply.content.msg,
             author = reply.author
@@ -266,7 +267,7 @@ class DiscussionViewModel @Inject constructor(
     }
 
     fun onClearReply() {
-        inputMode.value = DiscussionInputMode.Default
+        _inputMode.value = DiscussionInputMode.Default
     }
 
     fun onSendComment(text: String) {
@@ -284,7 +285,7 @@ class DiscussionViewModel @Inject constructor(
                 )
             ).onSuccess { (id, payload) ->
                 chatContainer.onPayload(payload)
-                inputMode.value = DiscussionInputMode.Default
+                _inputMode.value = DiscussionInputMode.Default
             }.onFailure { e ->
                 Timber.e(e, "Failed to send comment")
             }

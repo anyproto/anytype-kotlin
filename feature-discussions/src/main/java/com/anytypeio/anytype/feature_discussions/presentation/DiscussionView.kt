@@ -6,11 +6,6 @@ import com.anytypeio.anytype.core_models.Id
 
 sealed interface DiscussionView {
 
-    data class DateSection(
-        val formattedDate: String,
-        val timeInMillis: Long
-    ) : DiscussionView
-
     data class Comment(
         val id: String,
         val content: Content,

@@ -279,7 +279,6 @@ fun DiscussionCommentList(
                     is DiscussionView.Reply -> item.id
                     is DiscussionView.ReplyDivider -> "reply-divider-${item.replyId}"
                     is DiscussionView.ThreadDivider -> "thread-divider-${item.threadId}"
-                    is DiscussionView.DateSection -> item.formattedDate
                 }
             }
         ) { item ->
@@ -313,9 +312,6 @@ fun DiscussionCommentList(
                         color = colorResource(id = R.color.shape_secondary),
                         thickness = 1.dp
                     )
-                }
-                is DiscussionView.DateSection -> {
-                    DateSectionHeader(section = item)
                 }
             }
         }
@@ -681,18 +677,3 @@ fun ReactionsRow(reactions: List<DiscussionView.Reaction>) {
     }
 }
 
-@Composable
-fun DateSectionHeader(section: DiscussionView.DateSection) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = section.formattedDate,
-            fontSize = 13.sp,
-            color = colorResource(id = R.color.text_secondary)
-        )
-    }
-}

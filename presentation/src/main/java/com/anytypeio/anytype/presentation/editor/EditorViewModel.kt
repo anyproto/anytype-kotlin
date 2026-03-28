@@ -838,7 +838,7 @@ class EditorViewModel(
                 _discussionButtonState.value = if (existingDiscussionId != null) {
                     DiscussionButtonState.Comments(
                         discussionId = existingDiscussionId,
-                        count = 5
+                        count = 0
                     )
                 } else {
                     DiscussionButtonState.Empty

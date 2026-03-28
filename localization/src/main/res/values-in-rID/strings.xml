@@ -1732,6 +1732,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="main_navigation_content_desc_search_button">Tombol telusuri objek</string>
     <string name="main_navigation_content_desc_create_button">Tombol buat objek</string>
     <string name="chat">Obrolan</string>
+    <string name="discussion_comments">comments</string>
+    <string name="discussion_no_comments">No comments yet</string>
+    <string name="discussion_leave_comment">Leave a comment…</string>
     <string name="copy">Salin</string>
     <string name="copy_text">Salin Teks</string>
     <string name="copy_plain_text">Salin Teks Polos</string>

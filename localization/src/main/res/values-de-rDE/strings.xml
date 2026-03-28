@@ -1745,6 +1745,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="main_navigation_content_desc_search_button">Schaltfläche zum Suchen von Objekten</string>
     <string name="main_navigation_content_desc_create_button">Schaltfläche zum Erstellen eines Objekts</string>
     <string name="chat">Chat</string>
+    <string name="discussion_comments">comments</string>
+    <string name="discussion_no_comments">No comments yet</string>
+    <string name="discussion_leave_comment">Leave a comment…</string>
     <string name="copy">Kopieren</string>
     <string name="copy_text">Text kopieren</string>
     <string name="copy_plain_text">Klartext kopieren</string>

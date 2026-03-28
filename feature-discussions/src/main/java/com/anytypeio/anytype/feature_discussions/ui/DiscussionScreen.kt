@@ -137,7 +137,7 @@ fun DiscussionScreen(
             )
         }
     ) { paddingValues ->
-        Box(
+        Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -146,29 +146,25 @@ fun DiscussionScreen(
                 comments = comments,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(bottom = 60.dp),
+                    .weight(1f),
                 onReplyComment = onReplyComment,
                 onReplyToReply = onReplyToReply,
                 onCopyText = onCopyText
             )
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .imePadding()
-                    .navigationBarsPadding()
-            ) {
-                if (inputMode is DiscussionInputMode.Reply) {
-                    DiscussionReplyBanner(
-                        mode = inputMode,
-                        onClearReply = onClearReply
-                    )
-                }
-                DiscussionCommentInput(
-                    text = inputText,
-                    onValueChange = onInputValueChange,
-                    onSendClicked = onSendClicked
+            if (inputMode is DiscussionInputMode.Reply) {
+                DiscussionReplyBanner(
+                    mode = inputMode,
+                    onClearReply = onClearReply
                 )
             }
+            DiscussionCommentInput(
+                text = inputText,
+                onValueChange = onInputValueChange,
+                onSendClicked = onSendClicked,
+                modifier = Modifier
+                    .imePadding()
+                    .navigationBarsPadding()
+            )
         }
     }
 }

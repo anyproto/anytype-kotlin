@@ -370,8 +370,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="88dp" />
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="@dimen/dp_20" />
 
     <androidx.compose.ui.platform.ComposeView
         android:id="@+id/attachToChatPanel"

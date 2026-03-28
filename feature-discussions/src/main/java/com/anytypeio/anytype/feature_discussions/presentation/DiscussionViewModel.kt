@@ -55,7 +55,7 @@ class DiscussionViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(true)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val datePattern = "d MMMM yyyy"
+    private val datePattern = "d MMMM yyyy, HH:mm"
 
     private val _inputMode = MutableStateFlow<DiscussionInputMode>(DiscussionInputMode.Default)
     val inputMode: StateFlow<DiscussionInputMode> = _inputMode

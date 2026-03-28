@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_discussions.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -28,7 +29,7 @@ fun DiscussionButton(
 ) {
     Box(
         modifier = Modifier
-            .size(48.dp)
+            .size(52.dp)
             .shadow(
                 elevation = 4.dp,
                 shape = CircleShape
@@ -38,19 +39,28 @@ fun DiscussionButton(
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        if (hasComments) {
-            Text(
-                text = commentCount.toString(),
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.text_primary)
-            )
-        } else {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_chat_type_24),
-                contentDescription = "Discussion",
-                tint = colorResource(id = R.color.glyph_active)
-            )
+        Icon(
+            painter = painterResource(id = R.drawable.ic_chat_type_24),
+            contentDescription = "Discussion",
+            tint = colorResource(id = R.color.glyph_active)
+        )
+        if (hasComments && commentCount > 0) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 4.dp, end = 4.dp)
+                    .size(18.dp)
+                    .clip(CircleShape)
+                    .background(colorResource(id = R.color.palette_system_red)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = if (commentCount > 99) "99+" else commentCount.toString(),
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = colorResource(id = R.color.text_white)
+                )
+            }
         }
     }
 }

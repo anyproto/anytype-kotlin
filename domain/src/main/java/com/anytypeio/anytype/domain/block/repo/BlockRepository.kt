@@ -520,6 +520,7 @@ interface BlockRepository {
 
     //region CHATS
 
+    suspend fun addDiscussion(objectId: Id): Id
     suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Pair<Id, List<Event.Command.Chats>>
     suspend fun editChatMessage(command: Command.ChatCommand.EditMessage)
     suspend fun readChatMessages(command: Command.ChatCommand.ReadMessages)

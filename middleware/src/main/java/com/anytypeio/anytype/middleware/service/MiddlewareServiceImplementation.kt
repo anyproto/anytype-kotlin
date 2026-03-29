@@ -2554,6 +2554,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun objectDiscussionAdd(request: Rpc.Object.DiscussionAdd.Request): Rpc.Object.DiscussionAdd.Response {
+        val encoded = Service.objectAddDiscussion(
+            Rpc.Object.DiscussionAdd.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.DiscussionAdd.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.DiscussionAdd.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun chatReadMessages(request: Rpc.Chat.ReadMessages.Request): Rpc.Chat.ReadMessages.Response {
         val encoded = Service.chatReadMessages(
             Rpc.Chat.ReadMessages.Request.ADAPTER.encode(request)

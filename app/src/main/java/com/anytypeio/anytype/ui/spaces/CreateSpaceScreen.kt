@@ -367,23 +367,34 @@ private fun SelectedMemberRow(member: SpaceMemberView) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(56.dp)
+            .height(72.dp)
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         SpaceMemberIcon(
             icon = member.icon,
             modifier = Modifier,
-            iconSize = 40.dp
+            iconSize = 48.dp
         )
         Spacer(modifier = Modifier.width(12.dp))
-        Text(
-            text = member.name,
-            style = Title2,
-            color = colorResource(id = R.color.text_primary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = member.name,
+                style = Title2,
+                color = colorResource(id = R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = member.identity,
+                style = Caption1Regular,
+                color = colorResource(id = R.color.text_secondary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 
@@ -408,7 +419,7 @@ fun CreateSpaceScreenPreview() {
                 icon = SpaceMemberIconView.Placeholder("V")
             ),
             SpaceMemberView(
-                identity = "2",
+                identity = "2fj89dushflhsdiofhjisudhfiuadshfhsdjkhfahsdufnuisdhfhjsdhfjhsdjkafhkjsdh",
                 name = "Bob Smith",
                 icon = SpaceMemberIconView.Placeholder("F")
             ),

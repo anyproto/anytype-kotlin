@@ -861,9 +861,18 @@
     <string name="personal">Standaard</string>
     <string name="create_space">Maak ruimte</string>
     <string name="create_chat">Maak chat</string>
+    <string name="create_channel">New Channel</string>
     <string name="create_space_change_icon">Wijzig icoon</string>
     <string name="create_space_chat_name">Gespreksnaam</string>
     <string name="create_space_space_name">Naam ruimte</string>
+    <!-- Homepage Picker -->
+    <string name="homepage_picker_title">Create Home</string>
+    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_chat">Chat</string>
+    <string name="homepage_picker_widgets">Widgets</string>
+    <string name="homepage_picker_page">Pagina</string>
+    <string name="homepage_picker_collection">Verzameling</string>
+    <string name="homepage_picker_later">Later</string>
     <string name="generic_error">Er is iets misgegaan. Probeer het alsjeblieft opnieuw.</string>
     <string name="type">Type</string>
     <string name="format">Formaat</string>
@@ -1281,6 +1290,7 @@
     <string name="multiplayer_viewer_access_desc">Mensen met koppeling kunnen chat zien en lezen</string>
     <string name="multiplayer_request_access">Vraag toegang aan</string>
     <string name="multiplayer_request_access_desc">Eigenaar moet elk deelnameverzoek goedkeuren</string>
+    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
     <string name="multiplayer_qr_code">QR-code</string>
     <string name="multiplayer_mute">Demp</string>
     <string name="multiplayer_unmute">Demp niet meer</string>
@@ -1985,6 +1995,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="vault_create_chat_description">For real-time conversations</string>
     <string name="vault_create_space">Nieuwe ruimte</string>
     <string name="vault_create_space_description">For organized content and data</string>
+    <string name="vault_create_personal">Personal</string>
+    <string name="vault_create_group">Group</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ideeën vereisen gesprekken</string>
     <string name="spaces_introduction_page1_description">Anytype ondersteunt nu realtime gesprekken in gedeelde kanalen - zodat jullie gedachten en dialogen samen kunnen groeien.</string>
@@ -2025,6 +2037,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="failed_to_load_image">Laden afbeelding mislukt</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Neem deel via QR-code</string>
+    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_next">Volgende</string>
     <string name="vault_qr_scan_error_title">Kon de QR-code niet scannen</string>
     <string name="vault_qr_scan_error_description">Zorg ervoor dat het duidelijk zichtbaar is en probeer het opnieuw.</string>
     <string name="vault_qr_invalid_title">Ongeldige QR-code</string>
@@ -2037,6 +2051,10 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="open_settings">Open instellingen</string>
     <string name="allow">Sta toe</string>
     <string name="attachment_image">Bijlage afbeelding</string>
+    <!-- Shared Space Limit (DROID-4388) -->
+    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
+    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
+    <string name="vault_manage_channels">Manage Channels</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Foto\'s</string>
     <string name="attachment_menu_camera">Camera</string>

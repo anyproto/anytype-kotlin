@@ -190,16 +190,12 @@ class CreateSpaceViewModel(
         val proceed: suspend () -> Unit = if (shouldCreateInviteLink) {
             {
                 proceedWithMakeGroupChannelShareable(
-                    spaceId = SpaceId(spaceId),
-                    startingObject = response.startingObject
+                    spaceId = SpaceId(spaceId)
                 )
             }
         } else {
             {
-                finishSpaceCreation(
-                    spaceId = spaceId,
-                    startingObject = response.startingObject
-                )
+                finishSpaceCreation(spaceId = spaceId)
             }
         }
 
@@ -250,7 +246,7 @@ class CreateSpaceViewModel(
         }
     }
 
-    private suspend fun finishSpaceCreation(spaceId: Id, startingObject: Id?) {
+    private suspend fun finishSpaceCreation(spaceId: Id) {
         Timber.d("Space created: %s", spaceId)
         isInProgress.value = false
         spaceManager.set(space = spaceId).fold(
@@ -292,13 +288,12 @@ class CreateSpaceViewModel(
     // Note: Only GROUP channels create invite links.
     // PERSONAL channels are private and don't need invite links.
     private suspend fun proceedWithMakeGroupChannelShareable(
-        spaceId: SpaceId,
-        startingObject: Id?
+        spaceId: SpaceId
     ) {
         // Check if shareable space limit is reached
         if (isSharableLimitReached()) {
             Timber.d("Shareable space limit reached, skipping share and finishing creation")
-            finishSpaceCreation(spaceId = spaceId.id, startingObject = startingObject)
+            finishSpaceCreation(spaceId = spaceId.id)
             return
         }
 
@@ -306,10 +301,7 @@ class CreateSpaceViewModel(
             onSuccess = {
                 Timber.d("Successfully made space shareable")
                 analytics.sendEvent(eventName = shareSpace)
-                generateInviteLink(
-                    spaceId = spaceId,
-                    startingObject = startingObject
-                )
+                generateInviteLink(spaceId = spaceId)
             },
             onFailure = { error ->
                 Timber.e(error, "Error while making space shareable")
@@ -317,7 +309,7 @@ class CreateSpaceViewModel(
                     onError(error)
                 } else {
                     sendToast("Failed to make space shareable")
-                    finishSpaceCreation(spaceId = spaceId.id, startingObject = startingObject)
+                    finishSpaceCreation(spaceId = spaceId.id)
                 }
             }
         )
@@ -346,8 +338,7 @@ class CreateSpaceViewModel(
     }
 
     private suspend fun generateInviteLink(
-        spaceId: SpaceId,
-        startingObject: Id?
+        spaceId: SpaceId
     ) {
         generateSpaceInviteLink.async(
             params = GenerateSpaceInviteLink.Params(
@@ -365,10 +356,7 @@ class CreateSpaceViewModel(
                     permissions = CHAT_SPACE_DEFAULT_PERMISSIONS
                 )
 
-                proceedWithAddMembers(
-                    spaceId = spaceId,
-                    startingObject = startingObject
-                )
+                proceedWithAddMembers(spaceId = spaceId)
             },
             onFailure = { error ->
                 Timber.e(error, "Error while generating invite link")
@@ -376,15 +364,14 @@ class CreateSpaceViewModel(
                     onError(error)
                 } else {
                     sendToast("Failed to generate invite link")
-                    finishSpaceCreation(spaceId = spaceId.id, startingObject = startingObject)
+                    finishSpaceCreation(spaceId = spaceId.id)
                 }
             }
         )
     }
 
     private suspend fun proceedWithAddMembers(
-        spaceId: SpaceId,
-        startingObject: Id?
+        spaceId: SpaceId
     ) {
         val identities = vmParams.selectedMemberIdentities
         if (identities.isNotEmpty()) {
@@ -403,10 +390,7 @@ class CreateSpaceViewModel(
                 }
             )
         }
-        finishSpaceCreation(
-            spaceId = spaceId.id,
-            startingObject = startingObject
-        )
+        finishSpaceCreation(spaceId = spaceId.id)
     }
 
     //endregion

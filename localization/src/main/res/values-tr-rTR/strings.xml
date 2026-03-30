@@ -861,7 +861,7 @@
     <string name="personal">Varsayılan</string>
     <string name="create_space">Alan oluştur</string>
     <string name="create_chat">Sohbet oluştur</string>
-    <string name="create_channel">New Channel</string>
+    <string name="create_channel">Yeni Kanal</string>
     <string name="create_space_change_icon">Simgeyi değiştir</string>
     <string name="create_space_chat_name">Sohbet adı</string>
     <string name="create_space_space_name">Alan ismi</string>
@@ -1290,7 +1290,7 @@
     <string name="multiplayer_viewer_access_desc">Bağlantıya sahip kişiler sohbeti görüntüleyebilir ve okuyabilir</string>
     <string name="multiplayer_request_access">Erişim talebi</string>
     <string name="multiplayer_request_access_desc">Sohbet sahibinin her bir katılım talebini onaylaması gerekir.</string>
-    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
+    <string name="channel_members_subtitle">%1$d/%2$d düzenleyici, %3$d/%4$d görüntüleyici</string>
     <string name="multiplayer_qr_code">Karekod</string>
     <string name="multiplayer_mute">Sessize al</string>
     <string name="multiplayer_unmute">Sesi aç</string>
@@ -1755,9 +1755,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="main_navigation_content_desc_search_button">Nesneleri ara butonu</string>
     <string name="main_navigation_content_desc_create_button">Nesne oluştur butonu</string>
     <string name="chat">Sohbet</string>
-    <string name="discussion_comments">comments</string>
-    <string name="discussion_no_comments">No comments yet</string>
-    <string name="discussion_leave_comment">Leave a comment…</string>
+    <string name="discussion_comments">yorum</string>
+    <string name="discussion_no_comments">Henüz yorum yok</string>
+    <string name="discussion_leave_comment">Yorum bırak…</string>
     <string name="copy">Kopyala</string>
     <string name="copy_text">Metni Kopyala</string>
     <string name="copy_plain_text">Düz Metni Kopyala</string>
@@ -2037,7 +2037,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="failed_to_load_image">Görüntü yüklenemedi</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Karekod ile katıl</string>
-    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_select_members_title">Üyeleri seç</string>
     <string name="channel_next">Sonraki</string>
     <string name="vault_qr_scan_error_title">Karekod taranamadı</string>
     <string name="vault_qr_scan_error_description">Görünür olduğundan emin olun ve tekrar deneyin.</string>
@@ -2052,9 +2052,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="allow">İzin ver</string>
     <string name="attachment_image">Ekli görüntü</string>
     <!-- Shared Space Limit (DROID-4388) -->
-    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
-    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
-    <string name="vault_manage_channels">Manage Channels</string>
+    <string name="vault_shared_space_limit_title">Paylaşılan alan sınırına ulaşıldı</string>
+    <string name="vault_shared_space_limit_description">Planın %1$d ortak alana izin veriyor. Daha fazlasını oluşturmak için üyeliğini yükselt.</string>
+    <string name="vault_manage_channels">Kanalları Yönet</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Fotoğraflar</string>
     <string name="attachment_menu_camera">Kamera</string>

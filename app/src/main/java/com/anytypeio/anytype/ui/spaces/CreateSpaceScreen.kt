@@ -36,7 +36,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -55,15 +54,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceMemberIcon
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -366,20 +363,6 @@ fun Section(
 }
 
 @Composable
-fun UseCase() {
-    Box(modifier = Modifier.height(52.dp)) {
-        Text(
-            modifier = Modifier
-                .padding(start = 20.dp)
-                .align(Alignment.CenterStart),
-            text = "Empty space",
-            color = colorResource(id = R.color.text_primary),
-            style = BodyRegular
-        )
-    }
-}
-
-@Composable
 private fun SelectedMemberRow(member: SpaceMemberView) {
     Row(
         modifier = Modifier
@@ -388,36 +371,11 @@ private fun SelectedMemberRow(member: SpaceMemberView) {
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        when (val icon = member.icon) {
-            is SpaceMemberIconView.Placeholder -> {
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(colorResource(id = R.color.shape_tertiary)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = icon.name.take(1).uppercase().ifEmpty { "U" },
-                        style = Title1,
-                        color = colorResource(id = R.color.glyph_active)
-                    )
-                }
-            }
-            is SpaceMemberIconView.Image -> {
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(icon.url)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = icon.name,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            }
-        }
+        SpaceMemberIcon(
+            icon = member.icon,
+            modifier = Modifier,
+            iconSize = 40.dp
+        )
         Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = member.name,
@@ -442,6 +400,23 @@ fun CreateSpaceScreenPreview() {
         onBackClicked = {},
         onSpaceIconUploadClicked = {},
         onSpaceIconRemoveClicked = {},
-        isLoading = state
+        isLoading = state,
+        selectedMembers = listOf(
+            SpaceMemberView(
+                identity = "1",
+                name = "Alice Johnson",
+                icon = SpaceMemberIconView.Placeholder("V")
+            ),
+            SpaceMemberView(
+                identity = "2",
+                name = "Bob Smith",
+                icon = SpaceMemberIconView.Placeholder("F")
+            ),
+            SpaceMemberView(
+                identity = "3",
+                name = "Charlie Davis",
+                icon = SpaceMemberIconView.Placeholder("P")
+            )
+        )
     )
 }

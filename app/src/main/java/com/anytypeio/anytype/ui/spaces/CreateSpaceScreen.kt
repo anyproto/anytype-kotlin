@@ -149,7 +149,7 @@ fun CreateSpaceScreen(
                     color = colorResource(id = R.color.text_primary)
                 ),
                 singleLine = true,
-                enabled = true,
+                enabled = !isLoading.value,
                 colors = TextFieldDefaults.colors(
                     disabledTextColor = colorResource(id = R.color.text_primary),
                     cursorColor = colorResource(id = R.color.color_accent),

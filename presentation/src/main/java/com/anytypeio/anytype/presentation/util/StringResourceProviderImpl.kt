@@ -140,4 +140,8 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
     override fun getDeletedTypeName(): String {
         return context.getString(LocalizationR.string.deleted_type)
     }
+
+    override fun getChannelMembersSubtitle(editors: Int, writersLimit: Int, viewers: Int, readersLimit: Int): String {
+        return context.getString(LocalizationR.string.channel_members_subtitle, editors, writersLimit, viewers, readersLimit)
+    }
 }

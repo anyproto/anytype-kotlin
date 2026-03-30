@@ -945,7 +945,7 @@ class VaultViewModel(
         if (writersLimit == 0 && readersLimit == 0) return ""
         val editors = minOf(selectedCount, writersLimit)
         val viewers = maxOf(selectedCount - writersLimit, 0)
-        return "$editors/$writersLimit editors, $viewers/$readersLimit viewers"
+        return stringResourceProvider.getChannelMembersSubtitle(editors, writersLimit, viewers, readersLimit)
     }
 
     private suspend fun getSharedSpaceLimitInfo(): Pair<Int, Int> {

@@ -1493,6 +1493,7 @@
     <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
+    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
     <string name="multiplayer_qr_code">QR Code</string>
     <string name="multiplayer_mute">Mute</string>
     <string name="multiplayer_unmute">Unmute</string>

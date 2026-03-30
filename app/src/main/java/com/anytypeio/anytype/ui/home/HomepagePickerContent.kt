@@ -139,7 +139,7 @@ fun HomepagePickerContent(
             contentPadding = PaddingValues(start = 24.dp, end = 24.dp)
         ) {
             items(types) { type ->
-                ChannelTypeCard(
+                HomepageOptionCard(
                     type = type,
                     selected = type == selectedType,
                     label = when (type) {
@@ -187,7 +187,7 @@ fun HomepagePickerContent(
  * @param onClick called when the card is tapped
  */
 @Composable
-fun ChannelTypeCard(
+fun HomepageOptionCard(
     type: HomepageType,
     selected: Boolean,
     label: String,
@@ -276,7 +276,7 @@ private fun Pill(
 private val illustrationTitleStyle = TextStyle(
     fontSize = 15.sp,
     fontWeight = FontWeight.W500,
-    lineHeight = 11.sp
+    lineHeight = 20.sp
 )
 
 // --- Chat Illustration ---

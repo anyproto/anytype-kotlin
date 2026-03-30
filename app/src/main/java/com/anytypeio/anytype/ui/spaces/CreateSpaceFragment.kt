@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -17,14 +18,15 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.multiplayer.ChannelCreationType
+import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
-import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -125,9 +127,11 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
         skipCollapsed()
         expand()
+        (dialog as? BottomSheetDialog)?.findViewById<FrameLayout>(
+            com.google.android.material.R.id.design_bottom_sheet
+        )?.setBackgroundColor(requireContext().color(android.R.color.transparent))
     }
 
     override fun injectDependencies() {

@@ -1214,27 +1214,27 @@ fun MChatMessageContent.core(): Chat.Message.Content = Chat.Message.Content(
     marks = marks.map { it.toCoreModels() }
 )
 
-fun MChatMessageBlock.toCoreMessageBlock(): Chat.Message.MessageBlock? = when {
-    text != null -> Chat.Message.MessageBlock.Text(
-        text = text!!.text,
-        style = text!!.style.toCoreModels(),
-        marks = text!!.marks.map { it.toCoreModels() },
-        checked = text!!.checked
-    )
-    link != null -> Chat.Message.MessageBlock.Link(
-        targetObjectId = link!!.targetObjectId,
-        type = when (link!!.type) {
-            MChatMessageBlockLinkType.Object -> Chat.Message.MessageBlock.Link.LinkType.OBJECT
-            MChatMessageBlockLinkType.File -> Chat.Message.MessageBlock.Link.LinkType.FILE
-            MChatMessageBlockLinkType.Image -> Chat.Message.MessageBlock.Link.LinkType.IMAGE
-            MChatMessageBlockLinkType.Bookmark -> Chat.Message.MessageBlock.Link.LinkType.BOOKMARK
-        }
-    )
-    embed != null -> Chat.Message.MessageBlock.Embed(
-        text = embed!!.text
-    )
-    else -> null
-}
+fun MChatMessageBlock.toCoreMessageBlock(): Chat.Message.MessageBlock? =
+    text?.let { t ->
+        Chat.Message.MessageBlock.Text(
+            text = t.text,
+            style = t.style.toCoreModels(),
+            marks = t.marks.map { it.toCoreModels() },
+            checked = t.checked
+        )
+    } ?: link?.let { l ->
+        Chat.Message.MessageBlock.Link(
+            targetObjectId = l.targetObjectId,
+            type = when (l.type) {
+                MChatMessageBlockLinkType.Object -> Chat.Message.MessageBlock.Link.LinkType.OBJECT
+                MChatMessageBlockLinkType.File -> Chat.Message.MessageBlock.Link.LinkType.FILE
+                MChatMessageBlockLinkType.Image -> Chat.Message.MessageBlock.Link.LinkType.IMAGE
+                MChatMessageBlockLinkType.Bookmark -> Chat.Message.MessageBlock.Link.LinkType.BOOKMARK
+            }
+        )
+    } ?: embed?.let { e ->
+        Chat.Message.MessageBlock.Embed(text = e.text)
+    }
 
 fun MChatState.core(): Chat.State = Chat.State(
     unreadMessages = messages?.let { unread ->

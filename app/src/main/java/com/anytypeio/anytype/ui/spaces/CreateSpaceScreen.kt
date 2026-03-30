@@ -131,7 +131,8 @@ fun CreateSpaceScreen(
                 else -> spaceIconView
             },
             onSpaceIconUploadClicked = onSpaceIconUploadClicked,
-            onSpaceIconRemoveClicked = onSpaceIconRemoveClicked
+            onSpaceIconRemoveClicked = onSpaceIconRemoveClicked,
+            isLoading = isLoading.value
         )
         Spacer(modifier = Modifier.height(20.dp))
         Column(
@@ -248,6 +249,7 @@ fun SpaceIcon(
     spaceIconView: SpaceIconView,
     onSpaceIconUploadClicked: () -> Unit,
     onSpaceIconRemoveClicked: () -> Unit,
+    isLoading: Boolean = false
 ) {
     val context = LocalContext.current
 
@@ -258,7 +260,7 @@ fun SpaceIcon(
     Box(modifier = modifier.wrapContentSize()) {
         SpaceIconView(
             icon = spaceIconView,
-            modifier = Modifier.clickable {
+            modifier = Modifier.clickable(enabled = !isLoading) {
                 isIconMenuExpanded.value = !isIconMenuExpanded.value
             }
         )
@@ -278,7 +280,7 @@ fun SpaceIcon(
                     color = colorResource(id = R.color.shape_secondary),
                     shape = CircleShape
                 )
-                .clickable {
+                .clickable(enabled = !isLoading) {
                     isIconMenuExpanded.value = !isIconMenuExpanded.value
                 },
             contentAlignment = Alignment.Center

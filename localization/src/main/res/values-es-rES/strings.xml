@@ -861,7 +861,7 @@
     <string name="personal">Por defecto</string>
     <string name="create_space">Crear espacio</string>
     <string name="create_chat">Crear chat</string>
-    <string name="create_channel">New Channel</string>
+    <string name="create_channel">Nuevo canal</string>
     <string name="create_space_change_icon">Cambiar icono</string>
     <string name="create_space_chat_name">Nombre del chat</string>
     <string name="create_space_space_name">Nombre del espacio</string>
@@ -1290,7 +1290,7 @@
     <string name="multiplayer_viewer_access_desc">Quienes tengan el enlace podrán ver y leer el chat.</string>
     <string name="multiplayer_request_access">Solicitar acceso</string>
     <string name="multiplayer_request_access_desc">El propietario debe aprobar cada solicitud de incorporación.</string>
-    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
+    <string name="channel_members_subtitle">%1$d/%2$d editores, %3$d/%4$d visitantes</string>
     <string name="multiplayer_qr_code">Código QR</string>
     <string name="multiplayer_mute">Silenciar</string>
     <string name="multiplayer_unmute">No silenciar</string>
@@ -2037,7 +2037,7 @@ En concreto,
     <string name="failed_to_load_image">Error al cargar la imagen</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Unirse con código QR</string>
-    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_select_members_title">Seleccionar miembros</string>
     <string name="channel_next">Siguiente</string>
     <string name="vault_qr_scan_error_title">No se ha podido escanear el código QR</string>
     <string name="vault_qr_scan_error_description">Procura que se vea con claridad e inténtalo de nuevo.</string>
@@ -2052,9 +2052,9 @@ En concreto,
     <string name="allow">Permitir</string>
     <string name="attachment_image">Imagen adjunta</string>
     <!-- Shared Space Limit (DROID-4388) -->
-    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
-    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
-    <string name="vault_manage_channels">Manage Channels</string>
+    <string name="vault_shared_space_limit_title">Has llegado al límite de espacios compartidos</string>
+    <string name="vault_shared_space_limit_description">Tu plan admite %1$d espacios compartidos. Mejora tu suscripción para crear más.</string>
+    <string name="vault_manage_channels">Gestionar canales</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Fotos</string>
     <string name="attachment_menu_camera">Cámara</string>

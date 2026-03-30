@@ -18,7 +18,9 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.domain.misc.DateProvider
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -44,6 +46,7 @@ class DiscussionViewModel @Inject constructor(
     private val dispatchers: AppCoroutineDispatchers,
     private val addChatMessage: AddComment,
     private val deleteComment: DeleteComment,
+    private val toggleCommentReaction: ToggleCommentReaction,
     private val dateProvider: DateProvider
 ) : BaseViewModel() {
 
@@ -60,6 +63,9 @@ class DiscussionViewModel @Inject constructor(
 
     private val _inputMode = MutableStateFlow<DiscussionInputMode>(DiscussionInputMode.Default)
     val inputMode: StateFlow<DiscussionInputMode> = _inputMode
+
+    private val _commands = MutableSharedFlow<DiscussionCommand>()
+    val commands: SharedFlow<DiscussionCommand> = _commands
 
     private var account: Id = ""
 
@@ -109,7 +115,7 @@ class DiscussionViewModel @Inject constructor(
                         val avatar = member?.iconImage?.let { iconImage ->
                             if (iconImage.isNotEmpty()) {
                                 DiscussionView.Avatar.Image(
-                                    hash = iconImage,
+                                    hash = urlBuilder.thumbnail(iconImage),
                                     fallbackInitial = member.name?.firstOrNull()?.uppercase().orEmpty()
                                 )
                             } else {
@@ -277,6 +283,26 @@ class DiscussionViewModel @Inject constructor(
         _inputMode.value = DiscussionInputMode.Default
     }
 
+    fun onAddReaction(msg: Id) {
+        viewModelScope.launch {
+            _commands.emit(DiscussionCommand.SelectReaction(msg = msg))
+        }
+    }
+
+    fun onToggleReaction(msg: Id, emoji: String) {
+        viewModelScope.launch {
+            toggleCommentReaction.async(
+                Command.ChatCommand.ToggleMessageReaction(
+                    chat = vmParams.ctx,
+                    msg = msg,
+                    emoji = emoji
+                )
+            ).onFailure { e ->
+                Timber.e(e, "Failed to toggle comment reaction")
+            }
+        }
+    }
+
     fun onDeleteComment(id: Id) {
         viewModelScope.launch {
             deleteComment.async(
@@ -375,4 +401,8 @@ class DiscussionViewModel @Inject constructor(
         val ctx: Id,
         val space: Space
     )
+
+    sealed class DiscussionCommand {
+        data class SelectReaction(val msg: Id) : DiscussionCommand()
+    }
 }

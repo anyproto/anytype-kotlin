@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -12,6 +13,8 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -19,6 +22,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
+import com.anytypeio.anytype.ui.chats.SelectChatReactionFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
@@ -47,6 +51,24 @@ class DiscussionFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = content {
+        LaunchedEffect(Unit) {
+            vm.commands.collect { command ->
+                when (command) {
+                    is DiscussionViewModel.DiscussionCommand.SelectReaction -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.selectChatReactionScreen,
+                                SelectChatReactionFragment.args(
+                                    space = SpaceId(space),
+                                    chat = ctx,
+                                    msg = command.msg
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
         MaterialTheme(typography = typography) {
             DiscussionScreenWrapper(
                 vm = vm,

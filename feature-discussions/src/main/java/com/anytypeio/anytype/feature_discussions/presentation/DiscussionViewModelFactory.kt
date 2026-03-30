@@ -19,6 +19,7 @@ class DiscussionViewModelFactory @Inject constructor(
     private val dispatchers: AppCoroutineDispatchers,
     private val addChatMessage: AddComment,
     private val deleteComment: DeleteComment,
+    private val toggleCommentReaction: ToggleCommentReaction,
     private val dateProvider: DateProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
@@ -31,6 +32,7 @@ class DiscussionViewModelFactory @Inject constructor(
         dispatchers = dispatchers,
         addChatMessage = addChatMessage,
         deleteComment = deleteComment,
+        toggleCommentReaction = toggleCommentReaction,
         dateProvider = dateProvider
     ) as T
 }

@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -114,7 +115,9 @@ fun DiscussionScreenWrapper(
         onReplyToReply = { vm.onReplyToReply(it) },
         onCopyText = { clipboard.setText(AnnotatedString(it)) },
         onClearReply = { vm.onClearReply() },
-        onDeleteComment = { vm.onDeleteComment(it) }
+        onDeleteComment = { vm.onDeleteComment(it) },
+        onAddReaction = { vm.onAddReaction(it) },
+        onToggleReaction = { msg, emoji -> vm.onToggleReaction(msg, emoji) }
     )
 }
 
@@ -132,7 +135,9 @@ fun DiscussionScreen(
     onReplyToReply: (DiscussionView.Reply) -> Unit = {},
     onCopyText: (String) -> Unit = {},
     onClearReply: () -> Unit = {},
-    onDeleteComment: (Id) -> Unit = {}
+    onDeleteComment: (Id) -> Unit = {},
+    onAddReaction: (Id) -> Unit = {},
+    onToggleReaction: (Id, String) -> Unit = { _, _ -> }
 ) {
     Scaffold(
         containerColor = colorResource(id = R.color.background_primary),
@@ -158,7 +163,9 @@ fun DiscussionScreen(
                 onReplyComment = onReplyComment,
                 onReplyToReply = onReplyToReply,
                 onCopyText = onCopyText,
-                onDeleteComment = onDeleteComment
+                onDeleteComment = onDeleteComment,
+                onAddReaction = onAddReaction,
+                onToggleReaction = onToggleReaction
             )
             if (inputMode is DiscussionInputMode.Reply) {
                 DiscussionReplyBanner(
@@ -271,7 +278,9 @@ fun DiscussionCommentList(
     onReplyComment: (DiscussionView.Comment) -> Unit = {},
     onReplyToReply: (DiscussionView.Reply) -> Unit = {},
     onCopyText: (String) -> Unit = {},
-    onDeleteComment: (Id) -> Unit = {}
+    onDeleteComment: (Id) -> Unit = {},
+    onAddReaction: (Id) -> Unit = {},
+    onToggleReaction: (Id, String) -> Unit = { _, _ -> }
 ) {
     LazyColumn(
         modifier = modifier,
@@ -294,7 +303,9 @@ fun DiscussionCommentList(
                         comment = item,
                         onReply = { onReplyComment(item) },
                         onCopy = { onCopyText(item.content.msg) },
-                        onDelete = { onDeleteComment(item.id) }
+                        onDelete = { onDeleteComment(item.id) },
+                        onAddReaction = { onAddReaction(item.id) },
+                        onToggleReaction = { emoji -> onToggleReaction(item.id, emoji) }
                     )
                 }
                 is DiscussionView.Reply -> {
@@ -302,7 +313,9 @@ fun DiscussionCommentList(
                         reply = item,
                         onReply = { onReplyToReply(item) },
                         onCopy = { onCopyText(item.content.msg) },
-                        onDelete = { onDeleteComment(item.id) }
+                        onDelete = { onDeleteComment(item.id) },
+                        onAddReaction = { onAddReaction(item.id) },
+                        onToggleReaction = { emoji -> onToggleReaction(item.id, emoji) }
                     )
                 }
                 is DiscussionView.ReplyDivider -> {
@@ -332,7 +345,9 @@ fun DiscussionCommentItem(
     comment: DiscussionView.Comment,
     onReply: () -> Unit = {},
     onCopy: () -> Unit = {},
-    onDelete: () -> Unit = {}
+    onDelete: () -> Unit = {},
+    onAddReaction: () -> Unit = {},
+    onToggleReaction: (String) -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -419,76 +434,112 @@ fun DiscussionCommentItem(
             // Reactions
             if (comment.reactions.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
-                ReactionsRow(reactions = comment.reactions)
+                ReactionsRow(
+                    reactions = comment.reactions,
+                    onToggleReaction = onToggleReaction
+                )
             }
         }
-        DropdownMenu(
-            expanded = showDropdownMenu,
-            onDismissRequest = { showDropdownMenu = false }
-        ) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = stringResource(id = com.anytypeio.anytype.localization.R.string.chats_reply),
-                        style = PreviewTitle1Regular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                },
-                onClick = {
-                    showDropdownMenu = false
-                    onReply()
-                },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_dropdown_menu_reply),
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.glyph_active)
-                    )
-                }
+        MaterialTheme(
+            shapes = MaterialTheme.shapes.copy(
+                medium = RoundedCornerShape(16.dp)
+            ),
+            colors = MaterialTheme.colors.copy(
+                surface = colorResource(id = R.color.background_secondary)
             )
-            if (comment.content.msg.isNotEmpty()) {
+        ) {
+            DropdownMenu(
+                expanded = showDropdownMenu,
+                onDismissRequest = { showDropdownMenu = false }
+            ) {
                 DropdownMenuItem(
                     text = {
                         Text(
-                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.copy_plain_text),
+                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.chats_add_reaction),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    },
+                    trailingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_mood),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = colorResource(id = R.color.text_primary)
+                        )
+                    },
+                    onClick = {
+                        showDropdownMenu = false
+                        onAddReaction()
+                    }
+                )
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.chats_reply),
                             style = PreviewTitle1Regular,
                             color = colorResource(id = R.color.text_primary)
                         )
                     },
                     onClick = {
                         showDropdownMenu = false
-                        onCopy()
+                        onReply()
                     },
-                    leadingIcon = {
+                    trailingIcon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_reply),
                             contentDescription = null,
-                            tint = colorResource(id = R.color.glyph_active)
+                            modifier = Modifier.size(24.dp),
+                            tint = colorResource(id = R.color.text_primary)
                         )
                     }
                 )
-            }
-            if (comment.isOwn) {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.delete),
-                            style = PreviewTitle1Regular,
-                            color = colorResource(id = R.color.palette_system_red)
-                        )
-                    },
-                    onClick = {
-                        showDropdownMenu = false
-                        showDeleteWarning = true
-                    },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_dropdown_menu_delete),
-                            contentDescription = null,
-                            tint = colorResource(id = R.color.palette_system_red)
-                        )
-                    }
-                )
+                if (comment.content.msg.isNotEmpty()) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(id = com.anytypeio.anytype.localization.R.string.copy_plain_text),
+                                style = PreviewTitle1Regular,
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            onCopy()
+                        },
+                        trailingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = colorResource(id = R.color.text_primary)
+                            )
+                        }
+                    )
+                }
+                if (comment.isOwn) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(id = com.anytypeio.anytype.localization.R.string.delete),
+                                style = PreviewTitle1Regular,
+                                color = colorResource(id = R.color.palette_system_red)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            showDeleteWarning = true
+                        },
+                        trailingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_dropdown_menu_delete),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = colorResource(id = R.color.palette_system_red)
+                            )
+                        }
+                    )
+                }
             }
         }
     }
@@ -500,7 +551,9 @@ fun DiscussionReplyItem(
     reply: DiscussionView.Reply,
     onReply: () -> Unit = {},
     onCopy: () -> Unit = {},
-    onDelete: () -> Unit = {}
+    onDelete: () -> Unit = {},
+    onAddReaction: () -> Unit = {},
+    onToggleReaction: (String) -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -605,77 +658,113 @@ fun DiscussionReplyItem(
                 // Reactions
                 if (reply.reactions.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    ReactionsRow(reactions = reply.reactions)
+                    ReactionsRow(
+                        reactions = reply.reactions,
+                        onToggleReaction = onToggleReaction
+                    )
                 }
             }
         }
-        DropdownMenu(
-            expanded = showDropdownMenu,
-            onDismissRequest = { showDropdownMenu = false }
-        ) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = stringResource(id = com.anytypeio.anytype.localization.R.string.chats_reply),
-                        style = PreviewTitle1Regular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                },
-                onClick = {
-                    showDropdownMenu = false
-                    onReply()
-                },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_dropdown_menu_reply),
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.glyph_active)
-                    )
-                }
+        MaterialTheme(
+            shapes = MaterialTheme.shapes.copy(
+                medium = RoundedCornerShape(16.dp)
+            ),
+            colors = MaterialTheme.colors.copy(
+                surface = colorResource(id = R.color.background_secondary)
             )
-            if (reply.content.msg.isNotEmpty()) {
+        ) {
+            DropdownMenu(
+                expanded = showDropdownMenu,
+                onDismissRequest = { showDropdownMenu = false }
+            ) {
                 DropdownMenuItem(
                     text = {
                         Text(
-                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.copy_plain_text),
+                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.chats_add_reaction),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    },
+                    trailingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_mood),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = colorResource(id = R.color.text_primary)
+                        )
+                    },
+                    onClick = {
+                        showDropdownMenu = false
+                        onAddReaction()
+                    }
+                )
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.chats_reply),
                             style = PreviewTitle1Regular,
                             color = colorResource(id = R.color.text_primary)
                         )
                     },
                     onClick = {
                         showDropdownMenu = false
-                        onCopy()
+                        onReply()
                     },
-                    leadingIcon = {
+                    trailingIcon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_reply),
                             contentDescription = null,
-                            tint = colorResource(id = R.color.glyph_active)
+                            modifier = Modifier.size(24.dp),
+                            tint = colorResource(id = R.color.text_primary)
                         )
                     }
                 )
-            }
-            if (reply.isOwn) {
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.delete),
-                            style = PreviewTitle1Regular,
-                            color = colorResource(id = R.color.palette_system_red)
-                        )
-                    },
-                    onClick = {
-                        showDropdownMenu = false
-                        showDeleteWarning = true
-                    },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_dropdown_menu_delete),
-                            contentDescription = null,
-                            tint = colorResource(id = R.color.palette_system_red)
-                        )
-                    }
-                )
+                if (reply.content.msg.isNotEmpty()) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(id = com.anytypeio.anytype.localization.R.string.copy_plain_text),
+                                style = PreviewTitle1Regular,
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            onCopy()
+                        },
+                        trailingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = colorResource(id = R.color.text_primary)
+                            )
+                        }
+                    )
+                }
+                if (reply.isOwn) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(id = com.anytypeio.anytype.localization.R.string.delete),
+                                style = PreviewTitle1Regular,
+                                color = colorResource(id = R.color.palette_system_red)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            showDeleteWarning = true
+                        },
+                        trailingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_dropdown_menu_delete),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = colorResource(id = R.color.palette_system_red)
+                            )
+                        }
+                    )
+                }
             }
         }
     }
@@ -756,14 +845,22 @@ fun RichTextContent(parts: List<DiscussionView.Content.Part>) {
 }
 
 @Composable
-fun ReactionsRow(reactions: List<DiscussionView.Reaction>) {
+fun ReactionsRow(
+    reactions: List<DiscussionView.Reaction>,
+    onToggleReaction: (String) -> Unit = {}
+) {
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         reactions.forEach { reaction ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .clickable { onToggleReaction(reaction.emoji) }
                     .background(
-                        color = colorResource(id = R.color.shape_transparent_primary),
+                        color = if (reaction.isSelected)
+                            colorResource(id = R.color.palette_very_light_orange)
+                        else
+                            colorResource(id = R.color.shape_transparent_primary),
                         shape = RoundedCornerShape(16.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 5.dp)

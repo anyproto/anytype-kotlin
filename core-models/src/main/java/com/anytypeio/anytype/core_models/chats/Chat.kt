@@ -28,6 +28,7 @@ sealed class Chat {
         val createdAt: Long,
         val modifiedAt: Long,
         val content: Content?,
+        val blocks: List<MessageBlock> = emptyList(),
         val attachments: List<Attachment> = emptyList(),
         val reactions: Map<String, List<String>> = emptyMap(),
         val replyToMessageId: Id? = null,
@@ -49,6 +50,27 @@ sealed class Chat {
                 data object Image: Type()
                 data object Link: Type()
             }
+        }
+
+        sealed class MessageBlock {
+            data class Text(
+                val text: String,
+                val style: Block.Content.Text.Style,
+                val marks: List<Block.Content.Text.Mark>,
+                val checked: Boolean = false
+            ) : MessageBlock()
+
+            data class Link(
+                val targetObjectId: Id,
+                val type: LinkType
+            ) : MessageBlock() {
+                enum class LinkType { OBJECT, FILE, IMAGE, BOOKMARK }
+            }
+
+            data class Embed(
+                val text: String,
+                val processor: Int = 0
+            ) : MessageBlock()
         }
 
         companion object {

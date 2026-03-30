@@ -26,25 +26,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
-import coil3.request.ImageRequest
-import coil3.request.crossfade
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceMemberIcon
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -74,14 +68,14 @@ fun SelectMembersContent(
             .systemBarsPadding(),
         onDismissRequest = onDismissRequest,
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-        containerColor = colorResource(id = CoreR.color.background_secondary),
+        containerColor = Color.Transparent,
         dragHandle = null
     ) {
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .background(
-                    color = colorResource(id = CoreR.color.background_primary),
+                    color = colorResource(id = CoreR.color.background_secondary),
                     shape = RoundedCornerShape(16.dp)
                 )
         ) {
@@ -147,7 +141,6 @@ private fun SelectMembersTopBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(54.dp)
-            .background(colorResource(id = CoreR.color.background_primary))
     ) {
         Image(
             painter = painterResource(id = CoreR.drawable.ic_back_24),
@@ -235,11 +228,15 @@ private fun MemberRow(
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        SpaceMemberAvatar(icon = member.icon)
+        SpaceMemberIcon(
+            icon = member.icon,
+            iconSize = 48.dp,
+            modifier = Modifier
+        )
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        Column(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier.weight(1f).padding(end = 16.dp)) {
             Text(
                 text = member.name,
                 style = Title2,
@@ -261,72 +258,6 @@ private fun MemberRow(
         }
 
         SelectionCircle(selectionOrder = member.selectionOrder)
-    }
-}
-
-@Composable
-internal fun SpaceMemberAvatar(
-    icon: SpaceMemberIconView,
-    modifier: Modifier = Modifier,
-    avatarSize: Dp = 48.dp
-) {
-    val fontSize = (avatarSize.value / 2).sp
-    when (icon) {
-        is SpaceMemberIconView.Placeholder -> {
-            Box(
-                modifier = modifier
-                    .size(avatarSize)
-                    .clip(CircleShape)
-                    .background(colorResource(id = CoreR.color.shape_tertiary)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = icon.name
-                        .ifEmpty { "U" }
-                        .take(1)
-                        .uppercase(),
-                    style = TextStyle(
-                        fontSize = fontSize,
-                        fontWeight = FontWeight.SemiBold,
-                        color = colorResource(id = CoreR.color.glyph_active)
-                    )
-                )
-            }
-        }
-        is SpaceMemberIconView.Image -> {
-            Box(modifier = modifier.size(avatarSize)) {
-                Box(
-                    modifier = Modifier
-                        .size(avatarSize)
-                        .clip(CircleShape)
-                        .background(colorResource(id = CoreR.color.shape_tertiary)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = icon.name
-                            .ifEmpty { "U" }
-                            .take(1)
-                            .uppercase(),
-                        style = TextStyle(
-                            fontSize = fontSize,
-                            fontWeight = FontWeight.SemiBold,
-                            color = colorResource(id = CoreR.color.glyph_active)
-                        )
-                    )
-                }
-                AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(icon.url)
-                        .crossfade(true)
-                        .build(),
-                    contentDescription = icon.name,
-                    modifier = Modifier
-                        .size(avatarSize)
-                        .clip(CircleShape),
-                    contentScale = ContentScale.Crop
-                )
-            }
-        }
     }
 }
 
@@ -352,7 +283,7 @@ private fun SelectMembersContentPreview() {
                     isSelected = false
                 ),
                 MemberItem(
-                    identity = "3",
+                    identity = "fklsdjflkjsdkfjksadjfkljsdlkjfkldsajlkfjkasdjfkjasdkjfklajsdklfjakljfkjasdkl",
                     name = "Charlie",
                     globalName = null,
                     icon = SpaceMemberIconView.Placeholder("Charlie"),

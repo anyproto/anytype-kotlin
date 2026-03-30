@@ -252,12 +252,6 @@ class VaultViewModel(
 
     init {
         Timber.i("VaultViewModel - init started")
-        viewModelScope.launch {
-            getMembershipFeatures.async(Unit).fold(
-                onSuccess = { features -> _membershipFeatures.value = features },
-                onFailure = { e -> Timber.e(e, "Failed to fetch membership features") }
-            )
-        }
         combine(
             combine(
                 previewFlow.filterIsInstance<ChatPreviewContainer.PreviewState.Ready>(),
@@ -847,6 +841,10 @@ class VaultViewModel(
                         && !space.oneToOneIdentity.isNullOrEmpty()
                 }
                 if (hasOneToOneParticipants) {
+                    getMembershipFeatures.async(Unit).fold(
+                        onSuccess = { features -> _membershipFeatures.value = features },
+                        onFailure = { e -> Timber.e(e, "Failed to fetch membership features") }
+                    )
                     _selectMembersSearchQuery.value = ""
                     _selectedMemberIds.value = emptyList()
                     showSelectMembersSheet.value = true

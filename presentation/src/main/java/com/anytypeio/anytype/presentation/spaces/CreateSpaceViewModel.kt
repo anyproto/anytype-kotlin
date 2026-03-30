@@ -134,7 +134,7 @@ class CreateSpaceViewModel(
     }
 
     fun onCreateSpace(name: String) {
-        Timber.d("onCreateSpace, channelType: %s, name: %s", vmParams.channelType, name)
+        Timber.d("onCreateSpace, channelType: %s", vmParams.channelType)
         if (isDismissed.value) {
             return
         }

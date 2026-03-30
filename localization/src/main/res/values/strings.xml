@@ -958,9 +958,19 @@
     <string name="personal">Default</string>
     <string name="create_space">Create space</string>
     <string name="create_chat">Create chat</string>
+    <string name="create_channel">New Channel</string>
     <string name="create_space_change_icon">Change icon</string>
     <string name="create_space_chat_name">Chat name</string>
     <string name="create_space_space_name">Space name</string>
+
+    <!-- Homepage Picker -->
+    <string name="homepage_picker_title">Create Home</string>
+    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_chat">Chat</string>
+    <string name="homepage_picker_widgets">Widgets</string>
+    <string name="homepage_picker_page">Page</string>
+    <string name="homepage_picker_collection">Collection</string>
+    <string name="homepage_picker_later">Later</string>
 
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Type</string>
@@ -1483,6 +1493,7 @@
     <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
+    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
     <string name="multiplayer_qr_code">QR Code</string>
     <string name="multiplayer_mute">Mute</string>
     <string name="multiplayer_unmute">Unmute</string>
@@ -2288,6 +2299,8 @@ Please provide specific details of your needs here.</string>
     <string name="vault_create_chat_description">For real-time conversations</string>
     <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">For organized content and data</string>
+    <string name="vault_create_personal">Personal</string>
+    <string name="vault_create_group">Group</string>
 
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ideas need conversations</string>
@@ -2334,6 +2347,8 @@ Please provide specific details of your needs here.</string>
     
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Join via QR Code</string>
+    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_next">Next</string>
     <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
     <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
     <string name="vault_qr_invalid_title">Invalid QR code</string>
@@ -2346,6 +2361,11 @@ Please provide specific details of your needs here.</string>
     <string name="open_settings">Open Settings</string>
     <string name="allow">Allow</string>
     <string name="attachment_image">Attachment image</string>
+
+    <!-- Shared Space Limit (DROID-4388) -->
+    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
+    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
+    <string name="vault_manage_channels">Manage Channels</string>
 
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Photos</string>

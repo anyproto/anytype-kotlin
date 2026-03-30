@@ -517,6 +517,8 @@ sealed class Command {
     data class AddObjectToSpace(val space: Id, val objectId: Id)
     data class ApplyTemplate(val objectId: Id, val template: Id?)
 
+    data class SetHomepage(val contextId: Id, val objectId: Id)
+
     data class DeleteRelationOptions(val optionIds: List<Id>)
     data class SetRelationOptionsOrder(
         val space: SpaceId,

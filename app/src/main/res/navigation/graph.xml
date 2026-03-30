@@ -328,9 +328,14 @@
         android:id="@+id/createSpaceScreen"
         android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment">
         <argument
-            android:name="spaceUxType"
-            android:defaultValue="NONE"
-            app:argType="com.anytypeio.anytype.core_models.multiplayer.SpaceUxType" />
+            android:name="channelType"
+            android:defaultValue="PERSONAL"
+            app:argType="com.anytypeio.anytype.core_models.multiplayer.ChannelCreationType" />
+        <argument
+            android:name="selectedMemberIdentities"
+            app:argType="string[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
         <action
             android:id="@+id/exitToVaultAction"
             app:popUpTo="@+id/vaultScreen"

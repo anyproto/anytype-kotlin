@@ -38,6 +38,7 @@ import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipFeatures
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
@@ -809,6 +810,10 @@ class BlockDataRepository(
         )
     }
 
+    override suspend fun setHomepage(command: Command.SetHomepage): Id {
+        return remote.setHomepage(command)
+    }
+
     override suspend fun spaceOpen(space: Id, withChat: Boolean): Config = remote.spaceOpen(
         space = space,
         withChat = withChat
@@ -1001,6 +1006,13 @@ class BlockDataRepository(
         )
     }
 
+    override suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>) {
+        remote.addSpaceMembers(
+            space = space,
+            identities = identities
+        )
+    }
+
     override suspend fun changeSpaceMemberPermissions(
         space: SpaceId,
         identity: Id,
@@ -1053,6 +1065,10 @@ class BlockDataRepository(
 
     override suspend fun membershipStatus(command: Command.Membership.GetStatus): Membership? {
         return remote.membershipStatus(command)
+    }
+
+    override suspend fun membershipV2GetFeatures(): MembershipFeatures {
+        return remote.membershipV2GetFeatures()
     }
 
     override suspend fun membershipIsNameValid(command: Command.Membership.IsNameValid) {

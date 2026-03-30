@@ -50,6 +50,7 @@ import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipFeatures
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
@@ -2128,6 +2129,18 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun workspaceSetDashboard(command: Command.SetHomepage): Id {
+        val request = Rpc.Object.WorkspaceSetDashboard.Request(
+            contextId = command.contextId,
+            objectId = command.objectId
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectWorkspaceSetDashboard(request) }
+        logResponseIfDebug(response, time)
+        return response.objectId
+    }
+
+    @Throws(Exception::class)
     fun workspaceObjectListAdd(objects: List<Id>, space: Id): List<Id> {
         val request = Rpc.Workspace.Object.ListAdd.Request(
             objectIds = objects,
@@ -2605,6 +2618,22 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun addSpaceMembers(
+        space: SpaceId,
+        identities: List<Id>
+    ) {
+        // TODO: Wire to MW when SpaceParticipantsAddList protobuf classes are available
+        // val request = Rpc.Space.ParticipantsAddList.Request(
+        //     spaceId = space.id,
+        //     identities = identities
+        // )
+        // logRequestIfDebug(request)
+        // val (response, time) = measureTimedValue { service.spaceParticipantsAddList(request) }
+        // logResponseIfDebug(response, time)
+        Timber.d("addSpaceMembers stub: space=${space.id}, identities=$identities")
+    }
+
+    @Throws(Exception::class)
     fun changeSpaceMemberPermissions(space: SpaceId, identity: Id, permission: SpaceMemberPermissions) {
         val request = Rpc.Space.ParticipantPermissionsChange.Request(
             spaceId = space.id,
@@ -2843,6 +2872,21 @@ class Middleware @Inject constructor(
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.membershipSubscribeToUpdates(request) }
         logResponseIfDebug(response, time)
+    }
+
+    @Throws
+    fun membershipV2GetFeatures(noCache: Boolean = false): MembershipFeatures {
+        val request = Rpc.MembershipV2.GetStatus.Request(noCache = noCache)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipV2GetStatus(request) }
+        logResponseIfDebug(response, time)
+        val features = response.data_?.products
+            ?.firstOrNull()?.product?.features
+        return MembershipFeatures(
+            spaceWriters = features?.spaceWriters ?: 0,
+            spaceReaders = features?.spaceReaders ?: 0,
+            sharedSpaces = features?.sharedSpaces ?: 0
+        )
     }
 
     @Throws

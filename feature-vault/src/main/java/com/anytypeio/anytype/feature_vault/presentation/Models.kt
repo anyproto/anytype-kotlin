@@ -3,11 +3,12 @@ package com.anytypeio.anytype.feature_vault.presentation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_models.multiplayer.ChannelCreationType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.AttachmentPreview
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
-
+import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 import com.anytypeio.anytype.core_models.ui.WallpaperResult
 
 sealed class VaultSpaceView {
@@ -99,12 +100,16 @@ sealed class VaultUiState {
 sealed class VaultCommand {
     data class EnterSpaceHomeScreen(val space: Space) : VaultCommand()
     data class EnterSpaceLevelChat(val space: Space, val chat: Id) : VaultCommand()
-    data class CreateNewSpace(val spaceUxType: com.anytypeio.anytype.core_models.multiplayer.SpaceUxType) : VaultCommand()
+    data class CreateNewSpace(
+        val channelType: ChannelCreationType,
+        val selectedMembers: List<MemberItem> = emptyList()
+    ) : VaultCommand()
     data object OpenProfileSettings : VaultCommand()
     data class ShowDeleteSpaceWarning(val space: Id) : VaultCommand()
     data class ShowLeaveSpaceWarning(val space: Id) : VaultCommand()
     data class OpenSpaceSettings(val space: SpaceId) : VaultCommand()
     data object ScanQrCode : VaultCommand()
+    data object OpenSpaceListScreen : VaultCommand()
     data class NavigateToRequestJoinSpace(val link: String) : VaultCommand()
 
     sealed class Deeplink : VaultCommand() {
@@ -139,4 +144,23 @@ sealed class VaultErrors {
     data object QrScannerError : VaultErrors()
     data object QrCodeIsNotValid : VaultErrors()
     data object CameraPermissionDenied : VaultErrors()
+    data class SharedSpaceLimitReached(val limit: Int) : VaultErrors()
 }
+
+sealed class SelectMembersUiState {
+    data object Loading : SelectMembersUiState()
+    data class Content(
+        val members: List<MemberItem>,
+        val searchQuery: String,
+        val subtitle: String = ""
+    ) : SelectMembersUiState()
+}
+
+data class MemberItem(
+    val identity: Id,
+    val name: String,
+    val globalName: String?,
+    val icon: SpaceMemberIconView,
+    val isSelected: Boolean,
+    val selectionOrder: Int? = null
+)

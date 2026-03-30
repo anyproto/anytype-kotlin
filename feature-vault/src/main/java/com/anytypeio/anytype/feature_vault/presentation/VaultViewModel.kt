@@ -820,8 +820,6 @@ class VaultViewModel(
             analytics.sendEvent(
                 eventName = EventsDictionary.chatClickVaultCreateMenuSpace
             )
-        }
-        viewModelScope.launch {
             showCreateChannelMenu.value = false
             commands.emit(
                 VaultCommand.CreateNewSpace(

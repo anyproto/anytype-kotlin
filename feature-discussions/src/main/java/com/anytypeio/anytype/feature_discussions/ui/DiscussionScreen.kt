@@ -32,6 +32,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -69,7 +70,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
+import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -107,7 +113,8 @@ fun DiscussionScreenWrapper(
         onReplyComment = { vm.onReplyComment(it) },
         onReplyToReply = { vm.onReplyToReply(it) },
         onCopyText = { clipboard.setText(AnnotatedString(it)) },
-        onClearReply = { vm.onClearReply() }
+        onClearReply = { vm.onClearReply() },
+        onDeleteComment = { vm.onDeleteComment(it) }
     )
 }
 
@@ -124,7 +131,8 @@ fun DiscussionScreen(
     onReplyComment: (DiscussionView.Comment) -> Unit = {},
     onReplyToReply: (DiscussionView.Reply) -> Unit = {},
     onCopyText: (String) -> Unit = {},
-    onClearReply: () -> Unit = {}
+    onClearReply: () -> Unit = {},
+    onDeleteComment: (Id) -> Unit = {}
 ) {
     Scaffold(
         containerColor = colorResource(id = R.color.background_primary),
@@ -149,7 +157,8 @@ fun DiscussionScreen(
                     .weight(1f),
                 onReplyComment = onReplyComment,
                 onReplyToReply = onReplyToReply,
-                onCopyText = onCopyText
+                onCopyText = onCopyText,
+                onDeleteComment = onDeleteComment
             )
             if (inputMode is DiscussionInputMode.Reply) {
                 DiscussionReplyBanner(
@@ -261,7 +270,8 @@ fun DiscussionCommentList(
     modifier: Modifier = Modifier,
     onReplyComment: (DiscussionView.Comment) -> Unit = {},
     onReplyToReply: (DiscussionView.Reply) -> Unit = {},
-    onCopyText: (String) -> Unit = {}
+    onCopyText: (String) -> Unit = {},
+    onDeleteComment: (Id) -> Unit = {}
 ) {
     LazyColumn(
         modifier = modifier,
@@ -283,14 +293,16 @@ fun DiscussionCommentList(
                     DiscussionCommentItem(
                         comment = item,
                         onReply = { onReplyComment(item) },
-                        onCopy = { onCopyText(item.content.msg) }
+                        onCopy = { onCopyText(item.content.msg) },
+                        onDelete = { onDeleteComment(item.id) }
                     )
                 }
                 is DiscussionView.Reply -> {
                     DiscussionReplyItem(
                         reply = item,
                         onReply = { onReplyToReply(item) },
-                        onCopy = { onCopyText(item.content.msg) }
+                        onCopy = { onCopyText(item.content.msg) },
+                        onDelete = { onDeleteComment(item.id) }
                     )
                 }
                 is DiscussionView.ReplyDivider -> {
@@ -314,15 +326,42 @@ fun DiscussionCommentList(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DiscussionCommentItem(
     comment: DiscussionView.Comment,
     onReply: () -> Unit = {},
-    onCopy: () -> Unit = {}
+    onCopy: () -> Unit = {},
+    onDelete: () -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
+    var showDeleteWarning by remember { mutableStateOf(false) }
+
+    if (showDeleteWarning) {
+        ModalBottomSheet(
+            onDismissRequest = { showDeleteWarning = false },
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(16.dp),
+            dragHandle = null,
+            modifier = Modifier.padding(bottom = 32.dp, start = 12.dp, end = 12.dp)
+        ) {
+            GenericAlert(
+                config = AlertConfig.WithTwoButtons(
+                    title = stringResource(com.anytypeio.anytype.localization.R.string.chats_alert_delete_this_message),
+                    description = stringResource(com.anytypeio.anytype.localization.R.string.chats_alert_delete_this_message_description),
+                    firstButtonText = stringResource(com.anytypeio.anytype.localization.R.string.cancel),
+                    secondButtonText = stringResource(com.anytypeio.anytype.localization.R.string.delete),
+                    secondButtonType = BUTTON_WARNING,
+                    firstButtonType = BUTTON_SECONDARY,
+                    icon = R.drawable.ic_popup_question_56
+                ),
+                onFirstButtonClicked = { showDeleteWarning = false },
+                onSecondButtonClicked = { onDelete() },
+                addBottomSpacer = false
+            )
+        }
+    }
 
     Box {
         Column(
@@ -429,19 +468,68 @@ fun DiscussionCommentItem(
                     }
                 )
             }
+            if (comment.isOwn) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.delete),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.palette_system_red)
+                        )
+                    },
+                    onClick = {
+                        showDropdownMenu = false
+                        showDeleteWarning = true
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_delete),
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.palette_system_red)
+                        )
+                    }
+                )
+            }
         }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DiscussionReplyItem(
     reply: DiscussionView.Reply,
     onReply: () -> Unit = {},
-    onCopy: () -> Unit = {}
+    onCopy: () -> Unit = {},
+    onDelete: () -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
+    var showDeleteWarning by remember { mutableStateOf(false) }
+
+    if (showDeleteWarning) {
+        ModalBottomSheet(
+            onDismissRequest = { showDeleteWarning = false },
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(16.dp),
+            dragHandle = null,
+            modifier = Modifier.padding(bottom = 32.dp, start = 12.dp, end = 12.dp)
+        ) {
+            GenericAlert(
+                config = AlertConfig.WithTwoButtons(
+                    title = stringResource(com.anytypeio.anytype.localization.R.string.chats_alert_delete_this_message),
+                    description = stringResource(com.anytypeio.anytype.localization.R.string.chats_alert_delete_this_message_description),
+                    firstButtonText = stringResource(com.anytypeio.anytype.localization.R.string.cancel),
+                    secondButtonText = stringResource(com.anytypeio.anytype.localization.R.string.delete),
+                    secondButtonType = BUTTON_WARNING,
+                    firstButtonType = BUTTON_SECONDARY,
+                    icon = R.drawable.ic_popup_question_56
+                ),
+                onFirstButtonClicked = { showDeleteWarning = false },
+                onSecondButtonClicked = { onDelete() },
+                addBottomSpacer = false
+            )
+        }
+    }
 
     Box {
         Row(
@@ -563,6 +651,28 @@ fun DiscussionReplyItem(
                             painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
                             contentDescription = null,
                             tint = colorResource(id = R.color.glyph_active)
+                        )
+                    }
+                )
+            }
+            if (reply.isOwn) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.delete),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.palette_system_red)
+                        )
+                    },
+                    onClick = {
+                        showDropdownMenu = false
+                        showDeleteWarning = true
+                    },
+                    leadingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_delete),
+                            contentDescription = null,
+                            tint = colorResource(id = R.color.palette_system_red)
                         )
                     }
                 )

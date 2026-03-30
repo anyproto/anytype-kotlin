@@ -43,6 +43,7 @@ class DiscussionViewModel @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val dispatchers: AppCoroutineDispatchers,
     private val addChatMessage: AddComment,
+    private val deleteComment: DeleteComment,
     private val dateProvider: DateProvider
 ) : BaseViewModel() {
 
@@ -160,7 +161,8 @@ class DiscussionViewModel @Inject constructor(
                                     timestamp = msg.createdAt * 1000,
                                     formattedDate = formattedMsgDate,
                                     reactions = reactions,
-                                    avatar = avatar
+                                    avatar = avatar,
+                                    isOwn = msg.creator == account
                                 )
                             )
                         } else {
@@ -174,7 +176,8 @@ class DiscussionViewModel @Inject constructor(
                                     formattedDate = formattedMsgDate,
                                     reactions = reactions,
                                     replyCount = 0,
-                                    avatar = avatar
+                                    avatar = avatar,
+                                    isOwn = msg.creator == account
                                 )
                             )
                         }
@@ -274,6 +277,19 @@ class DiscussionViewModel @Inject constructor(
         _inputMode.value = DiscussionInputMode.Default
     }
 
+    fun onDeleteComment(id: Id) {
+        viewModelScope.launch {
+            deleteComment.async(
+                params = Command.ChatCommand.DeleteMessage(
+                    chat = vmParams.ctx,
+                    msg = id
+                )
+            ).onFailure { e ->
+                Timber.e(e, "Failed to delete comment")
+            }
+        }
+    }
+
     fun onSendComment(text: String) {
         if (text.isBlank()) return
         val mode = inputMode.value
@@ -303,7 +319,7 @@ class DiscussionViewModel @Inject constructor(
         for (block in blocks) {
             when (block) {
                 is Chat.Message.MessageBlock.Text -> {
-                    segments.add(block.text to block.marks)
+                    segments.add(block.text.trim() to block.marks)
                 }
                 is Chat.Message.MessageBlock.Link -> {
                     val placeholder = block.targetObjectId

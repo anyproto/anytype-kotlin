@@ -146,20 +146,21 @@ fun CreateSpaceScreen(
                 onValueChange = {
                     innerValue = it
                 },
-                textStyle = BodySemiBold.copy(
-                    color = colorResource(id = R.color.text_primary)
-                ),
+                textStyle = BodyRegular,
                 singleLine = true,
                 enabled = !isLoading.value,
                 colors = TextFieldDefaults.colors(
-                    disabledTextColor = colorResource(id = R.color.text_primary),
+                    focusedTextColor = colorResource(id = R.color.text_primary),
+                    disabledTextColor = colorResource(id = R.color.text_tertiary),
                     cursorColor = colorResource(id = R.color.color_accent),
                     focusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
                     unfocusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
                     errorContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                    disabledContainerColor = colorResource(id = R.color.shape_transparent_tertiary),
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
-                    errorIndicatorColor = Color.Transparent
+                    errorIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
                 ),
                 modifier = Modifier
                     .fillMaxWidth()

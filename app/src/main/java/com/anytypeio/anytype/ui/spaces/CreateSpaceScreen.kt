@@ -11,11 +11,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -26,7 +24,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -102,12 +99,11 @@ fun CreateSpaceScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
             .background(
-                color = colorResource(id = R.color.redEnd),
+                color = colorResource(id = R.color.background_secondary),
                 shape = RoundedCornerShape(16.dp)
             )
-            .imePadding()
+
     ) {
         Dragger(
             modifier = Modifier
@@ -174,7 +170,7 @@ fun CreateSpaceScreen(
                     keyboardController?.hide()
                     focusManager.clearFocus()
                 },
-                shape = RoundedCornerShape(size = 26.dp),
+                shape = RoundedCornerShape(size = 20.dp),
                 placeholder = {
                     Text(
                         modifier = Modifier.padding(start = 1.dp),
@@ -231,15 +227,18 @@ private fun CreateChannelTopBar(
             color = colorResource(id = R.color.text_primary)
         )
 
-        ButtonOnboardingPrimaryLarge(
-            text = stringResource(id = R.string.create),
-            onClick = onCreateClick,
-            loading = isLoading,
-            size = ButtonSize.Small,
-            modifierBox = Modifier
+        Box(
+            modifier = Modifier
                 .align(Alignment.CenterEnd)
                 .padding(end = 16.dp)
-        )
+        ) {
+            ButtonOnboardingPrimaryLarge(
+                text = stringResource(id = R.string.create),
+                onClick = onCreateClick,
+                loading = isLoading,
+                size = ButtonSize.Small,
+            )
+        }
     }
 }
 
@@ -276,7 +275,7 @@ fun SpaceIcon(
                     spotColor = Color.Black.copy(alpha = 0.12f)
                 )
                 .background(
-                    color = colorResource(id = R.color.shape_tertiary),
+                    color = colorResource(id = R.color.shape_secondary),
                     shape = CircleShape
                 )
                 .clickable {
@@ -284,11 +283,12 @@ fun SpaceIcon(
                 },
             contentAlignment = Alignment.Center
         ) {
-            Icon(
+            Image(
                 painter = painterResource(id = R.drawable.ic_edit_24),
                 contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                tint = colorResource(id = R.color.text_primary)
+                contentScale = ContentScale.Inside,
+                modifier = Modifier.size(20.dp),
+                colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary))
             )
         }
         DropdownMenu(

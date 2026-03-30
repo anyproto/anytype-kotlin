@@ -120,20 +120,24 @@ class DiscussionViewModel @Inject constructor(
 
                         val isReply = !msg.replyToMessageId.isNullOrEmpty()
 
-                        val mappedContent = DiscussionView.Content(
-                            msg = content?.text.orEmpty(),
-                            parts = content?.text
-                                .orEmpty()
-                                .let { text ->
-                                    text.splitByMarks(marks = content?.marks.orEmpty())
-                                }
-                                .map { (part, styles) ->
-                                    DiscussionView.Content.Part(
-                                        part = part,
-                                        styles = styles
-                                    )
-                                }
-                        )
+                        val mappedContent = if (msg.blocks.isNotEmpty()) {
+                            flattenBlocksToContent(msg.blocks)
+                        } else {
+                            DiscussionView.Content(
+                                msg = content?.text.orEmpty(),
+                                parts = content?.text
+                                    .orEmpty()
+                                    .let { text ->
+                                        text.splitByMarks(marks = content?.marks.orEmpty())
+                                    }
+                                    .map { (part, styles) ->
+                                        DiscussionView.Content.Part(
+                                            part = part,
+                                            styles = styles
+                                        )
+                                    }
+                            )
+                        }
 
                         val reactions = msg.reactions
                             .toList()
@@ -290,6 +294,65 @@ class DiscussionViewModel @Inject constructor(
                 Timber.e(e, "Failed to send comment")
             }
         }
+    }
+
+    private fun flattenBlocksToContent(
+        blocks: List<Chat.Message.MessageBlock>
+    ): DiscussionView.Content {
+        val segments = mutableListOf<Pair<String, List<Block.Content.Text.Mark>>>()
+        for (block in blocks) {
+            when (block) {
+                is Chat.Message.MessageBlock.Text -> {
+                    segments.add(block.text to block.marks)
+                }
+                is Chat.Message.MessageBlock.Link -> {
+                    val placeholder = block.targetObjectId
+                    val mark = Block.Content.Text.Mark(
+                        range = IntRange(0, placeholder.length),
+                        type = Block.Content.Text.Mark.Type.MENTION,
+                        param = block.targetObjectId
+                    )
+                    segments.add(placeholder to listOf(mark))
+                }
+                is Chat.Message.MessageBlock.Embed -> {
+                    segments.add(block.text to emptyList())
+                }
+            }
+        }
+
+        val combinedText = StringBuilder()
+        val allMarks = mutableListOf<Block.Content.Text.Mark>()
+        for ((index, segment) in segments.withIndex()) {
+            val (text, marks) = segment
+            val offset = combinedText.length
+            combinedText.append(text)
+            for (mark in marks) {
+                allMarks.add(
+                    mark.copy(
+                        range = IntRange(
+                            start = mark.range.first + offset,
+                            endInclusive = mark.range.last + offset
+                        )
+                    )
+                )
+            }
+            if (index < segments.size - 1) {
+                combinedText.append("\n")
+            }
+        }
+
+        val resultText = combinedText.toString()
+        return DiscussionView.Content(
+            msg = resultText,
+            parts = resultText
+                .splitByMarks(marks = allMarks)
+                .map { (part, styles) ->
+                    DiscussionView.Content.Part(
+                        part = part,
+                        styles = styles
+                    )
+                }
+        )
     }
 
     data class Params(

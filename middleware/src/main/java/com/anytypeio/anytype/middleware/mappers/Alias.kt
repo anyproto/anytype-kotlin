@@ -46,6 +46,11 @@ typealias MChatMessageAttachment = anytype.model.ChatMessage.Attachment
 typealias MChatMessageAttachmentType = anytype.model.ChatMessage.Attachment.AttachmentType
 typealias MChatMessageReactions = anytype.model.ChatMessage.Reactions
 typealias MChatMessageReactionIdentity = anytype.model.ChatMessage.Reactions.IdentityList
+typealias MChatMessageBlock = anytype.model.ChatMessage.MessageBlock
+typealias MChatMessageBlockText = anytype.model.ChatMessage.MessageBlockText
+typealias MChatMessageBlockLink = anytype.model.ChatMessage.MessageBlockLink
+typealias MChatMessageBlockLinkType = anytype.model.ChatMessage.MessageBlockLink.LinkType
+typealias MChatMessageBlockEmbed = anytype.model.ChatMessage.MessageBlockEmbed
 
 typealias MDV = anytype.model.Block.Content.Dataview
 typealias MDVView = anytype.model.Block.Content.Dataview.View

@@ -1184,6 +1184,7 @@ fun MP2PStatus.toCoreModel(): P2PStatus = when (this) {
 fun MChatMessage.core(): Chat.Message = Chat.Message(
     id = id,
     content = message?.core(),
+    blocks = blocks.mapNotNull { it.toCoreMessageBlock() },
     creator = creator,
     createdAt = createdAt,
     modifiedAt = modifiedAt,
@@ -1212,6 +1213,28 @@ fun MChatMessageContent.core(): Chat.Message.Content = Chat.Message.Content(
     style = style.toCoreModels(),
     marks = marks.map { it.toCoreModels() }
 )
+
+fun MChatMessageBlock.toCoreMessageBlock(): Chat.Message.MessageBlock? = when {
+    text != null -> Chat.Message.MessageBlock.Text(
+        text = text!!.text,
+        style = text!!.style.toCoreModels(),
+        marks = text!!.marks.map { it.toCoreModels() },
+        checked = text!!.checked
+    )
+    link != null -> Chat.Message.MessageBlock.Link(
+        targetObjectId = link!!.targetObjectId,
+        type = when (link!!.type) {
+            MChatMessageBlockLinkType.Object -> Chat.Message.MessageBlock.Link.LinkType.OBJECT
+            MChatMessageBlockLinkType.File -> Chat.Message.MessageBlock.Link.LinkType.FILE
+            MChatMessageBlockLinkType.Image -> Chat.Message.MessageBlock.Link.LinkType.IMAGE
+            MChatMessageBlockLinkType.Bookmark -> Chat.Message.MessageBlock.Link.LinkType.BOOKMARK
+        }
+    )
+    embed != null -> Chat.Message.MessageBlock.Embed(
+        text = embed!!.text
+    )
+    else -> null
+}
 
 fun MChatState.core(): Chat.State = Chat.State(
     unreadMessages = messages?.let { unread ->

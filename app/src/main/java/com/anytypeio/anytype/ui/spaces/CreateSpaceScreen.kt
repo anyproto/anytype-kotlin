@@ -1,32 +1,32 @@
 package com.anytypeio.anytype.ui.spaces
 
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -40,43 +40,45 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.R
-import androidx.compose.ui.text.style.TextOverflow
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
-import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel.SpaceMemberView
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel.SpaceMemberView
 
 
 @Composable
@@ -84,11 +86,11 @@ fun CreateSpaceScreen(
     spaceIconView: SpaceIconView,
     selectedMembers: List<SpaceMemberView> = emptyList(),
     onCreate: (Name) -> Unit,
+    onBackClicked: () -> Unit,
     onSpaceIconUploadClicked: () -> Unit,
     onSpaceIconRemoveClicked: () -> Unit,
     isLoading: State<Boolean>
 ) {
-    val isChatSpace = false
     var innerValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
     }
@@ -97,130 +99,102 @@ fun CreateSpaceScreen(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .background(
-                color = colorResource(id = R.color.background_primary),
+                color = colorResource(id = R.color.redEnd),
                 shape = RoundedCornerShape(16.dp)
             )
             .imePadding()
     ) {
         Dragger(
             modifier = Modifier
+                .align(Alignment.CenterHorizontally)
                 .padding(vertical = 6.dp)
-                .align(Alignment.TopCenter)
         )
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(top = 16.dp)
-        ) {
-            Header()
-            Spacer(modifier = Modifier.height(8.dp))
-            SpaceIcon(
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                spaceIconView = when (spaceIconView) {
-                    is SpaceIconView.DataSpace.Placeholder -> spaceIconView.copy(
-                        name = innerValue.text.ifEmpty {
-                            stringResource(id = R.string.u)
-                        }
-                    )
-                    else -> spaceIconView
-                },
-                onSpaceIconUploadClicked = onSpaceIconUploadClicked,
-                onSpaceIconRemoveClicked = onSpaceIconRemoveClicked
-            )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally),
-                text = stringResource(id = R.string.create_space_change_icon),
-                style = BodyCalloutMedium,
-                color = colorResource(id = R.color.glyph_active)
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .wrapContentHeight()
-            ) {
-                Text(
-                    text = stringResource(id = R.string.create_space_space_name),
-                    style = Caption1Medium,
-                    color = colorResource(id = R.color.text_secondary)
-                )
-                OutlinedTextField(
-                    value = innerValue,
-                    onValueChange = {
-                        innerValue = it
-                    },
-                    textStyle = BodySemiBold.copy(
-                        color = colorResource(id = R.color.text_primary)
-                    ),
-                    singleLine = true,
-                    enabled = true,
-                    colors = TextFieldDefaults.colors(
-                        disabledTextColor = colorResource(id = R.color.text_primary),
-                        cursorColor = colorResource(id = R.color.color_accent),
-                        focusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-                        unfocusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-                        errorContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        errorIndicatorColor = Color.Transparent
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(start = 0.dp, top = 12.dp)
-                        .focusRequester(focusRequester),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    keyboardActions = KeyboardActions {
-                        keyboardController?.hide()
-                        focusManager.clearFocus()
-                    },
-                    shape = RoundedCornerShape(size = 26.dp),
-                    placeholder = {
-                        Text(
-                            modifier = Modifier.padding(start = 1.dp),
-                            text = stringResource(id = R.string.untitled),
-                            style = BodySemiBold,
-                            color = colorResource(id = R.color.text_tertiary)
-                        )
-                    }
-                )
-            }
-            if (selectedMembers.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(20.dp))
-                Section(
-                    title = stringResource(id = com.anytypeio.anytype.localization.R.string.multiplayer_members),
-                    textPaddingStart = 16.dp
-                )
-                selectedMembers.forEach { member ->
-                    SelectedMemberRow(member = member)
-                }
-            }
-        }
-        ButtonOnboardingPrimaryLarge(
-            onClick = {
+        CreateChannelTopBar(
+            onBackClick = onBackClicked,
+            onCreateClick = {
                 focusManager.clearFocus()
                 keyboardController?.hide()
                 onCreate(innerValue.text)
             },
-            text = stringResource(id = R.string.create),
-            size = ButtonSize.Large,
-            modifierBox = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .windowInsetsPadding(WindowInsets.ime)
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp),
-            loading = isLoading.value,
-            enabled = true
+            isLoading = isLoading.value
         )
+        Spacer(modifier = Modifier.height(8.dp))
+        SpaceIcon(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            spaceIconView = when (spaceIconView) {
+                is SpaceIconView.DataSpace.Placeholder -> spaceIconView.copy(
+                    name = innerValue.text.ifEmpty {
+                        stringResource(id = R.string.u)
+                    }
+                )
+                else -> spaceIconView
+            },
+            onSpaceIconUploadClicked = onSpaceIconUploadClicked,
+            onSpaceIconRemoveClicked = onSpaceIconRemoveClicked
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .wrapContentHeight()
+        ) {
+            OutlinedTextField(
+                value = innerValue,
+                onValueChange = {
+                    innerValue = it
+                },
+                textStyle = BodySemiBold.copy(
+                    color = colorResource(id = R.color.text_primary)
+                ),
+                singleLine = true,
+                enabled = true,
+                colors = TextFieldDefaults.colors(
+                    disabledTextColor = colorResource(id = R.color.text_primary),
+                    cursorColor = colorResource(id = R.color.color_accent),
+                    focusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                    unfocusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                    errorContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    errorIndicatorColor = Color.Transparent
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(start = 0.dp, top = 12.dp)
+                    .focusRequester(focusRequester),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                },
+                shape = RoundedCornerShape(size = 26.dp),
+                placeholder = {
+                    Text(
+                        modifier = Modifier.padding(start = 1.dp),
+                        text = stringResource(id = R.string.untitled),
+                        style = BodySemiBold,
+                        color = colorResource(id = R.color.text_tertiary)
+                    )
+                }
+            )
+        }
+        if (selectedMembers.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(20.dp))
+            Section(
+                title = stringResource(id = com.anytypeio.anytype.localization.R.string.multiplayer_members),
+                textPaddingStart = 16.dp
+            )
+            selectedMembers.forEach { member ->
+                SelectedMemberRow(member = member)
+            }
+        }
     }
 
     LaunchedEffect(Unit) {
@@ -229,17 +203,42 @@ fun CreateSpaceScreen(
 }
 
 @Composable
-fun Header() {
+private fun CreateChannelTopBar(
+    onBackClick: () -> Unit,
+    onCreateClick: () -> Unit,
+    isLoading: Boolean
+) {
     Box(
         modifier = Modifier
-            .height(48.dp)
             .fillMaxWidth()
+            .height(54.dp)
     ) {
+        Image(
+            painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_back_24),
+            contentDescription = "Back",
+            modifier = Modifier
+                .size(48.dp)
+                .align(Alignment.CenterStart)
+                .noRippleThrottledClickable { onBackClick() },
+            contentScale = ContentScale.Inside,
+            colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary))
+        )
+
         Text(
             modifier = Modifier.align(Alignment.Center),
             text = stringResource(id = R.string.create_channel),
             style = Title1,
             color = colorResource(id = R.color.text_primary)
+        )
+
+        ButtonOnboardingPrimaryLarge(
+            text = stringResource(id = R.string.create),
+            onClick = onCreateClick,
+            loading = isLoading,
+            size = ButtonSize.Small,
+            modifierBox = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 16.dp)
         )
     }
 }
@@ -260,10 +259,38 @@ fun SpaceIcon(
     Box(modifier = modifier.wrapContentSize()) {
         SpaceIconView(
             icon = spaceIconView,
-            onSpaceIconClick = {
+            modifier = Modifier.clickable {
                 isIconMenuExpanded.value = !isIconMenuExpanded.value
             }
         )
+        // Edit badge
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .offset(x = 6.dp, y = 6.dp)
+                .size(32.dp)
+                .shadow(
+                    elevation = 16.dp,
+                    shape = CircleShape,
+                    ambientColor = Color.Black.copy(alpha = 0.12f),
+                    spotColor = Color.Black.copy(alpha = 0.12f)
+                )
+                .background(
+                    color = colorResource(id = R.color.shape_tertiary),
+                    shape = CircleShape
+                )
+                .clickable {
+                    isIconMenuExpanded.value = !isIconMenuExpanded.value
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_edit_24),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = colorResource(id = R.color.text_primary)
+            )
+        }
         DropdownMenu(
             modifier = Modifier,
             expanded = isIconMenuExpanded.value,
@@ -409,6 +436,7 @@ fun CreateSpaceScreenPreview() {
             name = "My Space"
         ),
         onCreate = { },
+        onBackClicked = {},
         onSpaceIconUploadClicked = {},
         onSpaceIconRemoveClicked = {},
         isLoading = state

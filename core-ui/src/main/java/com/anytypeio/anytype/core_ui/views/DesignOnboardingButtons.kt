@@ -5,6 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
@@ -52,24 +53,24 @@ fun ButtonOnboardingPrimaryLarge(
                 onClick = { if (!loading) onClick() },
                 interactionSource = interactionSource,
                 enabled = enabled,
-                shape = RoundedCornerShape(100.dp),
+                shape = RoundedCornerShape(size.cornerSize),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = backgroundColor,
                     contentColor = colorResource(id = R.color.text_white),
                     disabledBackgroundColor = colorResource(id = R.color.control_tertiary),
                     disabledContentColor = colorResource(id = R.color.text_tertiary)
                 ),
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
                 elevation = ButtonDefaults.elevation(
                     defaultElevation = 0.dp,
                     pressedElevation = 0.dp
                 ),
-                contentPadding = PaddingValues(0.dp, 14.dp, 0.dp, 14.dp)
+                contentPadding = size.contentPadding
             ) {
                 Text(
                     text = if (loading) "" else text,
                     modifier = Modifier,
-                    style = ButtonMedium,
+                    style = size.textStyle,
                     textAlign = TextAlign.Center
                 )
             }

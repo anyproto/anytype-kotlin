@@ -2974,6 +2974,14 @@ class Middleware @Inject constructor(
     }
 
     @Throws
+    fun objectDiscussionAdd(objectId: Id): Id {
+        val request = Rpc.Object.DiscussionAdd.Request(objectId = objectId)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectDiscussionAdd(request) }
+        logResponseIfDebug(response, time)
+        return response.discussionId
+    }
+
     fun chatAddMessage(command: Command.ChatCommand.AddMessage) : Pair<Id, List<Event.Command.Chats>> {
         val request = Rpc.Chat.AddMessage.Request(
             chatObjectId = command.chat,

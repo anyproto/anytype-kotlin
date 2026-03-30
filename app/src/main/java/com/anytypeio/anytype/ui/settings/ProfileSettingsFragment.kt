@@ -141,6 +141,11 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                                 findNavController().navigate(R.id.debugScreen)
                             }
                         },
+                        onExperimentalFeaturesClicked = {
+                            runCatching {
+                                findNavController().navigate(R.id.experimentalFeaturesScreen)
+                            }
+                        },
                         isDebugEnabled = vm.isDebugEnabled.collectAsStateWithLifecycle().value,
                         onMiscSectionClicked = vm::onMiscSectionClicked,
                         notificationsDisabled = notificationsDisabled,

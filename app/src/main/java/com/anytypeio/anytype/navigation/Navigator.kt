@@ -13,6 +13,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.allcontent.AllContentFragment
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.chats.ChatFragment
+import com.anytypeio.anytype.ui.discussions.DiscussionFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
@@ -59,6 +60,16 @@ class Navigator : AppNavigation {
                 ctx = target,
                 space = space,
                 popUpToVault = popUpToVault
+            )
+        )
+    }
+
+    override fun openDiscussion(target: Id, space: Id) {
+        navController?.navigate(
+            R.id.discussionScreen,
+            DiscussionFragment.args(
+                ctx = target,
+                space = space
             )
         )
     }

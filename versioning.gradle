@@ -69,7 +69,7 @@ ext.getBuildVersionName = {
         def baseName = "${versionMajor}.${versionMinor}.${versionPatch}-${date}"
         return customPostfix ? "${baseName}-${customPostfix}" : baseName
     } else {
-        def baseName = "${versionMajor}.${versionMinor}.${versionPatch}-beta"
+        def baseName = "${versionMajor}.${versionMinor}.${versionPatch}-alpha"
         return customPostfix ? "${baseName}-${customPostfix}" : baseName
     }
 }

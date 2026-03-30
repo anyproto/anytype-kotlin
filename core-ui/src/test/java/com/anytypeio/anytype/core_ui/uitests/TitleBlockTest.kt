@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.veryLight
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -95,7 +95,7 @@ class TitleBlockTest {
             rvMatcher.apply {
                 onItemView(0, R.id.root).checkIsDisplayed()
                 onItemView(0, R.id.title).checkHasBackgroundColor(
-                    resources.veryLight(redBackground, 0)
+                    resources.light(redBackground, 0)
                 )
                 onItemView(0, R.id.title).checkHasText(title.text!!)
             }

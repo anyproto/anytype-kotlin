@@ -210,6 +210,7 @@ dependencies {
     implementation project(':crash-reporting')
     implementation project(':payments')
     implementation project(':feature-chats')
+    implementation project(':feature-discussions')
     implementation project(':gallery-experience')
     implementation project(':feature-all-content')
     implementation project(':feature-date')

@@ -1127,6 +1127,10 @@ class BlockDataRepository(
         return remote.diffVersions(command)
     }
 
+    override suspend fun addDiscussion(objectId: Id): Id {
+        return remote.addDiscussion(objectId)
+    }
+
     override suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Pair<Id, List<Event.Command.Chats>> {
         return remote.addChatMessage(command)
     }

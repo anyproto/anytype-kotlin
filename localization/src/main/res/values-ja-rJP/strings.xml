@@ -556,8 +556,6 @@
     <string name="file_delete_delete">削除</string>
     <string name="menu_type_change">タイプを変更</string>
     <string name="menu_type_open">タイプを開く</string>
-    <string name="menu_type_open_set">クエリ %1$sを開く</string>
-    <string name="menu_type_create_set">クエリ %1$sを作成</string>
     <string name="toast_active_view_delete">このビューは削除できません</string>
     <string name="type_templates_widget_title">オブジェクトを作成</string>
     <string name="view_layout_widget_title">レイアウト</string>

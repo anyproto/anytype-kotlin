@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getSystemLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.core_models.ext.canCreateAdditionalChats
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.R
@@ -230,6 +231,7 @@ sealed class Widget {
             const val SECTION_OBJECT_TYPE = "object_type_section"
             const val SECTION_RECENTLY_EDITED = "recently_edited_section"
             const val OBJECT_TYPES_GROUP_ID = "object_types_group"
+            const val WIDGET_SPACE_CHAT_ID = "space_chat_widget_top"
             const val SOURCE_OTHER = "source_other"
 
             val SOURCE_KEYS = ObjectSearchConstants.defaultKeys
@@ -442,6 +444,7 @@ data class WidgetUiParams(
  *
  * @property pinnedWidgets Widgets from the pinned section (user-arranged widgets)
  * @property typeWidgets Widgets from the object type section
+ * @property chatWidget The space chat widget, pinned at the top for single-chat spaces (CHAT, ONE_TO_ONE)
  * @property unreadWidget The unread chat list widget, displayed separately at the top
  * @property recentlyEditedWidget The recently edited widget, displayed after objects section
  * @property binWidget The bin widget, displayed separately at the bottom
@@ -449,6 +452,7 @@ data class WidgetUiParams(
 data class WidgetSections(
     val pinnedWidgets: List<Widget>,
     val typeWidgets: List<Widget>,
+    val chatWidget: Widget.Chat? = null,
     val unreadWidget: Widget.UnreadChatList? = null,
     val recentlyEditedWidget: Widget.RecentlyEdited? = null,
     val binWidget: Widget.Bin? = null
@@ -516,9 +520,14 @@ suspend fun buildWidgetSections(
         null
     }
 
+    // Chat widget is always shown for single-chat spaces (CHAT, ONE_TO_ONE),
+    // independent of section visibility config.
+    val chatWidget = buildChatWidget(spaceView = spaceView, state = state)
+
     return WidgetSections(
         pinnedWidgets = pinnedWidgets,
         typeWidgets = typeWidgets,
+        chatWidget = chatWidget,
         unreadWidget = unreadWidget,
         recentlyEditedWidget = recentlyEditedWidget,
         binWidget = binWidget
@@ -526,8 +535,8 @@ suspend fun buildWidgetSections(
 }
 
 /**
- * Builds the space chat widget for data spaces with chat.
- * Displayed separately at the top, above all sections.
+ * Builds the space chat widget for single-chat spaces (CHAT, ONE_TO_ONE).
+ * Displayed as a fixed, non-removable widget at the top, above all sections.
  */
 private fun buildChatWidget(
     spaceView: ObjectWrapper.SpaceView,
@@ -535,7 +544,7 @@ private fun buildChatWidget(
 ): Widget.Chat? {
     val spaceChatId = spaceView.chatId
     return if (!spaceChatId.isNullOrEmpty()
-        && spaceView.spaceUxType != SpaceUxType.CHAT
+        && !spaceView.spaceUxType.canCreateAdditionalChats
     ) {
         Widget.Chat(config = state.config)
     } else {

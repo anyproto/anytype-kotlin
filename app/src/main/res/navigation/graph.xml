@@ -183,6 +183,11 @@
             app:popUpToInclusive="false" />
     </fragment>
 
+    <fragment
+        android:id="@+id/discussionScreen"
+        android:name="com.anytypeio.anytype.ui.discussions.DiscussionFragment"
+        android:label="Discussion" />
+
     <dialog
         android:id="@+id/selectChatReactionScreen"
         android:name="com.anytypeio.anytype.ui.chats.SelectChatReactionFragment"
@@ -501,6 +506,11 @@
         android:id="@+id/debugScreen"
         android:name="com.anytypeio.anytype.ui.settings.DebugFragment"
         android:label="DebugScreen" />
+
+    <dialog
+        android:id="@+id/experimentalFeaturesScreen"
+        android:name="com.anytypeio.anytype.ui.settings.ExperimentalFeaturesFragment"
+        android:label="ExperimentalFeaturesScreen" />
 
     <dialog
         android:id="@+id/globalSearchScreen"

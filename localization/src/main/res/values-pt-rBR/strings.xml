@@ -861,9 +861,18 @@
     <string name="personal">Padrão</string>
     <string name="create_space">Criar espaço</string>
     <string name="create_chat">Criar conversa</string>
+    <string name="create_channel">New Channel</string>
     <string name="create_space_change_icon">Alterar ícone</string>
     <string name="create_space_chat_name">Nome da conversa</string>
     <string name="create_space_space_name">Nome do espaço</string>
+    <!-- Homepage Picker -->
+    <string name="homepage_picker_title">Create Home</string>
+    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_chat">Chat</string>
+    <string name="homepage_picker_widgets">Widgets</string>
+    <string name="homepage_picker_page">Página</string>
+    <string name="homepage_picker_collection">Coleção</string>
+    <string name="homepage_picker_later">Depois</string>
     <string name="generic_error">Algo deu errado. Por favor, tente novamente.</string>
     <string name="type">Tipo</string>
     <string name="format">Formato</string>
@@ -1281,6 +1290,7 @@
     <string name="multiplayer_viewer_access_desc">Pessoas com link podem ver e ler a conversa</string>
     <string name="multiplayer_request_access">Solicitar acesso</string>
     <string name="multiplayer_request_access_desc">O proprietário deve aprovar cada solicitação de acesso</string>
+    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
     <string name="multiplayer_qr_code">Código QR</string>
     <string name="multiplayer_mute">Mute</string>
     <string name="multiplayer_unmute">Unmute</string>
@@ -1982,6 +1992,8 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="vault_create_chat_description">For real-time conversations</string>
     <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">For organized content and data</string>
+    <string name="vault_create_personal">Personal</string>
+    <string name="vault_create_group">Group</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ideas need conversations</string>
     <string name="spaces_introduction_page1_description">Anytype now supports real-time chat in Shared Channels — so your thoughts and dialogues can grow together.</string>
@@ -2022,6 +2034,8 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="failed_to_load_image">Failed to load image</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Join via QR Code</string>
+    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_next">Avançar</string>
     <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
     <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
     <string name="vault_qr_invalid_title">Invalid QR code</string>
@@ -2034,6 +2048,10 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="open_settings">Open Settings</string>
     <string name="allow">Permitir</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Shared Space Limit (DROID-4388) -->
+    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
+    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
+    <string name="vault_manage_channels">Manage Channels</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Fotos</string>
     <string name="attachment_menu_camera">Câmara</string>

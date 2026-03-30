@@ -859,9 +859,18 @@
     <string name="personal">默认</string>
     <string name="create_space">创建空间</string>
     <string name="create_chat">创建聊天</string>
+    <string name="create_channel">New Channel</string>
     <string name="create_space_change_icon">更改图标</string>
     <string name="create_space_chat_name">聊天名称</string>
     <string name="create_space_space_name">空间名称</string>
+    <!-- Homepage Picker -->
+    <string name="homepage_picker_title">创建主页</string>
+    <string name="homepage_picker_description">选择您和频道成员在打开频道时看到的内容。您可以随时在设置中进行更改。</string>
+    <string name="homepage_picker_chat">聊天</string>
+    <string name="homepage_picker_widgets">小部件</string>
+    <string name="homepage_picker_page">页面</string>
+    <string name="homepage_picker_collection">合集</string>
+    <string name="homepage_picker_later">稍后</string>
     <string name="generic_error">出错了，请再试一次。</string>
     <string name="type">类型</string>
     <string name="format">格式</string>
@@ -1277,6 +1286,7 @@
     <string name="multiplayer_viewer_access_desc">拥有链接的人可以查看和阅读聊天</string>
     <string name="multiplayer_request_access">请求访问</string>
     <string name="multiplayer_request_access_desc">所有者必须批准每个加入请求</string>
+    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
     <string name="multiplayer_qr_code">二维码</string>
     <string name="multiplayer_mute">静音</string>
     <string name="multiplayer_unmute">取消静音</string>
@@ -1968,6 +1978,8 @@
     <string name="vault_create_chat_description">用于实时对话</string>
     <string name="vault_create_space">新建空间</string>
     <string name="vault_create_space_description">用于结构化内容和数据</string>
+    <string name="vault_create_personal">个人</string>
+    <string name="vault_create_group">分组</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">想法需要对话</string>
     <string name="spaces_introduction_page1_description">Anytype 现已支持共享空间的实时聊天——让每一次所思所言，共同生长。</string>
@@ -2008,6 +2020,8 @@
     <string name="failed_to_load_image">加载图片失败</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">通过二维码加入</string>
+    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_next">下一步</string>
     <string name="vault_qr_scan_error_title">无法扫描二维码</string>
     <string name="vault_qr_scan_error_description">请确保它清晰可见并重试。</string>
     <string name="vault_qr_invalid_title">无效的二维码</string>
@@ -2020,6 +2034,10 @@
     <string name="open_settings">打开设置</string>
     <string name="allow">允许</string>
     <string name="attachment_image">附件图片</string>
+    <!-- Shared Space Limit (DROID-4388) -->
+    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
+    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
+    <string name="vault_manage_channels">Manage Channels</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">照片</string>
     <string name="attachment_menu_camera">相机</string>

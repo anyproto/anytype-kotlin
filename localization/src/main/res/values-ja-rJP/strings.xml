@@ -859,9 +859,18 @@
     <string name="personal">デフォルト</string>
     <string name="create_space">スペースを作成</string>
     <string name="create_chat">チャットを作成</string>
+    <string name="create_channel">New Channel</string>
     <string name="create_space_change_icon">アイコンを変更</string>
     <string name="create_space_chat_name">Chat name</string>
     <string name="create_space_space_name">スペース名</string>
+    <!-- Homepage Picker -->
+    <string name="homepage_picker_title">Create Home</string>
+    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_chat">チャット</string>
+    <string name="homepage_picker_widgets">Widgets</string>
+    <string name="homepage_picker_page">ページ</string>
+    <string name="homepage_picker_collection">コレクション</string>
+    <string name="homepage_picker_later">あとで</string>
     <string name="generic_error">問題が発生しました。もう一度お試しください。</string>
     <string name="type">種類</string>
     <string name="format">種類</string>
@@ -1277,6 +1286,7 @@
     <string name="multiplayer_viewer_access_desc">スペースやチャットを閲覧することができます</string>
     <string name="multiplayer_request_access">参加リクエスト</string>
     <string name="multiplayer_request_access_desc">スペース所有者が参加リクエストを受け取り、承認する必要があります</string>
+    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
     <string name="multiplayer_qr_code">QRコード</string>
     <string name="multiplayer_mute">ミュート</string>
     <string name="multiplayer_unmute">ミュート解除</string>
@@ -1973,6 +1983,8 @@
     <string name="vault_create_chat_description">For real-time conversations</string>
     <string name="vault_create_space">新しいスペース</string>
     <string name="vault_create_space_description">For organized content and data</string>
+    <string name="vault_create_personal">Personal</string>
+    <string name="vault_create_group">Group</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ideas need conversations</string>
     <string name="spaces_introduction_page1_description">Anytype now supports real-time chat in Shared Channels — so your thoughts and dialogues can grow together.</string>
@@ -2013,6 +2025,8 @@
     <string name="failed_to_load_image">画像を読み込めませんでした</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">QRコードで参加</string>
+    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_next">次へ</string>
     <string name="vault_qr_scan_error_title">QRコードをスキャンできませんでした</string>
     <string name="vault_qr_scan_error_description">はっきり見えることを確認し、もう一度お試しください。</string>
     <string name="vault_qr_invalid_title">無効なQRコード</string>
@@ -2025,6 +2039,10 @@
     <string name="open_settings">設定を開く</string>
     <string name="allow">許可</string>
     <string name="attachment_image">添付画像</string>
+    <!-- Shared Space Limit (DROID-4388) -->
+    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
+    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
+    <string name="vault_manage_channels">Manage Channels</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">画像</string>
     <string name="attachment_menu_camera">カメラ</string>

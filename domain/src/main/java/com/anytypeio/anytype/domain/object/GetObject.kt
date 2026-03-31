@@ -21,14 +21,7 @@ class GetObject @Inject constructor(
     override suspend fun doWork(params: Params): ObjectView = repo.getObject(
         id = params.target,
         space = params.space
-    ).also {
-        if (params.saveAsLastOpened) {
-            settings.setLastOpenedObject(
-                id = params.target,
-                space = params.space
-            )
-        }
-    }
+    )
 
     data class Params(
         val target: Id,

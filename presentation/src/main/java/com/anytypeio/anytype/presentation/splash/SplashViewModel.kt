@@ -417,7 +417,7 @@ class SplashViewModel(
             if (view != null) {
                 Timber.i("Space view loaded: $view")
                 when(view.spaceUxType) {
-                    SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> {
+                    SpaceUxType.ONE_TO_ONE -> {
                         val chat = resolveChatID(
                             space = space,
                             spaceView = view
@@ -431,7 +431,7 @@ class SplashViewModel(
                                 )
                             )
                         } else {
-                            Timber.w("Could not resolve chat ID for chat spaces")
+                            Timber.w("Could not resolve chat ID for one-to-one space")
                             commands.emit(
                                 Command.NavigateToWidgets(
                                     space = space.id,
@@ -441,6 +441,8 @@ class SplashViewModel(
                         }
                     }
                     else -> {
+                        // Regular channels (including former CHAT spaces) navigate
+                        // to widgets; homepage resolution happens in HomeScreenViewModel
                         commands.emit(
                             Command.NavigateToWidgets(
                                 space = space.id,

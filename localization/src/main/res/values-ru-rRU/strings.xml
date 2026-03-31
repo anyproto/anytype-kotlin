@@ -14,6 +14,9 @@
     <string name="clear_file_cache">Очистить кэш-файлов</string>
     <string name="debug_sync_report">Отладочный отчет синхронизации</string>
     <string name="debug">Отладка</string>
+    <string name="experimental_features">Экспериментальные функции</string>
+    <string name="experimental_features_compact_vault">Compact vault mode</string>
+    <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
     <string name="account">Хранилище</string>
     <string name="reset_account">Сбросить хранилище</string>
     <string name="delete_account">Удалить хранилище</string>
@@ -862,9 +865,18 @@
     <string name="personal">По умолчанию</string>
     <string name="create_space">Создать пространство</string>
     <string name="create_chat">Создать чат</string>
+    <string name="create_channel">New Channel</string>
     <string name="create_space_change_icon">Изменить иконку</string>
     <string name="create_space_chat_name">Имя чата</string>
     <string name="create_space_space_name">Название пространства</string>
+    <!-- Homepage Picker -->
+    <string name="homepage_picker_title">Create Home</string>
+    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_chat">Чат</string>
+    <string name="homepage_picker_widgets">Виджеты</string>
+    <string name="homepage_picker_page">Страница</string>
+    <string name="homepage_picker_collection">Коллекция</string>
+    <string name="homepage_picker_later">Не сейчас</string>
     <string name="generic_error">Произошла ошибка. Попробуйте ещё раз.</string>
     <string name="type">Тип</string>
     <string name="format">Формат</string>
@@ -1286,6 +1298,7 @@
     <string name="multiplayer_viewer_access_desc">Люди со ссылкой могут просматривать и читать чат</string>
     <string name="multiplayer_request_access">Запросить доступ</string>
     <string name="multiplayer_request_access_desc">Владелец должен одобрить каждый запрос на присоединение</string>
+    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
     <string name="multiplayer_qr_code">QR-код</string>
     <string name="multiplayer_mute">Заглушить</string>
     <string name="multiplayer_unmute">Включить звук</string>
@@ -1771,6 +1784,9 @@
     <string name="main_navigation_content_desc_search_button">Кнопка поиска объектов</string>
     <string name="main_navigation_content_desc_create_button">Кнопка создания объекта</string>
     <string name="chat">Чат</string>
+    <string name="discussion_comments">comments</string>
+    <string name="discussion_no_comments">No comments yet</string>
+    <string name="discussion_leave_comment">Leave a comment…</string>
     <string name="copy">Копировать</string>
     <string name="copy_text">Скопировать текст</string>
     <string name="copy_plain_text">Копировать обычный текст</string>
@@ -2008,6 +2024,8 @@
     <string name="vault_create_chat_description">Для разговоров в реальном времени</string>
     <string name="vault_create_space">Новое пространство</string>
     <string name="vault_create_space_description">Для организованного содержания и данных</string>
+    <string name="vault_create_personal">Personal</string>
+    <string name="vault_create_group">Group</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Идеи рождаются в диалоге.</string>
     <string name="spaces_introduction_page1_description">Anytype теперь поддерживает чат в режиме реального времени в общих каналах — поэтому ваши мысли и диалоги могут расти вместе.</string>
@@ -2048,17 +2066,24 @@
     <string name="failed_to_load_image">Не удалось загрузить изображение</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Присоединиться через QR-код</string>
+    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_next">Далее</string>
     <string name="vault_qr_scan_error_title">Не удалось отсканировать QR-код</string>
     <string name="vault_qr_scan_error_description">Убедитесь, что это хорошо видно и повторите попытку.</string>
     <string name="vault_qr_invalid_title">Неверный QR-код</string>
     <string name="vault_qr_invalid_description">Отсканированный QR-код не совпадает с действительным приглашением. Пожалуйста, проверьте его и повторите попытку.</string>
     <string name="vault_qr_try_again">Попробуйте еще раз</string>
     <string name="camera_permission_required_title">Требуется доступ к камере</string>
+    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
     <string name="camera_permission_rationale_message">Для сканирования QR-кодов, Anytype необходим доступ к камере. Это разрешение используется только для сканирования QR-кодов.</string>
     <string name="camera_permission_settings_message">Чтобы сканировать QR-коды, необходимо разрешить доступ к камере в настройках устройства.</string>
     <string name="open_settings">Открыть настройки</string>
     <string name="allow">Разрешить</string>
     <string name="attachment_image">Изображение вложения</string>
+    <!-- Shared Space Limit (DROID-4388) -->
+    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
+    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
+    <string name="vault_manage_channels">Manage Channels</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Фото</string>
     <string name="attachment_menu_camera">Камера</string>
@@ -2185,4 +2210,5 @@
     <string name="select_view">Select view</string>
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
+    <string name="chats_search_close_content_description">Close search</string>
 </resources>

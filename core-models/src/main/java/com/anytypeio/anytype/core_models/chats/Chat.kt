@@ -5,6 +5,15 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 
+data class ChatMessageSearchResult(
+    val chatId: Id,
+    val messageId: Id,
+    val score: Long,
+    val highlight: String,
+    val highlightRanges: List<IntRange>,
+    val message: Chat.Message
+)
+
 sealed class Chat {
 
     /**
@@ -19,6 +28,7 @@ sealed class Chat {
         val createdAt: Long,
         val modifiedAt: Long,
         val content: Content?,
+        val blocks: List<MessageBlock> = emptyList(),
         val attachments: List<Attachment> = emptyList(),
         val reactions: Map<String, List<String>> = emptyMap(),
         val replyToMessageId: Id? = null,
@@ -27,9 +37,9 @@ sealed class Chat {
         val synced: Boolean = false
     ) {
         data class Content(
-            val text: String,
-            val style: Block.Content.Text.Style,
-            val marks: List<Block.Content.Text.Mark>
+            val text: String = "",
+            val style: Block.Content.Text.Style = Block.Content.Text.Style.P,
+            val marks: List<Block.Content.Text.Mark> = emptyList()
         )
         data class Attachment(
             val target: Id,
@@ -40,6 +50,27 @@ sealed class Chat {
                 data object Image: Type()
                 data object Link: Type()
             }
+        }
+
+        sealed class MessageBlock {
+            data class Text(
+                val text: String,
+                val style: Block.Content.Text.Style,
+                val marks: List<Block.Content.Text.Mark>,
+                val checked: Boolean = false
+            ) : MessageBlock()
+
+            data class Link(
+                val targetObjectId: Id,
+                val type: LinkType
+            ) : MessageBlock() {
+                enum class LinkType { OBJECT, FILE, IMAGE, BOOKMARK }
+            }
+
+            data class Embed(
+                val text: String,
+                val processor: Int = 0
+            ) : MessageBlock()
         }
 
         companion object {
@@ -63,6 +94,34 @@ sealed class Chat {
                     text = text,
                     marks = marks,
                     style = Block.Content.Text.Style.P
+                ),
+                order = "",
+                synced = false
+            )
+
+            /**
+             * New message builder using blocks field instead of content.
+             */
+            fun newWithBlocks(
+                text: String,
+                attachments: List<Attachment> = emptyList(),
+                replyToMessageId: Id? = null,
+                marks: List<Block.Content.Text.Mark>
+            ) : Message = Message(
+                id = "",
+                createdAt = 0L,
+                modifiedAt = 0L,
+                attachments = attachments,
+                reactions = emptyMap(),
+                creator = "",
+                replyToMessageId = replyToMessageId,
+                content = Message.Content(),
+                blocks = listOf(
+                    MessageBlock.Text(
+                        text = text,
+                        marks = marks,
+                        style = Block.Content.Text.Style.P
+                    )
                 ),
                 order = "",
                 synced = false

@@ -173,14 +173,32 @@ private fun CameraPreview(
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
 
     val barcodeScanner = remember {
-        BarcodeScanning.getClient()
+        try {
+            BarcodeScanning.getClient()
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to initialize barcode scanner")
+            null
+        }
     }
 
     DisposableEffect(Unit) {
         onDispose {
             cameraExecutor.shutdown()
-            barcodeScanner.close()
+            barcodeScanner?.close()
         }
+    }
+
+    if (barcodeScanner == null) {
+        Box(
+            modifier = modifier,
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = stringResource(R.string.barcode_scanner_unavailable),
+                color = Color.White
+            )
+        }
+        return
     }
 
     AndroidView(
@@ -191,7 +209,12 @@ private fun CameraPreview(
 
             val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
             cameraProviderFuture.addListener({
-                val cameraProvider = cameraProviderFuture.get()
+                val cameraProvider = try {
+                    cameraProviderFuture.get()
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to get camera provider")
+                    return@addListener
+                }
 
                 val preview = Preview.Builder()
                     .build()
@@ -244,6 +267,10 @@ private fun CameraPreview(
                 val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
                 try {
+                    if (!cameraProvider.hasCamera(cameraSelector)) {
+                        Timber.w("No back camera available on this device")
+                        return@addListener
+                    }
                     cameraProvider.unbindAll()
                     cameraProvider.bindToLifecycle(
                         lifecycleOwner,

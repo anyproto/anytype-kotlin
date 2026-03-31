@@ -39,6 +39,10 @@ class NavigationRouter(
                     space = command.space,
                     popUpToVault = command.popUpToVault
                 )
+                is AppNavigation.Command.OpenDiscussion -> navigation.openDiscussion(
+                    target = command.target,
+                    space = command.space
+                )
                 is AppNavigation.Command.LaunchObjectSet -> navigation.launchObjectSet(
                     target = command.target,
                     space = command.space

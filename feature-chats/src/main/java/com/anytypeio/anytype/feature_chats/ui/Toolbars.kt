@@ -26,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -61,7 +62,8 @@ fun ChatTopToolbar(
     onCopyLink: () -> Unit = {},
     onMoveToBin: () -> Unit,
     onProperties: () -> Unit = {},
-    onNotificationSettingChanged: (NotificationSetting) -> Unit
+    onNotificationSettingChanged: (NotificationSetting) -> Unit,
+    onSearchClick: () -> Unit = {}
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
 
@@ -208,6 +210,10 @@ fun ChatTopToolbar(
                     onMoveToBinClick = {
                         onMoveToBin()
                         showDropdownMenu = false
+                    },
+                    onSearchClick = {
+                        onSearchClick()
+                        showDropdownMenu = false
                     }
                 )
             }
@@ -234,7 +240,8 @@ fun ChatTopToolbarPreview() {
         onCopyLink = {},
         onMoveToBin = {},
         onProperties = {},
-        onNotificationSettingChanged = {}
+        onNotificationSettingChanged = {},
+        onSearchClick = {}
     )
 }
 
@@ -257,7 +264,8 @@ fun ChatTopToolbarMutedPreview() {
         onCopyLink = {},
         onMoveToBin = {},
         onProperties = {},
-        onNotificationSettingChanged = {}
+        onNotificationSettingChanged = {},
+        onSearchClick = {}
     )
 }
 
@@ -420,4 +428,53 @@ fun FloatingDateHeaderPreview() {
         modifier = Modifier,
         text = "Today"
     )
+}
+
+@Composable
+fun SearchNavigationButtons(
+    modifier: Modifier = Modifier,
+    canNavigateUp: Boolean = true,
+    canNavigateDown: Boolean = true,
+    onNavigateUp: () -> Unit,
+    onNavigateDown: () -> Unit
+) {
+    androidx.compose.foundation.layout.Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(296.dp))
+                .background(color = colorResource(id = R.color.background_primary))
+                .then(
+                    if (canNavigateUp) Modifier.clickable { onNavigateUp() } else Modifier
+                )
+                .alpha(if (canNavigateUp) 1f else 0.3f),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_search_nav_up),
+                contentDescription = "Navigate up",
+                modifier = Modifier.size(32.dp)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(296.dp))
+                .background(color = colorResource(id = R.color.background_primary))
+                .then(
+                    if (canNavigateDown) Modifier.clickable { onNavigateDown() } else Modifier
+                )
+                .alpha(if (canNavigateDown) 1f else 0.3f),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_search_nav_down),
+                contentDescription = "Navigate down",
+                modifier = Modifier.size(32.dp)
+            )
+        }
+    }
 }

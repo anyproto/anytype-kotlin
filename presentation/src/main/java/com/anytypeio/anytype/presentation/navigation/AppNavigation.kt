@@ -16,6 +16,7 @@ interface AppNavigation {
         isPopUpToDashboard: Boolean = false
     )
     fun openChat(target: Id, space: Id, popUpToVault: Boolean = true)
+    fun openDiscussion(target: Id, space: Id)
     fun openDocument(target: Id, space: Id)
     fun openModalTemplateSelect(
         template: Id,
@@ -82,6 +83,7 @@ interface AppNavigation {
         data object ExitToSpaceHome : Command()
         data class OpenObject(val target: Id, val space: Id) : Command()
         data class OpenChat(val target: Id, val space: Id, val popUpToVault: Boolean) : Command()
+        data class OpenDiscussion(val target: Id, val space: Id) : Command()
         data class LaunchDocument(val target: Id, val space: Id) : Command()
         data class OpenModalTemplateSelect(
             val template: Id,

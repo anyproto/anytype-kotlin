@@ -95,6 +95,7 @@ class WidgetsScreenFragment : Fragment(),
     override fun onCreate(savedInstanceState: Bundle?) {
         val vmParams = HomeScreenVmParams(
             spaceId = SpaceId(space),
+            showHomepagePicker = argOrNull<Boolean>(SHOW_HOMEPAGE_PICKER_KEY) ?: false
         )
         componentManager().homeScreenComponent.get(vmParams).inject(this)
         super.onCreate(savedInstanceState)
@@ -228,6 +229,16 @@ class WidgetsScreenFragment : Fragment(),
                 onPinAccepted = {
                     vm.onBundledWidgetDeletionConfirmed()
                 }
+            )
+        }
+
+        // Homepage Picker - shown after channel creation
+        val showHomepagePicker = vm.showHomepagePicker.collectAsStateWithLifecycle().value
+        if (showHomepagePicker) {
+            HomepagePickerBottomSheet(
+                onHomepageSelected = vm::onHomepageSelected,
+                onLaterClicked = vm::onHomepagePickerDismissed,
+                onDismiss = vm::onHomepagePickerDismissed
             )
         }
 
@@ -656,13 +667,16 @@ class WidgetsScreenFragment : Fragment(),
         const val SHOW_MNEMONIC_KEY = "arg.home-screen.show-mnemonic"
         const val DEEP_LINK_KEY = "arg.home-screen.deep-link"
         const val SPACE_ID_KEY = "arg.home-screen.space-id"
+        const val SHOW_HOMEPAGE_PICKER_KEY = "arg.home-screen.show-homepage-picker"
 
         fun args(
             space: Id,
-            deeplink: String? = null
+            deeplink: String? = null,
+            showHomepagePicker: Boolean = false
         ): Bundle = bundleOf(
             DEEP_LINK_KEY to deeplink,
-            SPACE_ID_KEY to space
+            SPACE_ID_KEY to space,
+            SHOW_HOMEPAGE_PICKER_KEY to showHomepagePicker
         )
     }
 }

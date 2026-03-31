@@ -41,6 +41,7 @@ import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.ChatMessageSearchResult
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.isValidObject
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
@@ -49,6 +50,7 @@ import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipFeatures
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
@@ -2127,6 +2129,18 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun workspaceSetDashboard(command: Command.SetHomepage): Id {
+        val request = Rpc.Object.WorkspaceSetDashboard.Request(
+            contextId = command.contextId,
+            objectId = command.objectId
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectWorkspaceSetDashboard(request) }
+        logResponseIfDebug(response, time)
+        return response.objectId
+    }
+
+    @Throws(Exception::class)
     fun workspaceObjectListAdd(objects: List<Id>, space: Id): List<Id> {
         val request = Rpc.Workspace.Object.ListAdd.Request(
             objectIds = objects,
@@ -2604,6 +2618,22 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun addSpaceMembers(
+        space: SpaceId,
+        identities: List<Id>
+    ) {
+        // TODO: Wire to MW when SpaceParticipantsAddList protobuf classes are available
+        // val request = Rpc.Space.ParticipantsAddList.Request(
+        //     spaceId = space.id,
+        //     identities = identities
+        // )
+        // logRequestIfDebug(request)
+        // val (response, time) = measureTimedValue { service.spaceParticipantsAddList(request) }
+        // logResponseIfDebug(response, time)
+        Timber.d("addSpaceMembers stub: space=${space.id}, identities=$identities")
+    }
+
+    @Throws(Exception::class)
     fun changeSpaceMemberPermissions(space: SpaceId, identity: Id, permission: SpaceMemberPermissions) {
         val request = Rpc.Space.ParticipantPermissionsChange.Request(
             spaceId = space.id,
@@ -2845,6 +2875,21 @@ class Middleware @Inject constructor(
     }
 
     @Throws
+    fun membershipV2GetFeatures(noCache: Boolean = false): MembershipFeatures {
+        val request = Rpc.MembershipV2.GetStatus.Request(noCache = noCache)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipV2GetStatus(request) }
+        logResponseIfDebug(response, time)
+        val features = response.data_?.products
+            ?.firstOrNull()?.product?.features
+        return MembershipFeatures(
+            spaceWriters = features?.spaceWriters ?: 0,
+            spaceReaders = features?.spaceReaders ?: 0,
+            sharedSpaces = features?.sharedSpaces ?: 0
+        )
+    }
+
+    @Throws
     fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode) {
         val request = Rpc.Membership.VerifyEmailCode.Request(
             code = command.code
@@ -2929,6 +2974,14 @@ class Middleware @Inject constructor(
     }
 
     @Throws
+    fun objectDiscussionAdd(objectId: Id): Id {
+        val request = Rpc.Object.DiscussionAdd.Request(objectId = objectId)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectDiscussionAdd(request) }
+        logResponseIfDebug(response, time)
+        return response.discussionId
+    }
+
     fun chatAddMessage(command: Command.ChatCommand.AddMessage) : Pair<Id, List<Event.Command.Chats>> {
         val request = Rpc.Chat.AddMessage.Request(
             chatObjectId = command.chat,
@@ -3009,6 +3062,41 @@ class Middleware @Inject constructor(
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatReadAll(request) }
         logResponseIfDebug(response, time)
+    }
+
+    @Throws
+    fun chatSearch(command: Command.ChatCommand.SearchMessages): Command.ChatCommand.SearchMessages.Response {
+        val request = Rpc.Chat.Search.Request(
+            spaceId = command.space.id,
+            chatId = command.chat,
+            fullText = command.query,
+            offset = command.offset,
+            limit = command.limit,
+            sorts = listOf(
+                anytype.model.Search.Message.Sort(
+                    key = anytype.model.Search.Message.Sort.Key.ORDER_ID,
+                    type = anytype.model.Search.Message.Sort.Type.Desc
+                )
+            )
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.chatSearch(request) }
+        logResponseIfDebug(response, time)
+        return Command.ChatCommand.SearchMessages.Response(
+            results = response.results.mapNotNull { result ->
+                val message = result.message ?: return@mapNotNull null
+                ChatMessageSearchResult(
+                    chatId = result.chatId,
+                    messageId = result.messageId,
+                    score = result.score,
+                    highlight = result.highlight,
+                    highlightRanges = result.highlightRanges.map { range ->
+                        range.from..range.to
+                    },
+                    message = message.core()
+                )
+            }
+        )
     }
 
     @Throws

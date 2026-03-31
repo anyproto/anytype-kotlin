@@ -68,6 +68,7 @@ import com.anytypeio.anytype.core_utils.ext.isVideo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.feature_chats.R
+import com.anytypeio.anytype.feature_chats.presentation.ChatSearchState
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
@@ -96,7 +97,12 @@ fun ChatScreenWrapper(
     onRequestOpenFullScreenImageGallery: (List<Id>, Int) -> Unit,
     onSelectChatReaction: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
-    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
+    chatSearchState: ChatSearchState = ChatSearchState.Idle,
+    onSearchDismissed: () -> Unit = {},
+    onSearchBarTapped: () -> Unit = {},
+    onSearchNextResult: () -> Unit = {},
+    onSearchPreviousResult: () -> Unit = {}
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     var showSendRateLimitWarning by remember { mutableStateOf(false) }
@@ -279,7 +285,12 @@ fun ChatScreenWrapper(
             onCameraPermissionDenied = vm::onCameraPermissionDenied,
             onOpenAttachmentInBrowser = vm::onOpenAttachmentInBrowser,
             onOpenAttachmentFile = vm::onOpenAttachmentFile,
-            onOpenAttachmentAsObject = vm::onOpenAttachmentAsObject
+            onOpenAttachmentAsObject = vm::onOpenAttachmentAsObject,
+            chatSearchState = chatSearchState,
+            onSearchDismissed = onSearchDismissed,
+            onSearchBarTapped = onSearchBarTapped,
+            onSearchNextResult = onSearchNextResult,
+            onSearchPreviousResult = onSearchPreviousResult
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->
@@ -426,7 +437,12 @@ fun ChatScreen(
     spaceUxType: SpaceUxType? = null,
     onOpenAttachmentInBrowser: (ChatView.Message) -> Unit = {},
     onOpenAttachmentFile: (ChatView.Message) -> Unit = {},
-    onOpenAttachmentAsObject: (ChatView.Message) -> Unit = {}
+    onOpenAttachmentAsObject: (ChatView.Message) -> Unit = {},
+    chatSearchState: ChatSearchState = ChatSearchState.Idle,
+    onSearchDismissed: () -> Unit = {},
+    onSearchBarTapped: () -> Unit = {},
+    onSearchNextResult: () -> Unit = {},
+    onSearchPreviousResult: () -> Unit = {}
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -676,89 +692,98 @@ fun ChatScreen(
                 onOpenAttachmentAsObject = onOpenAttachmentAsObject
             )
 
-            GoToMentionButton(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(
-                        end = 12.dp,
-                        bottom = if (jumpToBottomButtonEnabled) 60.dp else 0.dp
-                    ),
-                onClick = onGoToMentionClicked,
-                enabled = counter.mentions > 0 && spaceUxType != null && spaceUxType != SpaceUxType.ONE_TO_ONE
-            )
+            val isInlineSearchActive = chatSearchState is ChatSearchState.Active
+                && !chatSearchState.isResultsListVisible
 
-            if (counter.mentions > 0 && spaceUxType != null && spaceUxType != SpaceUxType.ONE_TO_ONE) {
-                Box(
+            if (!isInlineSearchActive) {
+                val hasMentionsInGroupChat = counter.mentions > 0
+                    && spaceUxType != null
+                    && spaceUxType != SpaceUxType.ONE_TO_ONE
+
+                GoToMentionButton(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .defaultMinSize(minWidth = 20.dp, minHeight = 20.dp)
                         .padding(
-                            bottom = if (jumpToBottomButtonEnabled) 106.dp else 46.dp,
-                            end = 2.dp
-                        )
-                        .background(
-                            color = colorResource(R.color.transparent_active),
-                            shape = CircleShape
-                        )
-                ) {
-                    Text(
-                        text = counter.mentions.toString(),
+                            end = 12.dp,
+                            bottom = if (jumpToBottomButtonEnabled) 60.dp else 0.dp
+                        ),
+                    onClick = onGoToMentionClicked,
+                    enabled = hasMentionsInGroupChat
+                )
+
+                if (hasMentionsInGroupChat) {
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.Center)
+                            .align(Alignment.BottomEnd)
+                            .defaultMinSize(minWidth = 20.dp, minHeight = 20.dp)
                             .padding(
-                                horizontal = 5.dp,
-                                vertical = 2.dp
-                            ),
-                        color = colorResource(R.color.glyph_white),
-                        style = Caption1Regular
-                    )
-                }
-            }
-
-            GoToBottomButton(
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = 12.dp),
-                onGoToBottomClicked = {
-                    val lastVisibleIndex = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                    val lastVisibleView = if (lastVisibleIndex != null) {
-                        messages.getOrNull(lastVisibleIndex)
-                    } else {
-                        null
-                    }
-                    if (lastVisibleView is ChatView.Message) {
-                        onScrollToBottomClicked(
-                            lastVisibleView.id
+                                bottom = if (jumpToBottomButtonEnabled) 106.dp else 46.dp,
+                                end = 2.dp
+                            )
+                            .background(
+                                color = colorResource(R.color.transparent_active),
+                                shape = CircleShape
+                            )
+                    ) {
+                        Text(
+                            text = counter.mentions.toString(),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(
+                                    horizontal = 5.dp,
+                                    vertical = 2.dp
+                                ),
+                            color = colorResource(R.color.glyph_white),
+                            style = Caption1Regular
                         )
-                    } else {
-                        onScrollToBottomClicked(null)
                     }
-                },
-                enabled = jumpToBottomButtonEnabled
-            )
+                }
 
-            if (counter.messages > 0) {
-                Box(
+                GoToBottomButton(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .defaultMinSize(minWidth = 20.dp, minHeight = 20.dp)
-                        .padding(bottom = 46.dp, end = 2.dp)
-                        .background(
-                            color = colorResource(R.color.transparent_active),
-                            shape = CircleShape
-                        )
-                ) {
-                    Text(
-                        text = counter.messages.toString(),
+                        .padding(end = 12.dp),
+                    onGoToBottomClicked = {
+                        val lastVisibleIndex = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                        val lastVisibleView = if (lastVisibleIndex != null) {
+                            messages.getOrNull(lastVisibleIndex)
+                        } else {
+                            null
+                        }
+                        if (lastVisibleView is ChatView.Message) {
+                            onScrollToBottomClicked(
+                                lastVisibleView.id
+                            )
+                        } else {
+                            onScrollToBottomClicked(null)
+                        }
+                    },
+                    enabled = jumpToBottomButtonEnabled
+                )
+
+                if (counter.messages > 0) {
+                    Box(
                         modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(
-                                horizontal = 5.dp,
-                                vertical = 2.dp
-                            ),
-                        color = colorResource(R.color.glyph_white),
-                        style = Caption1Regular
-                    )
+                            .align(Alignment.BottomEnd)
+                            .defaultMinSize(minWidth = 20.dp, minHeight = 20.dp)
+                            .padding(bottom = 46.dp, end = 2.dp)
+                            .background(
+                                color = colorResource(R.color.transparent_active),
+                                shape = CircleShape
+                            )
+                    ) {
+                        Text(
+                            text = counter.messages.toString(),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .padding(
+                                    horizontal = 5.dp,
+                                    vertical = 2.dp
+                                ),
+                            color = colorResource(R.color.glyph_white),
+                            style = Caption1Regular
+                        )
+                    }
                 }
             }
 
@@ -854,6 +879,18 @@ fun ChatScreen(
                 }
             }
 
+            if (chatSearchState is ChatSearchState.Active && !chatSearchState.isResultsListVisible) {
+                SearchNavigationButtons(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 12.dp, bottom = 12.dp),
+                    canNavigateUp = chatSearchState.currentIndex < chatSearchState.results.size - 1,
+                    canNavigateDown = chatSearchState.currentIndex > 0,
+                    onNavigateUp = onSearchNextResult,
+                    onNavigateDown = onSearchPreviousResult
+                )
+            }
+
             if (isFloatingDateVisible.value && floatingDateState.value != null) {
                 FloatingDateHeader(
                     modifier = Modifier
@@ -869,7 +906,19 @@ fun ChatScreen(
             )
         }
 
-        if (isReadOnly) {
+        if (chatSearchState is ChatSearchState.Active && !chatSearchState.isResultsListVisible) {
+            ChatSearchBar(
+                query = chatSearchState.query,
+                onQueryChanged = {},
+                onDismiss = onSearchDismissed,
+                onClick = onSearchBarTapped,
+                backgroundColorRes = R.color.background_primary,
+                closeIconTintColorRes = R.color.glyph_selected,
+                modifier = Modifier
+                    .imePadding()
+                    .navigationBarsPadding()
+            )
+        } else if (isReadOnly) {
             ReaderChatBox(
                 modifier = Modifier
                     .padding(start = 20.dp, end = 20.dp, bottom = 12.dp)

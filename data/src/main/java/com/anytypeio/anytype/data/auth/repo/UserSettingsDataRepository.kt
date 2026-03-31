@@ -185,6 +185,14 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         cache.setDebugMenuEnabled(enabled)
     }
 
+    override suspend fun getCompactModeEnabled(): Boolean {
+        return cache.getCompactModeEnabled()
+    }
+
+    override suspend fun setCompactModeEnabled(enabled: Boolean) {
+        cache.setCompactModeEnabled(enabled)
+    }
+
     override suspend fun getInstalledAtDate(account: Account): Long? {
         return cache.getInstalledAtDate(account)
     }

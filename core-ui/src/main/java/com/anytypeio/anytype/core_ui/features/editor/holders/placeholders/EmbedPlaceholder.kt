@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockEmbedBinding
 import com.anytypeio.anytype.core_ui.extensions.canOpenEmbedExternally
 import com.anytypeio.anytype.core_ui.extensions.toEmbedIconResource
-import com.anytypeio.anytype.core_ui.extensions.veryLight
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
@@ -117,7 +117,7 @@ class EmbedPlaceholder(
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
         super.applyDecorations(decorations)
         binding.containerWithBackground.setBackgroundColor(
-            binding.containerWithBackground.resources.veryLight(decorations.last().background, 0)
+            binding.containerWithBackground.resources.light(decorations.last().background, 0)
         )
     }
 }

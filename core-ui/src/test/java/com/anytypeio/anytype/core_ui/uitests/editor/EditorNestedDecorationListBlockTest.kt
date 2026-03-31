@@ -15,7 +15,7 @@ import com.anytypeio.anytype.core_ui.StubBulletedView
 import com.anytypeio.anytype.core_ui.StubCheckboxView
 import com.anytypeio.anytype.core_ui.StubNumberedView
 import com.anytypeio.anytype.core_ui.StubToggleView
-import com.anytypeio.anytype.core_ui.extensions.veryLight
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.uitests.givenAdapter
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -264,7 +264,7 @@ class EditorNestedDecorationListBlockTest {
 
         decorationContainerView.checkHasViewGroupChildWithBackground(
             pos = 0,
-            background = context.resources.veryLight(bg1, 0),
+            background = context.resources.light(bg1, 0),
         )
         decorationContainerView.checkHasViewGroupChildWithMarginLeft(
             pos = 0,
@@ -273,7 +273,7 @@ class EditorNestedDecorationListBlockTest {
 
         decorationContainerView.checkHasViewGroupChildWithBackground(
             pos = 1,
-            background = context.resources.veryLight(bg2, 0),
+            background = context.resources.light(bg2, 0),
         )
         decorationContainerView.checkHasViewGroupChildWithMarginLeft(
             pos = 1,

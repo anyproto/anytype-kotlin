@@ -124,6 +124,8 @@ message Event {
           135; // received to update per-message mention read status (if needed
                // to highlight the unread mentions in the UI)
       Chat.UpdateMessageSyncStatus chatUpdateMessageSyncStatus = 136;
+      Chat.UpdatePinnedStatus chatUpdatePinnedStatus = 140;
+      Chat.UpdateReactionReadStatus chatUpdateReactionReadStatus = 141;
 
       Chat.Delete chatDelete = 131;
       Chat.UpdateState chatStateUpdate =
@@ -178,6 +180,16 @@ message Event {
     message UpdateState {
       model.ChatState state = 1;
       repeated string subIds = 2;
+    }
+    message UpdatePinnedStatus {
+      model.ChatMessage message = 1;
+      bool isPinned = 2;
+      repeated string subIds = 3;
+    }
+    message UpdateReactionReadStatus {
+      repeated string ids = 1;
+      bool isUnread = 2;
+      repeated string subIds = 3;
     }
   }
 

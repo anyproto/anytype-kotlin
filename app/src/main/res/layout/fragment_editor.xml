@@ -366,6 +366,14 @@
         android:layout_gravity="bottom|center_horizontal" />
 
     <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/discussionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="@dimen/dp_20" />
+
+    <androidx.compose.ui.platform.ComposeView
         android:id="@+id/attachToChatPanel"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -136,6 +136,7 @@ import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObje
 import com.anytypeio.anytype.presentation.sets.resolveTemplateForDataViewObject
 import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
+import com.anytypeio.anytype.presentation.spaces.HomepageType
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
@@ -281,6 +282,8 @@ class HomeScreenViewModel(
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
 
+    val showHomepagePicker = MutableStateFlow(vmParams.showHomepagePicker)
+
     private val isEmptyingBinInProgress = MutableStateFlow(false)
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
@@ -300,6 +303,7 @@ class HomeScreenViewModel(
     private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val unreadWidget = MutableStateFlow<Widget.UnreadChatList?>(null)
     private val recentlyEditedWidget = MutableStateFlow<Widget.RecentlyEdited?>(null)
+    private val chatWidget = MutableStateFlow<Widget.Chat?>(null)
     private val binWidget = MutableStateFlow<Widget.Bin?>(null)
 
     // Separate containers for pinned and type widgets
@@ -427,6 +431,22 @@ class HomeScreenViewModel(
                 flowOf(null)
             } else {
                 // Create container for recently edited widget
+                widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
+    // Exposed flow for chat widget
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val chatView: StateFlow<WidgetView?> = chatWidget
+        .flatMapLatest { widget ->
+            if (widget == null) {
+                flowOf(null)
+            } else {
                 widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
             }
         }
@@ -913,6 +933,7 @@ class HomeScreenViewModel(
                         typeWidgets.value = sections.typeWidgets
                     }
 
+                    chatWidget.value = sections.chatWidget
                     unreadWidget.value = sections.unreadWidget
                     recentlyEditedWidget.value = sections.recentlyEditedWidget
                     binWidget.value = sections.binWidget
@@ -926,6 +947,7 @@ class HomeScreenViewModel(
                         typeWidgets.value = emptyList()
                     }
 
+                    chatWidget.value = null
                     unreadWidget.value = null
                     recentlyEditedWidget.value = null
                     binWidget.value = null
@@ -1437,6 +1459,23 @@ class HomeScreenViewModel(
             Widget.Source.Other -> {
                 Timber.w("Skipping click on 'other' widget source")
             }
+        }
+    }
+
+    fun onSpaceChatWidgetClicked() {
+        Timber.d("onSpaceChatWidgetClicked")
+        viewModelScope.launch {
+            val currentSpaceView = _spaceViewState.value
+            if (currentSpaceView !is SpaceViewState.Success) {
+                Timber.w("onSpaceChatWidgetClicked: space view not ready, ignoring")
+                return@launch
+            }
+            val chatId = currentSpaceView.spaceChatId
+            if (chatId.isNullOrEmpty()) {
+                Timber.w("onSpaceChatWidgetClicked: chat not found")
+                return@launch
+            }
+            navigation(OpenChat(ctx = chatId, space = vmParams.spaceId.id))
         }
     }
 
@@ -3657,6 +3696,38 @@ class HomeScreenViewModel(
         )
     }
 
+    //region Homepage Picker
+
+    fun onHomepageSelected(type: HomepageType) {
+        viewModelScope.launch {
+            showHomepagePicker.value = false
+            when (type) {
+                HomepageType.WIDGETS -> {
+                    // Widgets is the default — nothing to set
+                    Timber.d("Homepage selected: Widgets (default)")
+                }
+                HomepageType.CHAT -> {
+                    // TODO: get space chat ID and call setHomepage
+                    Timber.d("Homepage selected: Chat")
+                }
+                HomepageType.PAGE -> {
+                    // TODO: create page object and call setHomepage
+                    Timber.d("Homepage selected: Page")
+                }
+                HomepageType.COLLECTION -> {
+                    // TODO: create collection object and call setHomepage
+                    Timber.d("Homepage selected: Collection")
+                }
+            }
+        }
+    }
+
+    fun onHomepagePickerDismissed() {
+        showHomepagePicker.value = false
+    }
+
+    //endregion
+
     class Factory @Inject constructor(
         private val vmParams: HomeScreenVmParams,
         private val openObject: OpenObject,
@@ -3943,7 +4014,10 @@ fun ObjectWrapper.Type.navigation(
     )
 }
 
-data class HomeScreenVmParams(val spaceId: SpaceId)
+data class HomeScreenVmParams(
+    val spaceId: SpaceId,
+    val showHomepagePicker: Boolean = false
+)
 
 const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 4
 const val MAX_PINNED_TYPE_COUNT_FOR_APP_ACTIONS = 3

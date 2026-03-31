@@ -29,6 +29,7 @@ import com.anytypeio.anytype.di.feature.SpaceTypesDependencies
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatComponentDependencies
+import com.anytypeio.anytype.di.feature.discussions.DiscussionComponentDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatReactionDependencies
 import com.anytypeio.anytype.di.feature.chats.SelectChatIconDependencies
 import com.anytypeio.anytype.di.feature.chats.SelectChatReactionDependencies
@@ -56,6 +57,7 @@ import com.anytypeio.anytype.di.feature.search.GlobalSearchDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
 import com.anytypeio.anytype.di.feature.settings.DebugDependencies
+import com.anytypeio.anytype.di.feature.settings.ExperimentalFeaturesDependencies
 import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
@@ -139,6 +141,7 @@ interface MainComponent :
     VaultComponentDependencies,
     AllContentDependencies,
     ChatComponentDependencies,
+    DiscussionComponentDependencies,
     SelectWidgetSourceDependencies,
     SelectWidgetTypeDependencies,
     LinkToObjectDependencies,
@@ -151,6 +154,7 @@ interface MainComponent :
     ParticipantComponentDependencies,
     EditTypePropertiesDependencies,
     DebugDependencies,
+    ExperimentalFeaturesDependencies,
     CreateObjectTypeDependencies,
     SpaceTypesDependencies,
     SpacePropertiesDependencies,
@@ -349,6 +353,11 @@ abstract class ComponentDependenciesModule {
     @Binds
     @IntoMap
     @ComponentDependenciesKey(ChatComponentDependencies::class)
+    abstract fun provideChatComponentDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(DiscussionComponentDependencies::class)
     abstract fun provideDiscussionComponentDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
@@ -415,6 +424,11 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(DebugDependencies::class)
     abstract fun provideDebugDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(ExperimentalFeaturesDependencies::class)
+    abstract fun provideExperimentalFeaturesDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

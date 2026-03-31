@@ -757,6 +757,7 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.notification -> ObjectType.Layout.NOTIFICATION
     MOTypeLayout.missingObject -> ObjectType.Layout.MISSING_OBJECT
     MOTypeLayout.devices -> ObjectType.Layout.DEVICES
+    MOTypeLayout.discussion -> ObjectType.Layout.DISCUSSION
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {
@@ -1183,6 +1184,7 @@ fun MP2PStatus.toCoreModel(): P2PStatus = when (this) {
 fun MChatMessage.core(): Chat.Message = Chat.Message(
     id = id,
     content = message?.core(),
+    blocks = blocks.mapNotNull { it.toCoreMessageBlock() },
     creator = creator,
     createdAt = createdAt,
     modifiedAt = modifiedAt,
@@ -1211,6 +1213,28 @@ fun MChatMessageContent.core(): Chat.Message.Content = Chat.Message.Content(
     style = style.toCoreModels(),
     marks = marks.map { it.toCoreModels() }
 )
+
+fun MChatMessageBlock.toCoreMessageBlock(): Chat.Message.MessageBlock? =
+    text?.let { t ->
+        Chat.Message.MessageBlock.Text(
+            text = t.text,
+            style = t.style.toCoreModels(),
+            marks = t.marks.map { it.toCoreModels() },
+            checked = t.checked
+        )
+    } ?: link?.let { l ->
+        Chat.Message.MessageBlock.Link(
+            targetObjectId = l.targetObjectId,
+            type = when (l.type) {
+                MChatMessageBlockLinkType.Object -> Chat.Message.MessageBlock.Link.LinkType.OBJECT
+                MChatMessageBlockLinkType.File -> Chat.Message.MessageBlock.Link.LinkType.FILE
+                MChatMessageBlockLinkType.Image -> Chat.Message.MessageBlock.Link.LinkType.IMAGE
+                MChatMessageBlockLinkType.Bookmark -> Chat.Message.MessageBlock.Link.LinkType.BOOKMARK
+            }
+        )
+    } ?: embed?.let { e ->
+        Chat.Message.MessageBlock.Embed(text = e.text)
+    }
 
 fun MChatState.core(): Chat.State = Chat.State(
     unreadMessages = messages?.let { unread ->

@@ -1180,6 +1180,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun objectWorkspaceSetDashboard(request: Rpc.Object.WorkspaceSetDashboard.Request): Rpc.Object.WorkspaceSetDashboard.Response {
+        val encoded = Service.objectWorkspaceSetDashboard(
+            Rpc.Object.WorkspaceSetDashboard.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.WorkspaceSetDashboard.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.WorkspaceSetDashboard.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun objectShow(request: Rpc.Object.Show.Request): Rpc.Object.Show.Response {
         val encoded = Service.objectShow(Rpc.Object.Show.Request.ADAPTER.encode(request))
         val response = Rpc.Object.Show.Response.ADAPTER.decode(encoded)
@@ -2437,6 +2450,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun membershipV2GetStatus(request: Rpc.MembershipV2.GetStatus.Request): Rpc.MembershipV2.GetStatus.Response {
+        val encoded = Service.membershipV2GetStatus(
+            Rpc.MembershipV2.GetStatus.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.MembershipV2.GetStatus.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.MembershipV2.GetStatus.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun getVersions(request: Rpc.History.GetVersions.Request): Rpc.History.GetVersions.Response {
         val encoded = Service.historyGetVersions(
             Rpc.History.GetVersions.Request.ADAPTER.encode(request)
@@ -2535,6 +2561,32 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Chat.ReadAll.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Chat.ReadAll.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun chatSearch(request: Rpc.Chat.Search.Request): Rpc.Chat.Search.Response {
+        val encoded = Service.chatSearch(
+            Rpc.Chat.Search.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Chat.Search.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Chat.Search.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectDiscussionAdd(request: Rpc.Object.DiscussionAdd.Request): Rpc.Object.DiscussionAdd.Response {
+        val encoded = Service.objectAddDiscussion(
+            Rpc.Object.DiscussionAdd.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.DiscussionAdd.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.DiscussionAdd.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

@@ -81,6 +81,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.clipboard.Paste.Companion.DEFAULT_RANGE
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.discussions.AddDiscussion
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -155,7 +156,6 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.update
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateCursorAndEditMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateSelection
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateTableOfContentsViews
-import com.anytypeio.anytype.presentation.editor.editor.items
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.markup
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_PREFIX
@@ -366,7 +366,8 @@ class EditorViewModel(
     private val fieldParser : FieldParser,
     private val dateProvider: DateProvider,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val urlHelper: UrlHelper
+    private val urlHelper: UrlHelper,
+    private val addDiscussion: AddDiscussion
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -462,6 +463,15 @@ class EditorViewModel(
             permission = permission,
             spaceUxType = spaceViews.get(space = vmParams.space)?.spaceUxType ?: SpaceUxType.DATA,
         )
+    }
+
+    private val _discussionButtonState = MutableStateFlow<DiscussionButtonState>(DiscussionButtonState.Hidden)
+    val discussionButtonState: StateFlow<DiscussionButtonState> = _discussionButtonState
+
+    sealed class DiscussionButtonState {
+        data object Hidden : DiscussionButtonState()
+        data object Empty : DiscussionButtonState()
+        data class Comments(val discussionId: Id, val count: Int) : DiscussionButtonState()
     }
 
     init {
@@ -822,6 +832,16 @@ class EditorViewModel(
                     }
                 }
 
+                val existingDiscussionId = currentObj?.getSingleValue<String>(Relations.DISCUSSION_ID)
+                    ?.takeIf { it.isNotEmpty() }
+                _discussionButtonState.value = if (existingDiscussionId != null) {
+                    DiscussionButtonState.Comments(
+                        discussionId = existingDiscussionId,
+                        count = 0
+                    )
+                } else {
+                    DiscussionButtonState.Empty
+                }
                 footers.value = getFooterState(root, currentObj)
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
                 Timber.d("Rendering starting...")
@@ -4356,46 +4376,28 @@ class EditorViewModel(
             }
             is ListenerType.Relation.ObjectType -> {
                 if (isObjectTemplate()) return
-                when (val relation = clicked.relation) {
+                when (clicked.relation) {
                     is ObjectRelationView.ObjectType.Base -> {
-                        viewModelScope.launch {
-                            val params = FindObjectSetForType.Params(
-                                space = vmParams.space,
-                                type = relation.type,
-                                filters = ObjectSearchConstants.setsByObjectTypeFilters(
-                                    types = listOf(relation.type)
+                        if (mode == EditorMode.Edit) {
+                            commands.postValue(
+                                EventWrapper(
+                                    Command.OpenObjectTypeMenu(
+                                        listOf(
+                                            ObjectTypeMenuItem.OpenType,
+                                            ObjectTypeMenuItem.ChangeType
+                                        )
+                                    )
                                 )
                             )
-                            findObjectSetForType(params).process(
-                                failure = {
-                                    Timber.e(
-                                        it,
-                                        "Error search for a set for type ${relation.type}"
-                                    )
-                                },
-                                success = { response ->
-                                    val command = when (response) {
-                                        is FindObjectSetForType.Response.NotFound ->
-                                            Command.OpenObjectTypeMenu(listOf(ObjectTypeMenuItem.ChangeType))
-
-                                        is FindObjectSetForType.Response.Success ->
-                                            Command.OpenObjectTypeMenu(
-                                                clicked.items(
-                                                    set = response.obj.id,
-                                                    space = requireNotNull(response.obj.spaceId)
-                                                )
-                                            )
-                                    }
-                                    commands.postValue(EventWrapper(command))
-                                }
-                            )
+                        } else {
+                            onOpenTypeClicked()
                         }
                     }
                     is ObjectRelationView.ObjectType.Deleted -> {
-                        commands.postValue(EventWrapper(Command.OpenObjectTypeMenu(listOf(ObjectTypeMenuItem.ChangeType))))
+                        onChangeObjectTypeClicked()
                     }
                     else -> {
-                        Timber.e("Unexpected relation type: $relation")
+                        Timber.e("Unexpected relation type: ${clicked.relation}")
                     }
                 }
             }
@@ -6925,25 +6927,6 @@ class EditorViewModel(
     }
     //endregion
 
-    fun onCreateNewSetForType(type: Id) {
-        viewModelScope.launch {
-            createObjectSet(
-                CreateObjectSet.Params(
-                    type = type,
-                    space = vmParams.space.id
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while creating a set of type: $type") },
-                success = { response ->
-                    proceedWithOpeningDataViewObject(
-                        target = response.target,
-                        space = vmParams.space
-                    )
-                }
-            )
-        }
-    }
-
     //region ADD URI OR OBJECT ID TO SELECTED TEXT
     fun proceedToCreateObjectAndAddToTextAsLink(name: String) {
         Timber.d("proceedToCreateObjectAndAddToTextAsLink, name:[$name]")
@@ -8087,6 +8070,53 @@ class EditorViewModel(
     fun onUpdateAppClick() {
         dispatch(command = Command.OpenAppStore)
     }
+    //endregion
+
+    //region DISCUSSION
+
+    fun onDiscussionButtonClicked() {
+        when (val state = discussionButtonState.value) {
+            is DiscussionButtonState.Comments -> {
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenDiscussion(
+                            target = state.discussionId,
+                            space = vmParams.space.id
+                        )
+                    )
+                )
+            }
+            is DiscussionButtonState.Empty -> {
+                // No discussion yet — create one, then open
+                viewModelScope.launch {
+                    addDiscussion.async(context).fold(
+                        onSuccess = { discussionId ->
+                            _discussionButtonState.value = DiscussionButtonState.Comments(
+                                discussionId = discussionId,
+                                count = 0
+                            )
+                            navigate(
+                                EventWrapper(
+                                    AppNavigation.Command.OpenDiscussion(
+                                        target = discussionId,
+                                        space = vmParams.space.id
+                                    )
+                                )
+                            )
+                        },
+                        onFailure = { e ->
+                            Timber.e(e, "Failed to create discussion")
+                            sendToast("Failed to create discussion")
+                        }
+                    )
+                }
+            }
+            is DiscussionButtonState.Hidden -> {
+                // Do nothing
+            }
+        }
+    }
+
     //endregion
 
     //region CALENDAR

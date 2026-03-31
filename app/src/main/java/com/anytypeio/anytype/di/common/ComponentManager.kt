@@ -55,6 +55,7 @@ import com.anytypeio.anytype.di.feature.ViewerFilterModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerChatComponent
+import com.anytypeio.anytype.di.feature.discussions.DaggerDiscussionComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerChatReactionComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerSelectChatIconComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerSelectChatReactionComponent
@@ -90,6 +91,7 @@ import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationModule
 import com.anytypeio.anytype.di.feature.settings.DaggerAboutAppComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerDebugComponent
+import com.anytypeio.anytype.di.feature.settings.DaggerExperimentalFeaturesComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerFilesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerSpacesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
@@ -112,6 +114,7 @@ import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatReactionViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.feature_chats.presentation.SelectChatReactionViewModel
 import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
@@ -168,6 +171,12 @@ class ComponentManager(
 
     val debugComponent = Component {
         DaggerDebugComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val experimentalFeaturesComponent = Component {
+        DaggerExperimentalFeaturesComponent
             .factory()
             .create(findComponentDependencies())
     }
@@ -1079,6 +1088,14 @@ class ComponentManager(
 
     val chatComponent = ComponentMapWithParam { params: ChatViewModel.Params.Default ->
         DaggerChatComponent
+            .builder()
+            .withDependencies(findComponentDependencies())
+            .withParams(params)
+            .build()
+    }
+
+    val discussionComponent = ComponentMapWithParam { params: DiscussionViewModel.Params ->
+        DaggerDiscussionComponent
             .builder()
             .withDependencies(findComponentDependencies())
             .withParams(params)

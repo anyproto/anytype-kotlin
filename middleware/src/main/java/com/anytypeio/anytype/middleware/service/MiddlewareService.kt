@@ -130,6 +130,9 @@ interface MiddlewareService {
     fun objectSetObjectType(request: Rpc.Object.SetObjectType.Request): Rpc.Object.SetObjectType.Response
 
     @Throws(Exception::class)
+    fun objectWorkspaceSetDashboard(request: Rpc.Object.WorkspaceSetDashboard.Request): Rpc.Object.WorkspaceSetDashboard.Response
+
+    @Throws(Exception::class)
     fun objectSetLayout(request: Rpc.Object.SetLayout.Request): Rpc.Object.SetLayout.Response
 
     @Throws(Exception::class)
@@ -626,6 +629,9 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun membershipSubscribeToUpdates(request: Rpc.MembershipV2.SubscribeToUpdates.Request): Rpc.MembershipV2.SubscribeToUpdates.Response
+
+    @Throws(Exception::class)
+    fun membershipV2GetStatus(request: Rpc.MembershipV2.GetStatus.Request): Rpc.MembershipV2.GetStatus.Response
     //endregion
 
     //region VERSION HISTORY
@@ -656,6 +662,8 @@ interface MiddlewareService {
     fun chatSubscribeToMessagePreviews(request: Rpc.Chat.SubscribeToMessagePreviews.Request): Rpc.Chat.SubscribeToMessagePreviews.Response
     fun chatUnsubscribeToMessagePreviews(request: Rpc.Chat.UnsubscribeFromMessagePreviews.Request): Rpc.Chat.UnsubscribeFromMessagePreviews.Response
     fun chatReadAll(request: Rpc.Chat.ReadAll.Request): Rpc.Chat.ReadAll.Response
+    fun chatSearch(request: Rpc.Chat.Search.Request): Rpc.Chat.Search.Response
+    fun objectDiscussionAdd(request: Rpc.Object.DiscussionAdd.Request): Rpc.Object.DiscussionAdd.Response
 
     //endregion
 

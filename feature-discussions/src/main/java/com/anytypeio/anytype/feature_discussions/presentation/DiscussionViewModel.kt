@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.Space
+import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -15,6 +16,7 @@ import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
+import com.anytypeio.anytype.feature_discussions.ui.DiscussionLinkDetector
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.domain.misc.DateProvider
 import javax.inject.Inject
@@ -66,6 +68,8 @@ class DiscussionViewModel @Inject constructor(
 
     private val _commands = MutableSharedFlow<DiscussionCommand>()
     val commands: SharedFlow<DiscussionCommand> = _commands
+
+    val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
 
     private var account: Id = ""
 
@@ -263,6 +267,121 @@ class DiscussionViewModel @Inject constructor(
             }
     }
 
+    // region Mention panel
+
+    fun onInputChanged(selection: IntRange, text: String) {
+        val query = resolveMentionQuery(
+            text = text,
+            selectionStart = selection.start
+        )
+        if (isMentionTriggered(text, selection.start)) {
+            val results = getMentionedMembers(query)
+            if (query != null && results.isNotEmpty()) {
+                mentionPanelState.value = MentionPanelState.Visible(
+                    results = results,
+                    query = query
+                )
+            }
+        } else if (shouldHideMention(text, selection.start)) {
+            mentionPanelState.value = MentionPanelState.Hidden
+        } else {
+            val results = getMentionedMembers(query)
+            if (results.isNotEmpty() && query != null) {
+                mentionPanelState.value = MentionPanelState.Visible(
+                    results = results,
+                    query = query
+                )
+            } else {
+                mentionPanelState.value = MentionPanelState.Hidden
+            }
+        }
+    }
+
+    private fun getMentionedMembers(
+        query: MentionPanelState.Query?
+    ): List<MentionPanelState.Member> {
+        val results = members.get().let { store ->
+            when (store) {
+                is Store.Data -> {
+                    store.members
+                        .filter { member -> member.permissions?.isAtLeastReader() == true }
+                        .map { member ->
+                            MentionPanelState.Member(
+                                id = member.id,
+                                name = member.name.orEmpty(),
+                                icon = SpaceMemberIconView.icon(
+                                    obj = member,
+                                    urlBuilder = urlBuilder
+                                ),
+                                isUser = member.identity == account
+                            )
+                        }.filter { m ->
+                            if (query != null) {
+                                m.name.contains(query.query, true)
+                            } else {
+                                true
+                            }
+                        }
+                }
+                Store.Empty -> emptyList()
+            }
+        }
+        return results
+    }
+
+    private fun isMentionTriggered(text: String, selectionStart: Int): Boolean {
+        if (selectionStart <= 0 || selectionStart > text.length) return false
+        val previousChar = text[selectionStart - 1]
+        return previousChar == '@'
+                && (selectionStart == 1 || !text[selectionStart - 2].isLetterOrDigit())
+    }
+
+    private fun shouldHideMention(text: String, selectionStart: Int): Boolean {
+        if (selectionStart > text.length) return false
+        val currentChar = if (selectionStart > 0) text[selectionStart - 1] else null
+        val atCharExists = text.lastIndexOf('@', selectionStart - 1) != -1
+        return currentChar == ' ' || !atCharExists
+    }
+
+    private fun resolveMentionQuery(
+        text: String,
+        selectionStart: Int
+    ): MentionPanelState.Query? {
+        val atIndex = text.lastIndexOf('@', selectionStart - 1)
+        if (atIndex == -1) return null
+
+        val beforeAt = text.getOrNull(atIndex - 1)
+        if (beforeAt != null && beforeAt.isLetterOrDigit()) return null
+
+        val endIndex = text.indexOfAny(charArrayOf(' ', '\n'), startIndex = atIndex)
+            .takeIf { it != -1 } ?: text.length
+
+        val query = text.substring(atIndex + 1, endIndex)
+        return MentionPanelState.Query(query, atIndex until endIndex)
+    }
+
+    // endregion
+
+    sealed class MentionPanelState {
+        data object Hidden : MentionPanelState()
+        data class Visible(
+            val results: List<Member>,
+            val query: Query
+        ) : MentionPanelState()
+
+        data class Member(
+            val id: Id,
+            val name: String,
+            val icon: SpaceMemberIconView,
+            val isUser: Boolean = false
+        )
+
+        data class Query(
+            val query: String,
+            val range: IntRange
+        )
+    }
+
     fun onReplyComment(comment: DiscussionView.Comment) {
         _inputMode.value = DiscussionInputMode.Reply(
             msg = comment.id,
@@ -316,22 +435,28 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
-    fun onSendComment(text: String) {
+    fun onSendComment(text: String, marks: List<Block.Content.Text.Mark>) {
         if (text.isBlank()) return
         val mode = inputMode.value
+        val trimmedText = text.trim()
+        val marksWithLinks = DiscussionLinkDetector.addLinkMarksToText(
+            text = trimmedText,
+            existingMarks = marks
+        )
         viewModelScope.launch {
             addChatMessage.async(
                 params = Command.ChatCommand.AddMessage(
                     chat = vmParams.ctx,
-                    message = Chat.Message.new(
-                        text = text.trim(),
-                        marks = emptyList(),
+                    message = Chat.Message.newWithBlocks(
+                        text = trimmedText,
+                        marks = marksWithLinks,
                         replyToMessageId = if (mode is DiscussionInputMode.Reply) mode.msg else null
                     )
                 )
             ).onSuccess { (id, payload) ->
                 chatContainer.onPayload(payload)
                 _inputMode.value = DiscussionInputMode.Default
+                mentionPanelState.value = MentionPanelState.Hidden
             }.onFailure { e ->
                 Timber.e(e, "Failed to send comment")
             }

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,7 +33,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -57,6 +55,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -71,12 +70,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
+import com.anytypeio.anytype.core_ui.text.InputSpan
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -85,30 +86,73 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionHeader
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionInputMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel.MentionPanelState
 
 @Composable
 fun DiscussionScreenWrapper(
     vm: DiscussionViewModel,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    onPlusClicked: () -> Unit = {}
 ) {
     val header = vm.header.collectAsStateWithLifecycle().value
     val messages = vm.messages.collectAsStateWithLifecycle().value
     val inputMode = vm.inputMode.collectAsStateWithLifecycle().value
+    val mentionPanelState = vm.mentionPanelState.collectAsStateWithLifecycle().value
     val clipboard = LocalClipboardManager.current
 
     var inputText by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
     }
+    var spans by remember { mutableStateOf<List<InputSpan>>(emptyList()) }
 
     DiscussionScreen(
         header = header,
         comments = messages,
         onBackClicked = onBackClicked,
         inputText = inputText,
-        onInputValueChange = { inputText = it },
-        onSendClicked = { text ->
-            vm.onSendComment(text)
+        spans = spans,
+        mentionPanelState = mentionPanelState,
+        onInputValueChange = { newText, newSpans ->
+            inputText = newText
+            spans = newSpans
+            vm.onInputChanged(
+                selection = newText.selection.start..newText.selection.end,
+                text = newText.text
+            )
+        },
+        onSendClicked = { text, currentSpans ->
+            val marks = currentSpans.mapNotNull { span ->
+                when (span) {
+                    is InputSpan.Mention -> {
+                        Block.Content.Text.Mark(
+                            type = Block.Content.Text.Mark.Type.MENTION,
+                            param = span.param,
+                            range = span.start..span.end
+                        )
+                    }
+                    is InputSpan.Markup -> {
+                        val type = when (span.type) {
+                            InputSpan.Markup.BOLD -> Block.Content.Text.Mark.Type.BOLD
+                            InputSpan.Markup.ITALIC -> Block.Content.Text.Mark.Type.ITALIC
+                            InputSpan.Markup.STRIKETHROUGH -> Block.Content.Text.Mark.Type.STRIKETHROUGH
+                            InputSpan.Markup.CODE -> Block.Content.Text.Mark.Type.KEYBOARD
+                            InputSpan.Markup.UNDERLINE -> Block.Content.Text.Mark.Type.UNDERLINE
+                            else -> null
+                        }
+                        if (type != null) {
+                            Block.Content.Text.Mark(
+                                type = type,
+                                range = span.start..span.end
+                            )
+                        } else {
+                            null
+                        }
+                    }
+                }
+            }
+            vm.onSendComment(text, marks)
             inputText = TextFieldValue("")
+            spans = emptyList()
         },
         inputMode = inputMode,
         onReplyComment = { vm.onReplyComment(it) },
@@ -117,7 +161,57 @@ fun DiscussionScreenWrapper(
         onClearReply = { vm.onClearReply() },
         onDeleteComment = { vm.onDeleteComment(it) },
         onAddReaction = { vm.onAddReaction(it) },
-        onToggleReaction = { msg, emoji -> vm.onToggleReaction(msg, emoji) }
+        onToggleReaction = { msg, emoji -> vm.onToggleReaction(msg, emoji) },
+        onPlusClicked = onPlusClicked,
+        onMentionMemberClicked = { member ->
+            val state = mentionPanelState
+            if (state is MentionPanelState.Visible) {
+                val query = state.query
+                val input = inputText.text
+
+                val replacementText = member.name + " "
+                val lengthDifference =
+                    replacementText.length - (query.range.last - query.range.first + 1)
+
+                val updatedText = input.replaceRange(query.range, replacementText)
+
+                val updatedSpans = spans.map { span ->
+                    if (span.start > query.range.last) {
+                        when (span) {
+                            is InputSpan.Mention -> span.copy(
+                                start = span.start + lengthDifference,
+                                end = span.end + lengthDifference
+                            )
+                            is InputSpan.Markup -> span.copy(
+                                start = span.start + lengthDifference,
+                                end = span.end + lengthDifference
+                            )
+                        }
+                    } else {
+                        span
+                    }
+                }
+
+                val mentionSpan = InputSpan.Mention(
+                    start = query.range.start,
+                    end = query.range.start + member.name.length,
+                    style = SpanStyle(textDecoration = TextDecoration.Underline),
+                    param = member.id
+                )
+
+                spans = updatedSpans + mentionSpan
+                inputText = inputText.copy(
+                    text = updatedText,
+                    selection = TextRange(
+                        index = query.range.start + replacementText.length
+                    )
+                )
+                vm.onInputChanged(
+                    selection = inputText.selection.start..inputText.selection.end,
+                    text = inputText.text
+                )
+            }
+        }
     )
 }
 
@@ -128,8 +222,10 @@ fun DiscussionScreen(
     comments: List<DiscussionView>,
     onBackClicked: () -> Unit,
     inputText: TextFieldValue = TextFieldValue(""),
-    onInputValueChange: (TextFieldValue) -> Unit = {},
-    onSendClicked: (String) -> Unit = {},
+    spans: List<InputSpan> = emptyList(),
+    mentionPanelState: MentionPanelState = MentionPanelState.Hidden,
+    onInputValueChange: (TextFieldValue, List<InputSpan>) -> Unit = { _, _ -> },
+    onSendClicked: (String, List<InputSpan>) -> Unit = { _, _ -> },
     inputMode: DiscussionInputMode = DiscussionInputMode.Default,
     onReplyComment: (DiscussionView.Comment) -> Unit = {},
     onReplyToReply: (DiscussionView.Reply) -> Unit = {},
@@ -137,51 +233,54 @@ fun DiscussionScreen(
     onClearReply: () -> Unit = {},
     onDeleteComment: (Id) -> Unit = {},
     onAddReaction: (Id) -> Unit = {},
-    onToggleReaction: (Id, String) -> Unit = { _, _ -> }
+    onToggleReaction: (Id, String) -> Unit = { _, _ -> },
+    onMentionMemberClicked: (MentionPanelState.Member) -> Unit = {},
+    onPlusClicked: () -> Unit = {}
 ) {
-    Scaffold(
-        containerColor = colorResource(id = R.color.background_primary),
-        contentWindowInsets = WindowInsets(0.dp),
-        topBar = {
-            DiscussionTopBar(
-                header = header,
-                onBackClicked = onBackClicked,
-                modifier = Modifier.statusBarsPadding()
-            )
-        }
-    ) { paddingValues ->
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(id = R.color.background_primary))
+    ) {
+        DiscussionTopBar(
+            header = header,
+            onBackClicked = onBackClicked,
+            modifier = Modifier.statusBarsPadding()
+        )
+        DiscussionCommentList(
+            comments = comments,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            DiscussionCommentList(
-                comments = comments,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f),
-                onReplyComment = onReplyComment,
-                onReplyToReply = onReplyToReply,
-                onCopyText = onCopyText,
-                onDeleteComment = onDeleteComment,
-                onAddReaction = onAddReaction,
-                onToggleReaction = onToggleReaction
-            )
-            if (inputMode is DiscussionInputMode.Reply) {
-                DiscussionReplyBanner(
-                    mode = inputMode,
-                    onClearReply = onClearReply
-                )
-            }
-            DiscussionCommentInput(
-                text = inputText,
-                onValueChange = onInputValueChange,
-                onSendClicked = onSendClicked,
-                modifier = Modifier
-                    .imePadding()
-                    .navigationBarsPadding()
+                .fillMaxWidth()
+                .weight(1f),
+            onReplyComment = onReplyComment,
+            onReplyToReply = onReplyToReply,
+            onCopyText = onCopyText,
+            onDeleteComment = onDeleteComment,
+            onAddReaction = onAddReaction,
+            onToggleReaction = onToggleReaction
+        )
+        if (mentionPanelState is MentionPanelState.Visible) {
+            DiscussionMentionPanel(
+                state = mentionPanelState,
+                onMemberClicked = onMentionMemberClicked
             )
         }
+        if (inputMode is DiscussionInputMode.Reply) {
+            DiscussionReplyBanner(
+                mode = inputMode,
+                onClearReply = onClearReply
+            )
+        }
+        DiscussionCommentInput(
+            text = inputText,
+            spans = spans,
+            onValueChange = onInputValueChange,
+            onSendClicked = onSendClicked,
+            onPlusClicked = onPlusClicked,
+            modifier = Modifier
+                .navigationBarsPadding()
+                .imePadding()
+        )
     }
 }
 
@@ -425,11 +524,7 @@ fun DiscussionCommentItem(
             // Text content
             if (comment.content.msg.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = comment.content.msg,
-                    style = BodyCallout,
-                    color = colorResource(id = R.color.text_primary)
-                )
+                RichTextContent(parts = comment.content.parts)
             }
             // Reactions
             if (comment.reactions.isNotEmpty()) {
@@ -649,11 +744,7 @@ fun DiscussionReplyItem(
                 // Text content
                 if (reply.content.msg.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = reply.content.msg,
-                        style = BodyCallout,
-                        color = colorResource(id = R.color.text_primary)
-                    )
+                    RichTextContent(parts = reply.content.parts)
                 }
                 // Reactions
                 if (reply.reactions.isNotEmpty()) {
@@ -879,4 +970,3 @@ fun ReactionsRow(
         }
     }
 }
-

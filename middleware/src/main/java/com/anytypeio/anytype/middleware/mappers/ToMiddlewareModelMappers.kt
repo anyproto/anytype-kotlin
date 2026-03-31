@@ -590,9 +590,36 @@ fun Chat.Message.mw(): MChatMessage = MChatMessage(
                 ids = ids
             )
         }
-    )
-
+    ),
+    blocks = blocks.map { it.mw() }
 )
+
+fun Chat.Message.MessageBlock.mw(): MChatMessageBlock = when (this) {
+    is Chat.Message.MessageBlock.Text -> MChatMessageBlock(
+        text = MChatMessageBlockText(
+            text = text,
+            style = style.toMiddlewareModel(),
+            marks = marks.map { it.toMiddlewareModel() },
+            checked = checked
+        )
+    )
+    is Chat.Message.MessageBlock.Link -> MChatMessageBlock(
+        link = MChatMessageBlockLink(
+            targetObjectId = targetObjectId,
+            type = when (type) {
+                Chat.Message.MessageBlock.Link.LinkType.OBJECT -> MChatMessageBlockLinkType.Object
+                Chat.Message.MessageBlock.Link.LinkType.FILE -> MChatMessageBlockLinkType.File
+                Chat.Message.MessageBlock.Link.LinkType.IMAGE -> MChatMessageBlockLinkType.Image
+                Chat.Message.MessageBlock.Link.LinkType.BOOKMARK -> MChatMessageBlockLinkType.Bookmark
+            }
+        )
+    )
+    is Chat.Message.MessageBlock.Embed -> MChatMessageBlock(
+        embed = MChatMessageBlockEmbed(
+            text = text
+        )
+    )
+}
 
 fun Chat.Message.Content.mw(): MChatMessageContent = MChatMessageContent(
     text = text,

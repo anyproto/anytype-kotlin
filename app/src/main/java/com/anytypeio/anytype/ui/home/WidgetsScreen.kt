@@ -71,7 +71,7 @@ fun WidgetsScreen(
     val chatWidget = viewModel.chatView.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
     val recentlyEditedWidget = viewModel.recentlyEditedView.collectAsState().value
-    val showHomepagePicker = viewModel.showHomepagePicker.collectAsState().value
+    val showHomepagePicker = viewModel.showHomepagePicker.collectAsState().value // used for guard
     val showCreateHomeWidget = viewModel.showCreateHomeWidget.collectAsState().value
     val showInviteMembersWidget = viewModel.showInviteMembersWidget.collectAsState().value
     val collapsedSections = viewModel.collapsedSections.collectAsState().value
@@ -275,17 +275,7 @@ fun WidgetsScreen(
                 }
             }
 
-            // Inline homepage picker — shown on first visit to a space with empty homepage
-            if (showHomepagePicker) {
-                item(key = "homepage_picker_inline") {
-                    HomepagePickerContent(
-                        onHomepageSelected = viewModel::onHomepageSelected,
-                        onLaterClicked = viewModel::onHomepagePickerDismissed
-                    )
-                }
-            }
-
-            // "Create Home" widget — shown after homepage picker was dismissed with "Later"
+            // "Create Home" widget — shown when homepage is not set and picker was dismissed
             if (showCreateHomeWidget && !showHomepagePicker) {
                 item(key = WidgetView.CreateHome.WIDGET_CREATE_HOME_ID) {
                     CreateHomeWidgetCard(

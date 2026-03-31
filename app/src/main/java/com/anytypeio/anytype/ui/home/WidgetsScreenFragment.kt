@@ -232,6 +232,16 @@ class WidgetsScreenFragment : Fragment(),
             )
         }
 
+        // Homepage Picker - shown as bottom sheet after channel creation or from Create Home widget
+        val showHomepagePicker = vm.showHomepagePicker.collectAsStateWithLifecycle().value
+        if (showHomepagePicker) {
+            HomepagePickerBottomSheet(
+                onHomepageSelected = vm::onHomepageSelected,
+                onLaterClicked = vm::onHomepagePickerDismissed,
+                onDismiss = vm::onHomepagePickerDismissed
+            )
+        }
+
         BackHandler {
             vm.onBackClicked()
         }

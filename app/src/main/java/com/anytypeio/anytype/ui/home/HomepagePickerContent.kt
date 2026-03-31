@@ -94,7 +94,12 @@ fun HomepagePickerContent(
                 shape = RoundedCornerShape(24.dp)
             )
     ) {
-        Spacer(modifier = Modifier.height(18.dp))
+        Dragger(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = 6.dp)
+        )
+        Spacer(modifier = Modifier.height(12.dp))
         Text(
             modifier = Modifier
                 .fillMaxWidth()

@@ -444,10 +444,20 @@ class DiscussionViewModel @Inject constructor(
     fun onSendComment(text: String, marks: List<Block.Content.Text.Mark>) {
         if (text.isBlank()) return
         val mode = inputMode.value
+        val leadingSpaces = text.length - text.trimStart().length
         val trimmedText = text.trim()
+        val adjustedMarks = marks.mapNotNull { mark ->
+            val newStart = (mark.range.first - leadingSpaces).coerceAtLeast(0)
+            val newEnd = (mark.range.last - leadingSpaces).coerceAtMost(trimmedText.length)
+            if (newStart < newEnd) {
+                mark.copy(range = newStart..newEnd)
+            } else {
+                null
+            }
+        }
         val marksWithLinks = DiscussionLinkDetector.addLinkMarksToText(
             text = trimmedText,
-            existingMarks = marks
+            existingMarks = adjustedMarks
         )
         viewModelScope.launch {
             addChatMessage.async(

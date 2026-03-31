@@ -171,7 +171,7 @@ fun normalizeSpans(
     return spans.mapNotNull { span ->
         val newStart = when {
             textLengthDifference > 0 && commonPrefixLength <= span.start -> span.start + textLengthDifference
-            textLengthDifference < 0 && commonPrefixLength <= span.start -> span.start + textLengthDifference
+            textLengthDifference < 0 && commonPrefixLength <= span.start -> (span.start + textLengthDifference).coerceAtLeast(commonPrefixLength)
             else -> span.start
         }.coerceAtLeast(0)
 

@@ -37,9 +37,9 @@ sealed class Chat {
         val synced: Boolean = false
     ) {
         data class Content(
-            val text: String,
-            val style: Block.Content.Text.Style,
-            val marks: List<Block.Content.Text.Mark>
+            val text: String = "",
+            val style: Block.Content.Text.Style = Block.Content.Text.Style.P,
+            val marks: List<Block.Content.Text.Mark> = emptyList()
         )
         data class Attachment(
             val target: Id,
@@ -94,6 +94,34 @@ sealed class Chat {
                     text = text,
                     marks = marks,
                     style = Block.Content.Text.Style.P
+                ),
+                order = "",
+                synced = false
+            )
+
+            /**
+             * New message builder using blocks field instead of content.
+             */
+            fun newWithBlocks(
+                text: String,
+                attachments: List<Attachment> = emptyList(),
+                replyToMessageId: Id? = null,
+                marks: List<Block.Content.Text.Mark>
+            ) : Message = Message(
+                id = "",
+                createdAt = 0L,
+                modifiedAt = 0L,
+                attachments = attachments,
+                reactions = emptyMap(),
+                creator = "",
+                replyToMessageId = replyToMessageId,
+                content = Message.Content(),
+                blocks = listOf(
+                    MessageBlock.Text(
+                        text = text,
+                        marks = marks,
+                        style = Block.Content.Text.Style.P
+                    )
                 ),
                 order = "",
                 synced = false

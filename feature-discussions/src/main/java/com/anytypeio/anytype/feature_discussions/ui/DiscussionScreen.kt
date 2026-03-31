@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,23 +23,25 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,13 +56,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -69,7 +74,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
+import com.anytypeio.anytype.core_ui.foundation.GenericAlert
+import com.anytypeio.anytype.core_ui.text.InputSpan
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -78,36 +90,134 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionHeader
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionInputMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
+import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel.MentionPanelState
 
 @Composable
 fun DiscussionScreenWrapper(
     vm: DiscussionViewModel,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    onPlusClicked: () -> Unit = {}
 ) {
     val header = vm.header.collectAsStateWithLifecycle().value
     val messages = vm.messages.collectAsStateWithLifecycle().value
     val inputMode = vm.inputMode.collectAsStateWithLifecycle().value
+    val mentionPanelState = vm.mentionPanelState.collectAsStateWithLifecycle().value
     val clipboard = LocalClipboardManager.current
 
-    var inputText by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue(""))
-    }
+    var inputText by remember { mutableStateOf(TextFieldValue("")) }
+    var spans by remember { mutableStateOf<List<InputSpan>>(emptyList()) }
 
     DiscussionScreen(
         header = header,
         comments = messages,
         onBackClicked = onBackClicked,
         inputText = inputText,
-        onInputValueChange = { inputText = it },
-        onSendClicked = { text ->
-            vm.onSendComment(text)
+        spans = spans,
+        mentionPanelState = mentionPanelState,
+        onInputValueChange = { newText, newSpans ->
+            inputText = newText
+            spans = newSpans
+            vm.onInputChanged(
+                selection = newText.selection.start..newText.selection.end,
+                text = newText.text
+            )
+        },
+        onSendClicked = { text, currentSpans ->
+            val marks = currentSpans.mapNotNull { span ->
+                when (span) {
+                    is InputSpan.Mention -> {
+                        Block.Content.Text.Mark(
+                            type = Block.Content.Text.Mark.Type.MENTION,
+                            param = span.param,
+                            range = span.start..span.end
+                        )
+                    }
+                    is InputSpan.Markup -> {
+                        val type = when (span.type) {
+                            InputSpan.Markup.BOLD -> Block.Content.Text.Mark.Type.BOLD
+                            InputSpan.Markup.ITALIC -> Block.Content.Text.Mark.Type.ITALIC
+                            InputSpan.Markup.STRIKETHROUGH -> Block.Content.Text.Mark.Type.STRIKETHROUGH
+                            InputSpan.Markup.CODE -> Block.Content.Text.Mark.Type.KEYBOARD
+                            InputSpan.Markup.UNDERLINE -> Block.Content.Text.Mark.Type.UNDERLINE
+                            else -> null
+                        }
+                        if (type != null) {
+                            Block.Content.Text.Mark(
+                                type = type,
+                                range = span.start..span.end
+                            )
+                        } else {
+                            null
+                        }
+                    }
+                }
+            }
+            vm.onSendComment(text, marks)
             inputText = TextFieldValue("")
+            spans = emptyList()
         },
         inputMode = inputMode,
         onReplyComment = { vm.onReplyComment(it) },
         onReplyToReply = { vm.onReplyToReply(it) },
         onCopyText = { clipboard.setText(AnnotatedString(it)) },
-        onClearReply = { vm.onClearReply() }
+        onClearReply = { vm.onClearReply() },
+        onDeleteComment = { vm.onDeleteComment(it) },
+        onAddReaction = { vm.onAddReaction(it) },
+        onToggleReaction = { msg, emoji -> vm.onToggleReaction(msg, emoji) },
+        onPlusClicked = onPlusClicked,
+        onMentionClicked = { id -> vm.onMentionClicked(id) },
+        onLinkClicked = { url ->
+            // Link clicks can be handled by the fragment via commands if needed
+        },
+        onMentionMemberClicked = { member ->
+            val state = mentionPanelState
+            if (state is MentionPanelState.Visible) {
+                val query = state.query
+                val input = inputText.text
+
+                val replacementText = member.name + " "
+                val lengthDifference =
+                    replacementText.length - (query.range.last - query.range.first + 1)
+
+                val updatedText = input.replaceRange(query.range, replacementText)
+
+                val updatedSpans = spans.map { span ->
+                    if (span.start > query.range.last) {
+                        when (span) {
+                            is InputSpan.Mention -> span.copy(
+                                start = span.start + lengthDifference,
+                                end = span.end + lengthDifference
+                            )
+                            is InputSpan.Markup -> span.copy(
+                                start = span.start + lengthDifference,
+                                end = span.end + lengthDifference
+                            )
+                        }
+                    } else {
+                        span
+                    }
+                }
+
+                val mentionSpan = InputSpan.Mention(
+                    start = query.range.start,
+                    end = query.range.start + member.name.length,
+                    style = SpanStyle(textDecoration = TextDecoration.Underline),
+                    param = member.id
+                )
+
+                spans = updatedSpans + mentionSpan
+                inputText = inputText.copy(
+                    text = updatedText,
+                    selection = TextRange(
+                        index = query.range.start + replacementText.length
+                    )
+                )
+                vm.onInputChanged(
+                    selection = inputText.selection.start..inputText.selection.end,
+                    text = inputText.text
+                )
+            }
+        }
     )
 }
 
@@ -118,53 +228,76 @@ fun DiscussionScreen(
     comments: List<DiscussionView>,
     onBackClicked: () -> Unit,
     inputText: TextFieldValue = TextFieldValue(""),
-    onInputValueChange: (TextFieldValue) -> Unit = {},
-    onSendClicked: (String) -> Unit = {},
+    spans: List<InputSpan> = emptyList(),
+    mentionPanelState: MentionPanelState = MentionPanelState.Hidden,
+    onInputValueChange: (TextFieldValue, List<InputSpan>) -> Unit = { _, _ -> },
+    onSendClicked: (String, List<InputSpan>) -> Unit = { _, _ -> },
     inputMode: DiscussionInputMode = DiscussionInputMode.Default,
     onReplyComment: (DiscussionView.Comment) -> Unit = {},
     onReplyToReply: (DiscussionView.Reply) -> Unit = {},
     onCopyText: (String) -> Unit = {},
-    onClearReply: () -> Unit = {}
+    onClearReply: () -> Unit = {},
+    onDeleteComment: (Id) -> Unit = {},
+    onAddReaction: (Id) -> Unit = {},
+    onToggleReaction: (Id, String) -> Unit = { _, _ -> },
+    onMentionMemberClicked: (MentionPanelState.Member) -> Unit = {},
+    onPlusClicked: () -> Unit = {},
+    onMentionClicked: (Id) -> Unit = {},
+    onLinkClicked: (String) -> Unit = {}
 ) {
-    Scaffold(
-        containerColor = colorResource(id = R.color.background_primary),
-        contentWindowInsets = WindowInsets(0.dp),
-        topBar = {
-            DiscussionTopBar(
-                header = header,
-                onBackClicked = onBackClicked,
-                modifier = Modifier.statusBarsPadding()
-            )
-        }
-    ) { paddingValues ->
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(id = R.color.background_primary))
+    ) {
+        DiscussionTopBar(
+            header = header,
+            onBackClicked = onBackClicked,
+            modifier = Modifier.statusBarsPadding()
+        )
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+                .fillMaxWidth()
+                .weight(1f)
         ) {
             DiscussionCommentList(
                 comments = comments,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f),
+                modifier = Modifier.fillMaxSize(),
                 onReplyComment = onReplyComment,
                 onReplyToReply = onReplyToReply,
-                onCopyText = onCopyText
+                onCopyText = onCopyText,
+                onDeleteComment = onDeleteComment,
+                onAddReaction = onAddReaction,
+                onToggleReaction = onToggleReaction,
+                onMentionClicked = onMentionClicked,
+                onLinkClicked = onLinkClicked
             )
-            if (inputMode is DiscussionInputMode.Reply) {
-                DiscussionReplyBanner(
-                    mode = inputMode,
-                    onClearReply = onClearReply
+            Column(
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                if (mentionPanelState is MentionPanelState.Visible) {
+                    DiscussionMentionPanel(
+                        state = mentionPanelState,
+                        onMemberClicked = onMentionMemberClicked
+                    )
+                }
+                if (inputMode is DiscussionInputMode.Reply) {
+                    DiscussionReplyBanner(
+                        mode = inputMode,
+                        onClearReply = onClearReply
+                    )
+                }
+                DiscussionCommentInput(
+                    text = inputText,
+                    spans = spans,
+                    onValueChange = onInputValueChange,
+                    onSendClicked = onSendClicked,
+                    onPlusClicked = onPlusClicked,
+                    modifier = Modifier
+                        .navigationBarsPadding()
+                        .imePadding()
                 )
             }
-            DiscussionCommentInput(
-                text = inputText,
-                onValueChange = onInputValueChange,
-                onSendClicked = onSendClicked,
-                modifier = Modifier
-                    .imePadding()
-                    .navigationBarsPadding()
-            )
         }
     }
 }
@@ -261,11 +394,25 @@ fun DiscussionCommentList(
     modifier: Modifier = Modifier,
     onReplyComment: (DiscussionView.Comment) -> Unit = {},
     onReplyToReply: (DiscussionView.Reply) -> Unit = {},
-    onCopyText: (String) -> Unit = {}
+    onCopyText: (String) -> Unit = {},
+    onDeleteComment: (Id) -> Unit = {},
+    onAddReaction: (Id) -> Unit = {},
+    onToggleReaction: (Id, String) -> Unit = { _, _ -> },
+    onMentionClicked: (Id) -> Unit = {},
+    onLinkClicked: (String) -> Unit = {}
 ) {
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(comments.isNotEmpty()) {
+        if (comments.isNotEmpty()) {
+            listState.scrollToItem(comments.lastIndex)
+        }
+    }
+
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(bottom = 16.dp)
+        state = listState,
+        contentPadding = PaddingValues(bottom = 120.dp)
     ) {
         items(
             items = comments,
@@ -283,14 +430,24 @@ fun DiscussionCommentList(
                     DiscussionCommentItem(
                         comment = item,
                         onReply = { onReplyComment(item) },
-                        onCopy = { onCopyText(item.content.msg) }
+                        onCopy = { onCopyText(item.content.msg) },
+                        onDelete = { onDeleteComment(item.id) },
+                        onAddReaction = { onAddReaction(item.id) },
+                        onToggleReaction = { emoji -> onToggleReaction(item.id, emoji) },
+                        onMentionClicked = onMentionClicked,
+                        onLinkClicked = onLinkClicked
                     )
                 }
                 is DiscussionView.Reply -> {
                     DiscussionReplyItem(
                         reply = item,
                         onReply = { onReplyToReply(item) },
-                        onCopy = { onCopyText(item.content.msg) }
+                        onCopy = { onCopyText(item.content.msg) },
+                        onDelete = { onDeleteComment(item.id) },
+                        onAddReaction = { onAddReaction(item.id) },
+                        onToggleReaction = { emoji -> onToggleReaction(item.id, emoji) },
+                        onMentionClicked = onMentionClicked,
+                        onLinkClicked = onLinkClicked
                     )
                 }
                 is DiscussionView.ReplyDivider -> {
@@ -314,15 +471,46 @@ fun DiscussionCommentList(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DiscussionCommentItem(
     comment: DiscussionView.Comment,
     onReply: () -> Unit = {},
-    onCopy: () -> Unit = {}
+    onCopy: () -> Unit = {},
+    onDelete: () -> Unit = {},
+    onAddReaction: () -> Unit = {},
+    onToggleReaction: (String) -> Unit = {},
+    onMentionClicked: (Id) -> Unit = {},
+    onLinkClicked: (String) -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
+    var showDeleteWarning by remember { mutableStateOf(false) }
+
+    if (showDeleteWarning) {
+        ModalBottomSheet(
+            onDismissRequest = { showDeleteWarning = false },
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(16.dp),
+            dragHandle = null,
+            modifier = Modifier.padding(bottom = 32.dp, start = 12.dp, end = 12.dp)
+        ) {
+            GenericAlert(
+                config = AlertConfig.WithTwoButtons(
+                    title = stringResource(com.anytypeio.anytype.localization.R.string.chats_alert_delete_this_message),
+                    description = stringResource(com.anytypeio.anytype.localization.R.string.chats_alert_delete_this_message_description),
+                    firstButtonText = stringResource(com.anytypeio.anytype.localization.R.string.cancel),
+                    secondButtonText = stringResource(com.anytypeio.anytype.localization.R.string.delete),
+                    secondButtonType = BUTTON_WARNING,
+                    firstButtonType = BUTTON_SECONDARY,
+                    icon = R.drawable.ic_popup_question_56
+                ),
+                onFirstButtonClicked = { showDeleteWarning = false },
+                onSecondButtonClicked = { onDelete() },
+                addBottomSpacer = false
+            )
+        }
+    }
 
     Box {
         Column(
@@ -371,77 +559,166 @@ fun DiscussionCommentItem(
             // Text content
             if (comment.content.msg.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = comment.content.msg,
-                    style = BodyCallout,
-                    color = colorResource(id = R.color.text_primary)
+                RichTextContent(
+                    parts = comment.content.parts,
+                    onMentionClicked = onMentionClicked,
+                    onLinkClicked = onLinkClicked
                 )
             }
             // Reactions
             if (comment.reactions.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
-                ReactionsRow(reactions = comment.reactions)
+                ReactionsRow(
+                    reactions = comment.reactions,
+                    onToggleReaction = onToggleReaction
+                )
             }
         }
-        DropdownMenu(
-            expanded = showDropdownMenu,
-            onDismissRequest = { showDropdownMenu = false }
-        ) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = stringResource(id = com.anytypeio.anytype.localization.R.string.chats_reply),
-                        style = PreviewTitle1Regular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                },
-                onClick = {
-                    showDropdownMenu = false
-                    onReply()
-                },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_dropdown_menu_reply),
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.glyph_active)
-                    )
-                }
+        MaterialTheme(
+            shapes = MaterialTheme.shapes.copy(
+                medium = RoundedCornerShape(16.dp)
+            ),
+            colors = MaterialTheme.colors.copy(
+                surface = colorResource(id = R.color.background_secondary)
             )
-            if (comment.content.msg.isNotEmpty()) {
+        ) {
+            DropdownMenu(
+                expanded = showDropdownMenu,
+                onDismissRequest = { showDropdownMenu = false }
+            ) {
                 DropdownMenuItem(
                     text = {
                         Text(
-                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.copy_plain_text),
+                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.chats_add_reaction),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    },
+                    trailingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_mood),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = colorResource(id = R.color.text_primary)
+                        )
+                    },
+                    onClick = {
+                        showDropdownMenu = false
+                        onAddReaction()
+                    }
+                )
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.chats_reply),
                             style = PreviewTitle1Regular,
                             color = colorResource(id = R.color.text_primary)
                         )
                     },
                     onClick = {
                         showDropdownMenu = false
-                        onCopy()
+                        onReply()
                     },
-                    leadingIcon = {
+                    trailingIcon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_reply),
                             contentDescription = null,
-                            tint = colorResource(id = R.color.glyph_active)
+                            modifier = Modifier.size(24.dp),
+                            tint = colorResource(id = R.color.text_primary)
                         )
                     }
                 )
+                if (comment.content.msg.isNotEmpty()) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(id = com.anytypeio.anytype.localization.R.string.copy_plain_text),
+                                style = PreviewTitle1Regular,
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            onCopy()
+                        },
+                        trailingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = colorResource(id = R.color.text_primary)
+                            )
+                        }
+                    )
+                }
+                if (comment.isOwn) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(id = com.anytypeio.anytype.localization.R.string.delete),
+                                style = PreviewTitle1Regular,
+                                color = colorResource(id = R.color.palette_system_red)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            showDeleteWarning = true
+                        },
+                        trailingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_dropdown_menu_delete),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = colorResource(id = R.color.palette_system_red)
+                            )
+                        }
+                    )
+                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun DiscussionReplyItem(
     reply: DiscussionView.Reply,
     onReply: () -> Unit = {},
-    onCopy: () -> Unit = {}
+    onCopy: () -> Unit = {},
+    onDelete: () -> Unit = {},
+    onAddReaction: () -> Unit = {},
+    onToggleReaction: (String) -> Unit = {},
+    onMentionClicked: (Id) -> Unit = {},
+    onLinkClicked: (String) -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
+    var showDeleteWarning by remember { mutableStateOf(false) }
+
+    if (showDeleteWarning) {
+        ModalBottomSheet(
+            onDismissRequest = { showDeleteWarning = false },
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(16.dp),
+            dragHandle = null,
+            modifier = Modifier.padding(bottom = 32.dp, start = 12.dp, end = 12.dp)
+        ) {
+            GenericAlert(
+                config = AlertConfig.WithTwoButtons(
+                    title = stringResource(com.anytypeio.anytype.localization.R.string.chats_alert_delete_this_message),
+                    description = stringResource(com.anytypeio.anytype.localization.R.string.chats_alert_delete_this_message_description),
+                    firstButtonText = stringResource(com.anytypeio.anytype.localization.R.string.cancel),
+                    secondButtonText = stringResource(com.anytypeio.anytype.localization.R.string.delete),
+                    secondButtonType = BUTTON_WARNING,
+                    firstButtonType = BUTTON_SECONDARY,
+                    icon = R.drawable.ic_popup_question_56
+                ),
+                onFirstButtonClicked = { showDeleteWarning = false },
+                onSecondButtonClicked = { onDelete() },
+                addBottomSpacer = false
+            )
+        }
+    }
 
     Box {
         Row(
@@ -508,64 +785,122 @@ fun DiscussionReplyItem(
                 // Text content
                 if (reply.content.msg.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = reply.content.msg,
-                        style = BodyCallout,
-                        color = colorResource(id = R.color.text_primary)
+                    RichTextContent(
+                        parts = reply.content.parts,
+                        onMentionClicked = onMentionClicked,
+                        onLinkClicked = onLinkClicked
                     )
                 }
                 // Reactions
                 if (reply.reactions.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    ReactionsRow(reactions = reply.reactions)
+                    ReactionsRow(
+                        reactions = reply.reactions,
+                        onToggleReaction = onToggleReaction
+                    )
                 }
             }
         }
-        DropdownMenu(
-            expanded = showDropdownMenu,
-            onDismissRequest = { showDropdownMenu = false }
-        ) {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = stringResource(id = com.anytypeio.anytype.localization.R.string.chats_reply),
-                        style = PreviewTitle1Regular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                },
-                onClick = {
-                    showDropdownMenu = false
-                    onReply()
-                },
-                leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_dropdown_menu_reply),
-                        contentDescription = null,
-                        tint = colorResource(id = R.color.glyph_active)
-                    )
-                }
+        MaterialTheme(
+            shapes = MaterialTheme.shapes.copy(
+                medium = RoundedCornerShape(16.dp)
+            ),
+            colors = MaterialTheme.colors.copy(
+                surface = colorResource(id = R.color.background_secondary)
             )
-            if (reply.content.msg.isNotEmpty()) {
+        ) {
+            DropdownMenu(
+                expanded = showDropdownMenu,
+                onDismissRequest = { showDropdownMenu = false }
+            ) {
                 DropdownMenuItem(
                     text = {
                         Text(
-                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.copy_plain_text),
+                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.chats_add_reaction),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    },
+                    trailingIcon = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_mood),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = colorResource(id = R.color.text_primary)
+                        )
+                    },
+                    onClick = {
+                        showDropdownMenu = false
+                        onAddReaction()
+                    }
+                )
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.chats_reply),
                             style = PreviewTitle1Regular,
                             color = colorResource(id = R.color.text_primary)
                         )
                     },
                     onClick = {
                         showDropdownMenu = false
-                        onCopy()
+                        onReply()
                     },
-                    leadingIcon = {
+                    trailingIcon = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_reply),
                             contentDescription = null,
-                            tint = colorResource(id = R.color.glyph_active)
+                            modifier = Modifier.size(24.dp),
+                            tint = colorResource(id = R.color.text_primary)
                         )
                     }
                 )
+                if (reply.content.msg.isNotEmpty()) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(id = com.anytypeio.anytype.localization.R.string.copy_plain_text),
+                                style = PreviewTitle1Regular,
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            onCopy()
+                        },
+                        trailingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = colorResource(id = R.color.text_primary)
+                            )
+                        }
+                    )
+                }
+                if (reply.isOwn) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = stringResource(id = com.anytypeio.anytype.localization.R.string.delete),
+                                style = PreviewTitle1Regular,
+                                color = colorResource(id = R.color.palette_system_red)
+                            )
+                        },
+                        onClick = {
+                            showDropdownMenu = false
+                            showDeleteWarning = true
+                        },
+                        trailingIcon = {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_dropdown_menu_delete),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp),
+                                tint = colorResource(id = R.color.palette_system_red)
+                            )
+                        }
+                    )
+                }
             }
         }
     }
@@ -618,23 +953,63 @@ fun CommentAvatar(
 }
 
 @Composable
-fun RichTextContent(parts: List<DiscussionView.Content.Part>) {
+fun RichTextContent(
+    parts: List<DiscussionView.Content.Part>,
+    onMentionClicked: (Id) -> Unit = {},
+    onLinkClicked: (String) -> Unit = {}
+) {
     val annotatedString = buildAnnotatedString {
         parts.forEach { part ->
-            val style = SpanStyle(
-                fontWeight = if (part.isBold) FontWeight.Bold else FontWeight.Normal,
-                fontStyle = if (part.isItalic) FontStyle.Italic else FontStyle.Normal,
-                textDecoration = when {
-                    part.isStrike && part.underline -> TextDecoration.combine(
-                        listOf(TextDecoration.LineThrough, TextDecoration.Underline)
-                    )
-                    part.isStrike -> TextDecoration.LineThrough
-                    part.underline -> TextDecoration.Underline
-                    else -> TextDecoration.None
+            if (part.mention?.param != null) {
+                withLink(
+                    LinkAnnotation.Clickable(
+                        tag = MENTION_SPAN_TAG,
+                        styles = TextLinkStyles(
+                            style = SpanStyle(
+                                fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                textDecoration = TextDecoration.Underline
+                            )
+                        )
+                    ) {
+                        onMentionClicked(part.mention.param.orEmpty())
+                    }
+                ) {
+                    append(part.part)
                 }
-            )
-            withStyle(style) {
-                append(part.part)
+            } else if (part.link?.param != null) {
+                withLink(
+                    LinkAnnotation.Clickable(
+                        tag = MENTION_LINK_TAG,
+                        styles = TextLinkStyles(
+                            style = SpanStyle(
+                                fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                textDecoration = TextDecoration.Underline
+                            )
+                        )
+                    ) {
+                        onLinkClicked(part.link.param.orEmpty())
+                    }
+                ) {
+                    append(part.part)
+                }
+            } else {
+                val style = SpanStyle(
+                    fontWeight = if (part.isBold) FontWeight.Bold else FontWeight.Normal,
+                    fontStyle = if (part.isItalic) FontStyle.Italic else FontStyle.Normal,
+                    textDecoration = when {
+                        part.isStrike && part.underline -> TextDecoration.combine(
+                            listOf(TextDecoration.LineThrough, TextDecoration.Underline)
+                        )
+                        part.isStrike -> TextDecoration.LineThrough
+                        part.underline -> TextDecoration.Underline
+                        else -> TextDecoration.None
+                    }
+                )
+                withStyle(style) {
+                    append(part.part)
+                }
             }
         }
     }
@@ -645,15 +1020,26 @@ fun RichTextContent(parts: List<DiscussionView.Content.Part>) {
     )
 }
 
+private const val MENTION_SPAN_TAG = "@-mention"
+private const val MENTION_LINK_TAG = "link"
+
 @Composable
-fun ReactionsRow(reactions: List<DiscussionView.Reaction>) {
+fun ReactionsRow(
+    reactions: List<DiscussionView.Reaction>,
+    onToggleReaction: (String) -> Unit = {}
+) {
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
         reactions.forEach { reaction ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .clickable { onToggleReaction(reaction.emoji) }
                     .background(
-                        color = colorResource(id = R.color.shape_transparent_primary),
+                        color = if (reaction.isSelected)
+                            colorResource(id = R.color.palette_very_light_orange)
+                        else
+                            colorResource(id = R.color.shape_transparent_primary),
                         shape = RoundedCornerShape(16.dp)
                     )
                     .padding(horizontal = 8.dp, vertical = 5.dp)
@@ -672,4 +1058,3 @@ fun ReactionsRow(reactions: List<DiscussionView.Reaction>) {
         }
     }
 }
-

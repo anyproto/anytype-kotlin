@@ -3764,51 +3764,42 @@ class HomeScreenViewModel(
                     }
                 }
                 HomepageType.CHAT -> {
-                    val config = spaceManager.getConfig()
-                    val chatId = config?.spaceChatId
-                    if (chatId != null) {
-                        setHomepage.async(
-                            SetHomepage.Params(spaceId = spaceId, homepage = chatId)
-                        ).onFailure {
-                            Timber.e(it, "Failed to set homepage to chat")
-                        }
-                    } else {
-                        Timber.w("No spaceChatId available for homepage")
-                    }
+                    createAndSetHomepage(
+                        typeKey = ObjectTypeUniqueKeys.CHAT_DERIVED,
+                        spaceId = spaceId
+                    )
                 }
                 HomepageType.PAGE -> {
-                    createObject.async(
-                        CreateObject.Param(
-                            type = TypeKey(ObjectTypeUniqueKeys.PAGE),
-                            space = vmParams.spaceId
-                        )
-                    ).onSuccess { result ->
-                        setHomepage.async(
-                            SetHomepage.Params(spaceId = spaceId, homepage = result.objectId)
-                        ).onFailure {
-                            Timber.e(it, "Failed to set page as homepage")
-                        }
-                    }.onFailure {
-                        Timber.e(it, "Failed to create page for homepage")
-                    }
+                    createAndSetHomepage(
+                        typeKey = ObjectTypeUniqueKeys.PAGE,
+                        spaceId = spaceId
+                    )
                 }
                 HomepageType.COLLECTION -> {
-                    createObject.async(
-                        CreateObject.Param(
-                            type = TypeKey(ObjectTypeUniqueKeys.COLLECTION),
-                            space = vmParams.spaceId
-                        )
-                    ).onSuccess { result ->
-                        setHomepage.async(
-                            SetHomepage.Params(spaceId = spaceId, homepage = result.objectId)
-                        ).onFailure {
-                            Timber.e(it, "Failed to set collection as homepage")
-                        }
-                    }.onFailure {
-                        Timber.e(it, "Failed to create collection for homepage")
-                    }
+                    createAndSetHomepage(
+                        typeKey = ObjectTypeUniqueKeys.COLLECTION,
+                        spaceId = spaceId
+                    )
                 }
             }
+        }
+    }
+
+    private suspend fun createAndSetHomepage(typeKey: String, spaceId: Id) {
+        createObject.async(
+            CreateObject.Param(
+                type = TypeKey(typeKey),
+                space = vmParams.spaceId
+            )
+        ).onSuccess { result ->
+            setHomepage.async(
+                SetHomepage.Params(spaceId = spaceId, homepage = result.objectId)
+            ).onFailure {
+                Timber.e(it, "Failed to set homepage")
+            }
+            proceedWithNavigation(result.obj.navigation())
+        }.onFailure {
+            Timber.e(it, "Failed to create object for homepage")
         }
     }
 

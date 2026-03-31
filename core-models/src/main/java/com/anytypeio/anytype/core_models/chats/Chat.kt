@@ -37,9 +37,9 @@ sealed class Chat {
         val synced: Boolean = false
     ) {
         data class Content(
-            val text: String,
-            val style: Block.Content.Text.Style,
-            val marks: List<Block.Content.Text.Mark>
+            val text: String = "",
+            val style: Block.Content.Text.Style = Block.Content.Text.Style.P,
+            val marks: List<Block.Content.Text.Mark> = emptyList()
         )
         data class Attachment(
             val target: Id,
@@ -115,7 +115,7 @@ sealed class Chat {
                 reactions = emptyMap(),
                 creator = "",
                 replyToMessageId = replyToMessageId,
-                content = null,
+                content = Message.Content(),
                 blocks = listOf(
                     MessageBlock.Text(
                         text = text,

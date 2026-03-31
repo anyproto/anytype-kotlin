@@ -9,7 +9,7 @@ object DiscussionLinkDetector {
     private const val TEL_PREFIX = "tel:"
 
     private val URL_REGEX = Regex(
-        "(https?://|www\\.|[a-zA-Z][a-zA-Z0-9+.-]*://)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]",
+        "(https?://|www\\.)[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]",
         RegexOption.IGNORE_CASE
     )
 

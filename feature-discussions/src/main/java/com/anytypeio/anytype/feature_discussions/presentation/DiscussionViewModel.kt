@@ -16,9 +16,9 @@ import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionLinkDetector
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.domain.misc.DateProvider
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -243,7 +243,7 @@ class DiscussionViewModel @Inject constructor(
                 }
 
                 val reordered = buildList<DiscussionView> {
-                    for (comment in topLevelComments) {
+                    topLevelComments.forEachIndexed { commentIndex, comment ->
                         val replies = collectReplies(comment.id)
                         add(comment.copy(replyCount = replies.size))
                         replies.forEachIndexed { index, reply ->
@@ -255,7 +255,9 @@ class DiscussionViewModel @Inject constructor(
                             }
                             add(reply)
                         }
-                        add(DiscussionView.ThreadDivider(threadId = comment.id))
+                        if (commentIndex < topLevelComments.lastIndex) {
+                            add(DiscussionView.ThreadDivider(threadId = comment.id))
+                        }
                     }
                 }
 
@@ -338,9 +340,8 @@ class DiscussionViewModel @Inject constructor(
 
     private fun shouldHideMention(text: String, selectionStart: Int): Boolean {
         if (selectionStart > text.length) return false
-        val currentChar = if (selectionStart > 0) text[selectionStart - 1] else null
-        val atCharExists = text.lastIndexOf('@', selectionStart - 1) != -1
-        return currentChar == ' ' || !atCharExists
+        val query = resolveMentionQuery(text, selectionStart)
+        return query == null
     }
 
     private fun resolveMentionQuery(
@@ -429,7 +430,12 @@ class DiscussionViewModel @Inject constructor(
                     chat = vmParams.ctx,
                     msg = id
                 )
-            ).onFailure { e ->
+            ).onSuccess {
+                val mode = _inputMode.value
+                if (mode is DiscussionInputMode.Reply && mode.msg == id) {
+                    _inputMode.value = DiscussionInputMode.Default
+                }
+            }.onFailure { e ->
                 Timber.e(e, "Failed to delete comment")
             }
         }
@@ -470,7 +476,18 @@ class DiscussionViewModel @Inject constructor(
         for (block in blocks) {
             when (block) {
                 is Chat.Message.MessageBlock.Text -> {
-                    segments.add(block.text.trim() to block.marks)
+                    val leadingSpaces = block.text.length - block.text.trimStart().length
+                    val trimmedText = block.text.trim()
+                    val adjustedMarks = block.marks.mapNotNull { mark ->
+                        val newStart = (mark.range.first - leadingSpaces).coerceAtLeast(0)
+                        val newEnd = (mark.range.last - leadingSpaces).coerceAtMost(trimmedText.length)
+                        if (newStart < newEnd) {
+                            mark.copy(range = newStart..newEnd)
+                        } else {
+                            null
+                        }
+                    }
+                    segments.add(trimmedText to adjustedMarks)
                 }
                 is Chat.Message.MessageBlock.Link -> {
                     val placeholder = block.targetObjectId
@@ -527,7 +544,19 @@ class DiscussionViewModel @Inject constructor(
         val space: Space
     )
 
+    fun onMentionClicked(id: Id) {
+        viewModelScope.launch {
+            _commands.emit(
+                DiscussionCommand.ViewMemberCard(
+                    member = id,
+                    space = vmParams.space
+                )
+            )
+        }
+    }
+
     sealed class DiscussionCommand {
         data class SelectReaction(val msg: Id) : DiscussionCommand()
+        data class ViewMemberCard(val member: Id, val space: Space) : DiscussionCommand()
     }
 }

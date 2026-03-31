@@ -23,7 +23,9 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.ui.chats.SelectChatReactionFragment
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.settings.typography
+import timber.log.Timber
 import javax.inject.Inject
 
 class DiscussionFragment : Fragment() {
@@ -64,6 +66,19 @@ class DiscussionFragment : Fragment() {
                                     msg = command.msg
                                 )
                             )
+                        }
+                    }
+                    is DiscussionViewModel.DiscussionCommand.ViewMemberCard -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.participantScreen,
+                                ParticipantFragment.args(
+                                    space = command.space.id,
+                                    objectId = command.member
+                                )
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while opening space member card")
                         }
                     }
                 }

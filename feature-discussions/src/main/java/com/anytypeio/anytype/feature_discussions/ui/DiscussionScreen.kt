@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenu
@@ -37,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,8 +63,11 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -163,6 +168,10 @@ fun DiscussionScreenWrapper(
         onAddReaction = { vm.onAddReaction(it) },
         onToggleReaction = { msg, emoji -> vm.onToggleReaction(msg, emoji) },
         onPlusClicked = onPlusClicked,
+        onMentionClicked = { id -> vm.onMentionClicked(id) },
+        onLinkClicked = { url ->
+            // Link clicks can be handled by the fragment via commands if needed
+        },
         onMentionMemberClicked = { member ->
             val state = mentionPanelState
             if (state is MentionPanelState.Visible) {
@@ -235,7 +244,9 @@ fun DiscussionScreen(
     onAddReaction: (Id) -> Unit = {},
     onToggleReaction: (Id, String) -> Unit = { _, _ -> },
     onMentionMemberClicked: (MentionPanelState.Member) -> Unit = {},
-    onPlusClicked: () -> Unit = {}
+    onPlusClicked: () -> Unit = {},
+    onMentionClicked: (Id) -> Unit = {},
+    onLinkClicked: (String) -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -247,40 +258,50 @@ fun DiscussionScreen(
             onBackClicked = onBackClicked,
             modifier = Modifier.statusBarsPadding()
         )
-        DiscussionCommentList(
-            comments = comments,
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
-            onReplyComment = onReplyComment,
-            onReplyToReply = onReplyToReply,
-            onCopyText = onCopyText,
-            onDeleteComment = onDeleteComment,
-            onAddReaction = onAddReaction,
-            onToggleReaction = onToggleReaction
-        )
-        if (mentionPanelState is MentionPanelState.Visible) {
-            DiscussionMentionPanel(
-                state = mentionPanelState,
-                onMemberClicked = onMentionMemberClicked
+                .weight(1f)
+        ) {
+            DiscussionCommentList(
+                comments = comments,
+                modifier = Modifier.fillMaxSize(),
+                onReplyComment = onReplyComment,
+                onReplyToReply = onReplyToReply,
+                onCopyText = onCopyText,
+                onDeleteComment = onDeleteComment,
+                onAddReaction = onAddReaction,
+                onToggleReaction = onToggleReaction,
+                onMentionClicked = onMentionClicked,
+                onLinkClicked = onLinkClicked
             )
+            Column(
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                if (mentionPanelState is MentionPanelState.Visible) {
+                    DiscussionMentionPanel(
+                        state = mentionPanelState,
+                        onMemberClicked = onMentionMemberClicked
+                    )
+                }
+                if (inputMode is DiscussionInputMode.Reply) {
+                    DiscussionReplyBanner(
+                        mode = inputMode,
+                        onClearReply = onClearReply
+                    )
+                }
+                DiscussionCommentInput(
+                    text = inputText,
+                    spans = spans,
+                    onValueChange = onInputValueChange,
+                    onSendClicked = onSendClicked,
+                    onPlusClicked = onPlusClicked,
+                    modifier = Modifier
+                        .navigationBarsPadding()
+                        .imePadding()
+                )
+            }
         }
-        if (inputMode is DiscussionInputMode.Reply) {
-            DiscussionReplyBanner(
-                mode = inputMode,
-                onClearReply = onClearReply
-            )
-        }
-        DiscussionCommentInput(
-            text = inputText,
-            spans = spans,
-            onValueChange = onInputValueChange,
-            onSendClicked = onSendClicked,
-            onPlusClicked = onPlusClicked,
-            modifier = Modifier
-                .navigationBarsPadding()
-                .imePadding()
-        )
     }
 }
 
@@ -379,11 +400,22 @@ fun DiscussionCommentList(
     onCopyText: (String) -> Unit = {},
     onDeleteComment: (Id) -> Unit = {},
     onAddReaction: (Id) -> Unit = {},
-    onToggleReaction: (Id, String) -> Unit = { _, _ -> }
+    onToggleReaction: (Id, String) -> Unit = { _, _ -> },
+    onMentionClicked: (Id) -> Unit = {},
+    onLinkClicked: (String) -> Unit = {}
 ) {
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(comments.isNotEmpty()) {
+        if (comments.isNotEmpty()) {
+            listState.scrollToItem(comments.lastIndex)
+        }
+    }
+
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(bottom = 16.dp)
+        state = listState,
+        contentPadding = PaddingValues(bottom = 120.dp)
     ) {
         items(
             items = comments,
@@ -404,7 +436,9 @@ fun DiscussionCommentList(
                         onCopy = { onCopyText(item.content.msg) },
                         onDelete = { onDeleteComment(item.id) },
                         onAddReaction = { onAddReaction(item.id) },
-                        onToggleReaction = { emoji -> onToggleReaction(item.id, emoji) }
+                        onToggleReaction = { emoji -> onToggleReaction(item.id, emoji) },
+                        onMentionClicked = onMentionClicked,
+                        onLinkClicked = onLinkClicked
                     )
                 }
                 is DiscussionView.Reply -> {
@@ -414,7 +448,9 @@ fun DiscussionCommentList(
                         onCopy = { onCopyText(item.content.msg) },
                         onDelete = { onDeleteComment(item.id) },
                         onAddReaction = { onAddReaction(item.id) },
-                        onToggleReaction = { emoji -> onToggleReaction(item.id, emoji) }
+                        onToggleReaction = { emoji -> onToggleReaction(item.id, emoji) },
+                        onMentionClicked = onMentionClicked,
+                        onLinkClicked = onLinkClicked
                     )
                 }
                 is DiscussionView.ReplyDivider -> {
@@ -446,7 +482,9 @@ fun DiscussionCommentItem(
     onCopy: () -> Unit = {},
     onDelete: () -> Unit = {},
     onAddReaction: () -> Unit = {},
-    onToggleReaction: (String) -> Unit = {}
+    onToggleReaction: (String) -> Unit = {},
+    onMentionClicked: (Id) -> Unit = {},
+    onLinkClicked: (String) -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -524,7 +562,11 @@ fun DiscussionCommentItem(
             // Text content
             if (comment.content.msg.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
-                RichTextContent(parts = comment.content.parts)
+                RichTextContent(
+                    parts = comment.content.parts,
+                    onMentionClicked = onMentionClicked,
+                    onLinkClicked = onLinkClicked
+                )
             }
             // Reactions
             if (comment.reactions.isNotEmpty()) {
@@ -648,7 +690,9 @@ fun DiscussionReplyItem(
     onCopy: () -> Unit = {},
     onDelete: () -> Unit = {},
     onAddReaction: () -> Unit = {},
-    onToggleReaction: (String) -> Unit = {}
+    onToggleReaction: (String) -> Unit = {},
+    onMentionClicked: (Id) -> Unit = {},
+    onLinkClicked: (String) -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -744,7 +788,11 @@ fun DiscussionReplyItem(
                 // Text content
                 if (reply.content.msg.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(4.dp))
-                    RichTextContent(parts = reply.content.parts)
+                    RichTextContent(
+                        parts = reply.content.parts,
+                        onMentionClicked = onMentionClicked,
+                        onLinkClicked = onLinkClicked
+                    )
                 }
                 // Reactions
                 if (reply.reactions.isNotEmpty()) {
@@ -908,23 +956,63 @@ fun CommentAvatar(
 }
 
 @Composable
-fun RichTextContent(parts: List<DiscussionView.Content.Part>) {
+fun RichTextContent(
+    parts: List<DiscussionView.Content.Part>,
+    onMentionClicked: (Id) -> Unit = {},
+    onLinkClicked: (String) -> Unit = {}
+) {
     val annotatedString = buildAnnotatedString {
         parts.forEach { part ->
-            val style = SpanStyle(
-                fontWeight = if (part.isBold) FontWeight.Bold else FontWeight.Normal,
-                fontStyle = if (part.isItalic) FontStyle.Italic else FontStyle.Normal,
-                textDecoration = when {
-                    part.isStrike && part.underline -> TextDecoration.combine(
-                        listOf(TextDecoration.LineThrough, TextDecoration.Underline)
-                    )
-                    part.isStrike -> TextDecoration.LineThrough
-                    part.underline -> TextDecoration.Underline
-                    else -> TextDecoration.None
+            if (part.mention?.param != null) {
+                withLink(
+                    LinkAnnotation.Clickable(
+                        tag = MENTION_SPAN_TAG,
+                        styles = TextLinkStyles(
+                            style = SpanStyle(
+                                fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                textDecoration = TextDecoration.Underline
+                            )
+                        )
+                    ) {
+                        onMentionClicked(part.mention.param.orEmpty())
+                    }
+                ) {
+                    append(part.part)
                 }
-            )
-            withStyle(style) {
-                append(part.part)
+            } else if (part.link?.param != null) {
+                withLink(
+                    LinkAnnotation.Clickable(
+                        tag = MENTION_LINK_TAG,
+                        styles = TextLinkStyles(
+                            style = SpanStyle(
+                                fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                textDecoration = TextDecoration.Underline
+                            )
+                        )
+                    ) {
+                        onLinkClicked(part.link.param.orEmpty())
+                    }
+                ) {
+                    append(part.part)
+                }
+            } else {
+                val style = SpanStyle(
+                    fontWeight = if (part.isBold) FontWeight.Bold else FontWeight.Normal,
+                    fontStyle = if (part.isItalic) FontStyle.Italic else FontStyle.Normal,
+                    textDecoration = when {
+                        part.isStrike && part.underline -> TextDecoration.combine(
+                            listOf(TextDecoration.LineThrough, TextDecoration.Underline)
+                        )
+                        part.isStrike -> TextDecoration.LineThrough
+                        part.underline -> TextDecoration.Underline
+                        else -> TextDecoration.None
+                    }
+                )
+                withStyle(style) {
+                    append(part.part)
+                }
             }
         }
     }
@@ -934,6 +1022,9 @@ fun RichTextContent(parts: List<DiscussionView.Content.Part>) {
         color = colorResource(id = R.color.text_primary)
     )
 }
+
+private const val MENTION_SPAN_TAG = "@-mention"
+private const val MENTION_LINK_TAG = "link"
 
 @Composable
 fun ReactionsRow(

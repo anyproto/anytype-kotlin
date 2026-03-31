@@ -90,7 +90,7 @@ fun DiscussionCommentInput(
                 shape = RoundedCornerShape(16.dp)
             )
             .background(
-                color = colorResource(R.color.navigation_panel),
+                color = colorResource(R.color.background_primary),
                 shape = RoundedCornerShape(16.dp)
             )
     ) {

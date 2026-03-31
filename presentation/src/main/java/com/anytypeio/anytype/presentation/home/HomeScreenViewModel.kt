@@ -3758,7 +3758,7 @@ class HomeScreenViewModel(
             when (type) {
                 HomepageType.EMPTY -> {
                     setHomepage.async(
-                        SetHomepage.Params(spaceId = spaceId, objectId = HOMEPAGE_WIDGETS_VALUE)
+                        SetHomepage.Params(spaceId = spaceId, homepage = HOMEPAGE_WIDGETS_VALUE)
                     ).onFailure {
                         Timber.e(it, "Failed to set homepage to widgets")
                     }
@@ -3768,7 +3768,7 @@ class HomeScreenViewModel(
                     val chatId = config?.spaceChatId
                     if (chatId != null) {
                         setHomepage.async(
-                            SetHomepage.Params(spaceId = spaceId, objectId = chatId)
+                            SetHomepage.Params(spaceId = spaceId, homepage = chatId)
                         ).onFailure {
                             Timber.e(it, "Failed to set homepage to chat")
                         }
@@ -3784,7 +3784,7 @@ class HomeScreenViewModel(
                         )
                     ).onSuccess { result ->
                         setHomepage.async(
-                            SetHomepage.Params(spaceId = spaceId, objectId = result.objectId)
+                            SetHomepage.Params(spaceId = spaceId, homepage = result.objectId)
                         ).onFailure {
                             Timber.e(it, "Failed to set page as homepage")
                         }
@@ -3800,7 +3800,7 @@ class HomeScreenViewModel(
                         )
                     ).onSuccess { result ->
                         setHomepage.async(
-                            SetHomepage.Params(spaceId = spaceId, objectId = result.objectId)
+                            SetHomepage.Params(spaceId = spaceId, homepage = result.objectId)
                         ).onFailure {
                             Timber.e(it, "Failed to set collection as homepage")
                         }

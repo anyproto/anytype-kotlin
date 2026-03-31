@@ -351,7 +351,7 @@ interface BlockRemote {
     ): Payload
 
     suspend fun setSpaceDetails(space: SpaceId, details: Struct)
-    suspend fun setHomepage(command: Command.SetHomepage): Id
+    suspend fun setHomepage(command: Command.SetHomepage)
 
     suspend fun deleteSpace(space: SpaceId)
     suspend fun spaceSetOrder(spaceViewId: Id, spaceViewOrder: List<Id>): List<Id>

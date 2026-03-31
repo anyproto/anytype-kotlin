@@ -1175,7 +1175,7 @@ class EditorViewModel(
     }
 
     //TODO need refactoring, logic must depend on Object Layouts
-    private fun onStartFocusing(payload: Payload) {
+    private suspend fun onStartFocusing(payload: Payload) {
         val event = payload.events.find { it is Event.Command.ShowObject }
         if (event is Event.Command.ShowObject) {
             val root = event.blocks.find { it.id == context }
@@ -1195,7 +1195,7 @@ class EditorViewModel(
                                     target = Editor.Focus.Target.Block(title.id),
                                     cursor = Editor.Cursor.End
                                 )
-                                viewModelScope.launch { orchestrator.stores.focus.update(focus) }
+                                orchestrator.stores.focus.update(focus)
                             } else {
                                 Timber.d("Skipping initial focusing. Title is not empty or is null")
                             }
@@ -1213,7 +1213,7 @@ class EditorViewModel(
                                 target = Editor.Focus.Target.Block(block.id),
                                 cursor = Editor.Cursor.End
                             )
-                            viewModelScope.launch { orchestrator.stores.focus.update(focus) }
+                            orchestrator.stores.focus.update(focus)
                         }
                     }
                 }
@@ -3227,8 +3227,10 @@ class EditorViewModel(
                                     target = Editor.Focus.Target.Block(last.id),
                                     cursor = null
                                 )
-                                viewModelScope.launch { orchestrator.stores.focus.update(focus) }
-                                viewModelScope.launch { refresh() }
+                                viewModelScope.launch {
+                                    orchestrator.stores.focus.update(focus)
+                                    refresh()
+                                }
                             } else {
                                 Timber.d("Outside click is ignored because focus is not empty")
                             }

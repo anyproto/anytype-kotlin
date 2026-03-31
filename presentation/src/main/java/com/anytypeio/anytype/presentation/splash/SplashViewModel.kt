@@ -391,62 +391,9 @@ class SplashViewModel(
     }
 
     private fun proceedWithNavigation() {
-        Timber.i("proceedWithNavigation, get getLastOpenedObject")
+        Timber.i("proceedWithNavigation, navigating to vault (last-opened-object logic removed)")
         viewModelScope.launch {
-            val space = getLastOpenedSpace.async(Unit).getOrNull()
-            if (space == null) {
-                Timber.w("No space found for last opened object navigation")
-                proceedWithVaultNavigation()
-                return@launch
-            }
-            val params = GetLastOpenedObject.Params(space = space)
-            getLastOpenedObject(params = params).process(
-                success = { response ->
-                    Timber.i("Last opened object response: ${response.javaClass.name}")
-                    when (response) {
-                        is GetLastOpenedObject.Response.Success -> {
-                            val obj = response.obj
-                            if (!SupportedLayouts.lastOpenObjectLayouts.contains(obj.layout)) {
-                                Timber.i("Last opened object layout not supported: ${obj.layout}")
-                                proceedWithVaultNavigation()
-                                return@process
-                            }
-
-                            val id = obj.id
-                            val space = requireNotNull(obj.spaceId)
-
-                            val view = awaitActiveSpaceView(SpaceId(space))
-                            if (view != null) {
-                                val chat = when(view.spaceUxType) {
-                                    SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> {
-                                        resolveChatID(
-                                            space = SpaceId(space),
-                                            spaceView = view
-                                        )
-                                    }
-                                    else -> {
-                                        null
-                                    }
-                                }
-                                emitNavigationForObject(
-                                    id = id,
-                                    space = space,
-                                    layout = obj.layout,
-                                    chatId = chat
-                                )
-                            } else {
-                                Timber.w("Space view not ready or timeout while restoring last opened object. Navigating to vault.")
-                                proceedWithVaultNavigation()
-                            }
-                        }
-                        else -> proceedWithVaultNavigation()
-                    }
-                },
-                failure = {
-                    Timber.e(it, "Error while getting last opened object")
-                    proceedWithVaultNavigation()
-                }
-            )
+            proceedWithVaultNavigation()
         }
     }
 

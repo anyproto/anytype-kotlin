@@ -160,7 +160,8 @@ interface SpaceViewSubscriptionContainer {
                         Relations.PUSH_NOTIFICATION_FORCE_ALL_IDS,
                         Relations.PUSH_NOTIFICATION_FORCE_MENTION_IDS,
                         Relations.PUSH_NOTIFICATION_FORCE_MUTE_IDS,
-                        Relations.ONE_TO_ONE_IDENTITY
+                        Relations.ONE_TO_ONE_IDENTITY,
+                        Relations.SPACE_HOMEPAGE
                     ),
                     filters = listOf(
                         DVFilter(

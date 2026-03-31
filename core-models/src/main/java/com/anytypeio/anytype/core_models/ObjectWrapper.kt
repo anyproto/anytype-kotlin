@@ -438,6 +438,14 @@ sealed class ObjectWrapper {
         val spaceOrder: String? get() = getSingleValue(Relations.SPACE_ORDER)
 
         val spaceJoinDate: Double? get() = getSingleValue(Relations.SPACE_JOIN_DATE)
+
+        /**
+         * Homepage setting for the space. Values:
+         * - Object ID string: open that object when entering the space
+         * - "widgets": open the widgets/home screen
+         * - null/empty: homepage not yet set
+         */
+        val homepage: String? get() = getSingleValue(Relations.SPACE_HOMEPAGE)
     }
 
     inline fun <reified T> getValue(relation: Key): T? {

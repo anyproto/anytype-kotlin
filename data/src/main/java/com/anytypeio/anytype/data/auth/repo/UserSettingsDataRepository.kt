@@ -228,4 +228,28 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
     override fun observeWidgetSections(space: SpaceId): Flow<WidgetSections> {
         return cache.observeWidgetSections(space)
     }
+
+    override suspend fun setHomepagePickerDismissed(space: SpaceId, dismissed: Boolean) {
+        cache.setHomepagePickerDismissed(space, dismissed)
+    }
+
+    override suspend fun getHomepagePickerDismissed(space: SpaceId): Boolean {
+        return cache.getHomepagePickerDismissed(space)
+    }
+
+    override suspend fun setCreateHomeDismissed(space: SpaceId, dismissed: Boolean) {
+        cache.setCreateHomeDismissed(space, dismissed)
+    }
+
+    override fun observeCreateHomeDismissed(space: SpaceId): Flow<Boolean> {
+        return cache.observeCreateHomeDismissed(space)
+    }
+
+    override suspend fun setInviteMembersDismissed(space: SpaceId, dismissed: Boolean) {
+        cache.setInviteMembersDismissed(space, dismissed)
+    }
+
+    override fun observeInviteMembersDismissed(space: SpaceId): Flow<Boolean> {
+        return cache.observeInviteMembersDismissed(space)
+    }
 }

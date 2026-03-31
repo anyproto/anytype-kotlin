@@ -44,6 +44,8 @@ import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.extractWidgetId
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.CreateHomeWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.InviteMembersWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetElement
 import com.anytypeio.anytype.ui.widgets.types.ObjectTypesGroupWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
@@ -69,6 +71,9 @@ fun WidgetsScreen(
     val chatWidget = viewModel.chatView.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
     val recentlyEditedWidget = viewModel.recentlyEditedView.collectAsState().value
+    val showHomepagePicker = viewModel.showHomepagePicker.collectAsState().value
+    val showCreateHomeWidget = viewModel.showCreateHomeWidget.collectAsState().value
+    val showInviteMembersWidget = viewModel.showInviteMembersWidget.collectAsState().value
     val collapsedSections = viewModel.collapsedSections.collectAsState().value
     val sectionConfig = viewModel.widgetSections.collectAsState().value
 
@@ -266,6 +271,36 @@ fun WidgetsScreen(
                         isMuted = chatWidget.isMuted,
                         onWidgetClicked = viewModel::onSpaceChatWidgetClicked,
                         onDropDownMenuAction = { } // No-op: top-level chat widget has no configurable actions
+                    )
+                }
+            }
+
+            // Inline homepage picker — shown on first visit to a space with empty homepage
+            if (showHomepagePicker) {
+                item(key = "homepage_picker_inline") {
+                    HomepagePickerContent(
+                        onHomepageSelected = viewModel::onHomepageSelected,
+                        onLaterClicked = viewModel::onHomepagePickerDismissed
+                    )
+                }
+            }
+
+            // "Create Home" widget — shown after homepage picker was dismissed with "Later"
+            if (showCreateHomeWidget && !showHomepagePicker) {
+                item(key = WidgetView.CreateHome.WIDGET_CREATE_HOME_ID) {
+                    CreateHomeWidgetCard(
+                        onWidgetClicked = viewModel::onCreateHomeWidgetClicked,
+                        onDismissClicked = viewModel::onCreateHomeWidgetDismissed
+                    )
+                }
+            }
+
+            // "Invite Members" widget — shown in shared spaces with <= 1 participant
+            if (showInviteMembersWidget) {
+                item(key = WidgetView.InviteMembers.WIDGET_INVITE_MEMBERS_ID) {
+                    InviteMembersWidgetCard(
+                        onWidgetClicked = viewModel::onInviteMembersWidgetClicked,
+                        onDismissClicked = viewModel::onInviteMembersWidgetDismissed
                     )
                 }
             }

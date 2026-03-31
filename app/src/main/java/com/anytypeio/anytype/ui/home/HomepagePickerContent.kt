@@ -84,7 +84,7 @@ fun HomepagePickerContent(
     onHomepageSelected: (HomepageType) -> Unit,
     onLaterClicked: () -> Unit
 ) {
-    var selectedType by remember { mutableStateOf(HomepageType.WIDGETS) }
+    var selectedType by remember { mutableStateOf(HomepageType.CHAT) }
 
     Column(
         modifier = Modifier
@@ -94,12 +94,7 @@ fun HomepagePickerContent(
                 shape = RoundedCornerShape(24.dp)
             )
     ) {
-        Dragger(
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = 6.dp)
-        )
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(18.dp))
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -124,9 +119,9 @@ fun HomepagePickerContent(
         val types = remember {
             listOf(
                 HomepageType.CHAT,
-                HomepageType.WIDGETS,
                 HomepageType.PAGE,
-                HomepageType.COLLECTION
+                HomepageType.COLLECTION,
+                HomepageType.EMPTY
             )
         }
 
@@ -144,9 +139,9 @@ fun HomepagePickerContent(
                     selected = type == selectedType,
                     label = when (type) {
                         HomepageType.CHAT -> stringResource(id = R.string.homepage_picker_chat)
-                        HomepageType.WIDGETS -> stringResource(id = R.string.homepage_picker_widgets)
                         HomepageType.PAGE -> stringResource(id = R.string.homepage_picker_page)
                         HomepageType.COLLECTION -> stringResource(id = R.string.homepage_picker_collection)
+                        HomepageType.EMPTY -> stringResource(id = R.string.homepage_picker_empty)
                     },
                     onClick = { selectedType = type }
                 )
@@ -216,9 +211,9 @@ fun HomepageOptionCard(
         ) {
             when (type) {
                 HomepageType.CHAT -> ChatIllustration(selected = selected)
-                HomepageType.WIDGETS -> WidgetsIllustration(selected = selected)
                 HomepageType.PAGE -> PageIllustration(selected = selected)
                 HomepageType.COLLECTION -> CollectionIllustration(selected = selected)
+                HomepageType.EMPTY -> WidgetsIllustration(selected = selected)
             }
         }
         Spacer(Modifier.height(7.dp))

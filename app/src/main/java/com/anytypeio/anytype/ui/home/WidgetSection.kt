@@ -549,6 +549,12 @@ fun LazyListScope.renderWidgetSection(
                     )
                 }
             }
+            is WidgetView.CreateHome -> {
+                // Rendered directly in WidgetsScreen.kt
+            }
+            is WidgetView.InviteMembers -> {
+                // Rendered directly in WidgetsScreen.kt
+            }
         }
     }
 }

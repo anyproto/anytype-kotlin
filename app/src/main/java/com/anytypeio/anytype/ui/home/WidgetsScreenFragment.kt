@@ -232,16 +232,6 @@ class WidgetsScreenFragment : Fragment(),
             )
         }
 
-        // Homepage Picker - shown after channel creation
-        val showHomepagePicker = vm.showHomepagePicker.collectAsStateWithLifecycle().value
-        if (showHomepagePicker) {
-            HomepagePickerBottomSheet(
-                onHomepageSelected = vm::onHomepageSelected,
-                onLaterClicked = vm::onHomepagePickerDismissed,
-                onDismiss = vm::onHomepagePickerDismissed
-            )
-        }
-
         BackHandler {
             vm.onBackClicked()
         }

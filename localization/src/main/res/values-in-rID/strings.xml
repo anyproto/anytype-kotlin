@@ -859,7 +859,7 @@
     <string name="personal">Bawaan</string>
     <string name="create_space">Buat ruang</string>
     <string name="create_chat">Buat obrolan</string>
-    <string name="create_channel">New Channel</string>
+    <string name="create_channel">Kanal Baru</string>
     <string name="create_space_change_icon">Ubah ikon</string>
     <string name="create_space_chat_name">Nama obrolan</string>
     <string name="create_space_space_name">Nama Ruang</string>
@@ -1286,7 +1286,7 @@
     <string name="multiplayer_viewer_access_desc">Orang dengan tautan ini bisa membaca obrolan</string>
     <string name="multiplayer_request_access">Minta akses</string>
     <string name="multiplayer_request_access_desc">Pemilik harus menyetujui setiap permintaan bergabung</string>
-    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
+    <string name="channel_members_subtitle">%1$d/%2$d penyunting, %3$d/%4$d pelihat</string>
     <string name="multiplayer_qr_code">Kode QR</string>
     <string name="multiplayer_mute">Senyapkan</string>
     <string name="multiplayer_unmute">Lepas senyap</string>
@@ -1742,9 +1742,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="main_navigation_content_desc_search_button">Tombol telusuri objek</string>
     <string name="main_navigation_content_desc_create_button">Tombol buat objek</string>
     <string name="chat">Obrolan</string>
-    <string name="discussion_comments">comments</string>
-    <string name="discussion_no_comments">No comments yet</string>
-    <string name="discussion_leave_comment">Leave a comment…</string>
+    <string name="discussion_comments">komentar</string>
+    <string name="discussion_no_comments">Belum ada komentar</string>
+    <string name="discussion_leave_comment">Tinggalkan komentar…</string>
     <string name="copy">Salin</string>
     <string name="copy_text">Salin Teks</string>
     <string name="copy_plain_text">Salin Teks Polos</string>
@@ -2024,7 +2024,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="failed_to_load_image">Gagal memuat gambar</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Gabung via kode QR</string>
-    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_select_members_title">Pilih anggota</string>
     <string name="channel_next">Lanjut</string>
     <string name="vault_qr_scan_error_title">Tidak bisa memindai kode QR</string>
     <string name="vault_qr_scan_error_description">Pastikan kodenya terlihat jelas lalu coba lagi.</string>
@@ -2039,9 +2039,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="allow">Izinkan</string>
     <string name="attachment_image">Lampiran gambar</string>
     <!-- Shared Space Limit (DROID-4388) -->
-    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
+    <string name="vault_shared_space_limit_title">Batas ruang terbagi tercapai</string>
     <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
-    <string name="vault_manage_channels">Manage Channels</string>
+    <string name="vault_manage_channels">Kelola Kanal</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Foto</string>
     <string name="attachment_menu_camera">Kamera</string>

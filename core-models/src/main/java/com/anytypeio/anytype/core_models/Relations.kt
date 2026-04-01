@@ -103,7 +103,6 @@ object Relations {
     const val PARTICIPANT_STATUS = "participantStatus"
     const val PARTICIPANT_PERMISSIONS = "participantPermissions"
     const val SPACE_ACCESS_TYPE = "spaceAccessType"
-    const val SPACE_DASHBOARD_ID = "spaceDashboardId"
     const val SPACE_HOMEPAGE = "homepage"
     const val ONE_TO_ONE_IDENTITY = "oneToOneIdentity"
     const val ONE_TO_ONE_REQUEST_METADATA = "oneToOneRequestMetadataKey"

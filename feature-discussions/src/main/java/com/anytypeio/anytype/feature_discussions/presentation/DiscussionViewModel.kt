@@ -773,7 +773,11 @@ class DiscussionViewModel @Inject constructor(
         viewModelScope.launch {
             when (block) {
                 is DiscussionView.ContentBlock.Image -> {
-                    // TODO: open full-screen image preview
+                    _commands.emit(
+                        DiscussionCommand.MediaPreview(
+                            obj = block.targetObjectId
+                        )
+                    )
                 }
                 is DiscussionView.ContentBlock.Bookmark -> {
                     if (block.url.isNotEmpty()) {
@@ -799,6 +803,7 @@ class DiscussionViewModel @Inject constructor(
         data class SelectReaction(val msg: Id) : DiscussionCommand()
         data class ViewMemberCard(val member: Id, val space: Space) : DiscussionCommand()
         data class Browse(val url: String) : DiscussionCommand()
+        data class MediaPreview(val obj: Id) : DiscussionCommand()
     }
 
     companion object {

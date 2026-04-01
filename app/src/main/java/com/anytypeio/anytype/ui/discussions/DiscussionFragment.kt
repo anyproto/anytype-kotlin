@@ -28,6 +28,7 @@ import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.chats.SelectChatReactionFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
@@ -93,6 +94,19 @@ class DiscussionFragment : Fragment() {
                             proceedWithAction(OpenUrl(command.url))
                         }.onFailure {
                             Timber.e(it, "Error while opening URL from discussion")
+                        }
+                    }
+                    is DiscussionViewModel.DiscussionCommand.MediaPreview -> {
+                        runCatching {
+                            MediaActivity.start(
+                                context = requireContext(),
+                                mediaType = MediaActivity.TYPE_IMAGE,
+                                objects = listOf(command.obj),
+                                index = 0,
+                                space = space
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while launching media preview from discussion")
                         }
                     }
                 }

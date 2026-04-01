@@ -14,6 +14,9 @@
     <string name="clear_file_cache">Wis bestandscache</string>
     <string name="debug_sync_report">Debug Sync Rapport</string>
     <string name="debug">Debug</string>
+    <string name="experimental_features">Experimentele functies</string>
+    <string name="experimental_features_compact_vault">Compact vault mode</string>
+    <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
     <string name="account">Kluis</string>
     <string name="reset_account">Reset kluis</string>
     <string name="delete_account">Verwijder kluis</string>
@@ -858,9 +861,18 @@
     <string name="personal">Standaard</string>
     <string name="create_space">Maak ruimte</string>
     <string name="create_chat">Maak chat</string>
+    <string name="create_channel">New Channel</string>
     <string name="create_space_change_icon">Wijzig icoon</string>
     <string name="create_space_chat_name">Gespreksnaam</string>
     <string name="create_space_space_name">Naam ruimte</string>
+    <!-- Homepage Picker -->
+    <string name="homepage_picker_title">Create Home</string>
+    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_chat">Chat</string>
+    <string name="homepage_picker_widgets">Widgets</string>
+    <string name="homepage_picker_page">Pagina</string>
+    <string name="homepage_picker_collection">Verzameling</string>
+    <string name="homepage_picker_later">Later</string>
     <string name="generic_error">Er is iets misgegaan. Probeer het alsjeblieft opnieuw.</string>
     <string name="type">Type</string>
     <string name="format">Formaat</string>
@@ -1278,6 +1290,7 @@
     <string name="multiplayer_viewer_access_desc">Mensen met koppeling kunnen chat zien en lezen</string>
     <string name="multiplayer_request_access">Vraag toegang aan</string>
     <string name="multiplayer_request_access_desc">Eigenaar moet elk deelnameverzoek goedkeuren</string>
+    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
     <string name="multiplayer_qr_code">QR-code</string>
     <string name="multiplayer_mute">Demp</string>
     <string name="multiplayer_unmute">Demp niet meer</string>
@@ -1742,6 +1755,9 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="main_navigation_content_desc_search_button">Zoek objecten knop</string>
     <string name="main_navigation_content_desc_create_button">Maak object knop</string>
     <string name="chat">Chat</string>
+    <string name="discussion_comments">comments</string>
+    <string name="discussion_no_comments">No comments yet</string>
+    <string name="discussion_leave_comment">Leave a comment…</string>
     <string name="copy">Kopiëren</string>
     <string name="copy_text">Kopieer tekst</string>
     <string name="copy_plain_text">Kopieer platte tekst</string>
@@ -1979,6 +1995,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="vault_create_chat_description">For real-time conversations</string>
     <string name="vault_create_space">Nieuwe ruimte</string>
     <string name="vault_create_space_description">For organized content and data</string>
+    <string name="vault_create_personal">Personal</string>
+    <string name="vault_create_group">Group</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ideeën vereisen gesprekken</string>
     <string name="spaces_introduction_page1_description">Anytype ondersteunt nu realtime gesprekken in gedeelde kanalen - zodat jullie gedachten en dialogen samen kunnen groeien.</string>
@@ -2019,17 +2037,24 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="failed_to_load_image">Laden afbeelding mislukt</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Neem deel via QR-code</string>
+    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_next">Volgende</string>
     <string name="vault_qr_scan_error_title">Kon de QR-code niet scannen</string>
     <string name="vault_qr_scan_error_description">Zorg ervoor dat het duidelijk zichtbaar is en probeer het opnieuw.</string>
     <string name="vault_qr_invalid_title">Ongeldige QR-code</string>
     <string name="vault_qr_invalid_description">De gescande QR-code komt niet overeen met enige geldige uitnodiging. Controleer het en probeer het opnieuw.</string>
     <string name="vault_qr_try_again">Probeer opnieuw</string>
     <string name="camera_permission_required_title">Cameratoegang vereist</string>
+    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
     <string name="camera_permission_rationale_message">Om QR-codes te scannen, heeft Anytype toegang tot jouw camera nodig. Deze machtiging wordt alleen gebruikt voor het scannen van QR-codes.</string>
     <string name="camera_permission_settings_message">Om QR-codes te scannen moet je toegang tot de camera geven in de instellingen van jouw apparaat.</string>
     <string name="open_settings">Open instellingen</string>
     <string name="allow">Sta toe</string>
     <string name="attachment_image">Bijlage afbeelding</string>
+    <!-- Shared Space Limit (DROID-4388) -->
+    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
+    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
+    <string name="vault_manage_channels">Manage Channels</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Foto\'s</string>
     <string name="attachment_menu_camera">Camera</string>
@@ -2155,4 +2180,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="select_view">Select view</string>
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
+    <string name="chats_search_close_content_description">Close search</string>
 </resources>

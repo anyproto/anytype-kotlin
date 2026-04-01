@@ -15,14 +15,18 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceCreationUseCase
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.core_models.multiplayer.ChannelCreationType
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.media.UploadFile
+import com.anytypeio.anytype.domain.multiplayer.AddSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -38,11 +42,13 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsShareSpaceNewLi
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -56,9 +62,11 @@ class CreateSpaceViewModel(
     private val saveCurrentSpace: SaveCurrentSpace,
     private val makeSpaceShareable: MakeSpaceShareable,
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
+    private val addSpaceMembers: AddSpaceMembers,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val permissions: UserPermissionProvider,
-    private val profileContainer: ProfileSubscriptionManager
+    private val profileContainer: ProfileSubscriptionManager,
+    private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
     val isInProgress = MutableStateFlow(false)
@@ -66,18 +74,13 @@ class CreateSpaceViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
 
     val spaceIconView: MutableStateFlow<SpaceIconView> = MutableStateFlow(
-        when (vmParams.spaceUxType) {
-            SpaceUxType.CHAT -> SpaceIconView.ChatSpace.Placeholder(
-                color = SystemColor.entries.random()
-            )
-            else -> SpaceIconView.DataSpace.Placeholder(
-                color = SystemColor.entries.random()
-            )
-        }
+        SpaceIconView.DataSpace.Placeholder(
+            color = SystemColor.entries.random()
+        )
     )
 
     init {
-        Timber.d("CreateSpaceViewModel initialized with spaceUxType: %s", vmParams.spaceUxType)
+        Timber.d("CreateSpaceViewModel initialized with channelType: %s", vmParams.channelType)
         viewModelScope.launch {
             analytics.sendEvent(eventName = EventsDictionary.screenSettingsSpaceCreate)
         }
@@ -85,27 +88,53 @@ class CreateSpaceViewModel(
 
     val isDismissed = MutableStateFlow(false)
 
+    val selectedMembersView: StateFlow<List<SpaceMemberView>> = spaceViews.observe()
+        .map { spaces ->
+            val identities = vmParams.selectedMemberIdentities
+            if (identities.isEmpty()) return@map emptyList()
+            spaces
+                .filter { space ->
+                    space.spaceUxType == SpaceUxType.ONE_TO_ONE
+                        && space.oneToOneIdentity in identities
+                }
+                .mapNotNull { space ->
+                    val identity = space.oneToOneIdentity ?: return@mapNotNull null
+                    val name = space.name.orEmpty()
+                    val iconImage = space.iconImage
+                    val icon = if (!iconImage.isNullOrEmpty()) {
+                        SpaceMemberIconView.Image(
+                            url = urlBuilder.thumbnail(iconImage),
+                            name = name
+                        )
+                    } else {
+                        SpaceMemberIconView.Placeholder(name = name)
+                    }
+                    SpaceMemberView(
+                        identity = identity,
+                        name = name,
+                        icon = icon
+                    )
+                }
+        }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
+
     /**
-     * Only CHAT spaces should automatically create invite links upon creation.
-     * ONE_TO_ONE spaces have immutable ACL between two participants and don't need invite links.
+     * Group channels should be made shareable and have invite links created.
+     * Personal channels are private and don't need invite links.
      */
     private val shouldCreateInviteLink: Boolean
-        get() = vmParams.spaceUxType == SpaceUxType.CHAT
+        get() = vmParams.channelType == ChannelCreationType.GROUP
 
     private val _createSpaceError = MutableStateFlow<CreateSpaceError?>(null)
     val createSpaceError: StateFlow<CreateSpaceError?> = _createSpaceError.asStateFlow()
 
     fun onImageSelected(url: Url) {
         Timber.d("onImageSelected: $url")
-        if (vmParams.spaceUxType == SpaceUxType.CHAT) {
-            spaceIconView.value = SpaceIconView.ChatSpace.Image(url = url)
-        } else {
-            spaceIconView.value = SpaceIconView.DataSpace.Image(url = url)
-        }
+        spaceIconView.value = SpaceIconView.DataSpace.Image(url = url)
     }
 
     fun onCreateSpace(name: String) {
-        Timber.d("onCreateSpace, spaceUxType: %s, name: %s", vmParams.spaceUxType, name)
+        Timber.d("onCreateSpace, channelType: %s", vmParams.channelType)
         if (isDismissed.value) {
             return
         }
@@ -113,23 +142,16 @@ class CreateSpaceViewModel(
             sendToast("Please wait...")
             return
         }
-        val (uxType, useCase) = if (vmParams.spaceUxType == SpaceUxType.CHAT) {
-            SpaceUxType.CHAT to SpaceCreationUseCase.CHAT_SPACE
-        } else {
-            SpaceUxType.DATA to SpaceCreationUseCase.DATA_SPACE_MOBILE
-        }
         viewModelScope.launch {
             val params = CreateSpace.Params(
                 details = mapOf(
                     Relations.NAME to name.trim(),
                     Relations.ICON_OPTION to when (val icon = spaceIconView.value) {
-                        is SpaceIconView.ChatSpace.Placeholder -> icon.color.index.toDouble()
                         is SpaceIconView.DataSpace.Placeholder -> icon.color.index.toDouble()
                         else -> SystemColor.SKY.index.toDouble()
-                    },
-                    Relations.SPACE_UX_TYPE to uxType.code.toDouble()
+                    }
                 ),
-                useCase = useCase
+                useCase = SpaceCreationUseCase.NONE
             )
             createSpace.stream(params = params).collect { result ->
                 result.fold(
@@ -157,10 +179,9 @@ class CreateSpaceViewModel(
             props = Props(
                 mapOf(
                     EventsPropertiesKey.route to EventsDictionary.Routes.navigation,
-                    EventsPropertiesKey.uxType to when (vmParams.spaceUxType) {
-                        SpaceUxType.CHAT -> "Chat"
-                        SpaceUxType.ONE_TO_ONE -> "OneToOne"
-                        else -> "Space"
+                    EventsPropertiesKey.uxType to when (vmParams.channelType) {
+                        ChannelCreationType.PERSONAL -> "Personal"
+                        ChannelCreationType.GROUP -> "Group"
                     }
                 )
             )
@@ -168,17 +189,13 @@ class CreateSpaceViewModel(
 
         val proceed: suspend () -> Unit = if (shouldCreateInviteLink) {
             {
-                proceedWithMakeChatSpaceSharable(
-                    spaceId = SpaceId(spaceId),
-                    startingObject = response.startingObject
+                proceedWithMakeGroupChannelShareable(
+                    spaceId = SpaceId(spaceId)
                 )
             }
         } else {
             {
-                finishSpaceCreation(
-                    spaceId = spaceId,
-                    startingObject = response.startingObject
-                )
+                finishSpaceCreation(spaceId = spaceId)
             }
         }
 
@@ -218,13 +235,6 @@ class CreateSpaceViewModel(
         onSuccess: suspend () -> Unit
     ) {
         when (icon) {
-            is SpaceIconView.ChatSpace.Image -> {
-                uploadAndSetIcon(
-                    url = icon.url,
-                    spaceId = spaceId,
-                    onSuccess = onSuccess
-                )
-            }
             is SpaceIconView.DataSpace.Image -> {
                 uploadAndSetIcon(
                     url = icon.url,
@@ -236,53 +246,22 @@ class CreateSpaceViewModel(
         }
     }
 
-    private suspend fun finishSpaceCreation(spaceId: Id, startingObject: Id?) {
+    private suspend fun finishSpaceCreation(spaceId: Id) {
         Timber.d("Space created: %s", spaceId)
         isInProgress.value = false
-        spaceManager.set(space = spaceId, withChat = vmParams.spaceUxType == SpaceUxType.CHAT).fold(
+        spaceManager.set(space = spaceId).fold(
             onSuccess = { _ ->
-                if (vmParams.spaceUxType == SpaceUxType.CHAT) {
-                    finishChatSpaceCreation(spaceId = spaceId)
-                } else {
-                    finishDataSpaceCreation(
-                        spaceId = spaceId,
-                        //DROID-4065: opens Data Space from Widget's Screen
-                        startingObject = null
+                saveCurrentSpace.async(params = SaveCurrentSpace.Params(SpaceId(spaceId)))
+                commands.emit(
+                    Command.SwitchSpaceWithHomepagePicker(
+                        space = Space(spaceId)
                     )
-                }
+                )
             },
             onFailure = { error ->
                 Timber.e(error, "Error setting created space")
                 onError(error)
             }
-        )
-    }
-
-    private suspend fun finishChatSpaceCreation(spaceId: Id) {
-        val spaceConfig = spaceManager.getConfig(SpaceId(spaceId))
-        val chatId = spaceConfig?.spaceChatId
-        if (chatId != null) {
-            saveCurrentSpace.async(params = SaveCurrentSpace.Params(SpaceId(spaceId)))
-            commands.emit(
-                Command.SwitchSpaceChat(
-                    space = Space(spaceId),
-                    chatId = chatId
-                )
-            )
-        } else {
-            onError(
-                IllegalStateException("Chat ID is null for created chat space: $spaceId")
-            )
-        }
-    }
-
-    private suspend fun finishDataSpaceCreation(spaceId: Id, startingObject: Id?) {
-        saveCurrentSpace.async(params = SaveCurrentSpace.Params(SpaceId(spaceId)))
-        commands.emit(
-            Command.SwitchSpace(
-                space = Space(spaceId),
-                startingObject = startingObject
-            )
         )
     }
 
@@ -302,25 +281,19 @@ class CreateSpaceViewModel(
 
     private fun proceedWithResettingRandomSpaceGradient() {
         val color = SystemColor.entries.random()
-        spaceIconView.value = if (vmParams.spaceUxType == SpaceUxType.CHAT) {
-            SpaceIconView.ChatSpace.Placeholder(color)
-        } else {
-            SpaceIconView.DataSpace.Placeholder(color)
-        }
+        spaceIconView.value = SpaceIconView.DataSpace.Placeholder(color)
     }
 
-    //region Share and Create Chat Space Link
-    // Note: Only CHAT spaces create invite links.
-    // ONE_TO_ONE spaces have immutable ACL between two participants,
-    // so they don't need/support invite links.
-    private suspend fun proceedWithMakeChatSpaceSharable(
-        spaceId: SpaceId,
-        startingObject: Id?
+    //region Share and Create Group Channel Link
+    // Note: Only GROUP channels create invite links.
+    // PERSONAL channels are private and don't need invite links.
+    private suspend fun proceedWithMakeGroupChannelShareable(
+        spaceId: SpaceId
     ) {
         // Check if shareable space limit is reached
         if (isSharableLimitReached()) {
             Timber.d("Shareable space limit reached, skipping share and finishing creation")
-            finishSpaceCreation(spaceId = spaceId.id, startingObject = startingObject)
+            finishSpaceCreation(spaceId = spaceId.id)
             return
         }
 
@@ -328,14 +301,16 @@ class CreateSpaceViewModel(
             onSuccess = {
                 Timber.d("Successfully made space shareable")
                 analytics.sendEvent(eventName = shareSpace)
-                generateInviteLink(
-                    spaceId = spaceId,
-                    startingObject = startingObject
-                )
+                generateInviteLink(spaceId = spaceId)
             },
             onFailure = { error ->
                 Timber.e(error, "Error while making space shareable")
-                onError(error)
+                if (vmParams.selectedMemberIdentities.isNotEmpty()) {
+                    onError(error)
+                } else {
+                    sendToast("Failed to make space shareable")
+                    finishSpaceCreation(spaceId = spaceId.id)
+                }
             }
         )
     }
@@ -363,8 +338,7 @@ class CreateSpaceViewModel(
     }
 
     private suspend fun generateInviteLink(
-        spaceId: SpaceId,
-        startingObject: Id?
+        spaceId: SpaceId
     ) {
         generateSpaceInviteLink.async(
             params = GenerateSpaceInviteLink.Params(
@@ -382,16 +356,41 @@ class CreateSpaceViewModel(
                     permissions = CHAT_SPACE_DEFAULT_PERMISSIONS
                 )
 
-                finishSpaceCreation(
-                    spaceId = spaceId.id,
-                    startingObject = startingObject
-                )
+                proceedWithAddMembers(spaceId = spaceId)
             },
             onFailure = { error ->
                 Timber.e(error, "Error while generating invite link")
-                onError(error)
+                if (vmParams.selectedMemberIdentities.isNotEmpty()) {
+                    onError(error)
+                } else {
+                    sendToast("Failed to generate invite link")
+                    finishSpaceCreation(spaceId = spaceId.id)
+                }
             }
         )
+    }
+
+    private suspend fun proceedWithAddMembers(
+        spaceId: SpaceId
+    ) {
+        val identities = vmParams.selectedMemberIdentities
+        if (identities.isNotEmpty()) {
+            addSpaceMembers.async(
+                AddSpaceMembers.Params(
+                    space = spaceId,
+                    identities = identities
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Successfully added ${identities.size} members to space")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Failed to add members to space")
+                    sendToast("Failed to add members")
+                }
+            )
+        }
+        finishSpaceCreation(spaceId = spaceId.id)
     }
 
     //endregion
@@ -406,9 +405,11 @@ class CreateSpaceViewModel(
         private val saveCurrentSpace: SaveCurrentSpace,
         private val makeSpaceShareable: MakeSpaceShareable,
         private val generateSpaceInviteLink: GenerateSpaceInviteLink,
+        private val addSpaceMembers: AddSpaceMembers,
         private val spaceViews: SpaceViewSubscriptionContainer,
         private val permissions: UserPermissionProvider,
-        private val profileContainer: ProfileSubscriptionManager
+        private val profileContainer: ProfileSubscriptionManager,
+        private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -423,29 +424,32 @@ class CreateSpaceViewModel(
             saveCurrentSpace = saveCurrentSpace,
             makeSpaceShareable = makeSpaceShareable,
             generateSpaceInviteLink = generateSpaceInviteLink,
+            addSpaceMembers = addSpaceMembers,
             spaceViews = spaceViews,
             permissions = permissions,
-            profileContainer = profileContainer
+            profileContainer = profileContainer,
+            urlBuilder = urlBuilder
         ) as T
     }
 
     sealed class Command {
-        data class SwitchSpace(
-            val space: Space,
-            val startingObject: Id?
-        ) : Command()
-
-        data class SwitchSpaceChat(
-            val space: Space,
-            val chatId: Id
+        data class SwitchSpaceWithHomepagePicker(
+            val space: Space
         ) : Command()
     }
 
     data class VmParams(
-        val spaceUxType: SpaceUxType
+        val channelType: ChannelCreationType,
+        val selectedMemberIdentities: List<String> = emptyList()
     )
 
     data class CreateSpaceError(val msg: String)
+
+    data class SpaceMemberView(
+        val identity: Id,
+        val name: String,
+        val icon: SpaceMemberIconView
+    )
 
     companion object {
         private val CHAT_SPACE_INVITE_TYPE = InviteType.WITHOUT_APPROVE

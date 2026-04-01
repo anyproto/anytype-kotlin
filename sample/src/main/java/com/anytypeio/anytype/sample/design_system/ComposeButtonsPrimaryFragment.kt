@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -25,6 +27,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSecondaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonPrimaryDarkTheme
@@ -409,6 +412,143 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                             text = "Button Dark",
                             size = ButtonSize.Large
                         )
+
+                        // ButtonOnboardingPrimaryLarge - all sizes
+                        Text(
+                            text = "ButtonOnboardingPrimaryLarge",
+                            modifier = Modifier
+                                .align(CenterHorizontally)
+                                .padding(top = 24.dp),
+                            style = HeadlineHeading,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                        Text(
+                            text = "XSmall",
+                            modifier = Modifier
+                                .align(CenterHorizontally)
+                                .padding(top = 8.dp),
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            ButtonOnboardingPrimaryLarge(
+                                onClick = {},
+                                text = "Create",
+                                size = ButtonSize.XSmall,
+                                modifierBox = Modifier
+                                    .wrapContentHeight()
+                                    .padding(vertical = 4.dp)
+                            )
+                        }
+                        Text(
+                            text = "Small",
+                            modifier = Modifier
+                                .align(CenterHorizontally)
+                                .padding(top = 8.dp),
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            ButtonOnboardingPrimaryLarge(
+                                onClick = {},
+                                text = "Create",
+                                size = ButtonSize.Small,
+                                modifierBox = Modifier
+                                    .wrapContentHeight()
+                                    .padding(vertical = 4.dp)
+                            )
+                        }
+                        Text(
+                            text = "Medium",
+                            modifier = Modifier
+                                .align(CenterHorizontally)
+                                .padding(top = 8.dp),
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            ButtonOnboardingPrimaryLarge(
+                                onClick = {},
+                                text = "Create",
+                                size = ButtonSize.Medium,
+                                modifierBox = Modifier
+                                    .wrapContentHeight()
+                                    .padding(vertical = 4.dp)
+                            )
+                        }
+                        Text(
+                            text = "Large (full width)",
+                            modifier = Modifier
+                                .align(CenterHorizontally)
+                                .padding(top = 8.dp),
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                        ButtonOnboardingPrimaryLarge(
+                            onClick = {},
+                            text = "Create",
+                            size = ButtonSize.Large,
+                            modifierBox = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                        )
+                        Text(
+                            text = "Small (loading toggle)",
+                            modifier = Modifier
+                                .align(CenterHorizontally)
+                                .padding(top = 8.dp),
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            loadingOnboardingPrimaryButton(
+                                size = ButtonSize.Small,
+                                modifierBox = Modifier
+                                    .wrapContentHeight()
+                                    .padding(vertical = 4.dp)
+                            )
+                        }
+                        Text(
+                            text = "Large (loading toggle)",
+                            modifier = Modifier
+                                .align(CenterHorizontally)
+                                .padding(top = 8.dp),
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                        loadingOnboardingPrimaryButton(
+                            size = ButtonSize.Large,
+                            modifierBox = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 4.dp)
+                        )
+                        Text(
+                            text = "Small (disabled)",
+                            modifier = Modifier
+                                .align(CenterHorizontally)
+                                .padding(top = 8.dp),
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            ButtonOnboardingPrimaryLarge(
+                                onClick = {},
+                                text = "Create",
+                                size = ButtonSize.Small,
+                                enabled = false,
+                                modifierBox = Modifier
+                                    .wrapContentHeight()
+                                    .padding(vertical = 4.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -474,6 +614,24 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
             size = size,
             loading = loadingState.value,
             loadingItemsCount = 3
+        )
+    }
+
+    @Composable
+    fun loadingOnboardingPrimaryButton(
+        size: ButtonSize,
+        modifierBox: Modifier = Modifier
+    ) {
+        val loadingState = remember { mutableStateOf(false) }
+        ButtonOnboardingPrimaryLarge(
+            onClick = {
+                loadingState.value = !loadingState.value
+            },
+            modifierBox = modifierBox,
+            text = "Create",
+            size = size,
+            loading = loadingState.value,
+            enabled = true
         )
     }
 

@@ -136,6 +136,7 @@ import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObje
 import com.anytypeio.anytype.presentation.sets.resolveTemplateForDataViewObject
 import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
+import com.anytypeio.anytype.presentation.spaces.HomepageType
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
@@ -280,6 +281,8 @@ class HomeScreenViewModel(
 
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
+
+    val showHomepagePicker = MutableStateFlow(vmParams.showHomepagePicker)
 
     private val isEmptyingBinInProgress = MutableStateFlow(false)
 
@@ -3693,6 +3696,38 @@ class HomeScreenViewModel(
         )
     }
 
+    //region Homepage Picker
+
+    fun onHomepageSelected(type: HomepageType) {
+        viewModelScope.launch {
+            showHomepagePicker.value = false
+            when (type) {
+                HomepageType.WIDGETS -> {
+                    // Widgets is the default — nothing to set
+                    Timber.d("Homepage selected: Widgets (default)")
+                }
+                HomepageType.CHAT -> {
+                    // TODO: get space chat ID and call setHomepage
+                    Timber.d("Homepage selected: Chat")
+                }
+                HomepageType.PAGE -> {
+                    // TODO: create page object and call setHomepage
+                    Timber.d("Homepage selected: Page")
+                }
+                HomepageType.COLLECTION -> {
+                    // TODO: create collection object and call setHomepage
+                    Timber.d("Homepage selected: Collection")
+                }
+            }
+        }
+    }
+
+    fun onHomepagePickerDismissed() {
+        showHomepagePicker.value = false
+    }
+
+    //endregion
+
     class Factory @Inject constructor(
         private val vmParams: HomeScreenVmParams,
         private val openObject: OpenObject,
@@ -3979,7 +4014,10 @@ fun ObjectWrapper.Type.navigation(
     )
 }
 
-data class HomeScreenVmParams(val spaceId: SpaceId)
+data class HomeScreenVmParams(
+    val spaceId: SpaceId,
+    val showHomepagePicker: Boolean = false
+)
 
 const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 4
 const val MAX_PINNED_TYPE_COUNT_FOR_APP_ACTIONS = 3

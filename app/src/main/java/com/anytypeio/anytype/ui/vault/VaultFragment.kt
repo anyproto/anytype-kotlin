@@ -34,7 +34,8 @@ import com.anytypeio.anytype.feature_vault.presentation.VaultNavigation
 import com.anytypeio.anytype.feature_vault.presentation.VaultViewModel
 import com.anytypeio.anytype.feature_vault.presentation.VaultViewModelFactory
 import com.anytypeio.anytype.feature_vault.ui.AlertScreenModals
-import com.anytypeio.anytype.feature_vault.ui.ChooseSpaceTypeScreen
+import com.anytypeio.anytype.feature_vault.ui.SelectMembersContent
+import com.anytypeio.anytype.feature_vault.ui.SharedSpaceLimitModal
 import com.anytypeio.anytype.feature_vault.ui.VaultScreen
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
@@ -95,8 +96,14 @@ class VaultFragment : BaseComposeFragment() {
                 uiState = vm.uiState.collectAsStateWithLifecycle().value,
                 showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
                 showCreateSpaceBadge = vm.showCreateSpaceBadge.collectAsStateWithLifecycle().value,
+                showCreateChannelMenu = vm.showCreateChannelMenu.collectAsStateWithLifecycle().value,
+                isLocalOnly = vm.isLocalOnly,
                 onSpaceClicked = vm::onSpaceClicked,
-                onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
+                onCreateChannelMenuClicked = vm::onCreateChannelMenuClicked,
+                onPersonalClicked = vm::onPersonalChannelClicked,
+                onGroupClicked = vm::onGroupChannelClicked,
+                onJoinViaQrClicked = vm::onJoinViaQrClicked,
+                onCreateChannelMenuDismissed = vm::onCreateChannelMenuDismissed,
                 onSettingsClicked = vm::onSettingsClicked,
                 profile = vm.profileView.collectAsStateWithLifecycle().value,
                 onMuteSpace = onMuteSpace,
@@ -158,23 +165,27 @@ class VaultFragment : BaseComposeFragment() {
                         onDismiss = vm::clearVaultError
                     )
                 }
+
+                is VaultErrors.SharedSpaceLimitReached -> {
+                    SharedSpaceLimitModal(
+                        limit = vaultErrors.limit,
+                        onUpgradeClicked = vm::onSharedSpaceLimitUpgradeClicked,
+                        onManageChannelsClicked = vm::onManageChannelsClicked,
+                        onDismiss = vm::clearVaultError
+                    )
+                }
             }
 
-            if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
-                ChooseSpaceTypeScreen(
-                    showChats = true,
-                    onCreateChatClicked = {
-                        vm.onCreateChatClicked()
-                    },
-                    onCreateSpaceClicked = {
-                        vm.onCreateSpaceClicked()
-                    },
-                    onJoinViaQrClicked = {
-                        vm.onJoinViaQrClicked()
-                    },
-                    onDismiss = {
-                        vm.onChooseSpaceTypeDismissed()
-                    }
+            // Dropdown menu is now hosted inside VaultScreen / VaultScreenToolbar
+
+            val showSelectMembers = vm.showSelectMembersSheet.collectAsStateWithLifecycle().value
+            if (showSelectMembers) {
+                SelectMembersContent(
+                    uiState = vm.selectMembersUiState.collectAsStateWithLifecycle().value,
+                    onMemberToggled = vm::onMemberToggled,
+                    onSearchQueryChanged = vm::onSelectMembersSearchQueryChanged,
+                    onNext = vm::onSelectMembersNext,
+                    onDismissRequest = vm::onSelectMembersDismissed
                 )
             }
         }
@@ -225,7 +236,11 @@ class VaultFragment : BaseComposeFragment() {
                 runCatching {
                     findNavController().navigate(
                         R.id.createSpaceScreen,
-                        bundleOf("spaceUxType" to command.spaceUxType)
+                        bundleOf(
+                            "channelType" to command.channelType,
+                            "selectedMemberIdentities" to command.selectedMembers
+                                .map { it.identity }.toTypedArray()
+                        )
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening create space screen from vault")
@@ -317,6 +332,14 @@ class VaultFragment : BaseComposeFragment() {
             
             VaultCommand.ScanQrCode -> {
                 handleCameraPermissionAndScan()
+            }
+
+            VaultCommand.OpenSpaceListScreen -> {
+                runCatching {
+                    findNavController().navigate(R.id.spaceListScreen)
+                }.onFailure {
+                    Timber.e(it, "Error while navigating to space list")
+                }
             }
             
             is VaultCommand.NavigateToRequestJoinSpace -> {

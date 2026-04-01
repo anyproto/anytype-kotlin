@@ -530,42 +530,42 @@ enum class ButtonSize(
     val textStyle: TextStyle
 ) {
     XSmall(
-        cornerSize = 6.dp,
+        cornerSize = 14.dp,
         contentPadding = PaddingValues(9.5.dp, 6.038.dp, 9.5.dp, 6.038.dp),
         textStyle = Caption1Medium
     ),
     XSmallSecondary(
-        cornerSize = 6.dp,
+        cornerSize = 14.dp,
         contentPadding = PaddingValues(9.5.dp, 6.038.dp, 9.5.dp, 6.038.dp),
         textStyle = Caption1Regular
     ),
     Small(
-        cornerSize = 8.dp,
+        cornerSize = 18.dp,
         contentPadding = PaddingValues(11.dp, 7.4.dp, 11.dp, 7.4.dp),
         textStyle = BodyCalloutMedium
     ),
     SmallSecondary(
-        cornerSize = 8.dp,
+        cornerSize = 18.dp,
         contentPadding = PaddingValues(11.dp, 7.4.dp, 11.dp, 7.4.dp),
         textStyle = BodyCalloutRegular
     ),
     Medium(
-        cornerSize = 10.dp,
+        cornerSize = 22.dp,
         contentPadding = PaddingValues(55.dp, 10.dp, 55.dp, 10.dp),
         textStyle = ButtonMedium
     ),
     MediumSecondary(
-        cornerSize = 10.dp,
+        cornerSize = 22.dp,
         contentPadding = PaddingValues(55.dp, 10.dp, 55.dp, 10.dp),
         textStyle = UXBody
     ),
     Large(
-        cornerSize = 12.dp,
+        cornerSize = 26.dp,
         contentPadding = PaddingValues(0.dp, 13.52.dp, 0.dp, 12.dp),
         textStyle = ButtonMedium
     ),
     LargeSecondary(
-        cornerSize = 12.dp,
+        cornerSize = 26.dp,
         contentPadding = PaddingValues(0.dp, 13.52.dp, 0.dp, 12.dp),
         textStyle = ButtonRegular
     ),

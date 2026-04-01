@@ -14,6 +14,9 @@
     <string name="clear_file_cache">Limpiar caché de archivos</string>
     <string name="debug_sync_report">Informe de sincronización de depuración</string>
     <string name="debug">Depurar</string>
+    <string name="experimental_features">Funciones experimentales</string>
+    <string name="experimental_features_compact_vault">Modo de arca compacto</string>
+    <string name="experimental_features_compact_vault_description">No muestra en el arca la vista previa de mensajes de canales leídos</string>
     <string name="account">Arca</string>
     <string name="reset_account">Restablecer arca</string>
     <string name="delete_account">Eliminar arca</string>
@@ -858,9 +861,18 @@
     <string name="personal">Por defecto</string>
     <string name="create_space">Crear espacio</string>
     <string name="create_chat">Crear chat</string>
+    <string name="create_channel">Nuevo canal</string>
     <string name="create_space_change_icon">Cambiar icono</string>
     <string name="create_space_chat_name">Nombre del chat</string>
     <string name="create_space_space_name">Nombre del espacio</string>
+    <!-- Homepage Picker -->
+    <string name="homepage_picker_title">Crear Inicio</string>
+    <string name="homepage_picker_description">Elige lo que veréis tú y otros miembros del canal al abrirlo. Puedes cambiarlo en los ajustes en cualquier momento.</string>
+    <string name="homepage_picker_chat">Chat</string>
+    <string name="homepage_picker_widgets">Widgets</string>
+    <string name="homepage_picker_page">Página</string>
+    <string name="homepage_picker_collection">Colección</string>
+    <string name="homepage_picker_later">Más tarde</string>
     <string name="generic_error">Algo ha salido mal. Inténtalo de nuevo.</string>
     <string name="type">Tipo:</string>
     <string name="format">Formato</string>
@@ -1278,6 +1290,7 @@
     <string name="multiplayer_viewer_access_desc">Quienes tengan el enlace podrán ver y leer el chat.</string>
     <string name="multiplayer_request_access">Solicitar acceso</string>
     <string name="multiplayer_request_access_desc">El propietario debe aprobar cada solicitud de incorporación.</string>
+    <string name="channel_members_subtitle">%1$d/%2$d editores, %3$d/%4$d visitantes</string>
     <string name="multiplayer_qr_code">Código QR</string>
     <string name="multiplayer_mute">Silenciar</string>
     <string name="multiplayer_unmute">No silenciar</string>
@@ -1742,6 +1755,9 @@ En concreto,
     <string name="main_navigation_content_desc_search_button">Botón Buscar objetos</string>
     <string name="main_navigation_content_desc_create_button">Botón Crear objeto</string>
     <string name="chat">Chat</string>
+    <string name="discussion_comments">comentarios</string>
+    <string name="discussion_no_comments">Aún no hay comentarios</string>
+    <string name="discussion_leave_comment">Deja un comentario…</string>
     <string name="copy">Copiar</string>
     <string name="copy_text">Copiar texto</string>
     <string name="copy_plain_text">Copiar texto simple</string>
@@ -1979,6 +1995,8 @@ En concreto,
     <string name="vault_create_chat_description">Para conversaciones en tiempo real</string>
     <string name="vault_create_space">Nuevo espacio</string>
     <string name="vault_create_space_description">Para contenido y datos organizados</string>
+    <string name="vault_create_personal">Personal</string>
+    <string name="vault_create_group">Grupo</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Las ideas necesitan comunicación</string>
     <string name="spaces_introduction_page1_description">Anytype permite ahora chatear en tiempo real en canales compartidos para que las ideas crezcan con el diálogo.</string>
@@ -2019,17 +2037,24 @@ En concreto,
     <string name="failed_to_load_image">Error al cargar la imagen</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Unirse con código QR</string>
+    <string name="channel_select_members_title">Seleccionar miembros</string>
+    <string name="channel_next">Siguiente</string>
     <string name="vault_qr_scan_error_title">No se ha podido escanear el código QR</string>
     <string name="vault_qr_scan_error_description">Procura que se vea con claridad e inténtalo de nuevo.</string>
     <string name="vault_qr_invalid_title">El código QR no es válido</string>
     <string name="vault_qr_invalid_description">El código QR escaneado no corresponde a una invitación válida. Compruébalo e inténtalo de nuevo.</string>
     <string name="vault_qr_try_again">Inténtalo de nuevo</string>
     <string name="camera_permission_required_title">Se requiere permiso de cámara</string>
+    <string name="barcode_scanner_unavailable">Este dispositivo no tiene un lector de QR disponible</string>
     <string name="camera_permission_rationale_message">Para escanear códigos QR, Anytype necesita acceder a la cámara. Este permiso solo se utiliza para escanear códigos QR.</string>
     <string name="camera_permission_settings_message">Para escanear códigos QR, debes permitir acceso a la cámara en los ajustes del dispositivo.</string>
     <string name="open_settings">Abrir ajustes</string>
     <string name="allow">Permitir</string>
     <string name="attachment_image">Imagen adjunta</string>
+    <!-- Shared Space Limit (DROID-4388) -->
+    <string name="vault_shared_space_limit_title">Has llegado al límite de espacios compartidos</string>
+    <string name="vault_shared_space_limit_description">Tu plan admite %1$d espacios compartidos. Mejora tu suscripción para crear más.</string>
+    <string name="vault_manage_channels">Gestionar canales</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Fotos</string>
     <string name="attachment_menu_camera">Cámara</string>
@@ -2154,4 +2179,5 @@ En concreto,
     <string name="select_view">Seleccionar vista</string>
     <string name="os_widget_data_view_title">Vista de datos</string>
     <string name="os_widget_data_view_description">Muestra elementos de un conjunto o colección</string>
+    <string name="chats_search_close_content_description">Cierra la búsqueda</string>
 </resources>

@@ -14,6 +14,9 @@
     <string name="clear_file_cache">Clear file cache</string>
     <string name="debug_sync_report">Debug Sync Report</string>
     <string name="debug">Debug</string>
+    <string name="experimental_features">Experimental Features</string>
+    <string name="experimental_features_compact_vault">Compact vault mode</string>
+    <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
     <string name="account">Vault</string>
     <string name="reset_account">Reset vault</string>
     <string name="delete_account">Delete vault</string>
@@ -862,9 +865,18 @@
     <string name="personal">Default</string>
     <string name="create_space">Create space</string>
     <string name="create_chat">Create chat</string>
+    <string name="create_channel">New Channel</string>
     <string name="create_space_change_icon">Змінити іконку</string>
     <string name="create_space_chat_name">Chat name</string>
     <string name="create_space_space_name">Назва простору</string>
+    <!-- Homepage Picker -->
+    <string name="homepage_picker_title">Create Home</string>
+    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_chat">Chat</string>
+    <string name="homepage_picker_widgets">Widgets</string>
+    <string name="homepage_picker_page">Page</string>
+    <string name="homepage_picker_collection">Колекція</string>
+    <string name="homepage_picker_later">Later</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Тип</string>
     <string name="format">Format</string>
@@ -1286,6 +1298,7 @@
     <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
+    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
     <string name="multiplayer_qr_code">QR Code</string>
     <string name="multiplayer_mute">Mute</string>
     <string name="multiplayer_unmute">Unmute</string>
@@ -1768,6 +1781,9 @@ Please provide specific details of your needs here.</string>
     <string name="main_navigation_content_desc_search_button">Search objects button</string>
     <string name="main_navigation_content_desc_create_button">Create object button</string>
     <string name="chat">Chat</string>
+    <string name="discussion_comments">comments</string>
+    <string name="discussion_no_comments">No comments yet</string>
+    <string name="discussion_leave_comment">Leave a comment…</string>
     <string name="copy">Копіювати</string>
     <string name="copy_text">Copy Text</string>
     <string name="copy_plain_text">Copy Plain Text</string>
@@ -2005,6 +2021,8 @@ Please provide specific details of your needs here.</string>
     <string name="vault_create_chat_description">For real-time conversations</string>
     <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">For organized content and data</string>
+    <string name="vault_create_personal">Personal</string>
+    <string name="vault_create_group">Group</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ideas need conversations</string>
     <string name="spaces_introduction_page1_description">Anytype now supports real-time chat in Shared Channels — so your thoughts and dialogues can grow together.</string>
@@ -2045,17 +2063,24 @@ Please provide specific details of your needs here.</string>
     <string name="failed_to_load_image">Failed to load image</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Join via QR Code</string>
+    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_next">Далі</string>
     <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
     <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
     <string name="vault_qr_invalid_title">Invalid QR code</string>
     <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
     <string name="vault_qr_try_again">Try again</string>
     <string name="camera_permission_required_title">Camera permission required</string>
+    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
     <string name="camera_permission_rationale_message">To scan QR codes, Anytype needs access to your camera. This permission is only used for scanning QR codes.</string>
     <string name="camera_permission_settings_message">To scan QR codes, you need to allow camera access in your device settings.</string>
     <string name="open_settings">Open Settings</string>
     <string name="allow">Allow</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Shared Space Limit (DROID-4388) -->
+    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
+    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
+    <string name="vault_manage_channels">Manage Channels</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Photos</string>
     <string name="attachment_menu_camera">Camera</string>
@@ -2183,4 +2208,5 @@ Please provide specific details of your needs here.</string>
     <string name="select_view">Select view</string>
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
+    <string name="chats_search_close_content_description">Close search</string>
 </resources>

@@ -14,6 +14,9 @@
     <string name="clear_file_cache">ファイルキャッシュを消去</string>
     <string name="debug_sync_report">デバッグ同期レポート</string>
     <string name="debug">デバッグ</string>
+    <string name="experimental_features">Experimental Features</string>
+    <string name="experimental_features_compact_vault">Compact vault mode</string>
+    <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
     <string name="account">保管庫</string>
     <string name="reset_account">保管庫をリセット</string>
     <string name="delete_account">保管庫を削除</string>
@@ -856,9 +859,18 @@
     <string name="personal">デフォルト</string>
     <string name="create_space">スペースを作成</string>
     <string name="create_chat">チャットを作成</string>
+    <string name="create_channel">New Channel</string>
     <string name="create_space_change_icon">アイコンを変更</string>
     <string name="create_space_chat_name">Chat name</string>
     <string name="create_space_space_name">スペース名</string>
+    <!-- Homepage Picker -->
+    <string name="homepage_picker_title">Create Home</string>
+    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_chat">チャット</string>
+    <string name="homepage_picker_widgets">Widgets</string>
+    <string name="homepage_picker_page">ページ</string>
+    <string name="homepage_picker_collection">コレクション</string>
+    <string name="homepage_picker_later">あとで</string>
     <string name="generic_error">問題が発生しました。もう一度お試しください。</string>
     <string name="type">種類</string>
     <string name="format">種類</string>
@@ -1274,6 +1286,7 @@
     <string name="multiplayer_viewer_access_desc">スペースやチャットを閲覧することができます</string>
     <string name="multiplayer_request_access">参加リクエスト</string>
     <string name="multiplayer_request_access_desc">スペース所有者が参加リクエストを受け取り、承認する必要があります</string>
+    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
     <string name="multiplayer_qr_code">QRコード</string>
     <string name="multiplayer_mute">ミュート</string>
     <string name="multiplayer_unmute">ミュート解除</string>
@@ -1730,6 +1743,9 @@
     <string name="main_navigation_content_desc_search_button">オブジェクト検索ボタン</string>
     <string name="main_navigation_content_desc_create_button">オブジェクト作成ボタン</string>
     <string name="chat">チャット</string>
+    <string name="discussion_comments">comments</string>
+    <string name="discussion_no_comments">No comments yet</string>
+    <string name="discussion_leave_comment">Leave a comment…</string>
     <string name="copy">コピー</string>
     <string name="copy_text">テキストをコピー</string>
     <string name="copy_plain_text">テキストをコピー</string>
@@ -1967,6 +1983,8 @@
     <string name="vault_create_chat_description">For real-time conversations</string>
     <string name="vault_create_space">新しいスペース</string>
     <string name="vault_create_space_description">For organized content and data</string>
+    <string name="vault_create_personal">Personal</string>
+    <string name="vault_create_group">Group</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ideas need conversations</string>
     <string name="spaces_introduction_page1_description">Anytype now supports real-time chat in Shared Channels — so your thoughts and dialogues can grow together.</string>
@@ -2007,17 +2025,24 @@
     <string name="failed_to_load_image">画像を読み込めませんでした</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">QRコードで参加</string>
+    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_next">次へ</string>
     <string name="vault_qr_scan_error_title">QRコードをスキャンできませんでした</string>
     <string name="vault_qr_scan_error_description">はっきり見えることを確認し、もう一度お試しください。</string>
     <string name="vault_qr_invalid_title">無効なQRコード</string>
     <string name="vault_qr_invalid_description">スキャンされたQRコードから有効な招待コードが見つかりませんでした。確認してもう一度お試しください。</string>
     <string name="vault_qr_try_again">もう一度実行</string>
     <string name="camera_permission_required_title">カメラへのアクセスが必要です</string>
+    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
     <string name="camera_permission_rationale_message">QRコードをスキャンするには、Anytypeがカメラにアクセスする必要があります。この許可はQRコードのスキャンにのみ使用されます。</string>
     <string name="camera_permission_settings_message">QRコードをスキャンするには、デバイス設定でカメラへのアクセスを許可する必要があります。</string>
     <string name="open_settings">設定を開く</string>
     <string name="allow">許可</string>
     <string name="attachment_image">添付画像</string>
+    <!-- Shared Space Limit (DROID-4388) -->
+    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
+    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
+    <string name="vault_manage_channels">Manage Channels</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">画像</string>
     <string name="attachment_menu_camera">カメラ</string>
@@ -2142,4 +2167,5 @@
     <string name="select_view">Select view</string>
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
+    <string name="chats_search_close_content_description">Close search</string>
 </resources>

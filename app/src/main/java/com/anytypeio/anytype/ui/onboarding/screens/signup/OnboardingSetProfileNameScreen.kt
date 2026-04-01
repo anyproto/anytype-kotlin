@@ -47,10 +47,10 @@ import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_models.ui.AccountProfile
 import com.anytypeio.anytype.core_models.ui.ProfileIconView
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
-import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
@@ -182,13 +182,13 @@ private fun SetProfileNameScreen(
             painter = painterResource(id = R.drawable.ic_back_24),
             contentDescription = stringResource(R.string.content_description_back_button_icon)
         )
-        OnBoardingButtonPrimary(
+        ButtonOnboardingPrimaryLarge(
             text = stringResource(id = R.string.onboarding_button_continue),
             onClick = {
                 submit()
             },
             size = ButtonSize.Large,
-            modifier = Modifier
+            modifierBox = Modifier
                 .fillMaxWidth()
                 .padding(
                     start = 20.dp,
@@ -196,7 +196,7 @@ private fun SetProfileNameScreen(
                     bottom = 20.dp
                 )
                 .align(Alignment.BottomCenter),
-            isLoading = isLoading,
+            loading = isLoading,
             enabled = true
         )
     }

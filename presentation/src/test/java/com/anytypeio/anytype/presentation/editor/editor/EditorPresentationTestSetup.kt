@@ -550,7 +550,8 @@ open class EditorPresentationTestSetup {
             fieldParser = fieldParser,
             dateProvider = dateProvider,
             spaceViews = spacedViews,
-            urlHelper = mock()
+            urlHelper = mock(),
+            addDiscussion = mock()
         )
     }
 

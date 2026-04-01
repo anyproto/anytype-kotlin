@@ -37,6 +37,7 @@ import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipFeatures
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
@@ -350,6 +351,7 @@ interface BlockRemote {
     ): Payload
 
     suspend fun setSpaceDetails(space: SpaceId, details: Struct)
+    suspend fun setHomepage(command: Command.SetHomepage): Id
 
     suspend fun deleteSpace(space: SpaceId)
     suspend fun spaceSetOrder(spaceViewId: Id, spaceViewOrder: List<Id>): List<Id>
@@ -430,6 +432,8 @@ interface BlockRemote {
 
     suspend fun removeSpaceMembers(space: SpaceId, identities: List<Id>)
 
+    suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>)
+
     suspend fun changeSpaceMemberPermissions(
         space: SpaceId,
         identity: Id,
@@ -454,6 +458,7 @@ interface BlockRemote {
     suspend fun replyNotifications(notifications: List<Id>)
 
     suspend fun membershipStatus(command: Command.Membership.GetStatus): Membership?
+    suspend fun membershipV2GetFeatures(): MembershipFeatures
     suspend fun membershipIsNameValid(command: Command.Membership.IsNameValid)
     suspend fun membershipGetPaymentUrl(command: Command.Membership.GetPaymentUrl): GetPaymentUrlResponse
     suspend fun membershipGetPortalLinkUrl(): String

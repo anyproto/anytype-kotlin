@@ -2,7 +2,9 @@ package com.anytypeio.anytype.ui.home
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.draw.alpha
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -276,11 +278,16 @@ fun WidgetsScreen(
             }
 
             // "Create Home" widget — shown when homepage is not set and picker was dismissed
-            if (showCreateHomeWidget && !showHomepagePicker) {
+            // Stays visible at 50% opacity while homepage picker is open
+            if (showCreateHomeWidget) {
+                item {
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
                 item(key = WidgetView.CreateHome.WIDGET_CREATE_HOME_ID) {
                     CreateHomeWidgetCard(
                         onWidgetClicked = viewModel::onCreateHomeWidgetClicked,
-                        onDismissClicked = viewModel::onCreateHomeWidgetDismissed
+                        onDismissClicked = viewModel::onCreateHomeWidgetDismissed,
+                        modifier = Modifier.alpha(if (showHomepagePicker) 0.5f else 1f)
                     )
                 }
             }

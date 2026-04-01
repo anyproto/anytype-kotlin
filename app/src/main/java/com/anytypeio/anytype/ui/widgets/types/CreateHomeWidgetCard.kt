@@ -30,10 +30,11 @@ import com.anytypeio.anytype.core_ui.views.BodySemiBold
 @Composable
 fun CreateHomeWidgetCard(
     onWidgetClicked: () -> Unit,
-    onDismissClicked: () -> Unit
+    onDismissClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
             .background(

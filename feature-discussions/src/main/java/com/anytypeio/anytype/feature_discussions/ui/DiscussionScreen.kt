@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.feature_discussions.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +13,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -72,6 +77,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.anytypeio.anytype.core_models.Block
@@ -86,11 +93,17 @@ import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.views.Title2
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionHeader
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionInputMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel.MentionPanelState
+import timber.log.Timber
 
 @Composable
 fun DiscussionScreenWrapper(
@@ -243,7 +256,8 @@ fun DiscussionScreen(
     onMentionMemberClicked: (MentionPanelState.Member) -> Unit = {},
     onPlusClicked: () -> Unit = {},
     onMentionClicked: (Id) -> Unit = {},
-    onLinkClicked: (String) -> Unit = {}
+    onLinkClicked: (String) -> Unit = {},
+    onContentBlockClicked: (DiscussionView.ContentBlock) -> Unit = {}
 ) {
     Column(
         modifier = Modifier
@@ -435,7 +449,8 @@ fun DiscussionCommentList(
                         onAddReaction = { onAddReaction(item.id) },
                         onToggleReaction = { emoji -> onToggleReaction(item.id, emoji) },
                         onMentionClicked = onMentionClicked,
-                        onLinkClicked = onLinkClicked
+                        onLinkClicked = onLinkClicked,
+                        onContentBlockClicked = onContentBlockClicked
                     )
                 }
                 is DiscussionView.Reply -> {
@@ -447,7 +462,8 @@ fun DiscussionCommentList(
                         onAddReaction = { onAddReaction(item.id) },
                         onToggleReaction = { emoji -> onToggleReaction(item.id, emoji) },
                         onMentionClicked = onMentionClicked,
-                        onLinkClicked = onLinkClicked
+                        onLinkClicked = onLinkClicked,
+                        onContentBlockClicked = onContentBlockClicked
                     )
                 }
                 is DiscussionView.ReplyDivider -> {
@@ -481,7 +497,8 @@ fun DiscussionCommentItem(
     onAddReaction: () -> Unit = {},
     onToggleReaction: (String) -> Unit = {},
     onMentionClicked: (Id) -> Unit = {},
-    onLinkClicked: (String) -> Unit = {}
+    onLinkClicked: (String) -> Unit = {},
+    onContentBlockClicked: (DiscussionView.ContentBlock) -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -556,8 +573,16 @@ fun DiscussionCommentItem(
                     )
                 }
             }
-            // Text content
-            if (comment.content.msg.isNotEmpty()) {
+            // Content blocks
+            if (comment.contentBlocks.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                ContentBlocksList(
+                    blocks = comment.contentBlocks,
+                    onMentionClicked = onMentionClicked,
+                    onLinkClicked = onLinkClicked,
+                    onContentBlockClicked = onContentBlockClicked
+                )
+            } else if (comment.content.msg.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
                 RichTextContent(
                     parts = comment.content.parts,
@@ -689,7 +714,8 @@ fun DiscussionReplyItem(
     onAddReaction: () -> Unit = {},
     onToggleReaction: (String) -> Unit = {},
     onMentionClicked: (Id) -> Unit = {},
-    onLinkClicked: (String) -> Unit = {}
+    onLinkClicked: (String) -> Unit = {},
+    onContentBlockClicked: (DiscussionView.ContentBlock) -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -782,8 +808,16 @@ fun DiscussionReplyItem(
                         )
                     }
                 }
-                // Text content
-                if (reply.content.msg.isNotEmpty()) {
+                // Content blocks
+                if (reply.contentBlocks.isNotEmpty()) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    ContentBlocksList(
+                        blocks = reply.contentBlocks,
+                        onMentionClicked = onMentionClicked,
+                        onLinkClicked = onLinkClicked,
+                        onContentBlockClicked = onContentBlockClicked
+                    )
+                } else if (reply.content.msg.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(4.dp))
                     RichTextContent(
                         parts = reply.content.parts,
@@ -949,6 +983,205 @@ fun CommentAvatar(
                 contentScale = ContentScale.Crop
             )
         }
+    }
+}
+
+@Composable
+fun ContentBlocksList(
+    blocks: List<DiscussionView.ContentBlock>,
+    onMentionClicked: (Id) -> Unit = {},
+    onLinkClicked: (String) -> Unit = {},
+    onContentBlockClicked: (DiscussionView.ContentBlock) -> Unit = {}
+) {
+    Timber.d("ContentBlockList: $blocks")
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        blocks.forEach { block ->
+            when (block) {
+                is DiscussionView.ContentBlock.Text -> {
+                    if (block.content.msg.isNotEmpty()) {
+                        RichTextContent(
+                            parts = block.content.parts,
+                            onMentionClicked = onMentionClicked,
+                            onLinkClicked = onLinkClicked
+                        )
+                    }
+                }
+                is DiscussionView.ContentBlock.Image -> {
+                    Timber.d("Image block url: ${block.url}")
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(block.url)
+                            .crossfade(true)
+                            .listener(
+                                onError = { _, result ->
+                                    Timber.e(result.throwable, "Image load error for url: ${block.url}")
+                                },
+                                onSuccess = { _, _ ->
+                                    Timber.d("Image loaded successfully: ${block.url}")
+                                }
+                            )
+                            .build(),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp))
+                            .border(
+                                width = 1.dp,
+                                color = colorResource(id = R.color.shape_transparent_secondary),
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .clickable { onContentBlockClicked(block) },
+                        contentScale = ContentScale.Crop
+                    )
+                }
+                is DiscussionView.ContentBlock.Link -> {
+                    AttachedObjectCard(
+                        title = block.title,
+                        typeName = block.typeName,
+                        icon = block.icon,
+                        onClicked = { onContentBlockClicked(block) }
+                    )
+                }
+                is DiscussionView.ContentBlock.Bookmark -> {
+                    BookmarkCard(
+                        url = block.url,
+                        title = block.title,
+                        description = block.description,
+                        imageUrl = block.imageUrl,
+                        onClicked = { onContentBlockClicked(block) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun AttachedObjectCard(
+    title: String,
+    typeName: String,
+    icon: ObjectIcon,
+    onClicked: () -> Unit = {}
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(72.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .border(
+                width = 1.dp,
+                color = colorResource(id = R.color.shape_transparent_secondary),
+                shape = RoundedCornerShape(12.dp)
+            )
+            .background(
+                color = colorResource(id = R.color.background_secondary)
+            )
+            .clickable(onClick = onClicked)
+    ) {
+        ListWidgetObjectIcon(
+            icon = icon,
+            iconSize = 48.dp,
+            modifier = Modifier
+                .padding(start = 12.dp)
+                .align(alignment = Alignment.CenterStart),
+            onTaskIconClicked = {}
+        )
+        Text(
+            text = title.ifEmpty { stringResource(R.string.untitled) },
+            modifier = Modifier.padding(
+                start = if (icon != ObjectIcon.None) 72.dp else 12.dp,
+                top = 17.5.dp,
+                end = 12.dp
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = PreviewTitle2Medium,
+            color = colorResource(id = R.color.text_primary)
+        )
+        Text(
+            text = typeName.ifEmpty { stringResource(R.string.unknown_type) },
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(
+                    start = if (icon != ObjectIcon.None) 72.dp else 12.dp,
+                    bottom = 17.5.dp,
+                    end = 12.dp
+                ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = Relations3,
+            color = colorResource(id = R.color.text_secondary)
+        )
+    }
+}
+
+@Composable
+fun BookmarkCard(
+    url: String,
+    title: String,
+    description: String,
+    imageUrl: String?,
+    onClicked: () -> Unit = {}
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(color = colorResource(id = R.color.shape_transparent_secondary))
+            .clickable(onClick = onClicked)
+    ) {
+        if (!imageUrl.isNullOrEmpty()) {
+            val painter = rememberAsyncImagePainter(imageUrl)
+            Box {
+                if (painter.state is AsyncImagePainter.State.Loading) {
+                    androidx.compose.material3.CircularProgressIndicator(
+                        modifier = Modifier
+                            .align(alignment = Alignment.Center)
+                            .size(48.dp),
+                        color = colorResource(R.color.glyph_active),
+                        trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                        strokeWidth = 4.dp
+                    )
+                }
+                Image(
+                    painter = painter,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1.91f),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = url,
+            modifier = Modifier.padding(horizontal = 12.dp),
+            style = Relations3,
+            color = colorResource(R.color.transparent_active),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = title,
+            modifier = Modifier.padding(horizontal = 12.dp),
+            style = Title2,
+            color = colorResource(R.color.text_primary),
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = description,
+            modifier = Modifier.padding(horizontal = 12.dp),
+            style = Relations3,
+            color = colorResource(R.color.transparent_active),
+            maxLines = 3,
+            overflow = TextOverflow.Ellipsis
+        )
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 

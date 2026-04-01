@@ -12,6 +12,8 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.ui.discussions.DiscussionFragment
@@ -60,4 +62,6 @@ interface DiscussionComponentDependencies : ComponentDependencies {
     fun members(): ActiveSpaceMemberSubscriptionContainer
     fun storelessSubscriptionContainer(): StorelessSubscriptionContainer
     fun dateProvider(): DateProvider
+    fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun fieldParser(): FieldParser
 }

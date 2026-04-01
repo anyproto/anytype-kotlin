@@ -7,7 +7,10 @@ import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import javax.inject.Inject
 
 class DiscussionViewModelFactory @Inject constructor(
@@ -20,7 +23,10 @@ class DiscussionViewModelFactory @Inject constructor(
     private val addChatMessage: AddComment,
     private val deleteComment: DeleteComment,
     private val toggleCommentReaction: ToggleCommentReaction,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val fieldParser: FieldParser,
+    private val subscription: StorelessSubscriptionContainer
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = DiscussionViewModel(
@@ -33,6 +39,9 @@ class DiscussionViewModelFactory @Inject constructor(
         addChatMessage = addChatMessage,
         deleteComment = deleteComment,
         toggleCommentReaction = toggleCommentReaction,
-        dateProvider = dateProvider
+        dateProvider = dateProvider,
+        storeOfObjectTypes = storeOfObjectTypes,
+        fieldParser = fieldParser,
+        subscription = subscription
     ) as T
 }

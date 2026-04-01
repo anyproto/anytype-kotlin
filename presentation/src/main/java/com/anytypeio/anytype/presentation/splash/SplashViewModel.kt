@@ -28,7 +28,13 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
@@ -70,7 +76,8 @@ class SplashViewModel(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val migration: MigrationHelperDelegate,
     private val deepLinkResolver: DeepLinkResolver,
-    private val pendingIntentStore: PendingIntentStore
+    private val pendingIntentStore: PendingIntentStore,
+    private val searchObjects: SearchObjects
 ) : ViewModel(),
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate,
     MigrationHelperDelegate by migration {
@@ -329,7 +336,7 @@ class SplashViewModel(
     }
 
     //region NAVIGATION
-    private suspend fun awaitActiveSpaceView(space: SpaceId) = withTimeoutOrNull(SPACE_LOADING_TIMEOUT) {
+    private suspend fun awaitActiveSpaceView(space: SpaceId): ObjectWrapper.SpaceView? = withTimeoutOrNull(SPACE_LOADING_TIMEOUT) {
         spaceViews
             .observe(space)
             .onEach { view ->
@@ -441,13 +448,12 @@ class SplashViewModel(
                         }
                     }
                     else -> {
-                        // Regular channels (including former CHAT spaces) navigate
-                        // to widgets; homepage resolution happens in HomeScreenViewModel
-                        commands.emit(
-                            Command.NavigateToWidgets(
-                                space = space.id,
-                                deeplink = deeplink
-                            )
+                        // Regular channels: resolve homepage
+                        val homepage = view.homepage
+                        resolveHomepageNavigation(
+                            homepage = homepage,
+                            spaceId = space.id,
+                            deeplink = deeplink
                         )
                     }
                 }
@@ -470,6 +476,52 @@ class SplashViewModel(
         spaceView: ObjectWrapper.SpaceView
     ) : Id? {
         return spaceView.chatId ?: spaceManager.getConfig(space)?.spaceChatId
+    }
+
+    private suspend fun resolveHomepageNavigation(
+        homepage: String?,
+        spaceId: Id,
+        deeplink: String?
+    ) {
+        if (homepage.isNullOrEmpty() || homepage in HOMEPAGE_SPECIAL_CONSTANTS) {
+            commands.emit(Command.NavigateToWidgets(space = spaceId, deeplink = deeplink))
+            return
+        }
+        // Homepage is an object ID — resolve and navigate
+        val results = searchObjects.invoke(
+            params = SearchObjects.Params(
+                space = SpaceId(spaceId),
+                filters = listOf(
+                    DVFilter(
+                        relation = Relations.ID,
+                        value = homepage,
+                        condition = DVFilterCondition.EQUAL
+                    )
+                ),
+                keys = listOf(Relations.ID, Relations.LAYOUT, Relations.SPACE_ID),
+                limit = 1
+            )
+        )
+        val obj = results.getOrNull()?.firstOrNull()
+        if (obj == null) {
+            Timber.w("Homepage object $homepage not found, falling back to widgets")
+            commands.emit(Command.NavigateToWidgets(space = spaceId, deeplink = deeplink))
+            return
+        }
+        when (obj.navigation()) {
+            is OpenObjectNavigation.OpenEditor -> {
+                commands.emit(Command.NavigateToObject(id = homepage, space = spaceId, chat = null))
+            }
+            is OpenObjectNavigation.OpenDataView -> {
+                commands.emit(Command.NavigateToObjectSet(id = homepage, space = spaceId, chat = null))
+            }
+            is OpenObjectNavigation.OpenChat -> {
+                commands.emit(Command.NavigateToChat(space = spaceId, chat = homepage, deeplink = deeplink))
+            }
+            else -> {
+                commands.emit(Command.NavigateToWidgets(space = spaceId, deeplink = deeplink))
+            }
+        }
     }
 
     //endregion
@@ -497,6 +549,7 @@ class SplashViewModel(
             "Unable to retrieve account. Please update Anytype to the latest version."
         const val ERROR_CREATE_OBJECT = "Error while creating object: object type not found"
         const val SPACE_LOADING_TIMEOUT = 5000L
+        private val HOMEPAGE_SPECIAL_CONSTANTS = setOf("widgets", "graph", "lastOpened")
     }
 
     sealed class State {

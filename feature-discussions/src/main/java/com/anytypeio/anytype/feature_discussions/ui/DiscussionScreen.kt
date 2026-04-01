@@ -182,6 +182,7 @@ fun DiscussionScreenWrapper(
         onLinkClicked = { url ->
             // Link clicks can be handled by the fragment via commands if needed
         },
+        onContentBlockClicked = { block -> vm.onContentBlockClicked(block) },
         onMentionMemberClicked = { member ->
             val state = mentionPanelState
             if (state is MentionPanelState.Visible) {
@@ -284,7 +285,8 @@ fun DiscussionScreen(
                 onAddReaction = onAddReaction,
                 onToggleReaction = onToggleReaction,
                 onMentionClicked = onMentionClicked,
-                onLinkClicked = onLinkClicked
+                onLinkClicked = onLinkClicked,
+                onContentBlockClicked = onContentBlockClicked
             )
             Column(
                 modifier = Modifier.align(Alignment.BottomCenter)
@@ -413,7 +415,8 @@ fun DiscussionCommentList(
     onAddReaction: (Id) -> Unit = {},
     onToggleReaction: (Id, String) -> Unit = { _, _ -> },
     onMentionClicked: (Id) -> Unit = {},
-    onLinkClicked: (String) -> Unit = {}
+    onLinkClicked: (String) -> Unit = {},
+    onContentBlockClicked: (DiscussionView.ContentBlock) -> Unit = {}
 ) {
     val listState = rememberLazyListState()
 

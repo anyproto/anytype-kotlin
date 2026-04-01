@@ -3807,7 +3807,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             showHomepagePicker.value = false
             userSettingsRepository.setHomepagePickerDismissed(vmParams.spaceId, true)
-            showCreateHomeWidget.value = true
+            // Widget will appear on next visit via proceedWithHomepageObservation
         }
     }
 

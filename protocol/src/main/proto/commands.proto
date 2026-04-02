@@ -639,6 +639,36 @@ message Rpc {
                 }
             }
         }
+        message ParticipantsAddList {
+            message Request {
+                string spaceId = 1;
+                repeated string identities = 2;
+                model.ParticipantPermissions permissions = 3;
+            }
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        SEND_INVITE_FAILED = 3;
+
+                        NO_SUCH_SPACE = 101;
+                        SPACE_IS_DELETED = 102;
+                        REQUEST_FAILED = 103;
+                        LIMIT_REACHED = 104;
+                        NOT_SHAREABLE = 105;
+                        INCORRECT_PERMISSIONS = 106;
+                    }
+                }
+            }
+        }
     }
 
     message Wallet {

@@ -14,6 +14,9 @@
     <string name="clear_file_cache">Bersihkan tembolok</string>
     <string name="debug_sync_report">Laporan Sinkronisasi Debug</string>
     <string name="debug">Debug</string>
+    <string name="experimental_features">Fitur Percobaan</string>
+    <string name="experimental_features_compact_vault">Mode brankas ringkas</string>
+    <string name="experimental_features_compact_vault_description">Sembunyikan pratinjau pesan untuk kanal yang sudah dibaca</string>
     <string name="account">Brankas</string>
     <string name="reset_account">Setel ulang brankas</string>
     <string name="delete_account">Hapus brankas</string>
@@ -856,9 +859,18 @@
     <string name="personal">Bawaan</string>
     <string name="create_space">Buat ruang</string>
     <string name="create_chat">Buat obrolan</string>
+    <string name="create_channel">Kanal Baru</string>
     <string name="create_space_change_icon">Ubah ikon</string>
     <string name="create_space_chat_name">Nama obrolan</string>
     <string name="create_space_space_name">Nama Ruang</string>
+    <!-- Homepage Picker -->
+    <string name="homepage_picker_title">Create Home</string>
+    <string name="homepage_picker_description">Pilih hal yang dilihat anggota ruang ketika mereka membuka kanal. Ini bisa diubah lagi di setelan.</string>
+    <string name="homepage_picker_chat">Obrolan</string>
+    <string name="homepage_picker_widgets">Gawit</string>
+    <string name="homepage_picker_page">Halaman</string>
+    <string name="homepage_picker_collection">Koleksi</string>
+    <string name="homepage_picker_later">Nanti</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Tipe</string>
     <string name="format">Format</string>
@@ -1274,6 +1286,7 @@
     <string name="multiplayer_viewer_access_desc">Orang dengan tautan ini bisa membaca obrolan</string>
     <string name="multiplayer_request_access">Minta akses</string>
     <string name="multiplayer_request_access_desc">Pemilik harus menyetujui setiap permintaan bergabung</string>
+    <string name="channel_members_subtitle">%1$d/%2$d penyunting, %3$d/%4$d pelihat</string>
     <string name="multiplayer_qr_code">Kode QR</string>
     <string name="multiplayer_mute">Senyapkan</string>
     <string name="multiplayer_unmute">Lepas senyap</string>
@@ -1729,6 +1742,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="main_navigation_content_desc_search_button">Tombol telusuri objek</string>
     <string name="main_navigation_content_desc_create_button">Tombol buat objek</string>
     <string name="chat">Obrolan</string>
+    <string name="discussion_comments">komentar</string>
+    <string name="discussion_no_comments">Belum ada komentar</string>
+    <string name="discussion_leave_comment">Tinggalkan komentar…</string>
     <string name="copy">Salin</string>
     <string name="copy_text">Salin Teks</string>
     <string name="copy_plain_text">Salin Teks Polos</string>
@@ -1966,6 +1982,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="vault_create_chat_description">Untuk percakapan langsung</string>
     <string name="vault_create_space">Ruang Baru</string>
     <string name="vault_create_space_description">Untuk konten dan data tertata</string>
+    <string name="vault_create_personal">Pribadi</string>
+    <string name="vault_create_group">Grup</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ide perlu konversasi</string>
     <string name="spaces_introduction_page1_description">Anytype kini mendukung obrolan langsung di Saluran Bersama — sehingga pemikiran dan percakapan Anda dapat berkembang bersama.</string>
@@ -2006,17 +2024,24 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="failed_to_load_image">Gagal memuat gambar</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Gabung via kode QR</string>
+    <string name="channel_select_members_title">Pilih anggota</string>
+    <string name="channel_next">Lanjut</string>
     <string name="vault_qr_scan_error_title">Tidak bisa memindai kode QR</string>
     <string name="vault_qr_scan_error_description">Pastikan kodenya terlihat jelas lalu coba lagi.</string>
     <string name="vault_qr_invalid_title">Kode QR tidak valid</string>
     <string name="vault_qr_invalid_description">Kode yang terpindai tidak sesuai dengan undangan mana pun. Silakan cek lalu coba lagi.</string>
     <string name="vault_qr_try_again">Coba lagi</string>
     <string name="camera_permission_required_title">Izin kamera diperlukan</string>
+    <string name="barcode_scanner_unavailable">Pemindai QR tidak tersedia di perangkat ini</string>
     <string name="camera_permission_rationale_message">Untuk memindai kode QR, Anytype memerlukan akses kameramu. Izin ini hanya digunakan untuk memindai kode QR.</string>
     <string name="camera_permission_settings_message">Untuk memindai kode QR, kamu harus mengizinkan akses kamera di setelan perangkatmu.</string>
     <string name="open_settings">Buka Setelan</string>
     <string name="allow">Izinkan</string>
     <string name="attachment_image">Lampiran gambar</string>
+    <!-- Shared Space Limit (DROID-4388) -->
+    <string name="vault_shared_space_limit_title">Batas ruang terbagi tercapai</string>
+    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
+    <string name="vault_manage_channels">Kelola Kanal</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Foto</string>
     <string name="attachment_menu_camera">Kamera</string>
@@ -2140,4 +2165,5 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="select_view">Pilih tampilan</string>
     <string name="os_widget_data_view_title">Tampilan Data</string>
     <string name="os_widget_data_view_description">Tampilkan item dari Set atau Koleksi</string>
+    <string name="chats_search_close_content_description">Tutup pencarian</string>
 </resources>

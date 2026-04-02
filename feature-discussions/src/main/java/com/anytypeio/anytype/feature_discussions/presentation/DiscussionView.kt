@@ -15,7 +15,8 @@ sealed interface DiscussionView {
         val formattedDate: String? = null,
         val reactions: List<Reaction> = emptyList(),
         val replyCount: Int = 0,
-        val avatar: Avatar = Avatar.Initials()
+        val avatar: Avatar = Avatar.Initials(),
+        val isOwn: Boolean = false
     ) : DiscussionView
 
     data class Reply(
@@ -27,7 +28,8 @@ sealed interface DiscussionView {
         val formattedDate: String? = null,
         val reactions: List<Reaction> = emptyList(),
         val avatar: Avatar = Avatar.Initials(),
-        val depth: Int = 1
+        val depth: Int = 1,
+        val isOwn: Boolean = false
     ) : DiscussionView
 
     data class ReplyDivider(val replyId: String, val depth: Int = 1) : DiscussionView

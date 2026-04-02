@@ -14,6 +14,9 @@
     <string name="clear_file_cache">Dosya önbelleğini temizle</string>
     <string name="debug_sync_report">Hata Ayıklama Senkronizasyon Raporu</string>
     <string name="debug">Hata ayıklama</string>
+    <string name="experimental_features">Deneysel Özellikler</string>
+    <string name="experimental_features_compact_vault">Kompakt kasa modu</string>
+    <string name="experimental_features_compact_vault_description">Kasa içindeki okunmuş kanalların mesaj önizlemelerini gizler</string>
     <string name="account">Kasa</string>
     <string name="reset_account">Kasayı sıfırla</string>
     <string name="delete_account">Kasayı sil</string>
@@ -858,9 +861,18 @@
     <string name="personal">Varsayılan</string>
     <string name="create_space">Alan oluştur</string>
     <string name="create_chat">Sohbet oluştur</string>
+    <string name="create_channel">Yeni Kanal</string>
     <string name="create_space_change_icon">Simgeyi değiştir</string>
     <string name="create_space_chat_name">Sohbet adı</string>
     <string name="create_space_space_name">Alan ismi</string>
+    <!-- Homepage Picker -->
+    <string name="homepage_picker_title">Ana Sayfa Oluştur</string>
+    <string name="homepage_picker_description">Sen ve kanal üyelerinin kanalı açtıklarında görecekleri içeriği seç. Bunu istediğin zaman ayarlardan değiştirebilirsin.</string>
+    <string name="homepage_picker_chat">Sohbet</string>
+    <string name="homepage_picker_widgets">Widgetlar</string>
+    <string name="homepage_picker_page">Sayfa</string>
+    <string name="homepage_picker_collection">Koleksiyon</string>
+    <string name="homepage_picker_later">Daha sonra</string>
     <string name="generic_error">Bir şeyler yanlış gitti. Lütfen tekrar deneyin.</string>
     <string name="type">Tür</string>
     <string name="format">Biçim</string>
@@ -1278,6 +1290,7 @@
     <string name="multiplayer_viewer_access_desc">Bağlantıya sahip kişiler sohbeti görüntüleyebilir ve okuyabilir</string>
     <string name="multiplayer_request_access">Erişim talebi</string>
     <string name="multiplayer_request_access_desc">Sohbet sahibinin her bir katılım talebini onaylaması gerekir.</string>
+    <string name="channel_members_subtitle">%1$d/%2$d düzenleyici, %3$d/%4$d görüntüleyici</string>
     <string name="multiplayer_qr_code">Karekod</string>
     <string name="multiplayer_mute">Sessize al</string>
     <string name="multiplayer_unmute">Sesi aç</string>
@@ -1742,6 +1755,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="main_navigation_content_desc_search_button">Nesneleri ara butonu</string>
     <string name="main_navigation_content_desc_create_button">Nesne oluştur butonu</string>
     <string name="chat">Sohbet</string>
+    <string name="discussion_comments">yorum</string>
+    <string name="discussion_no_comments">Henüz yorum yok</string>
+    <string name="discussion_leave_comment">Yorum bırak…</string>
     <string name="copy">Kopyala</string>
     <string name="copy_text">Metni Kopyala</string>
     <string name="copy_plain_text">Düz Metni Kopyala</string>
@@ -1979,6 +1995,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="vault_create_chat_description">Gerçek zamanlı görüşmeler için</string>
     <string name="vault_create_space">Yeni Alan</string>
     <string name="vault_create_space_description">Düzenli içerik ve veriler için</string>
+    <string name="vault_create_personal">Kişisel</string>
+    <string name="vault_create_group">Grup</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Fikirler konuşulmaya ihtiyaç duyar</string>
     <string name="spaces_introduction_page1_description">Anytype artık Paylaşılan Kanallarda gerçek zamanlı sohbeti destekliyor — böylece düşünceleriniz ve diyaloglarınız birlikte gelişebilir.</string>
@@ -2019,17 +2037,24 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="failed_to_load_image">Görüntü yüklenemedi</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Karekod ile katıl</string>
+    <string name="channel_select_members_title">Üyeleri seç</string>
+    <string name="channel_next">Sonraki</string>
     <string name="vault_qr_scan_error_title">Karekod taranamadı</string>
     <string name="vault_qr_scan_error_description">Görünür olduğundan emin olun ve tekrar deneyin.</string>
     <string name="vault_qr_invalid_title">Geçersiz karekod</string>
     <string name="vault_qr_invalid_description">Taranan karekod geçerli bir davetiyeyle eşleşmiyor. Lütfen kontrol edin ve tekrar dene.</string>
     <string name="vault_qr_try_again">Tekrar deneyin</string>
     <string name="camera_permission_required_title">Kamera izni gerekli</string>
+    <string name="barcode_scanner_unavailable">Bu cihazda karekod tarayıcı bulunmuyor</string>
     <string name="camera_permission_rationale_message">Karekodları taramak için Anytype\'ın kamerana erişmesi gerekir. Bu izin yalnızca karekodları taramak için kullanılır.</string>
     <string name="camera_permission_settings_message">Karekodları taramak için cihaz ayarlarında kamera erişimine izin vermen gerekiyor.</string>
     <string name="open_settings">Ayarlar\'ı Aç</string>
     <string name="allow">İzin ver</string>
     <string name="attachment_image">Ekli görüntü</string>
+    <!-- Shared Space Limit (DROID-4388) -->
+    <string name="vault_shared_space_limit_title">Paylaşılan alan sınırına ulaşıldı</string>
+    <string name="vault_shared_space_limit_description">Planın %1$d ortak alana izin veriyor. Daha fazlasını oluşturmak için üyeliğini yükselt.</string>
+    <string name="vault_manage_channels">Kanalları Yönet</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Fotoğraflar</string>
     <string name="attachment_menu_camera">Kamera</string>
@@ -2155,4 +2180,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="select_view">Görünüm seç</string>
     <string name="os_widget_data_view_title">Veri Görünümü</string>
     <string name="os_widget_data_view_description">Bir Set veya Koleksiyondaki öğeleri görüntüle</string>
+    <string name="chats_search_close_content_description">Aramayı kapat</string>
 </resources>

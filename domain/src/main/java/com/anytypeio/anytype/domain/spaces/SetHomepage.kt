@@ -10,10 +10,10 @@ import javax.inject.Inject
 class SetHomepage @Inject constructor(
     dispatchers: AppCoroutineDispatchers,
     private val repo: BlockRepository
-) : ResultInteractor<SetHomepage.Params, Id>(dispatchers.io) {
+) : ResultInteractor<SetHomepage.Params, Unit>(dispatchers.io) {
 
-    override suspend fun doWork(params: Params): Id {
-        return repo.setHomepage(
+    override suspend fun doWork(params: Params) {
+        repo.setHomepage(
             Command.SetHomepage(
                 contextId = params.spaceId,
                 objectId = params.objectId

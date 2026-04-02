@@ -481,7 +481,7 @@ interface BlockRepository {
     suspend fun approveSpaceLeaveRequest(command: Command.ApproveSpaceLeaveRequest)
     suspend fun declineSpaceRequest(space: SpaceId, identity: Id)
     suspend fun removeSpaceMembers(space: SpaceId, identities: List<Id>)
-    suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>)
+    suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>, permissions: SpaceMemberPermissions)
     suspend fun changeSpaceMemberPermissions(
         space: SpaceId,
         identity: Id,

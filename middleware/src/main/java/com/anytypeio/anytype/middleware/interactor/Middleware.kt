@@ -2619,17 +2619,17 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun addSpaceMembers(
         space: SpaceId,
-        identities: List<Id>
+        identities: List<Id>,
+        permissions: SpaceMemberPermissions
     ) {
-        // TODO: Wire to MW when SpaceParticipantsAddList protobuf classes are available
-        // val request = Rpc.Space.ParticipantsAddList.Request(
-        //     spaceId = space.id,
-        //     identities = identities
-        // )
-        // logRequestIfDebug(request)
-        // val (response, time) = measureTimedValue { service.spaceParticipantsAddList(request) }
-        // logResponseIfDebug(response, time)
-        Timber.d("addSpaceMembers stub: space=${space.id}, identities=$identities")
+        val request = Rpc.Space.ParticipantsAddList.Request(
+            spaceId = space.id,
+            identities = identities,
+            permissions = permissions.toMw()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceParticipantsAddList(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)

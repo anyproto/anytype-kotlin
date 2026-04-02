@@ -2129,15 +2129,14 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun workspaceSetDashboard(command: Command.SetHomepage): Id {
-        val request = Rpc.Object.WorkspaceSetDashboard.Request(
-            contextId = command.contextId,
-            objectId = command.objectId
+    fun workspaceSetHomepage(command: Command.SetHomepage) {
+        val request = Rpc.Workspace.SetHomepage.Request(
+            spaceId = command.contextId,
+            homepage = command.objectId
         )
         logRequestIfDebug(request)
-        val (response, time) = measureTimedValue { service.objectWorkspaceSetDashboard(request) }
+        val (response, time) = measureTimedValue { service.workspaceSetHomepage(request) }
         logResponseIfDebug(response, time)
-        return response.objectId
     }
 
     @Throws(Exception::class)

@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -525,11 +524,10 @@ class SplashViewModel(
                 commands.emit(Command.NavigateToDateObject(id = homepage, space = spaceId, chat = null))
             }
             is OpenObjectNavigation.OpenBookmarkUrl -> {
-                // Bookmark as homepage — open as object editor
                 commands.emit(Command.NavigateToObject(id = homepage, space = spaceId, chat = null))
             }
             is OpenObjectNavigation.OpenParticipant -> {
-                commands.emit(Command.NavigateToObject(id = homepage, space = spaceId, chat = null))
+                commands.emit(Command.NavigateToWidgets(space = spaceId, deeplink = deeplink))
             }
             else -> {
                 commands.emit(Command.NavigateToWidgets(space = spaceId, deeplink = deeplink))

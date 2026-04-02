@@ -1223,8 +1223,25 @@ class VaultViewModel(
         }
         // Navigate to the homepage object via VaultNavigation
         // (VaultFragment first opens the widgets screen, then the object on top)
-        proceedWithNavigation(obj.navigation())
-        return null
+        when (val nav = obj.navigation()) {
+            is OpenObjectNavigation.OpenParticipant -> {
+                return VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
+            }
+            is OpenObjectNavigation.OpenBookmarkUrl -> {
+                // Open bookmark as editor object, not as external URL
+                proceedWithNavigation(
+                    OpenObjectNavigation.OpenEditor(
+                        target = homepage,
+                        space = obj.spaceId ?: targetSpace.id
+                    )
+                )
+                return null
+            }
+            else -> {
+                proceedWithNavigation(nav)
+                return null
+            }
+        }
     }
 
     private fun proceedWithNavigation(navigation: OpenObjectNavigation) {

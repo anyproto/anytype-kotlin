@@ -518,6 +518,19 @@ class SplashViewModel(
             is OpenObjectNavigation.OpenChat -> {
                 commands.emit(Command.NavigateToChat(space = spaceId, chat = homepage, deeplink = deeplink))
             }
+            is OpenObjectNavigation.OpenType -> {
+                commands.emit(Command.NavigateToObjectType(id = homepage, space = spaceId, chat = null))
+            }
+            is OpenObjectNavigation.OpenDateObject -> {
+                commands.emit(Command.NavigateToDateObject(id = homepage, space = spaceId, chat = null))
+            }
+            is OpenObjectNavigation.OpenBookmarkUrl -> {
+                // Bookmark as homepage — open as object editor
+                commands.emit(Command.NavigateToObject(id = homepage, space = spaceId, chat = null))
+            }
+            is OpenObjectNavigation.OpenParticipant -> {
+                commands.emit(Command.NavigateToObject(id = homepage, space = spaceId, chat = null))
+            }
             else -> {
                 commands.emit(Command.NavigateToWidgets(space = spaceId, deeplink = deeplink))
             }

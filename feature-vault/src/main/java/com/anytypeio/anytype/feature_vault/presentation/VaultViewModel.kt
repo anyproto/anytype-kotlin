@@ -901,7 +901,8 @@ class VaultViewModel(
             commands.emit(
                 VaultCommand.CreateNewSpace(
                     channelType = ChannelCreationType.GROUP,
-                    selectedMembers = selectedMembers
+                    selectedMembers = selectedMembers,
+                    writersLimit = _membershipFeatures.value.spaceWriters
                 )
             )
         }

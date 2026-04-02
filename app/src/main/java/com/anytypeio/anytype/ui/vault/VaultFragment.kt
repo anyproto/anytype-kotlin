@@ -239,7 +239,8 @@ class VaultFragment : BaseComposeFragment() {
                         bundleOf(
                             "channelType" to command.channelType,
                             "selectedMemberIdentities" to command.selectedMembers
-                                .map { it.identity }.toTypedArray()
+                                .map { it.identity }.toTypedArray(),
+                            "writersLimit" to command.writersLimit
                         )
                     )
                 }.onFailure {

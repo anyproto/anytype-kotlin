@@ -447,7 +447,21 @@ class VaultFragment : BaseComposeFragment() {
             }
 
             is VaultNavigation.OpenType -> {
-                Timber.e("Illegal command: type cannot be opened from vault")
+                runCatching {
+                    findNavController().navigate(
+                        R.id.actionOpenSpaceFromVault,
+                        WidgetsScreenFragment.args(
+                            space = destination.space,
+                            deeplink = null
+                        )
+                    )
+                    navigation().openObjectType(
+                        objectId = destination.target,
+                        space = destination.space
+                    )
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening type object from vault")
+                }
             }
 
             is VaultNavigation.OpenUrl -> {

@@ -130,7 +130,7 @@ interface MiddlewareService {
     fun objectSetObjectType(request: Rpc.Object.SetObjectType.Request): Rpc.Object.SetObjectType.Response
 
     @Throws(Exception::class)
-    fun objectWorkspaceSetDashboard(request: Rpc.Object.WorkspaceSetDashboard.Request): Rpc.Object.WorkspaceSetDashboard.Response
+    fun workspaceSetHomepage(request: Rpc.Workspace.SetHomepage.Request): Rpc.Workspace.SetHomepage.Response
 
     @Throws(Exception::class)
     fun objectSetLayout(request: Rpc.Object.SetLayout.Request): Rpc.Object.SetLayout.Response

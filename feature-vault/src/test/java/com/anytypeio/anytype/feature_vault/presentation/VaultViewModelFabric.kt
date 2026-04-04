@@ -30,6 +30,8 @@ import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
+import com.anytypeio.anytype.domain.payments.GetMembershipFeatures
 import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
@@ -84,7 +86,9 @@ object VaultViewModelFabric {
         createSpace: CreateSpace = mock(),
         deepLinkResolver: DeepLinkResolver = mock(),
         osWidgetSpacesSync: OsWidgetSpacesSync = mock(),
-        osWidgetDataViewSync: OsWidgetDataViewSync = mock()
+        osWidgetDataViewSync: OsWidgetDataViewSync = mock(),
+        networkModeProvider: NetworkModeProvider = mock(),
+        getMembershipFeatures: GetMembershipFeatures = mock()
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,
@@ -118,6 +122,8 @@ object VaultViewModelFabric {
         deepLinkResolver = deepLinkResolver,
         configStorage = configStorage,
         osWidgetSpacesSync = osWidgetSpacesSync,
-        osWidgetDataViewSync = osWidgetDataViewSync
+        osWidgetDataViewSync = osWidgetDataViewSync,
+        networkModeProvider = networkModeProvider,
+        getMembershipFeatures = getMembershipFeatures
     )
 }

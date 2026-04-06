@@ -3,12 +3,33 @@ package com.anytypeio.anytype.feature_discussions.presentation
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 sealed interface DiscussionView {
+
+    sealed class ContentBlock {
+        data class Text(val content: Content) : ContentBlock()
+        data class Image(val targetObjectId: Id, val url: Url) : ContentBlock()
+        data class Link(
+            val targetObjectId: Id,
+            val title: String,
+            val typeName: String,
+            val icon: ObjectIcon = ObjectIcon.None
+        ) : ContentBlock()
+        data class Bookmark(
+            val targetObjectId: Id,
+            val url: String,
+            val title: String,
+            val description: String,
+            val imageUrl: String?
+        ) : ContentBlock()
+    }
 
     data class Comment(
         val id: String,
         val content: Content,
+        val contentBlocks: List<ContentBlock> = emptyList(),
         val author: String,
         val creator: Id?,
         val timestamp: Long,
@@ -22,6 +43,7 @@ sealed interface DiscussionView {
     data class Reply(
         val id: String,
         val content: Content,
+        val contentBlocks: List<ContentBlock> = emptyList(),
         val author: String,
         val creator: Id?,
         val timestamp: Long,
@@ -67,3 +89,28 @@ data class DiscussionHeader(
     val title: String = "",
     val commentCount: Int = 0
 )
+
+sealed class CommentAttachment {
+    data class Media(
+        val uri: String,
+        val isVideo: Boolean = false,
+        val capturedByCamera: Boolean = false,
+        val state: State = State.Idle
+    ) : CommentAttachment()
+
+    data class File(
+        val uri: String,
+        val name: String,
+        val size: Int,
+        val state: State = State.Idle
+    ) : CommentAttachment()
+
+    sealed class State {
+        data object Idle : State()
+        data object Preloading : State()
+        data class Preloaded(val preloadedFileId: Id, val path: String) : State()
+        data object Uploading : State()
+        data class Uploaded(val objectId: Id) : State()
+        data object Failed : State()
+    }
+}

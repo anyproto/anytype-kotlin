@@ -16,13 +16,21 @@ import androidx.fragment.compose.content
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.intents.SystemAction.OpenUrl
+import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.chats.SelectChatReactionFragment
+import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.media.MediaActivity
+import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.settings.typography
 import timber.log.Timber
@@ -80,6 +88,123 @@ class DiscussionFragment : Fragment() {
                         }.onFailure {
                             Timber.e(it, "Error while opening space member card")
                         }
+                    }
+                    is DiscussionViewModel.DiscussionCommand.Browse -> {
+                        runCatching {
+                            proceedWithAction(OpenUrl(command.url))
+                        }.onFailure {
+                            Timber.e(it, "Error while opening URL from discussion")
+                        }
+                    }
+                    is DiscussionViewModel.DiscussionCommand.MediaPreview -> {
+                        runCatching {
+                            MediaActivity.start(
+                                context = requireContext(),
+                                mediaType = MediaActivity.TYPE_IMAGE,
+                                objects = listOf(command.obj),
+                                index = 0,
+                                space = space
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while launching media preview from discussion")
+                        }
+                    }
+                }
+            }
+        }
+        LaunchedEffect(Unit) {
+            vm.navigation.collect { nav ->
+                when (nav) {
+                    is OpenObjectNavigation.OpenEditor -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.objectNavigation,
+                                EditorFragment.args(
+                                    ctx = nav.target,
+                                    space = nav.space
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening editor from discussion")
+                        }
+                    }
+                    is OpenObjectNavigation.OpenDataView -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.dataViewNavigation,
+                                ObjectSetFragment.args(
+                                    ctx = nav.target,
+                                    space = nav.space
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening set from discussion")
+                        }
+                    }
+                    is OpenObjectNavigation.OpenType -> {
+                        runCatching {
+                            findNavController().navigate(
+                                resId = R.id.objectTypeNavigation,
+                                args = ObjectTypeFragment.args(
+                                    objectId = nav.target,
+                                    space = nav.space
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening type from discussion")
+                        }
+                    }
+                    is OpenObjectNavigation.OpenChat -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.chatScreen,
+                                ChatFragment.args(
+                                    space = nav.space,
+                                    ctx = nav.target
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening chat from discussion")
+                        }
+                    }
+                    is OpenObjectNavigation.OpenParticipant -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.participantScreen,
+                                ParticipantFragment.args(
+                                    space = nav.space,
+                                    objectId = nav.target
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening participant from discussion")
+                        }
+                    }
+                    is OpenObjectNavigation.OpenBookmarkUrl -> {
+                        runCatching {
+                            proceedWithAction(OpenUrl(nav.url))
+                        }.onFailure {
+                            Timber.w("Error while opening bookmark URL from discussion")
+                        }
+                    }
+                    is OpenObjectNavigation.OpenDateObject -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.objectNavigation,
+                                EditorFragment.args(
+                                    ctx = nav.target,
+                                    space = nav.space
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening date object from discussion")
+                        }
+                    }
+                    is OpenObjectNavigation.UnexpectedLayoutError -> {
+                        Timber.w("Unexpected layout error: ${nav.layout}")
+                    }
+                    OpenObjectNavigation.NonValidObject -> {
+                        Timber.w("Attempted to open non-valid object from discussion")
                     }
                 }
             }

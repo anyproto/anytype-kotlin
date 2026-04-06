@@ -810,8 +810,8 @@ class BlockDataRepository(
         )
     }
 
-    override suspend fun setHomepage(command: Command.SetHomepage): Id {
-        return remote.setHomepage(command)
+    override suspend fun setHomepage(command: Command.SetHomepage) {
+        remote.setHomepage(command)
     }
 
     override suspend fun spaceOpen(space: Id, withChat: Boolean): Config = remote.spaceOpen(

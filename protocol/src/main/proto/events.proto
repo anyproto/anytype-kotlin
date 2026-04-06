@@ -730,6 +730,7 @@ message Event {
                   // within the view
           bool wrapContent = 17; // Wrap content in view
           anytype.model.Block.Content.Dataview.View.ListSize listSize = 18; // List view size setting
+          bool alternateRows = 19; // Alternate row background colors in grid view
         }
 
         message Filter {

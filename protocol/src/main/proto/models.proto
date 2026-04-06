@@ -398,6 +398,7 @@ message Block {
                 string endRelationKey = 16; // Group view by this relationKey
                 bool wrapContent = 17; // Wrap content in view
                 ListSize listSize = 18; // List view size setting
+                bool alternateRows = 19; // Alternate row background colors in grid view
 
                 enum Type {
                     Table = 0;
@@ -1093,8 +1094,16 @@ enum SpaceUxType {
     None = 0; // old value for chat, deprecated
     Data = 1; // objects-first UX
     Stream = 2; // stream UX (chat with limited amount of owners)
-    Chat = 3; // chat UX
+    Chat = 3; // chat UX, deprecated
     OneToOne = 4; // onetoone UX (space with chat and immutable ACL between two participants)
+}
+
+enum SpaceType {
+    SpaceTypeUnknown  = 0;
+    SpaceTypeRegular  = 1;
+    SpaceTypeTech     = 2;
+    SpaceTypeChat     = 3;
+    SpaceTypeOneToOne = 4;
 }
 
 message Metadata {
@@ -1275,7 +1284,8 @@ message InvitePayload {
     string spaceName = 5;
     string spaceIconCid = 6;
     uint32 spaceIconOption = 10;
-    uint32 spaceUxType = 11;
+    uint32 spaceUxType = 11; // deprecated
+    uint32 spaceType = 14;
     repeated FileEncryptionKey spaceIconEncryptionKeys = 7;
 
 

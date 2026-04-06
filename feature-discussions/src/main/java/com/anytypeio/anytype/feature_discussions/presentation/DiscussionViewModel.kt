@@ -658,6 +658,11 @@ class DiscussionViewModel @Inject constructor(
                 }
             }
 
+            if (trimmedText.isEmpty() && additionalBlocks.isEmpty()) {
+                Timber.w("Aborting send: no text and all attachments failed")
+                return@launch
+            }
+
             addChatMessage.async(
                 params = Command.ChatCommand.AddMessage(
                     chat = vmParams.ctx,

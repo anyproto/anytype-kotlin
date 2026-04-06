@@ -60,9 +60,6 @@ class OsSpacesListWidget : GlanceAppWidget() {
         val entities = dataStore.observeSpaces().first()
         val spaces = entities.toDomain()
         Timber.tag(TAG).d("Read ${entities.size} space entities from DataStore, mapped to ${spaces.size} domain items")
-        entities.forEachIndexed { i, e ->
-            Timber.tag(TAG).d("  entity[$i]: spaceId=${e.spaceId}, name=${e.name}, icon=${e.iconImageUrl != null}")
-        }
         val strings = SpacesListWidgetStrings(
             emptyState = appContext.getString(R.string.os_widget_open_app_to_see_spaces),
             untitled = appContext.getString(R.string.untitled)

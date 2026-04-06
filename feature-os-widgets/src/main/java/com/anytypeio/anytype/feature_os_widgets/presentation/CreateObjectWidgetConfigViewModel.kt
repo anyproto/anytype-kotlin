@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.UUID
@@ -38,16 +39,18 @@ class CreateObjectWidgetConfigViewModel(
 
     init {
         Timber.d("$TAG init: appWidgetId=$appWidgetId")
-        loadSpaces()
-    }
-
-    private fun loadSpaces() {
-        val allSpaces = spaceViews.get()
-        val filtered = allSpaces
-            .filter { it.isActive && it.spaceUxType != SpaceUxType.CHAT && it.spaceUxType != SpaceUxType.ONE_TO_ONE }
-            .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
-        Timber.d("$TAG loadSpaces: total=${allSpaces.size}, filtered=${filtered.size}")
-        _spaces.value = filtered
+        viewModelScope.launch {
+            spaceViews.observe()
+                .map { allSpaces ->
+                    allSpaces
+                        .filter { it.isActive && it.spaceUxType != SpaceUxType.CHAT && it.spaceUxType != SpaceUxType.ONE_TO_ONE }
+                        .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
+                }
+                .collect { filtered ->
+                    Timber.d("$TAG loadSpaces: filtered=${filtered.size}")
+                    _spaces.value = filtered
+                }
+        }
     }
 
     fun onSpaceSelected(space: ObjectWrapper.SpaceView) {

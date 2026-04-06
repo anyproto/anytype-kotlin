@@ -133,10 +133,16 @@ fun ChatTopToolbar(
                 .padding(horizontal = 100.dp)
                 .fillMaxWidth()
                 .noRippleClickable {
-                    if (header is ChatViewModel.HeaderView.ChatObject && header.showDropDownMenu) {
-                        showDropdownMenu = !showDropdownMenu
-                    } else {
-                        onSpaceNameClicked()
+                    when {
+                        header is ChatViewModel.HeaderView.ChatObject && header.showDropDownMenu -> {
+                            showDropdownMenu = !showDropdownMenu
+                        }
+                        header is ChatViewModel.HeaderView.Default && header.showDropDownMenu -> {
+                            showDropdownMenu = !showDropdownMenu
+                        }
+                        else -> {
+                            onSpaceNameClicked()
+                        }
                     }
                 },
             horizontalArrangement = Arrangement.Center,
@@ -209,6 +215,45 @@ fun ChatTopToolbar(
                     },
                     onMoveToBinClick = {
                         onMoveToBin()
+                        showDropdownMenu = false
+                    },
+                    onSearchClick = {
+                        onSearchClick()
+                        showDropdownMenu = false
+                    }
+                )
+            }
+        }
+
+        if (header is ChatViewModel.HeaderView.Default && header.showDropDownMenu) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 52.dp)
+                    .align(Alignment.TopEnd)
+            ) {
+                ChatMenu(
+                    expanded = showDropdownMenu,
+                    currentNotificationSetting = header.notificationSetting,
+                    isPinned = false,
+                    canEdit = false,
+                    onDismissRequest = {
+                        showDropdownMenu = false
+                    },
+                    onPropertiesClick = {
+                        showDropdownMenu = false
+                    },
+                    onEditInfoClick = {
+                        showDropdownMenu = false
+                    },
+                    onNotificationSettingChanged = { setting ->
+                        onNotificationSettingChanged(setting)
+                        showDropdownMenu = false
+                    },
+                    onPinClick = {
+                        showDropdownMenu = false
+                    },
+                    onMoveToBinClick = {
                         showDropdownMenu = false
                     },
                     onSearchClick = {

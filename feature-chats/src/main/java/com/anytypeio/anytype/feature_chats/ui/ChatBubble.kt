@@ -711,7 +711,7 @@ private const val PDF = "\u202C"
  * the placeholder always flows left-to-right, preventing overlap with
  * RTL message text.
  */
-fun buildTimestampPlaceholder(formattedTime: String, editedLabel: String? = null): String {
+internal fun buildTimestampPlaceholder(formattedTime: String, editedLabel: String? = null): String {
     val inner = if (editedLabel != null) {
         " $editedLabel $formattedTime"
     } else {

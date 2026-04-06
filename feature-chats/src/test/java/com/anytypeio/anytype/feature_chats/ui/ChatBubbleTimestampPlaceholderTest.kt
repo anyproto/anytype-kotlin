@@ -56,7 +56,7 @@ class ChatBubbleTimestampPlaceholderTest {
     }
 
     @Test
-    fun `placeholder for 12h format should work correctly`() {
+    fun `placeholder with spaces in time string should work correctly`() {
         val result = buildTimestampPlaceholder(formattedTime = "02:30 PM")
 
         assertEquals("\u202A 02:30 PM\u202C", result)

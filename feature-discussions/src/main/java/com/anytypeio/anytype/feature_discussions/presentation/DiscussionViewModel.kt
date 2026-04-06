@@ -235,8 +235,6 @@ class DiscussionViewModel @Inject constructor(
                             emptyList()
                         }
 
-                        Timber.d("Content blocks: $contentBlocks")
-
                         val reactions = msg.reactions
                             .toList()
                             .sortedByDescending { (_, ids) -> ids.size }

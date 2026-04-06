@@ -1026,7 +1026,6 @@ fun ContentBlocksList(
     onLinkClicked: (String) -> Unit = {},
     onContentBlockClicked: (DiscussionView.ContentBlock) -> Unit = {}
 ) {
-    Timber.d("ContentBlockList: $blocks")
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         blocks.forEach { block ->
             when (block) {

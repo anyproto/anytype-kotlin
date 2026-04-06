@@ -73,6 +73,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -631,6 +632,7 @@ fun DiscussionCommentItem(
             )
         ) {
             DropdownMenu(
+                offset = DpOffset(8.dp, 8.dp),
                 expanded = showDropdownMenu,
                 onDismissRequest = { showDropdownMenu = false }
             ) {
@@ -867,6 +869,7 @@ fun DiscussionReplyItem(
             )
         ) {
             DropdownMenu(
+                offset = DpOffset(8.dp, 8.dp),
                 expanded = showDropdownMenu,
                 onDismissRequest = { showDropdownMenu = false }
             ) {

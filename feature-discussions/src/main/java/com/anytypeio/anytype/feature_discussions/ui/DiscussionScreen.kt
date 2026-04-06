@@ -118,6 +118,7 @@ fun DiscussionScreenWrapper(
     val mentionPanelState = vm.mentionPanelState.collectAsStateWithLifecycle().value
     val attachments = vm.commentAttachments.collectAsStateWithLifecycle().value
     val clipboard = LocalClipboardManager.current
+    val context = LocalContext.current
 
     var inputText by remember { mutableStateOf(TextFieldValue("")) }
     var spans by remember { mutableStateOf<List<InputSpan>>(emptyList()) }
@@ -182,15 +183,30 @@ fun DiscussionScreenWrapper(
         onToggleReaction = { msg, emoji -> vm.onToggleReaction(msg, emoji) },
         onMediaPicked = { vm.onCommentMediaPicked(it) },
         onFilePicked = { uris ->
-            vm.onCommentFilePicked(
-                uris.map { uri ->
-                    com.anytypeio.anytype.core_utils.common.DefaultFileInfo(
-                        uri = uri.toString(),
-                        name = uri.lastPathSegment ?: "file",
-                        size = 0
-                    )
+            val infos = uris.mapNotNull { uri ->
+                val cursor = context.contentResolver.query(
+                    uri, null, null, null, null
+                )
+                if (cursor != null) {
+                    cursor.use { c ->
+                        val nameIndex = c.getColumnIndex(
+                            android.provider.OpenableColumns.DISPLAY_NAME
+                        )
+                        val sizeIndex = c.getColumnIndex(
+                            android.provider.OpenableColumns.SIZE
+                        )
+                        c.moveToFirst()
+                        com.anytypeio.anytype.core_utils.common.DefaultFileInfo(
+                            uri = uri.toString(),
+                            name = c.getString(nameIndex),
+                            size = c.getLong(sizeIndex).toInt()
+                        )
+                    }
+                } else {
+                    null
                 }
-            )
+            }
+            vm.onCommentFilePicked(infos)
         },
         onClearAttachment = { vm.onClearAttachment(it) },
         onMentionClicked = { id -> vm.onMentionClicked(id) },

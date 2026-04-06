@@ -39,6 +39,7 @@ dependencies {
     implementation libs.composeMaterial
 
     implementation libs.coilCompose
+    implementation libs.coilVideo
 
     debugImplementation libs.composeTooling
 

@@ -13,7 +13,7 @@ class UrlBuilderImpl(val gateway: Gateway): UrlBuilder {
     /**
      * Builds large image url for given [path]
      */
-    override fun large(path: String): Url = gateway.provide() + IMAGE_PATH + path + LARGE_WIDTH_PARAM
+    override fun large(path: String): Url = gateway.provide() + IMAGE_PATH + path + LARGE_WIDTH_ALT_PARAM
 
     /**
      * Builds original image url for given [path]
@@ -44,6 +44,7 @@ class UrlBuilderImpl(val gateway: Gateway): UrlBuilder {
         const val IMAGE_PATH = "/image/"
         const val FILE_PATH = "/file/"
         const val LARGE_WIDTH_PARAM = "?width=1920"
+        const val LARGE_WIDTH_ALT_PARAM = "?width=1820"
         const val MEDIUM_WIDTH_PARAM = "?width=320"
     }
 }

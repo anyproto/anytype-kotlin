@@ -17,6 +17,8 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.core_ui.text.splitByMarks
+import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.onFailure
@@ -24,6 +26,8 @@ import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
+import com.anytypeio.anytype.domain.media.PreloadFile
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -32,8 +36,10 @@ import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionLinkDetector
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -46,6 +52,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 sealed class DiscussionInputMode {
@@ -70,7 +77,10 @@ class DiscussionViewModel @Inject constructor(
     private val dateProvider: DateProvider,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val fieldParser: FieldParser,
-    private val subscription: StorelessSubscriptionContainer
+    private val subscription: StorelessSubscriptionContainer,
+    private val uploadFile: UploadFile,
+    private val preloadFile: PreloadFile,
+    private val copyFileToCacheDirectory: CopyFileToCacheDirectory
 ) : BaseViewModel() {
 
     private val _header = MutableStateFlow(DiscussionHeader())
@@ -99,6 +109,9 @@ class DiscussionViewModel @Inject constructor(
     private var latestDependencies: Map<Id, ObjectWrapper.Basic> = emptyMap()
 
     private var account: Id = ""
+
+    val commentAttachments = MutableStateFlow<List<CommentAttachment>>(emptyList())
+    private val preloadingJobs = mutableListOf<Job>()
 
     init {
         viewModelScope.launch {
@@ -518,7 +531,7 @@ class DiscussionViewModel @Inject constructor(
     }
 
     fun onSendComment(text: String, marks: List<Block.Content.Text.Mark>) {
-        if (text.isBlank()) return
+        if (text.isBlank() && commentAttachments.value.isEmpty()) return
         val mode = inputMode.value
         val leadingSpaces = text.length - text.trimStart().length
         val trimmedText = text.trim()
@@ -536,24 +549,242 @@ class DiscussionViewModel @Inject constructor(
             existingMarks = adjustedMarks
         )
         viewModelScope.launch {
+            preloadingJobs.cancel()
+
+            val additionalBlocks = buildList {
+                val currAttachments = commentAttachments.value
+                currAttachments.forEachIndexed { idx, attachment ->
+                    when (attachment) {
+                        is CommentAttachment.Media -> {
+                            commentAttachments.value = commentAttachments.value.toMutableList().apply {
+                                set(idx, attachment.copy(state = CommentAttachment.State.Uploading))
+                            }
+                            val state = attachment.state
+                            var preloadedFileId: Id? = null
+                            var path: String
+                            if (state is CommentAttachment.State.Preloaded) {
+                                preloadedFileId = state.preloadedFileId
+                                path = state.path
+                            } else {
+                                path = if (attachment.capturedByCamera) {
+                                    try {
+                                        withContext(dispatchers.io) {
+                                            copyFileToCacheDirectory.copy(attachment.uri)
+                                        }
+                                    } catch (e: Exception) {
+                                        Timber.e(e, "Failed to copy media file to cache: ${attachment.uri}")
+                                        commentAttachments.value = commentAttachments.value.toMutableList().apply {
+                                            set(idx, attachment.copy(state = CommentAttachment.State.Failed))
+                                        }
+                                        return@forEachIndexed
+                                    }
+                                } else {
+                                    attachment.uri
+                                }
+                            }
+                            uploadFile.async(
+                                UploadFile.Params(
+                                    space = vmParams.space,
+                                    path = path,
+                                    type = if (attachment.isVideo)
+                                        Block.Content.File.Type.VIDEO
+                                    else
+                                        Block.Content.File.Type.IMAGE,
+                                    preloadFileId = preloadedFileId,
+                                    createdInContext = vmParams.ctx
+                                )
+                            ).onSuccess { file ->
+                                val linkType = if (attachment.isVideo)
+                                    Chat.Message.MessageBlock.Link.LinkType.FILE
+                                else
+                                    Chat.Message.MessageBlock.Link.LinkType.IMAGE
+                                add(
+                                    Chat.Message.MessageBlock.Link(
+                                        targetObjectId = file.id,
+                                        type = linkType
+                                    )
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while uploading media attachment")
+                                commentAttachments.value = commentAttachments.value.toMutableList().apply {
+                                    set(idx, attachment.copy(state = CommentAttachment.State.Failed))
+                                }
+                            }
+                        }
+                        is CommentAttachment.File -> {
+                            commentAttachments.value = commentAttachments.value.toMutableList().apply {
+                                set(idx, attachment.copy(state = CommentAttachment.State.Uploading))
+                            }
+                            val state = attachment.state
+                            var preloadedFileId: Id? = null
+                            var path: String?
+                            if (state is CommentAttachment.State.Preloaded) {
+                                preloadedFileId = state.preloadedFileId
+                                path = state.path
+                            } else {
+                                path = try {
+                                    withContext(dispatchers.io) {
+                                        copyFileToCacheDirectory.copy(attachment.uri)
+                                    }
+                                } catch (e: Exception) {
+                                    Timber.e(e, "Failed to copy file to cache: ${attachment.uri}")
+                                    commentAttachments.value = commentAttachments.value.toMutableList().apply {
+                                        set(idx, attachment.copy(state = CommentAttachment.State.Failed))
+                                    }
+                                    return@forEachIndexed
+                                }
+                            }
+                            uploadFile.async(
+                                UploadFile.Params(
+                                    space = vmParams.space,
+                                    path = path,
+                                    type = Block.Content.File.Type.NONE,
+                                    preloadFileId = preloadedFileId,
+                                    createdInContext = vmParams.ctx
+                                )
+                            ).onSuccess { file ->
+                                add(
+                                    Chat.Message.MessageBlock.Link(
+                                        targetObjectId = file.id,
+                                        type = Chat.Message.MessageBlock.Link.LinkType.FILE
+                                    )
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while uploading file attachment")
+                                commentAttachments.value = commentAttachments.value.toMutableList().apply {
+                                    set(idx, attachment.copy(state = CommentAttachment.State.Failed))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             addChatMessage.async(
                 params = Command.ChatCommand.AddMessage(
                     chat = vmParams.ctx,
                     message = Chat.Message.newWithBlocks(
                         text = trimmedText,
                         marks = marksWithLinks,
-                        replyToMessageId = if (mode is DiscussionInputMode.Reply) mode.msg else null
+                        replyToMessageId = if (mode is DiscussionInputMode.Reply) mode.msg else null,
+                        additionalBlocks = additionalBlocks
                     )
                 )
             ).onSuccess { (id, payload) ->
                 chatContainer.onPayload(payload)
                 _inputMode.value = DiscussionInputMode.Default
                 mentionPanelState.value = MentionPanelState.Hidden
+                commentAttachments.value = emptyList()
             }.onFailure { e ->
                 Timber.e(e, "Failed to send comment")
             }
         }
     }
+
+    fun onCommentMediaPicked(uris: List<MediaUri>) {
+        commentAttachments.value += uris.map { uri ->
+            CommentAttachment.Media(
+                uri = uri.uri,
+                isVideo = uri.isVideo,
+                capturedByCamera = uri.capturedByCamera
+            )
+        }
+        preloadingJobs += viewModelScope.launch {
+            uris.forEach { info ->
+                val path = if (info.capturedByCamera) {
+                    withContext(dispatchers.io) {
+                        copyFileToCacheDirectory.copy(info.uri)
+                    }
+                } else {
+                    info.uri
+                }
+                preloadFile.async(
+                    params = PreloadFile.Params(
+                        space = vmParams.space,
+                        path = path,
+                        type = Block.Content.File.Type.NONE
+                    )
+                ).onSuccess { preloadedFileId: Id ->
+                    commentAttachments.value = commentAttachments.value.map { a ->
+                        if (a is CommentAttachment.Media && a.uri == info.uri) {
+                            a.copy(
+                                state = CommentAttachment.State.Preloaded(
+                                    preloadedFileId = preloadedFileId,
+                                    path = path
+                                )
+                            )
+                        } else {
+                            a
+                        }
+                    }
+                }.onFailure {
+                    commentAttachments.value = commentAttachments.value.map { a ->
+                        if (a is CommentAttachment.Media && a.uri == info.uri) {
+                            a.copy(state = CommentAttachment.State.Failed)
+                        } else {
+                            a
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun onCommentFilePicked(infos: List<DefaultFileInfo>) {
+        commentAttachments.value += infos.map { info ->
+            CommentAttachment.File(
+                uri = info.uri,
+                name = info.name,
+                size = info.size,
+                state = CommentAttachment.State.Preloading
+            )
+        }
+        preloadingJobs += viewModelScope.launch {
+            infos.forEach { info ->
+                val path = withContext(dispatchers.io) {
+                    copyFileToCacheDirectory.copy(info.uri)
+                }
+                preloadFile.async(
+                    params = PreloadFile.Params(
+                        space = vmParams.space,
+                        path = path,
+                        type = Block.Content.File.Type.NONE
+                    )
+                ).onSuccess { preloadedFileId: Id ->
+                    commentAttachments.value = commentAttachments.value.map { a ->
+                        if (a is CommentAttachment.File && a.uri == info.uri) {
+                            a.copy(
+                                state = CommentAttachment.State.Preloaded(
+                                    preloadedFileId = preloadedFileId,
+                                    path = path
+                                )
+                            )
+                        } else {
+                            a
+                        }
+                    }
+                }.onFailure {
+                    commentAttachments.value = commentAttachments.value.map { a ->
+                        if (a is CommentAttachment.File && a.uri == info.uri) {
+                            a.copy(state = CommentAttachment.State.Failed)
+                        } else {
+                            a
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun onClearAttachment(attachment: CommentAttachment) {
+        commentAttachments.value = commentAttachments.value.filter { it != attachment }
+    }
+
+    data class MediaUri(
+        val uri: String,
+        val isVideo: Boolean = false,
+        val capturedByCamera: Boolean = false
+    )
 
     private suspend fun mapBlocksToContentBlocks(
         blocks: List<Chat.Message.MessageBlock>,

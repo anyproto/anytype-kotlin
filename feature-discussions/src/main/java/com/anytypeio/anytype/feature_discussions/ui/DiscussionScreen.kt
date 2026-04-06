@@ -98,6 +98,7 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.feature_discussions.presentation.CommentAttachment
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionHeader
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionInputMode
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
@@ -108,13 +109,13 @@ import timber.log.Timber
 @Composable
 fun DiscussionScreenWrapper(
     vm: DiscussionViewModel,
-    onBackClicked: () -> Unit,
-    onPlusClicked: () -> Unit = {}
+    onBackClicked: () -> Unit
 ) {
     val header = vm.header.collectAsStateWithLifecycle().value
     val messages = vm.messages.collectAsStateWithLifecycle().value
     val inputMode = vm.inputMode.collectAsStateWithLifecycle().value
     val mentionPanelState = vm.mentionPanelState.collectAsStateWithLifecycle().value
+    val attachments = vm.commentAttachments.collectAsStateWithLifecycle().value
     val clipboard = LocalClipboardManager.current
 
     var inputText by remember { mutableStateOf(TextFieldValue("")) }
@@ -126,6 +127,7 @@ fun DiscussionScreenWrapper(
         onBackClicked = onBackClicked,
         inputText = inputText,
         spans = spans,
+        attachments = attachments,
         mentionPanelState = mentionPanelState,
         onInputValueChange = { newText, newSpans ->
             inputText = newText
@@ -177,7 +179,19 @@ fun DiscussionScreenWrapper(
         onDeleteComment = { vm.onDeleteComment(it) },
         onAddReaction = { vm.onAddReaction(it) },
         onToggleReaction = { msg, emoji -> vm.onToggleReaction(msg, emoji) },
-        onPlusClicked = onPlusClicked,
+        onMediaPicked = { vm.onCommentMediaPicked(it) },
+        onFilePicked = { uris ->
+            vm.onCommentFilePicked(
+                uris.map { uri ->
+                    com.anytypeio.anytype.core_utils.common.DefaultFileInfo(
+                        uri = uri.toString(),
+                        name = uri.lastPathSegment ?: "file",
+                        size = 0
+                    )
+                }
+            )
+        },
+        onClearAttachment = { vm.onClearAttachment(it) },
         onMentionClicked = { id -> vm.onMentionClicked(id) },
         onLinkClicked = { url ->
             // Link clicks can be handled by the fragment via commands if needed
@@ -243,6 +257,7 @@ fun DiscussionScreen(
     onBackClicked: () -> Unit,
     inputText: TextFieldValue = TextFieldValue(""),
     spans: List<InputSpan> = emptyList(),
+    attachments: List<CommentAttachment> = emptyList(),
     mentionPanelState: MentionPanelState = MentionPanelState.Hidden,
     onInputValueChange: (TextFieldValue, List<InputSpan>) -> Unit = { _, _ -> },
     onSendClicked: (String, List<InputSpan>) -> Unit = { _, _ -> },
@@ -255,7 +270,9 @@ fun DiscussionScreen(
     onAddReaction: (Id) -> Unit = {},
     onToggleReaction: (Id, String) -> Unit = { _, _ -> },
     onMentionMemberClicked: (MentionPanelState.Member) -> Unit = {},
-    onPlusClicked: () -> Unit = {},
+    onMediaPicked: (List<DiscussionViewModel.MediaUri>) -> Unit = {},
+    onFilePicked: (List<android.net.Uri>) -> Unit = {},
+    onClearAttachment: (CommentAttachment) -> Unit = {},
     onMentionClicked: (Id) -> Unit = {},
     onLinkClicked: (String) -> Unit = {},
     onContentBlockClicked: (DiscussionView.ContentBlock) -> Unit = {}
@@ -306,9 +323,12 @@ fun DiscussionScreen(
                 DiscussionCommentInput(
                     text = inputText,
                     spans = spans,
+                    attachments = attachments,
                     onValueChange = onInputValueChange,
                     onSendClicked = onSendClicked,
-                    onPlusClicked = onPlusClicked,
+                    onMediaPicked = onMediaPicked,
+                    onFilePicked = onFilePicked,
+                    onClearAttachment = onClearAttachment,
                     modifier = Modifier
                         .navigationBarsPadding()
                         .imePadding()
@@ -974,11 +994,18 @@ fun CommentAvatar(
             )
         )
         if (avatar is DiscussionView.Avatar.Image) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
+            val context = LocalContext.current
+            val model = remember(avatar.hash) {
+                ImageRequest.Builder(context)
                     .data(avatar.hash)
+                    .size(128, 128)
+                    .diskCachePolicy(coil3.request.CachePolicy.ENABLED)
+                    .memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
                     .crossfade(true)
-                    .build(),
+                    .build()
+            }
+            AsyncImage(
+                model = model,
                 contentDescription = "Avatar",
                 modifier = Modifier
                     .size(size.dp)
@@ -1010,20 +1037,18 @@ fun ContentBlocksList(
                     }
                 }
                 is DiscussionView.ContentBlock.Image -> {
-                    Timber.d("Image block url: ${block.url}")
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
+                    val context = LocalContext.current
+                    val model = remember(block.url) {
+                        ImageRequest.Builder(context)
                             .data(block.url)
+                            .size(1024, 1024)
+                            .diskCachePolicy(coil3.request.CachePolicy.ENABLED)
+                            .memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
                             .crossfade(true)
-                            .listener(
-                                onError = { _, result ->
-                                    Timber.e(result.throwable, "Image load error for url: ${block.url}")
-                                },
-                                onSuccess = { _, _ ->
-                                    Timber.d("Image loaded successfully: ${block.url}")
-                                }
-                            )
-                            .build(),
+                            .build()
+                    }
+                    AsyncImage(
+                        model = model,
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth()

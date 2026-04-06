@@ -89,3 +89,28 @@ data class DiscussionHeader(
     val title: String = "",
     val commentCount: Int = 0
 )
+
+sealed class CommentAttachment {
+    data class Media(
+        val uri: String,
+        val isVideo: Boolean = false,
+        val capturedByCamera: Boolean = false,
+        val state: State = State.Idle
+    ) : CommentAttachment()
+
+    data class File(
+        val uri: String,
+        val name: String,
+        val size: Int,
+        val state: State = State.Idle
+    ) : CommentAttachment()
+
+    sealed class State {
+        data object Idle : State()
+        data object Preloading : State()
+        data class Preloaded(val preloadedFileId: Id, val path: String) : State()
+        data object Uploading : State()
+        data class Uploaded(val objectId: Id) : State()
+        data object Failed : State()
+    }
+}

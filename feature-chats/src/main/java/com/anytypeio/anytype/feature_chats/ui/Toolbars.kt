@@ -97,29 +97,19 @@ fun ChatTopToolbar(
                 )
             }
             is ChatViewModel.HeaderView.Default -> {
-                if (header.showAddMembers) {
-                    Image(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .padding(end = 48.dp)
-                            .height(52.dp)
-                            .width(40.dp)
-                            .noRippleClickable {
-                                onInviteMembersClicked()
-                            },
-                        contentScale = ContentScale.Inside,
-                        painter = painterResource(id = R.drawable.ic_space_settings_invite_members),
-                        contentDescription = "Invite members icon",
-                        colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
-                    )
-                }
                 SpaceIconView(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .padding(end = 16.dp),
                     mainSize = 28.dp,
                     icon = header.icon,
-                    onSpaceIconClick = { onSpaceIconClicked() }
+                    onSpaceIconClick = {
+                        if (header.showDropDownMenu) {
+                            showDropdownMenu = !showDropdownMenu
+                        } else {
+                            onSpaceIconClicked()
+                        }
+                    }
                 )
             }
             ChatViewModel.HeaderView.Init -> {
@@ -232,32 +222,32 @@ fun ChatTopToolbar(
                     .padding(top = 52.dp)
                     .align(Alignment.TopEnd)
             ) {
-                ChatMenu(
+                SpaceChatMenu(
                     expanded = showDropdownMenu,
                     currentNotificationSetting = header.notificationSetting,
-                    isPinned = false,
-                    canEdit = false,
+                    showInviteMembers = header.showAddMembers,
+                    showCopyLink = header.showAddMembers,
                     onDismissRequest = {
                         showDropdownMenu = false
                     },
-                    onPropertiesClick = {
-                        showDropdownMenu = false
-                    },
-                    onEditInfoClick = {
+                    onSearchClick = {
+                        onSearchClick()
                         showDropdownMenu = false
                     },
                     onNotificationSettingChanged = { setting ->
                         onNotificationSettingChanged(setting)
                         showDropdownMenu = false
                     },
-                    onPinClick = {
+                    onInviteMembersClick = {
+                        onInviteMembersClicked()
                         showDropdownMenu = false
                     },
-                    onMoveToBinClick = {
+                    onCopyLinkClick = {
+                        onCopyLink()
                         showDropdownMenu = false
                     },
-                    onSearchClick = {
-                        onSearchClick()
+                    onChannelSettingsClick = {
+                        onSpaceIconClicked()
                         showDropdownMenu = false
                     }
                 )

@@ -102,7 +102,8 @@ sealed class VaultCommand {
     data class EnterSpaceLevelChat(val space: Space, val chat: Id) : VaultCommand()
     data class CreateNewSpace(
         val channelType: ChannelCreationType,
-        val selectedMembers: List<MemberItem> = emptyList()
+        val selectedMembers: List<MemberItem> = emptyList(),
+        val writersLimit: Int = 0
     ) : VaultCommand()
     data object OpenProfileSettings : VaultCommand()
     data class ShowDeleteSpaceWarning(val space: Id) : VaultCommand()

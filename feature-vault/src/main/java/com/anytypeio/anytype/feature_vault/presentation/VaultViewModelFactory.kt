@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
@@ -74,7 +75,8 @@ class VaultViewModelFactory @Inject constructor(
     private val osWidgetSpacesSync: OsWidgetSpacesSync,
     private val osWidgetDataViewSync: OsWidgetDataViewSync,
     private val networkModeProvider: NetworkModeProvider,
-    private val getMembershipFeatures: GetMembershipFeatures
+    private val getMembershipFeatures: GetMembershipFeatures,
+    private val searchObjects: SearchObjects
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -114,6 +116,7 @@ class VaultViewModelFactory @Inject constructor(
         osWidgetSpacesSync = osWidgetSpacesSync,
         osWidgetDataViewSync = osWidgetDataViewSync,
         networkModeProvider = networkModeProvider,
-        getMembershipFeatures = getMembershipFeatures
+        getMembershipFeatures = getMembershipFeatures,
+        searchObjects = searchObjects
     ) as T
 }

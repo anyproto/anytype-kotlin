@@ -4,10 +4,11 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 
 /**
  * Whether this space type should navigate directly to chat instead of home screen.
- * CHAT and ONE_TO_ONE spaces open chat directly.
+ * Only ONE_TO_ONE spaces open chat directly. Regular channels (including former CHAT spaces)
+ * now use homepage-based navigation.
  */
 val SpaceUxType?.shouldNavigateDirectlyToChat: Boolean
-    get() = this == SpaceUxType.CHAT || this == SpaceUxType.ONE_TO_ONE
+    get() = this == SpaceUxType.ONE_TO_ONE
 
 /**
  * Whether to show message author name in chat preview.

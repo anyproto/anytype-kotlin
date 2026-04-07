@@ -105,7 +105,8 @@ class Middleware @Inject constructor(
             avatarLocalPath = command.avatarPath,
             icon = command.icon.toLong(),
             networkMode = command.networkMode.toMiddlewareModel(),
-            networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty()
+            networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty(),
+            enableMembershipV2 = true
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.accountCreate(request) }
@@ -125,7 +126,8 @@ class Middleware @Inject constructor(
             rootPath = command.path,
             networkMode = networkMode,
             networkCustomConfigFilePath = networkCustomConfigFilePath,
-            preferYamuxTransport = command.preferYamuxTransport ?: false
+            preferYamuxTransport = command.preferYamuxTransport ?: false,
+            enableMembershipV2 = true
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.accountSelect(request) }
@@ -2131,8 +2133,8 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun workspaceSetHomepage(command: Command.SetHomepage) {
         val request = Rpc.Workspace.SetHomepage.Request(
-            spaceId = command.contextId,
-            homepage = command.objectId
+            spaceId = command.spaceId,
+            homepage = command.homepage
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.workspaceSetHomepage(request) }
@@ -2619,17 +2621,17 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun addSpaceMembers(
         space: SpaceId,
-        identities: List<Id>
+        identities: List<Id>,
+        permissions: SpaceMemberPermissions
     ) {
-        // TODO: Wire to MW when SpaceParticipantsAddList protobuf classes are available
-        // val request = Rpc.Space.ParticipantsAddList.Request(
-        //     spaceId = space.id,
-        //     identities = identities
-        // )
-        // logRequestIfDebug(request)
-        // val (response, time) = measureTimedValue { service.spaceParticipantsAddList(request) }
-        // logResponseIfDebug(response, time)
-        Timber.d("addSpaceMembers stub: space=${space.id}, identities=$identities")
+        val request = Rpc.Space.ParticipantsAddList.Request(
+            spaceId = space.id,
+            identities = identities,
+            permissions = permissions.toMw()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceParticipantsAddList(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)

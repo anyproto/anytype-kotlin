@@ -336,6 +336,10 @@
             app:argType="string[]"
             app:nullable="true"
             android:defaultValue="@null" />
+        <argument
+            android:name="writersLimit"
+            app:argType="integer"
+            android:defaultValue="0" />
         <action
             android:id="@+id/exitToVaultAction"
             app:popUpTo="@+id/vaultScreen"

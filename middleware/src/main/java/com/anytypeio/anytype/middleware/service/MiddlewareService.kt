@@ -565,6 +565,9 @@ interface MiddlewareService {
     fun spaceMakeShareable(request: Rpc.Space.MakeShareable.Request): Rpc.Space.MakeShareable.Response
 
     @Throws(Exception::class)
+    fun spaceParticipantsAddList(request: Rpc.Space.ParticipantsAddList.Request): Rpc.Space.ParticipantsAddList.Response
+
+    @Throws(Exception::class)
     fun spaceParticipantPermissionsChange(request: Rpc.Space.ParticipantPermissionsChange.Request): Rpc.Space.ParticipantPermissionsChange.Response
 
     @Throws(Exception::class)

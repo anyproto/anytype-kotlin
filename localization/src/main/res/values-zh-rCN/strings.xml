@@ -2036,8 +2036,8 @@
     <string name="attachment_image">附件图片</string>
     <!-- Shared Space Limit (DROID-4388) -->
     <string name="vault_shared_space_limit_title">已达到共享空间上限</string>
-    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
-    <string name="vault_manage_channels">Manage Channels</string>
+    <string name="vault_shared_space_limit_description">您的计划允许创建 %1$d 个共享空间。升级会员以解锁更多。</string>
+    <string name="vault_manage_channels">管理频道</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">照片</string>
     <string name="attachment_menu_camera">相机</string>

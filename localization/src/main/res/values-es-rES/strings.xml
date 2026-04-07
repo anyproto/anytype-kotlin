@@ -873,8 +873,8 @@
     <string name="homepage_picker_collection">Colección</string>
     <string name="homepage_picker_empty">Vacío</string>
     <string name="homepage_picker_later">Más tarde</string>
-    <string name="invite_members_widget_title">Invite Members</string>
-    <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
+    <string name="invite_members_widget_title">Invitar a otras personas</string>
+    <string name="invite_members_widget_description">Invita a otras personas a este canal para empezar a colaborar. </string>
     <string name="generic_error">Algo ha salido mal. Inténtalo de nuevo.</string>
     <string name="type">Tipo:</string>
     <string name="format">Formato</string>

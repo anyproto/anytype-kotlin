@@ -949,7 +949,7 @@ enum RelationFormat {
 
     object = 100; // relation can has objectType to specify objectType
     relations = 101; // base64-encoded relation pb model
-
+    map = 102; // relation that handle map of values
 }
 
 enum ObjectOrigin {
@@ -1728,4 +1728,20 @@ enum SyncError {
 enum TemplateNamePrefillType {
     Empty = 0;
     FromTemplateName = 1;
+}
+
+message Placeholder {
+    string relationKey = 1;
+    repeated Value values = 2;
+
+    message Value {
+        Type type = 1;
+        google.protobuf.Value value = 2;
+    }
+
+    enum Type {
+        PlaceholderValue = 0;
+        PlaceholderToday = 1;
+        PlaceholderCurrentUser = 2;
+    }
 }

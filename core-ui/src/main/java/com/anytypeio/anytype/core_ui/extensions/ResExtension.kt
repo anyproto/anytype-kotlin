@@ -146,6 +146,7 @@ fun RelationFormat.getPrettyName(): Int = when (this) {
     RelationFormat.EMOJI -> R.string.relation_format_emoji
     RelationFormat.OBJECT -> R.string.relation_format_object
     RelationFormat.RELATIONS -> R.string.relation_format_relation
+    RelationFormat.MAP -> R.string.undefined
     RelationFormat.UNDEFINED -> R.string.undefined
 }
 

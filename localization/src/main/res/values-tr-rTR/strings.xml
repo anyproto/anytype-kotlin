@@ -873,8 +873,8 @@
     <string name="homepage_picker_collection">Koleksiyon</string>
     <string name="homepage_picker_empty">Boş</string>
     <string name="homepage_picker_later">Daha sonra</string>
-    <string name="invite_members_widget_title">Invite Members</string>
-    <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
+    <string name="invite_members_widget_title">Üyeleri Davet Et</string>
+    <string name="invite_members_widget_description">İşbirliğine başlamak için insanları bu kanala davet et.</string>
     <string name="generic_error">Bir şeyler yanlış gitti. Lütfen tekrar deneyin.</string>
     <string name="type">Tür</string>
     <string name="format">Biçim</string>

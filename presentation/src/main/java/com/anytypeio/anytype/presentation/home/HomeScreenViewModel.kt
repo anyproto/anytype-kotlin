@@ -3754,6 +3754,7 @@ class HomeScreenViewModel(
     fun onHomepageSelected(type: HomepageType) {
         viewModelScope.launch {
             showHomepagePicker.value = false
+            userSettingsRepository.setHomepagePickerDismissed(vmParams.spaceId, true)
             val spaceId = vmParams.spaceId.id
             when (type) {
                 HomepageType.EMPTY -> {

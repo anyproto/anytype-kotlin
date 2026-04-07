@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Relation.Format.EMAIL
 import com.anytypeio.anytype.core_models.Relation.Format.EMOJI
 import com.anytypeio.anytype.core_models.Relation.Format.FILE
 import com.anytypeio.anytype.core_models.Relation.Format.LONG_TEXT
+import com.anytypeio.anytype.core_models.Relation.Format.MAP
 import com.anytypeio.anytype.core_models.Relation.Format.NUMBER
 import com.anytypeio.anytype.core_models.Relation.Format.OBJECT
 import com.anytypeio.anytype.core_models.Relation.Format.PHONE
@@ -854,6 +855,7 @@ suspend fun Command.SearchWithMeta.Result.view(
                             EMOJI -> GlobalSearchItemView.Meta.None
                             CHECKBOX -> GlobalSearchItemView.Meta.None
                             RELATIONS -> GlobalSearchItemView.Meta.None
+                            MAP -> GlobalSearchItemView.Meta.None
                             UNDEFINED -> GlobalSearchItemView.Meta.None
                         }
                     } else {

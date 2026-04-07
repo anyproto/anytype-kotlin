@@ -867,10 +867,12 @@
     <string name="homepage_picker_title">创建主页</string>
     <string name="homepage_picker_description">选择您和频道成员在打开频道时看到的内容。您可以随时在设置中进行更改。</string>
     <string name="homepage_picker_chat">聊天</string>
-    <string name="homepage_picker_widgets">小部件</string>
     <string name="homepage_picker_page">页面</string>
     <string name="homepage_picker_collection">合集</string>
+    <string name="homepage_picker_empty">空的</string>
     <string name="homepage_picker_later">稍后</string>
+    <string name="invite_members_widget_title">Invite Members</string>
+    <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
     <string name="generic_error">出错了，请再试一次。</string>
     <string name="type">类型</string>
     <string name="format">格式</string>

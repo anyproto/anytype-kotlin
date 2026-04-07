@@ -7906,7 +7906,7 @@ class EditorViewModel(
                     )
                 )
             }
-            Relation.Format.EMOJI, Relation.Format.RELATIONS, Relation.Format.UNDEFINED -> {
+            Relation.Format.EMOJI, Relation.Format.RELATIONS, Relation.Format.MAP, Relation.Format.UNDEFINED -> {
                 sendToast(NOT_ALLOWED_FOR_RELATION)
                 Timber.d("No interaction allowed with this relation")
             }

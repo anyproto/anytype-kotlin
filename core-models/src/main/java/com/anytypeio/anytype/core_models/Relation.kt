@@ -45,6 +45,7 @@ data class Relation(
         EMOJI(10),
         OBJECT(100),
         RELATIONS(101),
+        MAP(102),
 
         UNDEFINED(-1)
     }

@@ -1,17 +1,14 @@
 package com.anytypeio.anytype.feature_vault.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -29,6 +26,7 @@ import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ui.AttachmentPreview
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewMedium
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewRegular
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
@@ -56,6 +54,7 @@ fun VaultDataSpaceChatCard(
     expandedSpaceId: String? = null,
     isLastMessageOutgoing: Boolean = false,
     isLastMessageSynced: Boolean = true,
+    isCompactMode: Boolean = false,
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
     onUnmuteSpace: (Id) -> Unit = {},
@@ -64,39 +63,12 @@ fun VaultDataSpaceChatCard(
     onSpaceSettings: (Id) -> Unit = {},
     onDeleteOrLeaveSpace: (Id, Boolean) -> Unit = { _, _ -> }
 ) {
+    val hasUnread = unreadMessageCount > 0 || unreadMentionCount > 0
+    val iconSize = if (isCompactMode) 44.dp else 64.dp
 
-    val updatedModifier = when (spaceBackground) {
-        is SpaceBackground.SolidColor -> modifier
-            .fillMaxSize()
-            .height(96.dp)
-            .padding(horizontal = 16.dp)
-            .background(
-                color = spaceBackground.color.copy(alpha = 0.3f),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .padding(horizontal = 16.dp)
-
-        is SpaceBackground.Gradient -> modifier
-            .fillMaxSize()
-            .height(96.dp)
-            .padding(horizontal = 16.dp)
-            .background(
-                brush = spaceBackground.brush,
-                shape = RoundedCornerShape(20.dp),
-                alpha = 0.3f
-            )
-            .padding(horizontal = 16.dp)
-
-        SpaceBackground.None -> Modifier
-            .fillMaxSize()
-            .height(96.dp)
-            .padding(horizontal = 16.dp)
-            .background(
-                color = colorResource(id = R.color.background_secondary),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .padding(horizontal = 16.dp)
-    }
+    val updatedModifier = vaultCardBackgroundModifier(
+        modifier, spaceBackground, fixedHeight = !isCompactMode
+    )
 
     Row(
         modifier = updatedModifier,
@@ -104,29 +76,44 @@ fun VaultDataSpaceChatCard(
     ) {
         SpaceIconView(
             icon = icon,
-            mainSize = 64.dp,
+            mainSize = iconSize,
             modifier = Modifier
         )
         val isSpaceMuted = spaceNotificationState == NotificationState.DISABLE
 
-        ContentDataSpaceChat(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 12.dp),
-            title = title,
-            chatName = chatName,
-            creatorName = creatorName,
-            messageText = messageText,
-            messageTime = messageTime,
-            chatPreview = spaceView.chatPreview,
-            unreadMessageCount = unreadMessageCount,
-            unreadMentionCount = unreadMentionCount,
-            attachmentPreviews = attachmentPreviews,
-            spaceNotificationState = spaceNotificationState,
-            isMuted = isSpaceMuted,
-            isPinned = isPinned,
-            showPendingIndicator = isLastMessageOutgoing && !isLastMessageSynced
-        )
+        if (isCompactMode && !hasUnread) {
+            // Compact read state: name only
+            Text(
+                text = title.ifEmpty { stringResource(id = R.string.untitled) },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 12.dp),
+                style = BodySemiBold,
+                color = colorResource(id = R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        } else {
+            ContentDataSpaceChat(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 12.dp),
+                title = title,
+                chatName = chatName,
+                creatorName = creatorName,
+                messageText = messageText,
+                messageTime = messageTime,
+                chatPreview = spaceView.chatPreview,
+                unreadMessageCount = unreadMessageCount,
+                unreadMentionCount = unreadMentionCount,
+                attachmentPreviews = attachmentPreviews,
+                spaceNotificationState = spaceNotificationState,
+                isMuted = isSpaceMuted,
+                isPinned = isPinned,
+                showPendingIndicator = isLastMessageOutgoing && !isLastMessageSynced,
+                isCompactMode = isCompactMode
+            )
+        }
 
         val shouldShowAsMuted =
             spaceNotificationState == NotificationState.MENTIONS || isSpaceMuted
@@ -177,7 +164,8 @@ private fun ContentDataSpaceChat(
     isMuted: Boolean? = null,
     spaceNotificationState: NotificationState,
     isPinned: Boolean = false,
-    showPendingIndicator: Boolean = false
+    showPendingIndicator: Boolean = false,
+    isCompactMode: Boolean = false
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
         val hasContent = !creatorName.isNullOrEmpty() ||
@@ -222,8 +210,15 @@ private fun ContentDataSpaceChat(
                 modifier = Modifier.weight(1f)
             )
 
-            // Show indicators if there's content, or pin if pinned but no content
-            if (hasContent) {
+            if (isCompactMode) {
+                // In compact mode, badges go on line 2 (next to chat name)
+                UnreadIndicatorsRow(
+                    unreadMessageCount = unreadMessageCount,
+                    unreadMentionCount = unreadMentionCount,
+                    notificationMode = spaceNotificationState,
+                    isPinned = isPinned
+                )
+            } else if (hasContent) {
                 UnreadIndicatorsRow(
                     unreadMessageCount = unreadMessageCount,
                     unreadMentionCount = unreadMentionCount,
@@ -243,8 +238,8 @@ private fun ContentDataSpaceChat(
             }
         }
 
-        // Line 3: Author + Message Preview
-        if (hasContent) {
+        // Line 3: Author + Message Preview (hidden in compact mode)
+        if (hasContent && !isCompactMode) {
             DataSpaceChatPreviewRow(
                 creatorName = creatorName,
                 messageText = messageText,

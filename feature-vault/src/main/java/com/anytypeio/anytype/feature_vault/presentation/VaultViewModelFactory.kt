@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -76,7 +77,8 @@ class VaultViewModelFactory @Inject constructor(
     private val osWidgetDataViewSync: OsWidgetDataViewSync,
     private val networkModeProvider: NetworkModeProvider,
     private val getMembershipFeatures: GetMembershipFeatures,
-    private val searchObjects: SearchObjects
+    private val searchObjects: SearchObjects,
+    private val userSettingsRepository: UserSettingsRepository
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -117,6 +119,7 @@ class VaultViewModelFactory @Inject constructor(
         osWidgetDataViewSync = osWidgetDataViewSync,
         networkModeProvider = networkModeProvider,
         getMembershipFeatures = getMembershipFeatures,
-        searchObjects = searchObjects
+        searchObjects = searchObjects,
+        userSettingsRepository = userSettingsRepository
     ) as T
 }

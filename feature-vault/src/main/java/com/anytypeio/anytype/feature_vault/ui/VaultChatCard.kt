@@ -6,11 +6,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -112,6 +112,45 @@ private fun getUnreadMessageCountBadgeColor(
 }
 
 @Composable
+fun vaultCardBackgroundModifier(
+    modifier: Modifier,
+    spaceBackground: SpaceBackground,
+    fixedHeight: Boolean
+): Modifier {
+    val sizeModifier = if (fixedHeight) {
+        modifier.fillMaxWidth().height(96.dp)
+    } else {
+        modifier.fillMaxWidth().heightIn(min = 56.dp)
+    }
+    return when (spaceBackground) {
+        is SpaceBackground.SolidColor -> sizeModifier
+            .padding(horizontal = 16.dp)
+            .background(
+                color = spaceBackground.color.copy(alpha = 0.3f),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .padding(horizontal = 16.dp, vertical = if (fixedHeight) 0.dp else 16.dp)
+
+        is SpaceBackground.Gradient -> sizeModifier
+            .padding(horizontal = 16.dp)
+            .background(
+                brush = spaceBackground.brush,
+                shape = RoundedCornerShape(20.dp),
+                alpha = 0.3f
+            )
+            .padding(horizontal = 16.dp, vertical = if (fixedHeight) 0.dp else 16.dp)
+
+        SpaceBackground.None -> sizeModifier
+            .padding(horizontal = 16.dp)
+            .background(
+                color = colorResource(id = R.color.background_secondary),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .padding(horizontal = 16.dp, vertical = if (fixedHeight) 0.dp else 16.dp)
+    }
+}
+
+@Composable
 fun VaultChatSpaceCard(
     modifier: Modifier = Modifier,
     title: String,
@@ -129,6 +168,7 @@ fun VaultChatSpaceCard(
     expandedSpaceId: String? = null,
     isLastMessageOutgoing: Boolean = false,
     isLastMessageSynced: Boolean = true,
+    isCompactMode: Boolean = false,
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
     onUnmuteSpace: (Id) -> Unit = {},
@@ -137,39 +177,12 @@ fun VaultChatSpaceCard(
     onSpaceSettings: (Id) -> Unit = {},
     onDeleteOrLeaveSpace: (Id, Boolean) -> Unit = { _, _ -> }
 ) {
+    val hasUnread = unreadMessageCount > 0 || unreadMentionCount > 0
+    val iconSize = if (isCompactMode) 44.dp else 64.dp
 
-    val updatedModifier = when (spaceBackground) {
-        is SpaceBackground.SolidColor -> modifier
-            .fillMaxSize()
-            .height(96.dp)
-            .padding(horizontal = 16.dp)
-            .background(
-                color = spaceBackground.color.copy(alpha = 0.3f),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .padding(horizontal = 16.dp)
-
-        is SpaceBackground.Gradient -> modifier
-            .fillMaxSize()
-            .height(96.dp)
-            .padding(horizontal = 16.dp)
-            .background(
-                brush = spaceBackground.brush,
-                shape = RoundedCornerShape(20.dp),
-                alpha = 0.3f
-            )
-            .padding(horizontal = 16.dp)
-
-        SpaceBackground.None -> Modifier
-            .fillMaxSize()
-            .height(96.dp)
-            .padding(horizontal = 16.dp)
-            .background(
-                color = colorResource(id = R.color.background_secondary),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .padding(horizontal = 16.dp)
-    }
+    val updatedModifier = vaultCardBackgroundModifier(
+        modifier, spaceBackground, fixedHeight = !isCompactMode
+    )
 
     Row(
         modifier = updatedModifier,
@@ -177,30 +190,45 @@ fun VaultChatSpaceCard(
     ) {
         SpaceIconView(
             icon = icon,
-            mainSize = 64.dp,
+            mainSize = iconSize,
             modifier = Modifier
         )
         val shouldShowAsMuted = spaceView.spaceNotificationState == NotificationState.DISABLE ||
                 spaceView.spaceNotificationState == NotificationState.MENTIONS
 
-        ContentChat(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 12.dp),
-            title = title.ifEmpty { stringResource(id = R.string.untitled) },
-            subtitle = messageText ?: chatPreview?.message?.content?.text.orEmpty(),
-            creatorName = creatorName,
-            messageText = messageText,
-            messageTime = messageTime,
-            chatPreview = chatPreview,
-            unreadMessageCount = unreadMessageCount,
-            unreadMentionCount = unreadMentionCount,
-            attachmentPreviews = attachmentPreviews,
-            isMuted = spaceView.spaceNotificationState == NotificationState.DISABLE,
-            spaceNotificationState = spaceView.spaceNotificationState,
-            isPinned = isPinned,
-            showPendingIndicator = isLastMessageOutgoing && !isLastMessageSynced
-        )
+        if (isCompactMode && !hasUnread) {
+            // Compact read state: name only
+            Text(
+                text = title.ifEmpty { stringResource(id = R.string.untitled) },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 12.dp),
+                style = BodySemiBold,
+                color = colorResource(id = R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        } else {
+            ContentChat(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp),
+                title = title.ifEmpty { stringResource(id = R.string.untitled) },
+                subtitle = messageText ?: chatPreview?.message?.content?.text.orEmpty(),
+                creatorName = creatorName,
+                messageText = messageText,
+                messageTime = messageTime,
+                chatPreview = chatPreview,
+                unreadMessageCount = unreadMessageCount,
+                unreadMentionCount = unreadMentionCount,
+                attachmentPreviews = attachmentPreviews,
+                isMuted = spaceView.spaceNotificationState == NotificationState.DISABLE,
+                spaceNotificationState = spaceView.spaceNotificationState,
+                isPinned = isPinned,
+                showPendingIndicator = isLastMessageOutgoing && !isLastMessageSynced,
+                isCompactMode = isCompactMode
+            )
+        }
 
         // Include dropdown menu inside the card
         SpaceActionsDropdownMenu(
@@ -234,7 +262,7 @@ fun VaultChatSpaceCard(
 }
 
 @Composable
-private fun RowScope.ContentChat(
+private fun ContentChat(
     modifier: Modifier,
     title: String,
     subtitle: String,
@@ -248,7 +276,8 @@ private fun RowScope.ContentChat(
     isMuted: Boolean? = null,
     spaceNotificationState: NotificationState? = null,
     isPinned: Boolean = false,
-    showPendingIndicator: Boolean = false
+    showPendingIndicator: Boolean = false,
+    isCompactMode: Boolean = false
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
         val hasContent = !creatorName.isNullOrEmpty() ||
@@ -291,7 +320,8 @@ private fun RowScope.ContentChat(
                 unreadMessageCount = unreadMessageCount,
                 unreadMentionCount = unreadMentionCount,
                 notificationMode = spaceNotificationState,
-                isPinned = isPinned
+                isPinned = isPinned,
+                maxLines = if (isCompactMode) 1 else 2
             )
         }
     }
@@ -307,7 +337,8 @@ private fun ChatSubtitleRow(
     unreadMessageCount: Int,
     unreadMentionCount: Int,
     notificationMode: NotificationState? = null,
-    isPinned: Boolean
+    isPinned: Boolean,
+    maxLines: Int = 2
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -333,7 +364,7 @@ private fun ChatSubtitleRow(
             text = chatText,
             inlineContent = inlineContent,
             modifier = Modifier.weight(1f),
-            maxLines = 2,
+            maxLines = maxLines,
             lineHeight = 20.sp,
             overflow = TextOverflow.Ellipsis,
             color = textColor,

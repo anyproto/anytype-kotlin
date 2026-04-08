@@ -39,6 +39,8 @@ import com.anytypeio.anytype.persistence.preferences.VAULT_PREFERENCE_FILENAME
 import com.anytypeio.anytype.persistence.preferences.VaultPrefsSerializer
 import com.anytypeio.anytype.persistence.preferences.WallpaperMigration
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -50,6 +52,10 @@ class DefaultUserSettingsCache(
     private val appDefaultDateFormatProvider: AppDefaultDateFormatProvider,
     private val osWidgetDataCleaner: OsWidgetDataCleaner = OsWidgetDataCleaner.NoOp
 ) : UserSettingsCache {
+
+    private val _compactModeFlow = MutableStateFlow(
+        prefs.getBoolean(COMPACT_MODE_ENABLED_KEY, false)
+    )
 
     //region Vault default settings
     fun initialVaultSettings(): VaultPreference {
@@ -791,7 +797,10 @@ class DefaultUserSettingsCache(
         prefs.edit()
             .putBoolean(COMPACT_MODE_ENABLED_KEY, enabled)
             .apply()
+        _compactModeFlow.value = enabled
     }
+
+    override fun observeCompactModeEnabled(): Flow<Boolean> = _compactModeFlow.asStateFlow()
 
     override suspend fun getInstalledAtDate(account: Account): Long? {
         return context.vaultPrefsStore

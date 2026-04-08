@@ -1,17 +1,14 @@
 package com.anytypeio.anytype.feature_vault.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,6 +29,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.AttachmentPreview
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.feature_vault.R
@@ -54,6 +52,7 @@ fun VaultOneToOneSpaceCard(
     expandedSpaceId: String? = null,
     isLastMessageOutgoing: Boolean = false,
     isLastMessageSynced: Boolean = true,
+    isCompactMode: Boolean = false,
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
     onUnmuteSpace: (Id) -> Unit = {},
@@ -62,39 +61,12 @@ fun VaultOneToOneSpaceCard(
     onSpaceSettings: (Id) -> Unit = {},
     onDeleteOrLeaveSpace: (Id, Boolean) -> Unit = { _, _ -> }
 ) {
+    val hasUnread = unreadMessageCount > 0 || unreadMentionCount > 0
+    val iconSize = if (isCompactMode) 44.dp else 64.dp
 
-    val updatedModifier = when (spaceBackground) {
-        is SpaceBackground.SolidColor -> modifier
-            .fillMaxSize()
-            .height(96.dp)
-            .padding(horizontal = 16.dp)
-            .background(
-                color = spaceBackground.color.copy(alpha = 0.3f),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .padding(horizontal = 16.dp)
-
-        is SpaceBackground.Gradient -> modifier
-            .fillMaxSize()
-            .height(96.dp)
-            .padding(horizontal = 16.dp)
-            .background(
-                brush = spaceBackground.brush,
-                shape = RoundedCornerShape(20.dp),
-                alpha = 0.3f
-            )
-            .padding(horizontal = 16.dp)
-
-        SpaceBackground.None -> Modifier
-            .fillMaxSize()
-            .height(96.dp)
-            .padding(horizontal = 16.dp)
-            .background(
-                color = colorResource(id = R.color.background_secondary),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .padding(horizontal = 16.dp)
-    }
+    val updatedModifier = vaultCardBackgroundModifier(
+        modifier, spaceBackground, fixedHeight = !isCompactMode
+    )
 
     Row(
         modifier = updatedModifier,
@@ -102,30 +74,45 @@ fun VaultOneToOneSpaceCard(
     ) {
         SpaceIconView(
             icon = icon,
-            mainSize = 64.dp,
+            mainSize = iconSize,
             modifier = Modifier
         )
         val shouldShowAsMuted = spaceView.spaceNotificationState == NotificationState.DISABLE ||
                 spaceView.spaceNotificationState == NotificationState.MENTIONS
 
-        // For ONE_TO_ONE spaces, we never show the creator name
-        ContentOneToOne(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 12.dp),
-            title = title.ifEmpty { stringResource(id = R.string.untitled) },
-            subtitle = messageText ?: chatPreview?.message?.content?.text.orEmpty(),
-            messageText = messageText,
-            messageTime = messageTime,
-            chatPreview = chatPreview,
-            unreadMessageCount = unreadMessageCount,
-            unreadMentionCount = unreadMentionCount,
-            attachmentPreviews = attachmentPreviews,
-            isMuted = spaceView.spaceNotificationState == NotificationState.DISABLE,
-            spaceNotificationState = spaceView.spaceNotificationState,
-            isPinned = isPinned,
-            showPendingIndicator = isLastMessageOutgoing && !isLastMessageSynced
-        )
+        if (isCompactMode && !hasUnread) {
+            // Compact read state: name only
+            Text(
+                text = title.ifEmpty { stringResource(id = R.string.untitled) },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 12.dp),
+                style = BodySemiBold,
+                color = colorResource(id = R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        } else {
+            // For ONE_TO_ONE spaces, we never show the creator name
+            ContentOneToOne(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 12.dp),
+                title = title.ifEmpty { stringResource(id = R.string.untitled) },
+                subtitle = messageText ?: chatPreview?.message?.content?.text.orEmpty(),
+                messageText = messageText,
+                messageTime = messageTime,
+                chatPreview = chatPreview,
+                unreadMessageCount = unreadMessageCount,
+                unreadMentionCount = unreadMentionCount,
+                attachmentPreviews = attachmentPreviews,
+                isMuted = spaceView.spaceNotificationState == NotificationState.DISABLE,
+                spaceNotificationState = spaceView.spaceNotificationState,
+                isPinned = isPinned,
+                showPendingIndicator = isLastMessageOutgoing && !isLastMessageSynced,
+                isCompactMode = isCompactMode
+            )
+        }
 
         // Include dropdown menu inside the card
         SpaceActionsDropdownMenu(
@@ -172,7 +159,8 @@ private fun ContentOneToOne(
     isMuted: Boolean? = null,
     spaceNotificationState: NotificationState? = null,
     isPinned: Boolean = false,
-    showPendingIndicator: Boolean = false
+    showPendingIndicator: Boolean = false,
+    isCompactMode: Boolean = false
 ) {
     Column(
         modifier = modifier,
@@ -216,7 +204,8 @@ private fun ContentOneToOne(
                 unreadMessageCount = unreadMessageCount,
                 unreadMentionCount = unreadMentionCount,
                 notificationMode = spaceNotificationState,
-                isPinned = isPinned
+                isPinned = isPinned,
+                maxLines = if (isCompactMode) 1 else 2
             )
         }
     }
@@ -231,7 +220,8 @@ private fun OneToOneSubtitleRow(
     unreadMessageCount: Int,
     unreadMentionCount: Int,
     notificationMode: NotificationState? = null,
-    isPinned: Boolean
+    isPinned: Boolean,
+    maxLines: Int = 2
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -259,7 +249,7 @@ private fun OneToOneSubtitleRow(
             text = chatText,
             inlineContent = inlineContent,
             modifier = Modifier.weight(1f),
-            maxLines = 2,
+            maxLines = maxLines,
             lineHeight = 20.sp,
             overflow = TextOverflow.Ellipsis,
             color = textColor,

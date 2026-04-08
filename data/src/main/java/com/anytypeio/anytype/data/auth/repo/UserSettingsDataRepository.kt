@@ -193,6 +193,10 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         cache.setCompactModeEnabled(enabled)
     }
 
+    override fun observeCompactModeEnabled(): Flow<Boolean> {
+        return cache.observeCompactModeEnabled()
+    }
+
     override suspend fun getInstalledAtDate(account: Account): Long? {
         return cache.getInstalledAtDate(account)
     }

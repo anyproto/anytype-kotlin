@@ -40,6 +40,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -139,7 +140,8 @@ class VaultViewModel(
     private val osWidgetDataViewSync: OsWidgetDataViewSync,
     private val networkModeProvider: NetworkModeProvider,
     private val getMembershipFeatures: GetMembershipFeatures,
-    private val searchObjects: SearchObjects
+    private val searchObjects: SearchObjects,
+    private val userSettingsRepository: UserSettingsRepository
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -211,6 +213,10 @@ class VaultViewModel(
 
     private val _uiState = MutableStateFlow<VaultUiState>(VaultUiState.Loading)
     val uiState: StateFlow<VaultUiState> = _uiState.asStateFlow()
+
+    val isCompactMode: StateFlow<Boolean> = userSettingsRepository
+        .observeCompactModeEnabled()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val selectMembersUiState: StateFlow<SelectMembersUiState> = combine(
         spaceFlow,

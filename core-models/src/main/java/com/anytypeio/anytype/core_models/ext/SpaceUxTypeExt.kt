@@ -12,13 +12,6 @@ val SpaceUxType?.shouldNavigateDirectlyToChat: Boolean
     get() = this == SpaceUxType.ONE_TO_ONE
 
 /**
- * Whether to show message author name in chat preview.
- * In ONE_TO_ONE spaces, the author is always the other person, so it's redundant.
- */
-val SpaceUxType?.shouldShowMessageAuthorInPreview: Boolean
-    get() = this != SpaceUxType.ONE_TO_ONE
-
-/**
  * Whether to show the member count for this space type.
  * In ONE_TO_ONE spaces, there can only be two people, so showing the count is redundant.
  */
@@ -43,10 +36,6 @@ val SpaceUxType?.canCreateAdditionalChats: Boolean
 /** @see SpaceUxType.shouldNavigateDirectlyToChat */
 val ObjectWrapper.SpaceView.shouldNavigateDirectlyToChat: Boolean
     get() = isOneToOneSpace
-
-/** @see SpaceUxType.shouldShowMessageAuthorInPreview */
-val ObjectWrapper.SpaceView.shouldShowMessageAuthorInPreview: Boolean
-    get() = !isOneToOneSpace
 
 /** @see SpaceUxType.shouldShowMemberCount */
 val ObjectWrapper.SpaceView.shouldShowMemberCount: Boolean

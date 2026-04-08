@@ -213,6 +213,8 @@ object Relations {
         "imageKind",
         "importType",
         "spaceAccessType",
+        "spaceUxType",
+        "spaceType",
         "spaceInviteFileCid",
         "spaceInviteFileKey",
         "readersLimit",

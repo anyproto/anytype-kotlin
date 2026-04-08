@@ -423,10 +423,38 @@ sealed class ObjectWrapper {
             return spaceAccessType == SpaceAccessType.SHARED
         }
 
+        /**
+         * True iff this space is a one-to-one (DM) space.
+         *
+         * Reads the new [spaceType] relation when available and falls back to
+         * the legacy [spaceUxType] when [spaceType] is `null` or
+         * [SpaceType.UNKNOWN]. The fallback covers two cases:
+         *  1. **Stale on-disk records** that haven't been re-derived by
+         *     middleware since the new relation was added.
+         *  2. **Bootstrap window** before middleware starts populating
+         *     [Relations.SPACE_TYPE] in the global space-view subscription.
+         *
+         * When [spaceType] is set to a concrete non-[SpaceType.UNKNOWN] value,
+         * it wins over [spaceUxType] — middleware is the source of truth.
+         */
         val isOneToOneSpace: Boolean get() {
             return when (spaceType) {
                 SpaceType.ONE_TO_ONE -> true
                 null, SpaceType.UNKNOWN -> spaceUxType == SpaceUxType.ONE_TO_ONE
+                else -> false
+            }
+        }
+
+        /**
+         * True iff this space is a chat-first ("Stream UX") space.
+         *
+         * Mirrors [isOneToOneSpace] for the [SpaceType.CHAT] /
+         * [SpaceUxType.CHAT] pair, with the same fallback semantics.
+         */
+        val isChatSpace: Boolean get() {
+            return when (spaceType) {
+                SpaceType.CHAT -> true
+                null, SpaceType.UNKNOWN -> spaceUxType == SpaceUxType.CHAT
                 else -> false
             }
         }

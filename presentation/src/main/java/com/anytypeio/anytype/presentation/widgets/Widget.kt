@@ -544,7 +544,7 @@ private fun buildChatWidget(
 ): Widget.Chat? {
     val spaceChatId = spaceView.chatId
     return if (!spaceChatId.isNullOrEmpty()
-        && !spaceView.spaceUxType.canCreateAdditionalChats
+        && !spaceView.canCreateAdditionalChats
     ) {
         Widget.Chat(config = state.config)
     } else {

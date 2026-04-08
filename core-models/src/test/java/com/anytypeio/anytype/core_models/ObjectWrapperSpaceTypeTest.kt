@@ -158,4 +158,71 @@ class ObjectWrapperSpaceTypeTest {
         )
         assertFalse(view.isOneToOneSpace)
     }
+
+    // region isChatSpace
+
+    @Test
+    fun `isChatSpace is true when spaceType is CHAT`() {
+        val view = ObjectWrapper.SpaceView(
+            map = mapOf<String, Any?>(
+                Relations.SPACE_TYPE to SpaceType.CHAT.code.toDouble()
+            )
+        )
+        assertTrue(view.isChatSpace)
+    }
+
+    @Test
+    fun `isChatSpace falls back to spaceUxType when spaceType is null`() {
+        val view = ObjectWrapper.SpaceView(
+            map = mapOf<String, Any?>(
+                Relations.SPACE_UX_TYPE to SpaceUxType.CHAT.code.toDouble()
+            )
+        )
+        assertNull(view.spaceType)
+        assertTrue(view.isChatSpace)
+    }
+
+    @Test
+    fun `isChatSpace falls back to spaceUxType when spaceType is UNKNOWN`() {
+        val view = ObjectWrapper.SpaceView(
+            map = mapOf<String, Any?>(
+                Relations.SPACE_TYPE to SpaceType.UNKNOWN.code.toDouble(),
+                Relations.SPACE_UX_TYPE to SpaceUxType.CHAT.code.toDouble()
+            )
+        )
+        assertTrue(view.isChatSpace)
+    }
+
+    @Test
+    fun `isChatSpace returns false when spaceType REGULAR even if spaceUxType CHAT`() {
+        val view = ObjectWrapper.SpaceView(
+            map = mapOf<String, Any?>(
+                Relations.SPACE_TYPE to SpaceType.REGULAR.code.toDouble(),
+                Relations.SPACE_UX_TYPE to SpaceUxType.CHAT.code.toDouble()
+            )
+        )
+        assertFalse(view.isChatSpace)
+    }
+
+    @Test
+    fun `isChatSpace is false for ONE_TO_ONE space`() {
+        val view = ObjectWrapper.SpaceView(
+            map = mapOf<String, Any?>(
+                Relations.SPACE_TYPE to SpaceType.ONE_TO_ONE.code.toDouble()
+            )
+        )
+        assertFalse(view.isChatSpace)
+    }
+
+    @Test
+    fun `isChatSpace is false when relation is absent and spaceUxType is DATA`() {
+        val view = ObjectWrapper.SpaceView(
+            map = mapOf<String, Any?>(
+                Relations.SPACE_UX_TYPE to SpaceUxType.DATA.code.toDouble()
+            )
+        )
+        assertFalse(view.isChatSpace)
+    }
+
+    // endregion
 }

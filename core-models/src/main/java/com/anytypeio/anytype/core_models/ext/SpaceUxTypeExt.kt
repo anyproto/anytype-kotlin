@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_models.ext
 
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 
 /**
@@ -30,3 +31,29 @@ val SpaceUxType?.shouldShowMemberCount: Boolean
  */
 val SpaceUxType?.canCreateAdditionalChats: Boolean
     get() = this != SpaceUxType.CHAT && this != SpaceUxType.ONE_TO_ONE
+
+// region ObjectWrapper.SpaceView extensions
+//
+// These mirror the SpaceUxType?-receiver helpers above but route through
+// ObjectWrapper.SpaceView, so they automatically respect the new
+// `spaceType` relation (with the legacy `spaceUxType` fallback baked into
+// `isOneToOneSpace` / `isChatSpace`). Prefer these helpers in any call
+// site that has the full SpaceView in scope.
+
+/** @see SpaceUxType.shouldNavigateDirectlyToChat */
+val ObjectWrapper.SpaceView.shouldNavigateDirectlyToChat: Boolean
+    get() = isOneToOneSpace
+
+/** @see SpaceUxType.shouldShowMessageAuthorInPreview */
+val ObjectWrapper.SpaceView.shouldShowMessageAuthorInPreview: Boolean
+    get() = !isOneToOneSpace
+
+/** @see SpaceUxType.shouldShowMemberCount */
+val ObjectWrapper.SpaceView.shouldShowMemberCount: Boolean
+    get() = !isOneToOneSpace
+
+/** @see SpaceUxType.canCreateAdditionalChats */
+val ObjectWrapper.SpaceView.canCreateAdditionalChats: Boolean
+    get() = !isChatSpace && !isOneToOneSpace
+
+// endregion

@@ -235,23 +235,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         runCatching {
                                             val controller = findNavController(R.id.fragment)
                                             controller.popBackStack(R.id.vaultScreen, false)
-                                            if (effect.chat != null && effect.spaceUxType == SpaceUxType.CHAT) {
-                                                controller.navigate(
-                                                    R.id.actionOpenChatFromVault,
-                                                    ChatFragment.args(
-                                                        space = command.space,
-                                                        ctx = effect.chat.orEmpty()
-                                                    )
+                                            controller.navigate(
+                                                R.id.actionOpenSpaceFromVault,
+                                                WidgetsScreenFragment.args(
+                                                    space = command.space,
+                                                    deeplink = null
                                                 )
-                                            } else {
-                                                controller.navigate(
-                                                    R.id.actionOpenSpaceFromVault,
-                                                    WidgetsScreenFragment.args(
-                                                        space = command.space,
-                                                        deeplink = null
-                                                    )
-                                                )
-                                            }
+                                            )
                                             proceedWithOpenObjectNavigation(command.navigation)
                                         }.onFailure {
                                             Timber.e(it, "Error while switching space when handling deep link to object")

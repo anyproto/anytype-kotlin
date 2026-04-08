@@ -753,11 +753,7 @@ class MainViewModel(
                 val home = config.home
                 val spaceView = spaceViews
                     .get(deeplink.space)
-                val chat = spaceView?.chatId?.ifEmpty { null }
-                val sideEffect = Command.Deeplink.DeepLinkToObject.SideEffect.SwitchSpace(
-                    chat = chat,
-                    home = home
-                )
+                val sideEffect = Command.Deeplink.DeepLinkToObject.SideEffect.SwitchSpace(home = home)
                 viewModelScope.sendEvent(
                     analytics = analytics,
                     eventName = EventsDictionary.openObjectByLink,
@@ -975,11 +971,7 @@ class MainViewModel(
                 val sideEffect: SideEffect? = null
             ) : Deeplink() {
                 sealed class SideEffect {
-                    data class SwitchSpace(
-                        val home: Id,
-                        val chat: Id? = null,
-                        val spaceUxType: SpaceUxType? = null
-                    ) : SideEffect()
+                    data class SwitchSpace(val home: Id) : SideEffect()
                 }
             }
 

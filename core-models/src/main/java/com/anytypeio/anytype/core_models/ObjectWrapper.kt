@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ext.typeOf
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
@@ -373,6 +374,14 @@ sealed class ObjectWrapper {
                     .firstOrNull { it.code == code?.toInt() }
             }
 
+        val spaceType: SpaceType?
+            get() {
+                val code = getValue<Double?>(Relations.SPACE_TYPE)
+                return SpaceType
+                    .entries
+                    .firstOrNull { it.code == code?.toInt() }
+            }
+
         val writersLimit: Double? get() = getSingleValue(Relations.WRITERS_LIMIT)
         val readersLimit: Double? get() = getSingleValue(Relations.READERS_LIMIT)
 
@@ -415,7 +424,11 @@ sealed class ObjectWrapper {
         }
 
         val isOneToOneSpace: Boolean get() {
-            return spaceUxType == SpaceUxType.ONE_TO_ONE
+            return when (spaceType) {
+                SpaceType.ONE_TO_ONE -> true
+                null, SpaceType.UNKNOWN -> spaceUxType == SpaceUxType.ONE_TO_ONE
+                else -> false
+            }
         }
 
         val oneToOneIdentity: Id? get() = getSingleValue(Relations.ONE_TO_ONE_IDENTITY)

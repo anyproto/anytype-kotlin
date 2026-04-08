@@ -66,6 +66,14 @@ enum class SpaceUxType(val code: Int) {
     ONE_TO_ONE(4)
 }
 
+enum class SpaceType(val code: Int) {
+    UNKNOWN(0),
+    REGULAR(1),
+    TECH(2),
+    CHAT(3),
+    ONE_TO_ONE(4)
+}
+
 enum class ChannelCreationType {
     PERSONAL,
     GROUP

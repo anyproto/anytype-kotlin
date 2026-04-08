@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature.spaces
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -59,4 +60,5 @@ interface CreateSpaceDependencies : ComponentDependencies {
     fun userSettingsRepo(): UserSettingsRepository
     fun permissions(): UserPermissionProvider
     fun profileContainer(): ProfileSubscriptionManager
+    fun urlBuilder(): UrlBuilder
 }

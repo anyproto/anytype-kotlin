@@ -52,6 +52,7 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
             RelationFormat.EMOJI -> context.getString(R.string.relation_format_emoji)
             RelationFormat.OBJECT -> context.getString(R.string.relation_format_object)
             RelationFormat.RELATIONS -> context.getString(R.string.relation_format_relation)
+            RelationFormat.MAP -> context.getString(R.string.undefined)
             RelationFormat.UNDEFINED -> context.getString(R.string.undefined)
         }
     }
@@ -139,5 +140,9 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
 
     override fun getDeletedTypeName(): String {
         return context.getString(LocalizationR.string.deleted_type)
+    }
+
+    override fun getChannelMembersSubtitle(editors: Int, writersLimit: Int, viewers: Int, readersLimit: Int): String {
+        return context.getString(LocalizationR.string.channel_members_subtitle, editors, writersLimit, viewers, readersLimit)
     }
 }

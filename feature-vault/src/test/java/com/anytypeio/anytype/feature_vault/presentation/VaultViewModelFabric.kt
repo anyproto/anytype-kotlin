@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
@@ -31,6 +32,8 @@ import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
+import com.anytypeio.anytype.domain.payments.GetMembershipFeatures
 import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
@@ -86,6 +89,9 @@ object VaultViewModelFabric {
         deepLinkResolver: DeepLinkResolver = mock(),
         osWidgetSpacesSync: OsWidgetSpacesSync = mock(),
         osWidgetDataViewSync: OsWidgetDataViewSync = mock(),
+        networkModeProvider: NetworkModeProvider = mock(),
+        getMembershipFeatures: GetMembershipFeatures = mock(),
+        searchObjects: SearchObjects = mock(),
         userSettingsRepository: UserSettingsRepository = mock()
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
@@ -121,6 +127,9 @@ object VaultViewModelFabric {
         configStorage = configStorage,
         osWidgetSpacesSync = osWidgetSpacesSync,
         osWidgetDataViewSync = osWidgetDataViewSync,
+        networkModeProvider = networkModeProvider,
+        getMembershipFeatures = getMembershipFeatures,
+        searchObjects = searchObjects,
         userSettingsRepository = userSettingsRepository
     )
 }

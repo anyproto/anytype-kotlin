@@ -130,6 +130,9 @@ interface MiddlewareService {
     fun objectSetObjectType(request: Rpc.Object.SetObjectType.Request): Rpc.Object.SetObjectType.Response
 
     @Throws(Exception::class)
+    fun workspaceSetHomepage(request: Rpc.Workspace.SetHomepage.Request): Rpc.Workspace.SetHomepage.Response
+
+    @Throws(Exception::class)
     fun objectSetLayout(request: Rpc.Object.SetLayout.Request): Rpc.Object.SetLayout.Response
 
     @Throws(Exception::class)
@@ -562,6 +565,9 @@ interface MiddlewareService {
     fun spaceMakeShareable(request: Rpc.Space.MakeShareable.Request): Rpc.Space.MakeShareable.Response
 
     @Throws(Exception::class)
+    fun spaceParticipantsAddList(request: Rpc.Space.ParticipantsAddList.Request): Rpc.Space.ParticipantsAddList.Response
+
+    @Throws(Exception::class)
     fun spaceParticipantPermissionsChange(request: Rpc.Space.ParticipantPermissionsChange.Request): Rpc.Space.ParticipantPermissionsChange.Response
 
     @Throws(Exception::class)
@@ -626,6 +632,9 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun membershipSubscribeToUpdates(request: Rpc.MembershipV2.SubscribeToUpdates.Request): Rpc.MembershipV2.SubscribeToUpdates.Response
+
+    @Throws(Exception::class)
+    fun membershipV2GetStatus(request: Rpc.MembershipV2.GetStatus.Request): Rpc.MembershipV2.GetStatus.Response
     //endregion
 
     //region VERSION HISTORY
@@ -657,6 +666,7 @@ interface MiddlewareService {
     fun chatUnsubscribeToMessagePreviews(request: Rpc.Chat.UnsubscribeFromMessagePreviews.Request): Rpc.Chat.UnsubscribeFromMessagePreviews.Response
     fun chatReadAll(request: Rpc.Chat.ReadAll.Request): Rpc.Chat.ReadAll.Response
     fun chatSearch(request: Rpc.Chat.Search.Request): Rpc.Chat.Search.Response
+    fun objectDiscussionAdd(request: Rpc.Object.DiscussionAdd.Request): Rpc.Object.DiscussionAdd.Response
 
     //endregion
 

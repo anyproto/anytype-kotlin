@@ -33,8 +33,11 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
+import com.anytypeio.anytype.domain.payments.GetMembershipFeatures
 import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
@@ -122,6 +125,21 @@ object VaultModule {
         repository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): CreateSpace = CreateSpace(repo = repository, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetMembershipFeatures(
+        repository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetMembershipFeatures = GetMembershipFeatures(repo = repository, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSearchObjects(
+        repository: BlockRepository
+    ): SearchObjects = SearchObjects(repo = repository)
 }
 
 interface VaultComponentDependencies : ComponentDependencies {
@@ -155,4 +173,5 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun configStorage(): ConfigStorage
     fun osWidgetSpacesSync(): OsWidgetSpacesSync
     fun osWidgetDataViewSync(): OsWidgetDataViewSync
+    fun networkModeProvider(): NetworkModeProvider
 }

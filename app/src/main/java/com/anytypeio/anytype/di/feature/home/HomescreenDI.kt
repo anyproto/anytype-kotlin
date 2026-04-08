@@ -45,6 +45,7 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
+import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.NotificationsChannel
@@ -236,6 +237,17 @@ object HomeScreenModule {
     @PerScreen
     @Provides
     fun provideSpaceInviteResolver(): SpaceInviteResolver = DefaultSpaceInviteResolver
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun setHomepage(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetHomepage = SetHomepage(
+        repo = repo,
+        dispatchers = dispatchers
+    )
 
     @JvmStatic
     @PerScreen

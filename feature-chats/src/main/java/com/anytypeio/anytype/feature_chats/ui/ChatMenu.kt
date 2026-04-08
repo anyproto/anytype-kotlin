@@ -274,6 +274,170 @@ private fun RowScope.ChatMenuItemContent(
     )
 }
 
+@Composable
+fun BoxScope.SpaceChatMenu(
+    modifier: Modifier = Modifier,
+    expanded: Boolean,
+    currentNotificationSetting: NotificationSetting,
+    showInviteMembers: Boolean = false,
+    showCopyLink: Boolean = false,
+    onDismissRequest: () -> Unit,
+    onSearchClick: () -> Unit,
+    onNotificationSettingChanged: (NotificationSetting) -> Unit,
+    onInviteMembersClick: () -> Unit = {},
+    onCopyLinkClick: () -> Unit = {},
+    onChannelSettingsClick: () -> Unit
+) {
+    var notificationsExpanded by remember { mutableStateOf(false) }
+    val chevronRotation by animateFloatAsState(
+        targetValue = if (notificationsExpanded) 90f else 0f,
+        label = "chevron rotation"
+    )
+    MaterialTheme(
+        shapes = MaterialTheme.shapes.copy(
+            medium = RoundedCornerShape(12.dp)
+        ),
+        colors = MaterialTheme.colors.copy(
+            background = colorResource(id = R.color.background_secondary)
+        )
+    ) {
+        DropdownMenu(
+            modifier = Modifier
+                .defaultMinSize(minWidth = 252.dp)
+                .background(
+                    shape = RoundedCornerShape(12.dp),
+                    color = colorResource(id = R.color.background_secondary)
+                )
+                .align(Alignment.TopEnd),
+            offset = DpOffset((-16).dp, 8.dp),
+            expanded = expanded,
+            onDismissRequest = onDismissRequest,
+            properties = PopupProperties(focusable = false)
+        ) {
+            // Search
+            DropdownMenuItem(
+                content = {
+                    ChatMenuItemContent(
+                        text = stringResource(com.anytypeio.anytype.localization.R.string.search),
+                        iconRes = com.anytypeio.anytype.core_ui.R.drawable.ic_search_18
+                    )
+                },
+                onClick = { onSearchClick() }
+            )
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+
+            // Notifications - expandable
+            DropdownMenuItem(
+                content = {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_arrow_right_18),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
+                        modifier = Modifier
+                            .width(14.dp)
+                            .height(22.dp)
+                            .rotate(chevronRotation)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.notifications_title),
+                        color = colorResource(id = R.color.text_primary),
+                        modifier = Modifier.weight(1f),
+                        style = BodyRegular
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_notifications),
+                        contentDescription = "Notification icon",
+                        colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
+                onClick = { notificationsExpanded = !notificationsExpanded }
+            )
+
+            // Notification sub-items
+            if (notificationsExpanded) {
+                DropdownMenuItem(
+                    content = {
+                        NotificationOptionItem(
+                            text = stringResource(R.string.chat_notifications_receive_all),
+                            isSelected = currentNotificationSetting == NotificationSetting.ALL
+                        )
+                    },
+                    onClick = {
+                        onNotificationSettingChanged(NotificationSetting.ALL)
+                    }
+                )
+
+                DropdownMenuItem(
+                    content = {
+                        NotificationOptionItem(
+                            text = stringResource(R.string.notifications_mentions),
+                            isSelected = currentNotificationSetting == NotificationSetting.MENTIONS
+                        )
+                    },
+                    onClick = {
+                        onNotificationSettingChanged(NotificationSetting.MENTIONS)
+                    }
+                )
+
+                DropdownMenuItem(
+                    content = {
+                        NotificationOptionItem(
+                            text = stringResource(R.string.chat_notifications_mute_all),
+                            isSelected = currentNotificationSetting == NotificationSetting.MUTE
+                        )
+                    },
+                    onClick = {
+                        onNotificationSettingChanged(NotificationSetting.MUTE)
+                    }
+                )
+            }
+
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+
+            // Invite Members - only for CHAT spaces (not 1:1)
+            if (showInviteMembers) {
+                DropdownMenuItem(
+                    content = {
+                        ChatMenuItemContent(
+                            text = stringResource(com.anytypeio.anytype.localization.R.string.space_settings_invite_members),
+                            iconRes = R.drawable.ic_space_settings_invite_members
+                        )
+                    },
+                    onClick = { onInviteMembersClick() }
+                )
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            }
+
+            // Copy Link - only for CHAT spaces (not 1:1)
+            if (showCopyLink) {
+                DropdownMenuItem(
+                    content = {
+                        ChatMenuItemContent(
+                            text = stringResource(com.anytypeio.anytype.localization.R.string.copy_link),
+                            iconRes = com.anytypeio.anytype.core_ui.R.drawable.ic_copy_link_24
+                        )
+                    },
+                    onClick = { onCopyLinkClick() }
+                )
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            }
+
+            // Channel Settings
+            DropdownMenuItem(
+                content = {
+                    ChatMenuItemContent(
+                        text = stringResource(com.anytypeio.anytype.localization.R.string.space_settings),
+                        iconRes = com.anytypeio.anytype.core_ui.R.drawable.ic_space_settings_24
+                    )
+                },
+                onClick = { onChannelSettingsClick() }
+            )
+        }
+    }
+}
+
 @DefaultPreviews
 @Composable
 fun ChatMenuPreview() {

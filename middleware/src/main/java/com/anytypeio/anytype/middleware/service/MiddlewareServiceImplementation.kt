@@ -1180,6 +1180,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun workspaceSetHomepage(request: Rpc.Workspace.SetHomepage.Request): Rpc.Workspace.SetHomepage.Response {
+        val encoded = Service.workspaceSetHomepage(
+            Rpc.Workspace.SetHomepage.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Workspace.SetHomepage.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Workspace.SetHomepage.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun objectShow(request: Rpc.Object.Show.Request): Rpc.Object.Show.Response {
         val encoded = Service.objectShow(Rpc.Object.Show.Request.ADAPTER.encode(request))
         val response = Rpc.Object.Show.Response.ADAPTER.decode(encoded)
@@ -2123,6 +2136,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun spaceParticipantsAddList(request: Rpc.Space.ParticipantsAddList.Request): Rpc.Space.ParticipantsAddList.Response {
+        val encoded = Service.spaceParticipantsAddList(
+            Rpc.Space.ParticipantsAddList.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.ParticipantsAddList.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.ParticipantsAddList.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun spaceParticipantPermissionsChange(request: Rpc.Space.ParticipantPermissionsChange.Request): Rpc.Space.ParticipantPermissionsChange.Response {
         val encoded = Service.spaceParticipantPermissionsChange(
             Rpc.Space.ParticipantPermissionsChange.Request.ADAPTER.encode(request)
@@ -2437,6 +2463,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun membershipV2GetStatus(request: Rpc.MembershipV2.GetStatus.Request): Rpc.MembershipV2.GetStatus.Response {
+        val encoded = Service.membershipV2GetStatus(
+            Rpc.MembershipV2.GetStatus.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.MembershipV2.GetStatus.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.MembershipV2.GetStatus.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun getVersions(request: Rpc.History.GetVersions.Request): Rpc.History.GetVersions.Response {
         val encoded = Service.historyGetVersions(
             Rpc.History.GetVersions.Request.ADAPTER.encode(request)
@@ -2548,6 +2587,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Chat.Search.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Chat.Search.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectDiscussionAdd(request: Rpc.Object.DiscussionAdd.Request): Rpc.Object.DiscussionAdd.Response {
+        val encoded = Service.objectAddDiscussion(
+            Rpc.Object.DiscussionAdd.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.DiscussionAdd.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.DiscussionAdd.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

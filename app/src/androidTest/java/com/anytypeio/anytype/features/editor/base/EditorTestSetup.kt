@@ -521,7 +521,8 @@ open class EditorTestSetup {
             fieldParser = fieldParser,
             dateProvider = dateProvider,
             spaceViews = spacedViews,
-            urlHelper = urlHelper
+            urlHelper = urlHelper,
+            addDiscussion = mock()
         )
     }
 

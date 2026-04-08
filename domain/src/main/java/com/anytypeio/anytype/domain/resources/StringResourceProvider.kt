@@ -30,4 +30,5 @@ interface StringResourceProvider {
     fun getMultiplayerApprove(): String
     fun getAdvancedFilterTitle(): String
     fun getDeletedTypeName(): String
+    fun getChannelMembersSubtitle(editors: Int, writersLimit: Int, viewers: Int, readersLimit: Int): String
 }

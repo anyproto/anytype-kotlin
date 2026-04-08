@@ -38,6 +38,7 @@ import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipFeatures
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
@@ -746,6 +747,10 @@ class BlockMiddleware(
         )
     }
 
+    override suspend fun setHomepage(command: Command.SetHomepage) {
+        middleware.workspaceSetHomepage(command)
+    }
+
     override suspend fun deleteSpace(space: SpaceId) {
         middleware.spaceDelete(space)
     }
@@ -964,6 +969,14 @@ class BlockMiddleware(
         )
     }
 
+    override suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>, permissions: SpaceMemberPermissions) {
+        middleware.addSpaceMembers(
+            space = space,
+            identities = identities,
+            permissions = permissions
+        )
+    }
+
     override suspend fun changeSpaceMemberPermissions(
         space: SpaceId,
         identity: Id,
@@ -1016,6 +1029,10 @@ class BlockMiddleware(
 
     override suspend fun membershipStatus(command: Command.Membership.GetStatus): Membership? {
         return middleware.membershipStatus(command)
+    }
+
+    override suspend fun membershipV2GetFeatures(): MembershipFeatures {
+        return middleware.membershipV2GetFeatures()
     }
 
     override suspend fun membershipIsNameValid(command: Command.Membership.IsNameValid) {
@@ -1076,6 +1093,10 @@ class BlockMiddleware(
 
     override suspend fun objectTypesSetOrder(command: Command.ObjectTypesSetOrder): List<String> {
         return middleware.objectTypesSetOrder(command)
+    }
+
+    override suspend fun addDiscussion(objectId: Id): Id {
+        return middleware.objectDiscussionAdd(objectId)
     }
 
     override suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Pair<Id, List<Event.Command.Chats>> {

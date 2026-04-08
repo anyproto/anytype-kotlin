@@ -50,6 +50,7 @@ import com.anytypeio.anytype.core_models.history.Version
 import com.anytypeio.anytype.core_models.membership.EmailVerificationStatus
 import com.anytypeio.anytype.core_models.membership.GetPaymentUrlResponse
 import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipFeatures
 import com.anytypeio.anytype.core_models.membership.MembershipTierData
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
@@ -104,7 +105,8 @@ class Middleware @Inject constructor(
             avatarLocalPath = command.avatarPath,
             icon = command.icon.toLong(),
             networkMode = command.networkMode.toMiddlewareModel(),
-            networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty()
+            networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty(),
+            enableMembershipV2 = true
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.accountCreate(request) }
@@ -124,7 +126,8 @@ class Middleware @Inject constructor(
             rootPath = command.path,
             networkMode = networkMode,
             networkCustomConfigFilePath = networkCustomConfigFilePath,
-            preferYamuxTransport = command.preferYamuxTransport ?: false
+            preferYamuxTransport = command.preferYamuxTransport ?: false,
+            enableMembershipV2 = true
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.accountSelect(request) }
@@ -2128,6 +2131,17 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun workspaceSetHomepage(command: Command.SetHomepage) {
+        val request = Rpc.Workspace.SetHomepage.Request(
+            spaceId = command.spaceId,
+            homepage = command.homepage
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.workspaceSetHomepage(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
     fun workspaceObjectListAdd(objects: List<Id>, space: Id): List<Id> {
         val request = Rpc.Workspace.Object.ListAdd.Request(
             objectIds = objects,
@@ -2605,6 +2619,22 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun addSpaceMembers(
+        space: SpaceId,
+        identities: List<Id>,
+        permissions: SpaceMemberPermissions
+    ) {
+        val request = Rpc.Space.ParticipantsAddList.Request(
+            spaceId = space.id,
+            identities = identities,
+            permissions = permissions.toMw()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.spaceParticipantsAddList(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
     fun changeSpaceMemberPermissions(space: SpaceId, identity: Id, permission: SpaceMemberPermissions) {
         val request = Rpc.Space.ParticipantPermissionsChange.Request(
             spaceId = space.id,
@@ -2846,6 +2876,21 @@ class Middleware @Inject constructor(
     }
 
     @Throws
+    fun membershipV2GetFeatures(noCache: Boolean = false): MembershipFeatures {
+        val request = Rpc.MembershipV2.GetStatus.Request(noCache = noCache)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipV2GetStatus(request) }
+        logResponseIfDebug(response, time)
+        val features = response.data_?.products
+            ?.firstOrNull()?.product?.features
+        return MembershipFeatures(
+            spaceWriters = features?.spaceWriters ?: 0,
+            spaceReaders = features?.spaceReaders ?: 0,
+            sharedSpaces = features?.sharedSpaces ?: 0
+        )
+    }
+
+    @Throws
     fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode) {
         val request = Rpc.Membership.VerifyEmailCode.Request(
             code = command.code
@@ -2930,6 +2975,14 @@ class Middleware @Inject constructor(
     }
 
     @Throws
+    fun objectDiscussionAdd(objectId: Id): Id {
+        val request = Rpc.Object.DiscussionAdd.Request(objectId = objectId)
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectDiscussionAdd(request) }
+        logResponseIfDebug(response, time)
+        return response.discussionId
+    }
+
     fun chatAddMessage(command: Command.ChatCommand.AddMessage) : Pair<Id, List<Event.Command.Chats>> {
         val request = Rpc.Chat.AddMessage.Request(
             chatObjectId = command.chat,

@@ -8,6 +8,7 @@ object Relations {
 
     const val ID = "id"
     const val CHAT_ID = "chatId"
+    const val DISCUSSION_ID = "discussionId"
     const val COVER = "cover"
     const val COVER_TYPE = "coverType"
     const val COVER_ID = "coverId"
@@ -102,7 +103,7 @@ object Relations {
     const val PARTICIPANT_STATUS = "participantStatus"
     const val PARTICIPANT_PERMISSIONS = "participantPermissions"
     const val SPACE_ACCESS_TYPE = "spaceAccessType"
-    const val SPACE_DASHBOARD_ID = "spaceDashboardId"
+    const val SPACE_HOMEPAGE = "homepage"
     const val ONE_TO_ONE_IDENTITY = "oneToOneIdentity"
     const val ONE_TO_ONE_REQUEST_METADATA = "oneToOneRequestMetadataKey"
     const val IDENTITY = "identity"
@@ -191,6 +192,7 @@ object Relations {
         "sizeInBytes",
         "oldAnytypeID",
         "spaceDashboardId",
+        "homepage",
         "recommendedRelations",
         "iconOption",
         "widthInPixels",

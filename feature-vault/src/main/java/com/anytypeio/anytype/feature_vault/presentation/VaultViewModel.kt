@@ -8,6 +8,9 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -21,10 +24,12 @@ import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.ChannelCreationType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.AccountProfile
 import com.anytypeio.anytype.core_models.ui.AttachmentPreview
+import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 import com.anytypeio.anytype.core_models.ui.computeWallpaperResult
 import com.anytypeio.anytype.core_models.ui.profileIcon
 import com.anytypeio.anytype.core_models.ui.spaceIcon
@@ -45,6 +50,7 @@ import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
 import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator.calculateChatNotificationState
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.`object`.resolveParticipantName
@@ -52,6 +58,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
@@ -60,6 +67,9 @@ import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.core_models.membership.MembershipFeatures
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
+import com.anytypeio.anytype.domain.payments.GetMembershipFeatures
 import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
@@ -76,6 +86,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -127,13 +138,16 @@ class VaultViewModel(
     private val configStorage: ConfigStorage,
     private val osWidgetSpacesSync: OsWidgetSpacesSync,
     private val osWidgetDataViewSync: OsWidgetDataViewSync,
+    private val networkModeProvider: NetworkModeProvider,
+    private val getMembershipFeatures: GetMembershipFeatures,
+    private val searchObjects: SearchObjects,
     private val userSettingsRepository: UserSettingsRepository
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
-    val showChooseSpaceType = MutableStateFlow(false)
+    val showCreateChannelMenu = MutableStateFlow(false)
     val notificationError = MutableStateFlow<String?>(null)
     val vaultErrors = MutableStateFlow<VaultErrors>(VaultErrors.Hidden)
 
@@ -142,6 +156,15 @@ class VaultViewModel(
 
     // Track whether to show the blue dot badge on "Create a new space" button
     val showCreateSpaceBadge = MutableStateFlow(false)
+
+    val isLocalOnly: Boolean
+        get() = networkModeProvider.get().networkMode == NetworkMode.LOCAL
+
+    // Select members state for group channel creation
+    val showSelectMembersSheet = MutableStateFlow(false)
+    private val _selectMembersSearchQuery = MutableStateFlow("")
+    private val _selectedMemberIds = MutableStateFlow<List<Id>>(emptyList())
+    private val _membershipFeatures = MutableStateFlow(MembershipFeatures())
 
     private val previewFlow: StateFlow<ChatPreviewContainer.PreviewState> =
         chatPreviewContainer.observePreviewsWithAttachments()
@@ -194,6 +217,48 @@ class VaultViewModel(
     val isCompactMode: StateFlow<Boolean> = userSettingsRepository
         .observeCompactModeEnabled()
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    val selectMembersUiState: StateFlow<SelectMembersUiState> = combine(
+        spaceFlow,
+        _selectMembersSearchQuery,
+        _selectedMemberIds,
+        _membershipFeatures
+    ) { spaces, query, selectedIds, features ->
+        val oneToOneSpaces = spaces.filter { space ->
+            space.spaceUxType == SpaceUxType.ONE_TO_ONE
+                && space.isActive
+                && !space.oneToOneIdentity.isNullOrEmpty()
+        }
+        val members = oneToOneSpaces
+            .filter { space ->
+                if (query.isBlank()) true
+                else space.name.orEmpty().contains(query, ignoreCase = true)
+            }
+            .mapNotNull { space ->
+                val identity = space.oneToOneIdentity ?: return@mapNotNull null
+                val name = space.name.orEmpty()
+                val icon = spaceViewToMemberIcon(space)
+                val selectedIndex = selectedIds.indexOf(identity)
+                MemberItem(
+                    identity = identity,
+                    name = name,
+                    globalName = null,
+                    icon = icon,
+                    isSelected = selectedIndex >= 0,
+                    selectionOrder = if (selectedIndex >= 0) selectedIndex + 1 else null
+                )
+            }
+        val subtitle = buildMembersSubtitle(
+            selectedCount = selectedIds.size,
+            writersLimit = features.spaceWriters,
+            readersLimit = features.spaceReaders
+        )
+        SelectMembersUiState.Content(
+            members = members,
+            searchQuery = query,
+            subtitle = subtitle
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), SelectMembersUiState.Loading)
 
     init {
         Timber.i("VaultViewModel - init started")
@@ -732,12 +797,12 @@ class VaultViewModel(
         }
     }
 
-    fun onChooseSpaceTypeClicked() {
+    fun onCreateChannelMenuClicked() {
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.chatScreenVaultCreateMenu
             )
-            showChooseSpaceType.value = true
+            showCreateChannelMenu.value = true
             if (showCreateSpaceBadge.value) {
                 // Mark the badge as seen when user clicks the create space button
                 setCreateSpaceBadgeSeen.async(Unit).fold(
@@ -754,47 +819,155 @@ class VaultViewModel(
         }
     }
 
-    fun onCreateSpaceClicked() {
+    fun onPersonalChannelClicked() {
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.chatClickVaultCreateMenuSpace
             )
-        }
-        viewModelScope.launch {
-            showChooseSpaceType.value = false
+            showCreateChannelMenu.value = false
             commands.emit(
                 VaultCommand.CreateNewSpace(
-                    spaceUxType = SpaceUxType.DATA // Default to DATA space type
+                    channelType = ChannelCreationType.PERSONAL
                 )
             )
         }
     }
 
-    fun onCreateChatClicked() {
+    fun onGroupChannelClicked() {
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.chatClickVaultCreateMenuChat
             )
         }
         viewModelScope.launch {
-            showChooseSpaceType.value = false
+            showCreateChannelMenu.value = false
+            val (count, limit) = getSharedSpaceLimitInfo()
+            if (limit > 0 && count >= limit) {
+                vaultErrors.value = VaultErrors.SharedSpaceLimitReached(limit = limit)
+            } else {
+                val hasOneToOneParticipants = spaceFlow.value.any { space ->
+                    space.isOneToOneSpace
+                        && space.isActive
+                        && !space.oneToOneIdentity.isNullOrEmpty()
+                }
+                if (hasOneToOneParticipants) {
+                    getMembershipFeatures.async(Unit).fold(
+                        onSuccess = { features -> _membershipFeatures.value = features },
+                        onFailure = { e -> Timber.e(e, "Failed to fetch membership features") }
+                    )
+                    _selectMembersSearchQuery.value = ""
+                    _selectedMemberIds.value = emptyList()
+                    showSelectMembersSheet.value = true
+                } else {
+                    commands.emit(
+                        VaultCommand.CreateNewSpace(
+                            channelType = ChannelCreationType.GROUP
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun onCreateChannelMenuDismissed() {
+        viewModelScope.launch {
+            showCreateChannelMenu.value = false
+        }
+    }
+
+    fun onSelectMembersSearchQueryChanged(query: String) {
+        _selectMembersSearchQuery.value = query
+    }
+
+    fun onMemberToggled(identity: Id) {
+        _selectedMemberIds.update { current ->
+            if (current.contains(identity)) {
+                current - identity
+            } else {
+                val features = _membershipFeatures.value
+                val limit = features.spaceWriters + features.spaceReaders
+                if (limit > 0 && current.size >= limit) {
+                    current
+                } else {
+                    current + identity
+                }
+            }
+        }
+    }
+
+    fun onSelectMembersNext() {
+        viewModelScope.launch {
+            val state = selectMembersUiState.value
+            val selectedMembers = if (state is SelectMembersUiState.Content) {
+                state.members.filter { it.isSelected }
+            } else {
+                emptyList()
+            }
+            showSelectMembersSheet.value = false
             commands.emit(
                 VaultCommand.CreateNewSpace(
-                    spaceUxType = SpaceUxType.CHAT // Default to CHAT space type
+                    channelType = ChannelCreationType.GROUP,
+                    selectedMembers = selectedMembers,
+                    writersLimit = _membershipFeatures.value.spaceWriters
                 )
             )
         }
     }
 
-    fun onChooseSpaceTypeDismissed() {
+    fun onSelectMembersDismissed() {
+        showSelectMembersSheet.value = false
+        _selectMembersSearchQuery.value = ""
+        _selectedMemberIds.value = emptyList()
+    }
+
+    fun onSharedSpaceLimitUpgradeClicked() {
         viewModelScope.launch {
-            showChooseSpaceType.value = false
+            vaultErrors.value = VaultErrors.Hidden
+            commands.emit(VaultCommand.Deeplink.MembershipScreen(tierId = null))
         }
+    }
+
+    fun onManageChannelsClicked() {
+        viewModelScope.launch {
+            vaultErrors.value = VaultErrors.Hidden
+            commands.emit(VaultCommand.OpenSpaceListScreen)
+        }
+    }
+
+    private fun spaceViewToMemberIcon(spaceView: ObjectWrapper.SpaceView): SpaceMemberIconView {
+        val icon = spaceView.iconImage
+        val name = spaceView.name.orEmpty()
+        return if (!icon.isNullOrEmpty()) {
+            SpaceMemberIconView.Image(url = urlBuilder.thumbnail(icon), name = name)
+        } else {
+            SpaceMemberIconView.Placeholder(name = name)
+        }
+    }
+
+    private fun buildMembersSubtitle(
+        selectedCount: Int,
+        writersLimit: Int,
+        readersLimit: Int
+    ): String {
+        if (writersLimit == 0 && readersLimit == 0) return ""
+        val editors = minOf(selectedCount, writersLimit)
+        val viewers = maxOf(selectedCount - writersLimit, 0)
+        return stringResourceProvider.getChannelMembersSubtitle(editors, writersLimit, viewers, readersLimit)
+    }
+
+    private suspend fun getSharedSpaceLimitInfo(): Pair<Int, Int> {
+        val countFlow = spaceViewSubscriptionContainer.sharedSpaceCount(
+            userPermissionProvider.all()
+        )
+        val limitFlow = profileContainer.observe().map {
+            it.getValue<Double?>(Relations.SHARED_SPACES_LIMIT)?.toInt() ?: 0
+        }
+        return combine(countFlow, limitFlow) { c, l -> c to l }.first()
     }
 
     fun onJoinViaQrClicked() {
         viewModelScope.launch {
-            showChooseSpaceType.value = false
+            showCreateChannelMenu.value = false
             commands.emit(VaultCommand.ScanQrCode)
         }
     }
@@ -994,17 +1167,23 @@ class VaultViewModel(
                     spaceUxType = spaceUxType,
                     emitSettings = emitSettings
                 )
-                commands.emit(command)
+                if (command != null) {
+                    commands.emit(command)
+                }
             }
         )
     }
 
-    private fun resolveNavigationCommand(
+    /**
+     * Resolves which command to emit when entering a space.
+     * Returns null if navigation was handled internally (e.g., homepage object).
+     */
+    private suspend fun resolveNavigationCommand(
         targetSpace: SpaceId,
         config: Config,
         spaceUxType: SpaceUxType?,
         emitSettings: Boolean
-    ): VaultCommand {
+    ): VaultCommand? {
         val chat = config.spaceChatId
         return when {
             emitSettings -> {
@@ -1015,7 +1194,59 @@ class VaultViewModel(
                 VaultCommand.EnterSpaceLevelChat(space = targetSpace, chat = chat)
             }
             else -> {
-                VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
+                val spaceView = spaceViewSubscriptionContainer.get(targetSpace)
+                val homepage = spaceView?.homepage
+                resolveHomepageNavigation(homepage, targetSpace)
+            }
+        }
+    }
+
+    private suspend fun resolveHomepageNavigation(
+        homepage: String?,
+        targetSpace: SpaceId
+    ): VaultCommand? {
+        if (homepage.isNullOrEmpty() || homepage in HOMEPAGE_SPECIAL_CONSTANTS) {
+            return VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
+        }
+        // Homepage is an object ID — resolve and navigate
+        val results = searchObjects.invoke(
+            params = SearchObjects.Params(
+                space = targetSpace,
+                filters = listOf(
+                    DVFilter(
+                        relation = Relations.ID,
+                        value = homepage,
+                        condition = DVFilterCondition.EQUAL
+                    )
+                ),
+                keys = listOf(Relations.ID, Relations.LAYOUT, Relations.SPACE_ID),
+                limit = 1
+            )
+        )
+        val obj = results.getOrNull()?.firstOrNull()
+        if (obj == null) {
+            Timber.w("Homepage object $homepage not found, falling back to widgets")
+            return VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
+        }
+        // Navigate to the homepage object via VaultNavigation
+        // (VaultFragment first opens the widgets screen, then the object on top)
+        when (val nav = obj.navigation()) {
+            is OpenObjectNavigation.OpenParticipant -> {
+                return VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
+            }
+            is OpenObjectNavigation.OpenBookmarkUrl -> {
+                // Open bookmark as editor object, not as external URL
+                proceedWithNavigation(
+                    OpenObjectNavigation.OpenEditor(
+                        target = homepage,
+                        space = obj.spaceId ?: targetSpace.id
+                    )
+                )
+                return null
+            }
+            else -> {
+                proceedWithNavigation(nav)
+                return null
             }
         }
     }
@@ -1461,5 +1692,6 @@ class VaultViewModel(
 
     companion object {
         private const val OS_WIDGET_SYNC_DEBOUNCE_MS = 2000L
+        private val HOMEPAGE_SPECIAL_CONSTANTS = setOf("widgets", "graph", "lastOpened")
     }
 }

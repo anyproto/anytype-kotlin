@@ -781,7 +781,6 @@ class VaultViewModel(
                     proceedWithSavingCurrentSpace(
                         targetSpace = SpaceId(targetSpace),
                         config = config,
-                        spaceUxType = view.space.spaceUxType,
                         emitSettings = emitSettings
                     )
                 }
@@ -1150,7 +1149,7 @@ class VaultViewModel(
     private suspend fun proceedWithSavingCurrentSpace(
         targetSpace: SpaceId,
         config: Config,
-        spaceUxType: SpaceUxType?,
+        forceChatNavigation: Boolean = false,
         emitSettings: Boolean = false
     ) {
         saveCurrentSpace.async(
@@ -1160,11 +1159,11 @@ class VaultViewModel(
                 Timber.e(it, "Error while saving current space on vault screen")
             },
             onSuccess = {
-                Timber.d("Successfully saved current space: $targetSpace, Space UX Type: $spaceUxType")
+                Timber.d("Successfully saved current space: $targetSpace")
                 val command = resolveNavigationCommand(
                     targetSpace = targetSpace,
                     config = config,
-                    spaceUxType = spaceUxType,
+                    forceChatNavigation = forceChatNavigation,
                     emitSettings = emitSettings
                 )
                 if (command != null) {
@@ -1177,24 +1176,33 @@ class VaultViewModel(
     /**
      * Resolves which command to emit when entering a space.
      * Returns null if navigation was handled internally (e.g., homepage object).
+     *
+     * [forceChatNavigation] is an override for callers that know the target is
+     * a one-to-one space but whose [ObjectWrapper.SpaceView] is not yet in the
+     * subscription cache (e.g., a brand-new space created moments ago). When
+     * `false`, the function looks up the SpaceView from the subscription and
+     * uses [shouldNavigateDirectlyToChat], which respects the new `spaceType`
+     * relation with the legacy `spaceUxType` fallback.
      */
     private suspend fun resolveNavigationCommand(
         targetSpace: SpaceId,
         config: Config,
-        spaceUxType: SpaceUxType?,
+        forceChatNavigation: Boolean,
         emitSettings: Boolean
     ): VaultCommand? {
         val chat = config.spaceChatId
+        val spaceView = spaceViewSubscriptionContainer.get(targetSpace)
+        val shouldNavigateToChat = forceChatNavigation
+                || spaceView?.shouldNavigateDirectlyToChat == true
         return when {
             emitSettings -> {
                 VaultCommand.OpenSpaceSettings(space = targetSpace)
             }
-            spaceUxType.shouldNavigateDirectlyToChat && chat != null -> {
+            shouldNavigateToChat && chat != null -> {
                 Timber.d("Navigating to chat: $chat")
                 VaultCommand.EnterSpaceLevelChat(space = targetSpace, chat = chat)
             }
             else -> {
-                val spaceView = spaceViewSubscriptionContainer.get(targetSpace)
                 val homepage = spaceView?.homepage
                 resolveHomepageNavigation(homepage, targetSpace)
             }
@@ -1682,7 +1690,7 @@ class VaultViewModel(
                 proceedWithSavingCurrentSpace(
                     targetSpace = spaceId,
                     config = config,
-                    spaceUxType = SpaceUxType.ONE_TO_ONE,
+                    forceChatNavigation = true,
                     emitSettings = false
                 )
             }

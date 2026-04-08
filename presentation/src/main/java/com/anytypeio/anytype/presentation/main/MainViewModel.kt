@@ -20,7 +20,7 @@ import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.misc.navigation
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.ext.shouldNavigateDirectlyToChat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.presentation.BuildConfig
@@ -672,13 +672,16 @@ class MainViewModel(
         
         suspend fun emitNavigationCommand(config: Config) {
             val spaceView = spaceViews.get(SpaceId(targetSpace))
-            val spaceUxType = spaceView?.spaceUxType
+            val shouldNavigateDirectlyToChat = spaceView?.shouldNavigateDirectlyToChat == true
             val chatId = config.spaceChatId
-            Timber.d("OS widget navigation: space=$targetSpace, uxType=$spaceUxType, chatId=$chatId")
+            Timber.d(
+                "OS widget navigation: space=$targetSpace, " +
+                    "oneToOne=$shouldNavigateDirectlyToChat, chatId=$chatId"
+            )
             commands.emit(
                 Command.Deeplink.DeepLinkToSpace(
                     space = targetSpace,
-                    spaceUxType = spaceUxType,
+                    shouldNavigateDirectlyToChat = shouldNavigateDirectlyToChat,
                     chatId = chatId
                 )
             )
@@ -989,11 +992,14 @@ class MainViewModel(
 
             /**
              * Deep link from OS home screen widget to open a specific space.
-             * Navigation depends on spaceUxType - CHAT/ONE_TO_ONE go to chat, DATA goes to home.
+             *
+             * One-to-one spaces open the chat directly; every other channel
+             * opens the space home, which then resolves the homepage via the
+             * homepage-set logic (see DROID-4388 / GO-6752).
              */
             data class DeepLinkToSpace(
                 val space: Id,
-                val spaceUxType: SpaceUxType? = null,
+                val shouldNavigateDirectlyToChat: Boolean = false,
                 val chatId: Id? = null
             ) : Deeplink()
 

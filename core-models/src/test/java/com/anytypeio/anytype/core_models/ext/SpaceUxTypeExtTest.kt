@@ -10,8 +10,8 @@ class SpaceUxTypeExtTest {
     // shouldNavigateDirectlyToChat tests
 
     @Test
-    fun `CHAT space should navigate directly to chat`() {
-        assertTrue(SpaceUxType.CHAT.shouldNavigateDirectlyToChat)
+    fun `CHAT space should not navigate directly to chat`() {
+        assertFalse(SpaceUxType.CHAT.shouldNavigateDirectlyToChat)
     }
 
     @Test

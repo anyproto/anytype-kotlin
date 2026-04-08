@@ -92,7 +92,9 @@ object VaultViewModelFabric {
         networkModeProvider: NetworkModeProvider = mock(),
         getMembershipFeatures: GetMembershipFeatures = mock(),
         searchObjects: SearchObjects = mock(),
-        userSettingsRepository: UserSettingsRepository = mock()
+        userSettingsRepository: UserSettingsRepository = mock {
+            on { observeCompactModeEnabled() }.thenReturn(flowOf(false))
+        }
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,

@@ -225,7 +225,7 @@ class VaultViewModel(
         _membershipFeatures
     ) { spaces, query, selectedIds, features ->
         val oneToOneSpaces = spaces.filter { space ->
-            space.spaceUxType == SpaceUxType.ONE_TO_ONE
+            space.isOneToOneSpace
                 && space.isActive
                 && !space.oneToOneIdentity.isNullOrEmpty()
         }
@@ -488,19 +488,15 @@ class VaultViewModel(
         accountIdentity: Id?
     ): VaultSpaceView {
         return when {
-            // ONE_TO_ONE space with chat preview → VaultSpaceView.OneToOneSpace
-            space.spaceUxType == SpaceUxType.ONE_TO_ONE -> {
+            // 1-1 (DM) space → VaultSpaceView.OneToOneSpace
+            space.isOneToOneSpace -> {
                 createOneToOneSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
             }
-            // Pure CHAT space with chat preview → VaultSpaceView.ChatSpace
-            space.spaceUxType == SpaceUxType.CHAT -> {
-                createChatSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
-            }
-            // any other space with chat preview → VaultSpaceView.DataSpaceWithChat
+            // Data space with chat preview → VaultSpaceView.DataSpaceWithChat
             chatPreview != null -> {
                 createDataSpaceWithChatView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
             }
-            // any other space without chat preview → VaultSpaceView.DataSpace
+            // Data space without chat preview → VaultSpaceView.DataSpace
             else -> {
                 createDataSpaceView(space, permissions, wallpapers)
             }

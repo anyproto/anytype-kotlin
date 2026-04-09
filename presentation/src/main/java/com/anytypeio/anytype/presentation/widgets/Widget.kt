@@ -487,7 +487,7 @@ suspend fun buildWidgetSections(
             params = params,
             isObjectTypeSectionCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE),
             storeOfObjectTypes = storeOfObjectTypes,
-            spaceUxType = spaceView.spaceUxType
+            isOneToOneSpace = spaceView.isOneToOneSpace
         )
     } else {
         emptyList()
@@ -588,7 +588,7 @@ private suspend fun buildTypeSection(
     params: WidgetUiParams,
     isObjectTypeSectionCollapsed: Boolean,
     storeOfObjectTypes: StoreOfObjectTypes,
-    spaceUxType: SpaceUxType?
+    isOneToOneSpace: Boolean
 ): List<Widget> = buildList {
 
     val sectionStateDesc = if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
@@ -598,7 +598,7 @@ private suspend fun buildTypeSection(
             isOwnerOrEditor = params.isOwnerOrEditor,
             config = state.config,
             storeOfObjectTypes = storeOfObjectTypes,
-            spaceUxType = spaceUxType
+            isOneToOneSpace = isOneToOneSpace
         )
         addAll(types)
         Timber.d("ObjectType section: $sectionStateDesc, widgets added: ${types.size}")
@@ -659,17 +659,17 @@ internal suspend fun mapSpaceTypesToWidgets(
     isOwnerOrEditor: Boolean,
     config: Config,
     storeOfObjectTypes: StoreOfObjectTypes,
-    spaceUxType: SpaceUxType?
+    isOneToOneSpace: Boolean
 ): List<Widget> {
     val allTypes = storeOfObjectTypes.getAll()
-    
+
     // Get system layouts based on space context
-    val systemLayoutsForSpace = getSystemLayouts(spaceUxType)
+    val systemLayoutsForSpace = getSystemLayouts(isOneToOneSpace)
     val excludedLayouts = systemLayoutsForSpace + SupportedLayouts.dateLayouts + listOf(
         ObjectType.Layout.OBJECT_TYPE,
         ObjectType.Layout.PARTICIPANT
     )
-    
+
     val filteredObjectTypes = allTypes
         .mapNotNull { objectType ->
             if (!objectType.isValid ||
@@ -686,9 +686,9 @@ internal suspend fun mapSpaceTypesToWidgets(
 
     Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
 
-    // Sort types by priority using shared extension
-    val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
-    val sortedTypes = filteredObjectTypes.sortByTypePriority(isChatSpace)
+    // Sort types by priority using shared extension. CHAT-type spaces no longer
+    // exist, so the isChatSpace sort flag collapses to isOneToOneSpace.
+    val sortedTypes = filteredObjectTypes.sortByTypePriority(isChatSpace = isOneToOneSpace)
 
     // Create single grouped widget for object types
     // The container (ObjectTypesGroupWidgetContainer) fetches types from StoreOfObjectTypes

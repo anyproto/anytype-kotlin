@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import junit.framework.TestCase.assertTrue
 import kotlin.test.assertFalse
 import net.bytebuddy.utility.RandomString
@@ -489,14 +488,12 @@ class SpaceViewExtKtTest {
     private fun createSpaceView(
         writersLimit: Int,
         readersLimit: Int,
-        spaceUxType: SpaceUxType = SpaceUxType.DATA
     ) = ObjectWrapper.SpaceView(
         map = mapOf(
             Relations.ID to spaceId,
             Relations.WRITERS_LIMIT to writersLimit.toDouble(),
             Relations.READERS_LIMIT to readersLimit.toDouble(),
             Relations.SPACE_ACCESS_TYPE to 2.0,
-            Relations.SPACE_UX_TYPE to spaceUxType.code.toDouble()
         )
     )
     //endregion

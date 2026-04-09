@@ -38,7 +38,6 @@ import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -2331,28 +2330,11 @@ class HomeScreenViewModel(
     fun onBackClicked() {
         proceedWithCloseOpenObjects()
         viewModelScope.launch {
-            val currentSpaceView = _spaceViewState.value
-            val (spaceUxType, spaceChatId) = when (currentSpaceView) {
-                is SpaceViewState.Success -> {
-                    // CHAT-type spaces no longer exist; translate from the new
-                    // isOneToOneSpace flag so the legacy Command signature stays
-                    // intact until its consumer is migrated in a follow-up.
-                    val legacyType = if (currentSpaceView.isOneToOneSpace) {
-                        SpaceUxType.ONE_TO_ONE
-                    } else {
-                        SpaceUxType.DATA
-                    }
-                    legacyType to currentSpaceView.spaceChatId
-                }
-                else -> {
-                    // Default to DATA type if space view not loaded
-                    SpaceUxType.DATA to null
-                }
-            }
+            val currentSpaceView = _spaceViewState.value as? SpaceViewState.Success
             commands.emit(
                 Command.HandleChatSpaceBackNavigation(
-                    spaceUxType = spaceUxType,
-                    spaceChatId = spaceChatId
+                    isOneToOneSpace = currentSpaceView?.isOneToOneSpace == true,
+                    spaceChatId = currentSpaceView?.spaceChatId
                 )
             )
         }
@@ -4099,7 +4081,7 @@ sealed class Command {
     data object ShowLeaveSpaceWarning : Command()
 
     data class HandleChatSpaceBackNavigation(
-        val spaceUxType: SpaceUxType,
+        val isOneToOneSpace: Boolean,
         val spaceChatId: Id?
     ) : Command()
 

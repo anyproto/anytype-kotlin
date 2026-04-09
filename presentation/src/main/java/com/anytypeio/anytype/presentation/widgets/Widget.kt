@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getSystemLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.canCreateAdditionalChats
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.R
 import com.anytypeio.anytype.core_models.UrlBuilder
@@ -493,11 +492,11 @@ suspend fun buildWidgetSections(
         emptyList()
     }
 
-    // Build unread widget only if visible - only for data spaces
+    // Build unread widget only if visible - only for regular (non-1-1) spaces
     val unreadWidget = if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.UNREAD)) {
         buildUnreadWidget(
             state = state,
-            spaceUxType = spaceView.spaceUxType
+            isOneToOneSpace = spaceView.isOneToOneSpace
         )
     } else {
         null
@@ -609,10 +608,10 @@ private suspend fun buildTypeSection(
 
 private fun buildUnreadWidget(
     state: ObjectViewState.Success,
-    spaceUxType: SpaceUxType?
+    isOneToOneSpace: Boolean
 ): Widget.UnreadChatList? {
-    return if (spaceUxType == SpaceUxType.DATA) {
-        Timber.d("buildUnreadWidget: Creating unread widget for data space")
+    return if (!isOneToOneSpace) {
+        Timber.d("buildUnreadWidget: Creating unread widget for regular space")
         Widget.UnreadChatList(
             id = "widget_unread_chat_list",
             source = Widget.Source.Bundled.Chat,
@@ -620,7 +619,7 @@ private fun buildUnreadWidget(
             icon = ObjectIcon.SimpleIcon("chatbubble", R.color.control_primary)
         )
     } else {
-        Timber.d("buildUnreadWidget: Skipping unread widget for non-data space")
+        Timber.d("buildUnreadWidget: Skipping unread widget for 1-1 space")
         null
     }
 }

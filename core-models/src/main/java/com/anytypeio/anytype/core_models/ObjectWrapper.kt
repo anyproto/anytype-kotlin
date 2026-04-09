@@ -445,20 +445,6 @@ sealed class ObjectWrapper {
             }
         }
 
-        /**
-         * True iff this space is a chat-first ("Stream UX") space.
-         *
-         * Mirrors [isOneToOneSpace] for the [SpaceType.CHAT] /
-         * [SpaceUxType.CHAT] pair, with the same fallback semantics.
-         */
-        val isChatSpace: Boolean get() {
-            return when (spaceType) {
-                SpaceType.CHAT -> true
-                null, SpaceType.UNKNOWN -> spaceUxType == SpaceUxType.CHAT
-                else -> false
-            }
-        }
-
         val oneToOneIdentity: Id? get() = getSingleValue(Relations.ONE_TO_ONE_IDENTITY)
 
         val spacePushNotificationMode

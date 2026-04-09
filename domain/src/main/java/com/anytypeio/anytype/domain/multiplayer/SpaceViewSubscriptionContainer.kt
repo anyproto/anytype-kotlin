@@ -139,6 +139,7 @@ interface SpaceViewSubscriptionContainer {
                     keys = listOf(
                         Relations.ID,
                         Relations.SPACE_UX_TYPE,
+                        Relations.SPACE_TYPE,
                         Relations.TARGET_SPACE_ID,
                         Relations.CHAT_ID,
                         Relations.SPACE_ACCOUNT_STATUS,

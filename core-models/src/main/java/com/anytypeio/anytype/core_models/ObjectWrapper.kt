@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ext.typeOf
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
@@ -373,6 +374,14 @@ sealed class ObjectWrapper {
                     .firstOrNull { it.code == code?.toInt() }
             }
 
+        val spaceType: SpaceType?
+            get() {
+                val code = getValue<Double?>(Relations.SPACE_TYPE)
+                return SpaceType
+                    .entries
+                    .firstOrNull { it.code == code?.toInt() }
+            }
+
         val writersLimit: Double? get() = getSingleValue(Relations.WRITERS_LIMIT)
         val readersLimit: Double? get() = getSingleValue(Relations.READERS_LIMIT)
 
@@ -414,8 +423,26 @@ sealed class ObjectWrapper {
             return spaceAccessType == SpaceAccessType.SHARED
         }
 
+        /**
+         * True iff this space is a one-to-one (DM) space.
+         *
+         * Reads the new [spaceType] relation when available and falls back to
+         * the legacy [spaceUxType] when [spaceType] is `null` or
+         * [SpaceType.UNKNOWN]. The fallback covers two cases:
+         *  1. **Stale on-disk records** that haven't been re-derived by
+         *     middleware since the new relation was added.
+         *  2. **Bootstrap window** before middleware starts populating
+         *     [Relations.SPACE_TYPE] in the global space-view subscription.
+         *
+         * When [spaceType] is set to a concrete non-[SpaceType.UNKNOWN] value,
+         * it wins over [spaceUxType] — middleware is the source of truth.
+         */
         val isOneToOneSpace: Boolean get() {
-            return spaceUxType == SpaceUxType.ONE_TO_ONE
+            return when (spaceType) {
+                SpaceType.ONE_TO_ONE -> true
+                null, SpaceType.UNKNOWN -> spaceUxType == SpaceUxType.ONE_TO_ONE
+                else -> false
+            }
         }
 
         val oneToOneIdentity: Id? get() = getSingleValue(Relations.ONE_TO_ONE_IDENTITY)

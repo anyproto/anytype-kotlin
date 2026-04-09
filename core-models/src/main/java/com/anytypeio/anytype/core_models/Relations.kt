@@ -39,6 +39,7 @@ object Relations {
     const val SNIPPET = "snippet"
     const val SPACE_ID = "spaceId"
     const val SPACE_UX_TYPE = "spaceUxType"
+    const val SPACE_TYPE = "spaceType"
     const val TARGET_SPACE_ID = "targetSpaceId"
     const val SET_OF = "setOf"
     const val URL = "url"
@@ -212,6 +213,8 @@ object Relations {
         "imageKind",
         "importType",
         "spaceAccessType",
+        "spaceUxType",
+        "spaceType",
         "spaceInviteFileCid",
         "spaceInviteFileKey",
         "readersLimit",

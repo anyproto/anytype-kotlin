@@ -54,7 +54,6 @@ import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -461,7 +460,7 @@ class EditorViewModel(
     val navPanelState = permission.map { permission ->
         NavPanelState.fromPermission(
             permission = permission,
-            spaceUxType = spaceViews.get(space = vmParams.space)?.spaceUxType ?: SpaceUxType.DATA,
+            isOneToOneSpace = spaceViews.get(space = vmParams.space)?.isOneToOneSpace == true,
         )
     }
 
@@ -5607,9 +5606,9 @@ class EditorViewModel(
             }
             _objectTypes.clear()
             _objectTypes.addAll(filteredTypes)
-            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
-            val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
-            val sortedTypes = filteredTypes.sortByTypePriority(isChatSpace)
+            val sortedTypes = filteredTypes.sortByTypePriority(
+                isChatSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
+            )
             val views = sortedTypes.toObjectTypeViews(
                 includeListTypes = true,
                 includeBookmarkType = true
@@ -6653,13 +6652,13 @@ class EditorViewModel(
                 return
             }
             val fullText = filter.removePrefix(MENTION_PREFIX)
-            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+            val isOneToOneSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
             val params = SearchObjects.Params(
                 space = vmParams.space,
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
                     ignore = context,
-                    spaceUxType = spaceUxType
+                    isOneToOneSpace = isOneToOneSpace
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,
@@ -6810,9 +6809,9 @@ class EditorViewModel(
             }
             _objectTypes.clear()
             _objectTypes.addAll(filteredTypes)
-            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
-            val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
-            val sortedObjects = filteredTypes.sortByTypePriority(isChatSpace)
+            val sortedObjects = filteredTypes.sortByTypePriority(
+                isChatSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
+            )
             val items = buildList {
                 add(TypesWidgetItem.Search)
                 addAll(

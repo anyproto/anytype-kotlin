@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.UrlBuilder
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetCreateObjectEntity
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -44,7 +43,7 @@ class CreateObjectWidgetConfigViewModel(
     private fun loadSpaces() {
         val allSpaces = spaceViews.get()
         val filtered = allSpaces
-            .filter { it.isActive && it.spaceUxType != SpaceUxType.CHAT && it.spaceUxType != SpaceUxType.ONE_TO_ONE }
+            .filter { it.isActive && !it.isOneToOneSpace }
             .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
         Timber.d("$TAG loadSpaces: total=${allSpaces.size}, filtered=${filtered.size}")
         _spaces.value = filtered

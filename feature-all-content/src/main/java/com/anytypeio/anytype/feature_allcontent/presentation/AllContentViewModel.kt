@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.misc.navigation
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
@@ -150,7 +149,7 @@ class AllContentViewModel(
     val navPanelState = permission.map { permission ->
         NavPanelState.fromPermission(
             permission = permission,
-            spaceUxType = spaceViews.get(space = vmParams.spaceId)?.spaceUxType ?: SpaceUxType.DATA,
+            isOneToOneSpace = spaceViews.get(space = vmParams.spaceId)?.isOneToOneSpace == true,
         )
     }
 

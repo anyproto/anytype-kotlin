@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.UrlBuilder
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetSpaceShortcutEntity
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -42,7 +41,7 @@ class SpaceShortcutWidgetConfigViewModel(
         val allSpaces = spaceViews.get()
         Timber.d("$TAG loadSpaces: total=${allSpaces.size}")
         val filtered = allSpaces
-            .filter { it.isActive && it.spaceUxType != SpaceUxType.CHAT && it.spaceUxType != SpaceUxType.ONE_TO_ONE }
+            .filter { it.isActive && !it.isOneToOneSpace }
             .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
         Timber.d("$TAG loadSpaces: filtered=${filtered.size}")
         _spaces.value = filtered

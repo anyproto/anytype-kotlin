@@ -35,7 +35,6 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -142,7 +141,7 @@ class WidgetsScreenFragment : Fragment(),
                             HomeScreenMenu(
                                 expanded = isMenuExpanded,
                                 spaceAccessType = spaceViewState.spaceAccessType,
-                                spaceUxType = spaceViewState.spaceUxType,
+                                isOneToOneSpace = spaceViewState.isOneToOneSpace,
                                 isMuted = isMuted,
                                 onDismiss = { isMenuExpanded = false },
                                 onSpaceSettingsClicked = {
@@ -459,16 +458,16 @@ class WidgetsScreenFragment : Fragment(),
 
             is Command.HandleChatSpaceBackNavigation -> {
                 runCatching {
-                    // Deterministic navigation based on space type, not back stack
+                    // Deterministic navigation based on space kind, not back stack
                     val chatId = command.spaceChatId
-                    if ((command.spaceUxType == SpaceUxType.CHAT || command.spaceUxType == SpaceUxType.ONE_TO_ONE) && !chatId.isNullOrEmpty()) {
-                        // Chat and One-to-One spaces: navigate to chat object
+                    if (command.isOneToOneSpace && !chatId.isNullOrEmpty()) {
+                        // 1-1 (DM) space: navigate to chat object
                         navigation().openChat(
                             target = chatId,
                             space = space
                         )
                     } else {
-                        // Data space: always navigate to vault
+                        // Regular data space: always navigate to vault
                         vm.proceedWithExitingToVault()
                         findNavController().navigate(R.id.action_back_on_vault)
                     }

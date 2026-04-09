@@ -225,7 +225,7 @@ class VaultViewModel(
         _membershipFeatures
     ) { spaces, query, selectedIds, features ->
         val oneToOneSpaces = spaces.filter { space ->
-            space.spaceUxType == SpaceUxType.ONE_TO_ONE
+            space.isOneToOneSpace
                 && space.isActive
                 && !space.oneToOneIdentity.isNullOrEmpty()
         }
@@ -488,19 +488,15 @@ class VaultViewModel(
         accountIdentity: Id?
     ): VaultSpaceView {
         return when {
-            // ONE_TO_ONE space with chat preview → VaultSpaceView.OneToOneSpace
-            space.spaceUxType == SpaceUxType.ONE_TO_ONE -> {
+            // 1-1 (DM) space → VaultSpaceView.OneToOneSpace
+            space.isOneToOneSpace -> {
                 createOneToOneSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
             }
-            // Pure CHAT space with chat preview → VaultSpaceView.ChatSpace
-            space.spaceUxType == SpaceUxType.CHAT -> {
-                createChatSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
-            }
-            // any other space with chat preview → VaultSpaceView.DataSpaceWithChat
+            // Data space with chat preview → VaultSpaceView.DataSpaceWithChat
             chatPreview != null -> {
                 createDataSpaceWithChatView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
             }
-            // any other space without chat preview → VaultSpaceView.DataSpace
+            // Data space without chat preview → VaultSpaceView.DataSpace
             else -> {
                 createDataSpaceView(space, permissions, wallpapers)
             }
@@ -572,51 +568,6 @@ class VaultViewModel(
         val isSynced = message?.synced ?: true
 
         return MessagePreviewData(creatorName, messageText, messageTime, attachmentPreviews, isOutgoing, isSynced)
-    }
-
-    /**
-     * Create a Vault View for a Chat Space with a chat preview
-     */
-    private suspend fun createChatSpaceView(
-        space: ObjectWrapper.SpaceView,
-        chatPreview: Chat.Preview?,
-        unreadCounts: UnreadCounts?,
-        permissions: Map<Id, SpaceMemberPermissions>,
-        wallpapers: Map<Id, Wallpaper>,
-        chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
-        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
-        accountIdentity: Id?
-    ): VaultSpaceView.ChatSpace {
-        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity, accountIdentity)
-
-        val icon = space.spaceIcon(urlBuilder)
-
-        val perms =
-            space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
-        val isOwner = perms.isOwner()
-
-        val wallpaper = space.targetSpaceId.let { wallpapers[it] } ?: Wallpaper.Default
-        val wallpaperResult = computeWallpaperResult(
-            icon = icon,
-            wallpaper = wallpaper
-        )
-
-        return VaultSpaceView.ChatSpace(
-            space = space,
-            icon = icon,
-            chatPreview = chatPreview,
-            creatorName = previewData.creatorName,
-            messageText = previewData.messageText,
-            messageTime = previewData.messageTime,
-            unreadMessageCount = unreadCounts?.unreadMessages ?: 0,
-            unreadMentionCount = unreadCounts?.unreadMentions ?: 0,
-            attachmentPreviews = previewData.attachmentPreviews,
-            isOwner = isOwner,
-            spaceNotificationState = space.spacePushNotificationMode,
-            wallpaper = wallpaperResult,
-            isLastMessageOutgoing = previewData.isOutgoing,
-            isLastMessageSynced = previewData.isSynced
-        )
     }
 
     /**
@@ -781,7 +732,6 @@ class VaultViewModel(
                     proceedWithSavingCurrentSpace(
                         targetSpace = SpaceId(targetSpace),
                         config = config,
-                        spaceUxType = view.space.spaceUxType,
                         emitSettings = emitSettings
                     )
                 }
@@ -1150,7 +1100,7 @@ class VaultViewModel(
     private suspend fun proceedWithSavingCurrentSpace(
         targetSpace: SpaceId,
         config: Config,
-        spaceUxType: SpaceUxType?,
+        forceChatNavigation: Boolean = false,
         emitSettings: Boolean = false
     ) {
         saveCurrentSpace.async(
@@ -1160,11 +1110,11 @@ class VaultViewModel(
                 Timber.e(it, "Error while saving current space on vault screen")
             },
             onSuccess = {
-                Timber.d("Successfully saved current space: $targetSpace, Space UX Type: $spaceUxType")
+                Timber.d("Successfully saved current space: $targetSpace")
                 val command = resolveNavigationCommand(
                     targetSpace = targetSpace,
                     config = config,
-                    spaceUxType = spaceUxType,
+                    forceChatNavigation = forceChatNavigation,
                     emitSettings = emitSettings
                 )
                 if (command != null) {
@@ -1177,24 +1127,33 @@ class VaultViewModel(
     /**
      * Resolves which command to emit when entering a space.
      * Returns null if navigation was handled internally (e.g., homepage object).
+     *
+     * [forceChatNavigation] is an override for callers that know the target is
+     * a one-to-one space but whose [ObjectWrapper.SpaceView] is not yet in the
+     * subscription cache (e.g., a brand-new space created moments ago). When
+     * `false`, the function looks up the SpaceView from the subscription and
+     * uses [shouldNavigateDirectlyToChat], which respects the new `spaceType`
+     * relation with the legacy `spaceUxType` fallback.
      */
     private suspend fun resolveNavigationCommand(
         targetSpace: SpaceId,
         config: Config,
-        spaceUxType: SpaceUxType?,
+        forceChatNavigation: Boolean,
         emitSettings: Boolean
     ): VaultCommand? {
         val chat = config.spaceChatId
+        val spaceView = spaceViewSubscriptionContainer.get(targetSpace)
+        val shouldNavigateToChat = forceChatNavigation
+                || spaceView?.shouldNavigateDirectlyToChat == true
         return when {
             emitSettings -> {
                 VaultCommand.OpenSpaceSettings(space = targetSpace)
             }
-            spaceUxType.shouldNavigateDirectlyToChat && chat != null -> {
+            shouldNavigateToChat && chat != null -> {
                 Timber.d("Navigating to chat: $chat")
                 VaultCommand.EnterSpaceLevelChat(space = targetSpace, chat = chat)
             }
             else -> {
-                val spaceView = spaceViewSubscriptionContainer.get(targetSpace)
                 val homepage = spaceView?.homepage
                 resolveHomepageNavigation(homepage, targetSpace)
             }
@@ -1682,7 +1641,7 @@ class VaultViewModel(
                 proceedWithSavingCurrentSpace(
                     targetSpace = spaceId,
                     config = config,
-                    spaceUxType = SpaceUxType.ONE_TO_ONE,
+                    forceChatNavigation = true,
                     emitSettings = false
                 )
             }

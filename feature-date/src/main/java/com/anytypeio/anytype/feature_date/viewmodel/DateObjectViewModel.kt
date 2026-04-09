@@ -15,7 +15,6 @@ import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.misc.navigation
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.core_ui.lists.objects.UiContentState
@@ -263,7 +262,7 @@ class DateObjectViewModel(
                 .collect { result ->
                     val navPanelState = NavPanelState.fromPermission(
                         permission = result,
-                        spaceUxType = spaceViews.get(space = vmParams.spaceId)?.spaceUxType ?: SpaceUxType.DATA,
+                        isOneToOneSpace = spaceViews.get(space = vmParams.spaceId)?.isOneToOneSpace == true,
                     )
                     uiNavigationWidget.value = navPanelState
                     permission.value = result

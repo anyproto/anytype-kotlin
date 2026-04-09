@@ -31,7 +31,6 @@ import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
-import com.anytypeio.anytype.core_models.ext.canCreateAdditionalChats
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
@@ -39,7 +38,6 @@ import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -659,7 +657,7 @@ class HomeScreenViewModel(
                         spaceIcon = spaceIcon,
                         membersCount = spaceMemberCount,
                         spaceChatId = spaceView.getSingleValue<String>(Relations.CHAT_ID),
-                        spaceUxType = spaceView.spaceUxType ?: SpaceUxType.DATA,
+                        isOneToOneSpace = spaceView.isOneToOneSpace,
                         spaceAccessType = spaceView.spaceAccessType ?: SpaceAccessType.PRIVATE
                     )
                 }
@@ -678,7 +676,7 @@ class HomeScreenViewModel(
                         permission = permission,
                         forceHome = false,
                         spaceAccess = spaceView.spaceAccessType,
-                        spaceUxType = spaceView.spaceUxType
+                        isOneToOneSpace = spaceView.isOneToOneSpace
                     )
                 } else {
                     NavPanelState.Init
@@ -2332,20 +2330,11 @@ class HomeScreenViewModel(
     fun onBackClicked() {
         proceedWithCloseOpenObjects()
         viewModelScope.launch {
-            val currentSpaceView = _spaceViewState.value
-            val (spaceUxType, spaceChatId) = when (currentSpaceView) {
-                is SpaceViewState.Success -> {
-                    currentSpaceView.spaceUxType to currentSpaceView.spaceChatId
-                }
-                else -> {
-                    // Default to DATA type if space view not loaded
-                    SpaceUxType.DATA to null
-                }
-            }
+            val currentSpaceView = _spaceViewState.value as? SpaceViewState.Success
             commands.emit(
                 Command.HandleChatSpaceBackNavigation(
-                    spaceUxType = spaceUxType,
-                    spaceChatId = spaceChatId
+                    isOneToOneSpace = currentSpaceView?.isOneToOneSpace == true,
+                    spaceChatId = currentSpaceView?.spaceChatId
                 )
             )
         }
@@ -2850,16 +2839,16 @@ class HomeScreenViewModel(
         val type = TypeKey(dataViewSourceObj.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
         val space = vmParams.spaceId.id
         if (type.key == ObjectTypeIds.CHAT_DERIVED) {
-            // Check if chat creation is allowed based on space UX type
-            val currentSpaceUxType = (spaceViewState.value as? SpaceViewState.Success)?.spaceUxType
-            if (currentSpaceUxType.canCreateAdditionalChats) {
+            // Check if chat creation is allowed for the current space.
+            val currentSpaceState = spaceViewState.value as? SpaceViewState.Success
+            if (currentSpaceState?.canCreateAdditionalChats == true) {
                 commands.emit(
                     Command.CreateChatObject(
                         space = SpaceId(space)
                     )
                 )
             } else {
-                Timber.d("Chat creation not allowed in $currentSpaceUxType space")
+                Timber.d("Chat creation not allowed in current space")
             }
         } else {
             val startTime = System.currentTimeMillis()
@@ -3205,14 +3194,14 @@ class HomeScreenViewModel(
         
         // Special handling for CHAT_DERIVED: show create chat screen instead of direct creation
         if (objType?.uniqueKey == ObjectTypeIds.CHAT_DERIVED) {
-            // Check if chat creation is allowed based on space UX type
-            val currentSpaceUxType = (spaceViewState.value as? SpaceViewState.Success)?.spaceUxType
-            if (currentSpaceUxType.canCreateAdditionalChats) {
+            // Check if chat creation is allowed for the current space.
+            val currentSpaceState = spaceViewState.value as? SpaceViewState.Success
+            if (currentSpaceState?.canCreateAdditionalChats == true) {
                 viewModelScope.launch {
                     commands.emit(Command.CreateChatObject(vmParams.spaceId))
                 }
             } else {
-                Timber.d("Chat creation not allowed in $currentSpaceUxType space")
+                Timber.d("Chat creation not allowed in current space")
             }
             return
         }
@@ -3660,8 +3649,11 @@ class HomeScreenViewModel(
             val membersCount: Int,
             val spaceChatId: Id? = null,
             val spaceAccessType: SpaceAccessType,
-            val spaceUxType: SpaceUxType
-        ) : SpaceViewState()
+            val isOneToOneSpace: Boolean,
+        ) : SpaceViewState() {
+            val canCreateAdditionalChats: Boolean
+                get() = !isOneToOneSpace
+        }
 
         data class Failure(val e: Throwable) : SpaceViewState()
     }
@@ -4089,7 +4081,7 @@ sealed class Command {
     data object ShowLeaveSpaceWarning : Command()
 
     data class HandleChatSpaceBackNavigation(
-        val spaceUxType: SpaceUxType,
+        val isOneToOneSpace: Boolean,
         val spaceChatId: Id?
     ) : Command()
 

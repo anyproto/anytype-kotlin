@@ -50,11 +50,11 @@ class LinkToObjectViewModel(
         space = vmParams.space,
         limit = SEARCH_LIMIT,
         filters = buildList {
-            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+            val isOneToOneSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
             addAll(
                 ObjectSearchConstants.getFilterLinkTo(
                     ignore = ignore,
-                    spaceUxType = spaceUxType
+                    isOneToOneSpace = isOneToOneSpace
                 )
             )
         },
@@ -83,8 +83,8 @@ class LinkToObjectViewModel(
 
     override suspend fun setObjects(data: List<ObjectWrapper.Basic>) {
         Timber.d("LinkToObjectViewModel setObjects called with ${data.size} items")
-        val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
-        val supportedLayouts = SupportedLayouts.getLayouts(spaceUxType)
+        val isOneToOneSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
+        val supportedLayouts = SupportedLayouts.getLayouts(isOneToOneSpace)
         objects.emit(
             Resultat.success(data.filter {
                 supportedLayouts.contains(it.layout)

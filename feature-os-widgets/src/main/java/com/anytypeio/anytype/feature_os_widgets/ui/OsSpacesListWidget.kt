@@ -33,7 +33,6 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.feature_os_widgets.R
 import com.anytypeio.anytype.feature_os_widgets.deeplink.OsWidgetDeepLinks
 import com.anytypeio.anytype.feature_os_widgets.mapper.toDomain
@@ -154,7 +153,7 @@ private fun SpaceCard(space: OsWidgetSpaceItem, untitledFallback: String) {
             SpaceIcon(
                 icon = space.icon,
                 name = space.name,
-                spaceUxType = space.spaceUxType
+                isOneToOneSpace = space.isOneToOneSpace
             )
             Spacer(modifier = GlanceModifier.width(12.dp))
             Text(
@@ -180,7 +179,7 @@ private data class SpacesListWidgetStrings(
 private fun SpaceIcon(
     icon: OsWidgetSpaceIcon,
     name: String,
-    spaceUxType: SpaceUxType
+    isOneToOneSpace: Boolean
 ) {
     val backgroundColor = when (icon) {
         is OsWidgetSpaceIcon.Image -> icon.color.toWidgetColor()
@@ -194,10 +193,12 @@ private fun SpaceIcon(
 
     val initial = name.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
 
-    // Determine corner radius based on space type (chat spaces use circle, data spaces use rounded rect)
-    val cornerRadius = when (spaceUxType) {
-        SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> 20  // Circle for 40dp (half of size)
-        else -> SPACE_ICON_CORNER_RADIUS  // 6dp for data spaces
+    // Determine corner radius based on space kind (1-1 spaces use circle,
+    // regular data spaces use a rounded rect).
+    val cornerRadius = if (isOneToOneSpace) {
+        20  // Circle for 40dp (half of size)
+    } else {
+        SPACE_ICON_CORNER_RADIUS  // 6dp for data spaces
     }
 
     // Try to load cached image, fallback to placeholder

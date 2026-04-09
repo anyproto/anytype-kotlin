@@ -196,7 +196,7 @@ class VaultViewModelTest {
                     spaceAccountStatus = SpaceStatus.OK,
                     spaceLocalStatus = SpaceStatus.OK,
                     chatId = chatId1,
-                    spaceUxType = SpaceUxType.CHAT,
+                    spaceUxType = SpaceUxType.DATA,
                     createdDate = now
                 )
                 val chatSpace2 = StubSpaceView(
@@ -206,7 +206,7 @@ class VaultViewModelTest {
                     spaceAccountStatus = SpaceStatus.OK,
                     spaceLocalStatus = SpaceStatus.OK,
                     chatId = chatId2,
-                    spaceUxType = SpaceUxType.CHAT,
+                    spaceUxType = SpaceUxType.DATA,
                     createdDate = earlier
                 )
 
@@ -298,7 +298,7 @@ class VaultViewModelTest {
                 id = space1Id,
                 targetSpaceId = space1Id,
                 chatId = chatId1,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.DATA,
                 createdDate = baseTime.toDouble(),
                 spaceJoinDate = middleTime.toDouble()
             )
@@ -308,7 +308,7 @@ class VaultViewModelTest {
                 id = space2Id,
                 targetSpaceId = space2Id,
                 chatId = chatId2,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.DATA,
                 createdDate = baseTime.toDouble(),
                 spaceJoinDate = recentTime.toDouble()
             )
@@ -318,7 +318,7 @@ class VaultViewModelTest {
                 id = space3Id,
                 targetSpaceId = space3Id,
                 chatId = chatId3,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.DATA,
                 createdDate = baseTime.toDouble(),
                 spaceJoinDate = oldTime.toDouble()
             )
@@ -412,7 +412,7 @@ class VaultViewModelTest {
                 id = space1Id,
                 targetSpaceId = space1Id,
                 chatId = chatId1,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.DATA,
                 createdDate = baseTime.toDouble()
                 // No spaceJoinDate set
             )
@@ -1313,7 +1313,7 @@ class VaultViewModelTest {
             spaceAccountStatus = SpaceStatus.OK,
             spaceLocalStatus = SpaceStatus.OK,
             chatId = chatId1,
-            spaceUxType = SpaceUxType.CHAT,
+            spaceUxType = SpaceUxType.DATA,
             spaceOrder = "--aa"
         )
         val unpinnedChatSpace = StubSpaceView(
@@ -1323,7 +1323,7 @@ class VaultViewModelTest {
             spaceAccountStatus = SpaceStatus.OK,
             spaceLocalStatus = SpaceStatus.OK,
             chatId = chatId2,
-            spaceUxType = SpaceUxType.CHAT
+            spaceUxType = SpaceUxType.DATA
         )
 
         val chatPreview1 = stubChatPreview(pinnedChatSpaceId, chatId1, System.currentTimeMillis())
@@ -1594,7 +1594,7 @@ class VaultViewModelTest {
                 spaceAccountStatus = SpaceStatus.OK,
                 spaceLocalStatus = SpaceStatus.OK,
                 chatId = chatId,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.DATA,
                 createdDate = now.toDouble()
             )
 
@@ -1640,7 +1640,7 @@ class VaultViewModelTest {
             viewModel.uiState.test {
                 skipItems(1) // Skip loading state
                 val sections = awaitItem() as VaultUiState.Sections
-                val chatSpaceView = sections.mainSpaces.first() as VaultSpaceView.ChatSpace
+                val chatSpaceView = sections.mainSpaces.first() as VaultSpaceView.DataSpaceWithChat
 
                 // Message should be marked as outgoing since creator == account id
                 assertEquals(true, chatSpaceView.isLastMessageOutgoing)
@@ -1670,7 +1670,7 @@ class VaultViewModelTest {
                 spaceAccountStatus = SpaceStatus.OK,
                 spaceLocalStatus = SpaceStatus.OK,
                 chatId = chatId,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.DATA,
                 createdDate = now.toDouble()
             )
 
@@ -1716,7 +1716,7 @@ class VaultViewModelTest {
             viewModel.uiState.test {
                 skipItems(1) // Skip loading state
                 val sections = awaitItem() as VaultUiState.Sections
-                val chatSpaceView = sections.mainSpaces.first() as VaultSpaceView.ChatSpace
+                val chatSpaceView = sections.mainSpaces.first() as VaultSpaceView.DataSpaceWithChat
 
                 // Message should be marked as incoming since creator != account id
                 assertEquals(false, chatSpaceView.isLastMessageOutgoing)
@@ -1745,7 +1745,7 @@ class VaultViewModelTest {
                 spaceAccountStatus = SpaceStatus.OK,
                 spaceLocalStatus = SpaceStatus.OK,
                 chatId = chatId,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.DATA,
                 createdDate = now.toDouble()
             )
 
@@ -1791,7 +1791,7 @@ class VaultViewModelTest {
             viewModel.uiState.test {
                 skipItems(1) // Skip loading state
                 val sections = awaitItem() as VaultUiState.Sections
-                val chatSpaceView = sections.mainSpaces.first() as VaultSpaceView.ChatSpace
+                val chatSpaceView = sections.mainSpaces.first() as VaultSpaceView.DataSpaceWithChat
 
                 // This is an outgoing, unsynced message - should show pending indicator
                 assertEquals(true, chatSpaceView.isLastMessageOutgoing)
@@ -1875,13 +1875,18 @@ class VaultViewModelTest {
     }
 
     /**
-     * Test default values when no chat preview exists
+     * Test default values when no chat preview exists.
+     *
+     * Uses a ONE_TO_ONE space because `OneToOneSpace` is built regardless of
+     * whether a chat preview is present, and it retains the sync-status fields
+     * this test is exercising. A DATA space without a preview now maps to
+     * `DataSpace`, which intentionally has no sync fields.
      */
     @Test
     fun `sync status should have safe defaults when no chat preview exists`() = runTest {
         turbineScope {
-            // Given - A chat space without any preview
-            val chatSpaceId = "chat-space"
+            // Given - A 1-1 space without any chat preview
+            val chatSpaceId = "one-to-one-space"
             val chatId = "chat-id"
             val now = System.currentTimeMillis()
 
@@ -1892,7 +1897,7 @@ class VaultViewModelTest {
                 spaceAccountStatus = SpaceStatus.OK,
                 spaceLocalStatus = SpaceStatus.OK,
                 chatId = chatId,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.ONE_TO_ONE,
                 createdDate = now.toDouble()
             )
 
@@ -1924,11 +1929,11 @@ class VaultViewModelTest {
             viewModel.uiState.test {
                 skipItems(1) // Skip loading state
                 val sections = awaitItem() as VaultUiState.Sections
-                val chatSpaceView = sections.mainSpaces.first() as VaultSpaceView.ChatSpace
+                val spaceView = sections.mainSpaces.first() as VaultSpaceView.OneToOneSpace
 
                 // Without a message, defaults should be safe (not outgoing, synced)
-                assertEquals(false, chatSpaceView.isLastMessageOutgoing)
-                assertEquals(true, chatSpaceView.isLastMessageSynced)
+                assertEquals(false, spaceView.isLastMessageOutgoing)
+                assertEquals(true, spaceView.isLastMessageSynced)
             }
         }
     }

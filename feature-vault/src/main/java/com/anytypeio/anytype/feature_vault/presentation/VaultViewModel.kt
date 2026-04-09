@@ -571,51 +571,6 @@ class VaultViewModel(
     }
 
     /**
-     * Create a Vault View for a Chat Space with a chat preview
-     */
-    private suspend fun createChatSpaceView(
-        space: ObjectWrapper.SpaceView,
-        chatPreview: Chat.Preview?,
-        unreadCounts: UnreadCounts?,
-        permissions: Map<Id, SpaceMemberPermissions>,
-        wallpapers: Map<Id, Wallpaper>,
-        chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
-        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
-        accountIdentity: Id?
-    ): VaultSpaceView.ChatSpace {
-        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity, accountIdentity)
-
-        val icon = space.spaceIcon(urlBuilder)
-
-        val perms =
-            space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
-        val isOwner = perms.isOwner()
-
-        val wallpaper = space.targetSpaceId.let { wallpapers[it] } ?: Wallpaper.Default
-        val wallpaperResult = computeWallpaperResult(
-            icon = icon,
-            wallpaper = wallpaper
-        )
-
-        return VaultSpaceView.ChatSpace(
-            space = space,
-            icon = icon,
-            chatPreview = chatPreview,
-            creatorName = previewData.creatorName,
-            messageText = previewData.messageText,
-            messageTime = previewData.messageTime,
-            unreadMessageCount = unreadCounts?.unreadMessages ?: 0,
-            unreadMentionCount = unreadCounts?.unreadMentions ?: 0,
-            attachmentPreviews = previewData.attachmentPreviews,
-            isOwner = isOwner,
-            spaceNotificationState = space.spacePushNotificationMode,
-            wallpaper = wallpaperResult,
-            isLastMessageOutgoing = previewData.isOutgoing,
-            isLastMessageSynced = previewData.isSynced
-        )
-    }
-
-    /**
      * Create a Vault View for One-to-One Space with a chat preview
      */
     private suspend fun createOneToOneSpaceView(

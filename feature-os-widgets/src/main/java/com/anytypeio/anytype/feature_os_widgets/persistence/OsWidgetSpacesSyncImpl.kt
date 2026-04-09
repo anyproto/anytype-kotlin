@@ -29,16 +29,14 @@ class OsWidgetSpacesSyncImpl(
     override suspend fun sync(spaces: List<ObjectWrapper.SpaceView>) {
         Timber.tag(TAG).d("sync called with ${spaces.size} total spaces")
         spaces.forEachIndexed { i, s ->
-            Timber.tag(TAG).d("  input[$i]: name=${s.name}, targetSpaceId=${s.targetSpaceId}, isActive=${s.isActive}, spaceOrder=${s.spaceOrder}")
+            Timber.tag(TAG).d("  input[$i]: name=${s.name}, targetSpaceId=${s.targetSpaceId}, isActive=${s.isActive}, spaceOrder=${s.spaceOrder}, spaceUxType=${s.spaceUxType}")
         }
-        val pinnedSpaces = spaces
-            .filter { it.isActive && !it.spaceOrder.isNullOrEmpty() }
-            .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
+        val activeSpaces = spaces.filter { it.isActive }
 
-        Timber.tag(TAG).d("After filter: ${pinnedSpaces.size} pinned active spaces (from ${spaces.size} total)")
+        Timber.tag(TAG).d("Active spaces: ${activeSpaces.size} (from ${spaces.size} total)")
 
         val entities = mutableListOf<OsWidgetSpaceEntity>()
-        for (space in pinnedSpaces) {
+        for (space in activeSpaces) {
             entities.add(space.toWidgetEntity())
         }
         Timber.tag(TAG).d("Saving ${entities.size} entities to DataStore")
@@ -76,7 +74,8 @@ class OsWidgetSpacesSyncImpl(
             name = name.orEmpty(),
             iconImageUrl = localIconPath,
             iconColorIndex = iconOption?.toInt() ?: 0,
-            spaceUxType = spaceUxType?.ordinal ?: 0
+            spaceUxType = spaceUxType?.ordinal ?: 0,
+            spaceOrder = spaceOrder
         )
     }
 }

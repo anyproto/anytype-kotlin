@@ -32,7 +32,12 @@ data class OsWidgetSpaceEntity(
     /**
      * The SpaceUxType code (DATA=0, CHAT=1, STREAM=2, ONE_TO_ONE=3).
      */
-    val spaceUxType: Int
+    val spaceUxType: Int,
+
+    /**
+     * The space order string for pinned spaces, null if not pinned.
+     */
+    val spaceOrder: String? = null
 )
 
 /**

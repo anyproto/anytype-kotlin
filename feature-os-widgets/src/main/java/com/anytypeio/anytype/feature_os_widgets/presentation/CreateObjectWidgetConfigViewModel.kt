@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
+import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
+import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetCreateObjectEntity
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,21 +28,24 @@ class CreateObjectWidgetConfigViewModel(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
     private val configStore: CreateObjectWidgetConfigStore,
-    private val widgetUpdater: CreateObjectWidgetUpdater
+    private val widgetUpdater: CreateObjectWidgetUpdater,
+    private val launchWallet: LaunchWallet,
+    private val launchAccount: LaunchAccount
 ) : ViewModel() {
 
-    private val _spaces = MutableStateFlow<List<ObjectWrapper.SpaceView>>(emptyList())
-    val spaces: StateFlow<List<ObjectWrapper.SpaceView>> = _spaces.asStateFlow()
+    private val _spaces = MutableStateFlow<List<ObjectWrapper.SpaceView>?>(null)
+    val spaces: StateFlow<List<ObjectWrapper.SpaceView>?> = _spaces.asStateFlow()
 
     private val _selectedSpace = MutableStateFlow<ObjectWrapper.SpaceView?>(null)
     val selectedSpace: StateFlow<ObjectWrapper.SpaceView?> = _selectedSpace.asStateFlow()
 
-    private val _commands = MutableSharedFlow<Command>()
+    private val _commands = MutableSharedFlow<Command>(extraBufferCapacity = 1)
     val commands: SharedFlow<Command> = _commands.asSharedFlow()
 
     init {
         Timber.d("$TAG init: appWidgetId=$appWidgetId")
         viewModelScope.launch {
+            launchMiddleware()
             spaceViews.observe()
                 .map { allSpaces ->
                     allSpaces
@@ -51,6 +57,27 @@ class CreateObjectWidgetConfigViewModel(
                     _spaces.value = filtered
                 }
         }
+    }
+
+    private suspend fun launchMiddleware() {
+        Timber.d("$TAG launching wallet...")
+        val walletResult = launchWallet(BaseUseCase.None)
+        if (walletResult.isLeft) {
+            val error = (walletResult as com.anytypeio.anytype.domain.base.Either.Left).a
+            Timber.e(error, "$TAG wallet launch failed")
+            _commands.emit(Command.ShowError("Failed to start: ${error.message}"))
+            return
+        }
+        Timber.d("$TAG wallet launched")
+        Timber.d("$TAG launching account...")
+        val accountResult = launchAccount(BaseUseCase.None)
+        if (accountResult.isLeft) {
+            val error = (accountResult as com.anytypeio.anytype.domain.base.Either.Left).a
+            Timber.e(error, "$TAG account launch failed")
+            _commands.emit(Command.ShowError("Failed to start: ${error.message}"))
+            return
+        }
+        Timber.d("$TAG account launched")
     }
 
     fun onSpaceSelected(space: ObjectWrapper.SpaceView) {
@@ -111,7 +138,9 @@ class CreateObjectWidgetConfigViewModel(
         private val spaceViews: SpaceViewSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val configStore: CreateObjectWidgetConfigStore,
-        private val widgetUpdater: CreateObjectWidgetUpdater
+        private val widgetUpdater: CreateObjectWidgetUpdater,
+        private val launchWallet: LaunchWallet,
+        private val launchAccount: LaunchAccount
     ) {
         fun create(appWidgetId: Int): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
@@ -122,7 +151,9 @@ class CreateObjectWidgetConfigViewModel(
                         spaceViews = spaceViews,
                         urlBuilder = urlBuilder,
                         configStore = configStore,
-                        widgetUpdater = widgetUpdater
+                        widgetUpdater = widgetUpdater,
+                        launchWallet = launchWallet,
+                        launchAccount = launchAccount
                     ) as T
                 }
             }

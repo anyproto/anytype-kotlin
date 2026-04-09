@@ -289,7 +289,7 @@ class ObjectSetViewModel(
     val navPanelState = permission.map { permission ->
         NavPanelState.fromPermission(
             permission = permission,
-            spaceUxType = spaceViews.get(space = vmParams.space)?.spaceUxType ?: SpaceUxType.DATA,
+            isOneToOneSpace = spaceViews.get(space = vmParams.space)?.isOneToOneSpace == true,
         )
     }
 

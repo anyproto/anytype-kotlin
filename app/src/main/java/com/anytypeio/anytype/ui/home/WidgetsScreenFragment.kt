@@ -142,7 +142,7 @@ class WidgetsScreenFragment : Fragment(),
                             HomeScreenMenu(
                                 expanded = isMenuExpanded,
                                 spaceAccessType = spaceViewState.spaceAccessType,
-                                spaceUxType = spaceViewState.spaceUxType,
+                                isOneToOneSpace = spaceViewState.isOneToOneSpace,
                                 isMuted = isMuted,
                                 onDismiss = { isMenuExpanded = false },
                                 onSpaceSettingsClicked = {

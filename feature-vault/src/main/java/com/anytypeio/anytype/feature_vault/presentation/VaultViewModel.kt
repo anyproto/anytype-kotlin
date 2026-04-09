@@ -8,6 +8,8 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -38,6 +40,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -55,6 +58,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
@@ -135,7 +139,9 @@ class VaultViewModel(
     private val osWidgetSpacesSync: OsWidgetSpacesSync,
     private val osWidgetDataViewSync: OsWidgetDataViewSync,
     private val networkModeProvider: NetworkModeProvider,
-    private val getMembershipFeatures: GetMembershipFeatures
+    private val getMembershipFeatures: GetMembershipFeatures,
+    private val searchObjects: SearchObjects,
+    private val userSettingsRepository: UserSettingsRepository
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -207,6 +213,10 @@ class VaultViewModel(
 
     private val _uiState = MutableStateFlow<VaultUiState>(VaultUiState.Loading)
     val uiState: StateFlow<VaultUiState> = _uiState.asStateFlow()
+
+    val isCompactMode: StateFlow<Boolean> = userSettingsRepository
+        .observeCompactModeEnabled()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val selectMembersUiState: StateFlow<SelectMembersUiState> = combine(
         spaceFlow,
@@ -897,7 +907,8 @@ class VaultViewModel(
             commands.emit(
                 VaultCommand.CreateNewSpace(
                     channelType = ChannelCreationType.GROUP,
-                    selectedMembers = selectedMembers
+                    selectedMembers = selectedMembers,
+                    writersLimit = _membershipFeatures.value.spaceWriters
                 )
             )
         }
@@ -1156,17 +1167,23 @@ class VaultViewModel(
                     spaceUxType = spaceUxType,
                     emitSettings = emitSettings
                 )
-                commands.emit(command)
+                if (command != null) {
+                    commands.emit(command)
+                }
             }
         )
     }
 
-    private fun resolveNavigationCommand(
+    /**
+     * Resolves which command to emit when entering a space.
+     * Returns null if navigation was handled internally (e.g., homepage object).
+     */
+    private suspend fun resolveNavigationCommand(
         targetSpace: SpaceId,
         config: Config,
         spaceUxType: SpaceUxType?,
         emitSettings: Boolean
-    ): VaultCommand {
+    ): VaultCommand? {
         val chat = config.spaceChatId
         return when {
             emitSettings -> {
@@ -1177,7 +1194,59 @@ class VaultViewModel(
                 VaultCommand.EnterSpaceLevelChat(space = targetSpace, chat = chat)
             }
             else -> {
-                VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
+                val spaceView = spaceViewSubscriptionContainer.get(targetSpace)
+                val homepage = spaceView?.homepage
+                resolveHomepageNavigation(homepage, targetSpace)
+            }
+        }
+    }
+
+    private suspend fun resolveHomepageNavigation(
+        homepage: String?,
+        targetSpace: SpaceId
+    ): VaultCommand? {
+        if (homepage.isNullOrEmpty() || homepage in HOMEPAGE_SPECIAL_CONSTANTS) {
+            return VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
+        }
+        // Homepage is an object ID — resolve and navigate
+        val results = searchObjects.invoke(
+            params = SearchObjects.Params(
+                space = targetSpace,
+                filters = listOf(
+                    DVFilter(
+                        relation = Relations.ID,
+                        value = homepage,
+                        condition = DVFilterCondition.EQUAL
+                    )
+                ),
+                keys = listOf(Relations.ID, Relations.LAYOUT, Relations.SPACE_ID),
+                limit = 1
+            )
+        )
+        val obj = results.getOrNull()?.firstOrNull()
+        if (obj == null) {
+            Timber.w("Homepage object $homepage not found, falling back to widgets")
+            return VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
+        }
+        // Navigate to the homepage object via VaultNavigation
+        // (VaultFragment first opens the widgets screen, then the object on top)
+        when (val nav = obj.navigation()) {
+            is OpenObjectNavigation.OpenParticipant -> {
+                return VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
+            }
+            is OpenObjectNavigation.OpenBookmarkUrl -> {
+                // Open bookmark as editor object, not as external URL
+                proceedWithNavigation(
+                    OpenObjectNavigation.OpenEditor(
+                        target = homepage,
+                        space = obj.spaceId ?: targetSpace.id
+                    )
+                )
+                return null
+            }
+            else -> {
+                proceedWithNavigation(nav)
+                return null
             }
         }
     }
@@ -1623,5 +1692,6 @@ class VaultViewModel(
 
     companion object {
         private const val OS_WIDGET_SYNC_DEBOUNCE_MS = 2000L
+        private val HOMEPAGE_SPECIAL_CONSTANTS = setOf("widgets", "graph", "lastOpened")
     }
 }

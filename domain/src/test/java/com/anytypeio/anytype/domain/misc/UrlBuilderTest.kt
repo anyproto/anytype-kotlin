@@ -26,7 +26,7 @@ class UrlBuilderTest {
         val hash = "image001"
 
         val expected =
-            gateway.provide() + UrlBuilderImpl.IMAGE_PATH + hash + UrlBuilderImpl.LARGE_WIDTH_PARAM
+            gateway.provide() + UrlBuilderImpl.IMAGE_PATH + hash + UrlBuilderImpl.LARGE_WIDTH_ALT_PARAM
         val actual = urlBuilder.large(hash)
         assertEquals(expected, actual)
     }
@@ -35,7 +35,7 @@ class UrlBuilderTest {
     fun `should return url without hash when image hash is empty`() {
         val hash = ""
 
-        val expected = gateway.provide() + UrlBuilderImpl.IMAGE_PATH + UrlBuilderImpl.LARGE_WIDTH_PARAM
+        val expected = gateway.provide() + UrlBuilderImpl.IMAGE_PATH + UrlBuilderImpl.LARGE_WIDTH_ALT_PARAM
         val actual = urlBuilder.large(hash)
         assertEquals(expected, actual)
     }

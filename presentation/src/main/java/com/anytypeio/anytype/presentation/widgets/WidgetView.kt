@@ -338,6 +338,30 @@ sealed class WidgetView {
         override val sectionType: SectionType? = null
     }
 
+    /**
+     * "Create Home" widget shown when homepage is not yet configured.
+     * Displayed at the top of the widget list after the homepage picker was dismissed with "Later".
+     * Tapping opens the homepage picker. X button dismisses permanently (until homepage resets).
+     */
+    data object CreateHome : WidgetView() {
+        override val id: Id get() = WIDGET_CREATE_HOME_ID
+        override val canCreateObjectOfType: Boolean = false
+        override val sectionType: SectionType? = null
+        const val WIDGET_CREATE_HOME_ID = "id.widget.create.home"
+    }
+
+    /**
+     * "Invite Members" widget shown in shared spaces with <= 1 participant.
+     * Counts participants with active and joining status (excludes removing).
+     * X button permanently dismisses per space. Auto-hides when participant count > 1.
+     */
+    data object InviteMembers : WidgetView() {
+        override val id: Id get() = WIDGET_INVITE_MEMBERS_ID
+        override val canCreateObjectOfType: Boolean = false
+        override val sectionType: SectionType? = null
+        const val WIDGET_INVITE_MEMBERS_ID = "id.widget.invite.members"
+    }
+
     interface Draggable
 
     data class ChatCounter(

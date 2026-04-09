@@ -304,6 +304,12 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                     is WidgetView.RecentlyEdited -> {
                         // Recently edited has no menu
                     }
+                    is WidgetView.CreateHome -> {
+                        // No menu for temporary widgets
+                    }
+                    is WidgetView.InviteMembers -> {
+                        // No menu for temporary widgets
+                    }
                 }
             }
         }

@@ -2136,6 +2136,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun spaceParticipantsAddList(request: Rpc.Space.ParticipantsAddList.Request): Rpc.Space.ParticipantsAddList.Response {
+        val encoded = Service.spaceParticipantsAddList(
+            Rpc.Space.ParticipantsAddList.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.ParticipantsAddList.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.ParticipantsAddList.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun spaceParticipantPermissionsChange(request: Rpc.Space.ParticipantPermissionsChange.Request): Rpc.Space.ParticipantPermissionsChange.Response {
         val encoded = Service.spaceParticipantPermissionsChange(
             Rpc.Space.ParticipantPermissionsChange.Request.ADAPTER.encode(request)

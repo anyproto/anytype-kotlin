@@ -52,6 +52,7 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
             RelationFormat.EMOJI -> context.getString(R.string.relation_format_emoji)
             RelationFormat.OBJECT -> context.getString(R.string.relation_format_object)
             RelationFormat.RELATIONS -> context.getString(R.string.relation_format_relation)
+            RelationFormat.MAP -> context.getString(R.string.undefined)
             RelationFormat.UNDEFINED -> context.getString(R.string.undefined)
         }
     }

@@ -725,6 +725,7 @@ fun RelationFormat.toView() = when (this) {
     RelationFormat.OBJECT -> ColumnView.Format.OBJECT
     RelationFormat.TAG -> ColumnView.Format.TAG
     RelationFormat.RELATIONS -> ColumnView.Format.RELATIONS
+    RelationFormat.MAP -> ColumnView.Format.UNDEFINED
     RelationFormat.UNDEFINED -> ColumnView.Format.UNDEFINED
 }
 

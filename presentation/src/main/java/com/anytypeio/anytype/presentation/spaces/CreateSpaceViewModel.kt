@@ -375,20 +375,45 @@ class CreateSpaceViewModel(
     ) {
         val identities = vmParams.selectedMemberIdentities
         if (identities.isNotEmpty()) {
-            addSpaceMembers.async(
-                AddSpaceMembers.Params(
-                    space = spaceId,
-                    identities = identities
+            val writersLimit = vmParams.writersLimit
+            // Split identities: first N as writers, rest as readers
+            val writers = if (writersLimit > 0) identities.take(writersLimit) else identities
+            val readers = if (writersLimit > 0) identities.drop(writersLimit) else emptyList()
+
+            if (writers.isNotEmpty()) {
+                addSpaceMembers.async(
+                    AddSpaceMembers.Params(
+                        space = spaceId,
+                        identities = writers,
+                        permissions = SpaceMemberPermissions.WRITER
+                    )
+                ).fold(
+                    onSuccess = {
+                        Timber.d("Added ${writers.size} writers to space")
+                    },
+                    onFailure = { e ->
+                        Timber.e(e, "Failed to add writers to space")
+                        sendToast("Failed to add members")
+                    }
                 )
-            ).fold(
-                onSuccess = {
-                    Timber.d("Successfully added ${identities.size} members to space")
-                },
-                onFailure = { e ->
-                    Timber.e(e, "Failed to add members to space")
-                    sendToast("Failed to add members")
-                }
-            )
+            }
+            if (readers.isNotEmpty()) {
+                addSpaceMembers.async(
+                    AddSpaceMembers.Params(
+                        space = spaceId,
+                        identities = readers,
+                        permissions = SpaceMemberPermissions.READER
+                    )
+                ).fold(
+                    onSuccess = {
+                        Timber.d("Added ${readers.size} readers to space")
+                    },
+                    onFailure = { e ->
+                        Timber.e(e, "Failed to add readers to space")
+                        sendToast("Failed to add members")
+                    }
+                )
+            }
         }
         finishSpaceCreation(spaceId = spaceId.id)
     }
@@ -440,7 +465,8 @@ class CreateSpaceViewModel(
 
     data class VmParams(
         val channelType: ChannelCreationType,
-        val selectedMemberIdentities: List<String> = emptyList()
+        val selectedMemberIdentities: List<String> = emptyList(),
+        val writersLimit: Int = 0
     )
 
     data class CreateSpaceError(val msg: String)

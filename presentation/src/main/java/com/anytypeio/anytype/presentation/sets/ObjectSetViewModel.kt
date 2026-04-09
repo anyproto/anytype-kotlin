@@ -29,7 +29,6 @@ import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.permissions.layoutsSupportsEmojiAndImages
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -2903,10 +2902,9 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
     }
 
     private suspend fun fetchAndProcessObjectTypes(selectedType: Id, widgetState: TypeTemplatesWidgetUI.Data) {
-        // Get space UX type for context-aware filtering
-        val spaceView = spaceViews.get(vmParams.space)
-        val spaceUxType = spaceView?.spaceUxType
-        val createLayouts = getCreateObjectLayouts(spaceView?.isOneToOneSpace == true)
+        // Determine whether this is a 1-1 space for context-aware filtering / sorting.
+        val isOneToOneSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
+        val createLayouts = getCreateObjectLayouts(isOneToOneSpace)
 
         val allTypes = storeOfObjectTypes.getAll()
         val filteredTypes = allTypes.filter { type ->
@@ -2915,8 +2913,7 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
                 && type.recommendedLayout != ObjectType.Layout.PARTICIPANT
                 && type.uniqueKey != ObjectTypeIds.TEMPLATE
         }
-        val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
-        val sortedTypes = filteredTypes.sortByTypePriority(isChatSpace)
+        val sortedTypes = filteredTypes.sortByTypePriority(isChatSpace = isOneToOneSpace)
         val list = buildList {
             add(TemplateObjectTypeView.Search)
             addAll(sortedTypes.toTemplateObjectTypeViewItems(selectedType))

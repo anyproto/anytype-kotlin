@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.fold
@@ -71,15 +70,13 @@ class SpaceTypesViewModel(
             storeOfObjectTypes.trackChanges()
                 .collectLatest { event ->
 
-                    // Get space UX type to determine which layouts to exclude
-                    val spaceView = spaceViewContainer.get(vmParams.spaceId)
-                    val spaceUxType = spaceView?.spaceUxType
-                    
                     // Build dynamic exclusion list based on space type
+                    val isOneToOneSpace =
+                        spaceViewContainer.get(vmParams.spaceId)?.isOneToOneSpace == true
                     val excludedLayouts = buildList {
                         addAll(baseSystemLayouts)
-                        // Exclude CHAT_DERIVED and CHAT in Chat and One-to-One Spaces
-                        if (spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE) {
+                        // Exclude CHAT_DERIVED and CHAT in 1-1 spaces
+                        if (isOneToOneSpace) {
                             add(ObjectType.Layout.CHAT_DERIVED)
                             add(ObjectType.Layout.CHAT)
                         }

@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.UrlBuilder
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -156,18 +155,19 @@ fun SpaceGridItem(
  * Converts ObjectWrapper.SpaceView to SpaceIconView for rendering.
  */
 fun ObjectWrapper.SpaceView.toSpaceIconView(urlBuilder: UrlBuilder): SpaceIconView {
-    val isChat = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
+    // Only 1-1 spaces get the round ChatSpace-variant icon now.
+    val isOneToOne = isOneToOneSpace
     val color = iconOption?.toInt()?.let { SystemColor.color(it) } ?: SystemColor.SKY
     val imageUrl = iconImage?.takeIf { it.isNotEmpty() }?.let { urlBuilder.medium(it) }
 
     return if (imageUrl != null) {
-        if (isChat) {
+        if (isOneToOne) {
             SpaceIconView.ChatSpace.Image(url = imageUrl, color = color)
         } else {
             SpaceIconView.DataSpace.Image(url = imageUrl, color = color)
         }
     } else {
-        if (isChat) {
+        if (isOneToOne) {
             SpaceIconView.ChatSpace.Placeholder(color = color, name = name.orEmpty())
         } else {
             SpaceIconView.DataSpace.Placeholder(color = color, name = name.orEmpty())

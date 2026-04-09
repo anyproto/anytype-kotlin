@@ -54,7 +54,6 @@ import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -5607,9 +5606,9 @@ class EditorViewModel(
             }
             _objectTypes.clear()
             _objectTypes.addAll(filteredTypes)
-            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
-            val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
-            val sortedTypes = filteredTypes.sortByTypePriority(isChatSpace)
+            val sortedTypes = filteredTypes.sortByTypePriority(
+                isChatSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
+            )
             val views = sortedTypes.toObjectTypeViews(
                 includeListTypes = true,
                 includeBookmarkType = true
@@ -6810,9 +6809,9 @@ class EditorViewModel(
             }
             _objectTypes.clear()
             _objectTypes.addAll(filteredTypes)
-            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
-            val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
-            val sortedObjects = filteredTypes.sortByTypePriority(isChatSpace)
+            val sortedObjects = filteredTypes.sortByTypePriority(
+                isChatSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
+            )
             val items = buildList {
                 add(TypesWidgetItem.Search)
                 addAll(

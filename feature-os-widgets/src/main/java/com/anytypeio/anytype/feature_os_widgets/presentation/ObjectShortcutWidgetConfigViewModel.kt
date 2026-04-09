@@ -14,7 +14,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.UrlBuilder
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -77,7 +76,7 @@ class ObjectShortcutWidgetConfigViewModel(
     private fun loadSpaces() {
         val allSpaces = spaceViews.get()
         val filtered = allSpaces
-            .filter { it.isActive && it.spaceUxType != SpaceUxType.CHAT && it.spaceUxType != SpaceUxType.ONE_TO_ONE }
+            .filter { it.isActive && !it.isOneToOneSpace }
             .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
         Timber.d("$TAG loadSpaces: total=${allSpaces.size}, filtered=${filtered.size}")
         _spaces.value = filtered

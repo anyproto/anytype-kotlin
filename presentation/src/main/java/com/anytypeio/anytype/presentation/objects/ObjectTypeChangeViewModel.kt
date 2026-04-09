@@ -57,7 +57,7 @@ class ObjectTypeChangeViewModel(
         // Determine space UX type to decide whether CHAT types should be shown
         val spaceView = spaceViews.get(vmParams.spaceId)
         val spaceUxType = spaceView?.spaceUxType
-        val createLayouts = getCreateObjectLayouts(spaceUxType)
+        val createLayouts = getCreateObjectLayouts(spaceView?.isOneToOneSpace == true)
 
         val recommendedLayouts = when (vmParams.screen) {
             Screen.DATA_VIEW_SOURCE,

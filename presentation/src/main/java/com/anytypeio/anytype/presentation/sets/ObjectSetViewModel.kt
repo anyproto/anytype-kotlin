@@ -2906,7 +2906,7 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
         // Get space UX type for context-aware filtering
         val spaceView = spaceViews.get(vmParams.space)
         val spaceUxType = spaceView?.spaceUxType
-        val createLayouts = getCreateObjectLayouts(spaceUxType)
+        val createLayouts = getCreateObjectLayouts(spaceView?.isOneToOneSpace == true)
 
         val allTypes = storeOfObjectTypes.getAll()
         val filteredTypes = allTypes.filter { type ->

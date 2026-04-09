@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SupportedLayouts
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -64,28 +63,28 @@ class ObjectTypesGroupWidgetContainer(
             hasInstanceContainer.observe(),
             spaceViewContainer.observe(
                 space = spaceId,
-                keys = listOf(Relations.SPACE_UX_TYPE),
-                mapper = { it.spaceUxType }
+                keys = listOf(Relations.SPACE_TYPE, Relations.SPACE_UX_TYPE),
+                mapper = { it.isOneToOneSpace }
             )
-        ) { allTypes, typesWithInstances, spaceUxType ->
+        ) { allTypes, typesWithInstances, isOneToOneSpace ->
             // Convert Meta set to map for quick lookup by uniqueKey
             val typesWithInstancesKeys = typesWithInstances.map { it.uniqueKey }.toSet()
-            buildView(allTypes, typesWithInstancesKeys, spaceUxType)
+            buildView(allTypes, typesWithInstancesKeys, isOneToOneSpace)
         }
     }
 
     private fun buildView(
         allTypes: List<ObjectWrapper.Type>,
         typesWithObjects: Set<String>,
-        spaceUxType: SpaceUxType?
+        isOneToOneSpace: Boolean
     ): WidgetView.ObjectTypesGroup {
         // Get system layouts based on space context
-        val systemLayoutsForSpace = SupportedLayouts.getSystemLayouts(spaceUxType)
+        val systemLayoutsForSpace = SupportedLayouts.getSystemLayouts(isOneToOneSpace)
         val excludedLayouts = systemLayoutsForSpace + SupportedLayouts.dateLayouts + listOf(
             ObjectType.Layout.OBJECT_TYPE,
             ObjectType.Layout.PARTICIPANT
         )
-        
+
         // Filter out invalid types and types without objects
         val filteredObjectTypes = allTypes
             .filter { objectType ->
@@ -96,12 +95,12 @@ class ObjectTypesGroupWidgetContainer(
                 objectType.uniqueKey != ObjectTypeIds.TEMPLATE &&
                 typesWithObjects.contains(objectType.uniqueKey) // Only show types with objects
             }
-        
+
         Timber.d("ObjectTypesGroupWidgetContainer: allTypes = ${allTypes.size}, withObjects = ${typesWithObjects.size}, filtered = ${filteredObjectTypes.size}")
-        
-        // Sort types by priority using shared extension
-        val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
-        val sortedTypes = filteredObjectTypes.sortByTypePriority(isChatSpace)
+
+        // Sort types by priority using shared extension. CHAT-type spaces no
+        // longer exist, so the isChatSpace sort flag collapses to isOneToOneSpace.
+        val sortedTypes = filteredObjectTypes.sortByTypePriority(isChatSpace = isOneToOneSpace)
         
         // Map types to type rows
         val typeRows = sortedTypes.map { objectType ->

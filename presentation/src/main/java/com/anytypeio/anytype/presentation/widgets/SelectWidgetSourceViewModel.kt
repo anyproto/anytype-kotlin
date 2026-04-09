@@ -270,11 +270,11 @@ class SelectWidgetSourceViewModel(
     }
 
     override suspend fun getSearchObjectsParams(ignore: Id?): SearchObjects.Params {
-        val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+        val isOneToOneSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
         return super.getSearchObjectsParams(ignore).copy(
             filters = ObjectSearchConstants.filterSearchObjects(
                 excludeTypes = true,
-                spaceUxType = spaceUxType
+                isOneToOneSpace = isOneToOneSpace
             )
         )
     }

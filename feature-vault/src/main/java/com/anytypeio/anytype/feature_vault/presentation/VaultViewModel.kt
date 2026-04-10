@@ -398,8 +398,10 @@ class VaultViewModel(
                 previews.maxByOrNull { it.message?.createdAt ?: 0L } ?: previews.firstOrNull()
             }
 
+        val groupedPreviews = chatPreviews.groupBy { it.space.id }
+
         // Calculate total unread counts for all chats per space
-        val unreadCountsPerSpace = chatPreviews.groupBy { it.space.id }
+        val unreadCountsPerSpace = groupedPreviews
             .mapValues { (_, previews) ->
                 // Message count: sum all messages and cap at 999 (displayed as number badge in UI)
                 val totalUnreadMessages = previews.sumOf { it.state?.unreadMessages?.counter ?: 0 }.coerceAtMost(999)
@@ -412,7 +414,7 @@ class VaultViewModel(
         val chatDetailsMap = chatDetails.associateBy { it.id }
 
         // Collect chat names with unread messages per space, ordered by most recent first
-        val chatNamesPerSpace = chatPreviews.groupBy { it.space.id }
+        val chatNamesPerSpace = groupedPreviews
             .mapValues { (_, previews) ->
                 previews
                     .filter { preview ->

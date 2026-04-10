@@ -41,7 +41,6 @@ fun VaultDataSpaceChatCard(
     title: String,
     icon: SpaceIconView,
     spaceBackground: SpaceBackground,
-    chatName: String,
     chatNames: List<String> = emptyList(),
     creatorName: String? = null,
     messageText: String? = null,
@@ -107,8 +106,9 @@ fun VaultDataSpaceChatCard(
                     .weight(1f)
                     .padding(start = 12.dp),
                 title = title,
-                chatName = chatName,
-                chatNames = chatNames,
+                chatNames = chatNames.ifEmpty {
+                    listOfNotNull(spaceView.chatName.takeIf { it.isNotEmpty() })
+                },
                 creatorName = creatorName,
                 messageText = messageText,
                 messageTime = messageTime,
@@ -162,7 +162,6 @@ fun VaultDataSpaceChatCard(
 private fun ContentDataSpaceChat(
     modifier: Modifier,
     title: String,
-    chatName: String,
     chatNames: List<String> = emptyList(),
     creatorName: String? = null,
     messageText: String? = null,
@@ -207,7 +206,7 @@ private fun ContentDataSpaceChat(
         val visibleChatNames = if (showMultiChat) {
             chatNames.take(COMPACT_CHAT_NAMES_VISIBLE_COUNT).joinToString(", ")
         } else {
-            chatName
+            chatNames.firstOrNull().orEmpty()
         }
         val remainingCount = if (showMultiChat) {
             (chatNames.size - COMPACT_CHAT_NAMES_VISIBLE_COUNT).coerceAtLeast(0)
@@ -338,7 +337,6 @@ fun DataSpaceChatWithMessage() {
         VaultDataSpaceChatCard(
             modifier = Modifier.fillMaxWidth(),
             title = "Dream Team Space",
-            chatName = "#general-chat",
             icon = SpaceIconView.DataSpace.Placeholder(),
             chatNames = listOf("Alice", "Bob", "Charlie", "Vera"),
             messageText = "Don't forget grandma's birthday is next Thursday!",
@@ -375,7 +373,7 @@ fun DataSpaceChatMuted() {
         VaultDataSpaceChatCard(
             modifier = Modifier.fillMaxWidth(),
             title = "Project Alpha",
-            chatName = "#announcements",
+            chatNames = listOf("#announcements"),
             icon = SpaceIconView.DataSpace.Placeholder(),
             creatorName = "Bob",
             messageText = "Meeting scheduled for tomorrow at 10 AM",
@@ -413,7 +411,7 @@ fun DataSpaceChatNoMessage() {
         VaultDataSpaceChatCard(
             modifier = Modifier.fillMaxWidth(),
             title = "Empty Chat Space",
-            chatName = "#random",
+            chatNames = listOf("#random"),
             icon = SpaceIconView.DataSpace.Placeholder(),
             creatorName = null,
             messageText = null,

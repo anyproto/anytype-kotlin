@@ -75,7 +75,8 @@ class OsWidgetSpacesSyncImpl(
             iconImageUrl = localIconPath,
             iconColorIndex = iconOption?.toInt() ?: 0,
             spaceUxType = spaceUxType?.ordinal ?: 0,
-            spaceOrder = spaceOrder
+            spaceOrder = spaceOrder,
+            isOneToOneSpace = isOneToOneSpace
         )
     }
 }

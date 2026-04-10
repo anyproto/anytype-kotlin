@@ -249,8 +249,8 @@ class ChatViewModel @Inject constructor(
                     || notificationSetting == NotificationSetting.MENTIONS
                 val canEdit = currentPermission.value?.isOwnerOrEditor() == true
 
-                // Chat space
-                if (spaceView.spaceUxType == SpaceUxType.CHAT || spaceView.spaceUxType == SpaceUxType.ONE_TO_ONE) {
+                // 1-1 space
+                if (spaceView.isOneToOneSpace) {
                     header.value = HeaderView.Default(
                         title = spaceView.name.orEmpty(),
                         icon = spaceView.spaceIcon(builder = urlBuilder),

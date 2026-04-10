@@ -89,7 +89,7 @@ class SharingViewModelTest {
         targetSpaceId = "data-space-1",
         name = "Test Space",
         icon = SpaceIconView.Loading,
-        uxType = SpaceUxType.DATA,
+        isOneToOneSpace = false,
         chatId = null,
         isSelected = false
     )

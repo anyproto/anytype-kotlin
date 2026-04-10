@@ -31,14 +31,13 @@ import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
-import com.anytypeio.anytype.core_models.ext.canCreateAdditionalChats
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.misc.navigation
+import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -95,6 +94,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
+import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
@@ -266,7 +266,8 @@ class HomeScreenViewModel(
     private val scope: CoroutineScope,
     private val stringResourceProvider : StringResourceProvider,
     private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds,
-    private val setSpaceNotificationMode: SetSpaceNotificationMode
+    private val setSpaceNotificationMode: SetSpaceNotificationMode,
+    private val setHomepage: SetHomepage
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -283,6 +284,8 @@ class HomeScreenViewModel(
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
 
     val showHomepagePicker = MutableStateFlow(vmParams.showHomepagePicker)
+    val showCreateHomeWidget = MutableStateFlow(false)
+    val showInviteMembersWidget = MutableStateFlow(false)
 
     private val isEmptyingBinInProgress = MutableStateFlow(false)
 
@@ -618,6 +621,8 @@ class HomeScreenViewModel(
         proceedWithViewStatePipeline()
         proceedWithNavigationPanelState()
         proceedWithSpaceViewSubscription()
+        proceedWithHomepageObservation()
+        proceedWithInviteMembersWidgetObservation()
     }
 
     private fun proceedWithSpaceViewSubscription() {
@@ -652,7 +657,7 @@ class HomeScreenViewModel(
                         spaceIcon = spaceIcon,
                         membersCount = spaceMemberCount,
                         spaceChatId = spaceView.getSingleValue<String>(Relations.CHAT_ID),
-                        spaceUxType = spaceView.spaceUxType ?: SpaceUxType.DATA,
+                        isOneToOneSpace = spaceView.isOneToOneSpace,
                         spaceAccessType = spaceView.spaceAccessType ?: SpaceAccessType.PRIVATE
                     )
                 }
@@ -671,7 +676,7 @@ class HomeScreenViewModel(
                         permission = permission,
                         forceHome = false,
                         spaceAccess = spaceView.spaceAccessType,
-                        spaceUxType = spaceView.spaceUxType
+                        isOneToOneSpace = spaceView.isOneToOneSpace
                     )
                 } else {
                     NavPanelState.Init
@@ -1865,13 +1870,6 @@ class HomeScreenViewModel(
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {
         Timber.d("onResume, deeplink: ${deeplink}")
-        viewModelScope.launch {
-            clearLastOpenedObject.run(
-                ClearLastOpenedObject.Params(
-                    vmParams.spaceId
-                )
-            )
-        }
         when (deeplink) {
             is DeepLinkResolver.Action.Import.Experience -> {
                 viewModelScope.launch {
@@ -2332,20 +2330,11 @@ class HomeScreenViewModel(
     fun onBackClicked() {
         proceedWithCloseOpenObjects()
         viewModelScope.launch {
-            val currentSpaceView = _spaceViewState.value
-            val (spaceUxType, spaceChatId) = when (currentSpaceView) {
-                is SpaceViewState.Success -> {
-                    currentSpaceView.spaceUxType to currentSpaceView.spaceChatId
-                }
-                else -> {
-                    // Default to DATA type if space view not loaded
-                    SpaceUxType.DATA to null
-                }
-            }
+            val currentSpaceView = _spaceViewState.value as? SpaceViewState.Success
             commands.emit(
                 Command.HandleChatSpaceBackNavigation(
-                    spaceUxType = spaceUxType,
-                    spaceChatId = spaceChatId
+                    isOneToOneSpace = currentSpaceView?.isOneToOneSpace == true,
+                    spaceChatId = currentSpaceView?.spaceChatId
                 )
             )
         }
@@ -2850,16 +2839,16 @@ class HomeScreenViewModel(
         val type = TypeKey(dataViewSourceObj.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
         val space = vmParams.spaceId.id
         if (type.key == ObjectTypeIds.CHAT_DERIVED) {
-            // Check if chat creation is allowed based on space UX type
-            val currentSpaceUxType = (spaceViewState.value as? SpaceViewState.Success)?.spaceUxType
-            if (currentSpaceUxType.canCreateAdditionalChats) {
+            // Check if chat creation is allowed for the current space.
+            val currentSpaceState = spaceViewState.value as? SpaceViewState.Success
+            if (currentSpaceState?.canCreateAdditionalChats == true) {
                 commands.emit(
                     Command.CreateChatObject(
                         space = SpaceId(space)
                     )
                 )
             } else {
-                Timber.d("Chat creation not allowed in $currentSpaceUxType space")
+                Timber.d("Chat creation not allowed in current space")
             }
         } else {
             val startTime = System.currentTimeMillis()
@@ -3205,14 +3194,14 @@ class HomeScreenViewModel(
         
         // Special handling for CHAT_DERIVED: show create chat screen instead of direct creation
         if (objType?.uniqueKey == ObjectTypeIds.CHAT_DERIVED) {
-            // Check if chat creation is allowed based on space UX type
-            val currentSpaceUxType = (spaceViewState.value as? SpaceViewState.Success)?.spaceUxType
-            if (currentSpaceUxType.canCreateAdditionalChats) {
+            // Check if chat creation is allowed for the current space.
+            val currentSpaceState = spaceViewState.value as? SpaceViewState.Success
+            if (currentSpaceState?.canCreateAdditionalChats == true) {
                 viewModelScope.launch {
                     commands.emit(Command.CreateChatObject(vmParams.spaceId))
                 }
             } else {
-                Timber.d("Chat creation not allowed in $currentSpaceUxType space")
+                Timber.d("Chat creation not allowed in current space")
             }
             return
         }
@@ -3660,8 +3649,11 @@ class HomeScreenViewModel(
             val membersCount: Int,
             val spaceChatId: Id? = null,
             val spaceAccessType: SpaceAccessType,
-            val spaceUxType: SpaceUxType
-        ) : SpaceViewState()
+            val isOneToOneSpace: Boolean,
+        ) : SpaceViewState() {
+            val canCreateAdditionalChats: Boolean
+                get() = !isOneToOneSpace
+        }
 
         data class Failure(val e: Throwable) : SpaceViewState()
     }
@@ -3696,34 +3688,144 @@ class HomeScreenViewModel(
         )
     }
 
-    //region Homepage Picker
+    //region Homepage Picker & Temporary Widgets
+
+    private fun proceedWithHomepageObservation() {
+        viewModelScope.launch {
+            spaceViewSubscriptionContainer
+                .observe(vmParams.spaceId)
+                .collect { spaceView ->
+                    val homepage = spaceView.homepage
+                    if (!homepage.isNullOrEmpty()) {
+                        // Homepage is set. Reset createHomeDismissed so the widget can reappear
+                        // if homepage is later cleared (e.g., homepage object deleted by user,
+                        // middleware resets homepage to empty).
+                        userSettingsRepository.setCreateHomeDismissed(vmParams.spaceId, false)
+                        showHomepagePicker.value = false
+                        showCreateHomeWidget.value = false
+                    } else {
+                        val pickerDismissed = userSettingsRepository
+                            .getHomepagePickerDismissed(vmParams.spaceId)
+                        if (!pickerDismissed) {
+                            showHomepagePicker.value = true
+                        } else {
+                            val createHomeDismissed = userSettingsRepository
+                                .observeCreateHomeDismissed(vmParams.spaceId)
+                                .first()
+                            if (!createHomeDismissed) {
+                                showCreateHomeWidget.value = true
+                            }
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun proceedWithInviteMembersWidgetObservation() {
+        viewModelScope.launch {
+            combine(
+                spaceViewSubscriptionContainer.observe(vmParams.spaceId),
+                spaceMembers.observe(vmParams.spaceId),
+                userSettingsRepository.observeInviteMembersDismissed(vmParams.spaceId)
+            ) { spaceView, membersStore, dismissed ->
+                val isShared = spaceView.spaceAccessType == SpaceAccessType.SHARED
+                val members = (membersStore as? ActiveSpaceMemberSubscriptionContainer.Store.Data)
+                    ?.members ?: emptyList()
+                // Count active and joining participants, exclude removing
+                val activeOrJoiningCount = members.count { member ->
+                    member.status == ParticipantStatus.ACTIVE
+                            || member.status == ParticipantStatus.JOINING
+                }
+                isShared && activeOrJoiningCount <= 1 && !dismissed
+            }.collect { shouldShow ->
+                showInviteMembersWidget.value = shouldShow
+            }
+        }
+    }
 
     fun onHomepageSelected(type: HomepageType) {
         viewModelScope.launch {
             showHomepagePicker.value = false
+            userSettingsRepository.setHomepagePickerDismissed(vmParams.spaceId, true)
+            val spaceId = vmParams.spaceId.id
             when (type) {
-                HomepageType.WIDGETS -> {
-                    // Widgets is the default — nothing to set
-                    Timber.d("Homepage selected: Widgets (default)")
+                HomepageType.EMPTY -> {
+                    setHomepage.async(
+                        SetHomepage.Params(spaceId = spaceId, homepage = HOMEPAGE_WIDGETS_VALUE)
+                    ).onFailure {
+                        Timber.e(it, "Failed to set homepage to widgets")
+                    }
                 }
                 HomepageType.CHAT -> {
-                    // TODO: get space chat ID and call setHomepage
-                    Timber.d("Homepage selected: Chat")
+                    createAndSetHomepage(
+                        typeKey = ObjectTypeUniqueKeys.CHAT_DERIVED,
+                        spaceId = spaceId
+                    )
                 }
                 HomepageType.PAGE -> {
-                    // TODO: create page object and call setHomepage
-                    Timber.d("Homepage selected: Page")
+                    createAndSetHomepage(
+                        typeKey = ObjectTypeUniqueKeys.PAGE,
+                        spaceId = spaceId
+                    )
                 }
                 HomepageType.COLLECTION -> {
-                    // TODO: create collection object and call setHomepage
-                    Timber.d("Homepage selected: Collection")
+                    createAndSetHomepage(
+                        typeKey = ObjectTypeUniqueKeys.COLLECTION,
+                        spaceId = spaceId
+                    )
                 }
             }
         }
     }
 
+    private suspend fun createAndSetHomepage(typeKey: String, spaceId: Id) {
+        createObject.async(
+            CreateObject.Param(
+                type = TypeKey(typeKey),
+                space = vmParams.spaceId
+            )
+        ).onSuccess { result ->
+            setHomepage.async(
+                SetHomepage.Params(spaceId = spaceId, homepage = result.objectId)
+            ).onFailure {
+                Timber.e(it, "Failed to set homepage")
+            }
+            proceedWithNavigation(result.obj.navigation())
+        }.onFailure {
+            Timber.e(it, "Failed to create object for homepage")
+        }
+    }
+
     fun onHomepagePickerDismissed() {
-        showHomepagePicker.value = false
+        viewModelScope.launch {
+            showHomepagePicker.value = false
+            userSettingsRepository.setHomepagePickerDismissed(vmParams.spaceId, true)
+            // Widget will appear on next visit via proceedWithHomepageObservation
+        }
+    }
+
+    fun onCreateHomeWidgetClicked() {
+        showHomepagePicker.value = true
+    }
+
+    fun onCreateHomeWidgetDismissed() {
+        viewModelScope.launch {
+            showCreateHomeWidget.value = false
+            userSettingsRepository.setCreateHomeDismissed(vmParams.spaceId, true)
+        }
+    }
+
+    fun onInviteMembersWidgetClicked() {
+        viewModelScope.launch {
+            commands.emit(Command.ShareSpace(vmParams.spaceId))
+        }
+    }
+
+    fun onInviteMembersWidgetDismissed() {
+        viewModelScope.launch {
+            showInviteMembersWidget.value = false
+            userSettingsRepository.setInviteMembersDismissed(vmParams.spaceId, true)
+        }
     }
 
     //endregion
@@ -3792,7 +3894,8 @@ class HomeScreenViewModel(
         private val scope: CoroutineScope,
         private val stringResourceProvider : StringResourceProvider,
         private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds,
-        private val setSpaceNotificationMode: SetSpaceNotificationMode
+        private val setSpaceNotificationMode: SetSpaceNotificationMode,
+        private val setHomepage: SetHomepage
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -3858,12 +3961,14 @@ class HomeScreenViewModel(
             scope = scope,
             stringResourceProvider = stringResourceProvider,
             updateObjectTypesOrderIds = updateObjectTypesOrderIds,
-            setSpaceNotificationMode = setSpaceNotificationMode
+            setSpaceNotificationMode = setSpaceNotificationMode,
+            setHomepage = setHomepage
         ) as T
     }
 
     companion object {
         const val HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION = "subscription.home-screen.profile-object"
+        const val HOMEPAGE_WIDGETS_VALUE = "widgets"
 
         // Duration in milliseconds to lock type widget event processing after a drag operation
         // This prevents incoming middleware events from overwriting optimistic UI updates
@@ -3976,7 +4081,7 @@ sealed class Command {
     data object ShowLeaveSpaceWarning : Command()
 
     data class HandleChatSpaceBackNavigation(
-        val spaceUxType: SpaceUxType,
+        val isOneToOneSpace: Boolean,
         val spaceChatId: Id?
     ) : Command()
 

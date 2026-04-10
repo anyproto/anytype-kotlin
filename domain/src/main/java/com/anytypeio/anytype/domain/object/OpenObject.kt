@@ -19,26 +19,7 @@ class OpenObject @Inject constructor(
     override suspend fun doWork(params: Params) = repo.openObject(
         id = params.obj,
         space = params.spaceId
-    ).also {
-        if (params.saveAsLastOpened) {
-            val obj = ObjectWrapper.Basic(it.details[params.obj].orEmpty())
-            val space = obj.spaceId
-            if (!space.isNullOrEmpty()) {
-                settings.setLastOpenedObject(
-                    id = params.obj,
-                    space = SpaceId(space)
-                )
-            }
-        }
-        else {
-            val givenSpace = params.spaceId
-            if (givenSpace.id.isNotEmpty()) {
-                settings.clearLastOpenedObject(
-                    SpaceId(givenSpace.id)
-                )
-            }
-        }
-    }
+    )
 
     data class Params(
         val obj: Id,

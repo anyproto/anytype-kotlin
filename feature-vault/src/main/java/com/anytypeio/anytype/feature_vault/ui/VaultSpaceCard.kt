@@ -1,16 +1,13 @@
 package com.anytypeio.anytype.feature_vault.ui
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,44 +37,18 @@ fun DataSpaceCard(
     spaceBackground: SpaceBackground,
     spaceView: VaultSpaceView.DataSpace,
     expandedSpaceId: String? = null,
+    isCompactMode: Boolean = false,
     onDismissMenu: () -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
     onSpaceSettings: (Id) -> Unit = {},
     onDeleteOrLeaveSpace: (Id, Boolean) -> Unit = { _, _ -> }
 ) {
-    val updatedModifier = when (spaceBackground) {
-        is SpaceBackground.SolidColor -> modifier
-            .fillMaxSize()
-            .height(96.dp)
-            .padding(horizontal = 16.dp)
-            .background(
-                color = spaceBackground.color.copy(alpha = 0.3f),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .padding(horizontal = 16.dp)
+    val iconSize = if (isCompactMode) 44.dp else 64.dp
 
-        is SpaceBackground.Gradient -> modifier
-            .fillMaxSize()
-            .height(96.dp)
-            .padding(horizontal = 16.dp)
-            .background(
-                brush = spaceBackground.brush,
-                shape = RoundedCornerShape(20.dp),
-                alpha = 0.3f
-            )
-            .padding(horizontal = 16.dp)
-
-        SpaceBackground.None -> Modifier
-            .fillMaxSize()
-            .height(96.dp)
-            .padding(horizontal = 16.dp)
-            .background(
-                color = colorResource(id = R.color.background_secondary),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .padding(horizontal = 16.dp)
-    }
+    val updatedModifier = vaultCardBackgroundModifier(
+        modifier, spaceBackground, fixedHeight = !isCompactMode
+    )
 
     Row(
         modifier = updatedModifier,
@@ -85,7 +56,7 @@ fun DataSpaceCard(
     ) {
         SpaceIconView(
             icon = icon,
-            mainSize = 64.dp,
+            mainSize = iconSize,
             modifier = Modifier
         )
         ContentSpace(

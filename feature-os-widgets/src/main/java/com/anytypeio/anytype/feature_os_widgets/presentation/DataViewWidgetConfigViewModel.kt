@@ -87,7 +87,7 @@ class DataViewWidgetConfigViewModel(
 
     init {
         viewModelScope.launch {
-            val result = launchMiddlewareForConfig("DataViewConfig", launchWallet, launchAccount)
+            val result = launchMiddlewareForConfig(TAG, launchWallet, launchAccount)
             if (result is MiddlewareLaunchResult.Failure) {
                 _commands.emit(Command.FinishWithFailure(result.message))
                 return@launch
@@ -339,6 +339,10 @@ class DataViewWidgetConfigViewModel(
         data class FinishWithSuccess(val appWidgetId: Int) : Command()
         data class ShowError(val message: String) : Command()
         data class FinishWithFailure(val message: String) : Command()
+    }
+
+    companion object {
+        private const val TAG = "DataViewConfig"
     }
 
     class Factory @Inject constructor(

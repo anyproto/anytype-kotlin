@@ -33,6 +33,13 @@ import dagger.Component
 import dagger.Module
 import dagger.Provides
 
+/**
+ * Shared DI component for the CreateObject and SpaceShortcut widget config
+ * activities. These two activities are intentionally grouped here because
+ * they share the same set of dependencies and @PerScreen scope — keeping
+ * them on a single component avoids duplicating the entire module graph.
+ * Despite the name, this component also injects [SpaceShortcutWidgetConfigActivity].
+ */
 @Component(
     dependencies = [CreateObjectWidgetConfigDependencies::class],
     modules = [CreateObjectWidgetConfigModule::class]

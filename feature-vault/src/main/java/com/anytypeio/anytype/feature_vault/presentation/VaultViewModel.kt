@@ -411,10 +411,14 @@ class VaultViewModel(
         // Index chatDetails by chat ID for O(1) lookup of chat names
         val chatDetailsMap = chatDetails.associateBy { it.id }
 
-        // Collect all chat names per space, ordered by most recent message first
+        // Collect chat names with unread messages per space, ordered by most recent first
         val chatNamesPerSpace = chatPreviews.groupBy { it.space.id }
             .mapValues { (_, previews) ->
                 previews
+                    .filter { preview ->
+                        (preview.state?.unreadMessages?.counter ?: 0) > 0 ||
+                        (preview.state?.unreadMentions?.counter ?: 0) > 0
+                    }
                     .sortedByDescending { it.message?.createdAt ?: 0L }
                     .mapNotNull { preview ->
                         chatDetailsMap[preview.chat]?.name?.takeIf { it.isNotEmpty() }

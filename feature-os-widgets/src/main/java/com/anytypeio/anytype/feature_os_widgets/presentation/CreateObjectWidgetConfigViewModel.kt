@@ -5,6 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
+import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetCreateObjectEntity
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -13,6 +16,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.UUID
@@ -23,30 +27,40 @@ class CreateObjectWidgetConfigViewModel(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
     private val configStore: CreateObjectWidgetConfigStore,
-    private val widgetUpdater: CreateObjectWidgetUpdater
+    private val widgetUpdater: CreateObjectWidgetUpdater,
+    private val launchWallet: LaunchWallet,
+    private val launchAccount: LaunchAccount
 ) : ViewModel() {
 
-    private val _spaces = MutableStateFlow<List<ObjectWrapper.SpaceView>>(emptyList())
-    val spaces: StateFlow<List<ObjectWrapper.SpaceView>> = _spaces.asStateFlow()
+    private val _spaces = MutableStateFlow<List<ObjectWrapper.SpaceView>?>(null)
+    val spaces: StateFlow<List<ObjectWrapper.SpaceView>?> = _spaces.asStateFlow()
 
     private val _selectedSpace = MutableStateFlow<ObjectWrapper.SpaceView?>(null)
     val selectedSpace: StateFlow<ObjectWrapper.SpaceView?> = _selectedSpace.asStateFlow()
 
-    private val _commands = MutableSharedFlow<Command>()
+    private val _commands = MutableSharedFlow<Command>(extraBufferCapacity = 1)
     val commands: SharedFlow<Command> = _commands.asSharedFlow()
 
     init {
         Timber.d("$TAG init: appWidgetId=$appWidgetId")
-        loadSpaces()
-    }
-
-    private fun loadSpaces() {
-        val allSpaces = spaceViews.get()
-        val filtered = allSpaces
-            .filter { it.isActive && !it.isOneToOneSpace }
-            .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
-        Timber.d("$TAG loadSpaces: total=${allSpaces.size}, filtered=${filtered.size}")
-        _spaces.value = filtered
+        viewModelScope.launch {
+            val result = launchMiddlewareForConfig(TAG, launchWallet, launchAccount)
+            if (result is MiddlewareLaunchResult.Failure) {
+                _commands.emit(Command.FinishWithFailure(result.message))
+                return@launch
+            }
+            awaitFirstSpacesEmission(spaceViews.observe())
+            spaceViews.observe()
+                .map { allSpaces ->
+                    allSpaces
+                        .filter { it.isActive && it.spaceUxType != SpaceUxType.CHAT && it.spaceUxType != SpaceUxType.ONE_TO_ONE }
+                        .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
+                }
+                .collect { filtered ->
+                    Timber.d("$TAG loadSpaces: filtered=${filtered.size}")
+                    _spaces.value = filtered
+                }
+        }
     }
 
     fun onSpaceSelected(space: ObjectWrapper.SpaceView) {
@@ -101,13 +115,16 @@ class CreateObjectWidgetConfigViewModel(
         data class ShowTypeSelection(val spaceId: String) : Command()
         data class FinishWithSuccess(val appWidgetId: Int) : Command()
         data class ShowError(val message: String) : Command()
+        data class FinishWithFailure(val message: String) : Command()
     }
 
     class Factory @Inject constructor(
         private val spaceViews: SpaceViewSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val configStore: CreateObjectWidgetConfigStore,
-        private val widgetUpdater: CreateObjectWidgetUpdater
+        private val widgetUpdater: CreateObjectWidgetUpdater,
+        private val launchWallet: LaunchWallet,
+        private val launchAccount: LaunchAccount
     ) {
         fun create(appWidgetId: Int): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
@@ -118,7 +135,9 @@ class CreateObjectWidgetConfigViewModel(
                         spaceViews = spaceViews,
                         urlBuilder = urlBuilder,
                         configStore = configStore,
-                        widgetUpdater = widgetUpdater
+                        widgetUpdater = widgetUpdater,
+                        launchWallet = launchWallet,
+                        launchAccount = launchAccount
                     ) as T
                 }
             }

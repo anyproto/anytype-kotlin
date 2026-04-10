@@ -18,6 +18,8 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.objectIcon
+import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
+import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -34,6 +36,7 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -46,14 +49,16 @@ class DataViewWidgetConfigViewModel(
     private val getObject: GetObject,
     private val dataStore: DataViewWidgetConfigStore,
     private val itemsFetcher: DataViewItemsFetcher,
-    private val widgetUpdater: DataViewWidgetUpdater
+    private val widgetUpdater: DataViewWidgetUpdater,
+    private val launchWallet: LaunchWallet,
+    private val launchAccount: LaunchAccount
 ) : ViewModel() {
 
     private val _screenState = MutableStateFlow<ScreenState>(ScreenState.SpaceSelection)
     val screenState: StateFlow<ScreenState> = _screenState.asStateFlow()
 
-    private val _spaces = MutableStateFlow<List<ObjectWrapper.SpaceView>>(emptyList())
-    val spaces: StateFlow<List<ObjectWrapper.SpaceView>> = _spaces.asStateFlow()
+    private val _spaces = MutableStateFlow<List<ObjectWrapper.SpaceView>?>(null)
+    val spaces: StateFlow<List<ObjectWrapper.SpaceView>?> = _spaces.asStateFlow()
 
     private val _objectItems = MutableStateFlow<List<ObjectItemView>>(emptyList())
     val objectItems: StateFlow<List<ObjectItemView>> = _objectItems.asStateFlow()
@@ -73,7 +78,7 @@ class DataViewWidgetConfigViewModel(
     private val _viewers = MutableStateFlow<List<ViewerView>>(emptyList())
     val viewers: StateFlow<List<ViewerView>> = _viewers.asStateFlow()
 
-    private val _commands = MutableSharedFlow<Command>()
+    private val _commands = MutableSharedFlow<Command>(extraBufferCapacity = 1)
     val commands: SharedFlow<Command> = _commands.asSharedFlow()
 
     private var searchJob: Job? = null
@@ -81,14 +86,23 @@ class DataViewWidgetConfigViewModel(
     private var lastObjectView: ObjectView? = null
 
     init {
-        loadSpaces()
-    }
-
-    private fun loadSpaces() {
-        val allSpaces = spaceViews.get()
-        _spaces.value = allSpaces
-            .filter { it.isActive && !it.isOneToOneSpace }
-            .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
+        viewModelScope.launch {
+            val result = launchMiddlewareForConfig(TAG, launchWallet, launchAccount)
+            if (result is MiddlewareLaunchResult.Failure) {
+                _commands.emit(Command.FinishWithFailure(result.message))
+                return@launch
+            }
+            awaitFirstSpacesEmission(spaceViews.observe())
+            spaceViews.observe()
+                .map { allSpaces ->
+                    allSpaces
+                        .filter { it.isActive && !it.isOneToOneSpace }
+                        .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
+                }
+                .collect { filtered ->
+                    _spaces.value = filtered
+                }
+        }
     }
 
     fun onSpaceSelected(space: ObjectWrapper.SpaceView) {
@@ -324,6 +338,11 @@ class DataViewWidgetConfigViewModel(
     sealed class Command {
         data class FinishWithSuccess(val appWidgetId: Int) : Command()
         data class ShowError(val message: String) : Command()
+        data class FinishWithFailure(val message: String) : Command()
+    }
+
+    companion object {
+        private const val TAG = "DataViewConfig"
     }
 
     class Factory @Inject constructor(
@@ -333,7 +352,9 @@ class DataViewWidgetConfigViewModel(
         private val getObject: GetObject,
         private val dataStore: DataViewWidgetConfigStore,
         private val itemsFetcher: DataViewItemsFetcher,
-        private val widgetUpdater: DataViewWidgetUpdater
+        private val widgetUpdater: DataViewWidgetUpdater,
+        private val launchWallet: LaunchWallet,
+        private val launchAccount: LaunchAccount
     ) {
         fun create(appWidgetId: Int): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
@@ -347,7 +368,9 @@ class DataViewWidgetConfigViewModel(
                         getObject = getObject,
                         dataStore = dataStore,
                         itemsFetcher = itemsFetcher,
-                        widgetUpdater = widgetUpdater
+                        widgetUpdater = widgetUpdater,
+                        launchWallet = launchWallet,
+                        launchAccount = launchAccount
                     ) as T
                 }
             }

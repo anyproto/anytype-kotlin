@@ -36,7 +36,17 @@ data class OsWidgetSpaceEntity(
      * `spaceUxType: Int` ordinal) deserialize cleanly via `ignoreUnknownKeys`
      * — the correct value is re-populated by the next `sync()` pass.
      */
-    val isOneToOneSpace: Boolean = false
+    val isOneToOneSpace: Boolean = false,
+
+    /**
+     * Legacy ordinal retained for backward-compat deserialization of cached payloads.
+     */
+    val spaceUxType: Int = 0,
+
+    /**
+     * The space order string for pinned spaces, null if not pinned.
+     */
+    val spaceOrder: String? = null
 )
 
 /**

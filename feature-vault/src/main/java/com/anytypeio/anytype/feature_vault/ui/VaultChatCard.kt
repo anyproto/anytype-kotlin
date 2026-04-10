@@ -2,9 +2,7 @@ package com.anytypeio.anytype.feature_vault.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,16 +34,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.AttachmentPreview
 import com.anytypeio.anytype.core_models.ui.AttachmentType
-import com.anytypeio.anytype.core_models.ui.SpaceIconView
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewMedium
@@ -53,9 +44,7 @@ import com.anytypeio.anytype.core_ui.views.CodeChatPreviewRegular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.feature_vault.R
-import com.anytypeio.anytype.feature_vault.presentation.VaultSpaceView
 
 
 /**
@@ -150,123 +139,7 @@ fun vaultCardBackgroundModifier(
     }
 }
 
-@Composable
-private fun ContentChat(
-    modifier: Modifier,
-    title: String,
-    subtitle: String,
-    creatorName: String? = null,
-    messageText: String? = null,
-    messageTime: String? = null,
-    chatPreview: Chat.Preview? = null,
-    unreadMessageCount: Int = 0,
-    unreadMentionCount: Int = 0,
-    attachmentPreviews: List<AttachmentPreview> = emptyList(),
-    isMuted: Boolean? = null,
-    spaceNotificationState: NotificationState? = null,
-    isPinned: Boolean = false,
-    showPendingIndicator: Boolean = false,
-    isCompactMode: Boolean = false
-) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
-        val hasContent = !creatorName.isNullOrEmpty() ||
-                        !messageText.isNullOrEmpty() ||
-                        attachmentPreviews.isNotEmpty() ||
-                        subtitle.isNotEmpty()
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(24.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TitleRow(
-                modifier = Modifier.weight(1f),
-                message = title,
-                messageTime = messageTime,
-                isMuted = isMuted,
-                showPendingIndicator = showPendingIndicator
-            )
-
-            // Show pin icon when no content but is pinned
-            if (!hasContent && isPinned) {
-                Image(
-                    painter = painterResource(R.drawable.ic_pin_18),
-                    contentDescription = stringResource(R.string.content_desc_pin),
-                    modifier = Modifier.size(18.dp),
-                    colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
-                )
-            }
-        }
-
-        if (hasContent) {
-            ChatSubtitleRow(
-                subtitle = subtitle,
-                creatorName = creatorName,
-                messageText = messageText,
-                attachmentPreviews = attachmentPreviews,
-                chatPreview = chatPreview,
-                unreadMessageCount = unreadMessageCount,
-                unreadMentionCount = unreadMentionCount,
-                notificationMode = spaceNotificationState,
-                isPinned = isPinned,
-                maxLines = if (isCompactMode) 1 else 2
-            )
-        }
-    }
-}
-
-@Composable
-private fun ChatSubtitleRow(
-    subtitle: String,
-    creatorName: String?,
-    messageText: String?,
-    attachmentPreviews: List<AttachmentPreview>,
-    chatPreview: Chat.Preview?,
-    unreadMessageCount: Int,
-    unreadMentionCount: Int,
-    notificationMode: NotificationState? = null,
-    isPinned: Boolean,
-    maxLines: Int = 2
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        // Extract preview-specific counts for text color (not aggregated counts)
-        val previewUnreadMessages = chatPreview?.state?.unreadMessages?.counter ?: 0
-        val previewUnreadMentions = chatPreview?.state?.unreadMentions?.counter ?: 0
-
-        val textColor = getChatTextColor(
-            notificationMode = notificationMode,
-            unreadMessageCount = previewUnreadMessages,
-            unreadMentionCount = previewUnreadMentions
-        )
-        val (chatText, inlineContent) = buildChatContentWithInlineIcons(
-            creatorName = creatorName,
-            messageText = messageText,
-            attachmentPreviews = attachmentPreviews,
-            fallbackSubtitle = subtitle,
-            textColor = textColor
-        )
-
-        Text(
-            text = chatText,
-            inlineContent = inlineContent,
-            modifier = Modifier.weight(1f),
-            maxLines = maxLines,
-            lineHeight = 20.sp,
-            overflow = TextOverflow.Ellipsis,
-            color = textColor,
-        )
-
-        UnreadIndicatorsRow(
-            unreadMessageCount = unreadMessageCount,
-            unreadMentionCount = unreadMentionCount,
-            notificationMode = notificationMode,
-            isPinned = isPinned
-        )
-    }
-}
+const val COMPACT_CHAT_NAMES_VISIBLE_COUNT = 3
 
 @Composable
 fun UnreadIndicatorsRow(

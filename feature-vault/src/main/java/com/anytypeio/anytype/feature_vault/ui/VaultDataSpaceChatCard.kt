@@ -41,7 +41,7 @@ fun VaultDataSpaceChatCard(
     title: String,
     icon: SpaceIconView,
     spaceBackground: SpaceBackground,
-    chatName: String,
+    chatNames: List<String> = emptyList(),
     creatorName: String? = null,
     messageText: String? = null,
     messageTime: String? = null,
@@ -82,7 +82,7 @@ fun VaultDataSpaceChatCard(
         val isSpaceMuted = spaceNotificationState == NotificationState.DISABLE
 
         if (isCompactMode && !hasUnread) {
-            // Compact read state: name only
+            // Compact read state: name + pin
             Text(
                 text = title.ifEmpty { stringResource(id = R.string.untitled) },
                 modifier = Modifier
@@ -93,13 +93,20 @@ fun VaultDataSpaceChatCard(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+            if (isPinned) {
+                Image(
+                    painter = painterResource(R.drawable.ic_pin_18),
+                    contentDescription = stringResource(R.string.content_desc_pin),
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         } else {
             ContentDataSpaceChat(
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = 12.dp),
                 title = title,
-                chatName = chatName,
+                chatNames = chatNames,
                 creatorName = creatorName,
                 messageText = messageText,
                 messageTime = messageTime,
@@ -153,7 +160,7 @@ fun VaultDataSpaceChatCard(
 private fun ContentDataSpaceChat(
     modifier: Modifier,
     title: String,
-    chatName: String,
+    chatNames: List<String> = emptyList(),
     creatorName: String? = null,
     messageText: String? = null,
     messageTime: String? = null,
@@ -192,23 +199,47 @@ private fun ContentDataSpaceChat(
         val previewUnreadMessages = chatPreview?.state?.unreadMessages?.counter ?: 0
         val previewUnreadMentions = chatPreview?.state?.unreadMentions?.counter ?: 0
 
-        // Line 2: Chat Name + Indicators
+        // Line 2: Chat Name(s) + Indicators
+        val showAggregatedNames = isCompactMode && chatNames.size > 1
+        val visibleChatNames = if (showAggregatedNames) {
+            chatNames.take(COMPACT_CHAT_NAMES_VISIBLE_COUNT).joinToString(", ")
+        } else {
+            chatNames.firstOrNull().orEmpty()
+        }
+        val remainingCount = if (showAggregatedNames) {
+            (chatNames.size - COMPACT_CHAT_NAMES_VISIBLE_COUNT).coerceAtLeast(0)
+        } else {
+            0
+        }
+
+        val chatTextColor = getChatTextColor(
+            notificationMode = spaceNotificationState,
+            unreadMessageCount = previewUnreadMessages,
+            unreadMentionCount = previewUnreadMentions
+        )
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = chatName,
-                style = CodeChatPreviewMedium,
-                color = getChatTextColor(
-                    notificationMode = spaceNotificationState,
-                    unreadMessageCount = previewUnreadMessages,
-                    unreadMentionCount = previewUnreadMentions
-                ),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f)
-            )
+            Row(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = visibleChatNames,
+                    style = CodeChatPreviewMedium,
+                    color = chatTextColor,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+                if (remainingCount > 0) {
+                    Text(
+                        text = " +$remainingCount",
+                        style = CodeChatPreviewMedium,
+                        color = chatTextColor,
+                        maxLines = 1
+                    )
+                }
+            }
 
             if (isCompactMode) {
                 // In compact mode, badges go on line 2 (next to chat name)
@@ -304,13 +335,13 @@ fun DataSpaceChatWithMessage() {
         VaultDataSpaceChatCard(
             modifier = Modifier.fillMaxWidth(),
             title = "Dream Team Space",
-            chatName = "#general-chat",
             icon = SpaceIconView.DataSpace.Placeholder(),
-            creatorName = "Alice",
+            chatNames = listOf("Alice", "Bob", "Charlie", "Vera"),
             messageText = "Don't forget grandma's birthday is next Thursday!",
             messageTime = "17:01",
             unreadMessageCount = 2,
             unreadMentionCount = 1,
+            isCompactMode = true,
             spaceNotificationState = NotificationState.ALL,
             isPinned = false,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
@@ -321,7 +352,6 @@ fun DataSpaceChatWithMessage() {
                 icon = SpaceIconView.DataSpace.Placeholder(),
                 isOwner = true,
                 chatNotificationState = NotificationState.ALL,
-                chatName = "@feature-chat",
                 spaceNotificationState = NotificationState.ALL
             )
         )
@@ -340,7 +370,7 @@ fun DataSpaceChatMuted() {
         VaultDataSpaceChatCard(
             modifier = Modifier.fillMaxWidth(),
             title = "Project Alpha",
-            chatName = "#announcements",
+            chatNames = listOf("#announcements"),
             icon = SpaceIconView.DataSpace.Placeholder(),
             creatorName = "Bob",
             messageText = "Meeting scheduled for tomorrow at 10 AM",
@@ -358,7 +388,6 @@ fun DataSpaceChatMuted() {
                 ),
                 icon = SpaceIconView.DataSpace.Placeholder(),
                 isOwner = false,
-                chatName = "@feature-chat",
                 chatNotificationState = NotificationState.DISABLE,
                 spaceNotificationState = NotificationState.DISABLE
             )
@@ -378,7 +407,7 @@ fun DataSpaceChatNoMessage() {
         VaultDataSpaceChatCard(
             modifier = Modifier.fillMaxWidth(),
             title = "Empty Chat Space",
-            chatName = "#random",
+            chatNames = listOf("#random"),
             icon = SpaceIconView.DataSpace.Placeholder(),
             creatorName = null,
             messageText = null,
@@ -394,7 +423,6 @@ fun DataSpaceChatNoMessage() {
                 ),
                 icon = SpaceIconView.DataSpace.Placeholder(),
                 isOwner = true,
-                chatName = "@feature-chat",
                 chatNotificationState = NotificationState.DISABLE,
                 spaceNotificationState = NotificationState.ALL
             )

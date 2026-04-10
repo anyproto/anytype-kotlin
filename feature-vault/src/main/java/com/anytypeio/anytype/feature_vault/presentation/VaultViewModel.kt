@@ -398,8 +398,10 @@ class VaultViewModel(
                 previews.maxByOrNull { it.message?.createdAt ?: 0L } ?: previews.firstOrNull()
             }
 
+        val groupedPreviews = chatPreviews.groupBy { it.space.id }
+
         // Calculate total unread counts for all chats per space
-        val unreadCountsPerSpace = chatPreviews.groupBy { it.space.id }
+        val unreadCountsPerSpace = groupedPreviews
             .mapValues { (_, previews) ->
                 // Message count: sum all messages and cap at 999 (displayed as number badge in UI)
                 val totalUnreadMessages = previews.sumOf { it.state?.unreadMessages?.counter ?: 0 }.coerceAtMost(999)
@@ -410,6 +412,28 @@ class VaultViewModel(
 
         // Index chatDetails by chat ID for O(1) lookup of chat names
         val chatDetailsMap = chatDetails.associateBy { it.id }
+
+        // Collect chat names with unread messages per space, ordered by most recent first.
+        // Falls back to the most recent chat name when no chats have unreads (for non-compact view).
+        val chatNamesPerSpace = groupedPreviews
+            .mapValues { (_, previews) ->
+                val unreadNames = previews
+                    .filter { preview ->
+                        (preview.state?.unreadMessages?.counter ?: 0) > 0 ||
+                        (preview.state?.unreadMentions?.counter ?: 0) > 0
+                    }
+                    .sortedByDescending { it.message?.createdAt ?: 0L }
+                    .mapNotNull { preview ->
+                        chatDetailsMap[preview.chat]?.name?.takeIf { it.isNotEmpty() }
+                    }
+                unreadNames.ifEmpty {
+                    listOfNotNull(
+                        previews.maxByOrNull { it.message?.createdAt ?: 0L }
+                            ?.let { chatDetailsMap[it.chat]?.name?.takeIf { n -> n.isNotEmpty() } }
+                    )
+                }
+            }
+
         // Map all active spaces to VaultSpaceView objects
         val allSpacesRaw = spacesFromFlow
             .filter { space -> (space.isActive || space.isLoading) }
@@ -421,8 +445,11 @@ class VaultViewModel(
             val unreadCounts = space.targetSpaceId?.let { spaceId ->
                 unreadCountsPerSpace[spaceId]
             }
+            val chatNames = space.targetSpaceId?.let { spaceId ->
+                chatNamesPerSpace[spaceId]
+            } ?: emptyList()
 
-            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
+            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, unreadCounts, chatNames, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
         }
 
         // Loading state is now managed in the main combine flow, not here
@@ -481,6 +508,7 @@ class VaultViewModel(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
         unreadCounts: UnreadCounts?,
+        chatNames: List<String>,
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
@@ -494,7 +522,7 @@ class VaultViewModel(
             }
             // Data space with chat preview → VaultSpaceView.DataSpaceWithChat
             chatPreview != null -> {
-                createDataSpaceWithChatView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
+                createDataSpaceWithChatView(space, chatPreview, unreadCounts, chatNames, permissions, wallpapers, participantsByIdentity, accountIdentity)
             }
             // Data space without chat preview → VaultSpaceView.DataSpace
             else -> {
@@ -621,9 +649,9 @@ class VaultViewModel(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview,
         unreadCounts: UnreadCounts?,
+        chatNames: List<String>,
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
-        chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
         participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
         accountIdentity: Id?
     ): VaultSpaceView.DataSpaceWithChat {
@@ -640,9 +668,6 @@ class VaultViewModel(
             icon = icon,
             wallpaper = wallpaper
         )
-
-        // Lookup chat name from chat details subscription
-        val chatName = chatDetailsMap[chatPreview.chat]?.name.orEmpty()
 
         return VaultSpaceView.DataSpaceWithChat(
             space = space,
@@ -661,7 +686,7 @@ class VaultViewModel(
             ),
             wallpaper = wallpaperResult,
             spaceNotificationState = space.spacePushNotificationMode,
-            chatName = chatName,
+            chatNames = chatNames,
             isLastMessageOutgoing = previewData.isOutgoing,
             isLastMessageSynced = previewData.isSynced
         )

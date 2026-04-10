@@ -96,7 +96,7 @@ class DataViewWidgetConfigViewModel(
             spaceViews.observe()
                 .map { allSpaces ->
                     allSpaces
-                        .filter { it.isActive && it.spaceUxType != SpaceUxType.CHAT && it.spaceUxType != SpaceUxType.ONE_TO_ONE }
+                        .filter { it.isActive && !it.isOneToOneSpace }
                         .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
                 }
                 .collect { filtered ->

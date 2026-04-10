@@ -413,10 +413,11 @@ class VaultViewModel(
         // Index chatDetails by chat ID for O(1) lookup of chat names
         val chatDetailsMap = chatDetails.associateBy { it.id }
 
-        // Collect chat names with unread messages per space, ordered by most recent first
+        // Collect chat names with unread messages per space, ordered by most recent first.
+        // Falls back to the most recent chat name when no chats have unreads (for non-compact view).
         val chatNamesPerSpace = groupedPreviews
             .mapValues { (_, previews) ->
-                previews
+                val unreadNames = previews
                     .filter { preview ->
                         (preview.state?.unreadMessages?.counter ?: 0) > 0 ||
                         (preview.state?.unreadMentions?.counter ?: 0) > 0
@@ -425,6 +426,12 @@ class VaultViewModel(
                     .mapNotNull { preview ->
                         chatDetailsMap[preview.chat]?.name?.takeIf { it.isNotEmpty() }
                     }
+                unreadNames.ifEmpty {
+                    listOfNotNull(
+                        previews.maxByOrNull { it.message?.createdAt ?: 0L }
+                            ?.let { chatDetailsMap[it.chat]?.name?.takeIf { n -> n.isNotEmpty() } }
+                    )
+                }
             }
 
         // Map all active spaces to VaultSpaceView objects
@@ -515,7 +522,7 @@ class VaultViewModel(
             }
             // Data space with chat preview → VaultSpaceView.DataSpaceWithChat
             chatPreview != null -> {
-                createDataSpaceWithChatView(space, chatPreview, unreadCounts, chatNames, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
+                createDataSpaceWithChatView(space, chatPreview, unreadCounts, chatNames, permissions, wallpapers, participantsByIdentity, accountIdentity)
             }
             // Data space without chat preview → VaultSpaceView.DataSpace
             else -> {
@@ -645,7 +652,6 @@ class VaultViewModel(
         chatNames: List<String>,
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
-        chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
         participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
         accountIdentity: Id?
     ): VaultSpaceView.DataSpaceWithChat {
@@ -662,9 +668,6 @@ class VaultViewModel(
             icon = icon,
             wallpaper = wallpaper
         )
-
-        // Lookup chat name from chat details subscription
-        val chatName = chatDetailsMap[chatPreview.chat]?.name.orEmpty()
 
         return VaultSpaceView.DataSpaceWithChat(
             space = space,
@@ -683,7 +686,6 @@ class VaultViewModel(
             ),
             wallpaper = wallpaperResult,
             spaceNotificationState = space.spacePushNotificationMode,
-            chatName = chatName,
             chatNames = chatNames,
             isLastMessageOutgoing = previewData.isOutgoing,
             isLastMessageSynced = previewData.isSynced

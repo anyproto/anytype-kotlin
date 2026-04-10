@@ -106,9 +106,7 @@ fun VaultDataSpaceChatCard(
                     .weight(1f)
                     .padding(start = 12.dp),
                 title = title,
-                chatNames = chatNames.ifEmpty {
-                    listOfNotNull(spaceView.chatName.takeIf { it.isNotEmpty() })
-                },
+                chatNames = chatNames,
                 creatorName = creatorName,
                 messageText = messageText,
                 messageTime = messageTime,
@@ -354,7 +352,6 @@ fun DataSpaceChatWithMessage() {
                 icon = SpaceIconView.DataSpace.Placeholder(),
                 isOwner = true,
                 chatNotificationState = NotificationState.ALL,
-                chatName = "@feature-chat",
                 spaceNotificationState = NotificationState.ALL
             )
         )
@@ -391,7 +388,6 @@ fun DataSpaceChatMuted() {
                 ),
                 icon = SpaceIconView.DataSpace.Placeholder(),
                 isOwner = false,
-                chatName = "@feature-chat",
                 chatNotificationState = NotificationState.DISABLE,
                 spaceNotificationState = NotificationState.DISABLE
             )
@@ -427,7 +423,6 @@ fun DataSpaceChatNoMessage() {
                 ),
                 icon = SpaceIconView.DataSpace.Placeholder(),
                 isOwner = true,
-                chatName = "@feature-chat",
                 chatNotificationState = NotificationState.DISABLE,
                 spaceNotificationState = NotificationState.ALL
             )

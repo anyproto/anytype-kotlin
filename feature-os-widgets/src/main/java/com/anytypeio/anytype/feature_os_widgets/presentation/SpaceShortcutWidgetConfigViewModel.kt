@@ -50,7 +50,7 @@ class SpaceShortcutWidgetConfigViewModel(
                 .map { allSpaces ->
                     Timber.d("$TAG observe emitted ${allSpaces.size} spaces")
                     allSpaces
-                        .filter { it.isActive }
+                        .filter { it.isActive && !it.isOneToOneSpace }
                         .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
                 }
                 .collect { filtered ->

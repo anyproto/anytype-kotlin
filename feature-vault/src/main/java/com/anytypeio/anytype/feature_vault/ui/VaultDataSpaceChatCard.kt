@@ -225,21 +225,23 @@ private fun ContentDataSpaceChat(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = visibleChatNames,
-                style = CodeChatPreviewMedium,
-                color = chatTextColor,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f)
-            )
-            if (remainingCount > 0) {
+            Row(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = " +$remainingCount",
+                    text = visibleChatNames,
                     style = CodeChatPreviewMedium,
                     color = chatTextColor,
-                    maxLines = 1
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
                 )
+                if (remainingCount > 0) {
+                    Text(
+                        text = " +$remainingCount",
+                        style = CodeChatPreviewMedium,
+                        color = chatTextColor,
+                        maxLines = 1
+                    )
+                }
             }
 
             if (isCompactMode) {
@@ -335,7 +337,7 @@ fun DataSpaceChatWithMessage() {
         )
         VaultDataSpaceChatCard(
             modifier = Modifier.fillMaxWidth(),
-            title = "Dream Team Space1dskjfklsdjfkljsdkljf",
+            title = "Dream Team Space",
             chatName = "#general-chat",
             icon = SpaceIconView.DataSpace.Placeholder(),
             chatNames = listOf("Alice", "Bob", "Charlie", "Vera"),

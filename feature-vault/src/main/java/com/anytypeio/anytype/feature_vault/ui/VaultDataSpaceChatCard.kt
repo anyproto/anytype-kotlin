@@ -200,13 +200,13 @@ private fun ContentDataSpaceChat(
         val previewUnreadMentions = chatPreview?.state?.unreadMentions?.counter ?: 0
 
         // Line 2: Chat Name(s) + Indicators
-        val showMultiChat = isCompactMode && chatNames.size > 1
-        val visibleChatNames = if (showMultiChat) {
+        val showAggregatedNames = isCompactMode && chatNames.size > 1
+        val visibleChatNames = if (showAggregatedNames) {
             chatNames.take(COMPACT_CHAT_NAMES_VISIBLE_COUNT).joinToString(", ")
         } else {
             chatNames.firstOrNull().orEmpty()
         }
-        val remainingCount = if (showMultiChat) {
+        val remainingCount = if (showAggregatedNames) {
             (chatNames.size - COMPACT_CHAT_NAMES_VISIBLE_COUNT).coerceAtLeast(0)
         } else {
             0

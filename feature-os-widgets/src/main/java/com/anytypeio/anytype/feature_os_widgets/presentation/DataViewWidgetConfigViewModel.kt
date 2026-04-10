@@ -21,7 +21,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
-import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -89,7 +88,12 @@ class DataViewWidgetConfigViewModel(
 
     init {
         viewModelScope.launch {
-            launchMiddleware()
+            val result = launchMiddlewareForConfig("DataViewConfig", launchWallet, launchAccount)
+            if (result is MiddlewareLaunchResult.Failure) {
+                _commands.emit(Command.FinishWithFailure(result.message))
+                return@launch
+            }
+            awaitFirstSpacesEmission(spaceViews.observe())
             spaceViews.observe()
                 .map { allSpaces ->
                     allSpaces
@@ -100,27 +104,6 @@ class DataViewWidgetConfigViewModel(
                     _spaces.value = filtered
                 }
         }
-    }
-
-    private suspend fun launchMiddleware() {
-        Timber.d("DataViewConfig launching wallet...")
-        val walletResult = launchWallet(BaseUseCase.None)
-        if (walletResult.isLeft) {
-            val error = (walletResult as com.anytypeio.anytype.domain.base.Either.Left).a
-            Timber.e(error, "DataViewConfig wallet launch failed")
-            _commands.emit(Command.ShowError("Failed to start: ${error.message}"))
-            return
-        }
-        Timber.d("DataViewConfig wallet launched")
-        Timber.d("DataViewConfig launching account...")
-        val accountResult = launchAccount(BaseUseCase.None)
-        if (accountResult.isLeft) {
-            val error = (accountResult as com.anytypeio.anytype.domain.base.Either.Left).a
-            Timber.e(error, "DataViewConfig account launch failed")
-            _commands.emit(Command.ShowError("Failed to start: ${error.message}"))
-            return
-        }
-        Timber.d("DataViewConfig account launched")
     }
 
     fun onSpaceSelected(space: ObjectWrapper.SpaceView) {
@@ -356,6 +339,7 @@ class DataViewWidgetConfigViewModel(
     sealed class Command {
         data class FinishWithSuccess(val appWidgetId: Int) : Command()
         data class ShowError(val message: String) : Command()
+        data class FinishWithFailure(val message: String) : Command()
     }
 
     class Factory @Inject constructor(

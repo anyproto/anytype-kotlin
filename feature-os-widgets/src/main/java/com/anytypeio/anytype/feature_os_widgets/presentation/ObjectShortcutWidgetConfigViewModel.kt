@@ -19,7 +19,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
-import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetObjectShortcutEntity
@@ -78,7 +77,12 @@ class ObjectShortcutWidgetConfigViewModel(
     init {
         Timber.d("$TAG init: appWidgetId=$appWidgetId")
         viewModelScope.launch {
-            launchMiddleware()
+            val result = launchMiddlewareForConfig(TAG, launchWallet, launchAccount)
+            if (result is MiddlewareLaunchResult.Failure) {
+                _commands.emit(Command.FinishWithFailure(result.message))
+                return@launch
+            }
+            awaitFirstSpacesEmission(spaceViews.observe())
             spaceViews.observe()
                 .map { allSpaces ->
                     allSpaces
@@ -90,27 +94,6 @@ class ObjectShortcutWidgetConfigViewModel(
                     _spaces.value = filtered
                 }
         }
-    }
-
-    private suspend fun launchMiddleware() {
-        Timber.d("$TAG launching wallet...")
-        val walletResult = launchWallet(BaseUseCase.None)
-        if (walletResult.isLeft) {
-            val error = (walletResult as com.anytypeio.anytype.domain.base.Either.Left).a
-            Timber.e(error, "$TAG wallet launch failed")
-            _commands.emit(Command.ShowError("Failed to start: ${error.message}"))
-            return
-        }
-        Timber.d("$TAG wallet launched")
-        Timber.d("$TAG launching account...")
-        val accountResult = launchAccount(BaseUseCase.None)
-        if (accountResult.isLeft) {
-            val error = (accountResult as com.anytypeio.anytype.domain.base.Either.Left).a
-            Timber.e(error, "$TAG account launch failed")
-            _commands.emit(Command.ShowError("Failed to start: ${error.message}"))
-            return
-        }
-        Timber.d("$TAG account launched")
     }
 
     fun onSpaceSelected(space: ObjectWrapper.SpaceView) {
@@ -290,6 +273,7 @@ class ObjectShortcutWidgetConfigViewModel(
     sealed class Command {
         data class FinishWithSuccess(val appWidgetId: Int) : Command()
         data class ShowError(val message: String) : Command()
+        data class FinishWithFailure(val message: String) : Command()
     }
 
     class Factory @Inject constructor(

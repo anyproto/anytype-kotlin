@@ -150,6 +150,24 @@ fun vaultCardBackgroundModifier(
     }
 }
 
+const val COMPACT_CHAT_NAMES_VISIBLE_COUNT = 3
+
+/**
+ * Formats a list of chat names for compact mode display.
+ * Shows up to [COMPACT_CHAT_NAMES_VISIBLE_COUNT] names, then appends "+N" for the rest.
+ * Example: "Middleware, General, Berlin +4"
+ */
+fun formatChatNames(chatNames: List<String>): String {
+    if (chatNames.isEmpty()) return ""
+    val visible = chatNames.take(COMPACT_CHAT_NAMES_VISIBLE_COUNT)
+    val remaining = chatNames.size - visible.size
+    return if (remaining > 0) {
+        "${visible.joinToString(", ")} +$remaining"
+    } else {
+        visible.joinToString(", ")
+    }
+}
+
 @Composable
 private fun ContentChat(
     modifier: Modifier,

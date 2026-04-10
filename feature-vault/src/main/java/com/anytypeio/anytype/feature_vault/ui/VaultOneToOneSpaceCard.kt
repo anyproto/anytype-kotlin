@@ -81,7 +81,7 @@ fun VaultOneToOneSpaceCard(
                 spaceView.spaceNotificationState == NotificationState.MENTIONS
 
         if (isCompactMode && !hasUnread) {
-            // Compact read state: name only
+            // Compact read state: name + pin
             Text(
                 text = title.ifEmpty { stringResource(id = R.string.untitled) },
                 modifier = Modifier
@@ -92,6 +92,13 @@ fun VaultOneToOneSpaceCard(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
+            if (isPinned) {
+                Image(
+                    painter = painterResource(R.drawable.ic_pin_18),
+                    contentDescription = stringResource(R.string.content_desc_pin),
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         } else {
             // For ONE_TO_ONE spaces, we never show the creator name
             ContentOneToOne(

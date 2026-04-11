@@ -97,29 +97,19 @@ fun ChatTopToolbar(
                 )
             }
             is ChatViewModel.HeaderView.Default -> {
-                if (header.showAddMembers) {
-                    Image(
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                            .padding(end = 48.dp)
-                            .height(52.dp)
-                            .width(40.dp)
-                            .noRippleClickable {
-                                onInviteMembersClicked()
-                            },
-                        contentScale = ContentScale.Inside,
-                        painter = painterResource(id = R.drawable.ic_space_settings_invite_members),
-                        contentDescription = "Invite members icon",
-                        colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
-                    )
-                }
                 SpaceIconView(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .padding(end = 16.dp),
                     mainSize = 28.dp,
                     icon = header.icon,
-                    onSpaceIconClick = { onSpaceIconClicked() }
+                    onSpaceIconClick = {
+                        if (header.showDropDownMenu) {
+                            showDropdownMenu = !showDropdownMenu
+                        } else {
+                            onSpaceIconClicked()
+                        }
+                    }
                 )
             }
             ChatViewModel.HeaderView.Init -> {
@@ -133,10 +123,16 @@ fun ChatTopToolbar(
                 .padding(horizontal = 100.dp)
                 .fillMaxWidth()
                 .noRippleClickable {
-                    if (header is ChatViewModel.HeaderView.ChatObject && header.showDropDownMenu) {
-                        showDropdownMenu = !showDropdownMenu
-                    } else {
-                        onSpaceNameClicked()
+                    when {
+                        header is ChatViewModel.HeaderView.ChatObject && header.showDropDownMenu -> {
+                            showDropdownMenu = !showDropdownMenu
+                        }
+                        header is ChatViewModel.HeaderView.Default && header.showDropDownMenu -> {
+                            showDropdownMenu = !showDropdownMenu
+                        }
+                        else -> {
+                            onSpaceNameClicked()
+                        }
                     }
                 },
             horizontalArrangement = Arrangement.Center,
@@ -213,6 +209,45 @@ fun ChatTopToolbar(
                     },
                     onSearchClick = {
                         onSearchClick()
+                        showDropdownMenu = false
+                    }
+                )
+            }
+        }
+
+        if (header is ChatViewModel.HeaderView.Default && header.showDropDownMenu) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 52.dp)
+                    .align(Alignment.TopEnd)
+            ) {
+                SpaceChatMenu(
+                    expanded = showDropdownMenu,
+                    currentNotificationSetting = header.notificationSetting,
+                    showInviteMembers = header.showAddMembers,
+                    showCopyLink = header.showAddMembers,
+                    onDismissRequest = {
+                        showDropdownMenu = false
+                    },
+                    onSearchClick = {
+                        onSearchClick()
+                        showDropdownMenu = false
+                    },
+                    onNotificationSettingChanged = { setting ->
+                        onNotificationSettingChanged(setting)
+                        showDropdownMenu = false
+                    },
+                    onInviteMembersClick = {
+                        onInviteMembersClicked()
+                        showDropdownMenu = false
+                    },
+                    onCopyLinkClick = {
+                        onCopyLink()
+                        showDropdownMenu = false
+                    },
+                    onChannelSettingsClick = {
+                        onSpaceIconClicked()
                         showDropdownMenu = false
                     }
                 )

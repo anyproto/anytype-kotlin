@@ -31,6 +31,10 @@ class MainBottomToolbar @JvmOverloads constructor(
     fun addDocClicks() = binding.btnAddDoc.clicks()
     fun shareClicks() = binding.btnShare.clicks()
     fun homeClicks() = binding.btnHome.clicks()
+    // Retained for callers in EditorFragment / ObjectSetFragment. The underlying
+    // button is no longer made visible by `setState` (chat-style spaces are gone),
+    // so this click source is inert in practice — removing the callers is a
+    // separate cleanup outside this refactor's scope.
     fun chatClicks() = binding.btnChat.clicks()
 
     fun setState(state: NavPanelState) {
@@ -41,7 +45,6 @@ class MainBottomToolbar @JvmOverloads constructor(
     private fun updateCreate(state: NavPanelState) {
         val enabled = when (state) {
             is NavPanelState.Default -> state.isCreateEnabled
-            is NavPanelState.Chat -> state.isCreateEnabled
             NavPanelState.Init -> false
         }
         with(binding) {
@@ -56,7 +59,6 @@ class MainBottomToolbar @JvmOverloads constructor(
             // Hide all left items by default
             btnShare.gone()
             btnHome.gone()
-            btnChat.gone()
 
             // Reset share icon to default
             icShare.setImageResource(R.drawable.ic_nav_panel_add_member)
@@ -65,7 +67,6 @@ class MainBottomToolbar @JvmOverloads constructor(
             // Determine leftButtonState
             val leftState = when (state) {
                 is NavPanelState.Default -> state.left
-                is NavPanelState.Chat -> state.left
                 NavPanelState.Init -> return
             }
 
@@ -83,10 +84,6 @@ class MainBottomToolbar @JvmOverloads constructor(
 
                 NavPanelState.LeftButtonState.Home -> {
                     btnHome.visible()
-                }
-
-                NavPanelState.LeftButtonState.Chat -> {
-                    btnChat.visible()
                 }
 
                 NavPanelState.LeftButtonState.Hidden -> {

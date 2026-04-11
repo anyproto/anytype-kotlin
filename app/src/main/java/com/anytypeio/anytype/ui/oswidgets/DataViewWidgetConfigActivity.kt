@@ -127,6 +127,15 @@ class DataViewWidgetConfigActivity : AppCompatActivity() {
                                         Toast.LENGTH_LONG
                                     ).show()
                                 }
+                                is DataViewWidgetConfigViewModel.Command.FinishWithFailure -> {
+                                    Toast.makeText(
+                                        this@DataViewWidgetConfigActivity,
+                                        "Error: ${command.message}",
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                    setResult(Activity.RESULT_CANCELED)
+                                    finish()
+                                }
                             }
                         }
                     }

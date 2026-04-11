@@ -137,7 +137,8 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
     override fun injectDependencies() {
         val vmParams = CreateSpaceViewModel.VmParams(
             channelType = channelType,
-            selectedMemberIdentities = selectedMemberIdentities
+            selectedMemberIdentities = selectedMemberIdentities,
+            writersLimit = args.writersLimit
         )
         componentManager().createSpaceComponent.get(vmParams).inject(this)
     }

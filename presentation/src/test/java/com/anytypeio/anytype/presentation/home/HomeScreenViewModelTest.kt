@@ -90,6 +90,7 @@ import com.anytypeio.anytype.domain.widgets.UpdateObjectTypesOrderIds
 import com.anytypeio.anytype.domain.widgets.ObserveWidgetSections
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
+import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.core_models.WidgetSections
 import com.anytypeio.anytype.core_models.WidgetSectionConfig
@@ -3005,6 +3006,9 @@ class HomeScreenViewModelTest {
     @Mock
     private lateinit var setSpaceNotificationMode: SetSpaceNotificationMode
 
+    @Mock
+    private lateinit var setHomepage: SetHomepage
+
     //region Recently Edited Section Tests
 
     @Test
@@ -3219,7 +3223,8 @@ class HomeScreenViewModelTest {
         scope = GlobalScope,
         stringResourceProvider = stringResourceProvider,
         updateObjectTypesOrderIds = updateObjectTypesOrderIds,
-        setSpaceNotificationMode = setSpaceNotificationMode
+        setSpaceNotificationMode = setSpaceNotificationMode,
+        setHomepage = setHomepage
     )
 
     companion object {

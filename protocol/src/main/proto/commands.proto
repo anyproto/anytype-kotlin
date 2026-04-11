@@ -4436,6 +4436,68 @@ message Rpc {
                 }
             }
         }
+        message SetPlaceholders {
+            message Request {
+                string templateId = 1;
+                repeated anytype.model.Placeholder placeholders = 2;
+            }
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+        message GetPlaceholders {
+            message Request {
+                string templateId = 1;
+            }
+            message Response {
+                Error error = 1;
+                repeated anytype.model.Placeholder placeholders = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+        message DeletePlaceholders {
+            message Request {
+                string templateId = 1;
+                repeated string relationKeys = 2;
+            }
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
     }
 
     message LinkPreview {

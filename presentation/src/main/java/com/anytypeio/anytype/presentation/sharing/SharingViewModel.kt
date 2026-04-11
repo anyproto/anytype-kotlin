@@ -134,7 +134,7 @@ class SharingViewModel(
                                 targetSpaceId = targetSpaceId,
                                 name = spaceView.name.orEmpty(),
                                 icon = spaceView.spaceIcon(urlBuilder),
-                                uxType = spaceView.spaceUxType,
+                                isOneToOneSpace = spaceView.isOneToOneSpace,
                                 chatId = spaceView.chatId,
                                 isSelected = false
                             )

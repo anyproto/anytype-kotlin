@@ -93,6 +93,11 @@ class CreateObjectWidgetConfigActivity : AppCompatActivity(), ObjectTypeSelectio
                                 is CreateObjectWidgetConfigViewModel.Command.ShowError -> {
                                     Toast.makeText(this@CreateObjectWidgetConfigActivity, "Error: ${command.message}", Toast.LENGTH_LONG).show()
                                 }
+                                is CreateObjectWidgetConfigViewModel.Command.FinishWithFailure -> {
+                                    Toast.makeText(this@CreateObjectWidgetConfigActivity, "Error: ${command.message}", Toast.LENGTH_LONG).show()
+                                    setResult(Activity.RESULT_CANCELED)
+                                    finish()
+                                }
                             }
                         }
                     }

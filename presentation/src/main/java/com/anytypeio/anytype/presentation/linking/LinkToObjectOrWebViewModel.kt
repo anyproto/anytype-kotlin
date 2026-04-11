@@ -129,8 +129,8 @@ class LinkToObjectOrWebViewModel(
                 }
             }
             else -> {
-                val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
-                val supportedLayouts = SupportedLayouts.getLayouts(spaceUxType)
+                val isOneToOneSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
+                val supportedLayouts = SupportedLayouts.getLayouts(isOneToOneSpace)
                 val filteredSearchResponse =
                     searchResponse
                         .filter { supportedLayouts.contains(it.layout) }
@@ -238,11 +238,11 @@ class LinkToObjectOrWebViewModel(
         space = vmParams.space,
         limit = ObjectSearchViewModel.SEARCH_LIMIT,
         filters = buildList {
-            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+            val isOneToOneSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
             addAll(
                 ObjectSearchConstants.getFilterLinkTo(
                     ignore = ignore,
-                    spaceUxType = spaceUxType
+                    isOneToOneSpace = isOneToOneSpace
                 )
             )
         },

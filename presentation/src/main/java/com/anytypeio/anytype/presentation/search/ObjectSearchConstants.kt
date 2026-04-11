@@ -12,7 +12,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -27,7 +26,7 @@ object ObjectSearchConstants {
     //region SEARCH OBJECTS
     fun filterSearchObjects(
         excludeTypes: Boolean = false,
-        spaceUxType: SpaceUxType? = null
+        isOneToOneSpace: Boolean = false
     ) = buildList {
         add(
             DVFilter(
@@ -71,8 +70,8 @@ object ObjectSearchConstants {
                 value = ObjectTypeUniqueKeys.PARTICIPANT
             )
         )
-        // Exclude chat types in chat and 1-1 spaces
-        if (spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE) {
+        // Exclude chat types in 1-1 spaces
+        if (isOneToOneSpace) {
             // Filter out objects whose type is chat
             add(
                 DVFilter(
@@ -95,11 +94,11 @@ object ObjectSearchConstants {
                 relation = Relations.LAYOUT,
                 condition = DVFilterCondition.IN,
                 value = if (excludeTypes) {
-                    SupportedLayouts.getObjectSearchLayouts(spaceUxType)
+                    SupportedLayouts.getObjectSearchLayouts(isOneToOneSpace)
                         .filter { it != ObjectType.Layout.OBJECT_TYPE }
                         .map { it.code.toDouble() }
                 } else {
-                    SupportedLayouts.getObjectSearchLayouts(spaceUxType)
+                    SupportedLayouts.getObjectSearchLayouts(isOneToOneSpace)
                         .map { it.code.toDouble() }
                 }
             )
@@ -120,7 +119,7 @@ object ObjectSearchConstants {
     //region LINK TO
     fun getFilterLinkTo(
         ignore: Id?,
-        spaceUxType: SpaceUxType? = null
+        isOneToOneSpace: Boolean = false
     ) = buildList {
         add(
             DVFilter(
@@ -164,8 +163,8 @@ object ObjectSearchConstants {
                 value = ObjectTypeUniqueKeys.PARTICIPANT
             )
         )
-        // Exclude chat types in chat and 1-1 spaces
-        if (spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE) {
+        // Exclude chat types in 1-1 spaces
+        if (isOneToOneSpace) {
             // Filter out objects whose type is chat
             add(
                 DVFilter(
@@ -187,7 +186,7 @@ object ObjectSearchConstants {
             DVFilter(
                 relation = Relations.LAYOUT,
                 condition = DVFilterCondition.IN,
-                value = SupportedLayouts.getObjectSearchLayouts(spaceUxType)
+                value = SupportedLayouts.getObjectSearchLayouts(isOneToOneSpace)
                     .map { it.code.toDouble() }
             )
         )
@@ -271,9 +270,9 @@ object ObjectSearchConstants {
 
     //region ADD OBJECT TO RELATION VALUE
     fun filterAddObjectToRelation(
-        space: Id, 
+        space: Id,
         targetTypes: List<Id>,
-        spaceUxType: SpaceUxType? = null
+        isOneToOneSpace: Boolean = false
     ) = buildList {
         addAll(
             listOf(
@@ -314,7 +313,8 @@ object ObjectSearchConstants {
                 DVFilter(
                     relation = Relations.LAYOUT,
                     condition = DVFilterCondition.IN,
-                    value = SupportedLayouts.getLayouts(spaceUxType).map { it.code.toDouble() }
+                    value = SupportedLayouts.getLayouts(isOneToOneSpace)
+                        .map { it.code.toDouble() }
                 )
             )
         } else {
@@ -332,7 +332,7 @@ object ObjectSearchConstants {
     //region ADD OBJECT TO FILTER
     fun filterAddObjectToFilter(
         limitObjectTypes: List<Key>,
-        spaceUxType: SpaceUxType? = null
+        isOneToOneSpace: Boolean = false
     ) = buildList {
         add(
             DVFilter(
@@ -374,7 +374,8 @@ object ObjectSearchConstants {
                 DVFilter(
                     relation = Relations.LAYOUT,
                     condition = DVFilterCondition.IN,
-                    value = SupportedLayouts.getLayouts(spaceUxType).map { it.code.toDouble() }
+                    value = SupportedLayouts.getLayouts(isOneToOneSpace)
+                        .map { it.code.toDouble() }
                 )
             )
         } else {

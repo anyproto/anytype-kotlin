@@ -4,30 +4,55 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.primitives.Space
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.core_ui.text.splitByMarks
+import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.ChatContainer
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
+import com.anytypeio.anytype.domain.media.PreloadFile
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionLinkDetector
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import javax.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 sealed class DiscussionInputMode {
@@ -49,7 +74,13 @@ class DiscussionViewModel @Inject constructor(
     private val addChatMessage: AddComment,
     private val deleteComment: DeleteComment,
     private val toggleCommentReaction: ToggleCommentReaction,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val fieldParser: FieldParser,
+    private val subscription: StorelessSubscriptionContainer,
+    private val uploadFile: UploadFile,
+    private val preloadFile: PreloadFile,
+    private val copyFileToCacheDirectory: CopyFileToCacheDirectory
 ) : BaseViewModel() {
 
     private val _header = MutableStateFlow(DiscussionHeader())
@@ -69,9 +100,18 @@ class DiscussionViewModel @Inject constructor(
     private val _commands = MutableSharedFlow<DiscussionCommand>()
     val commands: SharedFlow<DiscussionCommand> = _commands
 
+    private val _navigation = MutableSharedFlow<OpenObjectNavigation>()
+    val navigation: SharedFlow<OpenObjectNavigation> = _navigation
+
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
 
+    private val blockLinkTargets = MutableStateFlow<Set<Id>>(emptySet())
+    private var latestDependencies: Map<Id, ObjectWrapper.Basic> = emptyMap()
+
     private var account: Id = ""
+
+    val commentAttachments = MutableStateFlow<List<CommentAttachment>>(emptyList())
+    private val preloadingJobs = mutableListOf<Job>()
 
     init {
         viewModelScope.launch {
@@ -88,15 +128,54 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun proceedWithObservingMessages() {
-        chatContainer
+        val chatFlow = chatContainer
             .watch(chat = vmParams.ctx)
             .distinctUntilChanged()
+            .onEach { result ->
+                val linkIds = mutableSetOf<Id>()
+                result.messages.forEach { msg ->
+                    msg.blocks.forEach { block ->
+                        if (block is Chat.Message.MessageBlock.Link) {
+                            linkIds.add(block.targetObjectId)
+                        }
+                    }
+                }
+                blockLinkTargets.value = linkIds
+            }
+
+        val dependenciesFlow = blockLinkTargets
+            .flatMapLatest { ids ->
+                if (ids.isEmpty()) {
+                    kotlinx.coroutines.flow.flowOf(emptyMap())
+                } else {
+                    subscription.subscribe(
+                        searchParams = StoreSearchByIdsParams(
+                            subscription = "${vmParams.ctx}/discussion-block-links",
+                            space = SpaceId(vmParams.space.id),
+                            targets = ids.toList(),
+                            keys = BLOCK_LINK_KEYS
+                        )
+                    ).map { wrappers ->
+                        wrappers.associateBy { it.id }
+                    }
+                }
+            }
+            .catch { e ->
+                Timber.e(e, "Error subscribing to block link targets")
+                emit(emptyMap())
+            }
+
+        combine(chatFlow, dependenciesFlow) { result, dependencies ->
+            result to dependencies
+        }
             .flowOn(dispatchers.io)
             .catch { e ->
                 Timber.e(e, "Error observing discussion messages")
             }
-            .collect { result ->
+            .collect { (result, dependencies) ->
+                latestDependencies = dependencies
                 val commentViews = buildList {
                     result.messages.forEach { msg ->
                         val formattedMsgDate = dateProvider.formatToDateString(
@@ -150,6 +229,12 @@ class DiscussionViewModel @Inject constructor(
                             )
                         }
 
+                        val contentBlocks = if (msg.blocks.isNotEmpty()) {
+                            mapBlocksToContentBlocks(msg.blocks, dependencies)
+                        } else {
+                            emptyList()
+                        }
+
                         val reactions = msg.reactions
                             .toList()
                             .sortedByDescending { (_, ids) -> ids.size }
@@ -166,6 +251,7 @@ class DiscussionViewModel @Inject constructor(
                                 DiscussionView.Reply(
                                     id = msg.id,
                                     content = mappedContent,
+                                    contentBlocks = contentBlocks,
                                     author = member?.name.orEmpty(),
                                     creator = member?.id,
                                     timestamp = msg.createdAt * 1000,
@@ -180,6 +266,7 @@ class DiscussionViewModel @Inject constructor(
                                 DiscussionView.Comment(
                                     id = msg.id,
                                     content = mappedContent,
+                                    contentBlocks = contentBlocks,
                                     author = member?.name.orEmpty(),
                                     creator = member?.id,
                                     timestamp = msg.createdAt * 1000,
@@ -442,7 +529,7 @@ class DiscussionViewModel @Inject constructor(
     }
 
     fun onSendComment(text: String, marks: List<Block.Content.Text.Mark>) {
-        if (text.isBlank()) return
+        if (text.isBlank() && commentAttachments.value.isEmpty()) return
         val mode = inputMode.value
         val leadingSpaces = text.length - text.trimStart().length
         val trimmedText = text.trim()
@@ -460,22 +547,373 @@ class DiscussionViewModel @Inject constructor(
             existingMarks = adjustedMarks
         )
         viewModelScope.launch {
+            preloadingJobs.cancel()
+
+            val additionalBlocks = buildList {
+                val currAttachments = commentAttachments.value
+                currAttachments.forEachIndexed { idx, attachment ->
+                    when (attachment) {
+                        is CommentAttachment.Media -> {
+                            commentAttachments.value = commentAttachments.value.toMutableList().apply {
+                                set(idx, attachment.copy(state = CommentAttachment.State.Uploading))
+                            }
+                            val state = attachment.state
+                            var preloadedFileId: Id? = null
+                            var path: String
+                            if (state is CommentAttachment.State.Preloaded) {
+                                preloadedFileId = state.preloadedFileId
+                                path = state.path
+                            } else {
+                                path = if (attachment.capturedByCamera) {
+                                    try {
+                                        withContext(dispatchers.io) {
+                                            copyFileToCacheDirectory.copy(attachment.uri)
+                                        }
+                                    } catch (e: Exception) {
+                                        Timber.e(e, "Failed to copy media file to cache: ${attachment.uri}")
+                                        commentAttachments.value = commentAttachments.value.toMutableList().apply {
+                                            set(idx, attachment.copy(state = CommentAttachment.State.Failed))
+                                        }
+                                        return@forEachIndexed
+                                    }
+                                } else {
+                                    attachment.uri
+                                }
+                            }
+                            uploadFile.async(
+                                UploadFile.Params(
+                                    space = vmParams.space,
+                                    path = path,
+                                    type = if (attachment.isVideo)
+                                        Block.Content.File.Type.VIDEO
+                                    else
+                                        Block.Content.File.Type.IMAGE,
+                                    preloadFileId = preloadedFileId,
+                                    createdInContext = vmParams.ctx
+                                )
+                            ).onSuccess { file ->
+                                val linkType = if (attachment.isVideo)
+                                    Chat.Message.MessageBlock.Link.LinkType.FILE
+                                else
+                                    Chat.Message.MessageBlock.Link.LinkType.IMAGE
+                                add(
+                                    Chat.Message.MessageBlock.Link(
+                                        targetObjectId = file.id,
+                                        type = linkType
+                                    )
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while uploading media attachment")
+                                commentAttachments.value = commentAttachments.value.toMutableList().apply {
+                                    set(idx, attachment.copy(state = CommentAttachment.State.Failed))
+                                }
+                            }
+                        }
+                        is CommentAttachment.File -> {
+                            commentAttachments.value = commentAttachments.value.toMutableList().apply {
+                                set(idx, attachment.copy(state = CommentAttachment.State.Uploading))
+                            }
+                            val state = attachment.state
+                            var preloadedFileId: Id? = null
+                            var path: String?
+                            if (state is CommentAttachment.State.Preloaded) {
+                                preloadedFileId = state.preloadedFileId
+                                path = state.path
+                            } else {
+                                path = try {
+                                    withContext(dispatchers.io) {
+                                        copyFileToCacheDirectory.copy(attachment.uri)
+                                    }
+                                } catch (e: Exception) {
+                                    Timber.e(e, "Failed to copy file to cache: ${attachment.uri}")
+                                    commentAttachments.value = commentAttachments.value.toMutableList().apply {
+                                        set(idx, attachment.copy(state = CommentAttachment.State.Failed))
+                                    }
+                                    return@forEachIndexed
+                                }
+                            }
+                            uploadFile.async(
+                                UploadFile.Params(
+                                    space = vmParams.space,
+                                    path = path,
+                                    type = Block.Content.File.Type.NONE,
+                                    preloadFileId = preloadedFileId,
+                                    createdInContext = vmParams.ctx
+                                )
+                            ).onSuccess { file ->
+                                add(
+                                    Chat.Message.MessageBlock.Link(
+                                        targetObjectId = file.id,
+                                        type = Chat.Message.MessageBlock.Link.LinkType.FILE
+                                    )
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while uploading file attachment")
+                                commentAttachments.value = commentAttachments.value.toMutableList().apply {
+                                    set(idx, attachment.copy(state = CommentAttachment.State.Failed))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (trimmedText.isEmpty() && additionalBlocks.isEmpty()) {
+                Timber.w("Aborting send: no text and all attachments failed")
+                return@launch
+            }
+
             addChatMessage.async(
                 params = Command.ChatCommand.AddMessage(
                     chat = vmParams.ctx,
                     message = Chat.Message.newWithBlocks(
                         text = trimmedText,
                         marks = marksWithLinks,
-                        replyToMessageId = if (mode is DiscussionInputMode.Reply) mode.msg else null
+                        replyToMessageId = if (mode is DiscussionInputMode.Reply) mode.msg else null,
+                        additionalBlocks = additionalBlocks
                     )
                 )
             ).onSuccess { (id, payload) ->
                 chatContainer.onPayload(payload)
                 _inputMode.value = DiscussionInputMode.Default
                 mentionPanelState.value = MentionPanelState.Hidden
+                commentAttachments.value = emptyList()
             }.onFailure { e ->
                 Timber.e(e, "Failed to send comment")
             }
+        }
+    }
+
+    fun onCommentMediaPicked(uris: List<MediaUri>) {
+        commentAttachments.value += uris.map { uri ->
+            CommentAttachment.Media(
+                uri = uri.uri,
+                isVideo = uri.isVideo,
+                capturedByCamera = uri.capturedByCamera
+            )
+        }
+        preloadingJobs += viewModelScope.launch {
+            uris.forEach { info ->
+                val path = if (info.capturedByCamera) {
+                    withContext(dispatchers.io) {
+                        copyFileToCacheDirectory.copy(info.uri)
+                    }
+                } else {
+                    info.uri
+                }
+                preloadFile.async(
+                    params = PreloadFile.Params(
+                        space = vmParams.space,
+                        path = path,
+                        type = Block.Content.File.Type.NONE
+                    )
+                ).onSuccess { preloadedFileId: Id ->
+                    commentAttachments.value = commentAttachments.value.map { a ->
+                        if (a is CommentAttachment.Media && a.uri == info.uri) {
+                            a.copy(
+                                state = CommentAttachment.State.Preloaded(
+                                    preloadedFileId = preloadedFileId,
+                                    path = path
+                                )
+                            )
+                        } else {
+                            a
+                        }
+                    }
+                }.onFailure {
+                    commentAttachments.value = commentAttachments.value.map { a ->
+                        if (a is CommentAttachment.Media && a.uri == info.uri) {
+                            a.copy(state = CommentAttachment.State.Failed)
+                        } else {
+                            a
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun onCommentFilePicked(infos: List<DefaultFileInfo>) {
+        commentAttachments.value += infos.map { info ->
+            CommentAttachment.File(
+                uri = info.uri,
+                name = info.name,
+                size = info.size,
+                state = CommentAttachment.State.Preloading
+            )
+        }
+        preloadingJobs += viewModelScope.launch {
+            infos.forEach { info ->
+                val path = withContext(dispatchers.io) {
+                    copyFileToCacheDirectory.copy(info.uri)
+                }
+                preloadFile.async(
+                    params = PreloadFile.Params(
+                        space = vmParams.space,
+                        path = path,
+                        type = Block.Content.File.Type.NONE
+                    )
+                ).onSuccess { preloadedFileId: Id ->
+                    commentAttachments.value = commentAttachments.value.map { a ->
+                        if (a is CommentAttachment.File && a.uri == info.uri) {
+                            a.copy(
+                                state = CommentAttachment.State.Preloaded(
+                                    preloadedFileId = preloadedFileId,
+                                    path = path
+                                )
+                            )
+                        } else {
+                            a
+                        }
+                    }
+                }.onFailure {
+                    commentAttachments.value = commentAttachments.value.map { a ->
+                        if (a is CommentAttachment.File && a.uri == info.uri) {
+                            a.copy(state = CommentAttachment.State.Failed)
+                        } else {
+                            a
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun onClearAttachment(attachment: CommentAttachment) {
+        commentAttachments.value = commentAttachments.value.filter { it != attachment }
+    }
+
+    data class MediaUri(
+        val uri: String,
+        val isVideo: Boolean = false,
+        val capturedByCamera: Boolean = false
+    )
+
+    private suspend fun mapBlocksToContentBlocks(
+        blocks: List<Chat.Message.MessageBlock>,
+        dependencies: Map<Id, ObjectWrapper.Basic>
+    ): List<DiscussionView.ContentBlock> = buildList {
+        for (block in blocks) {
+            when (block) {
+                is Chat.Message.MessageBlock.Text -> {
+                    val leadingSpaces = block.text.length - block.text.trimStart().length
+                    val trimmedText = block.text.trim()
+                    val adjustedMarks = block.marks.mapNotNull { mark ->
+                        val newStart = (mark.range.first - leadingSpaces).coerceAtLeast(0)
+                        val newEnd = (mark.range.last - leadingSpaces).coerceAtMost(trimmedText.length)
+                        if (newStart < newEnd) {
+                            mark.copy(range = newStart..newEnd)
+                        } else {
+                            null
+                        }
+                    }
+                    val parts = trimmedText
+                        .splitByMarks(marks = adjustedMarks)
+                        .map { (part, styles) ->
+                            DiscussionView.Content.Part(part = part, styles = styles)
+                        }
+                    add(
+                        DiscussionView.ContentBlock.Text(
+                            content = DiscussionView.Content(msg = trimmedText, parts = parts)
+                        )
+                    )
+                }
+                is Chat.Message.MessageBlock.Link -> {
+                    add(mapLinkBlock(block, dependencies))
+                }
+                is Chat.Message.MessageBlock.Embed -> {
+                    val parts = listOf(
+                        DiscussionView.Content.Part(part = block.text)
+                    )
+                    add(
+                        DiscussionView.ContentBlock.Text(
+                            content = DiscussionView.Content(msg = block.text, parts = parts)
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    private suspend fun mapLinkBlock(
+        block: Chat.Message.MessageBlock.Link,
+        dependencies: Map<Id, ObjectWrapper.Basic>
+    ): DiscussionView.ContentBlock {
+        val wrapper = dependencies[block.targetObjectId]
+
+        // IMAGE type or IMAGE layout
+        if (block.type == Chat.Message.MessageBlock.Link.LinkType.IMAGE
+            || wrapper?.layout == ObjectType.Layout.IMAGE
+        ) {
+            return DiscussionView.ContentBlock.Image(
+                targetObjectId = block.targetObjectId,
+                url = urlBuilder.original(block.targetObjectId)
+            )
+        }
+
+        // BOOKMARK type or BOOKMARK layout
+        if (block.type == Chat.Message.MessageBlock.Link.LinkType.BOOKMARK
+            || wrapper?.layout == ObjectType.Layout.BOOKMARK
+        ) {
+            val imageHash = wrapper?.getSingleValue<String?>(Relations.PICTURE)
+            return DiscussionView.ContentBlock.Bookmark(
+                targetObjectId = block.targetObjectId,
+                url = wrapper?.getSingleValue<String>(Relations.SOURCE).orEmpty(),
+                title = wrapper?.name.orEmpty(),
+                description = wrapper?.description.orEmpty(),
+                imageUrl = if (!imageHash.isNullOrEmpty()) urlBuilder.large(imageHash) else null
+            )
+        }
+
+        // OBJECT / FILE / other — render as linked object card
+        if (wrapper != null && wrapper.isValid) {
+            val objType = storeOfObjectTypes.getTypeOfObject(wrapper)
+            val (_, typeName) = fieldParser.getObjectTypeIdAndName(
+                wrapper,
+                storeOfObjectTypes.getAll()
+            )
+            val title = resolveObjectTitle(wrapper)
+            return DiscussionView.ContentBlock.Link(
+                targetObjectId = block.targetObjectId,
+                title = title,
+                typeName = typeName,
+                icon = wrapper.objectIcon(
+                    builder = urlBuilder,
+                    objType = objType
+                )
+            )
+        }
+
+        // Fallback: render as mention text when wrapper is not available
+        val placeholder = block.targetObjectId
+        val mark = Block.Content.Text.Mark(
+            range = IntRange(0, placeholder.length),
+            type = Block.Content.Text.Mark.Type.MENTION,
+            param = block.targetObjectId
+        )
+        val parts = placeholder
+            .splitByMarks(marks = listOf(mark))
+            .map { (part, styles) ->
+                DiscussionView.Content.Part(part = part, styles = styles)
+            }
+        return DiscussionView.ContentBlock.Text(
+            content = DiscussionView.Content(msg = placeholder, parts = parts)
+        )
+    }
+
+    private fun resolveObjectTitle(wrapper: ObjectWrapper.Basic): String {
+        return when (wrapper.layout) {
+            ObjectType.Layout.NOTE -> wrapper.snippet.orEmpty()
+            in SupportedLayouts.fileLayouts -> {
+                val fileName = wrapper.name.orEmpty()
+                val fileExt = wrapper.fileExt
+                when {
+                    fileExt.isNullOrBlank() -> fileName
+                    fileName.endsWith(".$fileExt") -> fileName
+                    else -> "$fileName.$fileExt"
+                }
+            }
+            else -> wrapper.name.orEmpty()
         }
     }
 
@@ -565,8 +1003,64 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
+    fun onContentBlockClicked(block: DiscussionView.ContentBlock) {
+        viewModelScope.launch {
+            when (block) {
+                is DiscussionView.ContentBlock.Image -> {
+                    _commands.emit(
+                        DiscussionCommand.MediaPreview(
+                            obj = block.targetObjectId
+                        )
+                    )
+                }
+                is DiscussionView.ContentBlock.Bookmark -> {
+                    if (block.url.isNotEmpty()) {
+                        _commands.emit(DiscussionCommand.Browse(block.url))
+                    }
+                }
+                is DiscussionView.ContentBlock.Link -> {
+                    val wrapper = latestDependencies[block.targetObjectId]
+                    if (wrapper != null && wrapper.isValid) {
+                        _navigation.emit(wrapper.navigation())
+                    } else {
+                        Timber.w("Wrapper not found for content block link: ${block.targetObjectId}")
+                    }
+                }
+                is DiscussionView.ContentBlock.Text -> {
+                    // Text blocks handle their own clicks (mentions, links)
+                }
+            }
+        }
+    }
+
     sealed class DiscussionCommand {
         data class SelectReaction(val msg: Id) : DiscussionCommand()
         data class ViewMemberCard(val member: Id, val space: Space) : DiscussionCommand()
+        data class Browse(val url: String) : DiscussionCommand()
+        data class MediaPreview(val obj: Id) : DiscussionCommand()
+    }
+
+    companion object {
+        private val BLOCK_LINK_KEYS = listOf(
+            Relations.ID,
+            Relations.SPACE_ID,
+            Relations.PICTURE,
+            Relations.SOURCE,
+            Relations.DESCRIPTION,
+            Relations.NAME,
+            Relations.ICON_IMAGE,
+            Relations.ICON_EMOJI,
+            Relations.ICON_NAME,
+            Relations.ICON_OPTION,
+            Relations.TYPE,
+            Relations.LAYOUT,
+            Relations.IS_ARCHIVED,
+            Relations.IS_DELETED,
+            Relations.DONE,
+            Relations.SNIPPET,
+            Relations.SIZE_IN_BYTES,
+            Relations.FILE_MIME_TYPE,
+            Relations.FILE_EXT
+        )
     }
 }

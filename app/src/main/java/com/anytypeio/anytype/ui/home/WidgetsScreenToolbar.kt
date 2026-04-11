@@ -20,9 +20,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.ext.shouldShowMemberCount
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -96,28 +94,23 @@ fun HomeScreenToolbar(
         )
 
         // Show either member count or "Private channel" based on space type
-        val subtitleText: String? = when (spaceViewState.spaceUxType) {
-            SpaceUxType.ONE_TO_ONE -> stringResource(id = R.string.private_channel)
-            else -> {
-                if (spaceViewState.spaceUxType.shouldShowMemberCount) {
-                    val context = LocalContext.current
-                    val locale = context.resources.configuration.locales[0]
-                    if (locale != null && spaceViewState.membersCount > 0) {
-                        pluralStringResource(
-                            id = R.plurals.multiplayer_number_of_space_members,
-                            spaceViewState.membersCount,
-                            spaceViewState.membersCount,
-                            spaceViewState.membersCount
-                        )
-                    } else {
-                        if (locale == null) {
-                            Timber.e("Error getting the locale")
-                        }
-                        stringResource(id = R.string.three_dots_text_placeholder)
-                    }
-                } else {
-                    null
+        val subtitleText: String? = if (spaceViewState.isOneToOneSpace) {
+            stringResource(id = R.string.private_channel)
+        } else {
+            val context = LocalContext.current
+            val locale = context.resources.configuration.locales[0]
+            if (locale != null && spaceViewState.membersCount > 0) {
+                pluralStringResource(
+                    id = R.plurals.multiplayer_number_of_space_members,
+                    spaceViewState.membersCount,
+                    spaceViewState.membersCount,
+                    spaceViewState.membersCount
+                )
+            } else {
+                if (locale == null) {
+                    Timber.e("Error getting the locale")
                 }
+                stringResource(id = R.string.three_dots_text_placeholder)
             }
         }
 
@@ -167,7 +160,7 @@ fun HomeScreenToolbarPreview() {
             spaceIcon = SpaceIconView.DataSpace.Placeholder(name = "P"),
             membersCount = 1,
             spaceAccessType = SpaceAccessType.PRIVATE,
-            spaceUxType = SpaceUxType.CHAT
+            isOneToOneSpace = false,
         ),
         onSpaceIconClicked = {},
         onBackButtonClicked = {},

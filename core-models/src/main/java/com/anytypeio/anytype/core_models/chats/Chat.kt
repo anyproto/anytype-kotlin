@@ -106,7 +106,8 @@ sealed class Chat {
                 text: String,
                 attachments: List<Attachment> = emptyList(),
                 replyToMessageId: Id? = null,
-                marks: List<Block.Content.Text.Mark>
+                marks: List<Block.Content.Text.Mark>,
+                additionalBlocks: List<MessageBlock> = emptyList()
             ) : Message = Message(
                 id = "",
                 createdAt = 0L,
@@ -116,13 +117,16 @@ sealed class Chat {
                 creator = "",
                 replyToMessageId = replyToMessageId,
                 content = Message.Content(),
-                blocks = listOf(
-                    MessageBlock.Text(
-                        text = text,
-                        marks = marks,
-                        style = Block.Content.Text.Style.P
+                blocks = buildList {
+                    add(
+                        MessageBlock.Text(
+                            text = text,
+                            marks = marks,
+                            style = Block.Content.Text.Style.P
+                        )
                     )
-                ),
+                    addAll(additionalBlocks)
+                },
                 order = "",
                 synced = false
             )

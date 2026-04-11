@@ -21,21 +21,7 @@ open class OpenPage @Inject constructor(
         return repo.openPage(
             id = params.obj,
             space = params.space
-        ).also {
-            if (params.saveAsLastOpened) {
-                settings.setLastOpenedObject(
-                    id = params.obj,
-                    space = params.space
-                )
-            } else {
-                val givenSpace = params.space
-                if (givenSpace.id.isNotEmpty()) {
-                    settings.clearLastOpenedObject(
-                        SpaceId(givenSpace.id)
-                    )
-                }
-            }
-        }
+        )
     }
 
     data class Params(

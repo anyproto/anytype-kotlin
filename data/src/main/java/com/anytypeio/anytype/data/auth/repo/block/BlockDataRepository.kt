@@ -1006,10 +1006,11 @@ class BlockDataRepository(
         )
     }
 
-    override suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>) {
+    override suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>, permissions: SpaceMemberPermissions) {
         remote.addSpaceMembers(
             space = space,
-            identities = identities
+            identities = identities,
+            permissions = permissions
         )
     }
 

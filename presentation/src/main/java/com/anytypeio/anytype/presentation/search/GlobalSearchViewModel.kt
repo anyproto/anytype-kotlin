@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Relation.Format.EMAIL
 import com.anytypeio.anytype.core_models.Relation.Format.EMOJI
 import com.anytypeio.anytype.core_models.Relation.Format.FILE
 import com.anytypeio.anytype.core_models.Relation.Format.LONG_TEXT
+import com.anytypeio.anytype.core_models.Relation.Format.MAP
 import com.anytypeio.anytype.core_models.Relation.Format.NUMBER
 import com.anytypeio.anytype.core_models.Relation.Format.OBJECT
 import com.anytypeio.anytype.core_models.Relation.Format.PHONE
@@ -302,8 +303,8 @@ class GlobalSearchViewModel @Inject constructor(
                 offset = 0,
                 keys = DEFAULT_KEYS,
                 filters = buildList {
-                    val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
-                    addAll(filterSearchObjects(spaceUxType = spaceUxType))
+                    val isOneToOneSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
+                    addAll(filterSearchObjects(isOneToOneSpace = isOneToOneSpace))
                     add(
                         DVFilter(
                             relation = Relations.ID,
@@ -333,8 +334,8 @@ class GlobalSearchViewModel @Inject constructor(
                     offset = 0,
                     keys = DEFAULT_KEYS,
                     filters = buildList {
-                        val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
-                        addAll(ObjectSearchConstants.filterSearchObjects(spaceUxType = spaceUxType))
+                        val isOneToOneSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
+                        addAll(ObjectSearchConstants.filterSearchObjects(isOneToOneSpace = isOneToOneSpace))
                     },
                     sorts = ObjectSearchConstants.sortsSearchObjects,
                     withMetaRelationDetails = true,
@@ -854,6 +855,7 @@ suspend fun Command.SearchWithMeta.Result.view(
                             EMOJI -> GlobalSearchItemView.Meta.None
                             CHECKBOX -> GlobalSearchItemView.Meta.None
                             RELATIONS -> GlobalSearchItemView.Meta.None
+                            MAP -> GlobalSearchItemView.Meta.None
                             UNDEFINED -> GlobalSearchItemView.Meta.None
                         }
                     } else {

@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.sharing
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 
@@ -14,7 +13,7 @@ import com.anytypeio.anytype.core_models.ui.SpaceIconView
  * @property targetSpaceId The target space ID for operations
  * @property name Display name of the space
  * @property icon The space icon to display
- * @property uxType The UX type determining the sharing flow
+ * @property isOneToOneSpace Whether this is a 1-1 (DM) space; drives the chat sharing flow
  * @property chatId The chat ID if this space has chat functionality (null for pure data spaces)
  * @property isSelected Whether this space is currently selected
  */
@@ -23,7 +22,7 @@ data class SelectableSpaceView(
     val targetSpaceId: Id,
     val name: String,
     val icon: SpaceIconView,
-    val uxType: SpaceUxType?,
+    val isOneToOneSpace: Boolean,
     val chatId: Id?,
     val isSelected: Boolean = false
 ) {
@@ -31,10 +30,7 @@ data class SelectableSpaceView(
      * Determines which sharing flow should be used for this space.
      */
     val flowType: SharingFlowType
-        get() = when (uxType) {
-            SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> SharingFlowType.CHAT
-            else -> SharingFlowType.DATA  // DATA, STREAM, or null
-        }
+        get() = if (isOneToOneSpace) SharingFlowType.CHAT else SharingFlowType.DATA
 }
 
 /**
@@ -64,7 +60,7 @@ data class SelectableObjectView(
  */
 enum class SharingFlowType {
     /**
-     * Flow 1: Pure chat space (SpaceUxType.CHAT or ONE_TO_ONE).
+     * Flow 1: 1-1 (DM) space.
      * - Content is sent directly as chat messages
      * - Multi-select spaces allowed
      * - Comment becomes message or caption
@@ -72,7 +68,7 @@ enum class SharingFlowType {
     CHAT,
 
     /**
-     * Flow 2: Data space (SpaceUxType.DATA or STREAM).
+     * Flow 2: Regular data space.
      * - Content is created as objects in the space
      * - Single space selection
      * - Dynamically discovers chat objects for "Send to chat" option

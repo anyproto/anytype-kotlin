@@ -21,7 +21,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.R as CoreR
@@ -30,7 +29,7 @@ import com.anytypeio.anytype.core_ui.R as CoreR
 fun HomeScreenMenu(
     expanded: Boolean,
     spaceAccessType: SpaceAccessType,
-    spaceUxType: SpaceUxType,
+    isOneToOneSpace: Boolean,
     isMuted: Boolean,
     onDismiss: () -> Unit,
     onSpaceSettingsClicked: () -> Unit,
@@ -41,7 +40,7 @@ fun HomeScreenMenu(
     onManageSectionsClicked: () -> Unit
 ) {
     val isSharedSpace = spaceAccessType == SpaceAccessType.SHARED
-    val isOneToOne = spaceUxType == SpaceUxType.ONE_TO_ONE
+    val isOneToOne = isOneToOneSpace
 
     DropdownMenu(
         modifier = Modifier.width(254.dp),

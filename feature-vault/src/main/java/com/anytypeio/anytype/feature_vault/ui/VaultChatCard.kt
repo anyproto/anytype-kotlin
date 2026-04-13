@@ -2,15 +2,13 @@ package com.anytypeio.anytype.feature_vault.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -36,16 +34,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.AttachmentPreview
 import com.anytypeio.anytype.core_models.ui.AttachmentType
-import com.anytypeio.anytype.core_models.ui.SpaceIconView
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewMedium
@@ -53,9 +44,7 @@ import com.anytypeio.anytype.core_ui.views.CodeChatPreviewRegular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.feature_vault.R
-import com.anytypeio.anytype.feature_vault.presentation.VaultSpaceView
 
 
 /**
@@ -112,241 +101,45 @@ private fun getUnreadMessageCountBadgeColor(
 }
 
 @Composable
-fun VaultChatSpaceCard(
-    modifier: Modifier = Modifier,
-    title: String,
-    icon: SpaceIconView,
+fun vaultCardBackgroundModifier(
+    modifier: Modifier,
     spaceBackground: SpaceBackground,
-    creatorName: String? = null,
-    messageText: String? = null,
-    messageTime: String? = null,
-    chatPreview: Chat.Preview? = null,
-    unreadMessageCount: Int = 0,
-    unreadMentionCount: Int = 0,
-    attachmentPreviews: List<AttachmentPreview> = emptyList(),
-    isPinned: Boolean = false,
-    spaceView: VaultSpaceView.ChatSpace,
-    expandedSpaceId: String? = null,
-    isLastMessageOutgoing: Boolean = false,
-    isLastMessageSynced: Boolean = true,
-    onDismissMenu: () -> Unit = {},
-    onMuteSpace: (Id) -> Unit = {},
-    onUnmuteSpace: (Id) -> Unit = {},
-    onPinSpace: (Id) -> Unit = {},
-    onUnpinSpace: (Id) -> Unit = {},
-    onSpaceSettings: (Id) -> Unit = {},
-    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit = { _, _ -> }
-) {
-
-    val updatedModifier = when (spaceBackground) {
-        is SpaceBackground.SolidColor -> modifier
-            .fillMaxSize()
-            .height(96.dp)
+    fixedHeight: Boolean
+): Modifier {
+    val sizeModifier = if (fixedHeight) {
+        modifier.fillMaxWidth().height(96.dp)
+    } else {
+        modifier.fillMaxWidth().heightIn(min = 56.dp)
+    }
+    return when (spaceBackground) {
+        is SpaceBackground.SolidColor -> sizeModifier
             .padding(horizontal = 16.dp)
             .background(
                 color = spaceBackground.color.copy(alpha = 0.3f),
                 shape = RoundedCornerShape(20.dp)
             )
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp, vertical = if (fixedHeight) 0.dp else 16.dp)
 
-        is SpaceBackground.Gradient -> modifier
-            .fillMaxSize()
-            .height(96.dp)
+        is SpaceBackground.Gradient -> sizeModifier
             .padding(horizontal = 16.dp)
             .background(
                 brush = spaceBackground.brush,
                 shape = RoundedCornerShape(20.dp),
                 alpha = 0.3f
             )
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp, vertical = if (fixedHeight) 0.dp else 16.dp)
 
-        SpaceBackground.None -> Modifier
-            .fillMaxSize()
-            .height(96.dp)
+        SpaceBackground.None -> sizeModifier
             .padding(horizontal = 16.dp)
             .background(
                 color = colorResource(id = R.color.background_secondary),
                 shape = RoundedCornerShape(20.dp)
             )
-            .padding(horizontal = 16.dp)
-    }
-
-    Row(
-        modifier = updatedModifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        SpaceIconView(
-            icon = icon,
-            mainSize = 64.dp,
-            modifier = Modifier
-        )
-        val shouldShowAsMuted = spaceView.spaceNotificationState == NotificationState.DISABLE ||
-                spaceView.spaceNotificationState == NotificationState.MENTIONS
-
-        ContentChat(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 12.dp),
-            title = title.ifEmpty { stringResource(id = R.string.untitled) },
-            subtitle = messageText ?: chatPreview?.message?.content?.text.orEmpty(),
-            creatorName = creatorName,
-            messageText = messageText,
-            messageTime = messageTime,
-            chatPreview = chatPreview,
-            unreadMessageCount = unreadMessageCount,
-            unreadMentionCount = unreadMentionCount,
-            attachmentPreviews = attachmentPreviews,
-            isMuted = spaceView.spaceNotificationState == NotificationState.DISABLE,
-            spaceNotificationState = spaceView.spaceNotificationState,
-            isPinned = isPinned,
-            showPendingIndicator = isLastMessageOutgoing && !isLastMessageSynced
-        )
-
-        // Include dropdown menu inside the card
-        SpaceActionsDropdownMenu(
-            expanded = expandedSpaceId == spaceView.space.id,
-            onDismiss = onDismissMenu,
-            isMuted = shouldShowAsMuted,
-            isPinned = spaceView.isPinned,
-            isOwner = spaceView.isOwner,
-            onMuteToggle = {
-                spaceView.space.targetSpaceId?.let {
-                    if (shouldShowAsMuted) {
-                        onUnmuteSpace(it)
-                    } else {
-                        onMuteSpace(it)
-                    }
-                }
-            },
-            onPinToggle = {
-                spaceView.space.id.let {
-                    if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
-                }
-            },
-            onSpaceSettings = {
-                spaceView.space.id.let { onSpaceSettings(it) }
-            },
-            onDeleteOrLeaveSpace = {
-                spaceView.space.targetSpaceId?.let { onDeleteOrLeaveSpace(it, spaceView.isOwner) }
-            }
-        )
+            .padding(horizontal = 16.dp, vertical = if (fixedHeight) 0.dp else 16.dp)
     }
 }
 
-@Composable
-private fun RowScope.ContentChat(
-    modifier: Modifier,
-    title: String,
-    subtitle: String,
-    creatorName: String? = null,
-    messageText: String? = null,
-    messageTime: String? = null,
-    chatPreview: Chat.Preview? = null,
-    unreadMessageCount: Int = 0,
-    unreadMentionCount: Int = 0,
-    attachmentPreviews: List<AttachmentPreview> = emptyList(),
-    isMuted: Boolean? = null,
-    spaceNotificationState: NotificationState? = null,
-    isPinned: Boolean = false,
-    showPendingIndicator: Boolean = false
-) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
-        val hasContent = !creatorName.isNullOrEmpty() ||
-                        !messageText.isNullOrEmpty() ||
-                        attachmentPreviews.isNotEmpty() ||
-                        subtitle.isNotEmpty()
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(24.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            TitleRow(
-                modifier = Modifier.weight(1f),
-                message = title,
-                messageTime = messageTime,
-                isMuted = isMuted,
-                showPendingIndicator = showPendingIndicator
-            )
-
-            // Show pin icon when no content but is pinned
-            if (!hasContent && isPinned) {
-                Image(
-                    painter = painterResource(R.drawable.ic_pin_18),
-                    contentDescription = stringResource(R.string.content_desc_pin),
-                    modifier = Modifier.size(18.dp),
-                    colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
-                )
-            }
-        }
-
-        if (hasContent) {
-            ChatSubtitleRow(
-                subtitle = subtitle,
-                creatorName = creatorName,
-                messageText = messageText,
-                attachmentPreviews = attachmentPreviews,
-                chatPreview = chatPreview,
-                unreadMessageCount = unreadMessageCount,
-                unreadMentionCount = unreadMentionCount,
-                notificationMode = spaceNotificationState,
-                isPinned = isPinned
-            )
-        }
-    }
-}
-
-@Composable
-private fun ChatSubtitleRow(
-    subtitle: String,
-    creatorName: String?,
-    messageText: String?,
-    attachmentPreviews: List<AttachmentPreview>,
-    chatPreview: Chat.Preview?,
-    unreadMessageCount: Int,
-    unreadMentionCount: Int,
-    notificationMode: NotificationState? = null,
-    isPinned: Boolean
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        // Extract preview-specific counts for text color (not aggregated counts)
-        val previewUnreadMessages = chatPreview?.state?.unreadMessages?.counter ?: 0
-        val previewUnreadMentions = chatPreview?.state?.unreadMentions?.counter ?: 0
-
-        val textColor = getChatTextColor(
-            notificationMode = notificationMode,
-            unreadMessageCount = previewUnreadMessages,
-            unreadMentionCount = previewUnreadMentions
-        )
-        val (chatText, inlineContent) = buildChatContentWithInlineIcons(
-            creatorName = creatorName,
-            messageText = messageText,
-            attachmentPreviews = attachmentPreviews,
-            fallbackSubtitle = subtitle,
-            textColor = textColor
-        )
-
-        Text(
-            text = chatText,
-            inlineContent = inlineContent,
-            modifier = Modifier.weight(1f),
-            maxLines = 2,
-            lineHeight = 20.sp,
-            overflow = TextOverflow.Ellipsis,
-            color = textColor,
-        )
-
-        UnreadIndicatorsRow(
-            unreadMessageCount = unreadMessageCount,
-            unreadMentionCount = unreadMentionCount,
-            notificationMode = notificationMode,
-            isPinned = isPinned
-        )
-    }
-}
+const val COMPACT_CHAT_NAMES_VISIBLE_COUNT = 3
 
 @Composable
 fun UnreadIndicatorsRow(
@@ -759,57 +552,4 @@ fun buildChatContentWithInlineIcons(
     }
 
     return Pair(text, inlineContentMap)
-}
-
-@Composable
-@DefaultPreviews
-fun ChatWithMentionAndMessage() {
-    Column {
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(32.dp)
-        )
-        VaultChatSpaceCard(
-            modifier = Modifier.fillMaxWidth(),
-            title = "B&O Museum",
-            icon = SpaceIconView.ChatSpace.Placeholder(),
-            isPinned = true,
-            creatorName = "John Doe",
-            messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
-            messageTime = "18:32",
-            unreadMessageCount = 1,
-            unreadMentionCount = 1,
-            isLastMessageSynced = false,
-            isLastMessageOutgoing = true,
-            chatPreview =
-                Chat.Preview(
-                space = SpaceId("space-id"),
-                chat = "chat-id",
-                message = Chat.Message(
-                    id = "message-id",
-                    createdAt = System.currentTimeMillis(),
-                    modifiedAt = 0L,
-                    attachments = emptyList(),
-                    reactions = emptyMap(),
-                    creator = "creator-id",
-                    replyToMessageId = "",
-                    content = Chat.Message.Content(
-                        text = "Hello, this is a preview message.",
-                        marks = emptyList(),
-                        style = Block.Content.Text.Style.P
-                    ),
-                    order = "order-id",
-                    synced = false
-                )
-            ),
-            spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-            spaceView = VaultSpaceView.ChatSpace(
-                space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1", "id" to "spaceId1")),
-                icon = SpaceIconView.ChatSpace.Placeholder(),
-                isOwner = true,
-                spaceNotificationState = NotificationState.DISABLE
-            )
-        )
-    }
 }

@@ -10,7 +10,6 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
@@ -77,8 +76,7 @@ class SelectWidgetSourceViewModel(
                 spaceViews.observe(vmParams.space)
             ) { state, suggested, spaceView ->
                 val hasChat = !spaceView.chatId.isNullOrEmpty()
-                val isChatSpace = spaceView.spaceUxType == SpaceUxType.CHAT
-                
+
                 when(state) {
                     is ObjectSearchView.Success -> {
                         state.copy(
@@ -88,8 +86,7 @@ class SelectWidgetSourceViewModel(
                                     resolveSuggestedResults(
                                         suggested = suggested,
                                         query = query,
-                                        hasChat = hasChat,
-                                        isChatSpace = isChatSpace
+                                        hasChat = hasChat
                                     )
                                 )
                                 // Widgets from existing objects
@@ -105,8 +102,7 @@ class SelectWidgetSourceViewModel(
                                 resolveSuggestedResults(
                                     suggested = suggested,
                                     query = query,
-                                    hasChat = hasChat,
-                                    isChatSpace = isChatSpace
+                                    hasChat = hasChat
                                 )
                             )
                         }
@@ -136,8 +132,7 @@ class SelectWidgetSourceViewModel(
     private fun resolveSuggestedResults(
         suggested: SuggestedWidgetsState.Default,
         query: String,
-        hasChat: Boolean,
-        isChatSpace: Boolean
+        hasChat: Boolean
     ) = buildList {
 
         // Adding system widgets if matched by query
@@ -154,8 +149,8 @@ class SelectWidgetSourceViewModel(
                 if (contains(BundledWidgetSourceIds.ALL_OBJECTS)) {
                     add(BundledWidgetSourceView.AllObjects)
                 }
-                // Chat widget can only be added if the space has chat AND is not a chat space itself
-                if (contains(BundledWidgetSourceIds.CHAT) && hasChat && !isChatSpace) {
+                // Chat widget can only be added if the space has chat.
+                if (contains(BundledWidgetSourceIds.CHAT) && hasChat) {
                     add(BundledWidgetSourceView.Chat)
                 }
                 if (contains(BundledWidgetSourceIds.RECENT)) {
@@ -270,11 +265,11 @@ class SelectWidgetSourceViewModel(
     }
 
     override suspend fun getSearchObjectsParams(ignore: Id?): SearchObjects.Params {
-        val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+        val isOneToOneSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
         return super.getSearchObjectsParams(ignore).copy(
             filters = ObjectSearchConstants.filterSearchObjects(
                 excludeTypes = true,
-                spaceUxType = spaceUxType
+                isOneToOneSpace = isOneToOneSpace
             )
         )
     }

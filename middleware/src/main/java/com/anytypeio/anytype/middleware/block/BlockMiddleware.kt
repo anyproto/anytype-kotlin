@@ -969,10 +969,11 @@ class BlockMiddleware(
         )
     }
 
-    override suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>) {
+    override suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>, permissions: SpaceMemberPermissions) {
         middleware.addSpaceMembers(
             space = space,
-            identities = identities
+            identities = identities,
+            permissions = permissions
         )
     }
 

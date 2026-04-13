@@ -157,7 +157,7 @@ class ChatFragment : Fragment() {
                         onBackButtonClicked = {
                             vm.onBackButtonPressed(isExitingVault = popUpToVault)
                         },
-                        onSpaceNameClicked = vm::onSpaceIconClicked,
+                        onTitleClick = {},
                         onSpaceIconClicked = vm::onSpaceIconClicked,
                         onInviteMembersClicked = vm::onInviteMembersClicked,
                         onEditInfo = vm::onEditInfo,

@@ -859,7 +859,7 @@
     <string name="personal">默认</string>
     <string name="create_space">创建空间</string>
     <string name="create_chat">创建聊天</string>
-    <string name="create_channel">New Channel</string>
+    <string name="create_channel">新建频道</string>
     <string name="create_space_change_icon">更改图标</string>
     <string name="create_space_chat_name">聊天名称</string>
     <string name="create_space_space_name">空间名称</string>
@@ -867,10 +867,12 @@
     <string name="homepage_picker_title">创建主页</string>
     <string name="homepage_picker_description">选择您和频道成员在打开频道时看到的内容。您可以随时在设置中进行更改。</string>
     <string name="homepage_picker_chat">聊天</string>
-    <string name="homepage_picker_widgets">小部件</string>
     <string name="homepage_picker_page">页面</string>
     <string name="homepage_picker_collection">合集</string>
+    <string name="homepage_picker_empty">空的</string>
     <string name="homepage_picker_later">稍后</string>
+    <string name="invite_members_widget_title">邀请成员</string>
+    <string name="invite_members_widget_description">邀请成员加入此频道，开始协作。</string>
     <string name="generic_error">出错了，请再试一次。</string>
     <string name="type">类型</string>
     <string name="format">格式</string>
@@ -1286,7 +1288,7 @@
     <string name="multiplayer_viewer_access_desc">拥有链接的人可以查看和阅读聊天</string>
     <string name="multiplayer_request_access">请求访问</string>
     <string name="multiplayer_request_access_desc">所有者必须批准每个加入请求</string>
-    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
+    <string name="channel_members_subtitle">%1$d/%2$d 编辑者，%3$d/%4$d 查看者</string>
     <string name="multiplayer_qr_code">二维码</string>
     <string name="multiplayer_mute">静音</string>
     <string name="multiplayer_unmute">取消静音</string>
@@ -1738,9 +1740,9 @@
     <string name="main_navigation_content_desc_search_button">搜索对象按钮</string>
     <string name="main_navigation_content_desc_create_button">创建对象按钮</string>
     <string name="chat">聊天</string>
-    <string name="discussion_comments">comments</string>
-    <string name="discussion_no_comments">No comments yet</string>
-    <string name="discussion_leave_comment">Leave a comment…</string>
+    <string name="discussion_comments">评论</string>
+    <string name="discussion_no_comments">暂无评论</string>
+    <string name="discussion_leave_comment">添加评论...</string>
     <string name="copy">拷贝</string>
     <string name="copy_text">复制文本</string>
     <string name="copy_plain_text">复制纯文本</string>
@@ -2020,7 +2022,7 @@
     <string name="failed_to_load_image">加载图片失败</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">通过二维码加入</string>
-    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_select_members_title">选择成员</string>
     <string name="channel_next">下一步</string>
     <string name="vault_qr_scan_error_title">无法扫描二维码</string>
     <string name="vault_qr_scan_error_description">请确保它清晰可见并重试。</string>
@@ -2035,9 +2037,9 @@
     <string name="allow">允许</string>
     <string name="attachment_image">附件图片</string>
     <!-- Shared Space Limit (DROID-4388) -->
-    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
-    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
-    <string name="vault_manage_channels">Manage Channels</string>
+    <string name="vault_shared_space_limit_title">已达到共享空间上限</string>
+    <string name="vault_shared_space_limit_description">您的计划允许创建 %1$d 个共享空间。升级会员以解锁更多。</string>
+    <string name="vault_manage_channels">管理频道</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">照片</string>
     <string name="attachment_menu_camera">相机</string>

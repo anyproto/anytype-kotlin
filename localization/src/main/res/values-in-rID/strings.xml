@@ -867,10 +867,12 @@
     <string name="homepage_picker_title">Create Home</string>
     <string name="homepage_picker_description">Pilih hal yang dilihat anggota ruang ketika mereka membuka kanal. Ini bisa diubah lagi di setelan.</string>
     <string name="homepage_picker_chat">Obrolan</string>
-    <string name="homepage_picker_widgets">Gawit</string>
     <string name="homepage_picker_page">Halaman</string>
     <string name="homepage_picker_collection">Koleksi</string>
+    <string name="homepage_picker_empty">Kosong</string>
     <string name="homepage_picker_later">Nanti</string>
+    <string name="invite_members_widget_title">Undang Anggota</string>
+    <string name="invite_members_widget_description">Undang orang ke kanal ini untuk mulai berkolaborasi.</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Tipe</string>
     <string name="format">Format</string>

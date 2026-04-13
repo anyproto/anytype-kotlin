@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.FileDownloadLimit
 import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.FileLimitsEvent
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeLocal
@@ -19,6 +20,10 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.ClearFileCache
+import com.anytypeio.anytype.domain.download.GetFileDownloadLimit
+import com.anytypeio.anytype.domain.download.GetUseCellularForDownloads
+import com.anytypeio.anytype.domain.download.SetFileDownloadLimit
+import com.anytypeio.anytype.domain.download.SetUseCellularForDownloads
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -43,7 +48,11 @@ class FilesStorageViewModel(
     private val spacesUsageInfo: SpacesUsageInfo,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val buildProvider: BuildProvider,
-    private val deleteAccount: DeleteAccount
+    private val deleteAccount: DeleteAccount,
+    private val getFileDownloadLimit: GetFileDownloadLimit,
+    private val setFileDownloadLimit: SetFileDownloadLimit,
+    private val getUseCellularForDownloads: GetUseCellularForDownloads,
+    private val setUseCellularForDownloads: SetUseCellularForDownloads
 ) : BaseViewModel() {
 
     val events = MutableSharedFlow<Event>(replay = 0)
@@ -55,6 +64,12 @@ class FilesStorageViewModel(
     private val _state = MutableStateFlow(ScreenState.empty())
     val state: StateFlow<ScreenState> = _state
 
+    private val _downloadLimit = MutableStateFlow(FileDownloadLimit.DEFAULT)
+    val downloadLimit: StateFlow<FileDownloadLimit> = _downloadLimit
+
+    private val _useCellular = MutableStateFlow(false)
+    val useCellular: StateFlow<Boolean> = _useCellular
+
     private val jobs = mutableListOf<Job>()
 
     init {
@@ -65,6 +80,14 @@ class FilesStorageViewModel(
         getSpaceUsageInfo()
         subscribeToFileLimits()
         subscribeToFileLimitEvents()
+        loadDownloadSettings()
+    }
+
+    private fun loadDownloadSettings() {
+        jobs += viewModelScope.launch {
+            _downloadLimit.value = getFileDownloadLimit.run(Unit)
+            _useCellular.value = getUseCellularForDownloads.run(Unit)
+        }
     }
 
     fun onStop() {
@@ -172,6 +195,22 @@ class FilesStorageViewModel(
                 commands.emit(Command.OpenOffloadFilesScreen)
                 analytics.sendSettingsOffloadEvent()
             }
+            Event.OnOfflineDownloadsClicked -> {
+                commands.emit(
+                    Command.ShowOfflineDownloadsSelector(_downloadLimit.value)
+                )
+            }
+            is Event.OnUseCellularToggled -> {
+                setUseCellularForDownloads.run(event.value)
+                _useCellular.value = event.value
+            }
+        }
+    }
+
+    fun onOfflineDownloadsValueSelected(limit: FileDownloadLimit) {
+        viewModelScope.launch {
+            setFileDownloadLimit.run(limit)
+            _downloadLimit.value = limit
         }
     }
 
@@ -270,10 +309,15 @@ class FilesStorageViewModel(
 
     sealed class Event {
         data object OnOffloadFilesClicked : Event()
+        data object OnOfflineDownloadsClicked : Event()
+        data class OnUseCellularToggled(val value: Boolean) : Event()
     }
 
     sealed class Command {
         data object OpenOffloadFilesScreen : Command()
+        data class ShowOfflineDownloadsSelector(
+            val current: FileDownloadLimit
+        ) : Command()
     }
 
     class Factory @Inject constructor(
@@ -282,7 +326,11 @@ class FilesStorageViewModel(
         private val spacesUsageInfo: SpacesUsageInfo,
         private val interceptFileLimitEvents: InterceptFileLimitEvents,
         private val buildProvider: BuildProvider,
-        private val deleteAccount: DeleteAccount
+        private val deleteAccount: DeleteAccount,
+        private val getFileDownloadLimit: GetFileDownloadLimit,
+        private val setFileDownloadLimit: SetFileDownloadLimit,
+        private val getUseCellularForDownloads: GetUseCellularForDownloads,
+        private val setUseCellularForDownloads: SetUseCellularForDownloads
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -293,7 +341,11 @@ class FilesStorageViewModel(
             spacesUsageInfo = spacesUsageInfo,
             interceptFileLimitEvents = interceptFileLimitEvents,
             buildProvider = buildProvider,
-            deleteAccount = deleteAccount
+            deleteAccount = deleteAccount,
+            getFileDownloadLimit = getFileDownloadLimit,
+            setFileDownloadLimit = setFileDownloadLimit,
+            getUseCellularForDownloads = getUseCellularForDownloads,
+            setUseCellularForDownloads = setUseCellularForDownloads
         ) as T
     }
 

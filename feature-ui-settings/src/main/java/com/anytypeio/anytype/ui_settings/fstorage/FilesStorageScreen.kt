@@ -46,6 +46,7 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
@@ -150,13 +151,13 @@ fun LocalStorageScreen(
                     contentPadding = PaddingValues(12.dp, 7.dp, 12.dp, 7.dp)
                 }
             )
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(26.dp))
             Text(
                 text = stringResource(id = R.string.offline_downloads_section_title),
-                style = Title1,
-                color = colorResource(id = R.color.text_primary)
+                style = Caption1Medium,
+                color = colorResource(id = R.color.text_secondary)
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             OfflineDownloadsRow(
                 currentLimit = downloadLimit,
                 onClick = onOfflineDownloadsClicked
@@ -229,7 +230,7 @@ private fun OfflineDownloadsRow(
             )
             .clip(shape)
             .clickable(onClick = onClick, role = Role.Button)
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .padding(horizontal = 16.dp, vertical = 15.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -241,7 +242,7 @@ private fun OfflineDownloadsRow(
                 style = PreviewTitle1Regular,
                 color = colorResource(id = R.color.text_primary)
             )
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = stringResource(id = R.string.offline_downloads_subtitle),
                 style = Caption1Regular,
@@ -253,7 +254,7 @@ private fun OfflineDownloadsRow(
             style = PreviewTitle1Regular,
             color = colorResource(id = R.color.text_secondary)
         )
-        Spacer(modifier = Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(10.dp))
         Image(
             painter = painterResource(id = R.drawable.ic_disclosure_8_24),
             contentDescription = null,

@@ -55,7 +55,7 @@
             android:id="@+id/paginatorToolbar"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"
-            motion:layout_constraintBottom_toTopOf="@+id/bottomToolbarBox"
+            motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             motion:visibilityMode="ignore" />
@@ -159,7 +159,7 @@
             android:id="@+id/paginatorToolbar"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"
-            motion:layout_constraintBottom_toTopOf="@+id/bottomToolbarBox"
+            motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             motion:visibilityMode="ignore" />

@@ -130,23 +130,47 @@
         app:layout_constraintTop_toBottomOf="@+id/dataViewHeader"
         tools:visibility="visible" />
 
-    <FrameLayout
-        android:id="@+id/bottomToolbarBox"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/default_nav_panel_height"
-        android:layout_marginBottom="@dimen/dp_20"
-        android:background="@drawable/widget_main_bottom_toolbar_background"
-        app:layout_constraintBottom_toTopOf="@+id/bottomPanel"
-        app:layout_constraintEnd_toEndOf="parent"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabCreate"
+        android:layout_width="@dimen/nav_fab_button_size"
+        android:layout_height="@dimen/nav_fab_button_size"
+        android:layout_marginStart="@dimen/nav_fab_margin"
+        android:layout_marginBottom="@dimen/nav_fab_margin"
+        android:contentDescription="@string/main_navigation_content_desc_create_button"
+        android:src="@drawable/ic_nav_panel_plus"
+        android:visibility="invisible"
+        app:backgroundTint="@color/shape_primary"
+        app:elevation="0dp"
+        app:fabCustomSize="@dimen/nav_fab_button_size"
+        app:hoveredFocusedTranslationZ="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible">
-        <com.anytypeio.anytype.core_ui.widgets.toolbar.MainBottomToolbar
-            android:id="@+id/bottomToolbar"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            tools:visibility="visible" />
-    </FrameLayout>
+        app:maxImageSize="32dp"
+        app:pressedTranslationZ="0dp"
+        app:rippleColor="@android:color/transparent"
+        app:tint="@null"
+        tools:visibility="visible" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabSearch"
+        android:layout_width="@dimen/nav_fab_button_size"
+        android:layout_height="@dimen/nav_fab_button_size"
+        android:layout_marginEnd="@dimen/nav_fab_margin"
+        android:layout_marginBottom="@dimen/nav_fab_margin"
+        android:contentDescription="@string/main_navigation_content_desc_search_button"
+        android:src="@drawable/ic_nav_panel_search"
+        android:visibility="invisible"
+        app:backgroundTint="@color/shape_primary"
+        app:elevation="0dp"
+        app:fabCustomSize="@dimen/nav_fab_button_size"
+        app:hoveredFocusedTranslationZ="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:maxImageSize="32dp"
+        app:pressedTranslationZ="0dp"
+        app:rippleColor="@android:color/transparent"
+        app:tint="@null"
+        tools:visibility="visible" />
 
     <include
         android:id="@+id/initState"

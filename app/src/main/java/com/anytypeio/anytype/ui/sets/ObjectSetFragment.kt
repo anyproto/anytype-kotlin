@@ -274,7 +274,7 @@ open class ObjectSetFragment :
 
         setupGridAdapters()
         title.clearFocus()
-        topToolbarTitle.alpha = 0f
+        binding.topToolbar.root.findViewById<View>(R.id.titlePillContainer).alpha = 0f
         binding.root.setTransitionListener(transitionListener)
 
         addNewButton.setOnClickListener { vm.proceedWithDataViewObjectCreate() }
@@ -298,6 +298,8 @@ open class ObjectSetFragment :
                 }
             }
             subscribe(topBackButton.clicks().throttleFirst()) { vm.onBackButtonClicked() }
+            binding.topToolbar.root.findViewById<View>(R.id.titlePillContainer)
+                .setOnClickListener { /* wired in Task 11 */ }
             subscribe(menuButton.clicks().throttleFirst()) { vm.onMenuClicked() }
             subscribe(customizeViewButton.clicks().throttleFirst()) { vm.onViewerCustomizeButtonClicked() }
             subscribe(viewerTitle.clicks().throttleFirst()) { vm.onExpandViewerMenuClicked() }
@@ -1113,7 +1115,7 @@ open class ObjectSetFragment :
     }
 
     private fun onCoverRemoved() {
-        topToolbarThreeDotsButton.background = null
+        topToolbarThreeDotsButton.setBackgroundResource(R.drawable.bg_nav_circular_button)
         topToolbarThreeDotsIcon.imageTintList = null
         topToolbarStatusContainer.background = null
     }
@@ -1416,7 +1418,8 @@ open class ObjectSetFragment :
         override fun onTransitionCompleted(motionLayout: MotionLayout?, id: Int) {
             if (id == R.id.start) {
                 title.pauseTextWatchers { title.enableEditMode() }
-                topToolbarTitle.animate().alpha(0f).setDuration(DEFAULT_ANIM_DURATION).start()
+                binding.topToolbar.root.findViewById<View>(R.id.titlePillContainer)
+                    .animate().alpha(0f).setDuration(DEFAULT_ANIM_DURATION).start()
                 topToolbarThreeDotsButton.apply {
                     if (background != null) {
                         background?.alpha = DRAWABLE_ALPHA_FULL
@@ -1433,7 +1436,8 @@ open class ObjectSetFragment :
             }
             if (id == R.id.end) {
                 title.pauseTextWatchers { title.enableReadMode() }
-                topToolbarTitle.animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start()
+                binding.topToolbar.root.findViewById<View>(R.id.titlePillContainer)
+                    .animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start()
                 binding.topToolbar.root.findViewById<ImageView>(R.id.ivThreeDots).apply {
                     imageTintList = null
                 }

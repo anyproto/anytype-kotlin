@@ -8,9 +8,11 @@
 
     <FrameLayout
         android:id="@+id/topBackButton"
-        android:layout_width="56dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center_vertical">
+        android:layout_width="@dimen/nav_circular_button_size"
+        android:layout_height="@dimen/nav_circular_button_size"
+        android:layout_gravity="center_vertical|start"
+        android:layout_marginStart="12dp"
+        android:background="@drawable/bg_nav_circular_button">
 
         <ImageView
             android:id="@+id/ivTopBackButton"
@@ -37,13 +39,18 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="48dp"
-        android:layout_marginEnd="48dp">
+        android:layout_marginStart="64dp"
+        android:layout_marginEnd="64dp">
 
         <LinearLayout
+            android:id="@+id/titlePillContainer"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center">
+            android:layout_height="@dimen/nav_pill_height"
+            android:layout_gravity="center"
+            android:background="@drawable/bg_nav_pill_container"
+            android:paddingHorizontal="@dimen/nav_pill_horizontal_padding"
+            android:clickable="true"
+            android:focusable="true">
 
             <ImageView
                 android:id="@+id/ivTopToolbarIcon"
@@ -56,7 +63,7 @@
             <TextView
                 android:id="@+id/tvTopToolbarTitle"
                 style="@style/ObjectSetToolbarTitleStyle"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 tools:text="Your favorite movies" />
 
@@ -66,10 +73,11 @@
 
     <FrameLayout
         android:id="@+id/threeDotsButton"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="@dimen/nav_circular_button_size"
+        android:layout_height="@dimen/nav_circular_button_size"
         android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="14dp">
+        android:layout_marginEnd="12dp"
+        android:background="@drawable/bg_nav_circular_button">
 
         <ImageView
             android:id="@+id/ivThreeDots"

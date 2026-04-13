@@ -674,6 +674,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onBackButtonPressed() }
             .launchIn(lifecycleScope)
 
+        binding.topToolbar.container.setOnClickListener { /* wired in Task 11 */ }
+
         binding.discussionButton.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {

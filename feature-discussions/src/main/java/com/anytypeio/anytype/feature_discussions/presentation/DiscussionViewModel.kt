@@ -350,7 +350,7 @@ class DiscussionViewModel @Inject constructor(
 
                 _messages.value = reordered
                 _header.value = DiscussionHeader(
-                    commentCount = topLevelComments.size
+                    commentCount = commentViews.size
                 )
                 _isLoading.value = false
             }

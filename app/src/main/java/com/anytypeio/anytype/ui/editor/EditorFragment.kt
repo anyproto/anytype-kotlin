@@ -150,6 +150,7 @@ import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetD
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
@@ -457,6 +458,25 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
+    /**
+     * DROID-4318: Hide the editor FABs while the user scrolls down through
+     * content, restore them on upward scroll. The fragment root is a
+     * FrameLayout — Material's HideBottomViewOnScrollBehavior was a no-op
+     * on the old bottom toolbar, so this manual listener is the
+     * replacement.
+     */
+    private val fabScrollListener = object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            if (dy > 4) {
+                binding.fabCreate.hide()
+                binding.fabSearch.hide()
+            } else if (dy < -4) {
+                binding.fabCreate.show()
+                binding.fabSearch.show()
+            }
+        }
+    }
+
     private val pickerDelegate = PickerDelegate.Impl(this) { actions ->
         when (actions) {
             PickerDelegate.Actions.OnCancelCopyFileToCacheDir -> {
@@ -626,41 +646,28 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .launchIn(lifecycleScope)
 
 
-        binding.bottomToolbar
-            .shareClicks()
-            .onEach { vm.onShareButtonClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.bottomToolbar
-            .homeClicks()
-            .onEach { vm.onHomeButtonClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.bottomToolbar
-            .chatClicks()
-            .onEach { vm.onHomeButtonClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.bottomToolbar
-            .searchClicks()
-            .onEach { vm.onPageSearchClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.bottomToolbar
-            .addDocClicks()
+        // DROID-4318: Editor bottom navigation replaced with two scroll-aware
+        // floating action buttons (fabCreate / fabSearch). Share / home / chat
+        // entry points moved to the home overlay (Task 4) — no editor wiring.
+        binding.fabCreate
+            .clicks()
             .onEach { vm.onAddNewDocumentClicked() }
             .launchIn(lifecycleScope)
 
-        binding
-            .bottomToolbar
-            .binding
-            .btnAddDoc
+        binding.fabCreate
             .longClicks(withHaptic = true)
             .onEach {
                 val dialog = ObjectTypeSelectionFragment.new(space = space)
                 dialog.show(childFragmentManager, "editor-create-object-of-type-dialog")
             }
             .launchIn(lifecycleScope)
+
+        binding.fabSearch
+            .clicks()
+            .onEach { vm.onPageSearchClicked() }
+            .launchIn(lifecycleScope)
+
+        binding.recycler.addOnScrollListener(fabScrollListener)
 
         binding.topToolbar.menu
             .clicks()
@@ -970,9 +977,17 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             // TODO
         }.launchIn(lifecycleScope)
 
-        vm.navPanelState.onEach {
+        vm.navPanelState.onEach { state ->
             if (hasBinding) {
-                binding.bottomToolbar.setState(it)
+                // Mirror NavPanelState.Default.isCreateEnabled into the new
+                // fabCreate so disabled states (e.g. inside locked / template
+                // contexts) still apply. Visibility is driven by the
+                // navigationToolbar control-panel flag in render() and by
+                // the scroll listener.
+                val isCreateEnabled =
+                    (state as? NavPanelState.Default)?.isCreateEnabled == true
+                binding.fabCreate.isEnabled = isCreateEnabled
+                binding.fabCreate.alpha = if (isCreateEnabled) 1f else 0.5f
             }
         }.launchIn(lifecycleScope)
 
@@ -1020,7 +1035,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     override fun onDestroyView() {
         // Clear all text selections to prevent MultiSelectPopupWindow crashes
         clearActiveTextSelections()
-        
+
+        binding.recycler.removeOnScrollListener(fabScrollListener)
         pickerDelegate.clearPickit()
         super.onDestroyView()
     }
@@ -1650,10 +1666,17 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         if (state.navigationToolbar.isVisible) {
             binding.placeholder.requestFocus()
             binding.placeholder.hideKeyboard()
-            binding.bottomToolbarContainer.visible()
+            // DROID-4318: use instant visibility toggles instead of
+            // FloatingActionButton.show()/hide(), which animate scale+fade
+            // over ~200ms and leave a touch-through window on the hiding
+            // FAB. The scroll-aware listener still uses show()/hide() —
+            // that's the canonical Material FAB use case.
+            binding.fabCreate.isVisible = true
+            binding.fabSearch.isVisible = true
             binding.discussionButton.visible()
         } else {
-            binding.bottomToolbarContainer.gone()
+            binding.fabCreate.isVisible = false
+            binding.fabSearch.isVisible = false
             binding.discussionButton.gone()
         }
 

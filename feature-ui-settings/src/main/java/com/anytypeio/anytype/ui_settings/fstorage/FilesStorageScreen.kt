@@ -37,17 +37,20 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_models.FileDownloadLimit
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
@@ -86,19 +89,29 @@ fun LocalStorageScreen(
             ) {
                 Dragger()
             }
-            Header(stringResource(id = R.string.data_management))
+            Header(stringResource(id = R.string.local_storage))
             Spacer(modifier = Modifier.height(24.dp))
             Text(
-                text = stringResource(id = R.string.local_storage),
-                style = Title1,
-                color = colorResource(id = R.color.text_primary)
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(id = R.string.device_storage_used),
+                style = Caption1Medium,
+                color = colorResource(id = R.color.text_secondary),
+                textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = data.localUsage,
+                style = HeadlineTitleSemibold,
+                color = colorResource(id = R.color.text_secondary),
+                modifier = Modifier.fillMaxWidth()
+            )
+
             Text(
                 text = stringResource(id = R.string.in_order_to_save),
                 style = BodyCalloutRegular,
                 color = colorResource(id = R.color.text_primary),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(28.dp))
             Row(
@@ -144,13 +157,18 @@ fun LocalStorageScreen(
                 }
             }
             Spacer(modifier = Modifier.height(18.dp))
-            ButtonSecondary(
-                text = stringResource(id = R.string.offload_files),
-                onClick = onOffloadFilesClicked,
-                size = ButtonSize.SmallSecondary.apply {
-                    contentPadding = PaddingValues(12.dp, 7.dp, 12.dp, 7.dp)
-                }
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                ButtonOnboardingPrimaryLarge(
+                    text = stringResource(id = R.string.offload_files),
+                    onClick = onOffloadFilesClicked,
+                    size = ButtonSize.Medium,
+                    modifierBox = Modifier,
+                )
+            }
             Spacer(modifier = Modifier.height(26.dp))
             Text(
                 text = stringResource(id = R.string.offline_downloads_section_title),

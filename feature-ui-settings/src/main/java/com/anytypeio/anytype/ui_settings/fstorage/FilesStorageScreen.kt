@@ -312,7 +312,6 @@ private fun FileDownloadLimit.displayLabel(): String = stringResource(
         FileDownloadLimit.MB_20 -> R.string.offline_downloads_value_20mb
         FileDownloadLimit.MB_100 -> R.string.offline_downloads_value_100mb
         FileDownloadLimit.MB_250 -> R.string.offline_downloads_value_250mb
-        FileDownloadLimit.MB_500 -> R.string.offline_downloads_value_500mb
         FileDownloadLimit.GB_1 -> R.string.offline_downloads_value_1gb
         FileDownloadLimit.UNLIMITED -> R.string.offline_downloads_value_unlimited
     }

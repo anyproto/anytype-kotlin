@@ -2521,7 +2521,6 @@ Please provide specific details of your needs here.</string>
     <string name="offline_downloads_value_20mb">20 MB</string>
     <string name="offline_downloads_value_100mb">100 MB</string>
     <string name="offline_downloads_value_250mb">250 MB</string>
-    <string name="offline_downloads_value_500mb">500 MB</string>
     <string name="offline_downloads_value_1gb">1 GB</string>
     <string name="offline_downloads_value_unlimited">Unlimited</string>
 

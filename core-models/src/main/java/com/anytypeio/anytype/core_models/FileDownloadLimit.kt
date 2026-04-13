@@ -12,7 +12,6 @@ enum class FileDownloadLimit(val storageKey: String, val bytes: Long?) {
     MB_20(storageKey = "mb_20", bytes = 20L * 1024 * 1024),
     MB_100(storageKey = "mb_100", bytes = 100L * 1024 * 1024),
     MB_250(storageKey = "mb_250", bytes = 250L * 1024 * 1024),
-    MB_500(storageKey = "mb_500", bytes = 500L * 1024 * 1024),
     GB_1(storageKey = "gb_1", bytes = 1024L * 1024 * 1024),
     UNLIMITED(storageKey = "unlimited", bytes = Long.MAX_VALUE);
 

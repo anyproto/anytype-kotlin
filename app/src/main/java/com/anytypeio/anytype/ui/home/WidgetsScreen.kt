@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.ui.home
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -7,14 +10,17 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +33,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -35,8 +43,10 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.WidgetSectionType
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
-import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.OBJECT_TYPES_GROUP_ID
@@ -61,6 +71,41 @@ import com.anytypeio.anytype.ui.widgets.types.getPrettyName
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
+
+@Composable
+private fun CircularFabButton(
+    @DrawableRes iconRes: Int,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+    isEnabled: Boolean = true,
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)? = null,
+) {
+    Box(
+        modifier = modifier
+            .size(dimensionResource(R.dimen.nav_fab_button_size))
+            .clip(CircleShape)
+            .background(colorResource(R.color.shape_primary))
+            .alpha(if (isEnabled) 1f else 0.5f)
+            .then(
+                if (onLongClick != null) {
+                    Modifier.noRippleCombinedClickable(
+                        enabled = isEnabled,
+                        onLongClicked = onLongClick,
+                        onClick = onClick,
+                    )
+                } else {
+                    Modifier.noRippleClickable(onClick = onClick)
+                }
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = iconRes),
+            contentDescription = contentDescription
+        )
+    }
+}
 
 @Composable
 fun WidgetsScreen(
@@ -527,17 +572,43 @@ fun WidgetsScreen(
             }
         }
 
-        BottomNavigationMenu(
-            state = viewModel.navPanelState.collectAsStateWithLifecycle().value,
+        val navPanelState = viewModel.navPanelState.collectAsStateWithLifecycle().value
+        val isCreateEnabled = (navPanelState as? NavPanelState.Default)?.isCreateEnabled == true
+
+        // Create-object FAB (bottom-start). Tap creates a new object;
+        // long-press surfaces the type picker. Disabled visual reflects
+        // NavPanelState.Default.isCreateEnabled.
+        CircularFabButton(
+            iconRes = R.drawable.ic_nav_panel_plus,
+            contentDescription = stringResource(
+                id = R.string.main_navigation_content_desc_create_button
+            ),
             modifier = Modifier
-                .align(Alignment.BottomCenter)
+                .align(Alignment.BottomStart)
                 .navigationBarsPadding()
-                .padding(bottom = 20.dp),
-            onSearchClick = viewModel::onSearchIconClicked,
-            onAddDocClick = viewModel::onCreateNewObjectClicked,
-            onAddDocLongClick = viewModel::onCreateNewObjectLongClicked,
-            onShareButtonClicked = viewModel::onNavBarShareIconClicked,
-            onHomeButtonClicked = viewModel::onHomeButtonClicked
+                .padding(
+                    start = dimensionResource(R.dimen.nav_fab_margin),
+                    bottom = dimensionResource(R.dimen.nav_fab_margin),
+                ),
+            isEnabled = isCreateEnabled,
+            onClick = viewModel::onCreateNewObjectClicked,
+            onLongClick = viewModel::onCreateNewObjectLongClicked,
+        )
+
+        // Search FAB (bottom-end). Always enabled.
+        CircularFabButton(
+            iconRes = R.drawable.ic_nav_panel_search,
+            contentDescription = stringResource(
+                id = R.string.main_navigation_content_desc_search_button
+            ),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .navigationBarsPadding()
+                .padding(
+                    end = dimensionResource(R.dimen.nav_fab_margin),
+                    bottom = dimensionResource(R.dimen.nav_fab_margin),
+                ),
+            onClick = viewModel::onSearchIconClicked,
         )
     }
 }

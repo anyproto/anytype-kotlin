@@ -257,7 +257,8 @@ class ChatViewModel @Inject constructor(
                         isMuted = isMuted,
                         notificationSetting = notificationSetting,
                         canEdit = canEdit,
-                        showAddMembers = spaceView.spaceUxType != SpaceUxType.ONE_TO_ONE
+                        showAddMembers = spaceView.spaceUxType != SpaceUxType.ONE_TO_ONE,
+                        showDropDownMenu = false
                     )
                 } else if (chatObject != null) {
                     // Chat object - use wrapper from ObjectWatcher

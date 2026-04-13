@@ -338,10 +338,6 @@ open class ObjectSetFragment :
             ) { vm.onHomeButtonClicked() }
 
             subscribe(
-                binding.bottomToolbar.chatClicks().throttleFirst()
-            ) { vm.onHomeButtonClicked() }
-
-            subscribe(
                 binding.bottomToolbar.addDocClicks().throttleFirst()
             ) { vm.onAddNewDocumentClicked() }
 

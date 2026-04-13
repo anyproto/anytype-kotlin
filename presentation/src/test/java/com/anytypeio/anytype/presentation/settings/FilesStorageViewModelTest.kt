@@ -137,14 +137,14 @@ class FilesStorageViewModelTest {
     }
 
     @Test
-    fun `OnUseCellularToggled persists and updates state`() = runTest {
+    fun `onUseCellularToggled persists and updates state`() = runTest {
         // Given
         val vm = buildViewModel()
         vm.onStart()
         advanceUntilIdle()
 
         // When
-        vm.event(FilesStorageViewModel.Event.OnUseCellularToggled(true))
+        vm.onUseCellularToggled(true)
         advanceUntilIdle()
 
         // Then

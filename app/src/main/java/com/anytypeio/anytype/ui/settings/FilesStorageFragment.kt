@@ -68,7 +68,7 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
                             throttle { vm.event(Event.OnOfflineDownloadsClicked) }
                         },
                         onUseCellularToggled = { checked ->
-                            vm.event(Event.OnUseCellularToggled(checked))
+                            vm.onUseCellularToggled(checked)
                         }
                     )
 

@@ -200,10 +200,6 @@ class FilesStorageViewModel(
                     Command.ShowOfflineDownloadsSelector(_downloadLimit.value)
                 )
             }
-            is Event.OnUseCellularToggled -> {
-                setUseCellularForDownloads.run(event.value)
-                _useCellular.value = event.value
-            }
         }
     }
 
@@ -211,6 +207,15 @@ class FilesStorageViewModel(
         viewModelScope.launch {
             setFileDownloadLimit.run(limit)
             _downloadLimit.value = limit
+        }
+    }
+
+    // Direct call (not routed through the throttled `events` flow) so rapid toggles
+    // aren't dropped and UI state can't desync from persistence.
+    fun onUseCellularToggled(value: Boolean) {
+        viewModelScope.launch {
+            setUseCellularForDownloads.run(value)
+            _useCellular.value = value
         }
     }
 
@@ -310,7 +315,6 @@ class FilesStorageViewModel(
     sealed class Event {
         data object OnOffloadFilesClicked : Event()
         data object OnOfflineDownloadsClicked : Event()
-        data class OnUseCellularToggled(val value: Boolean) : Event()
     }
 
     sealed class Command {

@@ -282,7 +282,7 @@ private fun UseCellularRow(
                 role = Role.Switch,
                 onValueChange = onCheckedChange
             )
-            .padding(horizontal = 16.dp, vertical = 14.dp),
+            .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(

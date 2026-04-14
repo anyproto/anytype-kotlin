@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.DEFAULT_RELATIVE_DATES
+import com.anytypeio.anytype.core_models.FileDownloadLimit
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -809,5 +810,101 @@ class UserSettingsCacheTest {
         assertEquals(2, allWallpapers.size)
         assertEquals(newWallpaper, allWallpapers[space1.id])
         assertEquals(anotherWallpaper, allWallpapers[space2.id])
+    }
+
+    @Test
+    fun `file download limit defaults to OFF when unset`() = runTest {
+
+        // Clear preferences to start with clean state
+        defaultPrefs.edit().clear().apply()
+
+        val cache = DefaultUserSettingsCache(
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
+        )
+
+        assertEquals(
+            expected = FileDownloadLimit.OFF,
+            actual = cache.getFileDownloadLimit()
+        )
+    }
+
+    @Test
+    fun `file download limit persists across reads`() = runTest {
+
+        // Clear preferences to start with clean state
+        defaultPrefs.edit().clear().apply()
+
+        val cache = DefaultUserSettingsCache(
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
+        )
+
+        cache.setFileDownloadLimit(FileDownloadLimit.MB_100)
+
+        assertEquals(
+            expected = FileDownloadLimit.MB_100,
+            actual = cache.getFileDownloadLimit()
+        )
+    }
+
+    @Test
+    fun `observeFileDownloadLimit emits latest set value`() = runTest {
+
+        // Clear preferences to start with clean state
+        defaultPrefs.edit().clear().apply()
+
+        val cache = DefaultUserSettingsCache(
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
+        )
+
+        cache.setFileDownloadLimit(FileDownloadLimit.GB_1)
+
+        assertEquals(
+            expected = FileDownloadLimit.GB_1,
+            actual = cache.observeFileDownloadLimit().first()
+        )
+    }
+
+    @Test
+    fun `use cellular for downloads defaults to false`() = runTest {
+
+        // Clear preferences to start with clean state
+        defaultPrefs.edit().clear().apply()
+
+        val cache = DefaultUserSettingsCache(
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
+        )
+
+        assertEquals(
+            expected = false,
+            actual = cache.getUseCellularForDownloads()
+        )
+    }
+
+    @Test
+    fun `use cellular for downloads persists`() = runTest {
+
+        // Clear preferences to start with clean state
+        defaultPrefs.edit().clear().apply()
+
+        val cache = DefaultUserSettingsCache(
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
+        )
+
+        cache.setUseCellularForDownloads(true)
+
+        assertEquals(
+            expected = true,
+            actual = cache.getUseCellularForDownloads()
+        )
     }
 }

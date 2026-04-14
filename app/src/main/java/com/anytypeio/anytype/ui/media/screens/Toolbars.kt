@@ -73,16 +73,24 @@ fun MediaTopBar(
 
         // Title (center)
         if (title.isNotEmpty()) {
-            Text(
-                text = title,
-                style = PreviewTitle2Regular,
-                color = colorResource(R.color.text_white),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+            Box(
                 modifier = Modifier
                     .align(Alignment.Center)
                     .padding(horizontal = 56.dp)
-            )
+                    .background(
+                        color = Color.Black.copy(alpha = 0.35f),
+                        shape = RoundedCornerShape(7.dp)
+                    )
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+            ) {
+                Text(
+                    text = title,
+                    style = PreviewTitle2Regular,
+                    color = colorResource(R.color.text_white),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
 
         // Three-dots menu (right)

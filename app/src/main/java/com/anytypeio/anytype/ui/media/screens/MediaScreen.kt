@@ -686,6 +686,14 @@ private fun AudioPlayer(
         onControlsVisibilityChanged(showControls)
     }
 
+    // Auto-hide controls after delay (but not while user is seeking)
+    LaunchedEffect(showControls, isPlaying, userSeeking) {
+        if (showControls && isPlaying && !userSeeking) {
+            delay(DELAY_BEFORE_HIDING_CONTROLS)
+            if (!userSeeking) showControls = false
+        }
+    }
+
     // Poll playback progress
     LaunchedEffect(isPlaying, userSeeking) {
         while (isPlaying && !userSeeking) {
@@ -756,7 +764,7 @@ private fun AudioPlayer(
 
         // Overlay controls with fade-in/out
         AnimatedVisibility(
-            visible = true,
+            visible = showControls,
             enter = fadeIn(),
             exit = fadeOut()
         ) {

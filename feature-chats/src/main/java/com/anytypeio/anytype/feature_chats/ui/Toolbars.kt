@@ -123,17 +123,7 @@ fun ChatTopToolbar(
                 .padding(horizontal = 100.dp)
                 .fillMaxWidth()
                 .noRippleClickable {
-                    when {
-                        header is ChatViewModel.HeaderView.ChatObject && header.showDropDownMenu -> {
-                            showDropdownMenu = !showDropdownMenu
-                        }
-                        header is ChatViewModel.HeaderView.Default && header.showDropDownMenu -> {
-                            showDropdownMenu = !showDropdownMenu
-                        }
-                        else -> {
-                            onSpaceNameClicked()
-                        }
-                    }
+                    onSpaceNameClicked()
                 },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically

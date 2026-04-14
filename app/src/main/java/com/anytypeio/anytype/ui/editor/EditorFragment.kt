@@ -637,11 +637,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .launchIn(lifecycleScope)
 
         binding.bottomToolbar
-            .chatClicks()
-            .onEach { vm.onHomeButtonClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.bottomToolbar
             .searchClicks()
             .onEach { vm.onPageSearchClicked() }
             .launchIn(lifecycleScope)

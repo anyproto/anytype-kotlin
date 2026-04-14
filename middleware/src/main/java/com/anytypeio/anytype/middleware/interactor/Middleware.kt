@@ -2475,6 +2475,27 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun fileSetAutoDownload(enabled: Boolean, wifiOnly: Boolean) {
+        val request = Rpc.File.SetAutoDownload.Request(
+            enabled = enabled,
+            wifi_only = wifiOnly
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.fileSetAutoDownload(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
+    fun fileAutoDownloadSetLimit(sizeLimitMebibytes: Long) {
+        val request = Rpc.File.AutoDownloadSetLimit.Request(
+            sizeLimitMebibytes = sizeLimitMebibytes
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.fileAutoDownloadSetLimit(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
     fun duplicateObjectsList(
         objects: List<Id>
     ): List<Id> {

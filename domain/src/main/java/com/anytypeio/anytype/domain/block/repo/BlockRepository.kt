@@ -459,6 +459,8 @@ interface BlockRepository {
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
     suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload
     suspend fun nodeUsage(): NodeUsageInfo
+    suspend fun fileSetAutoDownload(enabled: Boolean, wifiOnly: Boolean)
+    suspend fun fileAutoDownloadSetLimit(sizeLimitMebibytes: Long)
     suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload
     suspend fun duplicateObjectsList(ids: List<Id>): List<Id>
     suspend fun createTemplateFromObject(ctx: Id): Id

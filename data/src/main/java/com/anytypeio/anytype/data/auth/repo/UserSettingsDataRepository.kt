@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.data.auth.repo
 
 import com.anytypeio.anytype.core_models.Account
+import com.anytypeio.anytype.core_models.FileDownloadLimit
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.WidgetSections
@@ -195,6 +196,26 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
 
     override fun observeCompactModeEnabled(): Flow<Boolean> {
         return cache.observeCompactModeEnabled()
+    }
+
+    override suspend fun getFileDownloadLimit(): FileDownloadLimit {
+        return cache.getFileDownloadLimit()
+    }
+
+    override suspend fun setFileDownloadLimit(limit: FileDownloadLimit) {
+        cache.setFileDownloadLimit(limit)
+    }
+
+    override fun observeFileDownloadLimit(): Flow<FileDownloadLimit> {
+        return cache.observeFileDownloadLimit()
+    }
+
+    override suspend fun getUseCellularForDownloads(): Boolean {
+        return cache.getUseCellularForDownloads()
+    }
+
+    override suspend fun setUseCellularForDownloads(enabled: Boolean) {
+        cache.setUseCellularForDownloads(enabled)
     }
 
     override suspend fun getInstalledAtDate(account: Account): Long? {

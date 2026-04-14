@@ -22,13 +22,17 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
+import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -89,18 +93,114 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     vm.commands.collect {
-                        // TODO(DROID-4318 Task 12): forward to parent navigator
+                        // Commands from HomeScreenViewModel are widget-host flows
+                        // (space settings dialogs, share, deep links, create-object, etc.)
+                        // that the overlay does not own. Object navigation flows through
+                        // vm.navigation below.
                         Timber.d("WidgetOverlay vm command: $it")
                     }
                 }
                 launch {
-                    vm.navigation.collect {
-                        // TODO(DROID-4318 Task 12): forward to parent navigator
-                        Timber.d("WidgetOverlay vm navigation: $it")
+                    vm.navigation.collect { destination ->
+                        proceed(destination)
                     }
                 }
                 launch { vm.toasts.collect { toast(it) } }
             }
+        }
+    }
+
+    private fun proceed(destination: HomeScreenViewModel.Navigation) {
+        Timber.d("WidgetOverlay destination: $destination")
+        // Always dismiss the overlay first so the back-stack does not contain the sheet.
+        dismiss()
+        when (destination) {
+            is HomeScreenViewModel.Navigation.OpenObject -> runCatching {
+                navigation().openDocument(
+                    target = destination.ctx,
+                    space = destination.space
+                )
+            }.onFailure { Timber.e(it, "Error opening document from overlay") }
+
+            is HomeScreenViewModel.Navigation.OpenSet -> runCatching {
+                navigation().openObjectSet(
+                    target = destination.ctx,
+                    space = destination.space,
+                    view = destination.view
+                )
+            }.onFailure { Timber.e(it, "Error opening object set from overlay") }
+
+            is HomeScreenViewModel.Navigation.OpenChat -> runCatching {
+                navigation().openChat(
+                    target = destination.ctx,
+                    space = destination.space,
+                    popUpToVault = false
+                )
+            }.onFailure { Timber.e(it, "Error opening chat from overlay") }
+
+            is HomeScreenViewModel.Navigation.ExpandWidget -> runCatching {
+                navigation().launchCollections(
+                    subscription = destination.subscription,
+                    space = destination.space
+                )
+            }.onFailure { Timber.e(it, "Error expanding widget from overlay") }
+
+            is HomeScreenViewModel.Navigation.OpenAllContent -> runCatching {
+                navigation().openAllContent(space = destination.space)
+            }.onFailure { Timber.e(it, "Error opening all content from overlay") }
+
+            is HomeScreenViewModel.Navigation.OpenDateObject -> runCatching {
+                navigation().openDateObject(
+                    objectId = destination.ctx,
+                    space = destination.space
+                )
+            }.onFailure { Timber.e(it, "Error opening date object from overlay") }
+
+            is HomeScreenViewModel.Navigation.OpenParticipant -> runCatching {
+                navigation().openParticipantObject(
+                    objectId = destination.objectId,
+                    space = destination.space
+                )
+            }.onFailure { Timber.e(it, "Error opening participant from overlay") }
+
+            is HomeScreenViewModel.Navigation.OpenType -> runCatching {
+                navigation().openObjectType(
+                    objectId = destination.target,
+                    space = destination.space,
+                    view = destination.view
+                )
+            }.onFailure { Timber.e(it, "Error opening object type from overlay") }
+
+            is HomeScreenViewModel.Navigation.OpenOwnerOrEditorSpaceSettings -> runCatching {
+                // The widgets-scoped action ids are not reachable from the overlay's
+                // host destination (chat/editor/object set), so navigate directly to
+                // the global spaceSettingsScreen destination with the space arg.
+                findNavController().navigate(
+                    R.id.spaceSettingsScreen,
+                    SpaceSettingsFragment.args(space = SpaceId(destination.space))
+                )
+            }.onFailure { Timber.e(it, "Error opening space settings from overlay") }
+
+            is HomeScreenViewModel.Navigation.OpenBookmarkUrl -> {
+                try {
+                    ActivityCustomTabsHelper.openUrl(
+                        activity = requireActivity(),
+                        url = destination.url
+                    )
+                } catch (e: Throwable) {
+                    Timber.e(e, "Error opening bookmark URL from overlay: ${destination.url}")
+                    toast("Failed to open URL")
+                }
+            }
+
+            is HomeScreenViewModel.Navigation.OpenTemplate -> runCatching {
+                navigation().openModalTemplateEdit(
+                    template = destination.template,
+                    templateTypeId = destination.templateTypeId,
+                    templateTypeKey = destination.templateTypeKey,
+                    space = destination.space
+                )
+            }.onFailure { Timber.e(it, "Error opening template from overlay") }
         }
     }
 
@@ -124,9 +224,6 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
     }
 
     companion object {
-        const val REQUEST_KEY = "widget_overlay_result"
-        const val RESULT_OBJECT_ID = "object_id"
-        const val RESULT_OBJECT_TYPE = "object_type"
         private const val ARG_SPACE_ID = "space_id"
         private const val TAG = "WidgetOverlayFragment"
 
@@ -149,9 +246,6 @@ private fun WidgetOverlayContent(
             .fillMaxSize()
             .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
-        // TODO (Task 12): thread an onObjectClicked callback so the overlay can
-        //  intercept object taps and deliver them via setFragmentResult(REQUEST_KEY, ...)
-        //  keyed on RESULT_OBJECT_ID / RESULT_OBJECT_TYPE.
         WidgetsScreen(
             viewModel = vm
         )

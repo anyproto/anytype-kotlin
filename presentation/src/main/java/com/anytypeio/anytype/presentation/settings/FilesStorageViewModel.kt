@@ -20,6 +20,8 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.ClearFileCache
+import com.anytypeio.anytype.domain.download.FileAutoDownloadSetLimit
+import com.anytypeio.anytype.domain.download.FileSetAutoDownload
 import com.anytypeio.anytype.domain.download.GetFileDownloadLimit
 import com.anytypeio.anytype.domain.download.GetUseCellularForDownloads
 import com.anytypeio.anytype.domain.download.SetFileDownloadLimit
@@ -52,7 +54,9 @@ class FilesStorageViewModel(
     private val getFileDownloadLimit: GetFileDownloadLimit,
     private val setFileDownloadLimit: SetFileDownloadLimit,
     private val getUseCellularForDownloads: GetUseCellularForDownloads,
-    private val setUseCellularForDownloads: SetUseCellularForDownloads
+    private val setUseCellularForDownloads: SetUseCellularForDownloads,
+    private val fileSetAutoDownload: FileSetAutoDownload,
+    private val fileAutoDownloadSetLimit: FileAutoDownloadSetLimit
 ) : BaseViewModel() {
 
     val events = MutableSharedFlow<Event>(replay = 0)
@@ -207,6 +211,7 @@ class FilesStorageViewModel(
         viewModelScope.launch {
             setFileDownloadLimit.run(limit)
             _downloadLimit.value = limit
+            syncToMiddleware(limit = limit, useCellular = _useCellular.value)
         }
     }
 
@@ -216,7 +221,50 @@ class FilesStorageViewModel(
         viewModelScope.launch {
             setUseCellularForDownloads.run(value)
             _useCellular.value = value
+            syncToMiddleware(limit = _downloadLimit.value, useCellular = value)
         }
+    }
+
+    // Pushes the current (limit, useCellular) pair to middleware. On failure the
+    // local state stays as the user set it; a toast surfaces the error so the user
+    // can retry by re-selecting. Matches iOS PR #4628 semantics: always call
+    // FileSetAutoDownload first, then FileAutoDownloadSetLimit only when enabled.
+    private suspend fun syncToMiddleware(
+        limit: FileDownloadLimit,
+        useCellular: Boolean
+    ) {
+        fileSetAutoDownload.async(
+            FileSetAutoDownload.Params(
+                enabled = limit.isEnabled,
+                wifiOnly = !useCellular
+            )
+        ).fold(
+            onSuccess = {
+                if (limit.isEnabled) {
+                    setLimitToMiddleware(limit)
+                }
+            },
+            onFailure = { exception ->
+                Timber.e(exception, "Failed to sync to middleware")
+                sendToast("Failed to update Offline Downloads setting")
+            }
+        )
+    }
+
+    private suspend fun setLimitToMiddleware(limit: FileDownloadLimit) {
+        fileAutoDownloadSetLimit.async(
+            FileAutoDownloadSetLimit.Params(
+                sizeLimitMebibytes = limit.sizeLimitMebibytes
+            )
+        ).fold(
+            onSuccess = {
+                Timber.d("Successfully synced to middleware")
+            },
+            onFailure = { error ->
+                Timber.e(error, "Failed to sync to middleware")
+                sendToast("Failed to update Offline Downloads setting")
+            }
+        )
     }
 
     private fun subscribeToFileLimits() {
@@ -334,7 +382,9 @@ class FilesStorageViewModel(
         private val getFileDownloadLimit: GetFileDownloadLimit,
         private val setFileDownloadLimit: SetFileDownloadLimit,
         private val getUseCellularForDownloads: GetUseCellularForDownloads,
-        private val setUseCellularForDownloads: SetUseCellularForDownloads
+        private val setUseCellularForDownloads: SetUseCellularForDownloads,
+        private val fileSetAutoDownload: FileSetAutoDownload,
+        private val fileAutoDownloadSetLimit: FileAutoDownloadSetLimit
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -349,7 +399,9 @@ class FilesStorageViewModel(
             getFileDownloadLimit = getFileDownloadLimit,
             setFileDownloadLimit = setFileDownloadLimit,
             getUseCellularForDownloads = getUseCellularForDownloads,
-            setUseCellularForDownloads = setUseCellularForDownloads
+            setUseCellularForDownloads = setUseCellularForDownloads,
+            fileSetAutoDownload = fileSetAutoDownload,
+            fileAutoDownloadSetLimit = fileAutoDownloadSetLimit
         ) as T
     }
 

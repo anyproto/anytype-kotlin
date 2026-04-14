@@ -60,7 +60,7 @@
     <string name="remove_image">Eliminar imagen</string>
     <string name="delete_space">Eliminar espacio</string>
     <string name="you_can_store">Puedes almacenar gratuitamente hasta %1$s de archivos en nuestro nodo de respaldo cifrado. Si llegas al límite, los archivos se almacenarán solo localmente.</string>
-    <string name="in_order_to_save">Free up space by offloading files to encrypted backup. They’ll load when you open them.</string>
+    <string name="in_order_to_save">Para liberar espacio, puedes guardar los archivos en el respaldo cifrado. Se cargarán cuando vuelvas a abrirlos.</string>
     <string name="manage_files">Gestionar archivos</string>
     <string name="local_storage">Almacenamiento local</string>
     <string name="offload_files">Guardar en el nodo</string>
@@ -2193,5 +2193,5 @@ En concreto,
     <string name="offline_downloads_value_250mb">250 MB</string>
     <string name="offline_downloads_value_1gb">1 GB</string>
     <string name="offline_downloads_value_unlimited">Ilimitado</string>
-    <string name="device_storage_used">Device storage used</string>
+    <string name="device_storage_used">Almacenamiento usado en el dispositivo</string>
 </resources>

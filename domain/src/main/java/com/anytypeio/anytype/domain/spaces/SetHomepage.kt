@@ -15,11 +15,11 @@ class SetHomepage @Inject constructor(
     override suspend fun doWork(params: Params) {
         repo.setHomepage(
             Command.SetHomepage(
-                contextId = params.spaceId,
-                objectId = params.objectId
+                spaceId = params.spaceId,
+                homepage = params.homepage
             )
         )
     }
 
-    data class Params(val spaceId: Id, val objectId: Id)
+    data class Params(val spaceId: Id, val homepage: Id)
 }

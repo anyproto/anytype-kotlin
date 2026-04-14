@@ -165,6 +165,14 @@ object SplashModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideSearchObjects(
+        repo: BlockRepository
+    ): com.anytypeio.anytype.domain.search.SearchObjects =
+        com.anytypeio.anytype.domain.search.SearchObjects(repo = repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideCreateObjectByType(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers,

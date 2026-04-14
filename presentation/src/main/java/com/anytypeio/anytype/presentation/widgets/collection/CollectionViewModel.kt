@@ -19,7 +19,6 @@ import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.misc.navigation
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
@@ -210,7 +209,7 @@ class CollectionViewModel(
                 .map { permission ->
                     NavPanelState.fromPermission(
                         permission = permission,
-                        spaceUxType = spaceViews.get(space = vmParams.spaceId)?.spaceUxType ?: SpaceUxType.DATA
+                        isOneToOneSpace = spaceViews.get(space = vmParams.spaceId)?.isOneToOneSpace == true
                     )
                 }.collect {
                     navPanelState.value = it

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
@@ -88,7 +90,11 @@ object VaultViewModelFabric {
         osWidgetSpacesSync: OsWidgetSpacesSync = mock(),
         osWidgetDataViewSync: OsWidgetDataViewSync = mock(),
         networkModeProvider: NetworkModeProvider = mock(),
-        getMembershipFeatures: GetMembershipFeatures = mock()
+        getMembershipFeatures: GetMembershipFeatures = mock(),
+        searchObjects: SearchObjects = mock(),
+        userSettingsRepository: UserSettingsRepository = mock {
+            on { observeCompactModeEnabled() }.thenReturn(flowOf(false))
+        }
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,
@@ -124,6 +130,8 @@ object VaultViewModelFabric {
         osWidgetSpacesSync = osWidgetSpacesSync,
         osWidgetDataViewSync = osWidgetDataViewSync,
         networkModeProvider = networkModeProvider,
-        getMembershipFeatures = getMembershipFeatures
+        getMembershipFeatures = getMembershipFeatures,
+        searchObjects = searchObjects,
+        userSettingsRepository = userSettingsRepository
     )
 }

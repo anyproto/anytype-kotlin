@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.config
 
 import com.anytypeio.anytype.core_models.Account
+import com.anytypeio.anytype.core_models.FileDownloadLimit
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ThemeMode
@@ -77,6 +78,14 @@ interface UserSettingsRepository {
 
     suspend fun getCompactModeEnabled(): Boolean
     suspend fun setCompactModeEnabled(enabled: Boolean)
+    fun observeCompactModeEnabled(): Flow<Boolean>
+
+    suspend fun getFileDownloadLimit(): FileDownloadLimit
+    suspend fun setFileDownloadLimit(limit: FileDownloadLimit)
+    fun observeFileDownloadLimit(): Flow<FileDownloadLimit>
+
+    suspend fun getUseCellularForDownloads(): Boolean
+    suspend fun setUseCellularForDownloads(enabled: Boolean)
 
     suspend fun getInstalledAtDate(account: Account): Long?
     suspend fun setInstalledAtDate(account: Account, timestamp: Long)
@@ -88,4 +97,11 @@ interface UserSettingsRepository {
     suspend fun getWidgetSections(space: SpaceId): WidgetSections
     suspend fun setWidgetSections(space: SpaceId, sections: WidgetSections)
     fun observeWidgetSections(space: SpaceId): Flow<WidgetSections>
+
+    suspend fun setHomepagePickerDismissed(space: SpaceId, dismissed: Boolean)
+    suspend fun getHomepagePickerDismissed(space: SpaceId): Boolean
+    suspend fun setCreateHomeDismissed(space: SpaceId, dismissed: Boolean)
+    fun observeCreateHomeDismissed(space: SpaceId): Flow<Boolean>
+    suspend fun setInviteMembersDismissed(space: SpaceId, dismissed: Boolean)
+    fun observeInviteMembersDismissed(space: SpaceId): Flow<Boolean>
 }

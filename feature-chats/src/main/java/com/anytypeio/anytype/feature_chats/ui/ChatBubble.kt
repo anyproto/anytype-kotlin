@@ -298,13 +298,14 @@ fun Bubble(
                                 )
                             ) {
                                 append(
-                                    timestamp.formatTimeInMillis(TIME_H24).let {
-                                        if (isEdited) {
-                                            " ${stringResource(R.string.chats_message_edited)} $it"
+                                    buildTimestampPlaceholder(
+                                        formattedTime = timestamp.formatTimeInMillis(TIME_H24),
+                                        editedLabel = if (isEdited) {
+                                            stringResource(R.string.chats_message_edited)
                                         } else {
-                                            " $it"
+                                            null
                                         }
-                                    }
+                                    )
                                 )
                             }
                         },
@@ -693,3 +694,28 @@ fun ChatUserAvatar(
 }
 
 val SWIPE_THRESHOLD_DP = 40.dp
+
+/**
+ * Unicode Left-to-Right Embedding (LRE) marker.
+ */
+private const val LRE = "\u202A"
+
+/**
+ * Unicode Pop Directional Formatting (PDF) marker.
+ */
+private const val PDF = "\u202C"
+
+/**
+ * Builds the transparent timestamp placeholder text used to reserve space
+ * in the message bubble. Wraps the text in LRE/PDF Unicode markers so
+ * the placeholder always flows left-to-right, preventing overlap with
+ * RTL message text.
+ */
+internal fun buildTimestampPlaceholder(formattedTime: String, editedLabel: String? = null): String {
+    val inner = if (editedLabel != null) {
+        " $editedLabel $formattedTime"
+    } else {
+        " $formattedTime"
+    }
+    return "$LRE$inner$PDF"
+}

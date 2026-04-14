@@ -39,6 +39,7 @@ object Relations {
     const val SNIPPET = "snippet"
     const val SPACE_ID = "spaceId"
     const val SPACE_UX_TYPE = "spaceUxType"
+    const val SPACE_TYPE = "spaceType"
     const val TARGET_SPACE_ID = "targetSpaceId"
     const val SET_OF = "setOf"
     const val URL = "url"
@@ -103,7 +104,7 @@ object Relations {
     const val PARTICIPANT_STATUS = "participantStatus"
     const val PARTICIPANT_PERMISSIONS = "participantPermissions"
     const val SPACE_ACCESS_TYPE = "spaceAccessType"
-    const val SPACE_DASHBOARD_ID = "spaceDashboardId"
+    const val SPACE_HOMEPAGE = "homepage"
     const val ONE_TO_ONE_IDENTITY = "oneToOneIdentity"
     const val ONE_TO_ONE_REQUEST_METADATA = "oneToOneRequestMetadataKey"
     const val IDENTITY = "identity"
@@ -192,6 +193,7 @@ object Relations {
         "sizeInBytes",
         "oldAnytypeID",
         "spaceDashboardId",
+        "homepage",
         "recommendedRelations",
         "iconOption",
         "widthInPixels",
@@ -211,6 +213,8 @@ object Relations {
         "imageKind",
         "importType",
         "spaceAccessType",
+        "spaceUxType",
+        "spaceType",
         "spaceInviteFileCid",
         "spaceInviteFileKey",
         "readersLimit",

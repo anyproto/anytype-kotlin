@@ -782,6 +782,7 @@ fun MRelationFormat.format(): Relation.Format = when (this) {
     MRelationFormat.status -> RelationFormat.STATUS
     MRelationFormat.tag -> RelationFormat.TAG
     MRelationFormat.relations -> RelationFormat.RELATIONS
+    MRelationFormat.map -> RelationFormat.MAP
 }
 
 fun MRelationOption.option(): Relation.Option = Relation.Option(

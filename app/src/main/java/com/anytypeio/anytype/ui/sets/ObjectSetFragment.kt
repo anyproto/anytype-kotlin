@@ -123,6 +123,7 @@ import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
+import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.CollectionAddObjectTypeFragment
@@ -336,7 +337,9 @@ open class ObjectSetFragment :
             }
             subscribe(topBackButton.clicks().throttleFirst()) { vm.onBackButtonClicked() }
             binding.topToolbar.root.findViewById<View>(R.id.titlePillContainer)
-                .setOnClickListener { /* wired in Task 11 */ }
+                .setOnClickListener {
+                    WidgetOverlayFragment.show(parentFragmentManager, space)
+                }
             subscribe(menuButton.clicks().throttleFirst()) { vm.onMenuClicked() }
             subscribe(customizeViewButton.clicks().throttleFirst()) { vm.onViewerCustomizeButtonClicked() }
             subscribe(viewerTitle.clicks().throttleFirst()) { vm.onExpandViewerMenuClicked() }

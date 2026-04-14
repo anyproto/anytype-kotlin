@@ -162,6 +162,7 @@ import com.anytypeio.anytype.ui.editor.modals.SetBlockTextValueFragment
 import com.anytypeio.anytype.ui.editor.modals.TextBlockIconPickerFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
+import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
@@ -681,7 +682,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onBackButtonPressed() }
             .launchIn(lifecycleScope)
 
-        binding.topToolbar.container.setOnClickListener { /* wired in Task 11 */ }
+        binding.topToolbar.container.setOnClickListener {
+            WidgetOverlayFragment.show(parentFragmentManager, space)
+        }
 
         binding.discussionButton.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)

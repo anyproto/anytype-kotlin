@@ -308,23 +308,32 @@ fun AudioPlayerBox(
     onDeleteClick: () -> Unit = {},
     onRestoreClick: () -> Unit = {}
 ) {
+    var chromeVisible by remember { mutableStateOf(true) }
+
     Box(modifier = Modifier.fillMaxSize()) {
         AudioPlayer(
             url = url,
-            name = name
+            name = name,
+            onControlsVisibilityChanged = { chromeVisible = it }
         )
 
         // Top bar
-        MediaTopBar(
+        AnimatedVisibility(
+            visible = chromeVisible,
+            enter = fadeIn(),
+            exit = fadeOut(),
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .systemBarsPadding(),
-            title = name,
-            isArchived = isArchived,
-            onBackClick = onBackClick,
-            onDownloadClick = onDownloadClick,
-            onDeleteClick = onDeleteClick
-        )
+                .systemBarsPadding()
+        ) {
+            MediaTopBar(
+                title = name,
+                isArchived = isArchived,
+                onBackClick = onBackClick,
+                onDownloadClick = onDownloadClick,
+                onDeleteClick = onDeleteClick
+            )
+        }
 
         // Archived banner (top-center, below top bar)
         if (isArchived) {
@@ -377,21 +386,30 @@ fun VideoPlayerBox(
     onDeleteClick: () -> Unit = {},
     onRestoreClick: () -> Unit = {}
 ) {
+    var chromeVisible by remember { mutableStateOf(true) }
+
     Box(modifier = Modifier.fillMaxSize()) {
         VideoPlayer(
-            url = url
+            url = url,
+            onControlsVisibilityChanged = { chromeVisible = it }
         )
 
         // Top bar
-        MediaTopBar(
+        AnimatedVisibility(
+            visible = chromeVisible,
+            enter = fadeIn(),
+            exit = fadeOut(),
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .systemBarsPadding(),
-            isArchived = isArchived,
-            onBackClick = onBackClick,
-            onDownloadClick = onDownloadClick,
-            onDeleteClick = onDeleteClick
-        )
+                .systemBarsPadding()
+        ) {
+            MediaTopBar(
+                isArchived = isArchived,
+                onBackClick = onBackClick,
+                onDownloadClick = onDownloadClick,
+                onDeleteClick = onDeleteClick
+            )
+        }
 
         // Archived banner (top-center, below top bar)
         if (isArchived) {
@@ -436,7 +454,10 @@ fun VideoPlayerBox(
 }
 
 @Composable
-private fun VideoPlayer(url: String) {
+private fun VideoPlayer(
+    url: String,
+    onControlsVisibilityChanged: (Boolean) -> Unit = {}
+) {
     val videoViewRef = remember { mutableStateOf<VideoView?>(null) }
     var isPlaying by remember { mutableStateOf(false) }
     var isBuffering by remember { mutableStateOf(true) }
@@ -444,6 +465,10 @@ private fun VideoPlayer(url: String) {
     var currentPosition by remember { mutableStateOf(0) }
     var userSeeking by remember { mutableStateOf(false) }
     var showControls by remember { mutableStateOf(true) }
+
+    LaunchedEffect(showControls) {
+        onControlsVisibilityChanged(showControls)
+    }
 
     // Poll playback progress
     LaunchedEffect(isPlaying, userSeeking) {
@@ -646,7 +671,8 @@ private fun VideoPlayer(url: String) {
 @Composable
 private fun AudioPlayer(
     url: String,
-    name: String
+    name: String,
+    onControlsVisibilityChanged: (Boolean) -> Unit = {}
 ) {
     val videoViewRef = remember { mutableStateOf<VideoView?>(null) }
     var isPlaying by remember { mutableStateOf(false) }
@@ -655,6 +681,10 @@ private fun AudioPlayer(
     var currentPosition by remember { mutableStateOf(0) }
     var userSeeking by remember { mutableStateOf(false) }
     var showControls by remember { mutableStateOf(true) }
+
+    LaunchedEffect(showControls) {
+        onControlsVisibilityChanged(showControls)
+    }
 
     // Poll playback progress
     LaunchedEffect(isPlaying, userSeeking) {

@@ -56,7 +56,11 @@ fun MediaTopBar(
             modifier = Modifier
                 .align(Alignment.CenterStart)
                 .padding(start = 12.dp)
-                .size(32.dp)
+                .size(28.dp)
+                .background(
+                    color = Color.Black.copy(alpha = 0.35f),
+                    shape = RoundedCornerShape(7.dp)
+                )
                 .noRippleClickable { onBackClick() },
             contentAlignment = Alignment.Center
         ) {

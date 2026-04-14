@@ -2179,5 +2179,5 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="offline_downloads_value_250mb">250 MB</string>
     <string name="offline_downloads_value_1gb">1 GB</string>
     <string name="offline_downloads_value_unlimited">Tanpa batas</string>
-    <string name="device_storage_used">Device storage used</string>
+    <string name="device_storage_used">Penyimpanan perangkat yang terpakai</string>
 </resources>

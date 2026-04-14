@@ -869,10 +869,12 @@
     <string name="homepage_picker_title">Ana Sayfa Oluştur</string>
     <string name="homepage_picker_description">Sen ve kanal üyelerinin kanalı açtıklarında görecekleri içeriği seç. Bunu istediğin zaman ayarlardan değiştirebilirsin.</string>
     <string name="homepage_picker_chat">Sohbet</string>
-    <string name="homepage_picker_widgets">Widgetlar</string>
     <string name="homepage_picker_page">Sayfa</string>
     <string name="homepage_picker_collection">Koleksiyon</string>
+    <string name="homepage_picker_empty">Boş</string>
     <string name="homepage_picker_later">Daha sonra</string>
+    <string name="invite_members_widget_title">Üyeleri Davet Et</string>
+    <string name="invite_members_widget_description">İşbirliğine başlamak için insanları bu kanala davet et.</string>
     <string name="generic_error">Bir şeyler yanlış gitti. Lütfen tekrar deneyin.</string>
     <string name="type">Tür</string>
     <string name="format">Biçim</string>

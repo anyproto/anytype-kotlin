@@ -321,10 +321,13 @@ private fun ChatSearchResultItem(
                 Spacer(modifier = Modifier.height(2.dp))
                 // Highlighted message preview
                 val highlightColor = colorResource(R.color.palette_system_blue)
+                val previewText = result.highlight.ifEmpty {
+                    result.message.content?.text.orEmpty()
+                }
                 Text(
                     text = buildHighlightedText(
-                        text = result.highlight,
-                        ranges = result.highlightRanges,
+                        text = previewText,
+                        ranges = if (result.highlight.isNotEmpty()) result.highlightRanges else emptyList(),
                         highlightColor = highlightColor
                     ),
                     style = Relations2,

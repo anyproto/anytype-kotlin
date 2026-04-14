@@ -381,7 +381,7 @@ class SpaceSettingsViewModel(
                     when (spaceView.spaceAccessType) {
                         SpaceAccessType.PRIVATE, SpaceAccessType.SHARED -> {
                             add(Spacer(id = "after-name", height = 4))
-                            if (spaceView.spaceUxType.shouldShowMemberCount) {
+                            if (spaceView.shouldShowMemberCount) {
                                 add(MembersSmall(count = spaceMemberCount))
                             }
                         }

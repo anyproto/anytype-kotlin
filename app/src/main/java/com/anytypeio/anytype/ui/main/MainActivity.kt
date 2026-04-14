@@ -39,7 +39,6 @@ import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATI
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeMode
-import com.anytypeio.anytype.core_models.ext.shouldNavigateDirectlyToChat
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -235,23 +234,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         runCatching {
                                             val controller = findNavController(R.id.fragment)
                                             controller.popBackStack(R.id.vaultScreen, false)
-                                            if (effect.chat != null && effect.spaceUxType == SpaceUxType.CHAT) {
-                                                controller.navigate(
-                                                    R.id.actionOpenChatFromVault,
-                                                    ChatFragment.args(
-                                                        space = command.space,
-                                                        ctx = effect.chat.orEmpty()
-                                                    )
+                                            controller.navigate(
+                                                R.id.actionOpenSpaceFromVault,
+                                                WidgetsScreenFragment.args(
+                                                    space = command.space,
+                                                    deeplink = null
                                                 )
-                                            } else {
-                                                controller.navigate(
-                                                    R.id.actionOpenSpaceFromVault,
-                                                    WidgetsScreenFragment.args(
-                                                        space = command.space,
-                                                        deeplink = null
-                                                    )
-                                                )
-                                            }
+                                            )
                                             proceedWithOpenObjectNavigation(command.navigation)
                                         }.onFailure {
                                             Timber.e(it, "Error while switching space when handling deep link to object")
@@ -314,16 +303,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             }
                             is Command.Deeplink.DeepLinkToSpace -> {
                                 // Space was already switched by MainViewModel.
-                                // Navigate based on space type: CHAT/ONE_TO_ONE -> chat, DATA -> home
+                                // One-to-one spaces open the chat directly. Every other channel
+                                // opens the space home, which then resolves the homepage via the
+                                // homepage-set logic (see DROID-4388 / GO-6752).
                                 runCatching {
                                     val controller = findNavController(R.id.fragment)
                                     controller.popBackStack(R.id.vaultScreen, false)
-                                    
-                                    val shouldNavigateToChat = command.spaceUxType?.shouldNavigateDirectlyToChat == true
+
+                                    val shouldNavigateToChat = command.shouldNavigateDirectlyToChat
                                             && !command.chatId.isNullOrEmpty()
-                                    
+
                                     if (shouldNavigateToChat) {
-                                        // CHAT or ONE_TO_ONE space - go directly to chat
+                                        // One-to-one space — open the chat directly.
                                         controller.navigate(
                                             R.id.actionOpenChatFromVault,
                                             ChatFragment.args(
@@ -332,7 +323,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                             )
                                         )
                                     } else {
-                                        // DATA space - go to home/widgets screen
+                                        // Regular channel — open the space home; the homepage
+                                        // setting decides what the user actually sees there.
                                         controller.navigate(
                                             R.id.actionOpenSpaceFromVault,
                                             WidgetsScreenFragment.args(

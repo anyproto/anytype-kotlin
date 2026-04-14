@@ -9,8 +9,11 @@ import com.anytypeio.anytype.domain.account.DeleteAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.ClearFileCache
+import com.anytypeio.anytype.domain.download.FileAutoDownloadSetLimit
+import com.anytypeio.anytype.domain.download.FileSetAutoDownload
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
@@ -61,6 +64,22 @@ object FilesStorageModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideFileSetAutoDownload(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): FileSetAutoDownload = FileSetAutoDownload(repo, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideFileAutoDownloadSetLimit(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): FileAutoDownloadSetLimit = FileAutoDownloadSetLimit(repo, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideFileLimitEvents(
         channel: FileLimitsEventChannel,
         dispatchers: AppCoroutineDispatchers
@@ -91,4 +110,5 @@ interface FilesStorageDependencies : ComponentDependencies {
     fun authRepo(): AuthRepository
     fun logger(): Logger
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
+    fun userSettingsRepository(): UserSettingsRepository
 }

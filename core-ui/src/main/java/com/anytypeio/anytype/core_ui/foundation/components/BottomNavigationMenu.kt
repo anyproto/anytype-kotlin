@@ -48,21 +48,11 @@ fun BottomNavigationMenu(
             enabled to if (enabled) FULL_ALPHA else DEFAULT_DISABLED_ALPHA
         }
 
-        is NavPanelState.Chat -> {
-            val enabled = state.isCreateEnabled
-            enabled to if (enabled) FULL_ALPHA else DEFAULT_DISABLED_ALPHA
-        }
-
         NavPanelState.Init -> false to DEFAULT_DISABLED_ALPHA
     }
 
     // Build the left button item according to NavPanelState
     val leftNavItem = when (state) {
-        is NavPanelState.Chat -> state.left.toNavItem(
-            onShare = onShareButtonClicked,
-            onChat = onHomeButtonClicked
-        )
-
         is NavPanelState.Default -> state.left.toNavItem(
             onShare = onShareButtonClicked,
             onHome = onHomeButtonClicked
@@ -140,8 +130,7 @@ fun BottomNavigationMenu(
 // Extension to map LeftButtonState to NavItem
 private fun NavPanelState.LeftButtonState.toNavItem(
     onShare: () -> Unit,
-    onHome: () -> Unit = {},
-    onChat: () -> Unit = {}
+    onHome: () -> Unit = {}
 ): NavItem? = when (this) {
     is NavPanelState.LeftButtonState.AddMembers -> NavItem(
         res = BottomNavigationItem.ADD_MEMBERS.res,
@@ -161,12 +150,6 @@ private fun NavPanelState.LeftButtonState.toNavItem(
         res = BottomNavigationItem.HOME.res,
         contentDescRes = R.string.main_navigation_content_desc_home_button,
         onClick = onHome
-    )
-
-    NavPanelState.LeftButtonState.Chat -> NavItem(
-        res = BottomNavigationItem.CHAT.res,
-        contentDescRes = R.string.main_navigation_content_desc_chat_button,
-        onClick = onChat
     )
 
     NavPanelState.LeftButtonState.Hidden -> null
@@ -218,7 +201,6 @@ private fun MenuItem(
 
 private enum class BottomNavigationItem(@DrawableRes val res: Int) {
     HOME(R.drawable.ic_nav_panel_home),
-    CHAT(R.drawable.ic_chat_32),
     MEMBERS(R.drawable.ic_nav_panel_members),
     ADD_MEMBERS(R.drawable.ic_nav_panel_add_member),
     SEARCH(R.drawable.ic_nav_panel_search),

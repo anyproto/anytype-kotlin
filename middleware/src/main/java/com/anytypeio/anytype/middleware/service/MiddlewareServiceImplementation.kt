@@ -732,6 +732,36 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun fileSetAutoDownload(
+        request: Rpc.File.SetAutoDownload.Request
+    ): Rpc.File.SetAutoDownload.Response {
+        val encoded = Service.fileSetAutoDownload(
+            Rpc.File.SetAutoDownload.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.File.SetAutoDownload.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.File.SetAutoDownload.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun fileAutoDownloadSetLimit(
+        request: Rpc.File.AutoDownloadSetLimit.Request
+    ): Rpc.File.AutoDownloadSetLimit.Response {
+        val encoded = Service.fileAutoDownloadSetLimit(
+            Rpc.File.AutoDownloadSetLimit.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.File.AutoDownloadSetLimit.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.File.AutoDownloadSetLimit.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun navigationListObjects(request: Rpc.Navigation.ListObjects.Request): Rpc.Navigation.ListObjects.Response {
         val encoded =
             Service.navigationListObjects(Rpc.Navigation.ListObjects.Request.ADAPTER.encode(request))
@@ -2131,6 +2161,19 @@ class MiddlewareServiceImplementation @Inject constructor(
                 }
                 else -> throw Exception(error.description)
             }
+        } else {
+            return response
+        }
+    }
+
+    override fun spaceParticipantsAddList(request: Rpc.Space.ParticipantsAddList.Request): Rpc.Space.ParticipantsAddList.Response {
+        val encoded = Service.spaceParticipantsAddList(
+            Rpc.Space.ParticipantsAddList.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.ParticipantsAddList.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.ParticipantsAddList.Response.Error.Code.NULL) {
+            throw Exception(error.description)
         } else {
             return response
         }

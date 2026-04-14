@@ -74,6 +74,21 @@ class MediaActivity : ComponentActivity() {
                         VideoPlayerBox(
                             url = state.url,
                             isArchived = state.isArchived,
+                            onBackClick = { finish() },
+                            onDownloadClick = {
+                                val givenSpace = space
+                                if (givenSpace != null && videoId != null) {
+                                    vm.onDownloadObject(
+                                        id = videoId,
+                                        space = SpaceId(givenSpace)
+                                    )
+                                } else {
+                                    toast("Space not found")
+                                }
+                            },
+                            onDeleteClick = {
+                                videoId?.let { vm.onDeleteObject(it) }
+                            },
                             onRestoreClick = {
                                 videoId?.let { vm.onRestoreObjectClicked(it) }
                             }
@@ -107,6 +122,21 @@ class MediaActivity : ComponentActivity() {
                             name = state.name,
                             url = state.url,
                             isArchived = state.isArchived,
+                            onBackClick = { finish() },
+                            onDownloadClick = {
+                                val givenSpace = space
+                                if (givenSpace != null && audioId != null) {
+                                    vm.onDownloadObject(
+                                        id = audioId,
+                                        space = SpaceId(givenSpace)
+                                    )
+                                } else {
+                                    toast("Space not found")
+                                }
+                            },
+                            onDeleteClick = {
+                                audioId?.let { vm.onDeleteObject(it) }
+                            },
                             onRestoreClick = {
                                 audioId?.let { vm.onRestoreObjectClicked(it) }
                             }

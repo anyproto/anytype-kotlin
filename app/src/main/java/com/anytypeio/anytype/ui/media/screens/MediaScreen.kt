@@ -113,12 +113,12 @@ fun ImageGallery(
             )
         }
 
-        // Archived banner (top-center)
+        // Archived banner (top-center, below top bar)
         if (isCurrentImageArchived) {
             val fullText = stringResource(R.string.media_object_in_bin)
             val restoreText = "Restore it?"
             val startIndex = fullText.indexOf(restoreText)
-            
+
             val annotatedText = buildAnnotatedString {
                 if (startIndex >= 0) {
                     // Add text before "Restore it?"
@@ -135,12 +135,12 @@ fun ImageGallery(
                     append(fullText)
                 }
             }
-            
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
-                    .padding(top = 16.dp)
+                    .padding(top = 56.dp)
                     .background(
                         color = colorResource(R.color.home_screen_toolbar_button),
                         shape = RoundedCornerShape(8.dp)
@@ -171,7 +171,7 @@ fun ImageGallery(
                 Box(
                     modifier = Modifier
                         .systemBarsPadding()
-                        .padding(top = if (isCurrentImageArchived) 48.dp else 48.dp)
+                        .padding(top = if (isCurrentImageArchived) 96.dp else 56.dp)
                         .background(
                             color = colorResource(R.color.home_screen_toolbar_button),
                             shape = RoundedCornerShape(12.dp)
@@ -187,17 +187,16 @@ fun ImageGallery(
             }
         }
 
-        // Toolbar
+        // Top bar
         AnimatedVisibility(
             visible = chromeVisible,
             enter = fadeIn(),
             exit  = fadeOut(),
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 24.dp)
+                .align(Alignment.TopCenter)
+                .systemBarsPadding()
         ) {
-            MediaActionToolbar(
-                modifier = Modifier.padding(bottom = 32.dp),
+            MediaTopBar(
                 isArchived = isCurrentImageArchived,
                 onBackClick = onBackClick,
                 onDownloadClick = {
@@ -205,9 +204,6 @@ fun ImageGallery(
                 },
                 onDeleteClick = {
                     onDeleteClick(images[pagerState.settledPage].obj)
-                },
-                onOpenClick = {
-                    onOpenClick(images[pagerState.settledPage].obj)
                 }
             )
         }
@@ -307,6 +303,9 @@ fun AudioPlayerBox(
     name: String,
     url: String,
     isArchived: Boolean = false,
+    onBackClick: () -> Unit = {},
+    onDownloadClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
     onRestoreClick: () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -314,13 +313,25 @@ fun AudioPlayerBox(
             url = url,
             name = name
         )
-        
-        // Archived banner (top-center)
+
+        // Top bar
+        MediaTopBar(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .systemBarsPadding(),
+            title = name,
+            isArchived = isArchived,
+            onBackClick = onBackClick,
+            onDownloadClick = onDownloadClick,
+            onDeleteClick = onDeleteClick
+        )
+
+        // Archived banner (top-center, below top bar)
         if (isArchived) {
             val fullText = stringResource(R.string.media_object_in_bin)
             val restoreText = "Restore it?"
             val startIndex = fullText.indexOf(restoreText)
-            
+
             val annotatedText = buildAnnotatedString {
                 if (startIndex >= 0) {
                     append(fullText.substring(0, startIndex))
@@ -334,12 +345,12 @@ fun AudioPlayerBox(
                     append(fullText)
                 }
             }
-            
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
-                    .padding(top = 16.dp)
+                    .padding(top = 56.dp)
                     .background(
                         color = colorResource(R.color.home_screen_toolbar_button),
                         shape = RoundedCornerShape(8.dp)
@@ -361,19 +372,33 @@ fun AudioPlayerBox(
 fun VideoPlayerBox(
     url: String,
     isArchived: Boolean = false,
+    onBackClick: () -> Unit = {},
+    onDownloadClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
     onRestoreClick: () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         VideoPlayer(
             url = url
         )
-        
-        // Archived banner (top-center)
+
+        // Top bar
+        MediaTopBar(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .systemBarsPadding(),
+            isArchived = isArchived,
+            onBackClick = onBackClick,
+            onDownloadClick = onDownloadClick,
+            onDeleteClick = onDeleteClick
+        )
+
+        // Archived banner (top-center, below top bar)
         if (isArchived) {
             val fullText = stringResource(R.string.media_object_in_bin)
             val restoreText = "Restore it?"
             val startIndex = fullText.indexOf(restoreText)
-            
+
             val annotatedText = buildAnnotatedString {
                 if (startIndex >= 0) {
                     append(fullText.substring(0, startIndex))
@@ -387,12 +412,12 @@ fun VideoPlayerBox(
                     append(fullText)
                 }
             }
-            
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
-                    .padding(top = 16.dp)
+                    .padding(top = 56.dp)
                     .background(
                         color = colorResource(R.color.home_screen_toolbar_button),
                         shape = RoundedCornerShape(8.dp)

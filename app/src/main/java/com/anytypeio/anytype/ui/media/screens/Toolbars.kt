@@ -76,7 +76,7 @@ fun MediaTopBar(
             Text(
                 text = title,
                 style = PreviewTitle2Regular,
-                color = colorResource(R.color.text_primary),
+                color = colorResource(R.color.text_white),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

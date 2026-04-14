@@ -60,7 +60,7 @@
     <string name="remove_image">Görseli kaldır</string>
     <string name="delete_space">Alanı sil</string>
     <string name="you_can_store">Dosyalarının %1$s kadarını şifrelenmiş yedekleme düğümümüzde ücretsiz olarak saklayabilirsin. Sınıra ulaşırsan dosyalar yalnızca yerel olarak depolanacaktır.</string>
-    <string name="in_order_to_save">Free up space by offloading files to encrypted backup. They’ll load when you open them.</string>
+    <string name="in_order_to_save">Dosyaları şifreli yedekleme alanına aktararak yer aç. Dosyalar, onları açtığında yüklenecektir.</string>
     <string name="manage_files">Dosyaları yönet</string>
     <string name="local_storage">Yerel depolama</string>
     <string name="offload_files">Dosyaları kaldır</string>
@@ -2194,5 +2194,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="offline_downloads_value_250mb">250 MB</string>
     <string name="offline_downloads_value_1gb">1 GB</string>
     <string name="offline_downloads_value_unlimited">Limitsiz</string>
-    <string name="device_storage_used">Device storage used</string>
+    <string name="device_storage_used">Kullanılan cihaz depolama alanı</string>
 </resources>

@@ -895,6 +895,14 @@ class BlockMiddleware(
         return middleware.nodeUsage()
     }
 
+    override suspend fun fileSetAutoDownload(enabled: Boolean, wifiOnly: Boolean) {
+        middleware.fileSetAutoDownload(enabled, wifiOnly)
+    }
+
+    override suspend fun fileAutoDownloadSetLimit(sizeLimitMebibytes: Long) {
+        middleware.fileAutoDownloadSetLimit(sizeLimitMebibytes)
+    }
+
     override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {
         return middleware.setInternalFlags(command)
     }

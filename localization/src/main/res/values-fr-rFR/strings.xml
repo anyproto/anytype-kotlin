@@ -71,7 +71,7 @@
     <string name="get_more_space">Obtenir plus d’espace</string>
     <string name="account_name">Nom</string>
     <string name="space_settings">Paramètres de l\'espace</string>
-    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
+    <string name="space_settings_error_change_type">Impossible de changer le type d\'espace. Veuillez réessayer.</string>
     <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
     <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
     <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
@@ -703,7 +703,7 @@
     <string name="edit_relations_title">Propriétés</string>
     <string name="edit_view">Modifier la vue</string>
     <string name="relation_open_edit">Open to edit</string>
-    <string name="remove_from_set">Remove from this query</string>
+    <string name="remove_from_set">Supprimer de cette requête</string>
     <string name="reset">Reset</string>
     <string name="search_a_relation">Rechercher une propriété</string>
     <string name="content_description_check_icon">Check icon</string>
@@ -869,10 +869,12 @@
     <string name="homepage_picker_title">Create Home</string>
     <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
     <string name="homepage_picker_chat">Messagerie</string>
-    <string name="homepage_picker_widgets">Widgets</string>
     <string name="homepage_picker_page">Page</string>
     <string name="homepage_picker_collection">Collection</string>
+    <string name="homepage_picker_empty">Vide</string>
     <string name="homepage_picker_later">Plus tard</string>
+    <string name="invite_members_widget_title">Invite Members</string>
+    <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
     <string name="generic_error">Une erreur s\'est produite. Veuillez réessayer.</string>
     <string name="type">Type</string>
     <string name="format">Format</string>

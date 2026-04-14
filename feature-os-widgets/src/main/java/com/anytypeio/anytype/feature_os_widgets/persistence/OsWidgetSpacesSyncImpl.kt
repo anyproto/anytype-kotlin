@@ -22,6 +22,21 @@ class OsWidgetSpacesSyncImpl(
     private val dataStore by lazy { OsWidgetsDataStore(context) }
     private val iconCache by lazy { OsWidgetIconCache(context) }
 
+    /**
+     * In-memory record of the icon hash we last cached to disk for a given
+     * spaceId. Because sync() runs on every debounced vault emission, this
+     * lets us skip the network download + bitmap decode + file write when
+     * the icon for a given space has not changed since the last sync.
+     */
+    private val lastCachedIconHashBySpace = mutableMapOf<String, String>()
+
+    /**
+     * In-memory snapshot of the entities we most recently wrote to DataStore.
+     * Used to short-circuit the DataStore write when nothing changed across
+     * successive debounced syncs.
+     */
+    private var lastWrittenEntities: List<OsWidgetSpaceEntity>? = null
+
     companion object {
         private const val TAG = "OsWidget"
     }
@@ -29,20 +44,23 @@ class OsWidgetSpacesSyncImpl(
     override suspend fun sync(spaces: List<ObjectWrapper.SpaceView>) {
         Timber.tag(TAG).d("sync called with ${spaces.size} total spaces")
         spaces.forEachIndexed { i, s ->
-            Timber.tag(TAG).d("  input[$i]: name=${s.name}, targetSpaceId=${s.targetSpaceId}, isActive=${s.isActive}, spaceOrder=${s.spaceOrder}")
+            Timber.tag(TAG).d("  input[$i]: name=${s.name}, targetSpaceId=${s.targetSpaceId}, isActive=${s.isActive}, spaceOrder=${s.spaceOrder}, spaceUxType=${s.spaceUxType}")
         }
-        val pinnedSpaces = spaces
-            .filter { it.isActive && !it.spaceOrder.isNullOrEmpty() }
-            .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
+        val activeSpaces = spaces.filter { it.isActive }
 
-        Timber.tag(TAG).d("After filter: ${pinnedSpaces.size} pinned active spaces (from ${spaces.size} total)")
+        Timber.tag(TAG).d("Active spaces: ${activeSpaces.size} (from ${spaces.size} total)")
 
         val entities = mutableListOf<OsWidgetSpaceEntity>()
-        for (space in pinnedSpaces) {
+        for (space in activeSpaces) {
             entities.add(space.toWidgetEntity())
+        }
+        if (entities == lastWrittenEntities) {
+            Timber.tag(TAG).d("Entities unchanged, skipping DataStore write")
+            return
         }
         Timber.tag(TAG).d("Saving ${entities.size} entities to DataStore")
         dataStore.saveSpaces(entities)
+        lastWrittenEntities = entities.toList()
         
         // Note: We don't cleanup stale icons here because sync() is called
         // multiple times during startup with partial data. Icons are cleaned
@@ -55,13 +73,29 @@ class OsWidgetSpacesSyncImpl(
         
         Timber.tag(TAG).d("Processing space '$name' (id=$spaceId), iconHash=$iconHash")
         
-        // Try to cache the icon locally (download from middleware server)
+        // Try to cache the icon locally (download from middleware server).
+        // Skip the download if we already cached this exact hash for this
+        // space — reuse the existing file on disk.
         val localIconPath = if (iconHash != null) {
-            val url = urlBuilder.thumbnail(iconHash)
-            Timber.tag(TAG).d("Built URL for space $spaceId: $url")
-            iconCache.cacheIcon(url, spaceId) ?: iconCache.getCachedIconPath(spaceId)
+            val alreadyCachedPath = iconCache.getCachedIconPath(spaceId)
+                ?.takeIf { lastCachedIconHashBySpace[spaceId] == iconHash }
+            if (alreadyCachedPath != null) {
+                Timber.tag(TAG).d("Icon unchanged for space $spaceId, reusing $alreadyCachedPath")
+                alreadyCachedPath
+            } else {
+                val url = urlBuilder.thumbnail(iconHash)
+                Timber.tag(TAG).d("Built URL for space $spaceId: $url")
+                val cached = iconCache.cacheIcon(url, spaceId)
+                if (cached != null) {
+                    lastCachedIconHashBySpace[spaceId] = iconHash
+                    cached
+                } else {
+                    iconCache.getCachedIconPath(spaceId)
+                }
+            }
         } else {
             Timber.tag(TAG).d("No icon hash for space $spaceId, using placeholder")
+            lastCachedIconHashBySpace.remove(spaceId)
             null
         }
         
@@ -76,6 +110,8 @@ class OsWidgetSpacesSyncImpl(
             name = name.orEmpty(),
             iconImageUrl = localIconPath,
             iconColorIndex = iconOption?.toInt() ?: 0,
+            spaceUxType = spaceUxType?.ordinal ?: 0,
+            spaceOrder = spaceOrder,
             isOneToOneSpace = isOneToOneSpace
         )
     }

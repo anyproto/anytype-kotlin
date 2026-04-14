@@ -932,6 +932,14 @@ class BlockDataRepository(
         return remote.nodeUsage()
     }
 
+    override suspend fun fileSetAutoDownload(enabled: Boolean, wifiOnly: Boolean) {
+        remote.fileSetAutoDownload(enabled, wifiOnly)
+    }
+
+    override suspend fun fileAutoDownloadSetLimit(sizeLimitMebibytes: Long) {
+        remote.fileAutoDownloadSetLimit(sizeLimitMebibytes)
+    }
+
     override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {
         return remote.setInternalFlags(command)
     }

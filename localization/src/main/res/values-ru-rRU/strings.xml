@@ -873,10 +873,12 @@
     <string name="homepage_picker_title">Create Home</string>
     <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
     <string name="homepage_picker_chat">Чат</string>
-    <string name="homepage_picker_widgets">Виджеты</string>
     <string name="homepage_picker_page">Страница</string>
     <string name="homepage_picker_collection">Коллекция</string>
+    <string name="homepage_picker_empty">Пусто</string>
     <string name="homepage_picker_later">Не сейчас</string>
+    <string name="invite_members_widget_title">Invite Members</string>
+    <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
     <string name="generic_error">Произошла ошибка. Попробуйте ещё раз.</string>
     <string name="type">Тип</string>
     <string name="format">Формат</string>

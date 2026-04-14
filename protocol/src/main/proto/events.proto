@@ -126,6 +126,8 @@ message Event {
       Chat.UpdateMessageSyncStatus chatUpdateMessageSyncStatus = 136;
       Chat.UpdatePinnedStatus chatUpdatePinnedStatus = 140;
       Chat.UpdateReactionReadStatus chatUpdateReactionReadStatus = 141;
+      Object.AutoArchive objectAutoArchive = 142;
+      Object.AutoRestore objectAutoRestore = 143;
 
       Chat.Delete chatDelete = 131;
       Chat.UpdateState chatStateUpdate =
@@ -336,6 +338,14 @@ message Event {
     }
 
     message Close { string id = 1; }
+
+    message AutoArchive {
+      repeated string objectIds = 1;
+    }
+
+    message AutoRestore {
+      repeated string objectIds = 1;
+    }
   }
   message Block {
     /*

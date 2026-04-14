@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -41,7 +43,7 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpaceSelectionScreen(
-    spaces: List<ObjectWrapper.SpaceView>,
+    spaces: List<ObjectWrapper.SpaceView>?,
     urlBuilder: UrlBuilder,
     onSpaceSelected: (ObjectWrapper.SpaceView) -> Unit,
     onCancel: () -> Unit
@@ -77,7 +79,18 @@ fun SpaceSelectionScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (spaces.isEmpty()) {
+            if (spaces == null) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = colorResource(id = R.color.glyph_active),
+                        strokeWidth = 2.dp
+                    )
+                }
+            } else if (spaces.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center

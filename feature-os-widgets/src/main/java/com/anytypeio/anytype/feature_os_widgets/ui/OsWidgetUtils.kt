@@ -39,5 +39,7 @@ internal fun stableItemId(input: String): Long {
     for (char in input) {
         hash = 31 * hash + char.code
     }
-    return hash
+    // Glance reserves IDs below this threshold
+    val minGlanceId = -4611686018427387904L
+    return if (hash < minGlanceId) hash.ushr(1) else hash
 }

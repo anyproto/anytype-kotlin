@@ -33,6 +33,7 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.feature_os_widgets.R
 import com.anytypeio.anytype.feature_os_widgets.deeplink.OsWidgetDeepLinks
 import com.anytypeio.anytype.feature_os_widgets.mapper.toDomain
@@ -56,12 +57,22 @@ class OsSpacesListWidget : GlanceAppWidget() {
         Timber.tag(TAG).d("provideGlance called, glanceId=$id")
         val appContext = context.applicationContext
         val dataStore = OsWidgetsDataStore(appContext)
-        val entities = dataStore.observeSpaces().first()
-        val spaces = entities.toDomain()
-        Timber.tag(TAG).d("Read ${entities.size} space entities from DataStore, mapped to ${spaces.size} domain items")
-        entities.forEachIndexed { i, e ->
-            Timber.tag(TAG).d("  entity[$i]: spaceId=${e.spaceId}, name=${e.name}, icon=${e.iconImageUrl != null}")
+        val allEntities = dataStore.observeSpaces().first()
+        Timber.tag(TAG).d("Read ${allEntities.size} space entities from DataStore")
+
+        val pinnedEntities = allEntities
+            .filter { !it.spaceOrder.isNullOrEmpty() }
+            .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
+
+        val entriesToShow = pinnedEntities.ifEmpty {
+            allEntities.filter {
+                it.spaceUxType != SpaceUxType.CHAT.ordinal
+                        && it.spaceUxType != SpaceUxType.ONE_TO_ONE.ordinal
+            }
         }
+
+        val spaces = entriesToShow.toDomain()
+        Timber.tag(TAG).d("Showing ${spaces.size} spaces (${pinnedEntities.size} pinned)")
         val strings = SpacesListWidgetStrings(
             emptyState = appContext.getString(R.string.os_widget_open_app_to_see_spaces),
             untitled = appContext.getString(R.string.untitled)

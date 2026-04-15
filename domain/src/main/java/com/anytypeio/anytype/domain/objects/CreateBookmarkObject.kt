@@ -18,13 +18,15 @@ class CreateBookmarkObject @Inject constructor(
         repo.createBookmarkObject(
             space = params.space,
             url = params.url,
-            details = params.details
+            details = params.details,
+            createdInContext = params.createdInContext
         )
     }
 
     data class Params(
         val space: Id,
         val url: Url,
-        val details: Struct = emptyMap()
+        val details: Struct = emptyMap(),
+        val createdInContext: Id? = null
     )
 }

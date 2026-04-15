@@ -980,12 +980,16 @@ class Middleware @Inject constructor(
     fun objectCreateBookmark(
         space: Id,
         url: Url,
-        details: Struct
+        details: Struct,
+        createdInContext: Id? = null
     ): Id {
         val request = Rpc.Object.CreateBookmark.Request(
             details = buildMap {
                 put(Relations.SOURCE, url)
                 putAll(details)
+                if (!createdInContext.isNullOrEmpty()) {
+                    put(Relations.CREATED_IN_CONTEXT, createdInContext)
+                }
             },
             spaceId = space
         )

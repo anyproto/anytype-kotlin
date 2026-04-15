@@ -235,13 +235,20 @@ sealed class Command {
      * @property [prefilled] new object details
      * @property [template] id of the template for this object (optional)
      * @property [internalFlags] flags responsible for the object creation logic
+     * @property [createdInContext] object ID of the parent context (e.g. collection ID)
+     *   for middleware creation-context garbage collection. Only set when there is a
+     *   clear parent-child ownership between the context and the new object.
+     * @property [createdInContextRef] block ID, relation key, or message ID within
+     *   the parent context (e.g. relation key when creating an object inside a property).
      */
     data class CreateObject(
         val prefilled: Struct,
         val template: Id?,
         val internalFlags: List<InternalFlags>,
         val space: SpaceId,
-        val typeKey: TypeKey
+        val typeKey: TypeKey,
+        val createdInContext: Id? = null,
+        val createdInContextRef: String? = null
     )
 
     class Move(

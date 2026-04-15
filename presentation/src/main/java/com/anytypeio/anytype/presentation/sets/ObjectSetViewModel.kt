@@ -1718,7 +1718,8 @@ class ObjectSetViewModel(
             template = validTemplateId,
             type = type,
             filters = viewer.filters,
-            prefilled = prefilled
+            prefilled = prefilled,
+            createdInContext = vmParams.ctx
         )
         if (type.key == ObjectTypeIds.BOOKMARK) {
             dispatch(

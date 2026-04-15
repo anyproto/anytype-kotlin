@@ -56,7 +56,8 @@ class ObjectSetCreateBookmarkRecordViewModel(
                     )
                     createBookmark(
                         input = input,
-                        details = prefilled
+                        details = prefilled,
+                        createdInContext = state.root
                     ) { bookmarkObj -> addBookmarkToCollection(bookmarkObj) }
                 }
 
@@ -128,12 +129,14 @@ class ObjectSetCreateBookmarkRecordViewModel(
     private suspend fun createBookmark(
         input: String,
         details: Struct = emptyMap(),
+        createdInContext: Id? = null,
         onSuccess: suspend (Id) -> Unit
     ) {
         val params = CreateBookmarkObject.Params(
             space = spaceManager.get(),
             url = input,
-            details = details
+            details = details,
+            createdInContext = createdInContext
         )
         createBookmarkObject(params).process(
             failure = {

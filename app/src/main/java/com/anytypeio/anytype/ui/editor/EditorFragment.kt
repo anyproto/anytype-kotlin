@@ -438,9 +438,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         ) { isHeaderOverlaid ->
             if (isHeaderOverlaid) {
                 binding.topToolbar.setBackgroundColor(0)
-                binding.topToolbar.container.animate().alpha(0f)
-                    .setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
-                    .start()
                 if (blockAdapter.views.isNotEmpty()) {
                     val firstView = blockAdapter.views.first()
                     if (firstView is BlockView.Title && firstView.hasCover) {
@@ -451,9 +448,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             } else {
                 binding.topToolbar.setBackgroundColor(requireContext().color(R.color.defaultCanvasColor))
-                binding.topToolbar.container.animate().alpha(1f)
-                    .setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
-                    .start()
                 binding.topToolbar.setStyle(overCover = false)
             }
         }
@@ -593,7 +587,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             setHasFixedSize(true)
             itemAnimator = null
             adapter = blockAdapter
-            addOnScrollListener(titleVisibilityDetector)
             addItemDecoration(defaultBottomOffsetDecorator)
         }
 
@@ -1744,7 +1737,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 binding.recycler.removeItemDecoration(actionToolbarFooter)
             }
             if (isScrollAndMoveEnabled)
-                enterScrollAndMove()
+                //enterScrollAndMove()
             else
                 exitScrollAndMove()
         }

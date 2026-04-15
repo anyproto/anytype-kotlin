@@ -5,38 +5,49 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.res.colorResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.ui.WallpaperResult
+import com.anytypeio.anytype.core_models.ui.WallpaperView
+import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
+import com.anytypeio.anytype.core_ui.widgets.toSpaceBackground
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
+import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import javax.inject.Inject
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -46,6 +57,8 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
     lateinit var factory: HomeScreenViewModel.Factory
 
     private val vm: HomeScreenViewModel by viewModels { factory }
+
+    private val mainVm: MainViewModel by activityViewModels()
 
     private val space: String get() = argString(ARG_SPACE_ID)
 
@@ -78,6 +91,7 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
             MaterialTheme {
                 WidgetOverlayContent(
                     vm = vm,
+                    wallpaperState = mainVm.wallpaperState,
                     onBackClicked = { dismiss() },
                     onSpaceSettingsClicked = {
                         vm.onSpaceSettingsClicked(space = SpaceId(space))
@@ -238,12 +252,30 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
 @Composable
 private fun WidgetOverlayContent(
     vm: HomeScreenViewModel,
+    wallpaperState: StateFlow<WallpaperResult>,
     onBackClicked: () -> Unit,
     onSpaceSettingsClicked: () -> Unit,
 ) {
+    val wallpaper by wallpaperState.collectAsStateWithLifecycle()
+    val spaceBackground = wallpaper.toSpaceBackground()
+    val wallpaperAlpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA / 255f
+
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(colorResource(R.color.background_primary))
+            .then(
+                when (spaceBackground) {
+                    is SpaceBackground.SolidColor -> Modifier.background(
+                        color = spaceBackground.color.copy(alpha = wallpaperAlpha)
+                    )
+                    is SpaceBackground.Gradient -> Modifier.background(
+                        brush = spaceBackground.brush,
+                        alpha = wallpaperAlpha
+                    )
+                    SpaceBackground.None -> Modifier
+                }
+            )
             .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
         WidgetsScreen(

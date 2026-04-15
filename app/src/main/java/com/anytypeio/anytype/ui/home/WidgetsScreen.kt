@@ -30,6 +30,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -84,6 +86,13 @@ private fun CircularFabButton(
     Box(
         modifier = modifier
             .size(dimensionResource(R.dimen.nav_fab_button_size))
+            .shadow(
+                elevation = 4.dp,
+                shape = CircleShape,
+                clip = false,
+                ambientColor = Color.Black.copy(alpha = 0.12f),
+                spotColor = Color.Black.copy(alpha = 0.12f),
+            )
             .clip(CircleShape)
             .background(colorResource(R.color.shape_primary))
             .alpha(if (isEnabled) 1f else 0.5f)

@@ -11,7 +11,7 @@
     <dimen name="default_editor_item_offset">48dp</dimen>
 
     <!-- Navigation redesign (DROID-4318) -->
-    <dimen name="nav_circular_button_size">40dp</dimen>
+    <dimen name="nav_circular_button_size">44dp</dimen>
     <dimen name="nav_pill_height">40dp</dimen>
     <dimen name="nav_pill_horizontal_padding">16dp</dimen>
     <dimen name="nav_top_toolbar_height">52dp</dimen>

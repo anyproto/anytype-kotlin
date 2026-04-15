@@ -70,7 +70,9 @@ import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
+import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.TypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ObjectSetTitle
@@ -312,7 +314,6 @@ open class ObjectSetFragment :
         binding.fabSearch.isVisible = true
 
         title.clearFocus()
-        binding.topToolbar.root.findViewById<View>(R.id.titlePillContainer).alpha = 0f
         binding.root.setTransitionListener(transitionListener)
 
         addNewButton.setOnClickListener { vm.proceedWithDataViewObjectCreate() }
@@ -989,6 +990,28 @@ open class ObjectSetFragment :
         }
         binding.topToolbar.root.findViewById<TextView>(R.id.tvTopToolbarTitle).text = header.title.text
 
+        // Mirror the body header icon into the top-bar pill so the user has a
+        // persistent, visually anchored tap target for the widget overlay.
+        val topIcon = binding.topToolbar.root.findViewById<ObjectIconWidget>(R.id.ivTopToolbarIcon)
+        when {
+            header.title.text.isBlank() -> {
+                topIcon.setIcon(ObjectIcon.None)
+                topIcon.gone()
+            }
+            !header.title.emoji.isNullOrBlank() -> {
+                topIcon.setIcon(ObjectIcon.Basic.Emoji(header.title.emoji.orEmpty()))
+                topIcon.visible()
+            }
+            !header.title.image.isNullOrBlank() -> {
+                topIcon.setIcon(ObjectIcon.Basic.Image(header.title.image.orEmpty()))
+                topIcon.visible()
+            }
+            else -> {
+                topIcon.setIcon(ObjectIcon.None)
+                topIcon.gone()
+            }
+        }
+
         binding.objectHeader.root.findViewById<ViewGroup>(R.id.docEmojiIconContainer).apply {
             if (header.title.emoji != null) visible() else gone()
             jobs += this.clicks()
@@ -1448,8 +1471,6 @@ open class ObjectSetFragment :
         override fun onTransitionCompleted(motionLayout: MotionLayout?, id: Int) {
             if (id == R.id.start) {
                 title.pauseTextWatchers { title.enableEditMode() }
-                binding.topToolbar.root.findViewById<View>(R.id.titlePillContainer)
-                    .animate().alpha(0f).setDuration(DEFAULT_ANIM_DURATION).start()
                 topToolbarThreeDotsButton.apply {
                     if (background != null) {
                         background?.alpha = DRAWABLE_ALPHA_FULL
@@ -1466,8 +1487,6 @@ open class ObjectSetFragment :
             }
             if (id == R.id.end) {
                 title.pauseTextWatchers { title.enableReadMode() }
-                binding.topToolbar.root.findViewById<View>(R.id.titlePillContainer)
-                    .animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start()
                 binding.topToolbar.root.findViewById<ImageView>(R.id.ivThreeDots).apply {
                     imageTintList = null
                 }

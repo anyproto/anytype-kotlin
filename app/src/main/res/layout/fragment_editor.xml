@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/defaultCanvasColor"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     tools:context="com.anytypeio.anytype.ui.editor.EditorFragment">
 
     <View
@@ -23,7 +25,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sheet"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
@@ -42,9 +46,10 @@
         <com.anytypeio.anytype.core_ui.widgets.toolbar.ObjectTopToolbar
             android:id="@+id/topToolbar"
             android:layout_width="0dp"
-            android:layout_height="@dimen/default_toolbar_height"
+            android:layout_height="44dp"
             android:clickable="true"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -192,16 +197,19 @@
         android:layout_marginStart="@dimen/nav_fab_margin"
         android:layout_marginBottom="@dimen/nav_fab_margin"
         android:contentDescription="@string/main_navigation_content_desc_create_button"
+        android:outlineAmbientShadowColor="@color/nav_chip_shadow"
+        android:outlineSpotShadowColor="@color/nav_chip_shadow"
         android:src="@drawable/ic_nav_panel_plus"
         android:visibility="invisible"
         app:backgroundTint="@color/shape_primary"
-        app:elevation="0dp"
+        app:elevation="4dp"
         app:fabCustomSize="@dimen/nav_fab_button_size"
-        app:hoveredFocusedTranslationZ="0dp"
+        app:hoveredFocusedTranslationZ="4dp"
         app:maxImageSize="32dp"
-        app:pressedTranslationZ="0dp"
+        app:pressedTranslationZ="4dp"
         app:rippleColor="@android:color/transparent"
         app:tint="@null"
+        tools:targetApi="28"
         tools:visibility="visible" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -212,16 +220,19 @@
         android:layout_marginEnd="@dimen/nav_fab_margin"
         android:layout_marginBottom="@dimen/nav_fab_margin"
         android:contentDescription="@string/main_navigation_content_desc_search_button"
+        android:outlineAmbientShadowColor="@color/nav_chip_shadow"
+        android:outlineSpotShadowColor="@color/nav_chip_shadow"
         android:src="@drawable/ic_nav_panel_search"
         android:visibility="invisible"
         app:backgroundTint="@color/shape_primary"
-        app:elevation="0dp"
+        app:elevation="4dp"
         app:fabCustomSize="@dimen/nav_fab_button_size"
-        app:hoveredFocusedTranslationZ="0dp"
+        app:hoveredFocusedTranslationZ="4dp"
         app:maxImageSize="32dp"
-        app:pressedTranslationZ="0dp"
+        app:pressedTranslationZ="4dp"
         app:rippleColor="@android:color/transparent"
         app:tint="@null"
+        tools:targetApi="28"
         tools:visibility="visible" />
 
     <FrameLayout

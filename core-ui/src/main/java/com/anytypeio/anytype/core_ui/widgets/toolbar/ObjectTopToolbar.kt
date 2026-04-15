@@ -13,8 +13,6 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetObjectTopToolbarBinding
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
-import com.anytypeio.anytype.core_utils.ext.invisible
-import com.anytypeio.anytype.core_utils.ext.visible
 
 class ObjectTopToolbar @JvmOverloads constructor(
     context: Context,
@@ -34,23 +32,22 @@ class ObjectTopToolbar @JvmOverloads constructor(
     val templates: TextView get() = binding.tvTemplates
 
     init {
-        container.alpha = 0f
+        // Don't clip shadows cast by the circular/pill children inside the merge layout.
+        clipChildren = false
+        clipToPadding = false
     }
 
     fun setStyle(
         overCover: Boolean
     ) = with(binding) {
         if (overCover) {
-            menu.setBackgroundResource(R.drawable.rect_object_menu_button_default)
-            statusBadge.setBackgroundResource(R.drawable.rect_object_menu_button_default)
-            ivThreeDots.imageTintList = ColorStateList.valueOf(Color.WHITE)
-            ivTopBackButton.imageTintList = ColorStateList.valueOf(Color.WHITE)
+            //menu.setBackgroundResource(R.drawable.rect_object_menu_button_default)
+            //statusBadge.setBackgroundResource(R.drawable.rect_object_menu_button_default)
+            //ivThreeDots.imageTintList = ColorStateList.valueOf(Color.WHITE)
+            //ivTopBackButton.imageTintList = ColorStateList.valueOf(Color.WHITE)
         } else {
-            menu.setBackgroundResource(R.drawable.bg_nav_circular_button)
-            topBackButton.setBackgroundResource(R.drawable.bg_nav_circular_button)
-            ivTopBackButton.imageTintList = null
-            ivThreeDots.imageTintList = null
-            statusBadge.background = null
+            //menu.setBackgroundResource(R.drawable.bg_nav_circular_button)
+            //topBackButton.setBackgroundResource(R.drawable.bg_nav_circular_button)
         }
     }
 

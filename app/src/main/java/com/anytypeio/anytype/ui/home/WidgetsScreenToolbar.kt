@@ -16,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -62,6 +64,13 @@ private fun CircularIconButton(
     Box(
         modifier = modifier
             .size(dimensionResource(R.dimen.nav_circular_button_size))
+            .shadow(
+                elevation = 4.dp,
+                shape = CircleShape,
+                clip = false,
+                ambientColor = Color.Black.copy(alpha = 0.12f),
+                spotColor = Color.Black.copy(alpha = 0.12f),
+            )
             .clip(CircleShape)
             .background(colorResource(R.color.shape_primary))
             .noRippleClickable(onClick = onClick),

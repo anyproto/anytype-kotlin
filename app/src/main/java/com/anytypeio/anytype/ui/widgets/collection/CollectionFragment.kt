@@ -13,6 +13,10 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
+import com.anytypeio.anytype.ui.chats.ChatFragment
+import com.anytypeio.anytype.ui.create.CreateObjectDialogFragment
+import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -69,14 +73,45 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     CollectionScreen(
                         vm = vm,
                         onCreateObjectLongClicked = {
-                            val dialog = ObjectTypeSelectionFragment.new(space = space)
-                            dialog.show(childFragmentManager, "fullscreen-widget-create-object-type-dialog")
+                            if (BuildConfig.USE_NEW_CREATE_OBJECT) {
+                                val dialog = CreateObjectDialogFragment.new(space = space)
+                                dialog.show(childFragmentManager, CreateObjectDialogFragment.TAG)
+                            } else {
+                                val dialog = ObjectTypeSelectionFragment.new(space = space)
+                                dialog.show(childFragmentManager, "fullscreen-widget-create-object-type-dialog")
+                            }
                         },
                         onSearchClicked = {
                             vm.onSearchClicked(space)
                         }
                     )
                 }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        childFragmentManager.setFragmentResultListener(
+            CreateObjectDialogFragment.RESULT_KEY_NAVIGATION,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val navType = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_TYPE)
+            val id = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_ID) ?: return@setFragmentResultListener
+            val spaceStr = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_SPACE) ?: return@setFragmentResultListener
+            when (navType) {
+                "OpenEditor" -> findNavController().navigate(
+                    R.id.objectNavigation,
+                    EditorFragment.args(ctx = id, space = spaceStr)
+                )
+                "OpenSet" -> findNavController().navigate(
+                    R.id.dataViewNavigation,
+                    ObjectSetFragment.args(ctx = id, space = spaceStr)
+                )
+                "OpenChat" -> findNavController().navigate(
+                    R.id.chatScreen,
+                    ChatFragment.args(ctx = id, space = spaceStr)
+                )
             }
         }
     }

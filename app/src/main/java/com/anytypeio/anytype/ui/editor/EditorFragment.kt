@@ -169,7 +169,11 @@ import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
+import com.anytypeio.anytype.BuildConfig
+import com.anytypeio.anytype.ui.chats.ChatFragment
+import com.anytypeio.anytype.ui.create.CreateObjectDialogFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.EditorObjectTypeUpdateFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeUpdateListener
@@ -558,6 +562,29 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        childFragmentManager.setFragmentResultListener(
+            CreateObjectDialogFragment.RESULT_KEY_NAVIGATION,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val navType = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_TYPE)
+            val id = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_ID) ?: return@setFragmentResultListener
+            val spaceStr = bundle.getString(CreateObjectDialogFragment.RESULT_NAV_SPACE) ?: return@setFragmentResultListener
+            when (navType) {
+                "OpenEditor" -> findNavController().navigate(
+                    R.id.objectNavigation,
+                    EditorFragment.args(ctx = id, space = spaceStr)
+                )
+                "OpenSet" -> findNavController().navigate(
+                    R.id.dataViewNavigation,
+                    ObjectSetFragment.args(ctx = id, space = spaceStr)
+                )
+                "OpenChat" -> findNavController().navigate(
+                    R.id.chatScreen,
+                    ChatFragment.args(ctx = id, space = spaceStr)
+                )
+            }
+        }
+
         setupWindowInsetAnimation()
 
         dndDelegate.init(blockAdapter, vm, this)
@@ -652,8 +679,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .btnAddDoc
             .longClicks(withHaptic = true)
             .onEach {
-                val dialog = ObjectTypeSelectionFragment.new(space = space)
-                dialog.show(childFragmentManager, "editor-create-object-of-type-dialog")
+                if (BuildConfig.USE_NEW_CREATE_OBJECT) {
+                    val dialog = CreateObjectDialogFragment.new(space = space)
+                    dialog.show(childFragmentManager, CreateObjectDialogFragment.TAG)
+                } else {
+                    val dialog = ObjectTypeSelectionFragment.new(space = space)
+                    dialog.show(childFragmentManager, "editor-create-object-of-type-dialog")
+                }
             }
             .launchIn(lifecycleScope)
 

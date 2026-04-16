@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import javax.inject.Inject
 
 /**
@@ -12,11 +13,13 @@ import javax.inject.Inject
  * @param storeOfObjectTypes Store for fetching object types
  * @param spaceViewContainer Container for observing space properties (needed for sort order)
  * @param vmParams Parameters including the current space ID
+ * @param createObjectByTypeAndTemplate Use case for creating objects by type and template
  */
 class CreateObjectViewModelFactory @Inject constructor(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val spaceViewContainer: SpaceViewSubscriptionContainer,
-    private val vmParams: NewCreateObjectViewModel.VmParams
+    private val vmParams: NewCreateObjectViewModel.VmParams,
+    private val createObjectByTypeAndTemplate: CreateObjectByTypeAndTemplate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -24,7 +27,8 @@ class CreateObjectViewModelFactory @Inject constructor(
         return NewCreateObjectViewModel(
             storeOfObjectTypes = storeOfObjectTypes,
             spaceViewContainer = spaceViewContainer,
-            vmParams = vmParams
+            vmParams = vmParams,
+            createObjectByTypeAndTemplate = createObjectByTypeAndTemplate
         ) as T
     }
 }

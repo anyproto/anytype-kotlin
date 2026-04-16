@@ -4,11 +4,15 @@ import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
+import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +25,9 @@ import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -33,6 +40,7 @@ class NewCreateObjectViewModelTest {
 
     private lateinit var storeOfObjectTypes: DefaultStoreOfObjectTypes
     private lateinit var spaceViewContainer: FakeSpaceViewSubscriptionContainer
+    private val createObjectByTypeAndTemplate = mock<CreateObjectByTypeAndTemplate>()
 
     @Before
     fun setUp() {
@@ -442,14 +450,194 @@ class NewCreateObjectViewModelTest {
 
     // endregion
 
+    // region: Object Creation Navigation
+
+    @Test
+    fun `should emit OpenEditor navigation when object with basic layout is created`() = runTest {
+        // Arrange
+        spaceViewContainer.setSpaceUxType(SpaceUxType.DATA)
+        val objectId = "new-object-id"
+        val typeKey = TypeKey("ot-page")
+        val createdObj = ObjectWrapper.Basic(
+            mapOf(
+                "id" to objectId,
+                "layout" to ObjectType.Layout.BASIC.code.toDouble()
+            )
+        )
+        val createResult = CreateObjectByTypeAndTemplate.Result.Success(
+            objectId = objectId,
+            event = Payload(context = objectId, events = emptyList()),
+            typeKey = typeKey,
+            obj = createdObj
+        )
+        whenever(createObjectByTypeAndTemplate.async(any())).thenReturn(
+            Resultat.success(createResult)
+        )
+
+        val vm = createViewModel()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Act
+        vm.onAction(CreateObjectAction.CreateObjectOfType(typeKey = typeKey.key, typeName = "Page"))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Assert
+        vm.navigation.test {
+            val nav = awaitItem()
+            assertTrue(nav is CreateObjectNavigation.OpenEditor)
+            assertEquals(objectId, (nav as CreateObjectNavigation.OpenEditor).id)
+            assertEquals(spaceId, nav.space)
+        }
+    }
+
+    @Test
+    fun `should emit OpenSet navigation when collection layout object is created`() = runTest {
+        // Arrange
+        spaceViewContainer.setSpaceUxType(SpaceUxType.DATA)
+        val objectId = "new-collection-id"
+        val typeKey = TypeKey("ot-collection")
+        val createdObj = ObjectWrapper.Basic(
+            mapOf(
+                "id" to objectId,
+                "layout" to ObjectType.Layout.COLLECTION.code.toDouble()
+            )
+        )
+        val createResult = CreateObjectByTypeAndTemplate.Result.Success(
+            objectId = objectId,
+            event = Payload(context = objectId, events = emptyList()),
+            typeKey = typeKey,
+            obj = createdObj
+        )
+        whenever(createObjectByTypeAndTemplate.async(any())).thenReturn(
+            Resultat.success(createResult)
+        )
+
+        val vm = createViewModel()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Act
+        vm.onAction(CreateObjectAction.CreateObjectOfType(typeKey = typeKey.key, typeName = "Collection"))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Assert
+        vm.navigation.test {
+            val nav = awaitItem()
+            assertTrue(nav is CreateObjectNavigation.OpenSet)
+            assertEquals(objectId, (nav as CreateObjectNavigation.OpenSet).id)
+            assertEquals(spaceId, nav.space)
+        }
+    }
+
+    @Test
+    fun `should emit OpenChat navigation when chat layout object is created`() = runTest {
+        // Arrange
+        spaceViewContainer.setSpaceUxType(SpaceUxType.DATA)
+        val objectId = "new-chat-id"
+        val typeKey = TypeKey("ot-chat")
+        val createdObj = ObjectWrapper.Basic(
+            mapOf(
+                "id" to objectId,
+                "layout" to ObjectType.Layout.CHAT.code.toDouble()
+            )
+        )
+        val createResult = CreateObjectByTypeAndTemplate.Result.Success(
+            objectId = objectId,
+            event = Payload(context = objectId, events = emptyList()),
+            typeKey = typeKey,
+            obj = createdObj
+        )
+        whenever(createObjectByTypeAndTemplate.async(any())).thenReturn(
+            Resultat.success(createResult)
+        )
+
+        val vm = createViewModel()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Act
+        vm.onAction(CreateObjectAction.CreateObjectOfType(typeKey = typeKey.key, typeName = "Chat"))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Assert
+        vm.navigation.test {
+            val nav = awaitItem()
+            assertTrue(nav is CreateObjectNavigation.OpenChat)
+            assertEquals(objectId, (nav as CreateObjectNavigation.OpenChat).id)
+            assertEquals(spaceId, nav.space)
+        }
+    }
+
+    @Test
+    fun `should show error state when object creation fails`() = runTest {
+        // Arrange
+        spaceViewContainer.setSpaceUxType(SpaceUxType.DATA)
+        val errorMessage = "Network error"
+        whenever(createObjectByTypeAndTemplate.async(any())).thenReturn(
+            Resultat.failure(RuntimeException(errorMessage))
+        )
+
+        val vm = createViewModel()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Act
+        vm.onAction(CreateObjectAction.CreateObjectOfType(typeKey = "ot-page", typeName = "Page"))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Assert
+        vm.state.test {
+            val state = awaitItem()
+            assertEquals(errorMessage, state.error)
+        }
+    }
+
+    @Test
+    fun `should immediately create object when typeKey is pre-selected`() = runTest {
+        // Arrange
+        spaceViewContainer.setSpaceUxType(SpaceUxType.DATA)
+        val objectId = "pre-created-object-id"
+        val preSelectedTypeKey = TypeKey("ot-note")
+        val createdObj = ObjectWrapper.Basic(
+            mapOf(
+                "id" to objectId,
+                "layout" to ObjectType.Layout.NOTE.code.toDouble()
+            )
+        )
+        val createResult = CreateObjectByTypeAndTemplate.Result.Success(
+            objectId = objectId,
+            event = Payload(context = objectId, events = emptyList()),
+            typeKey = preSelectedTypeKey,
+            obj = createdObj
+        )
+        whenever(createObjectByTypeAndTemplate.async(any())).thenReturn(
+            Resultat.success(createResult)
+        )
+
+        // Act - create VM with pre-selected typeKey
+        val vm = createViewModel(typeKey = preSelectedTypeKey)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Assert - navigation is triggered automatically without any user action
+        vm.navigation.test {
+            val nav = awaitItem()
+            assertTrue(nav is CreateObjectNavigation.OpenEditor)
+            assertEquals(objectId, (nav as CreateObjectNavigation.OpenEditor).id)
+            assertEquals(spaceId, nav.space)
+        }
+    }
+
+    // endregion
+
     // region: Helpers
 
-    private fun createViewModel(): NewCreateObjectViewModel {
-        val vmParams = NewCreateObjectViewModel.VmParams(spaceId = spaceId)
+    private fun createViewModel(typeKey: TypeKey? = null): NewCreateObjectViewModel {
+        val vmParams = NewCreateObjectViewModel.VmParams(
+            spaceId = spaceId,
+            typeKey = typeKey
+        )
         return NewCreateObjectViewModel(
             storeOfObjectTypes = storeOfObjectTypes,
             spaceViewContainer = spaceViewContainer,
-            vmParams = vmParams
+            vmParams = vmParams,
+            createObjectByTypeAndTemplate = createObjectByTypeAndTemplate
         )
     }
 

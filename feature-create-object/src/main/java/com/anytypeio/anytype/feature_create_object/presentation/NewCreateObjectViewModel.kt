@@ -7,15 +7,20 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.ui.objectIcon
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import javax.inject.Inject
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -29,18 +34,26 @@ import timber.log.Timber
  * @param storeOfObjectTypes Store containing all available object types
  * @param spaceViewContainer Container for observing space view properties
  * @param vmParams Parameters including the current space ID
+ * @param createObjectByTypeAndTemplate Use case for creating objects
  */
 class NewCreateObjectViewModel @Inject constructor(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val spaceViewContainer: SpaceViewSubscriptionContainer,
-    private val vmParams: VmParams
+    private val vmParams: VmParams,
+    private val createObjectByTypeAndTemplate: CreateObjectByTypeAndTemplate
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(NewCreateObjectState())
     val state: StateFlow<NewCreateObjectState> = _state.asStateFlow()
 
+    private val _navigation = Channel<CreateObjectNavigation>(Channel.BUFFERED)
+    val navigation = _navigation.receiveAsFlow()
+
     init {
         observeObjectTypes()
+        vmParams.typeKey?.let { key ->
+            onCreateObject(typeKey = key, typeName = "")
+        }
     }
 
     /**
@@ -149,7 +162,6 @@ class NewCreateObjectViewModel @Inject constructor(
 
     /**
      * Handles actions from the UI.
-     * Only processes search actions internally; other actions are handled by parent components.
      *
      * @param action The action to process
      */
@@ -157,8 +169,59 @@ class NewCreateObjectViewModel @Inject constructor(
         when (action) {
             is CreateObjectAction.UpdateSearch -> onSearchQueryChanged(action.query)
             is CreateObjectAction.Retry -> retry()
-            // Other actions (media, create object, attach) are handled by the parent component
-            else -> { /* No-op */
+            is CreateObjectAction.CreateObjectOfType -> onCreateObject(
+                typeKey = TypeKey(action.typeKey),
+                typeName = action.typeName
+            )
+            else -> { /* Media actions handled by parent component */ }
+        }
+    }
+
+    private fun onCreateObject(typeKey: TypeKey, typeName: String) {
+        viewModelScope.launch {
+            val resultat = createObjectByTypeAndTemplate.async(
+                CreateObjectByTypeAndTemplate.Param(
+                    typeKey = typeKey,
+                    space = vmParams.spaceId,
+                    keys = emptyList()
+                )
+            )
+            when (resultat) {
+                is Resultat.Success -> {
+                    when (val result = resultat.value) {
+                        is CreateObjectByTypeAndTemplate.Result.Success -> {
+                            val layout = result.obj.layout
+                            val nav = when (layout) {
+                                ObjectType.Layout.COLLECTION,
+                                ObjectType.Layout.SET -> CreateObjectNavigation.OpenSet(
+                                    id = result.objectId,
+                                    space = vmParams.spaceId
+                                )
+                                ObjectType.Layout.CHAT,
+                                ObjectType.Layout.CHAT_DERIVED -> CreateObjectNavigation.OpenChat(
+                                    id = result.objectId,
+                                    space = vmParams.spaceId
+                                )
+                                else -> CreateObjectNavigation.OpenEditor(
+                                    id = result.objectId,
+                                    space = vmParams.spaceId
+                                )
+                            }
+                            _navigation.send(nav)
+                        }
+                        is CreateObjectByTypeAndTemplate.Result.ObjectTypeNotFound -> {
+                            _state.update { it.copy(error = "Object type not found") }
+                        }
+                    }
+                }
+                is Resultat.Failure -> {
+                    _state.update {
+                        it.copy(error = resultat.exception.message ?: "Failed to create object")
+                    }
+                }
+                is Resultat.Loading -> {
+                    // no-op: loading state not expected from async()
+                }
             }
         }
     }
@@ -166,8 +229,10 @@ class NewCreateObjectViewModel @Inject constructor(
     /**
      * Parameters for the ViewModel.
      * @param spaceId The current space ID, used to determine space type for sorting
+     * @param typeKey Optional pre-selected type key; if provided, object creation is triggered immediately
      */
     data class VmParams(
-        val spaceId: SpaceId
+        val spaceId: SpaceId,
+        val typeKey: TypeKey? = null
     )
 }

@@ -320,6 +320,7 @@ class ObjectSetViewModel(
                         ctx = vmParams.ctx,
                         urlBuilder = urlBuilder,
                         coverImageHashProvider = coverImageHashProvider,
+                        storeOfObjectTypes = storeOfObjectTypes,
                         isReadOnlyMode = permission == SpaceMemberPermissions.NO_PERMISSIONS || permission == SpaceMemberPermissions.READER
                     )
                     updateLayoutConflictState(featuredBlock = featuredBlock)

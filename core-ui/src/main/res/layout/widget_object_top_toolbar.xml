@@ -97,6 +97,7 @@
             android:drawableEnd="@drawable/ic_templates_expand"
             android:drawablePadding="@dimen/dp_2"
             android:gravity="center_vertical"
+            android:visibility="invisible"
             tools:text="This type has 2 templates"
             tools:visibility="gone">
 

@@ -70,10 +70,7 @@ import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
-import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
-import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
-import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.TypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ObjectSetTitle
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerEditWidget
@@ -179,22 +176,22 @@ open class ObjectSetFragment :
         get() = binding.objectHeader.root
 
     private val topBackButton: View
-        get() = binding.topToolbar.root.findViewById(R.id.topBackButton)
+        get() = binding.topToolbar.back
 
     private val topToolbar: ViewGroup
-        get() = binding.topToolbar.root
+        get() = binding.topToolbar
 
     private val topToolbarTitle: TextView
-        get() = binding.topToolbar.root.findViewById(R.id.tvTopToolbarTitle)
+        get() = binding.topToolbar.title
 
     private val topToolbarThreeDotsButton: ViewGroup
-        get() = binding.topToolbar.root.findViewById(R.id.threeDotsButton)
+        get() = binding.topToolbar.menu as ViewGroup
 
     private val topToolbarStatusContainer: View
-        get() = binding.topToolbar.root.findViewById(R.id.statusBadge)
+        get() = binding.topToolbar.status
 
     private val topToolbarThreeDotsIcon: ImageView
-        get() = binding.topToolbar.root.findViewById(R.id.ivThreeDots)
+        get() = binding.topToolbar.menu.findViewById(R.id.ivThreeDots)
 
     private val addNewButton: TextView
         get() = binding.dataViewHeader.addNewButton
@@ -206,7 +203,7 @@ open class ObjectSetFragment :
         get() = binding.dataViewHeader.customizeViewButton
 
     private val menuButton: FrameLayout
-        get() = binding.topToolbar.root.findViewById(R.id.threeDotsButton)
+        get() = binding.topToolbar.menu as FrameLayout
 
     private val featuredRelations: FeaturedRelationGroupWidget
         get() = binding.objectHeader.root.findViewById(R.id.featuredRelationsWidget)
@@ -337,10 +334,9 @@ open class ObjectSetFragment :
                 }
             }
             subscribe(topBackButton.clicks().throttleFirst()) { vm.onBackButtonClicked() }
-            binding.topToolbar.root.findViewById<View>(R.id.titlePillContainer)
-                .setOnClickListener {
-                    WidgetOverlayFragment.show(parentFragmentManager, space)
-                }
+            binding.topToolbar.container.setOnClickListener {
+                WidgetOverlayFragment.show(parentFragmentManager, space)
+            }
             subscribe(menuButton.clicks().throttleFirst()) { vm.onMenuClicked() }
             subscribe(customizeViewButton.clicks().throttleFirst()) { vm.onViewerCustomizeButtonClicked() }
             subscribe(viewerTitle.clicks().throttleFirst()) { vm.onExpandViewerMenuClicked() }
@@ -624,7 +620,7 @@ open class ObjectSetFragment :
     }
 
     private fun setStatus(status: SpaceSyncAndP2PStatusState?) {
-        binding.topToolbar.root.findViewById<StatusBadgeWidget>(R.id.statusBadge).bind(status)
+        binding.topToolbar.status.bind(status)
         topToolbarStatusContainer.setOnClickListener {
             vm.onSyncStatusBadgeClicked()
         }
@@ -988,29 +984,15 @@ open class ObjectSetFragment :
                 title.setText(header.title.text)
             }
         }
-        binding.topToolbar.root.findViewById<TextView>(R.id.tvTopToolbarTitle).text = header.title.text
+        binding.topToolbar.title.text =
+            header.title.text.ifBlank { getString(R.string.untitled) }
 
         // Mirror the body header icon into the top-bar pill so the user has a
         // persistent, visually anchored tap target for the widget overlay.
-        val topIcon = binding.topToolbar.root.findViewById<ObjectIconWidget>(R.id.ivTopToolbarIcon)
-        when {
-            header.title.text.isBlank() -> {
-                topIcon.setIcon(ObjectIcon.None)
-                topIcon.gone()
-            }
-            !header.title.emoji.isNullOrBlank() -> {
-                topIcon.setIcon(ObjectIcon.Basic.Emoji(header.title.emoji.orEmpty()))
-                topIcon.visible()
-            }
-            !header.title.image.isNullOrBlank() -> {
-                topIcon.setIcon(ObjectIcon.Basic.Image(header.title.image.orEmpty()))
-                topIcon.visible()
-            }
-            else -> {
-                topIcon.setIcon(ObjectIcon.None)
-                topIcon.gone()
-            }
-        }
+        // The resolved icon already includes the object-type fallback when no
+        // custom emoji/image is set, so it can always be displayed.
+        binding.topToolbar.icon.setIcon(header.title.icon)
+        binding.topToolbar.icon.visible()
 
         binding.objectHeader.root.findViewById<ViewGroup>(R.id.docEmojiIconContainer).apply {
             if (header.title.emoji != null) visible() else gone()
@@ -1487,7 +1469,7 @@ open class ObjectSetFragment :
             }
             if (id == R.id.end) {
                 title.pauseTextWatchers { title.enableReadMode() }
-                binding.topToolbar.root.findViewById<ImageView>(R.id.ivThreeDots).apply {
+                topToolbarThreeDotsIcon.apply {
                     imageTintList = null
                 }
                 topToolbarThreeDotsButton.apply {

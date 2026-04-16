@@ -6,6 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/defaultCanvasColor"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     tools:context="com.anytypeio.anytype.ui.editor.EditorFragment">
 
     <View
@@ -23,7 +25,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/sheet"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler"
@@ -42,9 +46,10 @@
         <com.anytypeio.anytype.core_ui.widgets.toolbar.ObjectTopToolbar
             android:id="@+id/topToolbar"
             android:layout_width="0dp"
-            android:layout_height="@dimen/default_toolbar_height"
+            android:layout_height="44dp"
             android:clickable="true"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -95,7 +100,7 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:background="@color/defaultCanvasColor"
-            android:translationY="-48dp"
+            android:translationY="-120dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -146,7 +151,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:background="@color/defaultCanvasColor"
-            android:translationY="-48dp"
+            android:translationY="-120dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -184,28 +189,26 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    <FrameLayout
-        android:id="@+id/bottomToolbarContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/default_nav_panel_height"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="@dimen/dp_20"
-        android:background="@drawable/widget_main_bottom_toolbar_background"
-        android:clickable="true"
-        android:focusable="true"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabCreate"
+        android:layout_width="@dimen/nav_fab_button_size"
+        android:layout_height="@dimen/nav_fab_button_size"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/nav_fab_margin"
+        android:layout_marginBottom="@dimen/nav_fab_margin"
+        android:contentDescription="@string/main_navigation_content_desc_create_button"
+        android:src="@drawable/ic_create_obj_32"
         android:visibility="invisible"
-        app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
-        tools:visibility="visible">
-        <com.anytypeio.anytype.core_ui.widgets.toolbar.MainBottomToolbar
-            android:id="@+id/bottomToolbar"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center"
-            android:clickable="true"
-            android:focusable="true"
-            android:visibility="visible"
-            tools:visibility="visible" />
-    </FrameLayout>>
+        app:backgroundTint="@color/navigation_panel"
+        app:elevation="20dp"
+        app:fabCustomSize="@dimen/nav_fab_button_size"
+        app:hoveredFocusedTranslationZ="4dp"
+        app:maxImageSize="32dp"
+        app:pressedTranslationZ="4dp"
+        app:rippleColor="@android:color/transparent"
+        app:tint="@color/control_primary"
+        tools:targetApi="28"
+        tools:visibility="visible" />
 
     <FrameLayout
         android:id="@+id/targeter"
@@ -365,13 +368,26 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal" />
 
-    <androidx.compose.ui.platform.ComposeView
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/discussionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="@dimen/dp_20" />
+        android:layout_width="@dimen/nav_fab_button_size"
+        android:layout_height="@dimen/nav_fab_button_size"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="@dimen/nav_fab_margin"
+        android:layout_marginBottom="@dimen/nav_fab_margin"
+        android:contentDescription="@string/main_navigation_content_desc_chat_button"
+        android:src="@drawable/ic_chat_type_24"
+        android:visibility="invisible"
+        app:backgroundTint="@color/navigation_panel"
+        app:elevation="20dp"
+        app:fabCustomSize="@dimen/nav_fab_button_size"
+        app:hoveredFocusedTranslationZ="4dp"
+        app:maxImageSize="32dp"
+        app:pressedTranslationZ="4dp"
+        app:rippleColor="@android:color/transparent"
+        app:tint="@color/control_primary"
+        tools:targetApi="28"
+        tools:visibility="visible" />
 
     <androidx.compose.ui.platform.ComposeView
         android:id="@+id/attachToChatPanel"

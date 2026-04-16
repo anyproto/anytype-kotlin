@@ -55,7 +55,7 @@
             android:id="@+id/paginatorToolbar"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"
-            motion:layout_constraintBottom_toTopOf="@+id/bottomToolbarBox"
+            motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             motion:visibilityMode="ignore" />
@@ -102,6 +102,24 @@
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             motion:layout_constraintTop_toTopOf="parent"
+            motion:visibilityMode="ignore" />
+        <Constraint
+            android:id="@+id/discussionButton"
+            android:layout_width="@dimen/nav_fab_button_size"
+            android:layout_height="@dimen/nav_fab_button_size"
+            android:layout_marginStart="@dimen/nav_fab_margin"
+            android:layout_marginBottom="@dimen/nav_fab_margin"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:visibilityMode="ignore" />
+        <Constraint
+            android:id="@+id/fabCreate"
+            android:layout_width="@dimen/nav_fab_button_size"
+            android:layout_height="@dimen/nav_fab_button_size"
+            android:layout_marginEnd="@dimen/nav_fab_margin"
+            android:layout_marginBottom="@dimen/nav_fab_margin"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
             motion:visibilityMode="ignore" />
         <Constraint
             android:id="@id/templatesWidget">
@@ -159,7 +177,7 @@
             android:id="@+id/paginatorToolbar"
             android:layout_width="0dp"
             android:layout_height="@dimen/default_toolbar_height"
-            motion:layout_constraintBottom_toTopOf="@+id/bottomToolbarBox"
+            motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             motion:visibilityMode="ignore" />
@@ -206,6 +224,25 @@
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             motion:layout_constraintTop_toTopOf="parent"
+            motion:visibilityMode="ignore" />
+
+        <Constraint
+            android:id="@+id/discussionButton"
+            android:layout_width="@dimen/nav_fab_button_size"
+            android:layout_height="@dimen/nav_fab_button_size"
+            android:layout_marginStart="@dimen/nav_fab_margin"
+            android:layout_marginBottom="@dimen/nav_fab_margin"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:visibilityMode="ignore" />
+        <Constraint
+            android:id="@+id/fabCreate"
+            android:layout_width="@dimen/nav_fab_button_size"
+            android:layout_height="@dimen/nav_fab_button_size"
+            android:layout_marginEnd="@dimen/nav_fab_margin"
+            android:layout_marginBottom="@dimen/nav_fab_margin"
+            motion:layout_constraintBottom_toBottomOf="parent"
+            motion:layout_constraintEnd_toEndOf="parent"
             motion:visibilityMode="ignore" />
 
         <Constraint

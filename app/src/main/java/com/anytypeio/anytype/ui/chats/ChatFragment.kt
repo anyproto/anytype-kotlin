@@ -82,6 +82,7 @@ import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.feature_vault.ui.AlertScreenModals
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
@@ -157,7 +158,9 @@ class ChatFragment : Fragment() {
                         onBackButtonClicked = {
                             vm.onBackButtonPressed(isExitingVault = popUpToVault)
                         },
-                        onSpaceNameClicked = vm::onSpaceIconClicked,
+                        onTitleClick = {
+                            WidgetOverlayFragment.show(parentFragmentManager, space)
+                        },
                         onSpaceIconClicked = vm::onSpaceIconClicked,
                         onInviteMembersClicked = vm::onInviteMembersClicked,
                         onEditInfo = vm::onEditInfo,

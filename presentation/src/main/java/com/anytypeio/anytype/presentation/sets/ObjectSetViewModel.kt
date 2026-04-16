@@ -61,6 +61,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.discussions.AddDiscussion
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CloseObject
@@ -211,7 +212,8 @@ class ObjectSetViewModel(
     private val emojiProvider: EmojiProvider,
     private val emojiSuggester: EmojiSuggester,
     private val stringResourceProvider: StringResourceProvider,
-    private val getDefaultObjectType: GetDefaultObjectType
+    private val getDefaultObjectType: GetDefaultObjectType,
+    private val addDiscussion: AddDiscussion
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -224,6 +226,14 @@ class ObjectSetViewModel(
     val error = MutableStateFlow<String?>(null)
 
     val featured = MutableStateFlow<BlockView.FeaturedRelation?>(null)
+
+    /**
+     * State of the bottom-left "Discussion" button — mirrors [DiscussionButtonState]
+     * in EditorViewModel so all object screens share the same two-button layout.
+     */
+    private val _discussionButtonState =
+        MutableStateFlow<DiscussionButtonState>(DiscussionButtonState.Hidden)
+    val discussionButtonState: StateFlow<DiscussionButtonState> = _discussionButtonState
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
@@ -320,8 +330,10 @@ class ObjectSetViewModel(
                         ctx = vmParams.ctx,
                         urlBuilder = urlBuilder,
                         coverImageHashProvider = coverImageHashProvider,
+                        storeOfObjectTypes = storeOfObjectTypes,
                         isReadOnlyMode = permission == SpaceMemberPermissions.NO_PERMISSIONS || permission == SpaceMemberPermissions.READER
                     )
+                    updateDiscussionButtonState(state)
                     updateLayoutConflictState(featuredBlock = featuredBlock)
                 }
         }
@@ -3971,6 +3983,82 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
                 space = vmParams.space.id
             )
         }
+    }
+
+    //endregion
+
+    //region DISCUSSION
+
+    /**
+     * Pulls the existing discussion id (if any) off the current object's
+     * details and updates the bottom-bar state.
+     *
+     * Mirrors EditorViewModel's discussion-state derivation so the same
+     * Discussion button works across editor / set / type screens.
+     */
+    private fun updateDiscussionButtonState(state: ObjectState.DataView) {
+        val currentObj = state.details.getObject(vmParams.ctx)
+        // Object types don't support discussions — keep the button hidden
+        // for the type screen embedded in WithSetScreen.
+        if (currentObj?.layout == ObjectType.Layout.OBJECT_TYPE) {
+            _discussionButtonState.value = DiscussionButtonState.Hidden
+            return
+        }
+        val existingDiscussionId = currentObj
+            ?.getSingleValue<String>(Relations.DISCUSSION_ID)
+            ?.takeIf { it.isNotEmpty() }
+        _discussionButtonState.value = if (existingDiscussionId != null) {
+            DiscussionButtonState.Comments(discussionId = existingDiscussionId)
+        } else {
+            DiscussionButtonState.Empty
+        }
+    }
+
+    fun onDiscussionButtonClicked() {
+        when (val state = discussionButtonState.value) {
+            is DiscussionButtonState.Comments -> {
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenDiscussion(
+                            target = state.discussionId,
+                            space = vmParams.space.id
+                        )
+                    )
+                )
+            }
+            is DiscussionButtonState.Empty -> {
+                viewModelScope.launch {
+                    addDiscussion.async(vmParams.ctx).fold(
+                        onSuccess = { discussionId ->
+                            _discussionButtonState.value = DiscussionButtonState.Comments(
+                                discussionId = discussionId
+                            )
+                            navigate(
+                                EventWrapper(
+                                    AppNavigation.Command.OpenDiscussion(
+                                        target = discussionId,
+                                        space = vmParams.space.id
+                                    )
+                                )
+                            )
+                        },
+                        onFailure = { e ->
+                            Timber.e(e, "Failed to create discussion")
+                            toast("Failed to create discussion")
+                        }
+                    )
+                }
+            }
+            DiscussionButtonState.Hidden -> {
+                // No-op: button is hidden, click shouldn't reach the VM.
+            }
+        }
+    }
+
+    sealed class DiscussionButtonState {
+        data object Hidden : DiscussionButtonState()
+        data object Empty : DiscussionButtonState()
+        data class Comments(val discussionId: Id) : DiscussionButtonState()
     }
 
     //endregion

@@ -3998,6 +3998,12 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
      */
     private fun updateDiscussionButtonState(state: ObjectState.DataView) {
         val currentObj = state.details.getObject(vmParams.ctx)
+        // Object types don't support discussions — keep the button hidden
+        // for the type screen embedded in WithSetScreen.
+        if (currentObj?.layout == ObjectType.Layout.OBJECT_TYPE) {
+            _discussionButtonState.value = DiscussionButtonState.Hidden
+            return
+        }
         val existingDiscussionId = currentObj
             ?.getSingleValue<String>(Relations.DISCUSSION_ID)
             ?.takeIf { it.isNotEmpty() }

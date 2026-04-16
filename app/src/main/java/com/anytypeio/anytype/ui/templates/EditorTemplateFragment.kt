@@ -70,7 +70,6 @@ class EditorTemplateFragment : EditorFragment() {
                 // Use instant visibility toggles, not FAB.hide(), to avoid
                 // the ~200ms scale+fade animation and touch-through window.
                 binding.fabCreate.isVisible = false
-                binding.fabSearch.isVisible = false
                 if (state.navigationToolbar.isVisible) {
                     binding.btnSelectTemplate.visible()
                 } else {
@@ -79,7 +78,6 @@ class EditorTemplateFragment : EditorFragment() {
             }
             TYPE_TEMPLATE_EDIT -> {
                 binding.fabCreate.isVisible = false
-                binding.fabSearch.isVisible = false
                 binding.btnSelectTemplate.gone()
             }
         }

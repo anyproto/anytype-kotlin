@@ -209,29 +209,6 @@
         tools:targetApi="28"
         tools:visibility="visible" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabSearch"
-        android:layout_width="@dimen/nav_fab_button_size"
-        android:layout_height="@dimen/nav_fab_button_size"
-        android:layout_gravity="bottom|start"
-        android:layout_marginEnd="@dimen/nav_fab_margin"
-        android:layout_marginBottom="@dimen/nav_fab_margin"
-        android:contentDescription="@string/main_navigation_content_desc_search_button"
-        android:outlineAmbientShadowColor="@color/nav_chip_shadow"
-        android:outlineSpotShadowColor="@color/nav_chip_shadow"
-        android:src="@drawable/ic_nav_panel_search"
-        android:visibility="invisible"
-        app:backgroundTint="@color/shape_primary"
-        app:elevation="4dp"
-        app:fabCustomSize="@dimen/nav_fab_button_size"
-        app:hoveredFocusedTranslationZ="4dp"
-        app:maxImageSize="32dp"
-        app:pressedTranslationZ="4dp"
-        app:rippleColor="@android:color/transparent"
-        app:tint="@null"
-        tools:targetApi="28"
-        tools:visibility="visible" />
-
     <FrameLayout
         android:id="@+id/targeter"
         android:layout_width="match_parent"
@@ -390,13 +367,26 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal" />
 
-    <androidx.compose.ui.platform.ComposeView
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/discussionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="@dimen/dp_20" />
+        android:layout_width="@dimen/nav_fab_button_size"
+        android:layout_height="@dimen/nav_fab_button_size"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="@dimen/nav_fab_margin"
+        android:layout_marginBottom="@dimen/nav_fab_margin"
+        android:contentDescription="@string/main_navigation_content_desc_chat_button"
+        android:src="@drawable/ic_chat_type_24"
+        android:visibility="invisible"
+        app:backgroundTint="@color/navigation_panel"
+        app:elevation="20dp"
+        app:fabCustomSize="@dimen/nav_fab_button_size"
+        app:hoveredFocusedTranslationZ="4dp"
+        app:maxImageSize="32dp"
+        app:pressedTranslationZ="4dp"
+        app:rippleColor="@android:color/transparent"
+        app:tint="@color/control_primary"
+        tools:targetApi="28"
+        tools:visibility="visible" />
 
     <androidx.compose.ui.platform.ComposeView
         android:id="@+id/attachToChatPanel"

@@ -464,10 +464,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             if (dy > 4) {
                 binding.fabCreate.hide()
-                binding.fabSearch.hide()
+                binding.discussionButton.hide()
             } else if (dy < -4) {
                 binding.fabCreate.show()
-                binding.fabSearch.show()
+                binding.discussionButton.show()
             }
         }
     }
@@ -641,8 +641,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
 
         // DROID-4318: Editor bottom navigation replaced with two scroll-aware
-        // floating action buttons (fabCreate / fabSearch). Share / home / chat
-        // entry points moved to the home overlay (Task 4) — no editor wiring.
+        // floating action buttons (fabCreate / discussionButton). Share / home
+        // / chat entry points moved to the home overlay (Task 4) — no editor
+        // wiring.
         binding.fabCreate
             .clicks()
             .onEach { vm.onAddNewDocumentClicked() }
@@ -654,11 +655,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 val dialog = ObjectTypeSelectionFragment.new(space = space)
                 dialog.show(childFragmentManager, "editor-create-object-of-type-dialog")
             }
-            .launchIn(lifecycleScope)
-
-        binding.fabSearch
-            .clicks()
-            .onEach { vm.onPageSearchClicked() }
             .launchIn(lifecycleScope)
 
         binding.recycler.addOnScrollListener(fabScrollListener)
@@ -679,31 +675,17 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             WidgetOverlayFragment.show(parentFragmentManager, space)
         }
 
-        binding.discussionButton.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                val state = vm.discussionButtonState.collectAsStateWithLifecycle().value
-                when (state) {
-                    is EditorViewModel.DiscussionButtonState.Empty -> {
-                        com.anytypeio.anytype.feature_discussions.ui.DiscussionButton(
-                            hasComments = false,
-                            commentCount = 0,
-                            onClick = { vm.onDiscussionButtonClicked() }
-                        )
-                    }
-                    is EditorViewModel.DiscussionButtonState.Comments -> {
-                        com.anytypeio.anytype.feature_discussions.ui.DiscussionButton(
-                            hasComments = true,
-                            commentCount = state.count,
-                            onClick = { vm.onDiscussionButtonClicked() }
-                        )
-                    }
-                    is EditorViewModel.DiscussionButtonState.Hidden -> {
-                        // Render nothing
-                    }
-                }
+        binding.discussionButton
+            .clicks()
+            .onEach { vm.onDiscussionButtonClicked() }
+            .launchIn(lifecycleScope)
+
+        vm.discussionButtonState
+            .onEach { state ->
+                binding.discussionButton.isVisible =
+                    state !is EditorViewModel.DiscussionButtonState.Hidden
             }
-        }
+            .launchIn(lifecycleScope)
 
         binding.markupToolbar
             .highlightClicks()
@@ -1668,12 +1650,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             // FAB. The scroll-aware listener still uses show()/hide() —
             // that's the canonical Material FAB use case.
             binding.fabCreate.isVisible = true
-            binding.fabSearch.isVisible = true
-            binding.discussionButton.visible()
+            binding.discussionButton.isVisible =
+                vm.discussionButtonState.value !is EditorViewModel.DiscussionButtonState.Hidden
         } else {
             binding.fabCreate.isVisible = false
-            binding.fabSearch.isVisible = false
-            binding.discussionButton.gone()
+            binding.discussionButton.isVisible = false
         }
 
         if (state.mainToolbar.isVisible) {

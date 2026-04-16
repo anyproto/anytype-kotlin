@@ -1561,8 +1561,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is BlockView.Title.Basic -> {
                     resetTopToolbarTitle(
                         text = title.text,
-                        emoji = title.emoji,
-                        image = title.image,
+                        icon = title.icon
                     )
                     if (title.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
@@ -1577,8 +1576,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is BlockView.Title.Profile -> {
                     resetTopToolbarTitle(
                         text = title.text,
-                        emoji = null,
-                        image = title.image,
+                        icon = title.icon
                     )
                     if (title.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
@@ -1593,8 +1591,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is BlockView.Title.Todo -> {
                     resetTopToolbarTitle(
                         text = title.text,
-                        emoji = null,
-                        image = title.image,
+                        icon = title.icon
                     )
                     if (title.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
@@ -1612,27 +1609,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private fun resetTopToolbarTitle(text: String?, emoji: String?, image: String?) {
-        binding.topToolbar.title.text = text
-        val iconView = binding.topToolbar.icon
-        when {
-            text.isNullOrBlank() -> {
-                iconView.setIcon(ObjectIcon.None)
-                iconView.gone()
-            }
-            !emoji.isNullOrBlank() -> {
-                iconView.setIcon(ObjectIcon.Basic.Emoji(emoji))
-                iconView.visible()
-            }
-            !image.isNullOrBlank() -> {
-                iconView.setIcon(ObjectIcon.Basic.Image(image))
-                iconView.visible()
-            }
-            else -> {
-                iconView.setIcon(ObjectIcon.None)
-                iconView.gone()
-            }
-        }
+    private fun resetTopToolbarTitle(text: String?, icon: ObjectIcon) {
+        binding.topToolbar.title.text =
+            text?.takeIf { it.isNotBlank() } ?: getString(R.string.untitled)
+        binding.topToolbar.icon.setIcon(icon)
+        binding.topToolbar.icon.visible()
     }
 
     open fun render(state: ControlPanelState) {

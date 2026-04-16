@@ -40,15 +40,6 @@ class ObjectTopToolbar @JvmOverloads constructor(
     fun setStyle(
         overCover: Boolean
     ) = with(binding) {
-        if (overCover) {
-            //menu.setBackgroundResource(R.drawable.rect_object_menu_button_default)
-            //statusBadge.setBackgroundResource(R.drawable.rect_object_menu_button_default)
-            //ivThreeDots.imageTintList = ColorStateList.valueOf(Color.WHITE)
-            //ivTopBackButton.imageTintList = ColorStateList.valueOf(Color.WHITE)
-        } else {
-            //menu.setBackgroundResource(R.drawable.bg_nav_circular_button)
-            //topBackButton.setBackgroundResource(R.drawable.bg_nav_circular_button)
-        }
     }
 
     fun hideStatusContainer() {

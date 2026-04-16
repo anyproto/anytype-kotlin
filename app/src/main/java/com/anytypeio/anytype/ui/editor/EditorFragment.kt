@@ -1765,6 +1765,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 behavior.apply {
                     removeBottomSheetCallback(onHideBottomSheetCallback)
+                    removeBottomSheetCallback(onHideBottomSheetCallback)
                     setState(BottomSheetBehavior.STATE_HIDDEN)
                 }
             }

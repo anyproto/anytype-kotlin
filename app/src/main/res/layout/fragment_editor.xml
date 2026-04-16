@@ -205,6 +205,7 @@
         app:hoveredFocusedTranslationZ="4dp"
         app:maxImageSize="32dp"
         app:pressedTranslationZ="4dp"
+        app:rippleColor="@android:color/transparent"
         app:tint="@color/control_primary"
         tools:targetApi="28"
         tools:visibility="visible" />

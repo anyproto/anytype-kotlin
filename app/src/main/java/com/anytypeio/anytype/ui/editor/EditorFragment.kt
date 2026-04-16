@@ -86,7 +86,6 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.longClicks
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
-import com.anytypeio.anytype.core_ui.tools.EditorHeaderOverlayDetector
 import com.anytypeio.anytype.core_ui.tools.LastItemBottomOffsetDecorator
 import com.anytypeio.anytype.core_ui.tools.MarkupColorToolbarFooter
 import com.anytypeio.anytype.core_ui.tools.MentionFooterItemDecorator
@@ -431,34 +430,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    val titleVisibilityDetector by lazy {
-        EditorHeaderOverlayDetector(
-            threshold = dimen(R.dimen.default_toolbar_height),
-            thresholdPadding = dimen(R.dimen.dp_8)
-        ) { isHeaderOverlaid ->
-            if (isHeaderOverlaid) {
-                binding.topToolbar.setBackgroundColor(0)
-                if (blockAdapter.views.isNotEmpty()) {
-                    val firstView = blockAdapter.views.first()
-                    if (firstView is BlockView.Title && firstView.hasCover) {
-                        binding.topToolbar.setStyle(overCover = true)
-                    } else {
-                        binding.topToolbar.setStyle(overCover = false)
-                    }
-                }
-            } else {
-                binding.topToolbar.setBackgroundColor(requireContext().color(R.color.defaultCanvasColor))
-                binding.topToolbar.setStyle(overCover = false)
-            }
-        }
-    }
-
     /**
      * DROID-4318: Hide the editor FABs while the user scrolls down through
      * content, restore them on upward scroll. The fragment root is a
      * FrameLayout — Material's HideBottomViewOnScrollBehavior was a no-op
      * on the old bottom toolbar, so this manual listener is the
      * replacement.
+     *
+     * Guarded by navigationToolbar.isVisible so an upward scroll during
+     * multi-select / markup / other modes (where render() has set the FABs
+     * invisible) does not reveal them via show().
      */
     private val fabScrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -466,8 +447,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 binding.fabCreate.hide()
                 binding.discussionButton.hide()
             } else if (dy < -4) {
+                val navToolbarVisible =
+                    vm.controlPanelViewState.value?.navigationToolbar?.isVisible == true
+                if (!navToolbarVisible) return
                 binding.fabCreate.show()
-                binding.discussionButton.show()
+                if (vm.discussionButtonState.value !is
+                    EditorViewModel.DiscussionButtonState.Hidden
+                ) {
+                    binding.discussionButton.show()
+                }
             }
         }
     }

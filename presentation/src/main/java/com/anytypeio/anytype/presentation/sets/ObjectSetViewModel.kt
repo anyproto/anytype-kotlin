@@ -4008,10 +4008,7 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
             ?.getSingleValue<String>(Relations.DISCUSSION_ID)
             ?.takeIf { it.isNotEmpty() }
         _discussionButtonState.value = if (existingDiscussionId != null) {
-            DiscussionButtonState.Comments(
-                discussionId = existingDiscussionId,
-                count = 0
-            )
+            DiscussionButtonState.Comments(discussionId = existingDiscussionId)
         } else {
             DiscussionButtonState.Empty
         }
@@ -4034,8 +4031,7 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
                     addDiscussion.async(vmParams.ctx).fold(
                         onSuccess = { discussionId ->
                             _discussionButtonState.value = DiscussionButtonState.Comments(
-                                discussionId = discussionId,
-                                count = 0
+                                discussionId = discussionId
                             )
                             navigate(
                                 EventWrapper(
@@ -4062,7 +4058,7 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
     sealed class DiscussionButtonState {
         data object Hidden : DiscussionButtonState()
         data object Empty : DiscussionButtonState()
-        data class Comments(val discussionId: Id, val count: Int) : DiscussionButtonState()
+        data class Comments(val discussionId: Id) : DiscussionButtonState()
     }
 
     //endregion

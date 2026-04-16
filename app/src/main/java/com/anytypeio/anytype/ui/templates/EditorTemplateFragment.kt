@@ -95,10 +95,6 @@ class EditorTemplateFragment : EditorFragment() {
             } else {
                 binding.topToolbar.hide()
             }
-            topToolbar.apply {
-                container.alpha = 1f
-            }
-            recycler.removeOnScrollListener(titleVisibilityDetector)
             topToolbar.title.updateLayoutParams<LinearLayout.LayoutParams> {
                 width = LinearLayout.LayoutParams.WRAP_CONTENT
                 height = LinearLayout.LayoutParams.MATCH_PARENT

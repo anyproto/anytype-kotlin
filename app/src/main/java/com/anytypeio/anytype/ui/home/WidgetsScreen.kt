@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
@@ -21,7 +19,6 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,6 +27,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
@@ -38,9 +37,9 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.BuildConfig
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.WidgetSectionType
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
@@ -48,6 +47,7 @@ import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
+import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.SectionType
@@ -56,20 +56,16 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTIO
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_RECENTLY_EDITED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_UNREAD
-import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_SPACE_CHAT_ID
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
-import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_RECENTLY_EDITED_ID
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_SPACE_CHAT_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.extractWidgetId
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.CreateHomeWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.InviteMembersWidgetCard
-import com.anytypeio.anytype.ui.widgets.types.ListWidgetElement
 import com.anytypeio.anytype.ui.widgets.types.ObjectTypesGroupWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
-import com.anytypeio.anytype.ui.widgets.types.getPrettyName
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 

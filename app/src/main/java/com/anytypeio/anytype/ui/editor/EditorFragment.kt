@@ -1737,7 +1737,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 binding.recycler.removeItemDecoration(actionToolbarFooter)
             }
             if (isScrollAndMoveEnabled)
-                //enterScrollAndMove()
+                enterScrollAndMove()
             else
                 exitScrollAndMove()
         }
@@ -2181,7 +2181,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             ObjectAnimator.ofFloat(
                 binding.multiSelectTopToolbar,
                 SELECT_BUTTON_ANIMATION_PROPERTY,
-                -requireContext().dimen(R.dimen.dp_48)
+                -requireContext().dimen(R.dimen.dp_120)
             ).apply {
                 duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
                 interpolator = DecelerateInterpolator()
@@ -2209,7 +2209,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         ObjectAnimator.ofFloat(
             binding.scrollAndMoveHint,
             SELECT_BUTTON_ANIMATION_PROPERTY,
-            -requireContext().dimen(R.dimen.dp_48)
+            -requireContext().dimen(R.dimen.dp_120)
         ).apply {
             duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
             interpolator = DecelerateInterpolator()

@@ -100,7 +100,7 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:background="@color/defaultCanvasColor"
-            android:translationY="-48dp"
+            android:translationY="-120dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -151,7 +151,7 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:background="@color/defaultCanvasColor"
-            android:translationY="-48dp"
+            android:translationY="-120dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

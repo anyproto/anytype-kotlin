@@ -217,11 +217,6 @@ open class ObjectSetFragment :
     private val initView: View get() = binding.initState.root
     private val dataViewInfo: DataViewInfo get() = binding.dataViewInfo
     private val rvHeaders: RecyclerView get() = binding.root.findViewById(R.id.rvHeader)
-    // IMPORTANT: a scroll listener (fabScrollListener) is attached to this
-    // instance in onViewCreated. The current implementation is safe because
-    // the grid container is a static include and is never re-inflated. If
-    // that changes, the scroll listener will silently stop working — update
-    // the registration/unregistration in onViewCreated/onDestroyView.
     private val rvRows: RecyclerView get() = binding.root.findViewById(R.id.rvRows)
 
     private val bottomPanelTranslationDelta: Float
@@ -258,24 +253,6 @@ open class ObjectSetFragment :
         )
     }
 
-    /**
-     * DROID-4318: Hide the object-set FABs while the user scrolls down
-     * through any data view, restore them on upward scroll. Mirrors the
-     * editor's fabScrollListener. Attached to rvRows (grid), galleryView
-     * and listView — all three inherit from RecyclerView.
-     */
-    private val fabScrollListener = object : RecyclerView.OnScrollListener() {
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            if (dy > 4) {
-                binding.fabCreate.hide()
-                binding.fabSearch.hide()
-            } else if (dy < -4) {
-                binding.fabCreate.show()
-                binding.fabSearch.show()
-            }
-        }
-    }
-
     private val ctx: Id get() = argString(CONTEXT_ID_KEY)
     private val space: Id get() = arg<String>(SPACE_ID_KEY)
     private val view: Id? get() = argOrNull<Id>(INITIAL_VIEW_ID_KEY)
@@ -300,15 +277,9 @@ open class ObjectSetFragment :
 
         setupGridAdapters()
 
-        // DROID-4318: Attach the FAB scroll listener to all three data view
-        // RecyclerViews. GalleryViewWidget and ListViewWidget both extend
-        // RecyclerView directly, so addOnScrollListener is inherited.
-        rvRows.addOnScrollListener(fabScrollListener)
-        binding.galleryView.addOnScrollListener(fabScrollListener)
-        binding.listView.addOnScrollListener(fabScrollListener)
-
+        // DROID-4318: Bottom buttons stay fixed across scrolling. Visibility
+        // is driven by view-state and discussionButtonState, not by scroll.
         binding.fabCreate.isVisible = true
-        binding.fabSearch.isVisible = true
 
         title.clearFocus()
         binding.root.setTransitionListener(transitionListener)
@@ -364,14 +335,9 @@ open class ObjectSetFragment :
 
             subscribe(binding.bottomPanel.root.touches()) { swipeDetector.onTouchEvent(it) }
 
-            // DROID-4318: Object-set bottom navigation replaced with two
-            // scroll-aware floating action buttons (fabCreate / fabSearch).
-            // Share / home / chat entry points moved to the home overlay
-            // (Task 4) — no object-set wiring.
-            subscribe(binding.fabSearch.clicks().throttleFirst()) {
-                vm.onSearchButtonClicked()
-            }
-
+            // DROID-4318: Two-button bottom layout — Discussion (left) +
+            // Create (right) — mirrors the editor. Buttons stay fixed at
+            // all times; visibility comes from VM state, not scroll.
             subscribe(binding.fabCreate.clicks().throttleFirst()) {
                 vm.onAddNewDocumentClicked()
             }
@@ -381,6 +347,17 @@ open class ObjectSetFragment :
                 .onEach {
                     val dialog = ObjectTypeSelectionFragment.new(space = space)
                     dialog.show(childFragmentManager, "set-create-object-of-type-dialog")
+                }
+                .launchIn(lifecycleScope)
+
+            subscribe(binding.discussionButton.clicks().throttleFirst()) {
+                vm.onDiscussionButtonClicked()
+            }
+
+            vm.discussionButtonState
+                .onEach { state ->
+                    binding.discussionButton.isVisible =
+                        state !is ObjectSetViewModel.DiscussionButtonState.Hidden
                 }
                 .launchIn(lifecycleScope)
         }
@@ -1487,9 +1464,8 @@ open class ObjectSetFragment :
 
         title.addTextChangedListener(titleTextWatcher)
 
-        // No isVisible mirror here — the set screen has no ControlPanelState
-        // navigation-toolbar state like the editor has. Visibility is managed
-        // by the scroll listener after a one-shot flip in onViewCreated.
+        // fabCreate stays visible. NavPanelState only mirrors the enabled
+        // flag here (read-only contexts grey the button out).
         vm.navPanelState
             .distinctUntilChanged()
             .onEach { state ->
@@ -1558,9 +1534,6 @@ open class ObjectSetFragment :
     }
 
     override fun onDestroyView() {
-        rvRows.removeOnScrollListener(fabScrollListener)
-        binding.galleryView.removeOnScrollListener(fabScrollListener)
-        binding.listView.removeOnScrollListener(fabScrollListener)
         viewerGridAdapter.clear()
         super.onDestroyView()
     }

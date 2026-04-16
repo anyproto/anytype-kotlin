@@ -36,18 +36,17 @@ fun HomeScreenToolbar(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(dimensionResource(R.dimen.nav_top_toolbar_height))
-            .padding(horizontal = 12.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        CircularIconButton(
+        CircularFabButton(
             iconRes = R.drawable.ic_default_top_back,
             onClick = onBackButtonClicked,
             contentDescription = stringResource(R.string.content_desc_back_button)
         )
-        CircularIconButton(
-            iconRes = R.drawable.ic_space_settings_24,
+        CircularFabButton(
+            iconRes = R.drawable.ic_space_list_dots,
             onClick = onSpaceSettingsClicked,
             contentDescription = stringResource(R.string.space_settings)
         )

@@ -38,7 +38,9 @@ import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
+import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.ui.base.navigation
@@ -106,12 +108,40 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    vm.commands.collect {
-                        // Commands from HomeScreenViewModel are widget-host flows
-                        // (space settings dialogs, share, deep links, create-object, etc.)
-                        // that the overlay does not own. Object navigation flows through
-                        // vm.navigation below.
-                        Timber.d("WidgetOverlay vm command: $it")
+                    vm.commands.collect { command ->
+                        // Most HomeScreenViewModel commands are widget-host flows
+                        // owned by WidgetsScreenFragment. The overlay handles the
+                        // two that originate from its own bottom buttons.
+                        when (command) {
+                            is Command.OpenGlobalSearchScreen -> {
+                                runCatching {
+                                    navigation().openGlobalSearch(
+                                        space = command.space
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error opening global search from overlay")
+                                }
+                                dismissAfterGesture()
+                            }
+                            is Command.OpenObjectCreateDialog -> {
+                                // Show on parent fragment manager so the dialog
+                                // survives the overlay dismiss below.
+                                runCatching {
+                                    ObjectTypeSelectionFragment
+                                        .new(space = command.space.id)
+                                        .show(
+                                            parentFragmentManager,
+                                            "overlay-object-create-dialog"
+                                        )
+                                }.onFailure {
+                                    Timber.e(it, "Error showing create-object dialog from overlay")
+                                }
+                                dismissAfterGesture()
+                            }
+                            else -> {
+                                Timber.d("WidgetOverlay vm command (ignored): $command")
+                            }
+                        }
                     }
                 }
                 launch {
@@ -122,6 +152,21 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
                 launch { vm.toasts.collect { toast(it) } }
             }
         }
+    }
+
+    /**
+     * Posts dismiss to the next frame. Dismissing synchronously during a
+     * Compose long-press crashes the pointer-input continuation ("Already
+     * resumed" — the BottomSheetDialog tear-down dispatches ACTION_CANCEL
+     * back into a coroutine that has already resumed). Yielding to the
+     * main-thread queue lets the gesture finish cleanly first.
+     */
+    private fun dismissAfterGesture() {
+        val v = view ?: run {
+            if (isAdded) dismiss()
+            return
+        }
+        v.post { if (isAdded) dismiss() }
     }
 
     private fun proceed(destination: HomeScreenViewModel.Navigation) {

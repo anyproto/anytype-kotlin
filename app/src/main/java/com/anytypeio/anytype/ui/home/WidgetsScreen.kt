@@ -28,9 +28,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -71,7 +69,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 
 
 @Composable
-private fun CircularFabButton(
+fun CircularFabButton(
     @DrawableRes iconRes: Int,
     contentDescription: String,
     modifier: Modifier = Modifier,
@@ -83,14 +81,14 @@ private fun CircularFabButton(
         modifier = modifier
             .size(dimensionResource(R.dimen.nav_fab_button_size))
             .shadow(
-                elevation = 4.dp,
+                elevation = 20.dp,
                 shape = CircleShape,
-                clip = false,
-                ambientColor = Color.Black.copy(alpha = 0.12f),
-                spotColor = Color.Black.copy(alpha = 0.12f),
+                clip = false
             )
-            .clip(CircleShape)
-            .background(colorResource(R.color.shape_primary))
+            .background(
+                color = colorResource(id = R.color.navigation_panel),
+                shape = CircleShape
+            )
             .alpha(if (isEnabled) 1f else 0.5f)
             .then(
                 if (onLongClick != null) {
@@ -580,13 +578,11 @@ fun WidgetsScreen(
         val navPanelState = viewModel.navPanelState.collectAsStateWithLifecycle().value
         val isCreateEnabled = (navPanelState as? NavPanelState.Default)?.isCreateEnabled == true
 
-        // Create-object FAB (bottom-start). Tap creates a new object;
-        // long-press surfaces the type picker. Disabled visual reflects
-        // NavPanelState.Default.isCreateEnabled.
+        // Search FAB (bottom-start). Always enabled.
         CircularFabButton(
-            iconRes = R.drawable.ic_nav_panel_plus,
+            iconRes = R.drawable.ic_nav_panel_search,
             contentDescription = stringResource(
-                id = R.string.main_navigation_content_desc_create_button
+                id = R.string.main_navigation_content_desc_search_button
             ),
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -594,17 +590,19 @@ fun WidgetsScreen(
                 .padding(
                     start = dimensionResource(R.dimen.nav_fab_margin),
                     bottom = dimensionResource(R.dimen.nav_fab_margin),
-                ),
-            isEnabled = isCreateEnabled,
-            onClick = viewModel::onCreateNewObjectClicked,
-            onLongClick = viewModel::onCreateNewObjectLongClicked,
+                )
+            ,
+            onClick = viewModel::onSearchIconClicked,
         )
 
-        // Search FAB (bottom-end). Always enabled.
+        // Create-object FAB (bottom-end). Tap creates a new object;
+        // long-press surfaces the type picker. Uses the same icon as the
+        // editor / set screens. Disabled visual reflects
+        // NavPanelState.Default.isCreateEnabled.
         CircularFabButton(
-            iconRes = R.drawable.ic_nav_panel_search,
+            iconRes = R.drawable.ic_create_obj_32,
             contentDescription = stringResource(
-                id = R.string.main_navigation_content_desc_search_button
+                id = R.string.main_navigation_content_desc_create_button
             ),
             modifier = Modifier
                 .align(Alignment.BottomEnd)
@@ -613,7 +611,9 @@ fun WidgetsScreen(
                     end = dimensionResource(R.dimen.nav_fab_margin),
                     bottom = dimensionResource(R.dimen.nav_fab_margin),
                 ),
-            onClick = viewModel::onSearchIconClicked,
+            isEnabled = isCreateEnabled,
+            onClick = viewModel::onCreateNewObjectClicked,
+            onLongClick = viewModel::onCreateNewObjectLongClicked,
         )
     }
 }

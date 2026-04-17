@@ -86,7 +86,6 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.longClicks
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
-import com.anytypeio.anytype.core_ui.tools.EditorHeaderOverlayDetector
 import com.anytypeio.anytype.core_ui.tools.LastItemBottomOffsetDecorator
 import com.anytypeio.anytype.core_ui.tools.MarkupColorToolbarFooter
 import com.anytypeio.anytype.core_ui.tools.MentionFooterItemDecorator
@@ -150,6 +149,7 @@ import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetD
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
@@ -161,6 +161,7 @@ import com.anytypeio.anytype.ui.editor.modals.SetBlockTextValueFragment
 import com.anytypeio.anytype.ui.editor.modals.TextBlockIconPickerFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
+import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
@@ -429,30 +430,32 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    val titleVisibilityDetector by lazy {
-        EditorHeaderOverlayDetector(
-            threshold = dimen(R.dimen.default_toolbar_height),
-            thresholdPadding = dimen(R.dimen.dp_8)
-        ) { isHeaderOverlaid ->
-            if (isHeaderOverlaid) {
-                binding.topToolbar.setBackgroundColor(0)
-                binding.topToolbar.container.animate().alpha(0f)
-                    .setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
-                    .start()
-                if (blockAdapter.views.isNotEmpty()) {
-                    val firstView = blockAdapter.views.first()
-                    if (firstView is BlockView.Title && firstView.hasCover) {
-                        binding.topToolbar.setStyle(overCover = true)
-                    } else {
-                        binding.topToolbar.setStyle(overCover = false)
-                    }
+    /**
+     * DROID-4318: Hide the editor FABs while the user scrolls down through
+     * content, restore them on upward scroll. The fragment root is a
+     * FrameLayout — Material's HideBottomViewOnScrollBehavior was a no-op
+     * on the old bottom toolbar, so this manual listener is the
+     * replacement.
+     *
+     * Guarded by navigationToolbar.isVisible so an upward scroll during
+     * multi-select / markup / other modes (where render() has set the FABs
+     * invisible) does not reveal them via show().
+     */
+    private val fabScrollListener = object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+            if (dy > 4) {
+                binding.fabCreate.hide()
+                binding.discussionButton.hide()
+            } else if (dy < -4) {
+                val navToolbarVisible =
+                    vm.controlPanelViewState.value?.navigationToolbar?.isVisible == true
+                if (!navToolbarVisible) return
+                binding.fabCreate.show()
+                if (vm.discussionButtonState.value !is
+                    EditorViewModel.DiscussionButtonState.Hidden
+                ) {
+                    binding.discussionButton.show()
                 }
-            } else {
-                binding.topToolbar.setBackgroundColor(requireContext().color(R.color.defaultCanvasColor))
-                binding.topToolbar.container.animate().alpha(1f)
-                    .setDuration(DEFAULT_TOOLBAR_ANIM_DURATION)
-                    .start()
-                binding.topToolbar.setStyle(overCover = false)
             }
         }
     }
@@ -572,7 +575,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             setHasFixedSize(true)
             itemAnimator = null
             adapter = blockAdapter
-            addOnScrollListener(titleVisibilityDetector)
             addItemDecoration(defaultBottomOffsetDecorator)
         }
 
@@ -626,36 +628,24 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .launchIn(lifecycleScope)
 
 
-        binding.bottomToolbar
-            .shareClicks()
-            .onEach { vm.onShareButtonClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.bottomToolbar
-            .homeClicks()
-            .onEach { vm.onHomeButtonClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.bottomToolbar
-            .searchClicks()
-            .onEach { vm.onPageSearchClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.bottomToolbar
-            .addDocClicks()
+        // DROID-4318: Editor bottom navigation replaced with two scroll-aware
+        // floating action buttons (fabCreate / discussionButton). Share / home
+        // / chat entry points moved to the home overlay (Task 4) — no editor
+        // wiring.
+        binding.fabCreate
+            .clicks()
             .onEach { vm.onAddNewDocumentClicked() }
             .launchIn(lifecycleScope)
 
-        binding
-            .bottomToolbar
-            .binding
-            .btnAddDoc
+        binding.fabCreate
             .longClicks(withHaptic = true)
             .onEach {
                 val dialog = ObjectTypeSelectionFragment.new(space = space)
                 dialog.show(childFragmentManager, "editor-create-object-of-type-dialog")
             }
             .launchIn(lifecycleScope)
+
+        binding.recycler.addOnScrollListener(fabScrollListener)
 
         binding.topToolbar.menu
             .clicks()
@@ -669,31 +659,21 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onBackButtonPressed() }
             .launchIn(lifecycleScope)
 
-        binding.discussionButton.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                val state = vm.discussionButtonState.collectAsStateWithLifecycle().value
-                when (state) {
-                    is EditorViewModel.DiscussionButtonState.Empty -> {
-                        com.anytypeio.anytype.feature_discussions.ui.DiscussionButton(
-                            hasComments = false,
-                            commentCount = 0,
-                            onClick = { vm.onDiscussionButtonClicked() }
-                        )
-                    }
-                    is EditorViewModel.DiscussionButtonState.Comments -> {
-                        com.anytypeio.anytype.feature_discussions.ui.DiscussionButton(
-                            hasComments = true,
-                            commentCount = state.count,
-                            onClick = { vm.onDiscussionButtonClicked() }
-                        )
-                    }
-                    is EditorViewModel.DiscussionButtonState.Hidden -> {
-                        // Render nothing
-                    }
-                }
-            }
+        binding.topToolbar.container.setOnClickListener {
+            WidgetOverlayFragment.show(parentFragmentManager, space)
         }
+
+        binding.discussionButton
+            .clicks()
+            .onEach { vm.onDiscussionButtonClicked() }
+            .launchIn(lifecycleScope)
+
+        vm.discussionButtonState
+            .onEach { state ->
+                binding.discussionButton.isVisible =
+                    state !is EditorViewModel.DiscussionButtonState.Hidden
+            }
+            .launchIn(lifecycleScope)
 
         binding.markupToolbar
             .highlightClicks()
@@ -963,9 +943,17 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             // TODO
         }.launchIn(lifecycleScope)
 
-        vm.navPanelState.onEach {
+        vm.navPanelState.onEach { state ->
             if (hasBinding) {
-                binding.bottomToolbar.setState(it)
+                // Mirror NavPanelState.Default.isCreateEnabled into the new
+                // fabCreate so disabled states (e.g. inside locked / template
+                // contexts) still apply. Visibility is driven by the
+                // navigationToolbar control-panel flag in render() and by
+                // the scroll listener.
+                val isCreateEnabled =
+                    (state as? NavPanelState.Default)?.isCreateEnabled == true
+                binding.fabCreate.isEnabled = isCreateEnabled
+                binding.fabCreate.alpha = if (isCreateEnabled) 1f else 0.5f
             }
         }.launchIn(lifecycleScope)
 
@@ -1013,7 +1001,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     override fun onDestroyView() {
         // Clear all text selections to prevent MultiSelectPopupWindow crashes
         clearActiveTextSelections()
-        
+
+        binding.recycler.removeOnScrollListener(fabScrollListener)
         pickerDelegate.clearPickit()
         super.onDestroyView()
     }
@@ -1560,8 +1549,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is BlockView.Title.Basic -> {
                     resetTopToolbarTitle(
                         text = title.text,
-                        emoji = title.emoji,
-                        image = title.image,
+                        icon = title.icon
                     )
                     if (title.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
@@ -1576,8 +1564,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is BlockView.Title.Profile -> {
                     resetTopToolbarTitle(
                         text = title.text,
-                        emoji = null,
-                        image = title.image,
+                        icon = title.icon
                     )
                     if (title.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
@@ -1592,8 +1579,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is BlockView.Title.Todo -> {
                     resetTopToolbarTitle(
                         text = title.text,
-                        emoji = null,
-                        image = title.image,
+                        icon = title.icon
                     )
                     if (title.hasCover) {
                         val mng = binding.recycler.layoutManager as LinearLayoutManager
@@ -1611,27 +1597,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private fun resetTopToolbarTitle(text: String?, emoji: String?, image: String?) {
-        binding.topToolbar.title.text = text
-        val iconView = binding.topToolbar.icon
-        when {
-            text.isNullOrBlank() -> {
-                iconView.setIcon(ObjectIcon.None)
-                iconView.gone()
-            }
-            !emoji.isNullOrBlank() -> {
-                iconView.setIcon(ObjectIcon.Basic.Emoji(emoji))
-                iconView.visible()
-            }
-            !image.isNullOrBlank() -> {
-                iconView.setIcon(ObjectIcon.Basic.Image(image))
-                iconView.visible()
-            }
-            else -> {
-                iconView.setIcon(ObjectIcon.None)
-                iconView.gone()
-            }
-        }
+    private fun resetTopToolbarTitle(text: String?, icon: ObjectIcon) {
+        binding.topToolbar.title.text =
+            text?.takeIf { it.isNotBlank() } ?: getString(R.string.untitled)
+        binding.topToolbar.icon.setIcon(icon)
+        binding.topToolbar.icon.visible()
     }
 
     open fun render(state: ControlPanelState) {
@@ -1643,11 +1613,17 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         if (state.navigationToolbar.isVisible) {
             binding.placeholder.requestFocus()
             binding.placeholder.hideKeyboard()
-            binding.bottomToolbarContainer.visible()
-            binding.discussionButton.visible()
+            // DROID-4318: use instant visibility toggles instead of
+            // FloatingActionButton.show()/hide(), which animate scale+fade
+            // over ~200ms and leave a touch-through window on the hiding
+            // FAB. The scroll-aware listener still uses show()/hide() —
+            // that's the canonical Material FAB use case.
+            binding.fabCreate.isVisible = true
+            binding.discussionButton.isVisible =
+                vm.discussionButtonState.value !is EditorViewModel.DiscussionButtonState.Hidden
         } else {
-            binding.bottomToolbarContainer.gone()
-            binding.discussionButton.gone()
+            binding.fabCreate.isVisible = false
+            binding.discussionButton.isVisible = false
         }
 
         if (state.mainToolbar.isVisible) {
@@ -1738,6 +1714,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     binding.recycler.removeItemDecoration(styleToolbarFooter)
                 }
                 behavior.apply {
+                    removeBottomSheetCallback(onHideBottomSheetCallback)
                     removeBottomSheetCallback(onHideBottomSheetCallback)
                     setState(BottomSheetBehavior.STATE_HIDDEN)
                 }
@@ -2155,7 +2132,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             ObjectAnimator.ofFloat(
                 binding.multiSelectTopToolbar,
                 SELECT_BUTTON_ANIMATION_PROPERTY,
-                -requireContext().dimen(R.dimen.dp_48)
+                -requireContext().dimen(R.dimen.dp_120)
             ).apply {
                 duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
                 interpolator = DecelerateInterpolator()
@@ -2183,7 +2160,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         ObjectAnimator.ofFloat(
             binding.scrollAndMoveHint,
             SELECT_BUTTON_ANIMATION_PROPERTY,
-            -requireContext().dimen(R.dimen.dp_48)
+            -requireContext().dimen(R.dimen.dp_120)
         ).apply {
             duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
             interpolator = DecelerateInterpolator()

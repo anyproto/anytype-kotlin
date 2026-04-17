@@ -7,21 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -111,66 +104,17 @@ class WidgetsScreenFragment : Fragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = content {
-        var isMenuExpanded by remember { mutableStateOf(false) }
-
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            containerColor = Color.Transparent,
-            contentWindowInsets = WindowInsets(0.dp),
-            topBar = {
-                val spaceViewState = vm.spaceViewState.collectAsStateWithLifecycle().value
-                if (spaceViewState is HomeScreenViewModel.SpaceViewState.Success) {
-                    Box {
-                        HomeScreenToolbar(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .statusBarsPadding(),
-                            spaceViewState = spaceViewState,
-                            onSpaceIconClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
-                            onBackButtonClicked = vm::onBackClicked,
-                            onMenuClicked = { isMenuExpanded = true },
-                        )
-                        
-                        // Menu positioned at top-right, anchored to the menu button
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .statusBarsPadding()
-                        ) {
-                            val isMuted = vm.isMuted.collectAsStateWithLifecycle().value
-                            HomeScreenMenu(
-                                expanded = isMenuExpanded,
-                                spaceAccessType = spaceViewState.spaceAccessType,
-                                isOneToOneSpace = spaceViewState.isOneToOneSpace,
-                                isMuted = isMuted,
-                                onDismiss = { isMenuExpanded = false },
-                                onSpaceSettingsClicked = {
-                                    vm.onSpaceSettingsClicked(space = SpaceId(space))
-                                },
-                                onMembersClicked = {
-                                    vm.onMembersClicked()
-                                },
-                                onMuteClicked = {
-                                    vm.onMuteClicked()
-                                },
-                                onQrCodeClicked = {
-                                    vm.onQrCodeClicked()
-                                },
-                                onCopyInviteLinkClicked = {
-                                    vm.onCopyInviteLinkClicked()
-                                },
-                                onManageSectionsClicked = {
-                                    vm.onManageSectionsClicked()
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-        ) { paddingValues ->
+        Box(modifier = Modifier.fillMaxSize()) {
             WidgetsScreen(
-                viewModel = vm,
-                paddingValues = paddingValues
+                viewModel = vm
+            )
+            HomeScreenToolbar(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .statusBarsPadding(),
+                onBackButtonClicked = vm::onBackClicked,
+                onSpaceSettingsClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) }
             )
         }
 

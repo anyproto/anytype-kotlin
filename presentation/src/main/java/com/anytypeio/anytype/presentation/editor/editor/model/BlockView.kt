@@ -666,7 +666,8 @@ sealed class BlockView : ViewType {
             override val mode: Mode = Mode.EDIT,
             override var cursor: Int? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
-            override val hint: String? = null
+            override val hint: String? = null,
+            val icon: ObjectIcon = ObjectIcon.None
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_TITLE
         }
@@ -766,6 +767,7 @@ sealed class BlockView : ViewType {
             override var cursor: Int? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val hint: String? = null,
+            val icon: ObjectIcon = ObjectIcon.None
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_PROFILE_TITLE
         }
@@ -789,7 +791,8 @@ sealed class BlockView : ViewType {
             override var cursor: Int? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             var isChecked: Boolean = false,
-            override val hint: String? = null
+            override val hint: String? = null,
+            val icon: ObjectIcon = ObjectIcon.None
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_TODO_TITLE
         }

@@ -202,6 +202,30 @@ class ComponentManager(
             )
     }
 
+    /**
+     * Single-slot cache for the widget overlay. Each fragment open fires get(),
+     * each fragment destroy fires release() which clears the slot so the next
+     * open builds a fresh DaggerHomeScreenComponent.
+     *
+     * IMPORTANT: the overlay must NOT be opened while [WidgetsScreenFragment]
+     * is alive for the same space. Both fragments use HomeScreenViewModel,
+     * and HomeScreenViewModel.onCleared() calls closeObject against the shared
+     * widget object. Running both simultaneously causes the first cleared VM
+     * to close the widget object the other VM is still subscribed to.
+     *
+     * In practice the overlay is only triggered from Chat/Editor/ObjectSet
+     * destinations where the root widgets screen is not in the back stack,
+     * so this invariant is preserved structurally — but any future
+     * "show overlay from the widgets screen itself" path must be prevented.
+     */
+    val widgetOverlayComponent = ComponentWithParams { vmParams: HomeScreenVmParams ->
+        DaggerHomeScreenComponent
+            .factory()
+            .create(
+                vmParams = vmParams, dependencies = findComponentDependencies()
+            )
+    }
+
     val collectionComponent = ComponentWithParams { vmParams: CollectionViewModel.VmParams ->
         DaggerCollectionComponent
             .factory()

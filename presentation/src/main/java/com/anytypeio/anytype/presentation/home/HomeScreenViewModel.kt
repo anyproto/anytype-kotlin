@@ -652,13 +652,23 @@ class HomeScreenViewModel(
                     } else {
                         name
                     }
+                    val otherMember = if (
+                        spaceView.isOneToOneSpace
+                        && members is ActiveSpaceMemberSubscriptionContainer.Store.Data
+                    ) {
+                        members.members.find { it.identity == spaceView.oneToOneIdentity }
+                    } else {
+                        null
+                    }
                     _spaceViewState.value = SpaceViewState.Success(
                         spaceName = spaceName,
                         spaceIcon = spaceIcon,
                         membersCount = spaceMemberCount,
                         spaceChatId = spaceView.getSingleValue<String>(Relations.CHAT_ID),
                         isOneToOneSpace = spaceView.isOneToOneSpace,
-                        spaceAccessType = spaceView.spaceAccessType ?: SpaceAccessType.PRIVATE
+                        spaceAccessType = spaceView.spaceAccessType ?: SpaceAccessType.PRIVATE,
+                        memberGlobalName = otherMember?.globalName,
+                        memberIdentity = otherMember?.identity
                     )
                 }
         }
@@ -3650,6 +3660,8 @@ class HomeScreenViewModel(
             val spaceChatId: Id? = null,
             val spaceAccessType: SpaceAccessType,
             val isOneToOneSpace: Boolean,
+            val memberGlobalName: String? = null,
+            val memberIdentity: String? = null,
         ) : SpaceViewState() {
             val canCreateAdditionalChats: Boolean
                 get() = !isOneToOneSpace

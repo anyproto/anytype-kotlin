@@ -65,6 +65,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
+import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import dagger.Binds
 import dagger.BindsInstance
@@ -93,6 +94,7 @@ interface HomeScreenComponent {
     }
 
     fun inject(fragment: WidgetsScreenFragment)
+    fun inject(fragment: WidgetOverlayFragment)
 }
 
 @Module

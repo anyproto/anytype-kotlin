@@ -50,6 +50,7 @@ import com.anytypeio.anytype.feature_object_type.ui.header.IconAndTitleWidget
 import com.anytypeio.anytype.feature_object_type.ui.layouts.TypeLayoutsScreen
 import com.anytypeio.anytype.feature_object_type.ui.templates.TemplatesModalList
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
+import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,12 +92,22 @@ fun WithSetScreen(
         topBar = {
             TopBarContent(
                 uiSyncStatusBadgeState = uiSyncStatusBadgeState,
+                uiTitleState = uiTitleState,
+                uiIconState = uiIconState,
                 onTypeEvent = { typeEvent ->
                     if (typeEvent is TypeEvent.OnBackClick) {
                         objectSetFragment.value?.onCloseCurrentObject()
                     }
                     if (typeEvent is TypeEvent.OnMenuClick) {
                         objectSetFragment.value?.onMenuClicked()
+                    }
+                    if (typeEvent is TypeEvent.OnTopBarTitleClick) {
+                        objectSetFragment.value?.let { fragment ->
+                            WidgetOverlayFragment.show(
+                                fragment.parentFragmentManager,
+                                space
+                            )
+                        }
                     }
                     onTypeEvent(typeEvent)
                 }

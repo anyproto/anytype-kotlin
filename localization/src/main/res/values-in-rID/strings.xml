@@ -2068,6 +2068,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     </string>
     <string name="private_local_yours_forever">terenkripsi, lokal, milikmu selamanya</string>
     <string name="private_channel">Saluran langsung</string>
+    <string name="space_header_private_channel">Private channel</string>
+    <string name="space_header_group_channel">Group channel</string>
     <string name="wallpaper_item_space_icon_color">Warna Bawaan</string>
     <string name="publish_to_web">Publikasi ke Web</string>
     <string name="preferences">Preferensi</string>

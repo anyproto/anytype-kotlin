@@ -627,6 +627,27 @@ fun UnreadSectionHeader(
 }
 
 @Composable
+fun MyFavoritesSectionHeader(
+    onSectionClicked: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .noRippleClickable { onSectionClicked() }
+    ) {
+        Text(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 20.dp, bottom = 12.dp),
+            text = stringResource(R.string.widgets_section_my_favorites),
+            style = Title2,
+            color = colorResource(id = R.color.text_transparent_secondary)
+        )
+    }
+}
+
+@Composable
 fun PinnedSectionHeader(
     onSectionClicked: () -> Unit,
 ) {

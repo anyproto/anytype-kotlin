@@ -7,21 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -35,7 +28,6 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -112,66 +104,17 @@ class WidgetsScreenFragment : Fragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = content {
-        var isMenuExpanded by remember { mutableStateOf(false) }
-
-        Scaffold(
-            modifier = Modifier.fillMaxSize(),
-            containerColor = Color.Transparent,
-            contentWindowInsets = WindowInsets(0.dp),
-            topBar = {
-                val spaceViewState = vm.spaceViewState.collectAsStateWithLifecycle().value
-                if (spaceViewState is HomeScreenViewModel.SpaceViewState.Success) {
-                    Box {
-                        HomeScreenToolbar(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .statusBarsPadding(),
-                            spaceViewState = spaceViewState,
-                            onSpaceIconClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
-                            onBackButtonClicked = vm::onBackClicked,
-                            onMenuClicked = { isMenuExpanded = true },
-                        )
-                        
-                        // Menu positioned at top-right, anchored to the menu button
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .statusBarsPadding()
-                        ) {
-                            val isMuted = vm.isMuted.collectAsStateWithLifecycle().value
-                            HomeScreenMenu(
-                                expanded = isMenuExpanded,
-                                spaceAccessType = spaceViewState.spaceAccessType,
-                                spaceUxType = spaceViewState.spaceUxType,
-                                isMuted = isMuted,
-                                onDismiss = { isMenuExpanded = false },
-                                onSpaceSettingsClicked = {
-                                    vm.onSpaceSettingsClicked(space = SpaceId(space))
-                                },
-                                onMembersClicked = {
-                                    vm.onMembersClicked()
-                                },
-                                onMuteClicked = {
-                                    vm.onMuteClicked()
-                                },
-                                onQrCodeClicked = {
-                                    vm.onQrCodeClicked()
-                                },
-                                onCopyInviteLinkClicked = {
-                                    vm.onCopyInviteLinkClicked()
-                                },
-                                onManageSectionsClicked = {
-                                    vm.onManageSectionsClicked()
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-        ) { paddingValues ->
+        Box(modifier = Modifier.fillMaxSize()) {
             WidgetsScreen(
-                viewModel = vm,
-                paddingValues = paddingValues
+                viewModel = vm
+            )
+            HomeScreenToolbar(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .statusBarsPadding(),
+                onBackButtonClicked = vm::onBackClicked,
+                onSpaceSettingsClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) }
             )
         }
 
@@ -232,7 +175,7 @@ class WidgetsScreenFragment : Fragment(),
             )
         }
 
-        // Homepage Picker - shown after channel creation
+        // Homepage Picker - shown as bottom sheet after channel creation or from Create Home widget
         val showHomepagePicker = vm.showHomepagePicker.collectAsStateWithLifecycle().value
         if (showHomepagePicker) {
             HomepagePickerBottomSheet(
@@ -459,16 +402,16 @@ class WidgetsScreenFragment : Fragment(),
 
             is Command.HandleChatSpaceBackNavigation -> {
                 runCatching {
-                    // Deterministic navigation based on space type, not back stack
+                    // Deterministic navigation based on space kind, not back stack
                     val chatId = command.spaceChatId
-                    if ((command.spaceUxType == SpaceUxType.CHAT || command.spaceUxType == SpaceUxType.ONE_TO_ONE) && !chatId.isNullOrEmpty()) {
-                        // Chat and One-to-One spaces: navigate to chat object
+                    if (command.isOneToOneSpace && !chatId.isNullOrEmpty()) {
+                        // 1-1 (DM) space: navigate to chat object
                         navigation().openChat(
                             target = chatId,
                             space = space
                         )
                     } else {
-                        // Data space: always navigate to vault
+                        // Regular data space: always navigate to vault
                         vm.proceedWithExitingToVault()
                         findNavController().navigate(R.id.action_back_on_vault)
                     }

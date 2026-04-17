@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -51,7 +52,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -69,7 +69,6 @@ import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.DismissBackground
 import com.anytypeio.anytype.core_ui.foundation.Divider
-import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -78,8 +77,10 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
+import com.anytypeio.anytype.core_ui.widgets.CircularFabButton
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
@@ -88,9 +89,9 @@ import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.UiItemsState
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiSnackbarState
+import com.anytypeio.anytype.feature_allcontent.models.UiSyncStatusBadgeState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
-import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -103,8 +104,8 @@ fun AllContentWrapperScreen(
     uiTabsState: UiTabsState,
     uiMenuState: UiMenuState,
     uiSnackbarState: UiSnackbarState,
+    uiSyncStatusBadgeState: UiSyncStatusBadgeState,
     uiItemsState: UiItemsState,
-    uiBottomMenu: NavPanelState,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
@@ -115,22 +116,21 @@ fun AllContentWrapperScreen(
     canPaginate: Boolean,
     onUpdateLimitSearch: () -> Unit,
     uiContentState: UiContentState,
-    onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
-    onBackLongClicked: () -> Unit,
+    onTitleClick: () -> Unit,
+    onSyncStatusClick: (SpaceSyncAndP2PStatusState) -> Unit,
     moveToBin: (UiContentItem.Item) -> Unit,
     undoMoveToBin: (Id) -> Unit,
-    onDismissSnackbar: () -> Unit,
-    onShareButtonClicked: () -> Unit,
-    onHomeButtonClicked: () -> Unit
+    onDismissSnackbar: () -> Unit
 ) {
 
     AllContentMainScreen(
         uiTitleState = uiTitleState,
         uiTabsState = uiTabsState,
         uiSnackbarState = uiSnackbarState,
+        uiSyncStatusBadgeState = uiSyncStatusBadgeState,
         onTabClick = onTabClick,
         onQueryChanged = onQueryChanged,
         uiMenuState = uiMenuState,
@@ -140,18 +140,16 @@ fun AllContentWrapperScreen(
         onBinClick = onBinClick,
         uiItemsState = uiItemsState,
         uiContentState = uiContentState,
-        onGlobalSearchClicked = onGlobalSearchClicked,
         onAddDocClicked = onAddDocClicked,
         onCreateObjectLongClicked = onCreateObjectLongClicked,
         onBackClicked = onBackClicked,
+        onTitleClick = onTitleClick,
+        onSyncStatusClick = onSyncStatusClick,
         moveToBin = moveToBin,
-        uiBottomMenu = uiBottomMenu,
         undoMoveToBin = undoMoveToBin,
         onDismissSnackbar = onDismissSnackbar,
         canPaginate = canPaginate,
         onUpdateLimitSearch = onUpdateLimitSearch,
-        onShareButtonClicked = onShareButtonClicked,
-        onHomeButtonClicked = onHomeButtonClicked,
         onOpenAsObject = onOpenAsObject
     )
 }
@@ -164,7 +162,7 @@ fun AllContentMainScreen(
     uiTabsState: UiTabsState,
     uiMenuState: UiMenuState,
     uiSnackbarState: UiSnackbarState,
-    uiBottomMenu: NavPanelState,
+    uiSyncStatusBadgeState: UiSyncStatusBadgeState,
     onTabClick: (AllContentTab) -> Unit,
     onQueryChanged: (String) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
@@ -173,17 +171,16 @@ fun AllContentMainScreen(
     onOpenAsObject: (UiContentItem.Item) -> Unit,
     onBinClick: () -> Unit,
     uiContentState: UiContentState,
-    onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
+    onTitleClick: () -> Unit,
+    onSyncStatusClick: (SpaceSyncAndP2PStatusState) -> Unit,
     moveToBin: (UiContentItem.Item) -> Unit,
     undoMoveToBin: (Id) -> Unit,
     onDismissSnackbar: () -> Unit,
     canPaginate: Boolean,
-    onUpdateLimitSearch: () -> Unit,
-    onShareButtonClicked: () -> Unit,
-    onHomeButtonClicked: () -> Unit
+    onUpdateLimitSearch: () -> Unit
 ) {
     var isSearchEmpty by remember { mutableStateOf(true) }
     val snackBarHostState = remember { SnackbarHostState() }
@@ -209,29 +206,6 @@ fun AllContentMainScreen(
         modifier = Modifier
             .fillMaxSize(),
         containerColor = colorResource(id = R.color.background_primary),
-        bottomBar = {
-            Box(
-                modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                    Modifier
-                        .windowInsetsPadding(WindowInsets.navigationBars)
-                        .padding(bottom = 20.dp)
-                        .fillMaxWidth()
-                else
-                    Modifier
-                        .padding(bottom = 20.dp)
-                        .fillMaxWidth()
-            ) {
-                BottomMenu(
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    onGlobalSearchClicked = onGlobalSearchClicked,
-                    onAddDocClicked = onAddDocClicked,
-                    onCreateObjectLongClicked = onCreateObjectLongClicked,
-                    uiBottomMenu = uiBottomMenu,
-                    onShareButtonClicked = onShareButtonClicked,
-                    onHomeButtonClicked = onHomeButtonClicked
-                )
-            }
-        },
         topBar = {
             Column(
                 modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
@@ -243,11 +217,14 @@ fun AllContentMainScreen(
             ) {
                 AllContentTopBarContainer(
                     titleState = uiTitleState,
+                    uiSyncStatusBadgeState = uiSyncStatusBadgeState,
                     uiMenuState = uiMenuState,
                     onSortClick = onSortClick,
                     onModeClick = onModeClick,
                     onBinClick = onBinClick,
-                    onBackClick = onBackClicked
+                    onBackClick = onBackClicked,
+                    onTitleClick = onTitleClick,
+                    onSyncStatusClick = onSyncStatusClick
                 )
                 AllContentTabs(tabsViewState = uiTabsState) { tab ->
                     onTabClick(tab)
@@ -279,72 +256,63 @@ fun AllContentMainScreen(
                         .padding(paddingValues)
                         .background(color = colorResource(id = R.color.background_primary))
 
-            Box(
-                modifier = contentModifier,
-                contentAlignment = Alignment.Center
-            ) {
-                when (uiItemsState) {
-                    UiItemsState.Empty -> {
-                        when (uiContentState) {
-                            is UiContentState.Error -> {
-                                ErrorState(uiContentState.message)
-                            }
+            Box(modifier = contentModifier) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    when (uiItemsState) {
+                        UiItemsState.Empty -> {
+                            when (uiContentState) {
+                                is UiContentState.Error -> {
+                                    ErrorState(uiContentState.message)
+                                }
 
-                            is UiContentState.Idle -> {
-                                // Do nothing.
-                            }
+                                is UiContentState.Idle -> {
+                                    // Do nothing.
+                                }
 
-                            UiContentState.InitLoading -> {
-                                LoadingState()
-                            }
+                                UiContentState.InitLoading -> {
+                                    LoadingState()
+                                }
 
-                            UiContentState.Paging -> {}
-                            UiContentState.Empty -> {
-                                EmptyState(isSearchEmpty = isSearchEmpty)
+                                UiContentState.Paging -> {}
+                                UiContentState.Empty -> {
+                                    EmptyState(isSearchEmpty = isSearchEmpty)
+                                }
                             }
                         }
-                    }
 
-                    is UiItemsState.Content -> {
-                        ContentItems(
-                            uiItemsState = uiItemsState,
-                            onItemClicked = onItemClicked,
-                            uiContentState = uiContentState,
-                            moveToBin = moveToBin,
-                            canPaginate = canPaginate,
-                            onUpdateLimitSearch = onUpdateLimitSearch,
-                            onOpenAsObject = onOpenAsObject
-                        )
+                        is UiItemsState.Content -> {
+                            ContentItems(
+                                uiItemsState = uiItemsState,
+                                onItemClicked = onItemClicked,
+                                uiContentState = uiContentState,
+                                moveToBin = moveToBin,
+                                canPaginate = canPaginate,
+                                onUpdateLimitSearch = onUpdateLimitSearch,
+                                onOpenAsObject = onOpenAsObject
+                            )
+                        }
                     }
                 }
+                CircularFabButton(
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(
+                            end = dimensionResource(id = com.anytypeio.anytype.core_ui.R.dimen.nav_fab_margin),
+                            bottom = dimensionResource(id = com.anytypeio.anytype.core_ui.R.dimen.nav_fab_margin)
+                        ),
+                    iconRes = com.anytypeio.anytype.core_ui.R.drawable.ic_create_obj_32,
+                    contentDescription = stringResource(id = R.string.create),
+                    onClick = onAddDocClicked,
+                    onLongClick = onCreateObjectLongClicked
+                )
             }
         },
         snackbarHost = {
             SnackbarHost(hostState = snackBarHostState)
         }
-    )
-}
-
-@Composable
-fun BottomMenu(
-    uiBottomMenu: NavPanelState,
-    modifier: Modifier = Modifier,
-    onGlobalSearchClicked: () -> Unit,
-    onAddDocClicked: () -> Unit,
-    onCreateObjectLongClicked: () -> Unit,
-    onShareButtonClicked: () -> Unit,
-    onHomeButtonClicked: () -> Unit
-) {
-    val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
-    if (isImeVisible) return
-    BottomNavigationMenu(
-        modifier = modifier,
-        onSearchClick = onGlobalSearchClicked,
-        onAddDocClick = onAddDocClicked,
-        onAddDocLongClick = onCreateObjectLongClicked,
-        onShareButtonClicked = onShareButtonClicked,
-        state = uiBottomMenu,
-        onHomeButtonClicked = onHomeButtonClicked
     )
 }
 
@@ -558,6 +526,7 @@ fun PreviewMainScreen() {
             ), selectedTab = AllContentTab.LISTS
         ),
         uiMenuState = UiMenuState.Hidden,
+        uiSyncStatusBadgeState = UiSyncStatusBadgeState.Hidden,
         onTabClick = {},
         onQueryChanged = {},
         onModeClick = {},
@@ -565,19 +534,17 @@ fun PreviewMainScreen() {
         onItemClicked = {},
         onBinClick = {},
         uiContentState = UiContentState.Error("Error message"),
-        onGlobalSearchClicked = {},
         onAddDocClicked = {},
         onCreateObjectLongClicked = {},
         onBackClicked = {},
+        onTitleClick = {},
+        onSyncStatusClick = {},
         moveToBin = {},
-        uiBottomMenu = NavPanelState.Init,
         uiSnackbarState = UiSnackbarState.Hidden,
         undoMoveToBin = {},
         onDismissSnackbar = {},
         canPaginate = true,
         onUpdateLimitSearch = {},
-        onShareButtonClicked = {},
-        onHomeButtonClicked = {},
         onOpenAsObject = {}
     )
 }

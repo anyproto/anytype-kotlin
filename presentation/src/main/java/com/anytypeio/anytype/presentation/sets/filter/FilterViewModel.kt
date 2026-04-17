@@ -397,7 +397,7 @@ open class FilterViewModel(
     ) {
         viewModelScope.launch {
             val spaceId = SpaceId(spaceManager.get())
-            val spaceUxType = spaceViews.get(spaceId)?.spaceUxType
+            val isOneToOneSpace = spaceViews.get(spaceId)?.isOneToOneSpace == true
             searchObjects(
                 SearchObjects.Params(
                     // TODO DROID-2916 Provide space id to vm params
@@ -405,7 +405,7 @@ open class FilterViewModel(
                     sorts = ObjectSearchConstants.sortAddObjectToFilter,
                     filters = ObjectSearchConstants.filterAddObjectToFilter(
                         limitObjectTypes = limitObjectTypes,
-                        spaceUxType = spaceUxType
+                        isOneToOneSpace = isOneToOneSpace
                     ),
                     fulltext = SearchObjects.EMPTY_TEXT,
                     offset = SearchObjects.INIT_OFFSET,

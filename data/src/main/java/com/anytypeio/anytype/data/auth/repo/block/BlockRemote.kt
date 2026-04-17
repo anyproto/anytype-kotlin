@@ -351,7 +351,7 @@ interface BlockRemote {
     ): Payload
 
     suspend fun setSpaceDetails(space: SpaceId, details: Struct)
-    suspend fun setHomepage(command: Command.SetHomepage): Id
+    suspend fun setHomepage(command: Command.SetHomepage)
 
     suspend fun deleteSpace(space: SpaceId)
     suspend fun spaceSetOrder(spaceViewId: Id, spaceViewOrder: List<Id>): List<Id>
@@ -403,6 +403,8 @@ interface BlockRemote {
     suspend fun removeObjectFromCollection(command : Command.RemoveObjectFromCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
     suspend fun nodeUsage(): NodeUsageInfo
+    suspend fun fileSetAutoDownload(enabled: Boolean, wifiOnly: Boolean)
+    suspend fun fileAutoDownloadSetLimit(sizeLimitMebibytes: Long)
     suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload
 
     suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload
@@ -432,7 +434,7 @@ interface BlockRemote {
 
     suspend fun removeSpaceMembers(space: SpaceId, identities: List<Id>)
 
-    suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>)
+    suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>, permissions: SpaceMemberPermissions)
 
     suspend fun changeSpaceMemberPermissions(
         space: SpaceId,

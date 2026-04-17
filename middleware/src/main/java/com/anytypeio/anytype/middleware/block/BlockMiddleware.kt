@@ -747,8 +747,8 @@ class BlockMiddleware(
         )
     }
 
-    override suspend fun setHomepage(command: Command.SetHomepage): Id {
-        return middleware.workspaceSetDashboard(command)
+    override suspend fun setHomepage(command: Command.SetHomepage) {
+        middleware.workspaceSetHomepage(command)
     }
 
     override suspend fun deleteSpace(space: SpaceId) {
@@ -895,6 +895,14 @@ class BlockMiddleware(
         return middleware.nodeUsage()
     }
 
+    override suspend fun fileSetAutoDownload(enabled: Boolean, wifiOnly: Boolean) {
+        middleware.fileSetAutoDownload(enabled, wifiOnly)
+    }
+
+    override suspend fun fileAutoDownloadSetLimit(sizeLimitMebibytes: Long) {
+        middleware.fileAutoDownloadSetLimit(sizeLimitMebibytes)
+    }
+
     override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {
         return middleware.setInternalFlags(command)
     }
@@ -969,10 +977,11 @@ class BlockMiddleware(
         )
     }
 
-    override suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>) {
+    override suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>, permissions: SpaceMemberPermissions) {
         middleware.addSpaceMembers(
             space = space,
-            identities = identities
+            identities = identities,
+            permissions = permissions
         )
     }
 

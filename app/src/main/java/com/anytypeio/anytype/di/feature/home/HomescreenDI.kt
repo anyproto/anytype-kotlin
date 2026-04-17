@@ -45,6 +45,7 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
+import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.NotificationsChannel
@@ -64,6 +65,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
+import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import dagger.Binds
 import dagger.BindsInstance
@@ -92,6 +94,7 @@ interface HomeScreenComponent {
     }
 
     fun inject(fragment: WidgetsScreenFragment)
+    fun inject(fragment: WidgetOverlayFragment)
 }
 
 @Module
@@ -236,6 +239,17 @@ object HomeScreenModule {
     @PerScreen
     @Provides
     fun provideSpaceInviteResolver(): SpaceInviteResolver = DefaultSpaceInviteResolver
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun setHomepage(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetHomepage = SetHomepage(
+        repo = repo,
+        dispatchers = dispatchers
+    )
 
     @JvmStatic
     @PerScreen

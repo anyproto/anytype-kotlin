@@ -810,8 +810,8 @@ class BlockDataRepository(
         )
     }
 
-    override suspend fun setHomepage(command: Command.SetHomepage): Id {
-        return remote.setHomepage(command)
+    override suspend fun setHomepage(command: Command.SetHomepage) {
+        remote.setHomepage(command)
     }
 
     override suspend fun spaceOpen(space: Id, withChat: Boolean): Config = remote.spaceOpen(
@@ -932,6 +932,14 @@ class BlockDataRepository(
         return remote.nodeUsage()
     }
 
+    override suspend fun fileSetAutoDownload(enabled: Boolean, wifiOnly: Boolean) {
+        remote.fileSetAutoDownload(enabled, wifiOnly)
+    }
+
+    override suspend fun fileAutoDownloadSetLimit(sizeLimitMebibytes: Long) {
+        remote.fileAutoDownloadSetLimit(sizeLimitMebibytes)
+    }
+
     override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {
         return remote.setInternalFlags(command)
     }
@@ -1006,10 +1014,11 @@ class BlockDataRepository(
         )
     }
 
-    override suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>) {
+    override suspend fun addSpaceMembers(space: SpaceId, identities: List<Id>, permissions: SpaceMemberPermissions) {
         remote.addSpaceMembers(
             space = space,
-            identities = identities
+            identities = identities,
+            permissions = permissions
         )
     }
 

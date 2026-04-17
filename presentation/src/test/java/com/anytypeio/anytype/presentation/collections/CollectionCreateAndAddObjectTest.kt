@@ -110,7 +110,8 @@ class CollectionCreateAndAddObjectTest : ObjectSetViewModelTestSetup() {
             emojiSuggester = emojiSuggester,
             createBlock = mock(),
             stringResourceProvider = stringResourceProvider,
-            getDefaultObjectType = getDefaultObjectType
+            getDefaultObjectType = getDefaultObjectType,
+            addDiscussion = mock()
         )
     }
 

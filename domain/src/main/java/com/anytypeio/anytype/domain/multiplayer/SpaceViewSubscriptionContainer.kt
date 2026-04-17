@@ -139,6 +139,7 @@ interface SpaceViewSubscriptionContainer {
                     keys = listOf(
                         Relations.ID,
                         Relations.SPACE_UX_TYPE,
+                        Relations.SPACE_TYPE,
                         Relations.TARGET_SPACE_ID,
                         Relations.CHAT_ID,
                         Relations.SPACE_ACCOUNT_STATUS,
@@ -160,7 +161,8 @@ interface SpaceViewSubscriptionContainer {
                         Relations.PUSH_NOTIFICATION_FORCE_ALL_IDS,
                         Relations.PUSH_NOTIFICATION_FORCE_MENTION_IDS,
                         Relations.PUSH_NOTIFICATION_FORCE_MUTE_IDS,
-                        Relations.ONE_TO_ONE_IDENTITY
+                        Relations.ONE_TO_ONE_IDENTITY,
+                        Relations.SPACE_HOMEPAGE
                     ),
                     filters = listOf(
                         DVFilter(

@@ -30,9 +30,23 @@ data class OsWidgetSpaceEntity(
     val iconColorIndex: Int,
 
     /**
-     * The SpaceUxType code (DATA=0, CHAT=1, STREAM=2, ONE_TO_ONE=3).
+     * Whether this is a 1-1 (DM) space. Drives icon shape in the widget.
+     *
+     * Defaults to false so existing cached payloads (which stored the legacy
+     * `spaceUxType: Int` ordinal) deserialize cleanly via `ignoreUnknownKeys`
+     * — the correct value is re-populated by the next `sync()` pass.
      */
-    val spaceUxType: Int
+    val isOneToOneSpace: Boolean = false,
+
+    /**
+     * Legacy ordinal retained for backward-compat deserialization of cached payloads.
+     */
+    val spaceUxType: Int = 0,
+
+    /**
+     * The space order string for pinned spaces, null if not pinned.
+     */
+    val spaceOrder: String? = null
 )
 
 /**

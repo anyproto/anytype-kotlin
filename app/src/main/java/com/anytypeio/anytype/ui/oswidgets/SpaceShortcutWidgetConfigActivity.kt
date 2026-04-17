@@ -87,6 +87,11 @@ class SpaceShortcutWidgetConfigActivity : AppCompatActivity() {
                                 is SpaceShortcutWidgetConfigViewModel.Command.ShowError -> {
                                     Toast.makeText(this@SpaceShortcutWidgetConfigActivity, "Error: ${command.message}", Toast.LENGTH_LONG).show()
                                 }
+                                is SpaceShortcutWidgetConfigViewModel.Command.FinishWithFailure -> {
+                                    Toast.makeText(this@SpaceShortcutWidgetConfigActivity, "Error: ${command.message}", Toast.LENGTH_LONG).show()
+                                    setResult(Activity.RESULT_CANCELED)
+                                    finish()
+                                }
                             }
                         }
                     }

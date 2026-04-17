@@ -261,8 +261,8 @@ open class ObjectSearchViewModel(
         space = vmParams.space,
         limit = SEARCH_LIMIT,
         filters = buildList {
-            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
-            addAll(ObjectSearchConstants.filterSearchObjects(spaceUxType = spaceUxType))
+            val isOneToOneSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
+            addAll(ObjectSearchConstants.filterSearchObjects(isOneToOneSpace = isOneToOneSpace))
         },
         sorts = ObjectSearchConstants.sortsSearchObjects,
         fulltext = EMPTY_QUERY,

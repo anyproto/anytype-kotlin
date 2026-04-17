@@ -54,6 +54,7 @@ import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
+import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
@@ -82,11 +83,13 @@ import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.feature_vault.ui.AlertScreenModals
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
+import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -157,7 +160,9 @@ class ChatFragment : Fragment() {
                         onBackButtonClicked = {
                             vm.onBackButtonPressed(isExitingVault = popUpToVault)
                         },
-                        onSpaceNameClicked = vm::onSpaceIconClicked,
+                        onTitleClick = {
+                            WidgetOverlayFragment.show(parentFragmentManager, space)
+                        },
                         onSpaceIconClicked = vm::onSpaceIconClicked,
                         onInviteMembersClicked = vm::onInviteMembersClicked,
                         onEditInfo = vm::onEditInfo,
@@ -165,7 +170,8 @@ class ChatFragment : Fragment() {
                         onCopyLink = vm::onCopyChatLink,
                         onMoveToBin = vm::onMoveToBin,
                         onNotificationSettingChanged = vm::onNotificationSettingChanged,
-                        onSearchClick = vm::onSearchTriggered
+                        onSearchClick = vm::onSearchTriggered,
+                        onSpaceSettingsClicked = vm::onOpenSpaceSettings
                     )
                 }
             ) { paddingValues ->
@@ -582,6 +588,25 @@ class ChatFragment : Fragment() {
                             toast(
                                 getString(R.string.chat_pinned_as_widget_success)
                             )
+                        }
+
+                        is ChatViewModel.ViewModelCommand.CopyLinkToClipboard -> {
+                            requireContext().copyPlainTextToClipboard(
+                                plainText = command.link,
+                                label = "Object link",
+                                successToast = getString(R.string.link_copied)
+                            )
+                        }
+
+                        is ChatViewModel.ViewModelCommand.OpenSpaceSettings -> {
+                            runCatching {
+                                findNavController().navigate(
+                                    R.id.action_open_space_settings_from_chat,
+                                    SpaceSettingsFragment.args(space = command.space)
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while opening space settings from chat")
+                            }
                         }
                     }
                 }

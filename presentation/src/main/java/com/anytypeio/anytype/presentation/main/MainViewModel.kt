@@ -20,7 +20,7 @@ import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.misc.navigation
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.ext.shouldNavigateDirectlyToChat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.presentation.BuildConfig
@@ -52,11 +52,13 @@ import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
+import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.vault.SetSpacesIntroductionShown
 import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.home.SpaceHomepageResolver
 import com.anytypeio.anytype.presentation.main.MainViewModel.Command.ShowDeletedAccountScreen
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.notifications.NotificationAction
@@ -111,6 +113,7 @@ class MainViewModel(
     private val chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer,
     private val participantSubscriptionContainer: ParticipantSubscriptionContainer,
     private val userSettingsRepository: UserSettingsRepository,
+    private val resolveSpaceHomepage: ResolveSpaceHomepage,
     private val debugRunProfiler: DebugRunProfiler
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
@@ -672,13 +675,54 @@ class MainViewModel(
         
         suspend fun emitNavigationCommand(config: Config) {
             val spaceView = spaceViews.get(SpaceId(targetSpace))
-            val spaceUxType = spaceView?.spaceUxType
+            val shouldNavigateDirectlyToChat = spaceView?.shouldNavigateDirectlyToChat == true
             val chatId = config.spaceChatId
-            Timber.d("OS widget navigation: space=$targetSpace, uxType=$spaceUxType, chatId=$chatId")
+            Timber.d(
+                "OS widget navigation: space=$targetSpace, " +
+                    "oneToOne=$shouldNavigateDirectlyToChat, chatId=$chatId"
+            )
+
+            // When the space has an explicit-object homepage configured, resolve it
+            // and open it directly (skipping the widgets back-stack entry).
+            if (!shouldNavigateDirectlyToChat &&
+                SpaceHomepageResolver.shouldSkipWidgetInjection(spaceView)
+            ) {
+                val homepageResult = resolveSpaceHomepage.async(
+                    ResolveSpaceHomepage.Params(space = SpaceId(targetSpace))
+                ).getOrNull()
+                if (homepageResult is ResolveSpaceHomepage.Result.Object) {
+                    // Chat homepages must go through the chat-screen nav graph
+                    // rather than `proceedWithOpenObjectNavigation`, which rejects
+                    // `OpenChat` with a toast.
+                    when (val nav = homepageResult.navigation) {
+                        is OpenObjectNavigation.OpenChat -> {
+                            commands.emit(
+                                Command.Deeplink.DeepLinkToSpace(
+                                    space = targetSpace,
+                                    shouldNavigateDirectlyToChat = true,
+                                    chatId = nav.target
+                                )
+                            )
+                        }
+                        else -> {
+                            commands.emit(
+                                Command.Deeplink.DeepLinkToObjectFromWidget(
+                                    space = targetSpace,
+                                    obj = spaceView?.homepage.orEmpty(),
+                                    navigation = nav,
+                                    openTargetDirectly = true
+                                )
+                            )
+                        }
+                    }
+                    return
+                }
+            }
+
             commands.emit(
                 Command.Deeplink.DeepLinkToSpace(
                     space = targetSpace,
-                    spaceUxType = spaceUxType,
+                    shouldNavigateDirectlyToChat = shouldNavigateDirectlyToChat,
                     chatId = chatId
                 )
             )
@@ -723,7 +767,8 @@ class MainViewModel(
                     Command.Deeplink.DeepLinkToObjectFromWidget(
                         space = targetSpace,
                         obj = objectId,
-                        navigation = navigation
+                        navigation = navigation,
+                        openTargetDirectly = hasExplicitObjectHomepage(SpaceId(targetSpace))
                     )
                 )
             }
@@ -751,13 +796,7 @@ class MainViewModel(
             .set(targetSpace)
             .onSuccess { config ->
                 val home = config.home
-                val spaceView = spaceViews
-                    .get(deeplink.space)
-                val chat = spaceView?.chatId?.ifEmpty { null }
-                val sideEffect = Command.Deeplink.DeepLinkToObject.SideEffect.SwitchSpace(
-                    chat = chat,
-                    home = home
-                )
+                val sideEffect = Command.Deeplink.DeepLinkToObject.SideEffect.SwitchSpace(home = home)
                 viewModelScope.sendEvent(
                     analytics = analytics,
                     eventName = EventsDictionary.openObjectByLink,
@@ -772,11 +811,23 @@ class MainViewModel(
                         navigation = result.obj.navigation(),
                         sideEffect = sideEffect,
                         space = deeplink.space.id,
-                        obj = deeplink.obj
+                        obj = deeplink.obj,
+                        openTargetDirectly = hasExplicitObjectHomepage(deeplink.space)
                     ),
                 )
             }
     }
+
+    /**
+     * Returns `true` when the given space has an explicit-object homepage configured
+     * (see DROID-4388). When `true`, deep-link/push back-stack handlers skip the
+     * widgets-screen injection so the back stack ends at [Vault, Target].
+     *
+     * Falls back to `false` when the SpaceView is not yet loaded — conservative
+     * default preserves the legacy [Vault, Widgets, Target] shape.
+     */
+    private fun hasExplicitObjectHomepage(space: SpaceId): Boolean =
+        SpaceHomepageResolver.shouldSkipWidgetInjection(spaceViews.get(space))
 
     fun onOpenChatTriggeredByPush(chatId: String, spaceId: String) {
         Timber.d("onOpenChatTriggeredByPush: $chatId, $spaceId")
@@ -789,7 +840,8 @@ class MainViewModel(
                             Command.LaunchChat(
                                 space = spaceId,
                                 chat = chatId,
-                                triggeredByPush = true
+                                triggeredByPush = true,
+                                openTargetDirectly = hasExplicitObjectHomepage(SpaceId(spaceId))
                             )
                         )
                     }.onFailure {
@@ -804,7 +856,8 @@ class MainViewModel(
                     Command.LaunchChat(
                         space = spaceId,
                         chat = chatId,
-                        triggeredByPush = true
+                        triggeredByPush = true,
+                        openTargetDirectly = hasExplicitObjectHomepage(SpaceId(spaceId))
                     )
                 )
             }
@@ -961,7 +1014,8 @@ class MainViewModel(
         data class LaunchChat(
             val space: Id,
             val chat: Id,
-            val triggeredByPush: Boolean = false
+            val triggeredByPush: Boolean = false,
+            val openTargetDirectly: Boolean = false
         ) : Command()
 
         data class Navigate(val destination: OpenObjectNavigation) : Command()
@@ -972,14 +1026,11 @@ class MainViewModel(
                 val obj: Id,
                 val space: Id,
                 val navigation: OpenObjectNavigation,
-                val sideEffect: SideEffect? = null
+                val sideEffect: SideEffect? = null,
+                val openTargetDirectly: Boolean = false
             ) : Deeplink() {
                 sealed class SideEffect {
-                    data class SwitchSpace(
-                        val home: Id,
-                        val chat: Id? = null,
-                        val spaceUxType: SpaceUxType? = null
-                    ) : SideEffect()
+                    data class SwitchSpace(val home: Id) : SideEffect()
                 }
             }
 
@@ -997,11 +1048,14 @@ class MainViewModel(
 
             /**
              * Deep link from OS home screen widget to open a specific space.
-             * Navigation depends on spaceUxType - CHAT/ONE_TO_ONE go to chat, DATA goes to home.
+             *
+             * One-to-one spaces open the chat directly; every other channel
+             * opens the space home, which then resolves the homepage via the
+             * homepage-set logic (see DROID-4388 / GO-6752).
              */
             data class DeepLinkToSpace(
                 val space: Id,
-                val spaceUxType: SpaceUxType? = null,
+                val shouldNavigateDirectlyToChat: Boolean = false,
                 val chatId: Id? = null
             ) : Deeplink()
 
@@ -1012,7 +1066,8 @@ class MainViewModel(
             data class DeepLinkToObjectFromWidget(
                 val space: Id,
                 val obj: Id,
-                val navigation: OpenObjectNavigation
+                val navigation: OpenObjectNavigation,
+                val openTargetDirectly: Boolean = false
             ) : Deeplink()
 
             /**

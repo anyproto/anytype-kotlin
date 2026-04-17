@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -57,16 +56,12 @@ class NewCreateObjectViewModel @Inject constructor(
                     storeOfObjectTypes.observe(),
                     spaceViewContainer.observe(
                         space = vmParams.spaceId,
-                        keys = listOf(Relations.SPACE_UX_TYPE),
-                        mapper = { it.spaceUxType }
+                        keys = listOf(Relations.SPACE_TYPE, Relations.SPACE_UX_TYPE),
+                        mapper = { it.isOneToOneSpace }
                     )
-                ) { allTypes, spaceUxType ->
-                    // Determine if this is a chat space for sorting priority
-                    val isChatSpace = spaceUxType == SpaceUxType.CHAT ||
-                                      spaceUxType == SpaceUxType.ONE_TO_ONE
-
+                ) { allTypes, isOneToOneSpace ->
                     // Get excluded layouts based on space type
-                    val systemLayouts = SupportedLayouts.getSystemLayouts(spaceUxType)
+                    val systemLayouts = SupportedLayouts.getSystemLayouts(isOneToOneSpace)
                     val excludedLayouts = systemLayouts + SupportedLayouts.dateLayouts + listOf(
                         ObjectType.Layout.OBJECT_TYPE,
                         ObjectType.Layout.PARTICIPANT
@@ -81,9 +76,11 @@ class NewCreateObjectViewModel @Inject constructor(
                         !excludedLayouts.contains(type.recommendedLayout)
                     }
 
-                    // Sort using user's custom widget order, then map to UI model
+                    // Sort using user's custom widget order, then map to UI model.
+                    // CHAT-type spaces no longer exist, so the isChatSpace sort flag
+                    // collapses to isOneToOneSpace — the only remaining special case.
                     filteredTypes
-                        .sortByTypePriority(isChatSpace)
+                        .sortByTypePriority(isChatSpace = isOneToOneSpace)
                         .map { type ->
                             ObjectTypeItem(
                                 typeKey = type.uniqueKey,

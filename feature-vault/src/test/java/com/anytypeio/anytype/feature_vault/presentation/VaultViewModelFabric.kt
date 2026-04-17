@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -24,12 +25,15 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
+import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.network.NetworkModeProvider
+import com.anytypeio.anytype.domain.payments.GetMembershipFeatures
 import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
@@ -84,7 +88,13 @@ object VaultViewModelFabric {
         createSpace: CreateSpace = mock(),
         deepLinkResolver: DeepLinkResolver = mock(),
         osWidgetSpacesSync: OsWidgetSpacesSync = mock(),
-        osWidgetDataViewSync: OsWidgetDataViewSync = mock()
+        osWidgetDataViewSync: OsWidgetDataViewSync = mock(),
+        networkModeProvider: NetworkModeProvider = mock(),
+        getMembershipFeatures: GetMembershipFeatures = mock(),
+        resolveSpaceHomepage: ResolveSpaceHomepage = mock(),
+        userSettingsRepository: UserSettingsRepository = mock {
+            on { observeCompactModeEnabled() }.thenReturn(flowOf(false))
+        }
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,
@@ -118,6 +128,10 @@ object VaultViewModelFabric {
         deepLinkResolver = deepLinkResolver,
         configStorage = configStorage,
         osWidgetSpacesSync = osWidgetSpacesSync,
-        osWidgetDataViewSync = osWidgetDataViewSync
+        osWidgetDataViewSync = osWidgetDataViewSync,
+        networkModeProvider = networkModeProvider,
+        getMembershipFeatures = getMembershipFeatures,
+        resolveSpaceHomepage = resolveSpaceHomepage,
+        userSettingsRepository = userSettingsRepository
     )
 }

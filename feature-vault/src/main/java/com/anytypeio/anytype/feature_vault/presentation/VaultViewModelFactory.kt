@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -25,6 +26,7 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
+import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
@@ -74,7 +76,9 @@ class VaultViewModelFactory @Inject constructor(
     private val osWidgetSpacesSync: OsWidgetSpacesSync,
     private val osWidgetDataViewSync: OsWidgetDataViewSync,
     private val networkModeProvider: NetworkModeProvider,
-    private val getMembershipFeatures: GetMembershipFeatures
+    private val getMembershipFeatures: GetMembershipFeatures,
+    private val resolveSpaceHomepage: ResolveSpaceHomepage,
+    private val userSettingsRepository: UserSettingsRepository
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -114,6 +118,8 @@ class VaultViewModelFactory @Inject constructor(
         osWidgetSpacesSync = osWidgetSpacesSync,
         osWidgetDataViewSync = osWidgetDataViewSync,
         networkModeProvider = networkModeProvider,
-        getMembershipFeatures = getMembershipFeatures
+        getMembershipFeatures = getMembershipFeatures,
+        resolveSpaceHomepage = resolveSpaceHomepage,
+        userSettingsRepository = userSettingsRepository
     ) as T
 }

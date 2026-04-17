@@ -181,6 +181,9 @@
             app:destination="@id/vaultScreen"
             app:popUpTo="@+id/main_navigation"
             app:popUpToInclusive="false" />
+        <action
+            android:id="@+id/action_open_space_settings_from_chat"
+            app:destination="@id/spaceSettingsScreen" />
     </fragment>
 
     <fragment
@@ -336,6 +339,10 @@
             app:argType="string[]"
             app:nullable="true"
             android:defaultValue="@null" />
+        <argument
+            android:name="writersLimit"
+            app:argType="integer"
+            android:defaultValue="0" />
         <action
             android:id="@+id/exitToVaultAction"
             app:popUpTo="@+id/vaultScreen"

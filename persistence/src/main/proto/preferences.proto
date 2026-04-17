@@ -36,6 +36,9 @@ message SpacePreference {
   repeated string expandedWidgetIds = 8;
   repeated string collapsedSectionIds = 9;
   optional SectionSettings sectionSettings = 10;
+  optional bool homepagePickerDismissed = 11;
+  optional bool createHomeDismissed = 12;
+  optional bool inviteMembersDismissed = 13;
 }
 
 message GlobalSearchHistoryProto {

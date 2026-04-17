@@ -11,6 +11,8 @@ sealed class DateEvent {
     sealed class TopToolbar : DateEvent() {
         data class OnSyncStatusClick(val status: SpaceSyncAndP2PStatusState) : TopToolbar()
         data class OnCalendarClick(val timestampInSeconds: TimestampInSeconds) : TopToolbar()
+        data object OnBackClick : TopToolbar()
+        data object OnTitleClick : TopToolbar()
     }
 
     sealed class Header : DateEvent() {

@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.ui.home
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -18,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -28,7 +25,6 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
@@ -42,8 +38,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.WidgetSectionType
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
+import com.anytypeio.anytype.core_ui.widgets.CircularFabButton
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
@@ -67,49 +62,6 @@ import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
-
-@Composable
-fun CircularFabButton(
-    @DrawableRes iconRes: Int,
-    contentDescription: String,
-    modifier: Modifier = Modifier,
-    isEnabled: Boolean = true,
-    onClick: () -> Unit,
-    onLongClick: (() -> Unit)? = null,
-) {
-    Box(
-        modifier = modifier
-            .size(dimensionResource(R.dimen.nav_fab_button_size))
-            .shadow(
-                elevation = 20.dp,
-                shape = CircleShape,
-                clip = false
-            )
-            .background(
-                color = colorResource(id = R.color.navigation_panel),
-                shape = CircleShape
-            )
-            .alpha(if (isEnabled) 1f else 0.5f)
-            .then(
-                if (onLongClick != null) {
-                    Modifier.noRippleCombinedClickable(
-                        enabled = isEnabled,
-                        onLongClicked = onLongClick,
-                        onClick = onClick,
-                    )
-                } else {
-                    Modifier.noRippleClickable(onClick = onClick)
-                }
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            painter = painterResource(id = iconRes),
-            contentDescription = contentDescription
-        )
-    }
-}
-
 @Composable
 fun WidgetsScreen(
     viewModel: HomeScreenViewModel
@@ -120,6 +72,7 @@ fun WidgetsScreen(
     val hapticFeedback = rememberReorderHapticFeedback()
 
     val mode = viewModel.mode.collectAsState().value
+    val spaceView = viewModel.spaceViewState.collectAsState().value
     val pinnedWidgets = viewModel.pinnedViews.collectAsState().value
     val typeWidgets = viewModel.typeViews.collectAsState().value
     val unreadWidget = viewModel.unreadView.collectAsState().value
@@ -326,6 +279,19 @@ fun WidgetsScreen(
                 bottom = bottomContentPadding
             )
         ) {
+
+            // Space profile header
+            if (spaceView is HomeScreenViewModel.SpaceViewState.Success) {
+                item(key = "space_profile_header") {
+                    SpaceProfileHeader(
+                        spaceIcon = spaceView.spaceIcon,
+                        spaceName = spaceView.spaceName,
+                        globalName = spaceView.memberGlobalName,
+                        identity = spaceView.memberIdentity,
+                        spaceAccessType = spaceView.spaceAccessType
+                    )
+                }
+            }
 
             // Chat widget pinned at the top for single-chat spaces (CHAT, ONE_TO_ONE)
             if (chatWidget is WidgetView.SpaceChat) {

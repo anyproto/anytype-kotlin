@@ -38,6 +38,7 @@ import com.anytypeio.anytype.feature_date.ui.DateMainScreen
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectCommand
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
@@ -203,6 +204,17 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         toast("Failed to open URL")
                     }
                 }
+
+                DateObjectCommand.OpenWidgets -> {
+                    runCatching {
+                        WidgetOverlayFragment.show(
+                            parentFragmentManager,
+                            space
+                        )
+                    }.onFailure { e ->
+                        Timber.e(e, "Error opening widget overlay from date object")
+                    }
+                }
             }
         }
     }
@@ -237,7 +249,6 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     uiHeaderState = vm.uiHeaderState.collectAsStateWithLifecycle().value,
                     uiFieldsState = vm.uiFieldsState.collectAsStateWithLifecycle().value,
                     uiObjectsListState = vm.uiObjectsListState.collectAsStateWithLifecycle().value,
-                    uiNavigationWidget = vm.uiNavigationWidget.collectAsStateWithLifecycle().value,
                     uiFieldsSheetState = vm.uiFieldsSheetState.collectAsStateWithLifecycle().value,
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,

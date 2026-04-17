@@ -72,7 +72,8 @@ fun ChatTopToolbar(
     onMoveToBin: () -> Unit,
     onProperties: () -> Unit = {},
     onNotificationSettingChanged: (NotificationSetting) -> Unit,
-    onSearchClick: () -> Unit = {}
+    onSearchClick: () -> Unit = {},
+    onSpaceSettingsClicked: () -> Unit = {}
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
 
@@ -284,7 +285,7 @@ fun ChatTopToolbar(
                         showDropdownMenu = false
                     },
                     onChannelSettingsClick = {
-                        onSpaceIconClicked()
+                        onSpaceSettingsClicked()
                         showDropdownMenu = false
                     }
                 )

@@ -74,9 +74,11 @@ import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -143,7 +145,10 @@ class VaultViewModel(
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
-    val commands = MutableSharedFlow<VaultCommand>(replay = 1)
+    val commands = MutableSharedFlow<VaultCommand>(replay = 0)
+
+    private val _inviteCommands = Channel<VaultCommand>(capacity = Channel.BUFFERED)
+    val inviteCommands = _inviteCommands.receiveAsFlow()
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showCreateChannelMenu = MutableStateFlow(false)
     val notificationError = MutableStateFlow<String?>(null)
@@ -967,7 +972,7 @@ class VaultViewModel(
                     }
 
                     is DeepLinkResolver.Action.Invite -> {
-                        commands.emit(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
+                        _inviteCommands.send(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
                     }
 
                     else -> {
@@ -976,7 +981,7 @@ class VaultViewModel(
                         val fileKey = spaceInviteResolver.parseFileKey(qrCode)
                         val contentId = spaceInviteResolver.parseContentId(qrCode)
                         if (fileKey != null && contentId != null) {
-                            commands.emit(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
+                            _inviteCommands.send(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
                         } else {
                             Timber.e("Failed to parse QR code: invalid format")
                             vaultErrors.value = VaultErrors.QrCodeIsNotValid

@@ -2079,6 +2079,8 @@ Merci de décrire ici vos besoins spécifiques.</string>
     </string>
     <string name="private_local_yours_forever">Chiffré, local, à vous pour toujours</string>
     <string name="private_channel">Direct channel</string>
+    <string name="space_header_private_channel">Private channel</string>
+    <string name="space_header_group_channel">Group channel</string>
     <string name="wallpaper_item_space_icon_color">Couleur par défaut</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Préférences</string>

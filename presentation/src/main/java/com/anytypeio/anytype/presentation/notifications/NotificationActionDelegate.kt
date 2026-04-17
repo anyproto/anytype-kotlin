@@ -4,6 +4,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceMemberByIdentity
 import com.anytypeio.anytype.domain.notifications.ReplyNotifications
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
+import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
@@ -22,7 +23,8 @@ interface NotificationActionDelegate {
         private val replyNotifications: ReplyNotifications,
         private val systemNotificationService: SystemNotificationService,
         private val spaceManager: SpaceManager,
-        private val saveCurrentSpace: SaveCurrentSpace
+        private val saveCurrentSpace: SaveCurrentSpace,
+        private val resolveSpaceHomepage: ResolveSpaceHomepage
     ) : NotificationActionDelegate {
 
         override val dispatcher: MutableSharedFlow<NotificationCommand> = MutableSharedFlow()
@@ -123,11 +125,33 @@ interface NotificationActionDelegate {
                             Timber.e(it, "Error while saving current space")
                         }
                     )
-                dispatcher.emit(NotificationCommand.GoToSpace(space = action.space,))
+                dispatcher.emit(resolveGoToSpaceCommand(action.space))
             } else {
                 // TODO show error msg
             }
             systemNotificationService.cancel(action.notification)
+        }
+
+        /**
+         * When a user taps a notification to enter a space, honor the space's
+         * homepage setting: if an explicit object is configured, open that
+         * object directly; otherwise fall back to the widgets home screen
+         * (DROID-4388).
+         */
+        private suspend fun resolveGoToSpaceCommand(
+            space: com.anytypeio.anytype.core_models.primitives.SpaceId
+        ): NotificationCommand {
+            val homepageResult = resolveSpaceHomepage.async(
+                ResolveSpaceHomepage.Params(space = space)
+            ).getOrNull()
+            return if (homepageResult is ResolveSpaceHomepage.Result.Object) {
+                NotificationCommand.GoToObject(
+                    space = space,
+                    navigation = homepageResult.navigation
+                )
+            } else {
+                NotificationCommand.GoToSpace(space = space)
+            }
         }
     }
 }

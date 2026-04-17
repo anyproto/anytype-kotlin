@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
+import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.vault.SetSpacesIntroductionShown
 import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
@@ -64,6 +65,7 @@ class MainViewModelFactory @Inject constructor(
     private val chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer,
     private val participantSubscriptionContainer: ParticipantSubscriptionContainer,
     private val userSettingsRepository: UserSettingsRepository,
+    private val resolveSpaceHomepage: ResolveSpaceHomepage,
     private val debugRunProfiler: DebugRunProfiler
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
@@ -99,6 +101,7 @@ class MainViewModelFactory @Inject constructor(
         chatsDetailsSubscriptionContainer = chatsDetailsSubscriptionContainer,
         participantSubscriptionContainer = participantSubscriptionContainer,
         userSettingsRepository = userSettingsRepository,
+        resolveSpaceHomepage = resolveSpaceHomepage,
         debugRunProfiler = debugRunProfiler
     ) as T
 }

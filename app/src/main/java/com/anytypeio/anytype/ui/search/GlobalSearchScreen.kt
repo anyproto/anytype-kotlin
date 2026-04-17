@@ -33,9 +33,9 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider as MaterialDivider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -616,12 +616,6 @@ private fun GlobalSearchItem(
                         }
                     }
                 )
-                if (isFile) {
-                    MaterialDivider(
-                        thickness = 0.5.dp,
-                        color = colorResource(id = R.color.shape_primary)
-                    )
-                }
             }
             if (isFile) {
                 DropdownMenuItem(

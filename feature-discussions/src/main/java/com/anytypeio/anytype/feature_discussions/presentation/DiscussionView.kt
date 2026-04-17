@@ -9,7 +9,10 @@ import com.anytypeio.anytype.core_models.ui.ObjectIcon
 sealed interface DiscussionView {
 
     sealed class ContentBlock {
-        data class Text(val content: Content) : ContentBlock()
+        data class Text(
+            val content: Content,
+            val style: Block.Content.Text.Style = Block.Content.Text.Style.P
+        ) : ContentBlock()
         data class Image(val targetObjectId: Id, val url: Url) : ContentBlock()
         data class Link(
             val targetObjectId: Id,

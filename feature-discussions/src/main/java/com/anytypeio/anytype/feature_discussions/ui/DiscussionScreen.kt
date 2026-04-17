@@ -97,6 +97,9 @@ import com.anytypeio.anytype.core_ui.text.InputSpan
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
@@ -1051,6 +1054,7 @@ fun ContentBlocksList(
                     if (block.content.msg.isNotEmpty()) {
                         RichTextContent(
                             parts = block.content.parts,
+                            style = block.style,
                             onMentionClicked = onMentionClicked,
                             onLinkClicked = onLinkClicked
                         )
@@ -1236,10 +1240,17 @@ fun BookmarkCard(
 @Composable
 fun RichTextContent(
     parts: List<DiscussionView.Content.Part>,
+    style: Block.Content.Text.Style = Block.Content.Text.Style.P,
     onMentionClicked: (Id) -> Unit = {},
     onLinkClicked: (String) -> Unit = {}
 ) {
     val resources = LocalContext.current.resources
+    val textStyle = when (style) {
+        Block.Content.Text.Style.H1 -> HeadlineTitle
+        Block.Content.Text.Style.H2 -> HeadlineHeading
+        Block.Content.Text.Style.H3 -> HeadlineSubheading
+        else -> null
+    }
     val annotatedString = buildAnnotatedString {
         parts.forEach { part ->
             val textColor = part.resolveTextColor(resources)
@@ -1283,7 +1294,7 @@ fun RichTextContent(
                     append(part.part)
                 }
             } else {
-                val style = SpanStyle(
+                val spanStyle = SpanStyle(
                     color = textColor ?: Color.Unspecified,
                     background = bgColor ?: Color.Unspecified,
                     fontWeight = if (part.isBold) FontWeight.Bold else FontWeight.Normal,
@@ -1297,7 +1308,7 @@ fun RichTextContent(
                         else -> TextDecoration.None
                     }
                 )
-                withStyle(style) {
+                withStyle(spanStyle) {
                     append(part.part)
                 }
             }
@@ -1305,7 +1316,8 @@ fun RichTextContent(
     }
     Text(
         text = annotatedString,
-        fontSize = 15.sp,
+        style = textStyle ?: TextStyle.Default,
+        fontSize = if (textStyle == null) 15.sp else TextStyle.Default.fontSize,
         color = colorResource(id = R.color.text_primary)
     )
 }

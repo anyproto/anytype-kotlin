@@ -814,7 +814,8 @@ class DiscussionViewModel @Inject constructor(
                         }
                     add(
                         DiscussionView.ContentBlock.Text(
-                            content = DiscussionView.Content(msg = trimmedText, parts = parts)
+                            content = DiscussionView.Content(msg = trimmedText, parts = parts),
+                            style = block.style
                         )
                     )
                 }

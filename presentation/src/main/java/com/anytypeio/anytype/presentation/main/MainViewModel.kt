@@ -691,14 +691,30 @@ class MainViewModel(
                     ResolveSpaceHomepage.Params(space = SpaceId(targetSpace))
                 ).getOrNull()
                 if (homepageResult is ResolveSpaceHomepage.Result.Object) {
-                    commands.emit(
-                        Command.Deeplink.DeepLinkToObjectFromWidget(
-                            space = targetSpace,
-                            obj = spaceView?.homepage.orEmpty(),
-                            navigation = homepageResult.navigation,
-                            openTargetDirectly = true
-                        )
-                    )
+                    // Chat homepages must go through the chat-screen nav graph
+                    // rather than `proceedWithOpenObjectNavigation`, which rejects
+                    // `OpenChat` with a toast.
+                    when (val nav = homepageResult.navigation) {
+                        is OpenObjectNavigation.OpenChat -> {
+                            commands.emit(
+                                Command.Deeplink.DeepLinkToSpace(
+                                    space = targetSpace,
+                                    shouldNavigateDirectlyToChat = true,
+                                    chatId = nav.target
+                                )
+                            )
+                        }
+                        else -> {
+                            commands.emit(
+                                Command.Deeplink.DeepLinkToObjectFromWidget(
+                                    space = targetSpace,
+                                    obj = spaceView?.homepage.orEmpty(),
+                                    navigation = nav,
+                                    openTargetDirectly = true
+                                )
+                            )
+                        }
+                    }
                     return
                 }
             }

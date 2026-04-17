@@ -802,6 +802,22 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     Timber.e(it, "Error while navigation to notification object")
                 }
             }
+
+            is NotificationCommand.GoToChat -> {
+                runCatching {
+                    val controller = findNavController(R.id.fragment)
+                    controller.popBackStack(R.id.vaultScreen, false)
+                    controller.navigate(
+                        R.id.actionOpenChatFromVault,
+                        ChatFragment.args(
+                            space = command.space.id,
+                            ctx = command.chat
+                        )
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation to notification chat")
+                }
+            }
         }
     }
 

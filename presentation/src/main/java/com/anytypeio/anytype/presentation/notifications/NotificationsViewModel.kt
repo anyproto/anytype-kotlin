@@ -305,6 +305,7 @@ sealed class NotificationCommand {
         val space: SpaceId,
         val navigation: com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
     ) : NotificationCommand()
+    data class GoToChat(val space: SpaceId, val chat: Id) : NotificationCommand()
     data class ViewSpaceJoinRequest(val space: SpaceId, val member: Id) : NotificationCommand()
     data class ViewSpaceLeaveRequest(val space: SpaceId) : NotificationCommand()
 }

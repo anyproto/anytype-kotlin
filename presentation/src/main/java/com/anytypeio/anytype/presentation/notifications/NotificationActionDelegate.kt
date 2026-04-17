@@ -144,13 +144,15 @@ interface NotificationActionDelegate {
             val homepageResult = resolveSpaceHomepage.async(
                 ResolveSpaceHomepage.Params(space = space)
             ).getOrNull()
-            return if (homepageResult is ResolveSpaceHomepage.Result.Object) {
-                NotificationCommand.GoToObject(
-                    space = space,
-                    navigation = homepageResult.navigation
-                )
-            } else {
-                NotificationCommand.GoToSpace(space = space)
+            if (homepageResult !is ResolveSpaceHomepage.Result.Object) {
+                return NotificationCommand.GoToSpace(space = space)
+            }
+            // Chat homepages need the chat-screen nav graph, not the generic
+            // object-navigation path (which rejects OpenChat with a toast).
+            return when (val nav = homepageResult.navigation) {
+                is com.anytypeio.anytype.core_models.misc.OpenObjectNavigation.OpenChat ->
+                    NotificationCommand.GoToChat(space = space, chat = nav.target)
+                else -> NotificationCommand.GoToObject(space = space, navigation = nav)
             }
         }
     }

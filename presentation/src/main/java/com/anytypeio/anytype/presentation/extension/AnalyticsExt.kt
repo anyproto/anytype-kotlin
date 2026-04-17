@@ -1965,6 +1965,9 @@ fun CoroutineScope.sendDeleteWidgetEvent(
                     Widget.Source.Bundled.Chat -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_CHAT)
                     }
+                    Widget.Source.Bundled.PersonalFavorites -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
+                    }
                 }
                 if (isInEditMode)
                     put(WidgetAnalytics.CONTEXT, WidgetAnalytics.CONTEXT_EDITOR)
@@ -2012,6 +2015,9 @@ fun CoroutineScope.sendClickWidgetTitleEvent(
                     }
                     Widget.Source.Bundled.Chat -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_CHAT)
+                    }
+                    Widget.Source.Bundled.PersonalFavorites -> {
+                        put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
                 }
 
@@ -2103,6 +2109,9 @@ fun CoroutineScope.sendReorderWidgetEvent(
                     }
                     Widget.Source.Bundled.Chat -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_CHAT)
+                    }
+                    Widget.Source.Bundled.PersonalFavorites -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
                 }
 

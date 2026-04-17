@@ -93,6 +93,8 @@ class WidgetContainerDelegateImpl(
             is Widget.AllObjects -> createAllObjectsContainer(widget)
             is Widget.Bin -> createBinContainer(widget)
             is Widget.ObjectTypesGroup -> createObjectTypesGroupContainer(widget, currentlyDisplayedViews)
+            // Task 12 (blocked on middleware) will create the PersonalFavorites container.
+            is Widget.PersonalFavorites -> null
         }
     }
 

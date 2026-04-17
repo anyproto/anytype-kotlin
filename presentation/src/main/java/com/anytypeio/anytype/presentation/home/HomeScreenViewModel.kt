@@ -1471,6 +1471,10 @@ class HomeScreenViewModel(
                     }
                 }
             }
+            is Widget.Source.Bundled.PersonalFavorites -> {
+                // Personal favorites section header is not clickable; no-op.
+                Timber.d("Skipping click on personal favorites widget source")
+            }
             Widget.Source.Other -> {
                 Timber.w("Skipping click on 'other' widget source")
             }
@@ -1755,6 +1759,7 @@ class HomeScreenViewModel(
         is Widget.Bin -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
         is Widget.ObjectTypesGroup -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
         is Widget.RecentlyEdited -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
+        is Widget.PersonalFavorites -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 
     // TODO move to a separate reducer inject into this VM's constructor

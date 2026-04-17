@@ -132,6 +132,15 @@ sealed class Widget {
         override val sectionType: SectionType = SectionType.UNREAD
     ) : Widget()
 
+    data class PersonalFavorites(
+        override val id: Id,
+        override val source: Source.Bundled.PersonalFavorites,
+        override val config: Config,
+        override val isAutoCreated: Boolean = false,
+        override val icon: ObjectIcon = ObjectIcon.None,
+        override val sectionType: SectionType = SectionType.MY_FAVORITES
+    ) : Widget()
+
     data class Bin(
         override val id: Id ,
         override val source: Source.Bundled.Bin,
@@ -216,6 +225,11 @@ sealed class Widget {
                 override val id: Id = BundledWidgetSourceIds.CHAT
                 override val type: Id? = null
             }
+
+            data object PersonalFavorites : Bundled() {
+                override val id: Id = BundledWidgetSourceIds.PERSONAL_FAVORITES
+                override val type: Id? = null
+            }
         }
 
         data object Other : Source() {
@@ -266,6 +280,7 @@ fun Widget.Source.hasValidSource(): Boolean = when (this) {
 fun Widget.Source.canCreateObjectOfType(): Boolean {
     return when (this) {
         Widget.Source.Bundled.Favorites -> true
+        Widget.Source.Bundled.PersonalFavorites -> false
         is Widget.Source.Default -> {
             if (obj.layout == ObjectType.Layout.OBJECT_TYPE) {
                 val wrapper = Type(obj.map)
@@ -796,6 +811,7 @@ fun Id.bundled(): Widget.Source.Bundled = when (this) {
     BundledWidgetSourceIds.BIN -> Widget.Source.Bundled.Bin
     BundledWidgetSourceIds.ALL_OBJECTS -> Widget.Source.Bundled.AllObjects
     BundledWidgetSourceIds.CHAT -> Widget.Source.Bundled.Chat
+    BundledWidgetSourceIds.PERSONAL_FAVORITES -> Widget.Source.Bundled.PersonalFavorites
     else -> throw IllegalStateException("Widget bundled id can't be $this")
 }
 

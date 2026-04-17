@@ -2082,6 +2082,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     </string>
     <string name="private_local_yours_forever">verschlüsselt, lokal, für immer deins</string>
     <string name="private_channel">Direkter Kanal</string>
+    <string name="space_header_private_channel">Private channel</string>
+    <string name="space_header_group_channel">Group channel</string>
     <string name="wallpaper_item_space_icon_color">Standardfarbe</string>
     <string name="publish_to_web">Im Web veröffentlichen</string>
     <string name="preferences">Einstellungen</string>

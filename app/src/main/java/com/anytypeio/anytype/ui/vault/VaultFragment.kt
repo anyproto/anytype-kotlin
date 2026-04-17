@@ -194,6 +194,9 @@ class VaultFragment : BaseComposeFragment() {
             vm.commands.collect { command -> proceed(command) }
         }
         LaunchedEffect(Unit) {
+            vm.inviteCommands.collect { command -> proceed(command) }
+        }
+        LaunchedEffect(Unit) {
             vm.navigations.collect { command -> proceed(command) }
         }
     }

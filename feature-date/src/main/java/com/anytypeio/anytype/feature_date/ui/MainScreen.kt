@@ -30,11 +30,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.lists.objects.PaginatedObjectList
 import com.anytypeio.anytype.core_ui.lists.objects.UiContentState
 import com.anytypeio.anytype.core_ui.lists.objects.UiObjectsListState
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
+import com.anytypeio.anytype.core_ui.widgets.CircularFabButton
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_date.R
 import com.anytypeio.anytype.feature_date.ui.models.DateEvent
@@ -45,8 +45,8 @@ import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsState
 import com.anytypeio.anytype.feature_date.viewmodel.UiHeaderState
 import com.anytypeio.anytype.feature_date.viewmodel.UiSnackbarState
 import com.anytypeio.anytype.feature_date.viewmodel.UiSyncStatusBadgeState
-import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
+import androidx.compose.ui.res.dimensionResource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -58,7 +58,6 @@ fun DateMainScreen(
     uiHeaderState: UiHeaderState,
     uiFieldsState: UiFieldsState,
     uiObjectsListState: UiObjectsListState,
-    uiNavigationWidget: NavPanelState,
     uiFieldsSheetState: UiFieldsSheetState,
     uiSyncStatusState: SyncStatusWidgetState,
     uiCalendarState: UiCalendarState,
@@ -106,7 +105,8 @@ fun DateMainScreen(
                 TopToolbarScreen(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(48.dp),
+                        .height(44.dp),
+                    uiHeaderState = uiHeaderState,
                     uiCalendarIconState = uiCalendarIconState,
                     uiSyncStatusBadgeState = uiSyncStatusBadgeState,
                     onDateEvent = onDateEvent
@@ -159,32 +159,26 @@ fun DateMainScreen(
                     uiState = uiContentState,
                     canPaginate = canPaginate,
                     onLoadMore = {
-                        DateEvent.ObjectsList.OnLoadMore
+                        onDateEvent(DateEvent.ObjectsList.OnLoadMore)
                     },
                     onMoveToBin = { item ->
-                        DateEvent.ObjectsList.OnObjectMoveToBin(item)
+                        onDateEvent(DateEvent.ObjectsList.OnObjectMoveToBin(item))
                     },
                     onObjectClicked = { item ->
-                        DateEvent.ObjectsList.OnObjectClicked(item)
+                        onDateEvent(DateEvent.ObjectsList.OnObjectClicked(item))
                     }
                 )
-                BottomNavigationMenu(
+                CircularFabButton(
                     modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 16.dp),
-                    onSearchClick = {
-                        onDateEvent(DateEvent.NavigationWidget.OnGlobalSearchClick)
-                    },
-                    onAddDocClick = {
-                        onDateEvent(DateEvent.NavigationWidget.OnAddDocClick)
-                    },
-                    onAddDocLongClick = {
-                        onDateEvent(DateEvent.NavigationWidget.OnAddDocLongClick)
-                    },
-                    state = uiNavigationWidget,
-                    onHomeButtonClicked = {
-                        onDateEvent(DateEvent.NavigationWidget.OnHomeClick)
-                    }
+                        .align(Alignment.BottomEnd)
+                        .padding(
+                            end = dimensionResource(id = com.anytypeio.anytype.core_ui.R.dimen.nav_fab_margin),
+                            bottom = dimensionResource(id = com.anytypeio.anytype.core_ui.R.dimen.nav_fab_margin)
+                        ),
+                    iconRes = R.drawable.ic_create_obj_32,
+                    contentDescription = stringResource(id = R.string.create),
+                    onClick = { onDateEvent(DateEvent.NavigationWidget.OnAddDocClick) },
+                    onLongClick = { onDateEvent(DateEvent.NavigationWidget.OnAddDocLongClick) }
                 )
             }
         },

@@ -786,6 +786,18 @@ class DateObjectViewModel(
                 uiSyncStatusWidgetState.value =
                     event.status.toSyncStatusWidgetState()
             }
+
+            DateEvent.TopToolbar.OnBackClick -> {
+                viewModelScope.launch {
+                    effects.emit(DateObjectCommand.Back)
+                }
+            }
+
+            DateEvent.TopToolbar.OnTitleClick -> {
+                viewModelScope.launch {
+                    effects.emit(DateObjectCommand.OpenWidgets)
+                }
+            }
         }
     }
 

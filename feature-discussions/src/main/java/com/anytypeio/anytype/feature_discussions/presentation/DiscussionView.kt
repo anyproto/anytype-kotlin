@@ -46,6 +46,8 @@ sealed interface DiscussionView {
             val isCode = styles.any { it.type == Block.Content.Text.Mark.Type.KEYBOARD }
             val link = styles.find { it.type == Block.Content.Text.Mark.Type.LINK }
             val mention = styles.find { it.type == Block.Content.Text.Mark.Type.MENTION }
+            val textColor = styles.find { it.type == Block.Content.Text.Mark.Type.TEXT_COLOR }
+            val backgroundColor = styles.find { it.type == Block.Content.Text.Mark.Type.BACKGROUND_COLOR }
         }
     }
 

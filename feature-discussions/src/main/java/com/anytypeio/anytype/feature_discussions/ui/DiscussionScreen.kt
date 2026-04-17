@@ -56,20 +56,27 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -82,7 +89,8 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewMode
 @Composable
 fun DiscussionScreenWrapper(
     vm: DiscussionViewModel,
-    onBackClicked: () -> Unit
+    onBackClicked: () -> Unit,
+    onMarkupLinkClicked: (String) -> Unit = {}
 ) {
     val header = vm.header.collectAsStateWithLifecycle().value
     val messages = vm.messages.collectAsStateWithLifecycle().value
@@ -107,7 +115,8 @@ fun DiscussionScreenWrapper(
         onReplyComment = { vm.onReplyComment(it) },
         onReplyToReply = { vm.onReplyToReply(it) },
         onCopyText = { clipboard.setText(AnnotatedString(it)) },
-        onClearReply = { vm.onClearReply() }
+        onClearReply = { vm.onClearReply() },
+        onMarkupLinkClicked = onMarkupLinkClicked
     )
 }
 
@@ -124,7 +133,8 @@ fun DiscussionScreen(
     onReplyComment: (DiscussionView.Comment) -> Unit = {},
     onReplyToReply: (DiscussionView.Reply) -> Unit = {},
     onCopyText: (String) -> Unit = {},
-    onClearReply: () -> Unit = {}
+    onClearReply: () -> Unit = {},
+    onMarkupLinkClicked: (String) -> Unit = {}
 ) {
     Scaffold(
         containerColor = colorResource(id = R.color.background_primary),
@@ -149,7 +159,8 @@ fun DiscussionScreen(
                     .weight(1f),
                 onReplyComment = onReplyComment,
                 onReplyToReply = onReplyToReply,
-                onCopyText = onCopyText
+                onCopyText = onCopyText,
+                onMarkupLinkClicked = onMarkupLinkClicked
             )
             if (inputMode is DiscussionInputMode.Reply) {
                 DiscussionReplyBanner(
@@ -261,7 +272,8 @@ fun DiscussionCommentList(
     modifier: Modifier = Modifier,
     onReplyComment: (DiscussionView.Comment) -> Unit = {},
     onReplyToReply: (DiscussionView.Reply) -> Unit = {},
-    onCopyText: (String) -> Unit = {}
+    onCopyText: (String) -> Unit = {},
+    onMarkupLinkClicked: (String) -> Unit = {}
 ) {
     LazyColumn(
         modifier = modifier,
@@ -283,14 +295,16 @@ fun DiscussionCommentList(
                     DiscussionCommentItem(
                         comment = item,
                         onReply = { onReplyComment(item) },
-                        onCopy = { onCopyText(item.content.msg) }
+                        onCopy = { onCopyText(item.content.msg) },
+                        onMarkupLinkClicked = onMarkupLinkClicked
                     )
                 }
                 is DiscussionView.Reply -> {
                     DiscussionReplyItem(
                         reply = item,
                         onReply = { onReplyToReply(item) },
-                        onCopy = { onCopyText(item.content.msg) }
+                        onCopy = { onCopyText(item.content.msg) },
+                        onMarkupLinkClicked = onMarkupLinkClicked
                     )
                 }
                 is DiscussionView.ReplyDivider -> {
@@ -319,7 +333,8 @@ fun DiscussionCommentList(
 fun DiscussionCommentItem(
     comment: DiscussionView.Comment,
     onReply: () -> Unit = {},
-    onCopy: () -> Unit = {}
+    onCopy: () -> Unit = {},
+    onMarkupLinkClicked: (String) -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -371,8 +386,53 @@ fun DiscussionCommentItem(
             // Text content
             if (comment.content.msg.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(4.dp))
+                val resources = LocalContext.current.resources
                 Text(
-                    text = comment.content.msg,
+                    text = buildAnnotatedString {
+                        comment.content.parts.forEach { part ->
+                            val textColor = part.resolveTextColor(resources)
+                            val bgColor = part.resolveBackgroundColor(resources)
+                            if (part.link?.param != null) {
+                                withLink(
+                                    LinkAnnotation.Clickable(
+                                        tag = "link",
+                                        styles = TextLinkStyles(
+                                            style = SpanStyle(
+                                                color = textColor ?: Color.Unspecified,
+                                                background = bgColor ?: Color.Unspecified,
+                                                fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                                fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                                textDecoration = TextDecoration.Underline
+                                            )
+                                        )
+                                    ) {
+                                        onMarkupLinkClicked(part.link.param.orEmpty())
+                                    }
+                                ) {
+                                    append(part.part)
+                                }
+                            } else {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = textColor ?: Color.Unspecified,
+                                        background = bgColor ?: Color.Unspecified,
+                                        fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                        fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                        textDecoration = when {
+                                            part.underline && part.isStrike -> TextDecoration.combine(
+                                                listOf(TextDecoration.Underline, TextDecoration.LineThrough)
+                                            )
+                                            part.underline -> TextDecoration.Underline
+                                            part.isStrike -> TextDecoration.LineThrough
+                                            else -> null
+                                        }
+                                    )
+                                ) {
+                                    append(part.part)
+                                }
+                            }
+                        }
+                    },
                     style = BodyCallout,
                     color = colorResource(id = R.color.text_primary)
                 )
@@ -438,7 +498,8 @@ fun DiscussionCommentItem(
 fun DiscussionReplyItem(
     reply: DiscussionView.Reply,
     onReply: () -> Unit = {},
-    onCopy: () -> Unit = {}
+    onCopy: () -> Unit = {},
+    onMarkupLinkClicked: (String) -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
@@ -508,8 +569,53 @@ fun DiscussionReplyItem(
                 // Text content
                 if (reply.content.msg.isNotEmpty()) {
                     Spacer(modifier = Modifier.height(4.dp))
+                    val resources = LocalContext.current.resources
                     Text(
-                        text = reply.content.msg,
+                        text = buildAnnotatedString {
+                            reply.content.parts.forEach { part ->
+                                val textColor = part.resolveTextColor(resources)
+                                val bgColor = part.resolveBackgroundColor(resources)
+                                if (part.link?.param != null) {
+                                    withLink(
+                                        LinkAnnotation.Clickable(
+                                            tag = "link",
+                                            styles = TextLinkStyles(
+                                                style = SpanStyle(
+                                                    color = textColor ?: Color.Unspecified,
+                                                    background = bgColor ?: Color.Unspecified,
+                                                    fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                                    fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                                    textDecoration = TextDecoration.Underline
+                                                )
+                                            )
+                                        ) {
+                                            onMarkupLinkClicked(part.link.param.orEmpty())
+                                        }
+                                    ) {
+                                        append(part.part)
+                                    }
+                                } else {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = textColor ?: Color.Unspecified,
+                                            background = bgColor ?: Color.Unspecified,
+                                            fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                            fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                            textDecoration = when {
+                                                part.underline && part.isStrike -> TextDecoration.combine(
+                                                    listOf(TextDecoration.Underline, TextDecoration.LineThrough)
+                                                )
+                                                part.underline -> TextDecoration.Underline
+                                                part.isStrike -> TextDecoration.LineThrough
+                                                else -> null
+                                            }
+                                        )
+                                    ) {
+                                        append(part.part)
+                                    }
+                                }
+                            }
+                        },
                         style = BodyCallout,
                         color = colorResource(id = R.color.text_primary)
                     )
@@ -643,6 +749,24 @@ fun RichTextContent(parts: List<DiscussionView.Content.Part>) {
         fontSize = 15.sp,
         color = colorResource(id = R.color.text_primary)
     )
+}
+
+private fun DiscussionView.Content.Part.resolveTextColor(
+    resources: android.content.res.Resources
+): Color? {
+    val param = textColor?.param ?: return null
+    val theme = ThemeColor.entries.find { it.code == param } ?: return null
+    if (theme == ThemeColor.DEFAULT) return null
+    return Color(resources.dark(theme))
+}
+
+private fun DiscussionView.Content.Part.resolveBackgroundColor(
+    resources: android.content.res.Resources
+): Color? {
+    val param = backgroundColor?.param ?: return null
+    val theme = ThemeColor.entries.find { it.code == param } ?: return null
+    if (theme == ThemeColor.DEFAULT) return null
+    return Color(resources.light(theme))
 }
 
 @Composable

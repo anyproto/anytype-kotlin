@@ -18,6 +18,9 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModelFactory
+import com.anytypeio.anytype.core_utils.intents.SystemAction
+import com.anytypeio.anytype.core_utils.intents.SystemAction.OpenUrl
+import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionScreenWrapper
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -52,6 +55,35 @@ class DiscussionFragment : Fragment() {
                 vm = vm,
                 onBackClicked = {
                     requireActivity().onBackPressedDispatcher.onBackPressed()
+                },
+                onMarkupLinkClicked = { url ->
+                    val handled = when {
+                        url.startsWith("mailto:") -> {
+                            proceedWithAction(SystemAction.MailTo(url.removePrefix("mailto:")))
+                        }
+                        url.startsWith("tel:") -> {
+                            proceedWithAction(SystemAction.Dial(url.removePrefix("tel:")))
+                        }
+                        url.startsWith("anytype://") || url.startsWith("file://") -> {
+                            proceedWithAction(
+                                SystemAction.CopyToClipboard(
+                                    plain = url,
+                                    label = "link"
+                                )
+                            )
+                        }
+                        else -> {
+                            proceedWithAction(OpenUrl(url))
+                        }
+                    }
+                    if (!handled && !url.startsWith("anytype://") && !url.startsWith("file://")) {
+                        proceedWithAction(
+                            SystemAction.CopyToClipboard(
+                                plain = url,
+                                label = "link"
+                            )
+                        )
+                    }
                 }
             )
         }

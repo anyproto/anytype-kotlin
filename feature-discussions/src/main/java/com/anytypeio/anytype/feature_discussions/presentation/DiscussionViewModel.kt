@@ -120,6 +120,13 @@ class DiscussionViewModel @Inject constructor(
 
                         val isReply = !msg.replyToMessageId.isNullOrEmpty()
 
+                        Timber.d("DISC_DEBUG: msg.id=${msg.id} blocks=${msg.blocks.size} content.marks=${msg.content?.marks?.map { "${it.type}(${it.param})" }}")
+                        msg.blocks.forEachIndexed { i, block ->
+                            when (block) {
+                                is Chat.Message.MessageBlock.Text -> Timber.d("DISC_DEBUG:   block[$i] text='${block.text}' marks=${block.marks.map { "${it.type}(${it.param})" }}")
+                                else -> Timber.d("DISC_DEBUG:   block[$i] type=${block::class.simpleName}")
+                            }
+                        }
                         val mappedContent = if (msg.blocks.isNotEmpty()) {
                             flattenBlocksToContent(msg.blocks)
                         } else {
@@ -139,6 +146,10 @@ class DiscussionViewModel @Inject constructor(
                             )
                         }
 
+                        Timber.d("DISC_DEBUG: mappedContent msg='${mappedContent.msg}' parts=${mappedContent.parts.size}")
+                        mappedContent.parts.forEach { p ->
+                            Timber.d("DISC_DEBUG:   mapped part='${p.part}' styles=${p.styles.map { "${it.type}(${it.param})" }} textColor=${p.textColor}")
+                        }
                         val reactions = msg.reactions
                             .toList()
                             .sortedByDescending { (_, ids) -> ids.size }

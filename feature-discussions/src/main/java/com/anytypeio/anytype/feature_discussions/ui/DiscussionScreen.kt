@@ -73,6 +73,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -84,7 +85,10 @@ import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
@@ -93,6 +97,10 @@ import com.anytypeio.anytype.core_ui.text.InputSpan
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.CodeBlock
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
@@ -210,9 +218,7 @@ fun DiscussionScreenWrapper(
         },
         onClearAttachment = { vm.onClearAttachment(it) },
         onMentionClicked = { id -> vm.onMentionClicked(id) },
-        onLinkClicked = { url ->
-            // Link clicks can be handled by the fragment via commands if needed
-        },
+        onLinkClicked = { url -> vm.onLinkClicked(url) },
         onContentBlockClicked = { block -> vm.onContentBlockClicked(block) },
         onMentionMemberClicked = { member ->
             val state = mentionPanelState
@@ -1047,11 +1053,113 @@ fun ContentBlocksList(
             when (block) {
                 is DiscussionView.ContentBlock.Text -> {
                     if (block.content.msg.isNotEmpty()) {
-                        RichTextContent(
-                            parts = block.content.parts,
-                            onMentionClicked = onMentionClicked,
-                            onLinkClicked = onLinkClicked
-                        )
+                        when (block.style) {
+                            Block.Content.Text.Style.BULLET -> {
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(
+                                        text = "•",
+                                        fontSize = 15.sp,
+                                        color = colorResource(id = R.color.text_primary),
+                                        modifier = Modifier.width(24.dp),
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                    )
+                                    RichTextContent(
+                                        parts = block.content.parts,
+                                        onMentionClicked = onMentionClicked,
+                                        onLinkClicked = onLinkClicked,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                            Block.Content.Text.Style.NUMBERED -> {
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(
+                                        text = "${block.number}.",
+                                        fontSize = 15.sp,
+                                        color = colorResource(id = R.color.text_primary),
+                                        modifier = Modifier.defaultMinSize(minWidth = 24.dp),
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                    )
+                                    RichTextContent(
+                                        parts = block.content.parts,
+                                        onMentionClicked = onMentionClicked,
+                                        onLinkClicked = onLinkClicked,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                            Block.Content.Text.Style.CHECKBOX -> {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    verticalAlignment = Alignment.Top
+                                ) {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = if (block.checked)
+                                                R.drawable.ic_checkbox_selected
+                                            else
+                                                R.drawable.ic_checkbox_default
+                                        ),
+                                        contentDescription = null,
+                                        tint = Color.Unspecified,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    RichTextContent(
+                                        parts = block.content.parts,
+                                        onMentionClicked = onMentionClicked,
+                                        onLinkClicked = onLinkClicked,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                            Block.Content.Text.Style.QUOTE -> {
+                                Row(
+                                    modifier = Modifier.height(IntrinsicSize.Min)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(2.dp)
+                                            .fillMaxHeight()
+                                            .background(
+                                                colorResource(id = R.color.block_highlight_divider)
+                                            )
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    RichTextContent(
+                                        parts = block.content.parts,
+                                        onMentionClicked = onMentionClicked,
+                                        onLinkClicked = onLinkClicked,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                            Block.Content.Text.Style.CODE_SNIPPET -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(
+                                            color = colorResource(id = R.color.shape_tertiary),
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                        .padding(12.dp)
+                                ) {
+                                    RichTextContent(
+                                        parts = block.content.parts,
+                                        style = block.style,
+                                        onMentionClicked = onMentionClicked,
+                                        onLinkClicked = onLinkClicked
+                                    )
+                                }
+                            }
+                            else -> {
+                                RichTextContent(
+                                    parts = block.content.parts,
+                                    style = block.style,
+                                    onMentionClicked = onMentionClicked,
+                                    onLinkClicked = onLinkClicked
+                                )
+                            }
+                        }
                     }
                 }
                 is DiscussionView.ContentBlock.Image -> {
@@ -1234,17 +1342,31 @@ fun BookmarkCard(
 @Composable
 fun RichTextContent(
     parts: List<DiscussionView.Content.Part>,
+    style: Block.Content.Text.Style = Block.Content.Text.Style.P,
     onMentionClicked: (Id) -> Unit = {},
-    onLinkClicked: (String) -> Unit = {}
+    onLinkClicked: (String) -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
+    val resources = LocalContext.current.resources
+    val textStyle = when (style) {
+        Block.Content.Text.Style.H1 -> HeadlineTitle
+        Block.Content.Text.Style.H2 -> HeadlineHeading
+        Block.Content.Text.Style.H3 -> HeadlineSubheading
+        Block.Content.Text.Style.CODE_SNIPPET -> CodeBlock
+        else -> null
+    }
     val annotatedString = buildAnnotatedString {
         parts.forEach { part ->
+            val textColor = part.resolveTextColor(resources)
+            val bgColor = part.resolveBackgroundColor(resources)
             if (part.mention?.param != null) {
                 withLink(
                     LinkAnnotation.Clickable(
                         tag = MENTION_SPAN_TAG,
                         styles = TextLinkStyles(
                             style = SpanStyle(
+                                color = textColor ?: Color.Unspecified,
+                                background = bgColor ?: Color.Unspecified,
                                 fontWeight = if (part.isBold) FontWeight.Bold else null,
                                 fontStyle = if (part.isItalic) FontStyle.Italic else null,
                                 textDecoration = TextDecoration.Underline
@@ -1262,6 +1384,8 @@ fun RichTextContent(
                         tag = MENTION_LINK_TAG,
                         styles = TextLinkStyles(
                             style = SpanStyle(
+                                color = textColor ?: Color.Unspecified,
+                                background = bgColor ?: Color.Unspecified,
                                 fontWeight = if (part.isBold) FontWeight.Bold else null,
                                 fontStyle = if (part.isItalic) FontStyle.Italic else null,
                                 textDecoration = TextDecoration.Underline
@@ -1274,7 +1398,9 @@ fun RichTextContent(
                     append(part.part)
                 }
             } else {
-                val style = SpanStyle(
+                val spanStyle = SpanStyle(
+                    color = textColor ?: Color.Unspecified,
+                    background = bgColor ?: Color.Unspecified,
                     fontWeight = if (part.isBold) FontWeight.Bold else FontWeight.Normal,
                     fontStyle = if (part.isItalic) FontStyle.Italic else FontStyle.Normal,
                     textDecoration = when {
@@ -1286,7 +1412,7 @@ fun RichTextContent(
                         else -> TextDecoration.None
                     }
                 )
-                withStyle(style) {
+                withStyle(spanStyle) {
                     append(part.part)
                 }
             }
@@ -1294,13 +1420,33 @@ fun RichTextContent(
     }
     Text(
         text = annotatedString,
-        fontSize = 15.sp,
-        color = colorResource(id = R.color.text_primary)
+        style = textStyle ?: TextStyle.Default,
+        fontSize = if (textStyle == null) 15.sp else TextStyle.Default.fontSize,
+        color = colorResource(id = R.color.text_primary),
+        modifier = modifier
     )
 }
 
 private const val MENTION_SPAN_TAG = "@-mention"
 private const val MENTION_LINK_TAG = "link"
+
+private fun DiscussionView.Content.Part.resolveTextColor(
+    resources: android.content.res.Resources
+): Color? {
+    val param = textColor?.param ?: return null
+    val theme = ThemeColor.entries.find { it.code == param } ?: return null
+    if (theme == ThemeColor.DEFAULT) return null
+    return Color(resources.dark(theme))
+}
+
+private fun DiscussionView.Content.Part.resolveBackgroundColor(
+    resources: android.content.res.Resources
+): Color? {
+    val param = backgroundColor?.param ?: return null
+    val theme = ThemeColor.entries.find { it.code == param } ?: return null
+    if (theme == ThemeColor.DEFAULT) return null
+    return Color(resources.light(theme))
+}
 
 @Composable
 fun ReactionsRow(

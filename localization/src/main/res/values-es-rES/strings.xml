@@ -60,7 +60,7 @@
     <string name="remove_image">Eliminar imagen</string>
     <string name="delete_space">Eliminar espacio</string>
     <string name="you_can_store">Puedes almacenar gratuitamente hasta %1$s de archivos en nuestro nodo de respaldo cifrado. Si llegas al límite, los archivos se almacenarán solo localmente.</string>
-    <string name="in_order_to_save">Para ahorrar espacio en tu dispositivo local, puedes guardar todos tus archivos en nuestro nodo de respaldo cifrado. Los archivos se cargarán de nuevo cuando los abras.</string>
+    <string name="in_order_to_save">Para liberar espacio, puedes guardar los archivos en el respaldo cifrado. Se cargarán cuando vuelvas a abrirlos.</string>
     <string name="manage_files">Gestionar archivos</string>
     <string name="local_storage">Almacenamiento local</string>
     <string name="offload_files">Guardar en el nodo</string>
@@ -2081,6 +2081,8 @@ En concreto,
     <string name="share_space_error_make_private_failed">No se ha podido hacer privado el espacio. Inténtalo de nuevo más tarde.</string>
     <string name="private_local_yours_forever">cifrado, local, tuyo para siempre</string>
     <string name="private_channel">Canal directo</string>
+    <string name="space_header_private_channel">Private channel</string>
+    <string name="space_header_group_channel">Group channel</string>
     <string name="wallpaper_item_space_icon_color">Color por defecto</string>
     <string name="publish_to_web">Publicar en la web</string>
     <string name="preferences">Preferencias</string>
@@ -2182,4 +2184,16 @@ En concreto,
     <string name="os_widget_data_view_title">Vista de datos</string>
     <string name="os_widget_data_view_description">Muestra elementos de un conjunto o colección</string>
     <string name="chats_search_close_content_description">Cierra la búsqueda</string>
+    <!-- DROID-4358 Offline Downloads settings -->
+    <string name="offline_downloads_section_title">Acceso sin conexión</string>
+    <string name="offline_downloads_title">Descargas sin conexión</string>
+    <string name="offline_downloads_subtitle">Sincroniza archivos hasta el tamaño seleccionado</string>
+    <string name="offline_downloads_use_cellular">Usar datos móviles</string>
+    <string name="offline_downloads_value_off">No</string>
+    <string name="offline_downloads_value_20mb">20 MB</string>
+    <string name="offline_downloads_value_100mb">100 MB</string>
+    <string name="offline_downloads_value_250mb">250 MB</string>
+    <string name="offline_downloads_value_1gb">1 GB</string>
+    <string name="offline_downloads_value_unlimited">Ilimitado</string>
+    <string name="device_storage_used">Almacenamiento usado en el dispositivo</string>
 </resources>

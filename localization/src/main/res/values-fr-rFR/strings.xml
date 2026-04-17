@@ -60,7 +60,7 @@
     <string name="remove_image">Supprimer l’image</string>
     <string name="delete_space">Supprimer l\'espace</string>
     <string name="you_can_store">Vous pouvez stocker gratuitement jusqu\'à %1$s de vos fichiers sur notre nœud de sauvegarde chiffré. Si vous atteignez la limite, les fichiers ne seront stockés que localement.</string>
-    <string name="in_order_to_save">Afin d\'économiser de l\'espace sur votre appareil, vous pouvez décharger tous vos fichiers vers notre nœud de sauvegarde chiffré. Les fichiers seront rechargés lorsque vous les ouvrirez.</string>
+    <string name="in_order_to_save">Free up space by offloading files to encrypted backup. They’ll load when you open them.</string>
     <string name="manage_files">Gérer les fichiers</string>
     <string name="local_storage">Stockage local</string>
     <string name="offload_files">Décharger les fichiers</string>
@@ -2079,6 +2079,8 @@ Merci de décrire ici vos besoins spécifiques.</string>
     </string>
     <string name="private_local_yours_forever">Chiffré, local, à vous pour toujours</string>
     <string name="private_channel">Direct channel</string>
+    <string name="space_header_private_channel">Private channel</string>
+    <string name="space_header_group_channel">Group channel</string>
     <string name="wallpaper_item_space_icon_color">Couleur par défaut</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Préférences</string>
@@ -2180,4 +2182,16 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
     <string name="chats_search_close_content_description">Close search</string>
+    <!-- DROID-4358 Offline Downloads settings -->
+    <string name="offline_downloads_section_title">Offline access</string>
+    <string name="offline_downloads_title">Offline Downloads</string>
+    <string name="offline_downloads_subtitle">Auto sync files up to a selected size</string>
+    <string name="offline_downloads_use_cellular">Use Cellular Data</string>
+    <string name="offline_downloads_value_off">Off</string>
+    <string name="offline_downloads_value_20mb">20 MB</string>
+    <string name="offline_downloads_value_100mb">100 MB</string>
+    <string name="offline_downloads_value_250mb">250 MB</string>
+    <string name="offline_downloads_value_1gb">1 GB</string>
+    <string name="offline_downloads_value_unlimited">Illimité</string>
+    <string name="device_storage_used">Device storage used</string>
 </resources>

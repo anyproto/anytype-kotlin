@@ -120,6 +120,7 @@ fun WidgetsScreen(
     val hapticFeedback = rememberReorderHapticFeedback()
 
     val mode = viewModel.mode.collectAsState().value
+    val spaceView = viewModel.spaceViewState.collectAsState().value
     val pinnedWidgets = viewModel.pinnedViews.collectAsState().value
     val typeWidgets = viewModel.typeViews.collectAsState().value
     val unreadWidget = viewModel.unreadView.collectAsState().value
@@ -326,6 +327,18 @@ fun WidgetsScreen(
                 bottom = bottomContentPadding
             )
         ) {
+
+            // Space profile header
+            if (spaceView is HomeScreenViewModel.SpaceViewState.Success) {
+                item(key = "space_profile_header") {
+                    SpaceProfileHeader(
+                        spaceIcon = spaceView.spaceIcon,
+                        spaceName = spaceView.spaceName,
+                        globalName = spaceView.memberGlobalName,
+                        identity = spaceView.memberIdentity
+                    )
+                }
+            }
 
             // Chat widget pinned at the top for single-chat spaces (CHAT, ONE_TO_ONE)
             if (chatWidget is WidgetView.SpaceChat) {

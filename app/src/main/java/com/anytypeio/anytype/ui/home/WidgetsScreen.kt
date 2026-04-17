@@ -335,7 +335,8 @@ fun WidgetsScreen(
                         spaceIcon = spaceView.spaceIcon,
                         spaceName = spaceView.spaceName,
                         globalName = spaceView.memberGlobalName,
-                        identity = spaceView.memberIdentity
+                        identity = spaceView.memberIdentity,
+                        spaceAccessType = spaceView.spaceAccessType
                     )
                 }
             }

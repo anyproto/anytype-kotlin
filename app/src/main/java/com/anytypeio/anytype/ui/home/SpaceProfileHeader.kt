@@ -16,16 +16,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.SystemColor
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.ui.widgets.collection.DefaultTheme
+import com.anytypeio.anytype.localization.R as LocalizationR
 
 @Composable
 fun SpaceProfileHeader(
@@ -33,6 +36,7 @@ fun SpaceProfileHeader(
     spaceName: String,
     globalName: String?,
     identity: String?,
+    spaceAccessType: SpaceAccessType,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -66,17 +70,19 @@ fun SpaceProfileHeader(
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(4.dp))
             val displayIdentity = globalName?.takeIf { it.isNotEmpty() } ?: identity
-            if (!displayIdentity.isNullOrEmpty()) {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = displayIdentity,
-                    style = Caption1Regular,
-                    color = colorResource(id = R.color.text_secondary),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+            val subtitle = displayIdentity ?: when (spaceAccessType) {
+                SpaceAccessType.PRIVATE -> stringResource(LocalizationR.string.space_header_private_channel)
+                else -> stringResource(LocalizationR.string.space_header_group_channel)
             }
+            Text(
+                text = subtitle,
+                style = Caption1Regular,
+                color = colorResource(id = R.color.text_secondary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
     }
 }
@@ -93,23 +99,42 @@ private fun SpaceProfileHeaderPreview() {
             ),
             spaceName = "Anytype",
             globalName = "anytype.any",
-            identity = "0x1234567890abcdef"
+            identity = "0x1234567890abcdef",
+            spaceAccessType = SpaceAccessType.PRIVATE
         )
     }
 }
 
-@Preview(name = "No Global Name", showBackground = true)
+@Preview(name = "Private Channel", showBackground = true)
 @Composable
-private fun SpaceProfileHeaderNoGlobalNamePreview() {
+private fun SpaceProfileHeaderPrivatePreview() {
     DefaultTheme {
         SpaceProfileHeader(
-            spaceIcon = SpaceIconView.ChatSpace.Placeholder(
-                color = SystemColor.PINK,
-                name = "John Doe"
+            spaceIcon = SpaceIconView.DataSpace.Placeholder(
+                color = SystemColor.TEAL,
+                name = "My Space"
             ),
-            spaceName = "John Doe",
+            spaceName = "My Space",
             globalName = null,
-            identity = "@johndoe"
+            identity = null,
+            spaceAccessType = SpaceAccessType.PRIVATE
+        )
+    }
+}
+
+@Preview(name = "Group Channel", showBackground = true)
+@Composable
+private fun SpaceProfileHeaderGroupPreview() {
+    DefaultTheme {
+        SpaceProfileHeader(
+            spaceIcon = SpaceIconView.DataSpace.Placeholder(
+                color = SystemColor.PINK,
+                name = "Team"
+            ),
+            spaceName = "Team Space",
+            globalName = null,
+            identity = null,
+            spaceAccessType = SpaceAccessType.SHARED
         )
     }
 }

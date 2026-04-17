@@ -793,9 +793,15 @@ class DiscussionViewModel @Inject constructor(
         blocks: List<Chat.Message.MessageBlock>,
         dependencies: Map<Id, ObjectWrapper.Basic>
     ): List<DiscussionView.ContentBlock> = buildList {
+        var numberedCounter = 0
         for (block in blocks) {
             when (block) {
                 is Chat.Message.MessageBlock.Text -> {
+                    if (block.style == Block.Content.Text.Style.NUMBERED) {
+                        numberedCounter++
+                    } else {
+                        numberedCounter = 0
+                    }
                     val leadingSpaces = block.text.length - block.text.trimStart().length
                     val trimmedText = block.text.trim()
                     val adjustedMarks = block.marks.mapNotNull { mark ->
@@ -815,7 +821,9 @@ class DiscussionViewModel @Inject constructor(
                     add(
                         DiscussionView.ContentBlock.Text(
                             content = DiscussionView.Content(msg = trimmedText, parts = parts),
-                            style = block.style
+                            style = block.style,
+                            number = numberedCounter,
+                            checked = block.checked
                         )
                     )
                 }

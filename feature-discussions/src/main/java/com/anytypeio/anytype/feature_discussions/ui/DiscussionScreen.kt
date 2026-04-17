@@ -97,6 +97,7 @@ import com.anytypeio.anytype.core_ui.text.InputSpan
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.CodeBlock
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
@@ -1052,12 +1053,113 @@ fun ContentBlocksList(
             when (block) {
                 is DiscussionView.ContentBlock.Text -> {
                     if (block.content.msg.isNotEmpty()) {
-                        RichTextContent(
-                            parts = block.content.parts,
-                            style = block.style,
-                            onMentionClicked = onMentionClicked,
-                            onLinkClicked = onLinkClicked
-                        )
+                        when (block.style) {
+                            Block.Content.Text.Style.BULLET -> {
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(
+                                        text = "•",
+                                        fontSize = 15.sp,
+                                        color = colorResource(id = R.color.text_primary),
+                                        modifier = Modifier.width(24.dp),
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                    )
+                                    RichTextContent(
+                                        parts = block.content.parts,
+                                        onMentionClicked = onMentionClicked,
+                                        onLinkClicked = onLinkClicked,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                            Block.Content.Text.Style.NUMBERED -> {
+                                Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(
+                                        text = "${block.number}.",
+                                        fontSize = 15.sp,
+                                        color = colorResource(id = R.color.text_primary),
+                                        modifier = Modifier.defaultMinSize(minWidth = 24.dp),
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                    )
+                                    RichTextContent(
+                                        parts = block.content.parts,
+                                        onMentionClicked = onMentionClicked,
+                                        onLinkClicked = onLinkClicked,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                            Block.Content.Text.Style.CHECKBOX -> {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    verticalAlignment = Alignment.Top
+                                ) {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = if (block.checked)
+                                                R.drawable.ic_checkbox_selected
+                                            else
+                                                R.drawable.ic_checkbox_default
+                                        ),
+                                        contentDescription = null,
+                                        tint = Color.Unspecified,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                    RichTextContent(
+                                        parts = block.content.parts,
+                                        onMentionClicked = onMentionClicked,
+                                        onLinkClicked = onLinkClicked,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                            Block.Content.Text.Style.QUOTE -> {
+                                Row(
+                                    modifier = Modifier.height(IntrinsicSize.Min)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(2.dp)
+                                            .fillMaxHeight()
+                                            .background(
+                                                colorResource(id = R.color.block_highlight_divider)
+                                            )
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    RichTextContent(
+                                        parts = block.content.parts,
+                                        onMentionClicked = onMentionClicked,
+                                        onLinkClicked = onLinkClicked,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+                            }
+                            Block.Content.Text.Style.CODE_SNIPPET -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(
+                                            color = colorResource(id = R.color.shape_tertiary),
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                        .padding(12.dp)
+                                ) {
+                                    RichTextContent(
+                                        parts = block.content.parts,
+                                        style = block.style,
+                                        onMentionClicked = onMentionClicked,
+                                        onLinkClicked = onLinkClicked
+                                    )
+                                }
+                            }
+                            else -> {
+                                RichTextContent(
+                                    parts = block.content.parts,
+                                    style = block.style,
+                                    onMentionClicked = onMentionClicked,
+                                    onLinkClicked = onLinkClicked
+                                )
+                            }
+                        }
                     }
                 }
                 is DiscussionView.ContentBlock.Image -> {
@@ -1242,13 +1344,15 @@ fun RichTextContent(
     parts: List<DiscussionView.Content.Part>,
     style: Block.Content.Text.Style = Block.Content.Text.Style.P,
     onMentionClicked: (Id) -> Unit = {},
-    onLinkClicked: (String) -> Unit = {}
+    onLinkClicked: (String) -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
     val resources = LocalContext.current.resources
     val textStyle = when (style) {
         Block.Content.Text.Style.H1 -> HeadlineTitle
         Block.Content.Text.Style.H2 -> HeadlineHeading
         Block.Content.Text.Style.H3 -> HeadlineSubheading
+        Block.Content.Text.Style.CODE_SNIPPET -> CodeBlock
         else -> null
     }
     val annotatedString = buildAnnotatedString {
@@ -1318,7 +1422,8 @@ fun RichTextContent(
         text = annotatedString,
         style = textStyle ?: TextStyle.Default,
         fontSize = if (textStyle == null) 15.sp else TextStyle.Default.fontSize,
-        color = colorResource(id = R.color.text_primary)
+        color = colorResource(id = R.color.text_primary),
+        modifier = modifier
     )
 }
 

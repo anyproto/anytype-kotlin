@@ -7,9 +7,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -30,12 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.Dp
@@ -43,43 +41,21 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
-import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 
 
-private val ChatToolbarButtonSize = 40.dp
-private val ChatToolbarButtonOuterPadding = 12.dp
-private val ChatToolbarTitlePillSideBuffer = 20.dp
-private val ChatToolbarTitlePillHorizontalPadding: Dp =
-    ChatToolbarButtonSize + ChatToolbarButtonOuterPadding + ChatToolbarTitlePillSideBuffer
-
-@Composable
-private fun ChatToolbarCircularContainer(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable BoxScope.() -> Unit,
-) {
-    Box(
-        modifier = modifier
-            .size(ChatToolbarButtonSize)
-            .shadow(
-                elevation = 4.dp,
-                shape = CircleShape,
-                clip = false,
-                ambientColor = Color.Black.copy(alpha = 0.12f),
-                spotColor = Color.Black.copy(alpha = 0.12f),
-            )
-            .clip(CircleShape)
-            .background(colorResource(R.color.shape_primary))
-            .noRippleClickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-        content = content,
-    )
-}
+private val ChatToolbarHeight = 44.dp
+private val ChatToolbarPillSize = 44.dp
+private val ChatToolbarHorizontalPadding = 16.dp
+private val ChatToolbarPillGap = 4.dp
+private val ChatToolbarTitleSidePadding: Dp =
+    ChatToolbarHorizontalPadding + ChatToolbarPillSize + ChatToolbarPillGap
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,117 +76,136 @@ fun ChatTopToolbar(
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
 
+    val showMenuButton = when (header) {
+        is ChatViewModel.HeaderView.ChatObject -> header.showDropDownMenu
+        is ChatViewModel.HeaderView.Default -> header.showDropDownMenu
+        ChatViewModel.HeaderView.Init -> false
+    }
+    val titleEndPadding: Dp =
+        if (showMenuButton) ChatToolbarTitleSidePadding else ChatToolbarHorizontalPadding
+
+    val isMuted = when (header) {
+        is ChatViewModel.HeaderView.Default -> header.isMuted
+        is ChatViewModel.HeaderView.ChatObject -> header.isMuted
+        else -> false
+    }
+    val titleText = when (header) {
+        is ChatViewModel.HeaderView.Default -> header.title.ifEmpty {
+            stringResource(R.string.untitled)
+        }
+        is ChatViewModel.HeaderView.ChatObject -> header.title.ifEmpty {
+            stringResource(R.string.untitled)
+        }
+        is ChatViewModel.HeaderView.Init -> ""
+    }
+
     Box(
-        modifier = modifier.height(52.dp)
+        modifier = modifier.height(ChatToolbarHeight)
     ) {
-        ChatToolbarCircularContainer(
+        Box(
             modifier = Modifier
                 .align(Alignment.CenterStart)
-                .padding(start = ChatToolbarButtonOuterPadding),
-            onClick = onBackButtonClicked
+                .padding(start = ChatToolbarHorizontalPadding)
+                .size(ChatToolbarPillSize)
+                .shadow(
+                    elevation = 20.dp,
+                    shape = CircleShape,
+                    clip = false
+                )
+                .background(
+                    color = colorResource(id = R.color.navigation_panel),
+                    shape = CircleShape
+                )
+                .noRippleThrottledClickable { onBackButtonClicked() },
+            contentAlignment = Alignment.Center
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_default_top_back),
                 contentDescription = stringResource(R.string.content_desc_back_button)
             )
         }
-        
-        when(header) {
-            is ChatViewModel.HeaderView.ChatObject -> {
-                ChatToolbarCircularContainer(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .padding(end = ChatToolbarButtonOuterPadding),
-                    onClick = { showDropdownMenu = !showDropdownMenu }
-                ) {
-                    ListWidgetObjectIcon(
-                        modifier = Modifier,
-                        iconSize = 28.dp,
-                        icon = header.icon
-                    )
-                }
-            }
-            is ChatViewModel.HeaderView.Default -> {
-                val onRightContainerClick: () -> Unit = {
-                    if (header.showDropDownMenu) {
-                        showDropdownMenu = !showDropdownMenu
-                    } else {
-                        onSpaceIconClicked()
-                    }
-                }
-                ChatToolbarCircularContainer(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .padding(end = ChatToolbarButtonOuterPadding),
-                    onClick = onRightContainerClick
-                ) {
-                    SpaceIconView(
-                        modifier = Modifier,
-                        mainSize = 28.dp,
-                        icon = header.icon,
-                        onSpaceIconClick = onRightContainerClick
-                    )
-                }
-            }
-            ChatViewModel.HeaderView.Init -> {
-                // Do nothing
-            }
-        }
 
-        val isMuted = when (header) {
-            is ChatViewModel.HeaderView.Default -> header.isMuted
-            is ChatViewModel.HeaderView.ChatObject -> header.isMuted
-            else -> false
-        }
-        val titleText = when (header) {
-            is ChatViewModel.HeaderView.Default -> header.title.ifEmpty {
-                stringResource(R.string.untitled)
-            }
-            is ChatViewModel.HeaderView.ChatObject -> header.title.ifEmpty {
-                stringResource(R.string.untitled)
-            }
-            is ChatViewModel.HeaderView.Init -> ""
-        }
-
-        Box(
+        Row(
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(horizontal = ChatToolbarTitlePillHorizontalPadding)
-                .height(ChatToolbarButtonSize)
+                .fillMaxWidth()
+                .padding(start = ChatToolbarTitleSidePadding, end = titleEndPadding)
+                .fillMaxHeight()
                 .shadow(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(20.dp),
-                    clip = false,
-                    ambientColor = Color.Black.copy(alpha = 0.12f),
-                    spotColor = Color.Black.copy(alpha = 0.12f),
+                    elevation = 20.dp,
+                    shape = RoundedCornerShape(22.dp),
+                    clip = false
                 )
-                .clip(RoundedCornerShape(20.dp))
-                .background(colorResource(R.color.shape_primary))
-                .noRippleClickable { onTitleClick() }
-                .padding(horizontal = 16.dp),
-            contentAlignment = Alignment.Center
+                .background(
+                    color = colorResource(id = R.color.navigation_panel),
+                    shape = RoundedCornerShape(22.dp)
+                )
+                .noRippleThrottledClickable { onTitleClick() }
+                .padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = titleText,
-                    color = colorResource(R.color.text_primary),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    textAlign = TextAlign.Center,
-                    style = Title1,
-                    modifier = if (isMuted) Modifier.weight(1f, fill = false) else Modifier
-                )
-                if (isMuted) {
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Image(
-                        modifier = Modifier.size(18.dp),
-                        painter = painterResource(id = R.drawable.ci_notifications_off),
-                        contentDescription = stringResource(id = R.string.content_desc_muted),
-                        colorFilter = ColorFilter.tint(colorResource(R.color.text_primary))
+            when (header) {
+                is ChatViewModel.HeaderView.ChatObject -> {
+                    ListWidgetObjectIcon(
+                        modifier = Modifier,
+                        iconSize = 24.dp,
+                        icon = header.icon
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
                 }
+                is ChatViewModel.HeaderView.Default -> {
+                    SpaceIconView(
+                        modifier = Modifier,
+                        mainSize = 24.dp,
+                        icon = header.icon,
+                        onSpaceIconClick = { onTitleClick() }
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                ChatViewModel.HeaderView.Init -> Unit
+            }
+            Text(
+                text = titleText,
+                color = colorResource(R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = PreviewTitle2Regular,
+                modifier = Modifier.weight(1f, fill = false)
+            )
+            if (isMuted) {
+                Spacer(modifier = Modifier.width(6.dp))
+                Image(
+                    modifier = Modifier.size(18.dp),
+                    painter = painterResource(id = R.drawable.ci_notifications_off),
+                    contentDescription = stringResource(id = R.string.content_desc_muted),
+                    colorFilter = ColorFilter.tint(colorResource(R.color.text_primary))
+                )
+            }
+        }
+
+        if (showMenuButton) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = ChatToolbarHorizontalPadding)
+                    .size(ChatToolbarPillSize)
+                    .shadow(
+                        elevation = 20.dp,
+                        shape = CircleShape,
+                        clip = false
+                    )
+                    .background(
+                        color = colorResource(id = R.color.navigation_panel),
+                        shape = CircleShape
+                    )
+                    .noRippleThrottledClickable { showDropdownMenu = true },
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    modifier = Modifier.size(24.dp),
+                    painter = painterResource(id = R.drawable.ic_space_list_dots),
+                    contentDescription = stringResource(R.string.more)
+                )
             }
         }
 
@@ -218,7 +213,7 @@ fun ChatTopToolbar(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 52.dp)
+                    .padding(top = ChatToolbarHeight)
                     .align(Alignment.TopEnd)
             ) {
                 ChatMenu(
@@ -261,7 +256,7 @@ fun ChatTopToolbar(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 52.dp)
+                    .padding(top = ChatToolbarHeight)
                     .align(Alignment.TopEnd)
             ) {
                 SpaceChatMenu(
@@ -330,6 +325,30 @@ fun ChatTopToolbarMutedPreview() {
             title = "My Chat Space",
             icon = SpaceIconView.ChatSpace.Placeholder(name = "MCS"),
             isMuted = true
+        ),
+        onSpaceIconClicked = {},
+        onBackButtonClicked = {},
+        onInviteMembersClicked = {},
+        onEditInfo = {},
+        onPin = {},
+        onCopyLink = {},
+        onMoveToBin = {},
+        onProperties = {},
+        onNotificationSettingChanged = {},
+        onSearchClick = {}
+    )
+}
+
+@DefaultPreviews
+@Composable
+fun ChatTopToolbarNoMenuPreview() {
+    ChatTopToolbar(
+        modifier = Modifier.fillMaxWidth(),
+        header = ChatViewModel.HeaderView.Default(
+            title = "Read-only Space",
+            icon = SpaceIconView.ChatSpace.Placeholder(name = "RO"),
+            isMuted = false,
+            showDropDownMenu = false
         ),
         onSpaceIconClicked = {},
         onBackButtonClicked = {},

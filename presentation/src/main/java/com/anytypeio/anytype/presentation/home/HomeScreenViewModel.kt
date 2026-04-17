@@ -3409,6 +3409,11 @@ class HomeScreenViewModel(
                 // Being in expandedIds means user explicitly collapsed it
                 expandedIds.contains(widget.id)
             }
+            SectionType.MY_FAVORITES -> {
+                // Personal Favorites widgets are expanded by default
+                // Being in expandedIds means user explicitly collapsed it
+                expandedIds.contains(widget.id)
+            }
             SectionType.TYPES -> {
                 // Object Types widgets are collapsed by default
                 // Being in expandedIds means user explicitly expanded it

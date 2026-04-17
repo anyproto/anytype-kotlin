@@ -513,6 +513,11 @@ fun WidgetsScreen(
                             }
                         }
                     }
+
+                    WidgetSectionType.MY_FAVORITES -> {
+                        // TODO (DROID-4397, Tasks 15-16): render My Favorites section header
+                        // and content when the user has at least one personal favorite.
+                    }
                 }
             }
 

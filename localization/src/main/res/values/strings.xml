@@ -94,6 +94,7 @@
     <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="manage_sections_title">Manage sections</string>
     <string name="section_unread">Unread</string>
+    <string name="section_my_favorites">My Favorites</string>
     <string name="section_pinned">Pinned</string>
     <string name="section_objects">Objects</string>
     <string name="section_recently_edited">Recently edited</string>

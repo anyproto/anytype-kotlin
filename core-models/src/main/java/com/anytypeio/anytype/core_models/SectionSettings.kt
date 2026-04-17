@@ -5,21 +5,23 @@ package com.anytypeio.anytype.core_models
  */
 enum class WidgetSectionType {
     UNREAD,
+    MY_FAVORITES,
     PINNED,
     OBJECTS,
     RECENTLY_EDITED,
     BIN;
 
     companion object {
-        val DEFAULT_ORDER = listOf(UNREAD, PINNED, OBJECTS, RECENTLY_EDITED, BIN)
+        val DEFAULT_ORDER = listOf(UNREAD, MY_FAVORITES, PINNED, OBJECTS, RECENTLY_EDITED, BIN)
     }
 
     /**
      * Determines if this section type can be configured by the user
      * UNREAD: Always visible, can't be toggled
+     * MY_FAVORITES: Driven by data (visible iff user has personal favorites); not a user toggle
      */
     fun isUserConfigurable(): Boolean {
-        return this != UNREAD
+        return this != UNREAD && this != MY_FAVORITES
     }
 }
 

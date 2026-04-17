@@ -36,6 +36,7 @@ import timber.log.Timber
 enum class SectionType {
     PINNED,
     UNREAD,
+    MY_FAVORITES,
     TYPES,
     RECENTLY_EDITED,
     NONE

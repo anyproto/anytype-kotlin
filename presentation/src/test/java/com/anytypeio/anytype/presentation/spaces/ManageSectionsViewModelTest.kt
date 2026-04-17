@@ -92,9 +92,11 @@ class ManageSectionsViewModelTest {
         assertIs<ManageSectionsState.Content>(state)
         val unread = state.sections.find { it.type == WidgetSectionType.UNREAD }!!
         assertFalse(unread.canReorder, "UNREAD should have canReorder=false")
-        state.sections.filter { it.type != WidgetSectionType.UNREAD }.forEach { section ->
-            assertTrue(section.canReorder, "${section.type} should have canReorder=true")
-        }
+        state.sections
+            .filter { it.type != WidgetSectionType.UNREAD && it.type != WidgetSectionType.MY_FAVORITES }
+            .forEach { section ->
+                assertTrue(section.canReorder, "${section.type} should have canReorder=true")
+            }
     }
 
     @Test
@@ -123,7 +125,8 @@ class ManageSectionsViewModelTest {
         advanceUntilIdle()
 
         val state = vm.uiState.value as ManageSectionsState.Content
-        val configurable = state.sections.filter { it.type != WidgetSectionType.UNREAD }
+        val configurable = state.sections
+            .filter { it.type != WidgetSectionType.UNREAD && it.type != WidgetSectionType.MY_FAVORITES }
         configurable.forEach { section ->
             assertTrue(section.canToggle, "${section.type} should have canToggle=true")
         }

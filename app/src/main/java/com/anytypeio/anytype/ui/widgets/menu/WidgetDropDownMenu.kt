@@ -325,6 +325,10 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
             // Recently edited widgets menu behavior - TODO: Define menu items
             emptyList<WidgetMenuItem>()
         }
+        SectionType.MY_FAVORITES -> {
+            // Personal Favorites widgets have no menu - favorites are managed via the star toggle
+            emptyList<WidgetMenuItem>()
+        }
         null -> {
             // No section type means no menu
             emptyList<WidgetMenuItem>()

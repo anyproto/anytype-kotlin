@@ -828,9 +828,11 @@ class DiscussionViewModel @Inject constructor(
                     )
                 }
                 is Chat.Message.MessageBlock.Link -> {
+                    numberedCounter = 0
                     add(mapLinkBlock(block, dependencies))
                 }
                 is Chat.Message.MessageBlock.Embed -> {
+                    numberedCounter = 0
                     val parts = listOf(
                         DiscussionView.Content.Part(part = block.text)
                     )

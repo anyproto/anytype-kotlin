@@ -60,7 +60,7 @@
     <string name="remove_image">Bild entfernen</string>
     <string name="delete_space">Space löschen</string>
     <string name="you_can_store">Du kannst bis zu %1$s deiner Dateien auf unserem verschlüsselten und kostenlosen Backup-Knoten speichern. Wenn das Limit erreicht wurde, werden Dateien nur noch lokal gespeichert.</string>
-    <string name="in_order_to_save">Um Platz auf deinem Gerät zu sparen, können alle deine Dateien auf unseren verschlüsselten Backup-Knoten ausgelagert werden. Die Dateien werden beim Öffnen dann wieder heruntergeladen.</string>
+    <string name="in_order_to_save">Free up space by offloading files to encrypted backup. They’ll load when you open them.</string>
     <string name="manage_files">Dateien verwalten</string>
     <string name="local_storage">Lokaler Speicher</string>
     <string name="offload_files">Dateien abladen</string>
@@ -2082,6 +2082,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     </string>
     <string name="private_local_yours_forever">verschlüsselt, lokal, für immer deins</string>
     <string name="private_channel">Direkter Kanal</string>
+    <string name="space_header_private_channel">Private channel</string>
+    <string name="space_header_group_channel">Group channel</string>
     <string name="wallpaper_item_space_icon_color">Standardfarbe</string>
     <string name="publish_to_web">Im Web veröffentlichen</string>
     <string name="preferences">Einstellungen</string>
@@ -2183,4 +2185,16 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
     <string name="chats_search_close_content_description">Suche schließen</string>
+    <!-- DROID-4358 Offline Downloads settings -->
+    <string name="offline_downloads_section_title">Offline-Zugriff</string>
+    <string name="offline_downloads_title">Offline-Downloads</string>
+    <string name="offline_downloads_subtitle">Automatische Synchronisierung von Dateien bis zu einer ausgewählten Größe</string>
+    <string name="offline_downloads_use_cellular">Mobile Daten verwenden</string>
+    <string name="offline_downloads_value_off">Deaktiviert</string>
+    <string name="offline_downloads_value_20mb">20 MB</string>
+    <string name="offline_downloads_value_100mb">100 MB</string>
+    <string name="offline_downloads_value_250mb">250 MB</string>
+    <string name="offline_downloads_value_1gb">1 GB</string>
+    <string name="offline_downloads_value_unlimited">Unbegrenzt</string>
+    <string name="device_storage_used">Device storage used</string>
 </resources>

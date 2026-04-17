@@ -60,7 +60,7 @@
     <string name="remove_image">Удалить изображение</string>
     <string name="delete_space">Удалить пространство</string>
     <string name="you_can_store">Вы можете бесплатно хранить до %1$s ваших файлов на нашем узле резервного копирования. При достижении лимита файлы будут храниться только локально.</string>
-    <string name="in_order_to_save">Чтобы сохранить место на вашем локальном устройстве, вы можете выгрузить все ваши файлы в наш зашифрованный узел резервного копирования. Файлы будут загружены обратно, когда вы откроете их.</string>
+    <string name="in_order_to_save">Free up space by offloading files to encrypted backup. They’ll load when you open them.</string>
     <string name="manage_files">Управление файлами</string>
     <string name="local_storage">Локальное хранилище</string>
     <string name="offload_files">Выгрузить файлы</string>
@@ -2110,6 +2110,8 @@
     </string>
     <string name="private_local_yours_forever">зашифрованный, локальный, ваш навсегда</string>
     <string name="private_channel">Прямой канал</string>
+    <string name="space_header_private_channel">Private channel</string>
+    <string name="space_header_group_channel">Group channel</string>
     <string name="wallpaper_item_space_icon_color">Цвет по умолчанию</string>
     <string name="publish_to_web">Опубликовать в веб</string>
     <string name="preferences">Настройки</string>
@@ -2213,4 +2215,16 @@
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
     <string name="chats_search_close_content_description">Close search</string>
+    <!-- DROID-4358 Offline Downloads settings -->
+    <string name="offline_downloads_section_title">Offline access</string>
+    <string name="offline_downloads_title">Offline Downloads</string>
+    <string name="offline_downloads_subtitle">Auto sync files up to a selected size</string>
+    <string name="offline_downloads_use_cellular">Use Cellular Data</string>
+    <string name="offline_downloads_value_off">Off</string>
+    <string name="offline_downloads_value_20mb">20 MB</string>
+    <string name="offline_downloads_value_100mb">100 MB</string>
+    <string name="offline_downloads_value_250mb">250 MB</string>
+    <string name="offline_downloads_value_1gb">1 GB</string>
+    <string name="offline_downloads_value_unlimited">Неограниченно</string>
+    <string name="device_storage_used">Device storage used</string>
 </resources>

@@ -10,6 +10,14 @@
     <dimen name="default_nav_panel_height">52dp</dimen>
     <dimen name="default_editor_item_offset">48dp</dimen>
 
+    <!-- Navigation redesign (DROID-4318) -->
+    <dimen name="nav_circular_button_size">44dp</dimen>
+    <dimen name="nav_pill_height">40dp</dimen>
+    <dimen name="nav_pill_horizontal_padding">16dp</dimen>
+    <dimen name="nav_top_toolbar_height">52dp</dimen>
+    <dimen name="nav_fab_button_size">48dp</dimen>
+    <dimen name="nav_fab_margin">16dp</dimen>
+
     <dimen name="main_bottom_toolbar_icon_width">72dp</dimen>
     <dimen name="main_bottom_toolbar_icon_height">52dp</dimen>
 

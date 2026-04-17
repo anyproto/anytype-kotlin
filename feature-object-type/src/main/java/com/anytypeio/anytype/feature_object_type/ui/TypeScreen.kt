@@ -23,6 +23,8 @@ import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 @Composable
 fun TopBarContent(
     uiSyncStatusBadgeState: UiSyncStatusBadgeState,
+    uiTitleState: UiTitleState,
+    uiIconState: UiIconState,
     onTypeEvent: (TypeEvent) -> Unit
 ) {
     // Use windowInsetsPadding if running on a recent SDK
@@ -33,6 +35,8 @@ fun TopBarContent(
     Column(modifier = modifier) {
         TopToolbar(
             uiSyncStatusBadgeState = uiSyncStatusBadgeState,
+            uiTitleState = uiTitleState,
+            uiIconState = uiIconState,
             onTypeEvent = onTypeEvent
         )
     }

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.ext.DateParser
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.objectIcon
@@ -48,6 +49,12 @@ sealed class AllContentMenuMode {
 sealed class UiTitleState {
     data object AllContent : UiTitleState()
     data object OnlyUnlinked : UiTitleState()
+}
+
+// SYNC STATUS BADGE
+sealed class UiSyncStatusBadgeState {
+    data object Hidden : UiSyncStatusBadgeState()
+    data class Visible(val status: SpaceSyncAndP2PStatusState) : UiSyncStatusBadgeState()
 }
 
 // TABS

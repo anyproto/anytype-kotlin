@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
+import com.anytypeio.anytype.domain.discussions.AddDiscussion
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
@@ -256,7 +257,8 @@ object ObjectSetModule {
         emojiProvider: EmojiProvider,
         emojiSuggester: EmojiSuggester,
         stringResourceProvider: StringResourceProvider,
-        getDefaultObjectType: GetDefaultObjectType
+        getDefaultObjectType: GetDefaultObjectType,
+        addDiscussion: AddDiscussion
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -304,7 +306,8 @@ object ObjectSetModule {
         emojiProvider = emojiProvider,
         emojiSuggester = emojiSuggester,
         stringResourceProvider = stringResourceProvider,
-        getDefaultObjectType = getDefaultObjectType
+        getDefaultObjectType = getDefaultObjectType,
+        addDiscussion = addDiscussion
     )
 
     @JvmStatic

@@ -143,7 +143,7 @@ class VaultViewModel(
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
-    val commands = MutableSharedFlow<VaultCommand>(replay = 0)
+    val commands = MutableSharedFlow<VaultCommand>(replay = 1)
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showCreateChannelMenu = MutableStateFlow(false)
     val notificationError = MutableStateFlow<String?>(null)

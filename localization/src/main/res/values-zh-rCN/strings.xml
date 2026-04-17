@@ -2063,6 +2063,8 @@
     <string name="share_space_error_make_private_failed">        无法将空间设为私有。请稍后重试。    </string>
     <string name="private_local_yours_forever">加密 · 本地 · 永久归你</string>
     <string name="private_channel">私聊频道</string>
+    <string name="space_header_private_channel">Private channel</string>
+    <string name="space_header_group_channel">Group channel</string>
     <string name="wallpaper_item_space_icon_color">默认颜色</string>
     <string name="publish_to_web">发布至网络</string>
     <string name="preferences">首选项</string>

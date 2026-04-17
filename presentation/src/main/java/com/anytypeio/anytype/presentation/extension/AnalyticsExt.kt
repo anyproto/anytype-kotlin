@@ -1966,6 +1966,9 @@ fun CoroutineScope.sendDeleteWidgetEvent(
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_CHAT)
                     }
                     Widget.Source.Bundled.PersonalFavorites -> {
+                        // TODO(DROID-4397): introduce a distinct analytics tag for
+                        //  personal favorites once the product/analytics contract
+                        //  is finalized. Bucketing under legacy "Favorites" for now.
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
                 }
@@ -2017,6 +2020,9 @@ fun CoroutineScope.sendClickWidgetTitleEvent(
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_CHAT)
                     }
                     Widget.Source.Bundled.PersonalFavorites -> {
+                        // TODO(DROID-4397): introduce a distinct analytics tag for
+                        //  personal favorites once the product/analytics contract
+                        //  is finalized. Bucketing under legacy "Favorites" for now.
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
                 }
@@ -2111,6 +2117,9 @@ fun CoroutineScope.sendReorderWidgetEvent(
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_CHAT)
                     }
                     Widget.Source.Bundled.PersonalFavorites -> {
+                        // TODO(DROID-4397): introduce a distinct analytics tag for
+                        //  personal favorites once the product/analytics contract
+                        //  is finalized. Bucketing under legacy "Favorites" for now.
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
                 }

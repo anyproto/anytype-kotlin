@@ -1785,6 +1785,10 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat_attachment_media">Ortam yükle</string>
     <string name="chat_attachment_upload">Yükle</string>
     <string name="chat_attach">Ekle</string>
+    <string name="upload_success_snackbar_image">New image added</string>
+    <string name="upload_success_snackbar_video">New video added</string>
+    <string name="upload_success_snackbar_file">New file added</string>
+    <string name="upload_success_snackbar_mixed">New files added</string>
     <string name="chats_reply">Yanıtla</string>
     <string name="chats_add_reaction">Tepki Ekle</string>
     <string name="chat_send_message_rate_limit_title">Durun! Turbo yazım algılandı!</string>

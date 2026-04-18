@@ -354,7 +354,8 @@ class ChatFragment : Fragment() {
                             vm.onSeeAllCreateSheetDismissed()
                         }
                     }
-                }
+                },
+                onBack = { vm.onSeeAllBackToAttachmentMenu() }
             )
 
             if (showGlobalSearchBottomSheet) {

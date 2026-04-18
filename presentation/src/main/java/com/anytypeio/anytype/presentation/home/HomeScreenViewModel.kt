@@ -2094,6 +2094,9 @@ class HomeScreenViewModel(
                     ?.takeIf { it.isNotEmpty() }
                 if (path == null) {
                     Timber.w("Upload: could not resolve path for ${target.uri}")
+                    target.sourceFilePath?.let { src ->
+                        runCatching { java.io.File(src).delete() }
+                    }
                     return@forEach
                 }
                 uploadFile.async(
@@ -2111,6 +2114,9 @@ class HomeScreenViewModel(
                     onFailure = { e -> Timber.e(e, "Upload failed for $path") }
                 )
                 runCatching { java.io.File(path).delete() }
+                target.sourceFilePath?.let { src ->
+                    runCatching { java.io.File(src).delete() }
+                }
             }
             if (successes.isNotEmpty()) {
                 _uploadSnackbar.emit(successes.toSnackbarVariant())
@@ -2120,7 +2126,14 @@ class HomeScreenViewModel(
 
     data class UploadToSpaceTarget(
         val uri: String,
-        val type: Block.Content.File.Type
+        val type: Block.Content.File.Type,
+        /**
+         * Optional local file path that should be deleted after upload
+         * completes (success or failure). Used by the camera capture path
+         * to clean up the FileProvider-backed temp file in the app cache.
+         * Regular gallery/SAF URIs don't need this.
+         */
+        val sourceFilePath: String? = null
     )
 
     private fun List<Block.Content.File.Type>.toSnackbarVariant(): UploadSuccessSnackbar {

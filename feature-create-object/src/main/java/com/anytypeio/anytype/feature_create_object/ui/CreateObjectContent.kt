@@ -58,9 +58,16 @@ import com.anytypeio.anytype.feature_create_object.presentation.ObjectTypeItem
 fun CreateObjectContent(
     state: NewCreateObjectState,
     onAction: (CreateObjectAction) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBack: (() -> Unit)? = null
 ) {
     Column(modifier = modifier) {
+        // Back row — shown when the host provides a back callback (e.g., chat's
+        // "See all" returning to the attachment menu).
+        if (onBack != null) {
+            BackRow(onClick = onBack)
+        }
+
         // Media section
         if (state.showMediaSection) {
             MediaSection(onAction = onAction)
@@ -355,6 +362,30 @@ private fun ObjectTypeMenuItem(
             color = colorResource(id = R.color.text_primary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+        )
+    }
+}
+
+@Composable
+private fun BackRow(onClick: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .clickable(onClick = onClick)
+            .padding(horizontal = 24.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_back_24),
+            contentDescription = stringResource(id = R.string.back),
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(20.dp))
+        Text(
+            text = stringResource(id = R.string.back),
+            style = BodyRegular,
+            color = colorResource(id = R.color.text_primary)
         )
     }
 }

@@ -38,7 +38,8 @@ fun CreateObjectPopup(
     state: NewCreateObjectState,
     onAction: (CreateObjectAction) -> Unit,
     modifier: Modifier = Modifier,
-    offset: DpOffset = StyledDropdownMenuDefaults.DefaultOffset
+    offset: DpOffset = StyledDropdownMenuDefaults.DefaultOffset,
+    onBack: (() -> Unit)? = null
 ) {
     StyledDropdownMenu(
         expanded = expanded,
@@ -49,7 +50,8 @@ fun CreateObjectPopup(
     ) {
         CreateObjectContent(
             state = state,
-            onAction = onAction
+            onAction = onAction,
+            onBack = onBack
         )
     }
 }

@@ -226,6 +226,7 @@ fun ChatScreenPreview() {
         onVideoCaptured = {},
         quickCreateTypes = emptyList(),
         onAttachmentAction = {},
+        reopenAttachmentMenu = kotlinx.coroutines.flow.MutableSharedFlow(),
         onDeleteMessageWarningTriggered = {},
         onAttachmentMenuTriggered = {}
     )

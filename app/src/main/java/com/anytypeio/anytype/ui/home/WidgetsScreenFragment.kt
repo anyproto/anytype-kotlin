@@ -250,21 +250,28 @@ class WidgetsScreenFragment : Fragment(),
             )
         }
         var capturedPhotoUri by rememberSaveable { mutableStateOf<String?>(null) }
+        var capturedPhotoPath by rememberSaveable { mutableStateOf<String?>(null) }
         val takePhotoLauncher = rememberLauncherForActivityResult(
             ActivityResultContracts.TakePicture()
         ) { isSuccess ->
             val uri = capturedPhotoUri
+            val sourcePath = capturedPhotoPath
             if (isSuccess && uri != null) {
                 vm.onUploadFilesToSpace(
                     listOf(
                         HomeScreenViewModel.UploadToSpaceTarget(
-                            uri,
-                            Block.Content.File.Type.IMAGE
+                            uri = uri,
+                            type = Block.Content.File.Type.IMAGE,
+                            sourceFilePath = sourcePath
                         )
                     )
                 )
+            } else if (sourcePath != null) {
+                // Capture cancelled/failed — still clean up the empty temp file.
+                runCatching { File(sourcePath).delete() }
             }
             capturedPhotoUri = null
+            capturedPhotoPath = null
         }
         val takePhotoPermissionLauncher = rememberLauncherForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -273,7 +280,10 @@ class WidgetsScreenFragment : Fragment(),
                 launchCameraForHomeUpload(
                     context = uploadContext,
                     launcher = takePhotoLauncher,
-                    onUriReceived = { capturedPhotoUri = it.toString() }
+                    onPhotoReady = { uri, file ->
+                        capturedPhotoUri = uri.toString()
+                        capturedPhotoPath = file.absolutePath
+                    }
                 )
             } else {
                 Timber.w("Camera permission denied for home upload")
@@ -785,7 +795,7 @@ class WidgetsScreenFragment : Fragment(),
 internal fun launchCameraForHomeUpload(
     context: android.content.Context,
     launcher: androidx.activity.compose.ManagedActivityResultLauncher<Uri, Boolean>,
-    onUriReceived: (Uri) -> Unit
+    onPhotoReady: (uri: Uri, file: File) -> Unit
 ) {
     val tempDir = File(context.cacheDir, HOME_UPLOAD_TEMP_FOLDER)
     if (!tempDir.exists()) tempDir.mkdirs()
@@ -798,7 +808,7 @@ internal fun launchCameraForHomeUpload(
         "${context.packageName}.provider",
         photoFile
     )
-    onUriReceived(uri)
+    onPhotoReady(uri, photoFile)
     launcher.launch(uri)
 }
 

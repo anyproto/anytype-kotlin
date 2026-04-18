@@ -85,6 +85,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
+import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
@@ -237,6 +238,18 @@ class ChatViewModel @Inject constructor(
 
     private val _seeAllCreateSheetVisible = MutableStateFlow(false)
     val seeAllCreateSheetVisible: StateFlow<Boolean> = _seeAllCreateSheetVisible.asStateFlow()
+
+    /**
+     * One-shot signal telling the ChatBox to re-open its attachment dropdown
+     * menu. Emitted after the user taps "Back" in the See-all CreateObjectPopup
+     * so that they return to the menu they came from.
+     */
+    private val _reopenAttachmentMenu = MutableSharedFlow<Unit>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val reopenAttachmentMenu: SharedFlow<Unit> = _reopenAttachmentMenu.asSharedFlow()
 
     private val _uploadSnackbar = MutableSharedFlow<UploadSuccessSnackbar>(
         replay = 0,
@@ -2514,12 +2527,12 @@ class ChatViewModel @Inject constructor(
         Timber.d("DROID-2966 onCreateAndAttachObjectOfType key=${typeKey.key}")
         viewModelScope.launch {
             _seeAllCreateSheetVisible.value = false
-            createObject.async(
-                params = CreateObject.Param(
-                    space = vmParams.space,
-                    type = typeKey
-                )
-            ).onSuccess { result ->
+            val objType = storeOfObjectTypes.getByKey(typeKey.key)
+            val params = objType?.uniqueKey.getCreateObjectParams(
+                space = vmParams.space,
+                defaultTemplate = objType?.defaultTemplateId
+            )
+            createObject.async(params).onSuccess { result ->
                 navigation.emit(
                     result.obj.navigation(
                         effect = OpenObjectNavigation.SideEffect.AttachToChat(
@@ -2540,6 +2553,16 @@ class ChatViewModel @Inject constructor(
 
     fun onSeeAllCreateSheetDismissed() {
         _seeAllCreateSheetVisible.value = false
+    }
+
+    /**
+     * Back action from the See-all CreateObjectPopup: dismisses the popup
+     * and signals the ChatBox to re-open the attachment menu so the user
+     * can pick a different option.
+     */
+    fun onSeeAllBackToAttachmentMenu() {
+        _seeAllCreateSheetVisible.value = false
+        viewModelScope.launch { _reopenAttachmentMenu.emit(Unit) }
     }
 
     fun hideError() {

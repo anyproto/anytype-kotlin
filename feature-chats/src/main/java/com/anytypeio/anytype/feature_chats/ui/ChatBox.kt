@@ -108,6 +108,7 @@ fun ChatBox(
     clearText: () -> Unit,
     quickCreateTypes: List<ObjectTypeMenuItem>,
     onAttachmentAction: (AttachmentMenuAction) -> Unit,
+    reopenAttachmentMenu: kotlinx.coroutines.flow.SharedFlow<Unit>,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
@@ -223,6 +224,16 @@ fun ChatBox(
     val scope = rememberCoroutineScope()
 
     var isFocused by remember { mutableStateOf(false) }
+
+    // Re-open attachment menu after "Back" was tapped in the See-all popup.
+    // Whichever of the two local menus is eligible (based on focus state)
+    // reacts — the other is a no-op because only one is rendered at a time.
+    androidx.compose.runtime.LaunchedEffect(reopenAttachmentMenu) {
+        reopenAttachmentMenu.collect {
+            showDropdownMenu = true
+            onAttachmentMenuTriggered()
+        }
+    }
 
     var showMarkup by remember { mutableStateOf(false) }
 
@@ -510,6 +521,7 @@ fun ChatBox(
                         spaceUxType = spaceUxType,
                         quickCreateTypes = quickCreateTypes,
                         onAttachmentAction = dispatchAttachmentAction,
+                        reopenAttachmentMenu = reopenAttachmentMenu,
                         onMentionClicked = {
                             val selection = text.selection
                             val cursorPosition = selection.start
@@ -933,12 +945,20 @@ fun ChatBoxEditPanel(
     spaceUxType: SpaceUxType? = null,
     quickCreateTypes: List<ObjectTypeMenuItem>,
     onAttachmentAction: (AttachmentMenuAction) -> Unit,
+    reopenAttachmentMenu: kotlinx.coroutines.flow.SharedFlow<Unit>,
     onStyleClicked: () -> Unit,
     onMentionClicked: () -> Unit,
     onAttachmentMenuTriggered: () -> Unit,
     ) {
 
     var showDropdownMenu by remember { mutableStateOf(false) }
+
+    androidx.compose.runtime.LaunchedEffect(reopenAttachmentMenu) {
+        reopenAttachmentMenu.collect {
+            showDropdownMenu = true
+            onAttachmentMenuTriggered()
+        }
+    }
 
     Row(
         modifier = modifier
@@ -1065,6 +1085,7 @@ fun ChatBoxEditPanelPreview() {
         onStyleClicked = {},
         quickCreateTypes = emptyList(),
         onAttachmentAction = {},
+        reopenAttachmentMenu = kotlinx.coroutines.flow.MutableSharedFlow(),
         onAttachmentMenuTriggered = {}
     )
 }

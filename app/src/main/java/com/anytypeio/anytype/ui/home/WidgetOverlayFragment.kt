@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +31,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.ui.WallpaperResult
 import com.anytypeio.anytype.core_models.ui.WallpaperView
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
@@ -38,9 +40,12 @@ import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectAction
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
+import com.anytypeio.anytype.feature_create_object.ui.CreateObjectPopup
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
-import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.ui.base.navigation
@@ -60,6 +65,10 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
 
     private val vm: HomeScreenViewModel by viewModels { factory }
 
+    private lateinit var createObjectFactory: CreateObjectViewModelFactory
+
+    private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
     private val mainVm: MainViewModel by activityViewModels()
 
     private val space: String get() = argString(ARG_SPACE_ID)
@@ -72,8 +81,19 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
             showHomepagePicker = false
         )
         componentManager().widgetOverlayComponent.get(vmParams).inject(this)
+        val createObjectVmParams = NewCreateObjectViewModel.VmParams(
+            spaceId = SpaceId(space),
+            showAttachObject = false,
+            showMediaSection = true
+        )
+        createObjectFactory = componentManager()
+            .createObjectFeatureComponent
+            .get(key = createObjectComponentKey(), param = createObjectVmParams)
+            .viewModelFactory()
         super.onCreate(savedInstanceState)
     }
+
+    private fun createObjectComponentKey(): String = "overlay-create-object:$space"
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
@@ -93,11 +113,13 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
             MaterialTheme {
                 WidgetOverlayContent(
                     vm = vm,
+                    createObjectVm = createObjectVm,
                     wallpaperState = mainVm.wallpaperState,
                     onBackClicked = { dismiss() },
                     onSpaceSettingsClicked = {
                         vm.onSpaceSettingsClicked(space = SpaceId(space))
-                    }
+                    },
+                    onCreateObjectAction = { action -> handleCreateObjectAction(action) }
                 )
             }
         }
@@ -120,21 +142,6 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
                                     )
                                 }.onFailure {
                                     Timber.e(it, "Error opening global search from overlay")
-                                }
-                                dismissAfterGesture()
-                            }
-                            is Command.OpenObjectCreateDialog -> {
-                                // Show on parent fragment manager so the dialog
-                                // survives the overlay dismiss below.
-                                runCatching {
-                                    ObjectTypeSelectionFragment
-                                        .new(space = command.space.id)
-                                        .show(
-                                            parentFragmentManager,
-                                            "overlay-object-create-dialog"
-                                        )
-                                }.onFailure {
-                                    Timber.e(it, "Error showing create-object dialog from overlay")
                                 }
                                 dismissAfterGesture()
                             }
@@ -278,8 +285,31 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
     }
 
     override fun onDestroy() {
+        componentManager().createObjectFeatureComponent.release(createObjectComponentKey())
         componentManager().widgetOverlayComponent.release()
         super.onDestroy()
+    }
+
+    private fun handleCreateObjectAction(action: CreateObjectAction) {
+        when (action) {
+            is CreateObjectAction.CreateObjectOfType -> {
+                vm.onCreateNewObjectOfTypeKey(typeKey = TypeKey(action.typeKey))
+            }
+            is CreateObjectAction.UpdateSearch,
+            is CreateObjectAction.Retry -> {
+                createObjectVm.onAction(action)
+            }
+            CreateObjectAction.SelectPhotos,
+            CreateObjectAction.TakePhoto,
+            CreateObjectAction.SelectFiles -> {
+                Timber.d("CreateObjectPopup media action: $action")
+                vm.hideCreateObjectSheet()
+            }
+            CreateObjectAction.AttachExistingObject -> {
+                Timber.d("CreateObjectPopup attach action received unexpectedly")
+                vm.hideCreateObjectSheet()
+            }
+        }
     }
 
     companion object {
@@ -297,9 +327,11 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
 @Composable
 private fun WidgetOverlayContent(
     vm: HomeScreenViewModel,
+    createObjectVm: NewCreateObjectViewModel,
     wallpaperState: StateFlow<WallpaperResult>,
     onBackClicked: () -> Unit,
     onSpaceSettingsClicked: () -> Unit,
+    onCreateObjectAction: (CreateObjectAction) -> Unit,
 ) {
     val wallpaper by wallpaperState.collectAsStateWithLifecycle()
     val spaceBackground = wallpaper.toSpaceBackground()
@@ -333,6 +365,18 @@ private fun WidgetOverlayContent(
                 .statusBarsPadding(),
             onBackButtonClicked = onBackClicked,
             onSpaceSettingsClicked = onSpaceSettingsClicked,
+        )
+
+        val createObjectSheetVisible by vm.createObjectSheetVisible.collectAsStateWithLifecycle()
+        val createObjectState by createObjectVm.state.collectAsStateWithLifecycle()
+        LaunchedEffect(createObjectSheetVisible) {
+            if (createObjectSheetVisible) createObjectVm.onOpen()
+        }
+        CreateObjectPopup(
+            expanded = createObjectSheetVisible,
+            onDismissRequest = { vm.hideCreateObjectSheet() },
+            state = createObjectState,
+            onAction = onCreateObjectAction
         )
     }
 }

@@ -561,8 +561,8 @@ fun WidgetsScreen(
             onClick = viewModel::onSearchIconClicked,
         )
 
-        // Create-object FAB (bottom-end). Tap creates a new object;
-        // long-press surfaces the type picker. Uses the same icon as the
+        // Create-object FAB (bottom-end). Tap surfaces the create-object
+        // popup (type picker + media rows). Uses the same icon as the
         // editor / set screens. Disabled visual reflects
         // NavPanelState.Default.isCreateEnabled.
         CircularFabButton(
@@ -578,8 +578,7 @@ fun WidgetsScreen(
                     bottom = dimensionResource(R.dimen.nav_fab_margin),
                 ),
             isEnabled = isCreateEnabled,
-            onClick = viewModel::onCreateNewObjectClicked,
-            onLongClick = viewModel::onCreateNewObjectLongClicked,
+            onClick = viewModel::onCreateObjectMenuClicked,
         )
     }
 }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,6 +30,11 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectAction
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
+import com.anytypeio.anytype.feature_create_object.ui.CreateObjectPopup
 import com.anytypeio.anytype.core_ui.features.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -49,7 +55,6 @@ import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
-import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.creation.WidgetSourceTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
@@ -82,7 +87,11 @@ class WidgetsScreenFragment : Fragment(),
     @Inject
     lateinit var factory: HomeScreenViewModel.Factory
 
+    private lateinit var createObjectFactory: CreateObjectViewModelFactory
+
     private val vm by viewModels<HomeScreenViewModel> { factory }
+
+    private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val vmParams = HomeScreenVmParams(
@@ -90,13 +99,25 @@ class WidgetsScreenFragment : Fragment(),
             showHomepagePicker = argOrNull<Boolean>(SHOW_HOMEPAGE_PICKER_KEY) ?: false
         )
         componentManager().homeScreenComponent.get(vmParams).inject(this)
+        val createObjectVmParams = NewCreateObjectViewModel.VmParams(
+            spaceId = SpaceId(space),
+            showAttachObject = false,
+            showMediaSection = true
+        )
+        createObjectFactory = componentManager()
+            .createObjectFeatureComponent
+            .get(key = createObjectComponentKey(), param = createObjectVmParams)
+            .viewModelFactory()
         super.onCreate(savedInstanceState)
     }
 
     override fun onDestroy() {
+        componentManager().createObjectFeatureComponent.release(createObjectComponentKey())
         componentManager().homeScreenComponent.release()
         super.onDestroy()
     }
+
+    private fun createObjectComponentKey(): String = "widgets-create-object:$space"
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
@@ -174,6 +195,20 @@ class WidgetsScreenFragment : Fragment(),
                 }
             )
         }
+
+        val createObjectSheetVisible =
+            vm.createObjectSheetVisible.collectAsStateWithLifecycle().value
+        val createObjectState =
+            createObjectVm.state.collectAsStateWithLifecycle().value
+        LaunchedEffect(createObjectSheetVisible) {
+            if (createObjectSheetVisible) createObjectVm.onOpen()
+        }
+        CreateObjectPopup(
+            expanded = createObjectSheetVisible,
+            onDismissRequest = { vm.hideCreateObjectSheet() },
+            state = createObjectState,
+            onAction = { action -> handleCreateObjectAction(action) }
+        )
 
         // Homepage Picker - shown as bottom sheet after channel creation or from Create Home widget
         val showHomepagePicker = vm.showHomepagePicker.collectAsStateWithLifecycle().value
@@ -373,13 +408,6 @@ class WidgetsScreenFragment : Fragment(),
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening space settings")
                 }
-            }
-
-            is Command.OpenObjectCreateDialog -> {
-                val dialog = ObjectTypeSelectionFragment.new(
-                    space = command.space.id
-                )
-                dialog.show(childFragmentManager, "object-create-dialog")
             }
 
             is Command.OpenGlobalSearchScreen -> {
@@ -595,6 +623,29 @@ class WidgetsScreenFragment : Fragment(),
 
     override fun onSelectObjectType(objType: ObjectWrapper.Type) {
         vm.onCreateNewObjectClicked(objType = objType)
+    }
+
+    private fun handleCreateObjectAction(action: CreateObjectAction) {
+        when (action) {
+            is CreateObjectAction.CreateObjectOfType -> {
+                vm.onCreateNewObjectOfTypeKey(typeKey = TypeKey(action.typeKey))
+            }
+            is CreateObjectAction.UpdateSearch,
+            is CreateObjectAction.Retry -> {
+                createObjectVm.onAction(action)
+            }
+            CreateObjectAction.SelectPhotos,
+            CreateObjectAction.TakePhoto,
+            CreateObjectAction.SelectFiles -> {
+                // TODO wire real media handlers in the follow-up.
+                Timber.d("CreateObjectPopup media action: $action")
+                vm.hideCreateObjectSheet()
+            }
+            CreateObjectAction.AttachExistingObject -> {
+                Timber.d("CreateObjectPopup attach action received unexpectedly")
+                vm.hideCreateObjectSheet()
+            }
+        }
     }
 
     override fun onChatObjectCreated(objectId: Id) {

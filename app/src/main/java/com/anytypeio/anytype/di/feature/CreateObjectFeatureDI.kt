@@ -29,8 +29,7 @@ interface CreateObjectFeatureComponent {
         ): CreateObjectFeatureComponent
     }
 
-    // Inject method for future Fragment (when UI is wired up)
-    // fun inject(fragment: CreateObjectFragment)
+    fun viewModelFactory(): CreateObjectViewModelFactory
 }
 
 @Module

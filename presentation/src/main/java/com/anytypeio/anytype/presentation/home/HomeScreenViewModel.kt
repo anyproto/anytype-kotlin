@@ -175,6 +175,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -286,6 +287,9 @@ class HomeScreenViewModel(
     val showHomepagePicker = MutableStateFlow(vmParams.showHomepagePicker)
     val showCreateHomeWidget = MutableStateFlow(false)
     val showInviteMembersWidget = MutableStateFlow(false)
+
+    private val _createObjectSheetVisible = MutableStateFlow(false)
+    val createObjectSheetVisible: StateFlow<Boolean> = _createObjectSheetVisible.asStateFlow()
 
     private val isEmptyingBinInProgress = MutableStateFlow(false)
 
@@ -2052,12 +2056,32 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onCreateNewObjectLongClicked() {
+    fun onCreateObjectMenuClicked() {
+        if (vmParams.spaceId.id.isNotEmpty()) {
+            _createObjectSheetVisible.value = true
+        }
+    }
+
+    fun hideCreateObjectSheet() {
+        _createObjectSheetVisible.value = false
+    }
+
+    /**
+     * Resolves an object type by unique key (emitted from the create-object
+     * bottom sheet) and delegates to [onCreateNewObjectClicked], which already
+     * handles chat-derived types, template-backed creation, analytics, and
+     * navigation.
+     */
+    fun onCreateNewObjectOfTypeKey(typeKey: TypeKey) {
         viewModelScope.launch {
-            val space = vmParams.spaceId.id
-            if (space.isNotEmpty()) {
-                commands.emit(Command.OpenObjectCreateDialog(SpaceId(space)))
+            val objType = storeOfObjectTypes.getByKey(typeKey.key)
+            _createObjectSheetVisible.value = false
+            if (objType == null) {
+                Timber.w("Create-object: type key ${typeKey.key} not found in store")
+                sendToast("Object type not available yet, please try again")
+                return@launch
             }
+            onCreateNewObjectClicked(objType = objType)
         }
     }
 
@@ -4035,8 +4059,6 @@ sealed class Command {
     ) : Command()
 
     data class OpenSpaceSettings(val spaceId: SpaceId) : Command()
-
-    data class OpenObjectCreateDialog(val space: SpaceId) : Command()
 
     data class OpenGlobalSearchScreen(val space: Id) : Command()
 

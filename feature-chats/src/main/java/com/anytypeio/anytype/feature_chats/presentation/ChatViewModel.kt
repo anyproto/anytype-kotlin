@@ -84,6 +84,7 @@ import com.anytypeio.anytype.feature_chats.ui.NotificationSetting
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
+import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
 import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
@@ -98,8 +99,10 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -234,6 +237,13 @@ class ChatViewModel @Inject constructor(
 
     private val _seeAllCreateSheetVisible = MutableStateFlow(false)
     val seeAllCreateSheetVisible: StateFlow<Boolean> = _seeAllCreateSheetVisible.asStateFlow()
+
+    private val _uploadSnackbar = MutableSharedFlow<UploadSuccessSnackbar>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+    val uploadSnackbar: SharedFlow<UploadSuccessSnackbar> = _uploadSnackbar.asSharedFlow()
 
     private var account: Id = ""
 
@@ -811,6 +821,7 @@ class ChatViewModel @Inject constructor(
             val normalizedMarkup = detectedLinkMarks.sortedBy { it.range.first }
 
             var shouldClearChatTempFolder = false
+            val uploadSuccesses = mutableListOf<Block.Content.File.Type>()
 
             chatBoxMode.value = chatBoxMode.value.updateIsSendingBlocked(isBlocked = true)
             val attachments = buildList {
@@ -891,18 +902,20 @@ class ChatViewModel @Inject constructor(
                                 }
                             }
 
+                            val mediaType = if (attachment.isVideo)
+                                Block.Content.File.Type.VIDEO
+                            else
+                                Block.Content.File.Type.IMAGE
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
                                     path = path,
-                                    type = if (attachment.isVideo)
-                                        Block.Content.File.Type.VIDEO
-                                    else
-                                        Block.Content.File.Type.IMAGE,
+                                    type = mediaType,
                                     preloadFileId = preloadedFileId,
                                     createdInContext = vmParams.ctx
                                 )
                             ).onSuccess { file ->
+                                uploadSuccesses += mediaType
                                 if (wasCopiedToCache) {
                                     withContext(dispatchers.io) {
                                         val isDeleted = copyFileToCacheDirectory.delete(path)
@@ -1011,6 +1024,7 @@ class ChatViewModel @Inject constructor(
                                     createdInContext = vmParams.ctx
                                 )
                             ).onSuccess { file ->
+                                uploadSuccesses += Block.Content.File.Type.NONE
                                 copyFileToCacheDirectory.delete(path)
                                 add(
                                     Chat.Message.Attachment(
@@ -1045,6 +1059,9 @@ class ChatViewModel @Inject constructor(
                         }
                     }
                 }
+            }
+            if (uploadSuccesses.isNotEmpty()) {
+                _uploadSnackbar.emit(uploadSuccesses.toSnackbarVariant())
             }
             when (val mode = chatBoxMode.value) {
                 is ChatBoxMode.Default -> {
@@ -2547,6 +2564,16 @@ class ChatViewModel @Inject constructor(
         val isVideo: Boolean = false,
         val capturedByCamera: Boolean = false
     )
+
+    private fun List<Block.Content.File.Type>.toSnackbarVariant(): UploadSuccessSnackbar {
+        val distinct = distinct()
+        if (distinct.size > 1) return UploadSuccessSnackbar.Mixed
+        return when (distinct.single()) {
+            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image
+            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video
+            else -> UploadSuccessSnackbar.File
+        }
+    }
 
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()

@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.Lifecycle
@@ -59,6 +60,8 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
+import com.anytypeio.anytype.presentation.main.MainViewModel
+import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.ViewerSpaceSettingsState
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
@@ -106,6 +109,8 @@ class WidgetsScreenFragment : Fragment(),
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
     private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
+    private val mainVm: MainViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val vmParams = HomeScreenVmParams(
@@ -335,6 +340,11 @@ class WidgetsScreenFragment : Fragment(),
                 launch { vm.commands.collect { command -> proceed(command) } }
                 launch { vm.navigation.collect { command -> proceed(command) } }
                 launch { vm.toasts.collect { toast(it) } }
+                launch {
+                    vm.uploadSnackbar.collect { variant ->
+                        mainVm.showSnackbarWithOk(uploadSnackbarMessage(variant))
+                    }
+                }
             }
         }
     }
@@ -793,3 +803,16 @@ internal fun launchCameraForHomeUpload(
 }
 
 private const val HOME_UPLOAD_TEMP_FOLDER = "home_upload_temp_folder"
+
+/**
+ * Resolve the user-facing snackbar message for an [UploadSuccessSnackbar]
+ * variant. Shared by fragments that host upload entry points (Widgets,
+ * Widget Overlay, Chat).
+ */
+internal fun Fragment.uploadSnackbarMessage(variant: UploadSuccessSnackbar): String =
+    when (variant) {
+        UploadSuccessSnackbar.Image -> getString(R.string.upload_success_snackbar_image)
+        UploadSuccessSnackbar.Video -> getString(R.string.upload_success_snackbar_video)
+        UploadSuccessSnackbar.File -> getString(R.string.upload_success_snackbar_file)
+        UploadSuccessSnackbar.Mixed -> getString(R.string.upload_success_snackbar_mixed)
+    }

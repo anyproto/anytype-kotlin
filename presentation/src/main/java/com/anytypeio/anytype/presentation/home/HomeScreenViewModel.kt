@@ -173,7 +173,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -294,6 +297,13 @@ class HomeScreenViewModel(
 
     private val _createObjectSheetVisible = MutableStateFlow(false)
     val createObjectSheetVisible: StateFlow<Boolean> = _createObjectSheetVisible.asStateFlow()
+
+    private val _uploadSnackbar = MutableSharedFlow<UploadSuccessSnackbar>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+    )
+    val uploadSnackbar: SharedFlow<UploadSuccessSnackbar> = _uploadSnackbar.asSharedFlow()
 
     private val isEmptyingBinInProgress = MutableStateFlow(false)
 
@@ -2077,6 +2087,7 @@ class HomeScreenViewModel(
         if (vmParams.spaceId.id.isEmpty() || targets.isEmpty()) return
         _createObjectSheetVisible.value = false
         viewModelScope.launch {
+            val successes = mutableListOf<Block.Content.File.Type>()
             targets.forEach { target ->
                 val path = runCatching { fileSharer.getPath(target.uri) }
                     .getOrNull()
@@ -2093,10 +2104,16 @@ class HomeScreenViewModel(
                         createdInContext = null
                     )
                 ).fold(
-                    onSuccess = { Timber.d("Upload success id=${it.id}") },
+                    onSuccess = {
+                        Timber.d("Upload success id=${it.id}")
+                        successes += target.type
+                    },
                     onFailure = { e -> Timber.e(e, "Upload failed for $path") }
                 )
                 runCatching { java.io.File(path).delete() }
+            }
+            if (successes.isNotEmpty()) {
+                _uploadSnackbar.emit(successes.toSnackbarVariant())
             }
         }
     }
@@ -2105,6 +2122,16 @@ class HomeScreenViewModel(
         val uri: String,
         val type: Block.Content.File.Type
     )
+
+    private fun List<Block.Content.File.Type>.toSnackbarVariant(): UploadSuccessSnackbar {
+        val distinct = distinct()
+        if (distinct.size > 1) return UploadSuccessSnackbar.Mixed
+        return when (distinct.single()) {
+            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image
+            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video
+            else -> UploadSuccessSnackbar.File
+        }
+    }
 
     fun hideCreateObjectSheet() {
         _createObjectSheetVisible.value = false

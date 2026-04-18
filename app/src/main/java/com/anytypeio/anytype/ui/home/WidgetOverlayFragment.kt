@@ -59,6 +59,7 @@ import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.main.MainViewModel
+import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -168,6 +169,11 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
                     }
                 }
                 launch { vm.toasts.collect { toast(it) } }
+                launch {
+                    vm.uploadSnackbar.collect { variant ->
+                        mainVm.showSnackbarWithOk(uploadSnackbarMessage(variant))
+                    }
+                }
             }
         }
     }

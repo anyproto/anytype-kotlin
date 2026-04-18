@@ -1814,6 +1814,10 @@
     <string name="chat_attachment_media">Загрузить медиафайл</string>
     <string name="chat_attachment_upload">Загрузить</string>
     <string name="chat_attach">Прикрепить</string>
+    <string name="upload_success_snackbar_image">New image added</string>
+    <string name="upload_success_snackbar_video">New video added</string>
+    <string name="upload_success_snackbar_file">New file added</string>
+    <string name="upload_success_snackbar_mixed">New files added</string>
     <string name="chats_reply">Ответить</string>
     <string name="chats_add_reaction">Добавить реакцию</string>
     <string name="chat_send_message_rate_limit_title">Удерживаем! Обнаружен Turbo typing!</string>

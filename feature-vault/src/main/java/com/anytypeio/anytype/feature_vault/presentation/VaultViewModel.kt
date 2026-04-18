@@ -8,8 +8,6 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Config
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -58,9 +56,9 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
+import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
@@ -76,9 +74,11 @@ import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -140,12 +140,15 @@ class VaultViewModel(
     private val osWidgetDataViewSync: OsWidgetDataViewSync,
     private val networkModeProvider: NetworkModeProvider,
     private val getMembershipFeatures: GetMembershipFeatures,
-    private val searchObjects: SearchObjects,
+    private val resolveSpaceHomepage: ResolveSpaceHomepage,
     private val userSettingsRepository: UserSettingsRepository
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
+
+    private val _inviteCommands = Channel<VaultCommand>(capacity = Channel.BUFFERED)
+    val inviteCommands = _inviteCommands.receiveAsFlow()
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showCreateChannelMenu = MutableStateFlow(false)
     val notificationError = MutableStateFlow<String?>(null)
@@ -969,7 +972,7 @@ class VaultViewModel(
                     }
 
                     is DeepLinkResolver.Action.Invite -> {
-                        commands.emit(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
+                        _inviteCommands.send(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
                     }
 
                     else -> {
@@ -978,7 +981,7 @@ class VaultViewModel(
                         val fileKey = spaceInviteResolver.parseFileKey(qrCode)
                         val contentId = spaceInviteResolver.parseContentId(qrCode)
                         if (fileKey != null && contentId != null) {
-                            commands.emit(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
+                            _inviteCommands.send(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
                         } else {
                             Timber.e("Failed to parse QR code: invalid format")
                             vaultErrors.value = VaultErrors.QrCodeIsNotValid
@@ -1179,69 +1182,40 @@ class VaultViewModel(
                 VaultCommand.EnterSpaceLevelChat(space = targetSpace, chat = chat)
             }
             else -> {
-                val homepage = spaceView?.homepage
-                resolveHomepageNavigation(homepage, targetSpace)
+                resolveHomepageNavigation(targetSpace)
             }
         }
     }
 
     private suspend fun resolveHomepageNavigation(
-        homepage: String?,
         targetSpace: SpaceId
     ): VaultCommand? {
-        if (homepage.isNullOrEmpty() || homepage in HOMEPAGE_SPECIAL_CONSTANTS) {
-            return VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
-        }
-        // Homepage is an object ID — resolve and navigate
-        val results = searchObjects.invoke(
-            params = SearchObjects.Params(
-                space = targetSpace,
-                filters = listOf(
-                    DVFilter(
-                        relation = Relations.ID,
-                        value = homepage,
-                        condition = DVFilterCondition.EQUAL
-                    )
-                ),
-                keys = listOf(Relations.ID, Relations.LAYOUT, Relations.SPACE_ID),
-                limit = 1
-            )
-        )
-        val obj = results.getOrNull()?.firstOrNull()
-        if (obj == null) {
-            Timber.w("Homepage object $homepage not found, falling back to widgets")
-            return VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
-        }
-        // Navigate to the homepage object via VaultNavigation
-        // (VaultFragment first opens the widgets screen, then the object on top)
-        when (val nav = obj.navigation()) {
-            is OpenObjectNavigation.OpenParticipant -> {
-                return VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
-            }
-            is OpenObjectNavigation.OpenBookmarkUrl -> {
-                // Open bookmark as editor object, not as external URL
-                proceedWithNavigation(
-                    OpenObjectNavigation.OpenEditor(
-                        target = homepage,
-                        space = obj.spaceId ?: targetSpace.id
-                    )
-                )
-                return null
-            }
-            else -> {
-                proceedWithNavigation(nav)
-                return null
+        val result = resolveSpaceHomepage.async(
+            ResolveSpaceHomepage.Params(space = targetSpace)
+        ).getOrNull() ?: ResolveSpaceHomepage.Result.Widgets
+        return when (result) {
+            ResolveSpaceHomepage.Result.Widgets ->
+                VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
+            is ResolveSpaceHomepage.Result.Object -> {
+                // Homepage is an explicit object — open it directly, bypassing
+                // the widgets back-stack entry (DROID-4388).
+                proceedWithNavigation(result.navigation, openTargetDirectly = true)
+                null
             }
         }
     }
 
-    private fun proceedWithNavigation(navigation: OpenObjectNavigation) {
+    private fun proceedWithNavigation(
+        navigation: OpenObjectNavigation,
+        openTargetDirectly: Boolean = false
+    ) {
         val nav = when (navigation) {
             is OpenObjectNavigation.OpenDataView -> {
                 VaultNavigation.OpenSet(
                     ctx = navigation.target,
                     space = navigation.space,
-                    view = null
+                    view = null,
+                    openTargetDirectly = openTargetDirectly
                 )
             }
 
@@ -1249,7 +1223,8 @@ class VaultViewModel(
 
                 VaultNavigation.OpenObject(
                     ctx = navigation.target,
-                    space = navigation.space
+                    space = navigation.space,
+                    openTargetDirectly = openTargetDirectly
                 )
 
             }
@@ -1257,7 +1232,8 @@ class VaultViewModel(
             is OpenObjectNavigation.OpenChat -> {
                 VaultNavigation.OpenChat(
                     ctx = navigation.target,
-                    space = navigation.space
+                    space = navigation.space,
+                    openTargetDirectly = openTargetDirectly
                 )
 
             }
@@ -1273,7 +1249,8 @@ class VaultViewModel(
             is OpenObjectNavigation.OpenDateObject -> {
                 VaultNavigation.OpenDateObject(
                     ctx = navigation.target,
-                    space = navigation.space
+                    space = navigation.space,
+                    openTargetDirectly = openTargetDirectly
                 )
 
             }
@@ -1281,7 +1258,8 @@ class VaultViewModel(
             is OpenObjectNavigation.OpenParticipant -> {
                 VaultNavigation.OpenParticipant(
                     ctx = navigation.target,
-                    space = navigation.space
+                    space = navigation.space,
+                    openTargetDirectly = openTargetDirectly
                 )
 
             }
@@ -1289,7 +1267,8 @@ class VaultViewModel(
             is OpenObjectNavigation.OpenType -> {
                 VaultNavigation.OpenType(
                     target = navigation.target,
-                    space = navigation.space
+                    space = navigation.space,
+                    openTargetDirectly = openTargetDirectly
                 )
             }
 
@@ -1676,6 +1655,5 @@ class VaultViewModel(
 
     companion object {
         private const val OS_WIDGET_SYNC_DEBOUNCE_MS = 2000L
-        private val HOMEPAGE_SPECIAL_CONSTANTS = setOf("widgets", "graph", "lastOpened")
     }
 }

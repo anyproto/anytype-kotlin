@@ -4,13 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/topToolbar"
     android:layout_width="match_parent"
-    android:layout_height="48dp">
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <FrameLayout
         android:id="@+id/topBackButton"
-        android:layout_width="56dp"
-        android:layout_height="48dp"
-        android:layout_gravity="center_vertical">
+        android:layout_width="@dimen/nav_circular_button_size"
+        android:layout_height="@dimen/nav_circular_button_size"
+        android:layout_marginStart="16dp"
+        android:background="@drawable/bg_nav_circular_button"
+        android:elevation="4dp"
+        android:outlineAmbientShadowColor="@color/nav_chip_shadow"
+        android:outlineSpotShadowColor="@color/nav_chip_shadow"
+        tools:targetApi="28">
 
         <ImageView
             android:id="@+id/ivTopBackButton"
@@ -23,53 +30,68 @@
 
     <com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
         android:id="@+id/statusBadge"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="@dimen/nav_circular_button_size"
+        android:layout_height="@dimen/nav_circular_button_size"
         android:layout_gravity="center_vertical|end"
         android:scaleType="center"
-        android:layout_marginEnd="54dp"
+        android:background="@drawable/bg_nav_circular_button"
+        android:layout_marginEnd="68dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
-    <FrameLayout
+    <LinearLayout
+        android:id="@+id/titlePillContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="48dp"
-        android:layout_marginEnd="48dp">
+        android:layout_height="44dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginEnd="120dp"
+        android:background="@drawable/bg_nav_pill_container"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="4dp"
+        android:outlineAmbientShadowColor="@color/nav_chip_shadow"
+        android:outlineSpotShadowColor="@color/nav_chip_shadow"
+        tools:targetApi="28">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+            android:id="@+id/ivTopToolbarIcon"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="8dp"
+            android:visibility="visible"
+            app:checkboxSize="20dp"
+            app:emojiSize="20dp"
+            app:imageSize="20dp"
+            app:initialTextSize="11sp"
+            tools:visibility="visible" />
+        <Space
+            android:layout_width="8dp"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/tvTopToolbarTitle"
+            style="@style/ObjectSetToolbarTitleStyle"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_gravity="center">
+            tools:text="Your favorite movies" />
 
-            <ImageView
-                android:id="@+id/ivTopToolbarIcon"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_gravity="center_vertical"
-                android:layout_marginEnd="8dp"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/tvTopToolbarTitle"
-                style="@style/ObjectSetToolbarTitleStyle"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:text="Your favorite movies" />
-
-        </LinearLayout>
-
-    </FrameLayout>
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/threeDotsButton"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="@dimen/nav_circular_button_size"
+        android:layout_height="@dimen/nav_circular_button_size"
         android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="14dp">
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_nav_circular_button"
+        android:elevation="4dp"
+        android:outlineAmbientShadowColor="@color/nav_chip_shadow"
+        android:outlineSpotShadowColor="@color/nav_chip_shadow"
+        tools:targetApi="28">
 
         <ImageView
             android:id="@+id/ivThreeDots"

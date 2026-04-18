@@ -53,6 +53,7 @@ import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.media.DiscardPreloadedFile
 import com.anytypeio.anytype.domain.media.PreloadFile
 import com.anytypeio.anytype.domain.media.UploadFile
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.GetLinkPreview
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
@@ -141,7 +142,8 @@ class ChatViewModel @Inject constructor(
     private val setSpaceDetails: SetSpaceDetails,
     private val setChatNotificationMode: SetChatNotificationMode,
     private val fieldParser: FieldParser,
-    private val chatSearchDelegate: ChatSearchDelegate
+    private val chatSearchDelegate: ChatSearchDelegate,
+    private val deepLinkResolver: DeepLinkResolver
 ) : BaseViewModel(),
     ExitToVaultDelegate by exitToVaultDelegate,
     PinObjectAsWidgetDelegate by pinObjectAsWidgetDelegate,
@@ -1849,6 +1851,13 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onOpenSpaceSettings() {
+        Timber.d("onOpenSpaceSettings")
+        viewModelScope.launch {
+            commands.emit(ViewModelCommand.OpenSpaceSettings(space = vmParams.space))
+        }
+    }
+
     fun onInviteMembersClicked() {
         Timber.d("onInviteMembersClicked")
         viewModelScope.launch {
@@ -1917,7 +1926,14 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onCopyChatLink() {
-        // TODO: Implement copy link functionality
+        Timber.d("onCopyChatLink")
+        viewModelScope.launch {
+            val link = deepLinkResolver.createObjectDeepLink(
+                obj = vmParams.ctx,
+                space = vmParams.space
+            )
+            commands.emit(ViewModelCommand.CopyLinkToClipboard(link = link))
+        }
     }
 
     fun onUpdateChatObjectInfoRequested(
@@ -2485,6 +2501,8 @@ class ChatViewModel @Inject constructor(
         data class ShareInviteLink(val link: String) : ViewModelCommand()
         data class ShareQrCode(val link: String) : ViewModelCommand()
         data class OpenChatInfo(val name: String, val icon: ObjectIcon) : ViewModelCommand()
+        data class CopyLinkToClipboard(val link: String) : ViewModelCommand()
+        data class OpenSpaceSettings(val space: SpaceId) : ViewModelCommand()
         sealed class Toast : ViewModelCommand() {
             data object PinnedChatAsWidget : Toast()
         }

@@ -60,7 +60,7 @@
     <string name="remove_image">Hapus gambar</string>
     <string name="delete_space">Hapus ruang</string>
     <string name="you_can_store">Kamu bisa menyimpan berkasmu hingga %1$s di simpul cadangan terenkripsi kami secara gratis. Jika melewati batas, berkasmu hanya akan disimpan secara lokal.</string>
-    <string name="in_order_to_save">Untuk menghemat penyimpanan ruang pada perangkat lokal, anda dapat melepaskan semua berkas ke simpul cadangan terenkripsi kami. Berkas - berkas akan diunduh kembali saat kamu membuka mereka. </string>
+    <string name="in_order_to_save">Free up space by offloading files to encrypted backup. They’ll load when you open them.</string>
     <string name="manage_files">Mengatur berkas</string>
     <string name="local_storage">Penyimpanan lokal</string>
     <string name="offload_files">Melepaskan berkas</string>
@@ -2068,6 +2068,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     </string>
     <string name="private_local_yours_forever">terenkripsi, lokal, milikmu selamanya</string>
     <string name="private_channel">Saluran langsung</string>
+    <string name="space_header_private_channel">Private channel</string>
+    <string name="space_header_group_channel">Group channel</string>
     <string name="wallpaper_item_space_icon_color">Warna Bawaan</string>
     <string name="publish_to_web">Publikasi ke Web</string>
     <string name="preferences">Preferensi</string>
@@ -2168,4 +2170,16 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="os_widget_data_view_title">Tampilan Data</string>
     <string name="os_widget_data_view_description">Tampilkan item dari Set atau Koleksi</string>
     <string name="chats_search_close_content_description">Tutup pencarian</string>
+    <!-- DROID-4358 Offline Downloads settings -->
+    <string name="offline_downloads_section_title">Akses luring</string>
+    <string name="offline_downloads_title">Unduhan Luring</string>
+    <string name="offline_downloads_subtitle">Sinkron otomatis hingga ukuran tertentu</string>
+    <string name="offline_downloads_use_cellular">Gunakan Data Seluler</string>
+    <string name="offline_downloads_value_off">Mati</string>
+    <string name="offline_downloads_value_20mb">20 MB</string>
+    <string name="offline_downloads_value_100mb">100 MB</string>
+    <string name="offline_downloads_value_250mb">250 MB</string>
+    <string name="offline_downloads_value_1gb">1 GB</string>
+    <string name="offline_downloads_value_unlimited">Tanpa batas</string>
+    <string name="device_storage_used">Penyimpanan perangkat yang terpakai</string>
 </resources>

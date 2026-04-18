@@ -35,4 +35,16 @@
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">@color/text_tertiary</item>
     </style>
+
+    <style name="WidgetOverlayBottomSheetTheme" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/WidgetOverlayBottomSheetStyle</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="WidgetOverlayBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="behavior_skipCollapsed">true</item>
+        <item name="behavior_hideable">true</item>
+    </style>
 </resources>

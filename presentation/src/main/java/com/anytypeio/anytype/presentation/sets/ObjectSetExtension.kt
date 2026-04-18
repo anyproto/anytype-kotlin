@@ -38,6 +38,7 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
@@ -54,16 +55,18 @@ import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import timber.log.Timber
 
-fun ObjectState.DataView.header(
+suspend fun ObjectState.DataView.header(
     ctx: Id,
     urlBuilder: UrlBuilder,
     coverImageHashProvider: CoverImageHashProvider,
+    storeOfObjectTypes: StoreOfObjectTypes,
     isReadOnlyMode: Boolean = false
 ): SetOrCollectionHeaderState {
     val title = blocks.title()
     return if (title != null) {
         val wrapper = details.getObject(ctx)
         val featured = wrapper?.featuredRelations
+        val objType = wrapper?.let { storeOfObjectTypes.getTypeOfObject(it) }
         SetOrCollectionHeaderState.Default(
             title = title(
                 ctx = ctx,
@@ -71,6 +74,7 @@ fun ObjectState.DataView.header(
                 urlBuilder = urlBuilder,
                 details = details,
                 coverImageHashProvider = coverImageHashProvider,
+                objType = objType,
             ),
             description = if (featured?.contains(Relations.DESCRIPTION) == true) {
                 SetOrCollectionHeaderState.Description.Default(

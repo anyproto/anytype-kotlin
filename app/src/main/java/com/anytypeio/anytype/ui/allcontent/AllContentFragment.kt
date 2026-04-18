@@ -5,8 +5,20 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
@@ -24,16 +36,17 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
+import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
-import com.anytypeio.anytype.presentation.navigation.NavPanelState
+import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.navigation
-import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
+import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
@@ -220,6 +233,16 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         toast("Failed to open URL")
                     }
                 }
+                AllContentViewModel.Command.OpenWidgets -> {
+                    runCatching {
+                        WidgetOverlayFragment.show(
+                            parentFragmentManager,
+                            space
+                        )
+                    }.onFailure { e ->
+                        Timber.e(e, "Error opening widget overlay from All Objects screen")
+                    }
+                }
             }
         }
     }
@@ -239,6 +262,8 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
                     uiMenuState = vm.uiMenuState.collectAsStateWithLifecycle().value,
                     uiSnackbarState = vm.uiSnackbarState.collectAsStateWithLifecycle().value,
+                    uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState
+                        .collectAsStateWithLifecycle().value,
                     onSortClick = vm::onSortClicked,
                     onModeClick = vm::onAllContentModeClicked,
                     onItemClicked = vm::onItemClicked,
@@ -247,30 +272,23 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
                     onUpdateLimitSearch = vm::updateLimit,
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
-                    onGlobalSearchClicked = vm::onGlobalSearchClicked,
                     onAddDocClicked = vm::onAddDockClicked,
                     onCreateObjectLongClicked = {
                         val dialog = ObjectTypeSelectionFragment.new(space = space)
                         dialog.show(childFragmentManager, null)
                     },
                     onBackClicked = vm::onBackClicked,
+                    onTitleClick = vm::onTopBarTitleClicked,
+                    onSyncStatusClick = vm::onSyncStatusBadgeClicked,
                     moveToBin = vm::proceedWithMoveToBin,
-                    onBackLongClicked = {
-                        // Currently not used.
-                        runCatching {
-                            findNavController().navigate(
-                                R.id.actionExitToSpaceWidgets,
-                                WidgetsScreenFragment.args(space = space)
-                            )
-                        }.onFailure {
-                            Timber.e(it, "Error while opening space switcher from all-content screen")
-                        }
-                    },
                     undoMoveToBin = vm::proceedWithUndoMoveToBin,
-                    onDismissSnackbar = vm::proceedWithDismissSnackbar,
-                    uiBottomMenu = vm.navPanelState.collectAsStateWithLifecycle(NavPanelState.Init).value,
-                    onShareButtonClicked = vm::onMemberButtonClicked,
-                    onHomeButtonClicked = vm::onHomeClicked
+                    onDismissSnackbar = vm::proceedWithDismissSnackbar
+                )
+                val syncStatusWidgetState by vm.uiSyncStatusWidgetState
+                    .collectAsStateWithLifecycle()
+                BottomSyncStatus(
+                    uiSyncStatusState = syncStatusWidgetState,
+                    onDismiss = vm::onSyncStatusDismiss
                 )
             }
         }
@@ -312,5 +330,27 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
 
         const val ARG_SPACE = "arg.all.content.space"
         fun args(space: Id): Bundle = bundleOf(ARG_SPACE to space)
+    }
+}
+
+@Composable
+private fun BottomSyncStatus(
+    uiSyncStatusState: SyncStatusWidgetState,
+    onDismiss: () -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        SpaceSyncStatusScreen(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .windowInsetsPadding(WindowInsets.navigationBars),
+            modifierCard = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 16.dp),
+            uiState = uiSyncStatusState,
+            onDismiss = onDismiss,
+            onUpdateAppClick = {}
+        )
     }
 }

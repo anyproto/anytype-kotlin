@@ -20,4 +20,5 @@ sealed class DateObjectCommand {
     data object OpenGlobalSearch : DateObjectCommand()
     data object ExitToVault : DateObjectCommand()
     data object Back : DateObjectCommand()
+    data object OpenWidgets : DateObjectCommand()
 }

@@ -24,9 +24,9 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
+import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
@@ -77,7 +77,7 @@ class VaultViewModelFactory @Inject constructor(
     private val osWidgetDataViewSync: OsWidgetDataViewSync,
     private val networkModeProvider: NetworkModeProvider,
     private val getMembershipFeatures: GetMembershipFeatures,
-    private val searchObjects: SearchObjects,
+    private val resolveSpaceHomepage: ResolveSpaceHomepage,
     private val userSettingsRepository: UserSettingsRepository
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
@@ -119,7 +119,7 @@ class VaultViewModelFactory @Inject constructor(
         osWidgetDataViewSync = osWidgetDataViewSync,
         networkModeProvider = networkModeProvider,
         getMembershipFeatures = getMembershipFeatures,
-        searchObjects = searchObjects,
+        resolveSpaceHomepage = resolveSpaceHomepage,
         userSettingsRepository = userSettingsRepository
     ) as T
 }

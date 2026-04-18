@@ -194,6 +194,9 @@ class VaultFragment : BaseComposeFragment() {
             vm.commands.collect { command -> proceed(command) }
         }
         LaunchedEffect(Unit) {
+            vm.inviteCommands.collect { command -> proceed(command) }
+        }
+        LaunchedEffect(Unit) {
             vm.navigations.collect { command -> proceed(command) }
         }
     }
@@ -366,13 +369,15 @@ class VaultFragment : BaseComposeFragment() {
     private fun proceed(destination: VaultNavigation) {
         when (destination) {
             is VaultNavigation.OpenObject -> runCatching {
-                findNavController().navigate(
-                    R.id.actionOpenSpaceFromVault,
-                    WidgetsScreenFragment.args(
-                        space = destination.space,
-                        deeplink = null
+                if (!destination.openTargetDirectly) {
+                    findNavController().navigate(
+                        R.id.actionOpenSpaceFromVault,
+                        WidgetsScreenFragment.args(
+                            space = destination.space,
+                            deeplink = null
+                        )
                     )
-                )
+                }
                 navigation().openDocument(
                     target = destination.ctx,
                     space = destination.space
@@ -382,13 +387,15 @@ class VaultFragment : BaseComposeFragment() {
             }
 
             is VaultNavigation.OpenSet -> runCatching {
-                findNavController().navigate(
-                    R.id.actionOpenSpaceFromVault,
-                    WidgetsScreenFragment.args(
-                        space = destination.space,
-                        deeplink = null
+                if (!destination.openTargetDirectly) {
+                    findNavController().navigate(
+                        R.id.actionOpenSpaceFromVault,
+                        WidgetsScreenFragment.args(
+                            space = destination.space,
+                            deeplink = null
+                        )
                     )
-                )
+                }
                 navigation().openObjectSet(
                     target = destination.ctx,
                     space = destination.space,
@@ -399,13 +406,15 @@ class VaultFragment : BaseComposeFragment() {
             }
 
             is VaultNavigation.OpenChat -> {
-                findNavController().navigate(
-                    R.id.actionOpenSpaceFromVault,
-                    WidgetsScreenFragment.args(
-                        space = destination.space,
-                        deeplink = null
+                if (!destination.openTargetDirectly) {
+                    findNavController().navigate(
+                        R.id.actionOpenSpaceFromVault,
+                        WidgetsScreenFragment.args(
+                            space = destination.space,
+                            deeplink = null
+                        )
                     )
-                )
+                }
                 navigation().openChat(
                     target = destination.ctx,
                     space = destination.space
@@ -414,13 +423,15 @@ class VaultFragment : BaseComposeFragment() {
 
             is VaultNavigation.OpenDateObject -> {
                 runCatching {
-                    findNavController().navigate(
-                        R.id.actionOpenSpaceFromVault,
-                        WidgetsScreenFragment.args(
-                            space = destination.space,
-                            deeplink = null
+                    if (!destination.openTargetDirectly) {
+                        findNavController().navigate(
+                            R.id.actionOpenSpaceFromVault,
+                            WidgetsScreenFragment.args(
+                                space = destination.space,
+                                deeplink = null
+                            )
                         )
-                    )
+                    }
                     navigation().openDateObject(
                         objectId = destination.ctx,
                         space = destination.space
@@ -432,13 +443,15 @@ class VaultFragment : BaseComposeFragment() {
 
             is VaultNavigation.OpenParticipant -> {
                 runCatching {
-                    findNavController().navigate(
-                        R.id.actionOpenSpaceFromVault,
-                        WidgetsScreenFragment.args(
-                            space = destination.space,
-                            deeplink = null
+                    if (!destination.openTargetDirectly) {
+                        findNavController().navigate(
+                            R.id.actionOpenSpaceFromVault,
+                            WidgetsScreenFragment.args(
+                                space = destination.space,
+                                deeplink = null
+                            )
                         )
-                    )
+                    }
                     navigation().openParticipantObject(
                         objectId = destination.ctx,
                         space = destination.space
@@ -450,13 +463,15 @@ class VaultFragment : BaseComposeFragment() {
 
             is VaultNavigation.OpenType -> {
                 runCatching {
-                    findNavController().navigate(
-                        R.id.actionOpenSpaceFromVault,
-                        WidgetsScreenFragment.args(
-                            space = destination.space,
-                            deeplink = null
+                    if (!destination.openTargetDirectly) {
+                        findNavController().navigate(
+                            R.id.actionOpenSpaceFromVault,
+                            WidgetsScreenFragment.args(
+                                space = destination.space,
+                                deeplink = null
+                            )
                         )
-                    )
+                    }
                     navigation().openObjectType(
                         objectId = destination.target,
                         space = destination.space

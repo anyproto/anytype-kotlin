@@ -3,7 +3,11 @@ package com.anytypeio.anytype.core_ui.widgets
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
@@ -16,6 +20,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 
@@ -40,6 +45,11 @@ fun CircularFabButton(
                 color = colorResource(id = R.color.navigation_panel),
                 shape = CircleShape
             )
+            .border(
+                width = 1.dp,
+                color = colorResource(id = R.color.shape_transparent_primary),
+                shape = CircleShape
+            )
             .alpha(if (isEnabled) 1f else 0.5f)
             .then(
                 if (onLongClick != null) {
@@ -57,6 +67,25 @@ fun CircularFabButton(
         Image(
             painter = painterResource(id = iconRes),
             contentDescription = contentDescription
+        )
+    }
+}
+
+@Composable
+@DefaultPreviews
+fun FabPreview() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = colorResource(id = R.color.background_primary)),
+    ) {
+        Spacer(modifier = Modifier.size(99.dp))
+        CircularFabButton(
+            iconRes = R.drawable.ic_create_obj_32,
+            contentDescription = "Create",
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally),
+            onClick = {}
         )
     }
 }

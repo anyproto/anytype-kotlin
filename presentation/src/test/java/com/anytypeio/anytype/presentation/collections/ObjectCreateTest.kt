@@ -376,7 +376,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                     template = null,
                     type = TypeKey(pageTypeId),
                     filters = emptyList(),
-                    prefilled = emptyMap()
+                    prefilled = emptyMap(),
+                    createdInContext = root
                 )
             )
             doReturn(Resultat.success(Unit)).`when`(closeObject).async(
@@ -398,7 +399,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                         type = TypeKey(pageTypeId),
                         template = null,
                         filters = emptyList(),
-                        prefilled = emptyMap()
+                        prefilled = emptyMap(),
+                        createdInContext = root
                     )
                 )
             }

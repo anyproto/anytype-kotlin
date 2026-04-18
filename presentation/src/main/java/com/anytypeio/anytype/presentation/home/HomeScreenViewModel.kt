@@ -2993,7 +2993,8 @@ class HomeScreenViewModel(
             template = defaultTemplate,
             type = defaultObjectTypeUniqueKey,
             filters = viewer.filters,
-            prefilled = prefilled
+            prefilled = prefilled,
+            createdInContext = collection
         )
 
         val space = vmParams.spaceId.id

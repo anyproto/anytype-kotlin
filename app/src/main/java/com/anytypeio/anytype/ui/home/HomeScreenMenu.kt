@@ -43,11 +43,13 @@ fun HomeScreenMenu(
     val isOneToOne = isOneToOneSpace
 
     DropdownMenu(
-        modifier = Modifier.width(254.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
         expanded = expanded,
         onDismissRequest = onDismiss,
         containerColor = colorResource(CoreR.color.background_secondary),
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(38.dp),
         tonalElevation = 8.dp,
         offset = DpOffset(
             x = (-16).dp,

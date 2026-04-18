@@ -38,10 +38,10 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -71,15 +71,15 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
-import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.menu.AttachmentMenuAction
+import com.anytypeio.anytype.core_ui.menu.AttachmentMenuPopup
+import com.anytypeio.anytype.core_ui.menu.ObjectTypeMenuItem
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.ContentMiscChat
@@ -94,6 +94,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatBox(
     text: TextFieldValue,
@@ -105,8 +106,9 @@ fun ChatBox(
     resetScroll: () -> Unit = {},
     attachments: List<ChatView.Message.ChatBoxAttachment>,
     clearText: () -> Unit,
-    onAttachObjectClicked: () -> Unit,
-    onCreateAndAttachObject: () -> Unit,
+    quickCreateTypes: List<ObjectTypeMenuItem>,
+    onAttachmentAction: (AttachmentMenuAction) -> Unit,
+    reopenAttachmentMenu: kotlinx.coroutines.flow.SharedFlow<Unit>,
     onClearAttachmentClicked: (ChatView.Message.ChatBoxAttachment) -> Unit,
     onClearReplyClicked: () -> Unit,
     onChatBoxMediaPicked: (List<Uri>) -> Unit,
@@ -141,7 +143,6 @@ fun ChatBox(
     }
 
     var capturedImageUri by rememberSaveable { mutableStateOf<String?>(null) }
-    var capturedVideoUri by rememberSaveable { mutableStateOf<String?>(null) }
 
     val takePhotoLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
@@ -149,17 +150,6 @@ fun ChatBox(
         if (isSuccess && capturedImageUri != null) {
             onImageCaptured(Uri.parse(capturedImageUri))
             capturedImageUri = null
-        } else {
-            Timber.w("DROID-2966 Failed to capture image")
-        }
-    }
-
-    val recordVideoLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CaptureVideo()
-    ) { isSuccess ->
-        if (isSuccess && capturedVideoUri != null) {
-            onVideoCaptured(Uri.parse(capturedVideoUri))
-            capturedVideoUri = null
         } else {
             Timber.w("DROID-2966 Failed to capture image")
         }
@@ -179,6 +169,20 @@ fun ChatBox(
         }
     }
 
+    var capturedVideoUri by rememberSaveable { mutableStateOf<String?>(null) }
+
+    val recordVideoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CaptureVideo()
+    ) { isSuccess ->
+        val uri = capturedVideoUri
+        if (isSuccess && uri != null) {
+            onVideoCaptured(Uri.parse(uri))
+        } else {
+            Timber.w("DROID-2966 Failed to capture video")
+        }
+        capturedVideoUri = null
+    }
+
     val recordVideoPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
@@ -193,6 +197,24 @@ fun ChatBox(
         }
     }
 
+    var showCameraChooser by remember { mutableStateOf(false) }
+
+    // Route menu actions: Photos/Camera/Files are handled by local launchers.
+    // Camera shows a Photo/Video chooser sheet. AttachObject,
+    // CreateObjectOfType, SeeAll bubble up.
+    val dispatchAttachmentAction: (AttachmentMenuAction) -> Unit = { action ->
+        when (action) {
+            AttachmentMenuAction.Photos -> uploadMediaLauncher.launch(
+                PickVisualMediaRequest(
+                    mediaType = ActivityResultContracts.PickVisualMedia.ImageAndVideo
+                )
+            )
+            AttachmentMenuAction.Camera -> showCameraChooser = true
+            AttachmentMenuAction.Files -> uploadFileLauncher.launch(arrayOf("*/*"))
+            else -> onAttachmentAction(action)
+        }
+    }
+
     // END OF LAUNCHERS
 
     val length = text.text.length
@@ -202,6 +224,16 @@ fun ChatBox(
     val scope = rememberCoroutineScope()
 
     var isFocused by remember { mutableStateOf(false) }
+
+    // Re-open attachment menu after "Back" was tapped in the See-all popup.
+    // Whichever of the two local menus is eligible (based on focus state)
+    // reacts — the other is a no-op because only one is rendered at a time.
+    androidx.compose.runtime.LaunchedEffect(reopenAttachmentMenu) {
+        reopenAttachmentMenu.collect {
+            showDropdownMenu = true
+            onAttachmentMenuTriggered()
+        }
+    }
 
     var showMarkup by remember { mutableStateOf(false) }
 
@@ -303,127 +335,12 @@ fun ChatBox(
                             .padding(start = 8.dp, end = 4.dp, top = 4.dp, bottom = 4.dp)
                     )
                     if (attachments.size < ChatConfig.MAX_ATTACHMENT_COUNT) {
-                        MaterialTheme(
-                            shapes = MaterialTheme.shapes.copy(
-                                medium = RoundedCornerShape(
-                                    12.dp
-                                )
-                            ),
-                            colors = MaterialTheme.colors.copy(
-                                surface = colorResource(id = R.color.background_secondary)
-                            )
-                        ) {
-                            DropdownMenu(
-                                offset = DpOffset(8.dp, 40.dp),
-                                expanded = showDropdownMenu,
-                                onDismissRequest = {
-                                    showDropdownMenu = false
-                                },
-                                modifier = Modifier
-                                    .align(Alignment.BottomEnd)
-                                    .defaultMinSize(
-                                        minWidth = 252.dp
-                                    ),
-                                properties = PopupProperties(focusable = false)
-                            ) {
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = stringResource(R.string.chat_attachment_create_object),
-                                            color = colorResource(id = R.color.text_primary)
-                                        )
-                                    },
-                                    onClick = {
-                                        showDropdownMenu = false
-                                        onCreateAndAttachObject()
-                                    }
-                                )
-                                Divider(
-                                    paddingStart = 0.dp,
-                                    paddingEnd = 0.dp
-                                )
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = stringResource(R.string.chat_attachment_object),
-                                            color = colorResource(id = R.color.text_primary)
-                                        )
-                                    },
-                                    onClick = {
-                                        showDropdownMenu = false
-                                        onAttachObjectClicked()
-                                    }
-                                )
-                                Divider(
-                                    paddingStart = 0.dp,
-                                    paddingEnd = 0.dp
-                                )
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = stringResource(R.string.chat_box_take_photo),
-                                            color = colorResource(id = R.color.text_primary)
-                                        )
-                                    },
-                                    onClick = {
-                                        showDropdownMenu = false
-                                        takePhotoPermissionLauncher.launch(Manifest.permission.CAMERA)
-                                    }
-                                )
-                                Divider(
-                                    paddingStart = 0.dp,
-                                    paddingEnd = 0.dp
-                                )
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = stringResource(R.string.chat_box_record_video),
-                                            color = colorResource(id = R.color.text_primary)
-                                        )
-                                    },
-                                    onClick = {
-                                        showDropdownMenu = false
-                                        recordVideoPermissionLauncher.launch(Manifest.permission.CAMERA)
-                                    }
-                                )
-                                Divider(
-                                    paddingStart = 0.dp,
-                                    paddingEnd = 0.dp
-                                )
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = stringResource(R.string.chat_attachment_media),
-                                            color = colorResource(id = R.color.text_primary)
-                                        )
-                                    },
-                                    onClick = {
-                                        showDropdownMenu = false
-                                        uploadMediaLauncher.launch(
-                                            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageAndVideo)
-                                        )
-                                    }
-                                )
-                                Divider(
-                                    paddingStart = 0.dp,
-                                    paddingEnd = 0.dp
-                                )
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = stringResource(R.string.chat_attachment_file),
-                                            color = colorResource(id = R.color.text_primary)
-                                        )
-                                    },
-                                    onClick = {
-                                        showDropdownMenu = false
-                                        uploadFileLauncher.launch(
-                                            arrayOf("*/*")
-                                        )
-                                    }
-                                )
-                            }
-                        }
+                        AttachmentMenuPopup(
+                            expanded = showDropdownMenu,
+                            onDismissRequest = { showDropdownMenu = false },
+                            onAction = dispatchAttachmentAction,
+                            quickCreateTypes = quickCreateTypes
+                        )
                     }
                 }
             }
@@ -602,7 +519,9 @@ fun ChatBox(
                 } else {
                     ChatBoxEditPanel(
                         spaceUxType = spaceUxType,
-                        onAttachObjectClicked = onAttachObjectClicked,
+                        quickCreateTypes = quickCreateTypes,
+                        onAttachmentAction = dispatchAttachmentAction,
+                        reopenAttachmentMenu = reopenAttachmentMenu,
                         onMentionClicked = {
                             val selection = text.selection
                             val cursorPosition = selection.start
@@ -622,23 +541,6 @@ fun ChatBox(
                         onStyleClicked = {
                             showMarkup = true
                         },
-                        onUploadFileClicked = {
-                            uploadFileLauncher.launch(
-                                arrayOf("*/*")
-                            )
-                        },
-                        onUploadMediaClicked = {
-                            uploadMediaLauncher.launch(
-                                PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageAndVideo)
-                            )
-                        },
-                        onTakePhotoClicked = {
-                            takePhotoPermissionLauncher.launch(Manifest.permission.CAMERA)
-                        },
-                        onRecordVideoClicked = {
-                            recordVideoPermissionLauncher.launch(Manifest.permission.CAMERA)
-                        },
-                        onCreateAndAttachObject = onCreateAndAttachObject,
                         onAttachmentMenuTriggered = onAttachmentMenuTriggered
                     )
                 }
@@ -690,6 +592,54 @@ fun ChatBox(
             }
         }
     }
+
+    if (showCameraChooser) {
+        val cameraChooserState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { showCameraChooser = false },
+            sheetState = cameraChooserState,
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            dragHandle = null
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
+            ) {
+                CameraChooserRow(
+                    text = stringResource(R.string.chat_box_take_photo),
+                    onClick = {
+                        showCameraChooser = false
+                        takePhotoPermissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                )
+                CameraChooserRow(
+                    text = stringResource(R.string.chat_box_record_video),
+                    onClick = {
+                        showCameraChooser = false
+                        recordVideoPermissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CameraChooserRow(
+    text: String,
+    onClick: () -> Unit
+) {
+    Text(
+        text = text,
+        style = com.anytypeio.anytype.core_ui.views.BodyRegular,
+        color = colorResource(id = R.color.text_primary),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+    )
 }
 
 @Composable
@@ -993,18 +943,22 @@ private fun MarkupIcon(
 fun ChatBoxEditPanel(
     modifier: Modifier = Modifier,
     spaceUxType: SpaceUxType? = null,
-    onAttachObjectClicked: () -> Unit,
+    quickCreateTypes: List<ObjectTypeMenuItem>,
+    onAttachmentAction: (AttachmentMenuAction) -> Unit,
+    reopenAttachmentMenu: kotlinx.coroutines.flow.SharedFlow<Unit>,
     onStyleClicked: () -> Unit,
     onMentionClicked: () -> Unit,
-    onUploadMediaClicked: () -> Unit,
-    onUploadFileClicked: () -> Unit,
-    onTakePhotoClicked: () -> Unit,
-    onRecordVideoClicked: () -> Unit,
-    onCreateAndAttachObject: () -> Unit,
     onAttachmentMenuTriggered: () -> Unit,
     ) {
 
     var showDropdownMenu by remember { mutableStateOf(false) }
+
+    androidx.compose.runtime.LaunchedEffect(reopenAttachmentMenu) {
+        reopenAttachmentMenu.collect {
+            showDropdownMenu = true
+            onAttachmentMenuTriggered()
+        }
+    }
 
     Row(
         modifier = modifier
@@ -1026,123 +980,12 @@ fun ChatBoxEditPanel(
                 painter = painterResource(id = R.drawable.ic_chat_box_add_attachment),
                 contentDescription = "Plus button"
             )
-            MaterialTheme(
-                shapes = MaterialTheme.shapes.copy(
-                    medium = RoundedCornerShape(
-                        12.dp
-                    )
-                ),
-                colors = MaterialTheme.colors.copy(
-                    surface = colorResource(id = R.color.background_secondary)
-                )
-            ) {
-                DropdownMenu(
-                    offset = DpOffset(8.dp, 40.dp),
-                    expanded = showDropdownMenu,
-                    onDismissRequest = {
-                        showDropdownMenu = false
-                    },
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .defaultMinSize(
-                            minWidth = 252.dp
-                        ),
-                    properties = PopupProperties(focusable = false)
-                ) {
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.chat_attachment_create_object),
-                                color = colorResource(id = R.color.text_primary)
-                            )
-                        },
-                        onClick = {
-                            showDropdownMenu = false
-                            onCreateAndAttachObject()
-                        }
-                    )
-                    Divider(
-                        paddingStart = 0.dp,
-                        paddingEnd = 0.dp
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.chat_attachment_object),
-                                color = colorResource(id = R.color.text_primary)
-                            )
-                        },
-                        onClick = {
-                            showDropdownMenu = false
-                            onAttachObjectClicked()
-                        }
-                    )
-                    Divider(
-                        paddingStart = 0.dp,
-                        paddingEnd = 0.dp
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.chat_box_take_photo),
-                                color = colorResource(id = R.color.text_primary)
-                            )
-                        },
-                        onClick = {
-                            showDropdownMenu = false
-                            onTakePhotoClicked()
-                        }
-                    )
-                    Divider(
-                        paddingStart = 0.dp,
-                        paddingEnd = 0.dp
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.chat_box_record_video),
-                                color = colorResource(id = R.color.text_primary)
-                            )
-                        },
-                        onClick = {
-                            showDropdownMenu = false
-                            onRecordVideoClicked()
-                        }
-                    )
-                    Divider(
-                        paddingStart = 0.dp,
-                        paddingEnd = 0.dp
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.chat_attachment_media),
-                                color = colorResource(id = R.color.text_primary)
-                            )
-                        },
-                        onClick = {
-                            showDropdownMenu = false
-                            onUploadMediaClicked()
-                        }
-                    )
-                    Divider(
-                        paddingStart = 0.dp,
-                        paddingEnd = 0.dp
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.chat_attachment_file),
-                                color = colorResource(id = R.color.text_primary)
-                            )
-                        },
-                        onClick = {
-                            showDropdownMenu = false
-                            onUploadFileClicked()
-                        }
-                    )
-                }
-            }
+            AttachmentMenuPopup(
+                expanded = showDropdownMenu,
+                onDismissRequest = { showDropdownMenu = false },
+                onAction = onAttachmentAction,
+                quickCreateTypes = quickCreateTypes
+            )
         }
 
         Spacer(modifier = Modifier.width(20.dp))
@@ -1240,12 +1083,9 @@ fun ChatBoxEditPanelPreview() {
     ChatBoxEditPanel(
         onMentionClicked = {},
         onStyleClicked = {},
-        onAttachObjectClicked = {},
-        onUploadFileClicked = {},
-        onUploadMediaClicked = {},
-        onTakePhotoClicked = {},
-        onRecordVideoClicked = {},
-        onCreateAndAttachObject = {},
+        quickCreateTypes = emptyList(),
+        onAttachmentAction = {},
+        reopenAttachmentMenu = kotlinx.coroutines.flow.MutableSharedFlow(),
         onAttachmentMenuTriggered = {}
     )
 }

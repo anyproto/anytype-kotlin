@@ -62,6 +62,8 @@ import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.menu.AttachmentMenuAction
+import com.anytypeio.anytype.core_ui.menu.ObjectTypeMenuItem
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.isVideo
@@ -104,6 +106,23 @@ fun ChatScreenWrapper(
     onSearchNextResult: () -> Unit = {},
     onSearchPreviousResult: () -> Unit = {}
 ) {
+    val quickCreateTypes by vm.quickCreateTypes.collectAsStateWithLifecycle()
+    val handleAttachmentAction: (AttachmentMenuAction) -> Unit = { action ->
+        when (action) {
+            AttachmentMenuAction.AttachObject -> onAttachObjectClicked()
+            is AttachmentMenuAction.CreateObjectOfType ->
+                vm.onCreateAndAttachObjectOfType(
+                    com.anytypeio.anytype.core_models.primitives.TypeKey(action.typeKey)
+                )
+            AttachmentMenuAction.SeeAll -> vm.onSeeAllCreateSheetRequested()
+            AttachmentMenuAction.Photos,
+            AttachmentMenuAction.Camera,
+            AttachmentMenuAction.Files -> {
+                // Photos/Camera/Files are intercepted inside ChatBox via its
+                // own ActivityResult launchers and never bubble up here.
+            }
+        }
+    }
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     var showSendRateLimitWarning by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -281,7 +300,9 @@ fun ChatScreenWrapper(
                 )
             },
             onRequestVideoPlayer = onRequestVideoPlayer,
-            onCreateAndAttachObject = vm::onCreateAndAttachObject,
+            quickCreateTypes = quickCreateTypes,
+            onAttachmentAction = handleAttachmentAction,
+            reopenAttachmentMenu = vm.reopenAttachmentMenu,
             onCameraPermissionDenied = vm::onCameraPermissionDenied,
             onOpenAttachmentInBrowser = vm::onOpenAttachmentInBrowser,
             onOpenAttachmentFile = vm::onOpenAttachmentFile,
@@ -431,7 +452,9 @@ fun ChatScreen(
     onShowQRCodeClick: () -> Unit,
     isReadOnly: Boolean = false,
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
-    onCreateAndAttachObject: () -> Unit,
+    quickCreateTypes: List<ObjectTypeMenuItem>,
+    onAttachmentAction: (AttachmentMenuAction) -> Unit,
+    reopenAttachmentMenu: kotlinx.coroutines.flow.SharedFlow<Unit>,
     onCameraPermissionDenied: () -> Unit = {},
     inviteLinkAccessLevel: SpaceInviteLinkAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled(),
     spaceUxType: SpaceUxType? = null,
@@ -953,7 +976,9 @@ fun ChatScreen(
                     text = TextFieldValue()
                     spans = emptyList()
                 },
-                onAttachObjectClicked = onAttachObjectClicked,
+                quickCreateTypes = quickCreateTypes,
+                onAttachmentAction = onAttachmentAction,
+                reopenAttachmentMenu = reopenAttachmentMenu,
                 onClearAttachmentClicked = onClearAttachmentClicked,
                 onClearReplyClicked = onClearReplyClicked,
                 onChatBoxMediaPicked = onChatBoxMediaPicked,
@@ -974,7 +999,6 @@ fun ChatScreen(
                 onUrlInserted = onUrlInserted,
                 onImageCaptured = onImageCaptured,
                 onVideoCaptured = onVideoCaptured,
-                onCreateAndAttachObject = onCreateAndAttachObject,
                 onCameraPermissionDenied = onCameraPermissionDenied,
                 onAttachmentMenuTriggered = onAttachmentMenuTriggered,
                 spaceUxType = spaceUxType

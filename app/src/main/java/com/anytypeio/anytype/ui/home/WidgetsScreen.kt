@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -26,9 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -561,25 +557,25 @@ fun WidgetsScreen(
             onClick = viewModel::onSearchIconClicked,
         )
 
-        // Create-object FAB (bottom-end). Tap creates a new object;
-        // long-press surfaces the type picker. Uses the same icon as the
-        // editor / set screens. Disabled visual reflects
-        // NavPanelState.Default.isCreateEnabled.
-        CircularFabButton(
-            iconRes = R.drawable.ic_create_obj_32,
-            contentDescription = stringResource(
-                id = R.string.main_navigation_content_desc_create_button
-            ),
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .navigationBarsPadding()
-                .padding(
-                    end = dimensionResource(R.dimen.nav_fab_margin),
-                    bottom = dimensionResource(R.dimen.nav_fab_margin),
+        // Create-object FAB (bottom-end). Tap surfaces the create-object
+        // popup (type picker + media rows). Uses the same icon as the
+        // editor / set screens. Hidden entirely when creation is not
+        // permitted (NavPanelState.Default.isCreateEnabled == false).
+        if (isCreateEnabled) {
+            CircularFabButton(
+                iconRes = R.drawable.ic_create_obj_32,
+                contentDescription = stringResource(
+                    id = R.string.main_navigation_content_desc_create_button
                 ),
-            isEnabled = isCreateEnabled,
-            onClick = viewModel::onCreateNewObjectClicked,
-            onLongClick = viewModel::onCreateNewObjectLongClicked,
-        )
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .navigationBarsPadding()
+                    .padding(
+                        end = dimensionResource(R.dimen.nav_fab_margin),
+                        bottom = dimensionResource(R.dimen.nav_fab_margin),
+                    ),
+                onClick = viewModel::onCreateObjectMenuClicked,
+            )
+        }
     }
 }

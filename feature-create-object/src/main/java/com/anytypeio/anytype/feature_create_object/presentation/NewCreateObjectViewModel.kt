@@ -36,7 +36,12 @@ class NewCreateObjectViewModel @Inject constructor(
     private val vmParams: VmParams
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(NewCreateObjectState())
+    private val _state = MutableStateFlow(
+        NewCreateObjectState(
+            showMediaSection = vmParams.showMediaSection,
+            showAttachExisting = vmParams.showAttachObject
+        )
+    )
     val state: StateFlow<NewCreateObjectState> = _state.asStateFlow()
 
     init {
@@ -60,20 +65,18 @@ class NewCreateObjectViewModel @Inject constructor(
                         mapper = { it.isOneToOneSpace }
                     )
                 ) { allTypes, isOneToOneSpace ->
-                    // Get excluded layouts based on space type
-                    val systemLayouts = SupportedLayouts.getSystemLayouts(isOneToOneSpace)
-                    val excludedLayouts = systemLayouts + SupportedLayouts.dateLayouts + listOf(
-                        ObjectType.Layout.OBJECT_TYPE,
-                        ObjectType.Layout.PARTICIPANT
-                    )
+                    // Allow-list of layouts creatable via the "New Object" flow —
+                    // matches iOS `supportedForCreationBase` and excludes file/media
+                    // layouts (FILE, IMAGE, VIDEO, AUDIO, PDF) by construction since
+                    // those types exist only via upload, not empty creation.
+                    val allowedLayouts = SupportedLayouts.getCreateObjectLayouts(isOneToOneSpace)
 
-                    // Filter valid types
                     val filteredTypes = allTypes.filter { type ->
                         type.isValid &&
                         type.isDeleted != true &&
                         type.isArchived != true &&
                         type.uniqueKey != ObjectTypeIds.TEMPLATE &&
-                        !excludedLayouts.contains(type.recommendedLayout)
+                        allowedLayouts.contains(type.recommendedLayout)
                     }
 
                     // Sort using user's custom widget order, then map to UI model.
@@ -107,6 +110,21 @@ class NewCreateObjectViewModel @Inject constructor(
                     )
                 }
             }
+        }
+    }
+
+    /**
+     * Resets transient UI state (search query, filtered list, error) without
+     * re-subscribing to the underlying hot flows. Call when the sheet opens so
+     * the user always sees the full, unfiltered list of types.
+     */
+    fun onOpen() {
+        _state.update { current ->
+            current.copy(
+                searchQuery = "",
+                filteredObjectTypes = current.objectTypes,
+                error = null
+            )
         }
     }
 
@@ -165,9 +183,16 @@ class NewCreateObjectViewModel @Inject constructor(
 
     /**
      * Parameters for the ViewModel.
-     * @param spaceId The current space ID, used to determine space type for sorting
+     *
+     * @param spaceId The current space ID, used to determine space type for sorting.
+     * @param showAttachObject Whether the host surface should offer "attach existing
+     *   object" as an affordance. This is currently chat-only. Defaults to false.
+     * @param showMediaSection Whether the host surface should offer media attachment
+     *   rows (Photos / Camera / Files). Defaults to false.
      */
     data class VmParams(
-        val spaceId: SpaceId
+        val spaceId: SpaceId,
+        val showAttachObject: Boolean = false,
+        val showMediaSection: Boolean = false
     )
 }

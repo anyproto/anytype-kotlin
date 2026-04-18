@@ -984,6 +984,16 @@ class MainViewModel(
         }
     }
 
+    /**
+     * Emit an app-level success Snackbar with an OK action. Routed through
+     * [commands] and rendered by MainActivity on android.R.id.content so
+     * it sits above whichever screen the user is on when the upload
+     * completes.
+     */
+    fun showSnackbarWithOk(msg: String) {
+        viewModelScope.launch { commands.emit(Command.SnackbarWithOk(msg)) }
+    }
+
     override fun onCleared() {
         // TODO: DROID-3763 - Disabled to test if appShutdown causes FD crashes on restore
         // The async fire-and-forget pattern may leave middleware in inconsistent state
@@ -1007,6 +1017,7 @@ class MainViewModel(
         class OpenCreateNewType(val type: Id) : Command()
         data class Error(val msg: String) : Command()
         data class Snackbar(val msg: String) : Command()
+        data class SnackbarWithOk(val msg: String) : Command()
 
         data object Notifications : Command()
         data object RequestNotificationPermission : Command()

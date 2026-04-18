@@ -19,10 +19,12 @@ import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
@@ -262,6 +264,14 @@ object HomeScreenModule {
         clearLastOpenedSpace = clearLastOpenedSpace
     )
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideUploadFile(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): UploadFile = UploadFile(repo = repo, dispatchers = dispatchers)
+
     @Module
     interface Declarations {
         @PerScreen
@@ -336,4 +346,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
     fun stringResProvider() : StringResourceProvider
     fun setSpaceNotificationMode(): SetSpaceNotificationMode
+    fun fileSharer(): FileSharer
 }

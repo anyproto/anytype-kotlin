@@ -1,10 +1,15 @@
 package com.anytypeio.anytype.ui.home
 
+import android.Manifest
 import android.app.Dialog
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,11 +17,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.core.os.bundleOf
@@ -29,8 +39,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.ui.WallpaperResult
+import com.anytypeio.anytype.core_utils.ext.isVideo
 import com.anytypeio.anytype.core_models.ui.WallpaperView
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.core_ui.widgets.toSpaceBackground
@@ -38,11 +51,15 @@ import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectAction
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
+import com.anytypeio.anytype.feature_create_object.ui.CreateObjectPopup
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
-import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.main.MainViewModel
+import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -60,6 +77,10 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
 
     private val vm: HomeScreenViewModel by viewModels { factory }
 
+    private lateinit var createObjectFactory: CreateObjectViewModelFactory
+
+    private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
     private val mainVm: MainViewModel by activityViewModels()
 
     private val space: String get() = argString(ARG_SPACE_ID)
@@ -72,8 +93,19 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
             showHomepagePicker = false
         )
         componentManager().widgetOverlayComponent.get(vmParams).inject(this)
+        val createObjectVmParams = NewCreateObjectViewModel.VmParams(
+            spaceId = SpaceId(space),
+            showAttachObject = false,
+            showMediaSection = true
+        )
+        createObjectFactory = componentManager()
+            .createObjectFeatureComponent
+            .get(key = createObjectComponentKey(), param = createObjectVmParams)
+            .viewModelFactory()
         super.onCreate(savedInstanceState)
     }
+
+    private fun createObjectComponentKey(): String = "overlay-create-object:$space"
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
@@ -93,11 +125,13 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
             MaterialTheme {
                 WidgetOverlayContent(
                     vm = vm,
+                    createObjectVm = createObjectVm,
                     wallpaperState = mainVm.wallpaperState,
                     onBackClicked = { dismiss() },
                     onSpaceSettingsClicked = {
                         vm.onSpaceSettingsClicked(space = SpaceId(space))
-                    }
+                    },
+                    onCreateObjectAction = { action -> handleCreateObjectAction(action) }
                 )
             }
         }
@@ -123,21 +157,6 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
                                 }
                                 dismissAfterGesture()
                             }
-                            is Command.OpenObjectCreateDialog -> {
-                                // Show on parent fragment manager so the dialog
-                                // survives the overlay dismiss below.
-                                runCatching {
-                                    ObjectTypeSelectionFragment
-                                        .new(space = command.space.id)
-                                        .show(
-                                            parentFragmentManager,
-                                            "overlay-object-create-dialog"
-                                        )
-                                }.onFailure {
-                                    Timber.e(it, "Error showing create-object dialog from overlay")
-                                }
-                                dismissAfterGesture()
-                            }
                             else -> {
                                 Timber.d("WidgetOverlay vm command (ignored): $command")
                             }
@@ -150,6 +169,11 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
                     }
                 }
                 launch { vm.toasts.collect { toast(it) } }
+                launch {
+                    vm.uploadSnackbar.collect { variant ->
+                        mainVm.showSnackbarWithOk(uploadSnackbarMessage(variant))
+                    }
+                }
             }
         }
     }
@@ -278,8 +302,31 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
     }
 
     override fun onDestroy() {
+        componentManager().createObjectFeatureComponent.release(createObjectComponentKey())
         componentManager().widgetOverlayComponent.release()
         super.onDestroy()
+    }
+
+    private fun handleCreateObjectAction(action: CreateObjectAction) {
+        when (action) {
+            is CreateObjectAction.CreateObjectOfType -> {
+                vm.onCreateNewObjectOfTypeKey(typeKey = TypeKey(action.typeKey))
+            }
+            is CreateObjectAction.UpdateSearch,
+            is CreateObjectAction.Retry -> {
+                createObjectVm.onAction(action)
+            }
+            CreateObjectAction.AttachExistingObject -> {
+                Timber.d("CreateObjectPopup attach action received unexpectedly")
+                vm.hideCreateObjectSheet()
+            }
+            CreateObjectAction.SelectPhotos,
+            CreateObjectAction.TakePhoto,
+            CreateObjectAction.SelectFiles -> {
+                // Media actions are handled inside WidgetOverlayContent where the
+                // Activity-result launchers live. This branch is unreachable.
+            }
+        }
     }
 
     companion object {
@@ -297,9 +344,11 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
 @Composable
 private fun WidgetOverlayContent(
     vm: HomeScreenViewModel,
+    createObjectVm: NewCreateObjectViewModel,
     wallpaperState: StateFlow<WallpaperResult>,
     onBackClicked: () -> Unit,
     onSpaceSettingsClicked: () -> Unit,
+    onCreateObjectAction: (CreateObjectAction) -> Unit,
 ) {
     val wallpaper by wallpaperState.collectAsStateWithLifecycle()
     val spaceBackground = wallpaper.toSpaceBackground()
@@ -333,6 +382,105 @@ private fun WidgetOverlayContent(
                 .statusBarsPadding(),
             onBackButtonClicked = onBackClicked,
             onSpaceSettingsClicked = onSpaceSettingsClicked,
+        )
+
+        val createObjectSheetVisible by vm.createObjectSheetVisible.collectAsStateWithLifecycle()
+        val createObjectState by createObjectVm.state.collectAsStateWithLifecycle()
+        LaunchedEffect(createObjectSheetVisible) {
+            if (createObjectSheetVisible) createObjectVm.onOpen()
+        }
+
+        val uploadContext = LocalContext.current
+        val uploadMediaLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.PickMultipleVisualMedia()
+        ) { uris ->
+            vm.onUploadFilesToSpace(
+                uris.map { uri ->
+                    val type = if (isVideo(uri, uploadContext))
+                        Block.Content.File.Type.VIDEO
+                    else
+                        Block.Content.File.Type.IMAGE
+                    HomeScreenViewModel.UploadToSpaceTarget(uri.toString(), type)
+                }
+            )
+        }
+        val uploadFileLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.OpenMultipleDocuments()
+        ) { uris ->
+            vm.onUploadFilesToSpace(
+                uris.map { uri ->
+                    HomeScreenViewModel.UploadToSpaceTarget(
+                        uri.toString(),
+                        Block.Content.File.Type.NONE
+                    )
+                }
+            )
+        }
+        var capturedPhotoUri by rememberSaveable { mutableStateOf<String?>(null) }
+        var capturedPhotoPath by rememberSaveable { mutableStateOf<String?>(null) }
+        val takePhotoLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.TakePicture()
+        ) { isSuccess ->
+            val uri = capturedPhotoUri
+            val sourcePath = capturedPhotoPath
+            if (isSuccess && uri != null) {
+                vm.onUploadFilesToSpace(
+                    listOf(
+                        HomeScreenViewModel.UploadToSpaceTarget(
+                            uri = uri,
+                            type = Block.Content.File.Type.IMAGE,
+                            sourceFilePath = sourcePath
+                        )
+                    )
+                )
+            } else if (sourcePath != null) {
+                runCatching { java.io.File(sourcePath).delete() }
+            }
+            capturedPhotoUri = null
+            capturedPhotoPath = null
+        }
+        val takePhotoPermissionLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                launchCameraForHomeUpload(
+                    context = uploadContext,
+                    launcher = takePhotoLauncher,
+                    onPhotoReady = { uri, file ->
+                        capturedPhotoUri = uri.toString()
+                        capturedPhotoPath = file.absolutePath
+                    }
+                )
+            } else {
+                Timber.w("Camera permission denied for overlay upload")
+            }
+        }
+
+        CreateObjectPopup(
+            expanded = createObjectSheetVisible,
+            onDismissRequest = { vm.hideCreateObjectSheet() },
+            state = createObjectState,
+            onAction = { action ->
+                when (action) {
+                    CreateObjectAction.SelectPhotos -> {
+                        uploadMediaLauncher.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageAndVideo
+                            )
+                        )
+                        vm.hideCreateObjectSheet()
+                    }
+                    CreateObjectAction.TakePhoto -> {
+                        takePhotoPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        vm.hideCreateObjectSheet()
+                    }
+                    CreateObjectAction.SelectFiles -> {
+                        uploadFileLauncher.launch(arrayOf("*/*"))
+                        vm.hideCreateObjectSheet()
+                    }
+                    else -> onCreateObjectAction(action)
+                }
+            }
         )
     }
 }

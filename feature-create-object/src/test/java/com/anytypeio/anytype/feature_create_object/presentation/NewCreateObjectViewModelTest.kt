@@ -4,7 +4,9 @@ import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObjectType
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -202,6 +204,36 @@ class NewCreateObjectViewModelTest {
             val state = awaitItem()
             assertEquals(1, state.objectTypes.size)
             assertEquals("Page", state.objectTypes.first().name)
+        }
+    }
+
+    @Test
+    fun `should filter out types with file and media layouts`() = runTest {
+        // Arrange
+        val creatable = StubObjectType(
+            uniqueKey = "ot-page",
+            name = "Page",
+            recommendedLayout = ObjectType.Layout.BASIC.code.toDouble()
+        )
+        val fileTypes = SupportedLayouts.fileLayouts.mapIndexed { i, layout ->
+            StubObjectType(
+                uniqueKey = "ot-file-$i",
+                name = "FileType-$i",
+                recommendedLayout = layout.code.toDouble()
+            )
+        }
+        storeOfObjectTypes.merge(listOf(creatable) + fileTypes)
+        spaceViewContainer.setSpaceUxType(SpaceUxType.DATA)
+
+        // Act
+        val vm = createViewModel()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Assert
+        vm.state.test {
+            val state = awaitItem()
+            assertEquals(1, state.objectTypes.size)
+            assertEquals("ot-page", state.objectTypes.first().typeKey)
         }
     }
 
@@ -423,7 +455,7 @@ class NewCreateObjectViewModelTest {
     // region: Default State Values
 
     @Test
-    fun `should have correct default state values`() = runTest {
+    fun `should have correct default state values when vm params omit flags`() = runTest {
         // Arrange
         spaceViewContainer.setSpaceUxType(SpaceUxType.DATA)
 
@@ -434,9 +466,75 @@ class NewCreateObjectViewModelTest {
         // Assert
         vm.state.test {
             val state = awaitItem()
+            assertFalse(state.showMediaSection)
+            assertFalse(state.showAttachExisting)
+            assertEquals("", state.searchQuery)
+        }
+    }
+
+    @Test
+    fun `should seed showMediaSection and showAttachExisting from vm params`() = runTest {
+        // Arrange
+        spaceViewContainer.setSpaceUxType(SpaceUxType.DATA)
+
+        // Act
+        val vm = createViewModel(
+            showAttachObject = true,
+            showMediaSection = true
+        )
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Assert
+        vm.state.test {
+            val state = awaitItem()
             assertTrue(state.showMediaSection)
             assertTrue(state.showAttachExisting)
+        }
+    }
+
+    // endregion
+
+    // region: onOpen reset
+
+    @Test
+    fun `onOpen should clear searchQuery and restore full filtered list`() = runTest {
+        // Arrange
+        val pageType = StubObjectType(
+            uniqueKey = "ot-page",
+            name = "Page",
+            recommendedLayout = ObjectType.Layout.BASIC.code.toDouble()
+        )
+        val noteType = StubObjectType(
+            uniqueKey = "ot-note",
+            name = "Note",
+            recommendedLayout = ObjectType.Layout.NOTE.code.toDouble()
+        )
+        storeOfObjectTypes.merge(listOf(pageType, noteType))
+        spaceViewContainer.setSpaceUxType(SpaceUxType.DATA)
+
+        val vm = createViewModel()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        vm.onSearchQueryChanged("page")
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Sanity: filtered list is reduced
+        vm.state.test {
+            val preReset = awaitItem()
+            assertEquals("page", preReset.searchQuery)
+            assertEquals(1, preReset.filteredObjectTypes.size)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        // Act
+        vm.onOpen()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Assert
+        vm.state.test {
+            val state = awaitItem()
             assertEquals("", state.searchQuery)
+            assertEquals(2, state.filteredObjectTypes.size)
         }
     }
 
@@ -444,8 +542,15 @@ class NewCreateObjectViewModelTest {
 
     // region: Helpers
 
-    private fun createViewModel(): NewCreateObjectViewModel {
-        val vmParams = NewCreateObjectViewModel.VmParams(spaceId = spaceId)
+    private fun createViewModel(
+        showAttachObject: Boolean = false,
+        showMediaSection: Boolean = false
+    ): NewCreateObjectViewModel {
+        val vmParams = NewCreateObjectViewModel.VmParams(
+            spaceId = spaceId,
+            showAttachObject = showAttachObject,
+            showMediaSection = showMediaSection
+        )
         return NewCreateObjectViewModel(
             storeOfObjectTypes = storeOfObjectTypes,
             spaceViewContainer = spaceViewContainer,
@@ -477,14 +582,15 @@ class NewCreateObjectViewModelTest {
         override fun observe(space: SpaceId): Flow<ObjectWrapper.SpaceView> =
             spaceViews.map { it.firstOrNull() ?: throw NoSuchElementException() }
 
-        @Suppress("UNCHECKED_CAST")
         override fun <T> observe(
             space: SpaceId,
             keys: List<String>,
             mapper: (ObjectWrapper.SpaceView) -> T
-        ): Flow<T> {
-            // For testing, we return the spaceUxType directly since that's what the ViewModel needs
-            return spaceUxType as Flow<T>
+        ): Flow<T> = spaceUxType.map { uxType ->
+            val fakeSpaceView = ObjectWrapper.SpaceView(
+                mapOf(Relations.SPACE_UX_TYPE to uxType.code.toDouble())
+            )
+            mapper(fakeSpaceView)
         }
 
         override fun get(): List<ObjectWrapper.SpaceView> = spaceViews.value

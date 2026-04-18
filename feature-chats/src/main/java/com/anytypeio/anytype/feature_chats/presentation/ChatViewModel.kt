@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -30,11 +31,13 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.core_models.ui.spaceIcon
+import com.anytypeio.anytype.core_ui.menu.ObjectTypeMenuItem
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -81,6 +84,7 @@ import com.anytypeio.anytype.feature_chats.ui.NotificationSetting
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
+import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
@@ -95,6 +99,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -189,6 +195,45 @@ class ChatViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(),
         initialValue = false
     )
+
+    /**
+     * Top-3 creatable object types for the chat `+` attachment menu.
+     * Mirrors the filtering + sorting used by [NewCreateObjectViewModel]:
+     * allow-list by [SupportedLayouts.getCreateObjectLayouts], then the
+     * shared [sortByTypePriority] (respects user's widget custom order),
+     * then take 3.
+     */
+    val quickCreateTypes: StateFlow<List<ObjectTypeMenuItem>> = combine(
+        storeOfObjectTypes.observe(),
+        spaceViews.observe(vmParams.space)
+    ) { allTypes, spaceView ->
+        val isOneToOneSpace = spaceView.isOneToOneSpace
+        val allowedLayouts = SupportedLayouts.getCreateObjectLayouts(isOneToOneSpace)
+        allTypes
+            .filter { type ->
+                type.isValid &&
+                    type.isDeleted != true &&
+                    type.isArchived != true &&
+                    type.uniqueKey != ObjectTypeIds.TEMPLATE &&
+                    allowedLayouts.contains(type.recommendedLayout)
+            }
+            .sortByTypePriority(isChatSpace = isOneToOneSpace)
+            .take(3)
+            .map { type ->
+                ObjectTypeMenuItem(
+                    typeKey = type.uniqueKey,
+                    name = type.name.orEmpty(),
+                    icon = type.objectIcon()
+                )
+            }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = emptyList()
+    )
+
+    private val _seeAllCreateSheetVisible = MutableStateFlow(false)
+    val seeAllCreateSheetVisible: StateFlow<Boolean> = _seeAllCreateSheetVisible.asStateFlow()
 
     private var account: Id = ""
 
@@ -2443,12 +2488,19 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onCreateAndAttachObject() {
-        Timber.d("DROID-2966 onCreateAndAttachObject")
+    /**
+     * Create a new object of [typeKey] and attach it to this chat.
+     * Triggered from the attachment menu's top-3 quick-create rows and
+     * from the "See all" popup's type selection.
+     */
+    fun onCreateAndAttachObjectOfType(typeKey: TypeKey) {
+        Timber.d("DROID-2966 onCreateAndAttachObjectOfType key=${typeKey.key}")
         viewModelScope.launch {
+            _seeAllCreateSheetVisible.value = false
             createObject.async(
                 params = CreateObject.Param(
-                    space = vmParams.space
+                    space = vmParams.space,
+                    type = typeKey
                 )
             ).onSuccess { result ->
                 navigation.emit(
@@ -2463,6 +2515,14 @@ class ChatViewModel @Inject constructor(
                 Timber.d(it, "DROID-2966 Error while creating attach-to-chat object")
             }
         }
+    }
+
+    fun onSeeAllCreateSheetRequested() {
+        _seeAllCreateSheetVisible.value = true
+    }
+
+    fun onSeeAllCreateSheetDismissed() {
+        _seeAllCreateSheetVisible.value = false
     }
 
     fun hideError() {

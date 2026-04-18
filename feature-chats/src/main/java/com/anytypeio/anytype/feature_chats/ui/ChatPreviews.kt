@@ -223,8 +223,8 @@ fun ChatScreenPreview() {
         onAddMembersClick = {},
         onShowQRCodeClick = {},
         onImageCaptured = {},
-        onVideoCaptured = {},
-        onCreateAndAttachObject = {},
+        quickCreateTypes = emptyList(),
+        onAttachmentAction = {},
         onDeleteMessageWarningTriggered = {},
         onAttachmentMenuTriggered = {}
     )

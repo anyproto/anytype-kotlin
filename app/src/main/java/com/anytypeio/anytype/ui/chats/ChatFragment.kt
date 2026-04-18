@@ -47,7 +47,12 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectAction
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
+import com.anytypeio.anytype.feature_create_object.ui.CreateObjectPopup
 import com.anytypeio.anytype.core_ui.features.multiplayer.ShareSpaceQrCodeScreen
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
@@ -103,8 +108,14 @@ class ChatFragment : Fragment() {
 
     private val vm by viewModels<ChatViewModel> { factory }
 
+    private lateinit var createObjectFactory: CreateObjectViewModelFactory
+
+    private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
     val ctx get() = arg<Id>(CTX_KEY)
     private val space get() = arg<Id>(SPACE_KEY)
+
+    private fun createObjectComponentKey(): String = "chat-create-object:$ctx"
 
     private val triggeredByPush get() = arg<Boolean>(TRIGGERED_BY_PUSH_KEY)
     private val popUpToVault get() = arg<Boolean>(POP_UP_TO_VAULT_KEY)
@@ -309,6 +320,37 @@ class ChatFragment : Fragment() {
                     )
                 }
             }
+
+            // "See all" create-object popup for the chat attachment menu.
+            val seeAllCreateSheetVisible =
+                vm.seeAllCreateSheetVisible.collectAsStateWithLifecycle().value
+            val createObjectState =
+                createObjectVm.state.collectAsStateWithLifecycle().value
+            LaunchedEffect(seeAllCreateSheetVisible) {
+                if (seeAllCreateSheetVisible) createObjectVm.onOpen()
+            }
+            CreateObjectPopup(
+                expanded = seeAllCreateSheetVisible,
+                onDismissRequest = { vm.onSeeAllCreateSheetDismissed() },
+                state = createObjectState,
+                onAction = { action ->
+                    when (action) {
+                        is CreateObjectAction.CreateObjectOfType ->
+                            vm.onCreateAndAttachObjectOfType(TypeKey(action.typeKey))
+                        is CreateObjectAction.UpdateSearch,
+                        is CreateObjectAction.Retry ->
+                            createObjectVm.onAction(action)
+                        CreateObjectAction.SelectPhotos,
+                        CreateObjectAction.TakePhoto,
+                        CreateObjectAction.SelectFiles,
+                        CreateObjectAction.AttachExistingObject -> {
+                            // Not reachable: showMediaSection/showAttachObject = false.
+                            Timber.d("ChatFragment see-all popup unexpected action: $action")
+                            vm.onSeeAllCreateSheetDismissed()
+                        }
+                    }
+                }
+            )
 
             if (showGlobalSearchBottomSheet) {
                 ModalBottomSheet(
@@ -777,9 +819,22 @@ class ChatFragment : Fragment() {
                 )
             )
             .inject(this)
+        // See-all popup: full type list, no media rows, no attach-existing row.
+        createObjectFactory = componentManager()
+            .createObjectFeatureComponent
+            .get(
+                key = createObjectComponentKey(),
+                param = NewCreateObjectViewModel.VmParams(
+                    spaceId = SpaceId(space),
+                    showAttachObject = false,
+                    showMediaSection = false
+                )
+            )
+            .viewModelFactory()
     }
 
     private fun releaseDependencies() {
+        componentManager().createObjectFeatureComponent.release(createObjectComponentKey())
         componentManager().chatComponent.release(ctx)
     }
 

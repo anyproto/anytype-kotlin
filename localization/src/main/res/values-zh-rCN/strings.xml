@@ -1768,6 +1768,10 @@
     <string name="chat_attachment_media">上传媒体文件</string>
     <string name="chat_attachment_upload">上传</string>
     <string name="chat_attach">附加</string>
+    <string name="upload_success_snackbar_image">New image added</string>
+    <string name="upload_success_snackbar_video">New video added</string>
+    <string name="upload_success_snackbar_file">New file added</string>
+    <string name="upload_success_snackbar_mixed">New files added</string>
     <string name="chats_reply">回复</string>
     <string name="chats_add_reaction">添加回应</string>
     <string name="chat_send_message_rate_limit_title">等等！输入得太快了！</string>

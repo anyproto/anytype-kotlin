@@ -1782,6 +1782,10 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Fazer upload</string>
     <string name="chat_attach">Anexar</string>
+    <string name="upload_success_snackbar_image">New image added</string>
+    <string name="upload_success_snackbar_video">New video added</string>
+    <string name="upload_success_snackbar_file">New file added</string>
+    <string name="upload_success_snackbar_mixed">New files added</string>
     <string name="chats_reply">Responder</string>
     <string name="chats_add_reaction">Adicionar reação</string>
     <string name="chat_send_message_rate_limit_title">Aguente aí! Digitação rápida detectada!</string>

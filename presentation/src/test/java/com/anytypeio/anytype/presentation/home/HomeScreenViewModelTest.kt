@@ -90,6 +90,8 @@ import com.anytypeio.anytype.domain.widgets.UpdateObjectTypesOrderIds
 import com.anytypeio.anytype.domain.widgets.ObserveWidgetSections
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
+import com.anytypeio.anytype.domain.device.FileSharer
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.core_models.WidgetSections
@@ -3009,6 +3011,12 @@ class HomeScreenViewModelTest {
     @Mock
     private lateinit var setHomepage: SetHomepage
 
+    @Mock
+    private lateinit var uploadFile: UploadFile
+
+    @Mock
+    private lateinit var fileSharer: FileSharer
+
     //region Recently Edited Section Tests
 
     @Test
@@ -3224,7 +3232,9 @@ class HomeScreenViewModelTest {
         stringResourceProvider = stringResourceProvider,
         updateObjectTypesOrderIds = updateObjectTypesOrderIds,
         setSpaceNotificationMode = setSpaceNotificationMode,
-        setHomepage = setHomepage
+        setHomepage = setHomepage,
+        uploadFile = uploadFile,
+        fileSharer = fileSharer
     )
 
     companion object {

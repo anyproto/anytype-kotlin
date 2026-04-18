@@ -1,11 +1,16 @@
 package com.anytypeio.anytype.ui.home
 
+import android.Manifest
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,9 +18,15 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -27,14 +38,17 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions.Builder
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_utils.ext.isVideo
 import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectAction
 import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
 import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
 import com.anytypeio.anytype.feature_create_object.ui.CreateObjectPopup
+import java.io.File
 import com.anytypeio.anytype.core_ui.features.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -203,11 +217,89 @@ class WidgetsScreenFragment : Fragment(),
         LaunchedEffect(createObjectSheetVisible) {
             if (createObjectSheetVisible) createObjectVm.onOpen()
         }
+
+        val uploadContext = LocalContext.current
+        val uploadMediaLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.PickMultipleVisualMedia()
+        ) { uris ->
+            vm.onUploadFilesToSpace(
+                uris.map { uri ->
+                    val type = if (isVideo(uri, uploadContext))
+                        Block.Content.File.Type.VIDEO
+                    else
+                        Block.Content.File.Type.IMAGE
+                    HomeScreenViewModel.UploadToSpaceTarget(uri.toString(), type)
+                }
+            )
+        }
+        val uploadFileLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.OpenMultipleDocuments()
+        ) { uris ->
+            vm.onUploadFilesToSpace(
+                uris.map { uri ->
+                    HomeScreenViewModel.UploadToSpaceTarget(
+                        uri.toString(),
+                        Block.Content.File.Type.NONE
+                    )
+                }
+            )
+        }
+        var capturedPhotoUri by rememberSaveable { mutableStateOf<String?>(null) }
+        val takePhotoLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.TakePicture()
+        ) { isSuccess ->
+            val uri = capturedPhotoUri
+            if (isSuccess && uri != null) {
+                vm.onUploadFilesToSpace(
+                    listOf(
+                        HomeScreenViewModel.UploadToSpaceTarget(
+                            uri,
+                            Block.Content.File.Type.IMAGE
+                        )
+                    )
+                )
+            }
+            capturedPhotoUri = null
+        }
+        val takePhotoPermissionLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                launchCameraForHomeUpload(
+                    context = uploadContext,
+                    launcher = takePhotoLauncher,
+                    onUriReceived = { capturedPhotoUri = it.toString() }
+                )
+            } else {
+                Timber.w("Camera permission denied for home upload")
+            }
+        }
+
         CreateObjectPopup(
             expanded = createObjectSheetVisible,
             onDismissRequest = { vm.hideCreateObjectSheet() },
             state = createObjectState,
-            onAction = { action -> handleCreateObjectAction(action) }
+            onAction = { action ->
+                when (action) {
+                    CreateObjectAction.SelectPhotos -> {
+                        uploadMediaLauncher.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageAndVideo
+                            )
+                        )
+                        vm.hideCreateObjectSheet()
+                    }
+                    CreateObjectAction.TakePhoto -> {
+                        takePhotoPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        vm.hideCreateObjectSheet()
+                    }
+                    CreateObjectAction.SelectFiles -> {
+                        uploadFileLauncher.launch(arrayOf("*/*"))
+                        vm.hideCreateObjectSheet()
+                    }
+                    else -> handleCreateObjectAction(action)
+                }
+            }
         )
 
         // Homepage Picker - shown as bottom sheet after channel creation or from Create Home widget
@@ -634,16 +726,15 @@ class WidgetsScreenFragment : Fragment(),
             is CreateObjectAction.Retry -> {
                 createObjectVm.onAction(action)
             }
-            CreateObjectAction.SelectPhotos,
-            CreateObjectAction.TakePhoto,
-            CreateObjectAction.SelectFiles -> {
-                // TODO wire real media handlers in the follow-up.
-                Timber.d("CreateObjectPopup media action: $action")
-                vm.hideCreateObjectSheet()
-            }
             CreateObjectAction.AttachExistingObject -> {
                 Timber.d("CreateObjectPopup attach action received unexpectedly")
                 vm.hideCreateObjectSheet()
+            }
+            CreateObjectAction.SelectPhotos,
+            CreateObjectAction.TakePhoto,
+            CreateObjectAction.SelectFiles -> {
+                // Media actions are handled in the popup's onAction lambda where
+                // the Activity-result launchers live. This branch is unreachable.
             }
         }
     }
@@ -674,3 +765,31 @@ class WidgetsScreenFragment : Fragment(),
         )
     }
 }
+
+/**
+ * Writes a temp JPEG into the app cache, gives the launcher the FileProvider URI,
+ * and reports the URI back via [onUriReceived] so callers can upload on capture.
+ * Mirrors `feature-chats/tools/launchCamera` but lives here so Home/Widgets can
+ * invoke it without depending on the chats module.
+ */
+internal fun launchCameraForHomeUpload(
+    context: android.content.Context,
+    launcher: androidx.activity.compose.ManagedActivityResultLauncher<Uri, Boolean>,
+    onUriReceived: (Uri) -> Unit
+) {
+    val tempDir = File(context.cacheDir, HOME_UPLOAD_TEMP_FOLDER)
+    if (!tempDir.exists()) tempDir.mkdirs()
+    val photoFile = File.createTempFile("IMG_", ".jpg", tempDir).apply {
+        createNewFile()
+        deleteOnExit()
+    }
+    val uri = FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.provider",
+        photoFile
+    )
+    onUriReceived(uri)
+    launcher.launch(uri)
+}
+
+private const val HOME_UPLOAD_TEMP_FOLDER = "home_upload_temp_folder"

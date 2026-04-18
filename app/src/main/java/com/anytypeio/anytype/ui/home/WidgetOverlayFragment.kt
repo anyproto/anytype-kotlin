@@ -1,10 +1,15 @@
 package com.anytypeio.anytype.ui.home
 
+import android.Manifest
 import android.app.Dialog
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,10 +19,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.core.os.bundleOf
@@ -30,9 +39,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.ui.WallpaperResult
+import com.anytypeio.anytype.core_utils.ext.isVideo
 import com.anytypeio.anytype.core_models.ui.WallpaperView
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.core_ui.widgets.toSpaceBackground
@@ -299,15 +310,15 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
             is CreateObjectAction.Retry -> {
                 createObjectVm.onAction(action)
             }
-            CreateObjectAction.SelectPhotos,
-            CreateObjectAction.TakePhoto,
-            CreateObjectAction.SelectFiles -> {
-                Timber.d("CreateObjectPopup media action: $action")
-                vm.hideCreateObjectSheet()
-            }
             CreateObjectAction.AttachExistingObject -> {
                 Timber.d("CreateObjectPopup attach action received unexpectedly")
                 vm.hideCreateObjectSheet()
+            }
+            CreateObjectAction.SelectPhotos,
+            CreateObjectAction.TakePhoto,
+            CreateObjectAction.SelectFiles -> {
+                // Media actions are handled inside WidgetOverlayContent where the
+                // Activity-result launchers live. This branch is unreachable.
             }
         }
     }
@@ -372,11 +383,89 @@ private fun WidgetOverlayContent(
         LaunchedEffect(createObjectSheetVisible) {
             if (createObjectSheetVisible) createObjectVm.onOpen()
         }
+
+        val uploadContext = LocalContext.current
+        val uploadMediaLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.PickMultipleVisualMedia()
+        ) { uris ->
+            vm.onUploadFilesToSpace(
+                uris.map { uri ->
+                    val type = if (isVideo(uri, uploadContext))
+                        Block.Content.File.Type.VIDEO
+                    else
+                        Block.Content.File.Type.IMAGE
+                    HomeScreenViewModel.UploadToSpaceTarget(uri.toString(), type)
+                }
+            )
+        }
+        val uploadFileLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.OpenMultipleDocuments()
+        ) { uris ->
+            vm.onUploadFilesToSpace(
+                uris.map { uri ->
+                    HomeScreenViewModel.UploadToSpaceTarget(
+                        uri.toString(),
+                        Block.Content.File.Type.NONE
+                    )
+                }
+            )
+        }
+        var capturedPhotoUri by rememberSaveable { mutableStateOf<String?>(null) }
+        val takePhotoLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.TakePicture()
+        ) { isSuccess ->
+            val uri = capturedPhotoUri
+            if (isSuccess && uri != null) {
+                vm.onUploadFilesToSpace(
+                    listOf(
+                        HomeScreenViewModel.UploadToSpaceTarget(
+                            uri,
+                            Block.Content.File.Type.IMAGE
+                        )
+                    )
+                )
+            }
+            capturedPhotoUri = null
+        }
+        val takePhotoPermissionLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                launchCameraForHomeUpload(
+                    context = uploadContext,
+                    launcher = takePhotoLauncher,
+                    onUriReceived = { capturedPhotoUri = it.toString() }
+                )
+            } else {
+                Timber.w("Camera permission denied for overlay upload")
+            }
+        }
+
         CreateObjectPopup(
             expanded = createObjectSheetVisible,
             onDismissRequest = { vm.hideCreateObjectSheet() },
             state = createObjectState,
-            onAction = onCreateObjectAction
+            onAction = { action ->
+                when (action) {
+                    CreateObjectAction.SelectPhotos -> {
+                        uploadMediaLauncher.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageAndVideo
+                            )
+                        )
+                        vm.hideCreateObjectSheet()
+                    }
+                    CreateObjectAction.TakePhoto -> {
+                        takePhotoPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        vm.hideCreateObjectSheet()
+                    }
+                    CreateObjectAction.SelectFiles -> {
+                        uploadFileLauncher.launch(arrayOf("*/*"))
+                        vm.hideCreateObjectSheet()
+                    }
+                    else -> onCreateObjectAction(action)
+                }
+            }
         )
     }
 }

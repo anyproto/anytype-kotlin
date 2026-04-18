@@ -9,6 +9,8 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.domain.device.FileSharer
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
@@ -268,7 +270,9 @@ class HomeScreenViewModel(
     private val stringResourceProvider : StringResourceProvider,
     private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds,
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
-    private val setHomepage: SetHomepage
+    private val setHomepage: SetHomepage,
+    private val uploadFile: UploadFile,
+    private val fileSharer: FileSharer
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -2061,6 +2065,46 @@ class HomeScreenViewModel(
             _createObjectSheetVisible.value = true
         }
     }
+
+    /**
+     * Upload one or more local URIs as standalone file/image/video objects
+     * in the current space. Triggered from the create-object popup's media
+     * rows (Photos / Camera / Files). Uploads run in [viewModelScope] — if
+     * the user leaves the screen before completion, they are cancelled.
+     * Background uploads are out of scope for this iteration.
+     */
+    fun onUploadFilesToSpace(targets: List<UploadToSpaceTarget>) {
+        if (vmParams.spaceId.id.isEmpty() || targets.isEmpty()) return
+        _createObjectSheetVisible.value = false
+        viewModelScope.launch {
+            targets.forEach { target ->
+                val path = runCatching { fileSharer.getPath(target.uri) }
+                    .getOrNull()
+                    ?.takeIf { it.isNotEmpty() }
+                if (path == null) {
+                    Timber.w("Upload: could not resolve path for ${target.uri}")
+                    return@forEach
+                }
+                uploadFile.async(
+                    UploadFile.Params(
+                        space = vmParams.spaceId,
+                        path = path,
+                        type = target.type,
+                        createdInContext = null
+                    )
+                ).fold(
+                    onSuccess = { Timber.d("Upload success id=${it.id}") },
+                    onFailure = { e -> Timber.e(e, "Upload failed for $path") }
+                )
+                runCatching { java.io.File(path).delete() }
+            }
+        }
+    }
+
+    data class UploadToSpaceTarget(
+        val uri: String,
+        val type: Block.Content.File.Type
+    )
 
     fun hideCreateObjectSheet() {
         _createObjectSheetVisible.value = false
@@ -3932,7 +3976,9 @@ class HomeScreenViewModel(
         private val stringResourceProvider : StringResourceProvider,
         private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds,
         private val setSpaceNotificationMode: SetSpaceNotificationMode,
-        private val setHomepage: SetHomepage
+        private val setHomepage: SetHomepage,
+        private val uploadFile: UploadFile,
+        private val fileSharer: FileSharer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -3999,7 +4045,9 @@ class HomeScreenViewModel(
             stringResourceProvider = stringResourceProvider,
             updateObjectTypesOrderIds = updateObjectTypesOrderIds,
             setSpaceNotificationMode = setSpaceNotificationMode,
-            setHomepage = setHomepage
+            setHomepage = setHomepage,
+            uploadFile = uploadFile,
+            fileSharer = fileSharer
         ) as T
     }
 

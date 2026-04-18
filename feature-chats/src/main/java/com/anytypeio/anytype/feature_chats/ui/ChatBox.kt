@@ -39,6 +39,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -85,11 +88,13 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
 import com.anytypeio.anytype.feature_chats.tools.launchCamera
+import com.anytypeio.anytype.feature_chats.tools.launchVideoRecorder
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatBox(
     text: TextFieldValue,
@@ -112,6 +117,7 @@ fun ChatBox(
     onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit,
     onUrlInserted: (Url) -> Unit,
     onImageCaptured: (Uri) -> Unit,
+    onVideoCaptured: (Uri) -> Unit,
     onAttachmentMenuTriggered: () -> Unit,
     spaceUxType: SpaceUxType? = null
     ) {
@@ -162,8 +168,39 @@ fun ChatBox(
         }
     }
 
+    var capturedVideoUri by rememberSaveable { mutableStateOf<String?>(null) }
+
+    val recordVideoLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.CaptureVideo()
+    ) { isSuccess ->
+        val uri = capturedVideoUri
+        if (isSuccess && uri != null) {
+            onVideoCaptured(Uri.parse(uri))
+        } else {
+            Timber.w("DROID-2966 Failed to capture video")
+        }
+        capturedVideoUri = null
+    }
+
+    val recordVideoPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            launchVideoRecorder(
+                context = context,
+                launcher = recordVideoLauncher,
+                onUriReceived = { capturedVideoUri = it.toString() }
+            )
+        } else {
+            onCameraPermissionDenied()
+        }
+    }
+
+    var showCameraChooser by remember { mutableStateOf(false) }
+
     // Route menu actions: Photos/Camera/Files are handled by local launchers.
-    // AttachObject, CreateObjectOfType, SeeAll bubble up.
+    // Camera shows a Photo/Video chooser sheet. AttachObject,
+    // CreateObjectOfType, SeeAll bubble up.
     val dispatchAttachmentAction: (AttachmentMenuAction) -> Unit = { action ->
         when (action) {
             AttachmentMenuAction.Photos -> uploadMediaLauncher.launch(
@@ -171,8 +208,7 @@ fun ChatBox(
                     mediaType = ActivityResultContracts.PickVisualMedia.ImageAndVideo
                 )
             )
-            AttachmentMenuAction.Camera ->
-                takePhotoPermissionLauncher.launch(Manifest.permission.CAMERA)
+            AttachmentMenuAction.Camera -> showCameraChooser = true
             AttachmentMenuAction.Files -> uploadFileLauncher.launch(arrayOf("*/*"))
             else -> onAttachmentAction(action)
         }
@@ -544,6 +580,54 @@ fun ChatBox(
             }
         }
     }
+
+    if (showCameraChooser) {
+        val cameraChooserState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { showCameraChooser = false },
+            sheetState = cameraChooserState,
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+            dragHandle = null
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp)
+            ) {
+                CameraChooserRow(
+                    text = stringResource(R.string.chat_box_take_photo),
+                    onClick = {
+                        showCameraChooser = false
+                        takePhotoPermissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                )
+                CameraChooserRow(
+                    text = stringResource(R.string.chat_box_record_video),
+                    onClick = {
+                        showCameraChooser = false
+                        recordVideoPermissionLauncher.launch(Manifest.permission.CAMERA)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CameraChooserRow(
+    text: String,
+    onClick: () -> Unit
+) {
+    Text(
+        text = text,
+        style = com.anytypeio.anytype.core_ui.views.BodyRegular,
+        color = colorResource(id = R.color.text_primary),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+    )
 }
 
 @Composable

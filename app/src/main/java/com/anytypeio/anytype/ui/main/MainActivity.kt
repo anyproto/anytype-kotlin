@@ -181,6 +181,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 findViewById<android.view.View>(android.R.id.content)
                                     ?.showSnackbar(command.msg, Snackbar.LENGTH_LONG)
                             }
+                            is Command.SnackbarWithOk -> {
+                                findViewById<android.view.View>(android.R.id.content)
+                                    ?.showSnackbar(
+                                        msg = command.msg,
+                                        length = Snackbar.LENGTH_LONG,
+                                        actionMessage = getString(R.string.button_okay),
+                                        action = { _ -> }
+                                    )
+                            }
                             is Command.Notifications -> {
                                 NotificationsFragment().show(supportFragmentManager, null)
                             }

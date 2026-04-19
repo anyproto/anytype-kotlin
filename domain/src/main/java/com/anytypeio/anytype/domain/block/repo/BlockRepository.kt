@@ -149,7 +149,12 @@ interface BlockRepository {
     /**
      * Creates bookmark object from url and returns its id.
      */
-    suspend fun createBookmarkObject(space: Id, url: Url, details: Struct): Id
+    suspend fun createBookmarkObject(
+        space: Id,
+        url: Url,
+        details: Struct,
+        createdInContext: Id? = null
+    ): Id
 
     suspend fun fetchBookmarkObject(ctx: Id, url: Url)
 

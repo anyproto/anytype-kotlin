@@ -61,7 +61,8 @@ class CreateDataViewObject @Inject constructor(
                     prefilled = params.prefilled,
                     internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
                     space = space,
-                    typeKey = params.type
+                    typeKey = params.type,
+                    createdInContext = params.createdInContext
                 )
                 val result = repo.createObject(command)
                 Result(
@@ -92,7 +93,8 @@ class CreateDataViewObject @Inject constructor(
             val type: TypeKey,
             val filters: List<DVFilter>,
             val template: Id?,
-            val prefilled: Struct
+            val prefilled: Struct,
+            val createdInContext: Id? = null
         ) : Params()
     }
 

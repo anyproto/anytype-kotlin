@@ -9,6 +9,8 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.domain.device.FileSharer
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
@@ -171,10 +173,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -267,7 +273,9 @@ class HomeScreenViewModel(
     private val stringResourceProvider : StringResourceProvider,
     private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds,
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
-    private val setHomepage: SetHomepage
+    private val setHomepage: SetHomepage,
+    private val uploadFile: UploadFile,
+    private val fileSharer: FileSharer
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -286,6 +294,16 @@ class HomeScreenViewModel(
     val showHomepagePicker = MutableStateFlow(vmParams.showHomepagePicker)
     val showCreateHomeWidget = MutableStateFlow(false)
     val showInviteMembersWidget = MutableStateFlow(false)
+
+    private val _createObjectSheetVisible = MutableStateFlow(false)
+    val createObjectSheetVisible: StateFlow<Boolean> = _createObjectSheetVisible.asStateFlow()
+
+    private val _uploadSnackbar = MutableSharedFlow<UploadSuccessSnackbar>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+    )
+    val uploadSnackbar: SharedFlow<UploadSuccessSnackbar> = _uploadSnackbar.asSharedFlow()
 
     private val isEmptyingBinInProgress = MutableStateFlow(false)
 
@@ -2052,12 +2070,102 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onCreateNewObjectLongClicked() {
+    fun onCreateObjectMenuClicked() {
+        if (vmParams.spaceId.id.isNotEmpty()) {
+            _createObjectSheetVisible.value = true
+        }
+    }
+
+    /**
+     * Upload one or more local URIs as standalone file/image/video objects
+     * in the current space. Triggered from the create-object popup's media
+     * rows (Photos / Camera / Files). Uploads run in [viewModelScope] — if
+     * the user leaves the screen before completion, they are cancelled.
+     * Background uploads are out of scope for this iteration.
+     */
+    fun onUploadFilesToSpace(targets: List<UploadToSpaceTarget>) {
+        if (vmParams.spaceId.id.isEmpty() || targets.isEmpty()) return
+        _createObjectSheetVisible.value = false
         viewModelScope.launch {
-            val space = vmParams.spaceId.id
-            if (space.isNotEmpty()) {
-                commands.emit(Command.OpenObjectCreateDialog(SpaceId(space)))
+            val successes = mutableListOf<Block.Content.File.Type>()
+            targets.forEach { target ->
+                val path = runCatching { fileSharer.getPath(target.uri) }
+                    .getOrNull()
+                    ?.takeIf { it.isNotEmpty() }
+                if (path == null) {
+                    Timber.w("Upload: could not resolve path for ${target.uri}")
+                    target.sourceFilePath?.let { src ->
+                        runCatching { java.io.File(src).delete() }
+                    }
+                    return@forEach
+                }
+                uploadFile.async(
+                    UploadFile.Params(
+                        space = vmParams.spaceId,
+                        path = path,
+                        type = target.type,
+                        createdInContext = null
+                    )
+                ).fold(
+                    onSuccess = {
+                        Timber.d("Upload success id=${it.id}")
+                        successes += target.type
+                    },
+                    onFailure = { e -> Timber.e(e, "Upload failed for $path") }
+                )
+                runCatching { java.io.File(path).delete() }
+                target.sourceFilePath?.let { src ->
+                    runCatching { java.io.File(src).delete() }
+                }
             }
+            if (successes.isNotEmpty()) {
+                _uploadSnackbar.emit(successes.toSnackbarVariant())
+            }
+        }
+    }
+
+    data class UploadToSpaceTarget(
+        val uri: String,
+        val type: Block.Content.File.Type,
+        /**
+         * Optional local file path that should be deleted after upload
+         * completes (success or failure). Used by the camera capture path
+         * to clean up the FileProvider-backed temp file in the app cache.
+         * Regular gallery/SAF URIs don't need this.
+         */
+        val sourceFilePath: String? = null
+    )
+
+    private fun List<Block.Content.File.Type>.toSnackbarVariant(): UploadSuccessSnackbar {
+        val distinct = distinct()
+        if (distinct.size > 1) return UploadSuccessSnackbar.Mixed
+        return when (distinct.single()) {
+            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image
+            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video
+            else -> UploadSuccessSnackbar.File
+        }
+    }
+
+    fun hideCreateObjectSheet() {
+        _createObjectSheetVisible.value = false
+    }
+
+    /**
+     * Resolves an object type by unique key (emitted from the create-object
+     * bottom sheet) and delegates to [onCreateNewObjectClicked], which already
+     * handles chat-derived types, template-backed creation, analytics, and
+     * navigation.
+     */
+    fun onCreateNewObjectOfTypeKey(typeKey: TypeKey) {
+        viewModelScope.launch {
+            val objType = storeOfObjectTypes.getByKey(typeKey.key)
+            _createObjectSheetVisible.value = false
+            if (objType == null) {
+                Timber.w("Create-object: type key ${typeKey.key} not found in store")
+                sendToast("Object type not available yet, please try again")
+                return@launch
+            }
+            onCreateNewObjectClicked(objType = objType)
         }
     }
 
@@ -2993,7 +3101,8 @@ class HomeScreenViewModel(
             template = defaultTemplate,
             type = defaultObjectTypeUniqueKey,
             filters = viewer.filters,
-            prefilled = prefilled
+            prefilled = prefilled,
+            createdInContext = collection
         )
 
         val space = vmParams.spaceId.id
@@ -3907,7 +4016,9 @@ class HomeScreenViewModel(
         private val stringResourceProvider : StringResourceProvider,
         private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds,
         private val setSpaceNotificationMode: SetSpaceNotificationMode,
-        private val setHomepage: SetHomepage
+        private val setHomepage: SetHomepage,
+        private val uploadFile: UploadFile,
+        private val fileSharer: FileSharer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -3974,7 +4085,9 @@ class HomeScreenViewModel(
             stringResourceProvider = stringResourceProvider,
             updateObjectTypesOrderIds = updateObjectTypesOrderIds,
             setSpaceNotificationMode = setSpaceNotificationMode,
-            setHomepage = setHomepage
+            setHomepage = setHomepage,
+            uploadFile = uploadFile,
+            fileSharer = fileSharer
         ) as T
     }
 
@@ -4034,8 +4147,6 @@ sealed class Command {
     ) : Command()
 
     data class OpenSpaceSettings(val spaceId: SpaceId) : Command()
-
-    data class OpenObjectCreateDialog(val space: SpaceId) : Command()
 
     data class OpenGlobalSearchScreen(val space: Id) : Command()
 

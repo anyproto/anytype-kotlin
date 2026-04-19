@@ -613,6 +613,7 @@ class SharingViewModel(
                 objectSearchQuery = ""
                 commentText = ""
                 cachedTypesMap = emptyMap()
+                _screenState.value = SharingScreenState.Loading
                 updateSpaceSelectionState()
                 true
             }

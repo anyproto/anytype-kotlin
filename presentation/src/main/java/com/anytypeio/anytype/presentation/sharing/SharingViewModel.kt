@@ -625,6 +625,15 @@ class SharingViewModel(
     private fun updateSpaceSelectionState() {
         val content = sharedContent ?: return
 
+        // Don't overwrite non-SpaceSelection states (e.g., ObjectSelection, Sending)
+        // when spaces subscription emits updates
+        val currentState = _screenState.value
+        if (currentState !is SharingScreenState.SpaceSelection
+            && currentState !is SharingScreenState.Loading
+            && currentState !is SharingScreenState.NoSpaces) {
+            return
+        }
+
         // Don't transition from Loading until spaces are loaded
         if (allSpaces.isEmpty() && _screenState.value is SharingScreenState.Loading) {
             return

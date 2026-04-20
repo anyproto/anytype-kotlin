@@ -357,7 +357,7 @@ class RelationValueListWidget @JvmOverloads constructor(
             is ObjectRelationView.ObjectType.Deleted -> {
                 text1.apply {
                     visible()
-                    setTextColor(context.getColor(R.color.palette_dark_red))
+                    setTextColor(context.getColor(R.color.palette_system_red))
                     text = context.resources.getString(R.string.deleted_type)
                     updateLayoutParams<LayoutParams> {
                         marginStart = 0

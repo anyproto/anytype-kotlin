@@ -2028,6 +2028,9 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_all_short">Tutto</string>
     <string name="notifications_mentions_short">Menzioni</string>
     <string name="notifications_disable_short">Disattiva</string>
+    <string name="notification_option_enable">Abilita</string>
+    <string name="notification_option_mute_and_hide">Mute and hide</string>
+    <string name="notification_option_disabled">Disattivato</string>
     <string name="space_notify_unmute">Riattiva</string>
     <string name="space_notify_mute">Silenzia</string>
     <string name="vault_pinned_limit_message">%1$d gli spazi fissati sono il tuo limite attuale. Rimuovi uno per aggiungere un nuovo preferito.</string>

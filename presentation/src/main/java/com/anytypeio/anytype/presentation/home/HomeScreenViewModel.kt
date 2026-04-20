@@ -299,8 +299,19 @@ class HomeScreenViewModel(
 
     val showHomepagePicker = MutableStateFlow(vmParams.showHomepagePicker)
     val showInviteMembersWidget = MutableStateFlow(false)
-    val spaceHomePickerState: MutableStateFlow<SpaceHomePickerState> =
-        MutableStateFlow(SpaceHomePickerState.Hidden)
+
+    private val spaceHomePickerDelegate: SpaceHomePickerDelegate = SpaceHomePickerDelegate(
+        space = vmParams.spaceId,
+        setHomepage = setHomepage,
+        searchObjects = searchObjects,
+        fieldParser = fieldParser,
+        storeOfObjectTypes = storeOfObjectTypes,
+        urlBuilder = urlBuilder,
+        isOneToOneSpaceProvider = {
+            (_spaceViewState.value as? SpaceViewState.Success)?.isOneToOneSpace == true
+        }
+    )
+    val spaceHomePickerState: StateFlow<SpaceHomePickerState> = spaceHomePickerDelegate.state
 
     private val _createObjectSheetVisible = MutableStateFlow(false)
     val createObjectSheetVisible: StateFlow<Boolean> = _createObjectSheetVisible.asStateFlow()
@@ -3979,111 +3990,22 @@ class HomeScreenViewModel(
     }
 
     fun onHomeWidgetChangeHomeClicked() {
-        openSpaceHomePicker()
-    }
-
-    fun onSpaceHomePickerDismissed() {
-        spaceHomePickerState.value = SpaceHomePickerState.Hidden
-    }
-
-    fun onSpaceHomePickerQueryChanged(query: String) {
-        val current = spaceHomePickerState.value
-        if (current is SpaceHomePickerState.Visible) {
-            spaceHomePickerState.value = current.copy(query = query, isLoading = true)
-            loadSpaceHomePickerCandidates(query)
-        }
-    }
-
-    fun onSpaceHomePickerObjectSelected(objectId: Id) {
-        viewModelScope.launch {
-            setHomepage.async(
-                SetHomepage.Params(
-                    spaceId = vmParams.spaceId.id,
-                    homepage = objectId
-                )
-            ).onFailure { Timber.e(it, "Failed to set homepage to object") }
-            spaceHomePickerState.value = SpaceHomePickerState.Hidden
-        }
-    }
-
-    fun onSpaceHomePickerNoHomeSelected() {
-        viewModelScope.launch {
-            setHomepage.async(
-                SetHomepage.Params(
-                    spaceId = vmParams.spaceId.id,
-                    homepage = HOMEPAGE_WIDGETS_VALUE
-                )
-            ).onFailure { Timber.e(it, "Failed to set homepage to widgets") }
-            spaceHomePickerState.value = SpaceHomePickerState.Hidden
-        }
-    }
-
-    private fun openSpaceHomePicker() {
-        val currentHomepage = homepageObject.value?.id
-        spaceHomePickerState.value = SpaceHomePickerState.Visible(
-            query = "",
-            candidates = emptyList(),
-            currentHomepage = currentHomepage,
-            isLoading = true
+        spaceHomePickerDelegate.show(
+            scope = viewModelScope,
+            currentHomepageObjectId = homepageObject.value?.id
         )
-        loadSpaceHomePickerCandidates(query = "")
     }
 
-    private fun loadSpaceHomePickerCandidates(query: String) {
-        viewModelScope.launch {
-            val isOneToOne =
-                (_spaceViewState.value as? SpaceViewState.Success)?.isOneToOneSpace == true
-            val params = SearchObjects.Params(
-                space = vmParams.spaceId,
-                filters = buildList {
-                    addAll(
-                        ObjectSearchConstants.filterSearchObjects(
-                            excludeTypes = true,
-                            isOneToOneSpace = isOneToOne
-                        )
-                    )
-                    add(
-                        DVFilter(
-                            relation = Relations.LAYOUT,
-                            condition = DVFilterCondition.IN,
-                            value = HOMEPAGE_ELIGIBLE_LAYOUTS.map { it.code.toDouble() }
-                        )
-                    )
-                },
-                fulltext = query,
-                keys = ObjectSearchConstants.defaultKeys,
-                limit = SPACE_HOME_PICKER_LIMIT
-            )
-            searchObjects.invoke(params).proceed(
-                failure = { e ->
-                    Timber.e(e, "Failed to load space home picker candidates")
-                    val current = spaceHomePickerState.value
-                    if (current is SpaceHomePickerState.Visible && current.query == query) {
-                        spaceHomePickerState.value = current.copy(isLoading = false)
-                    }
-                },
-                success = { objects ->
-                    val items = mutableListOf<SpaceHomePickerItem>()
-                    for (obj in objects) {
-                        if (!obj.notDeletedNorArchived) continue
-                        val objType = storeOfObjectTypes.getTypeOfObject(obj)
-                        items += SpaceHomePickerItem(
-                            objectId = obj.id,
-                            name = fieldParser.getObjectName(obj),
-                            icon = obj.objectIcon(builder = urlBuilder, objType = objType)
-                        )
-                    }
-                    val current = spaceHomePickerState.value
-                    if (current is SpaceHomePickerState.Visible && current.query == query) {
-                        spaceHomePickerState.value = current.copy(
-                            candidates = items,
-                            isLoading = false
-                        )
-                    }
-                }
-            )
-        }
-    }
+    fun onSpaceHomePickerDismissed() = spaceHomePickerDelegate.dismiss()
+
+    fun onSpaceHomePickerQueryChanged(query: String) =
+        spaceHomePickerDelegate.onQueryChanged(viewModelScope, query)
+
+    fun onSpaceHomePickerObjectSelected(objectId: Id) =
+        spaceHomePickerDelegate.onObjectSelected(viewModelScope, objectId)
+
+    fun onSpaceHomePickerNoHomeSelected() =
+        spaceHomePickerDelegate.onNoHomeSelected(viewModelScope)
 
     fun onInviteMembersWidgetClicked() {
         viewModelScope.launch {
@@ -4244,17 +4166,6 @@ class HomeScreenViewModel(
         const val HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION = "subscription.home-screen.profile-object"
         const val HOMEPAGE_WIDGETS_VALUE = "widgets"
         const val HOME_WIDGET_SUBSCRIPTION = "subscription.home-screen.home-widget"
-        const val SPACE_HOME_PICKER_LIMIT = 100
-
-        private val HOMEPAGE_ELIGIBLE_LAYOUTS: List<ObjectType.Layout> = listOf(
-            ObjectType.Layout.BASIC,
-            ObjectType.Layout.NOTE,
-            ObjectType.Layout.PROFILE,
-            ObjectType.Layout.TODO,
-            ObjectType.Layout.COLLECTION,
-            ObjectType.Layout.SET,
-            ObjectType.Layout.CHAT_DERIVED
-        )
 
         // Duration in milliseconds to lock type widget event processing after a drag operation
         // This prevents incoming middleware events from overwriting optimistic UI updates

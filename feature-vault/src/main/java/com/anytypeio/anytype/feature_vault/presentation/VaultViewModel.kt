@@ -429,9 +429,19 @@ class VaultViewModel(
 
         // Collect chat names with unread messages per space, ordered by most recent first.
         // Falls back to the most recent chat name when no chats have unreads (for non-compact view).
+        // Muted-and-hidden chats are excluded from the unread list so the compact row stays
+        // consistent with the badge count (which also skips them) — see DROID-4359.
         val chatNamesPerSpace = groupedPreviews
-            .mapValues { (_, previews) ->
-                val unreadNames = previews
+            .mapValues { (spaceId, previews) ->
+                val chatSpace = spacesFromFlow.find { it.targetSpaceId == spaceId }
+                val visible = if (chatSpace != null) {
+                    previews.filterNot {
+                        NotificationStateCalculator.isMutedAndHidden(chatSpace, it.chat)
+                    }
+                } else {
+                    previews
+                }
+                val unreadNames = visible
                     .filter { preview ->
                         (preview.state?.unreadMessages?.counter ?: 0) > 0 ||
                         (preview.state?.unreadMentions?.counter ?: 0) > 0

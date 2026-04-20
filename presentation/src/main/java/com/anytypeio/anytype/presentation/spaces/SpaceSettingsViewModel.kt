@@ -31,6 +31,7 @@ import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -449,7 +450,7 @@ class SpaceSettingsViewModel(
                         }
                     }
 
-                    if (spaceView.isShared || spaceView.isOneToOneSpace) {
+                    if (spaceView.spaceType == SpaceType.REGULAR && spaceView.isShared) {
                         add(Spacer(id = "before-notifications", height = 8))
                         add(Notifications)
                     }

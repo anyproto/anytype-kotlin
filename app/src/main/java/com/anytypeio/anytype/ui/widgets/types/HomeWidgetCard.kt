@@ -3,8 +3,10 @@ package com.anytypeio.anytype.ui.widgets.types
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,6 +34,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
@@ -50,7 +54,7 @@ fun HomeWidgetCard(
     val haptic = LocalHapticFeedback.current
     Row(
         modifier = modifier
-            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 24.dp, bottom = 6.dp)
             .fillMaxWidth()
             .height(52.dp)
             .background(
@@ -70,12 +74,12 @@ fun HomeWidgetCard(
     ) {
         ListWidgetObjectIcon(
             modifier = Modifier.padding(start = 16.dp),
-            iconSize = 24.dp,
+            iconSize = 20.dp,
             icon = item.icon
         )
-        Spacer(modifier = Modifier.width(8.dp))
+        Spacer(modifier = Modifier.width(12.dp))
         Text(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.weight(1f).padding(end = 8.dp),
             text = when (val n = item.name) {
                 is WidgetView.Name.Default -> n.prettyPrintName
                 is WidgetView.Name.Bundled -> stringResource(id = R.string.untitled)
@@ -89,10 +93,10 @@ fun HomeWidgetCard(
         Icon(
             painter = painterResource(id = R.drawable.ci_home),
             contentDescription = null,
-            tint = colorResource(id = R.color.glyph_active),
+            tint = colorResource(id = R.color.control_secondary),
             modifier = Modifier
                 .padding(end = 16.dp)
-                .size(20.dp)
+                .size(18.dp)
         )
         HomeWidgetMenu(
             isMenuExpanded = isMenuExpanded,
@@ -131,7 +135,32 @@ private fun HomeWidgetMenu(
                     style = BodyRegular,
                     color = colorResource(id = R.color.text_primary)
                 )
+            },
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.ci_home),
+                    contentDescription = null,
+                    tint = colorResource(id = R.color.control_secondary),
+                    modifier = Modifier.size(18.dp)
+                )
             }
+        )
+    }
+}
+
+@DefaultPreviews    
+@Composable
+fun Preview() {
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        HomeWidgetCard(
+            modifier = Modifier.align(Alignment.Center),
+            item = WidgetView.Home(objectId = "1",
+                name = WidgetView.Name.Default("Home"),
+                icon = ObjectIcon.TypeIcon.Default.DEFAULT),
+            onWidgetClicked = {},
+            onChangeHomeClicked = {}
         )
     }
 }

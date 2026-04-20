@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -19,9 +20,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,13 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -49,6 +48,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonOnboardingSecondaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.presentation.spaces.HomepageType
 
@@ -151,7 +151,7 @@ fun HomepagePickerContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(31.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         ButtonOnboardingPrimaryLarge(
             onClick = { onHomepageSelected(selectedType) },
@@ -192,16 +192,6 @@ fun HomepageOptionCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val borderColor = if (selected) {
-        colorResource(R.color.control_accent_50)
-    } else {
-        colorResource(R.color.shape_secondary)
-    }
-    val borderWidth = if (selected) 1.5.dp else 1.dp
-    val labelColor =
-        if (selected) colorResource(R.color.control_accent_50) else colorResource(R.color.text_secondary)
-
-
     Column(
         modifier = modifier.noRippleThrottledClickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -210,7 +200,11 @@ fun HomepageOptionCard(
             modifier = Modifier
                 .size(88.dp, 176.dp)
                 .clip(RoundedCornerShape(14.dp))
-                .border(borderWidth, borderColor, RoundedCornerShape(14.dp))
+                .border(
+                    width = 1.dp,
+                    color = colorResource(R.color.control_tertiary),
+                    shape = RoundedCornerShape(14.dp)
+                )
         ) {
             when (type) {
                 HomepageType.CHAT -> ChatIllustration(selected = selected)
@@ -219,11 +213,23 @@ fun HomepageOptionCard(
             }
         }
         Spacer(Modifier.height(7.dp))
-        androidx.compose.material3.Text(
+        Text(
             text = label,
             style = Caption1Medium,
-            color = labelColor,
+            color = colorResource(R.color.text_primary),
             textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(7.dp))
+        Image(
+            painter = painterResource(
+                id = if (selected) {
+                    R.drawable.ic_checkbox_checked
+                } else {
+                    R.drawable.ic_checkbox_default
+                }
+            ),
+            contentDescription = null,
+            modifier = Modifier.size(20.dp)
         )
     }
 }
@@ -237,17 +243,14 @@ private data class IllustrationColors(
 
 @Composable
 private fun illustrationColors(selected: Boolean): IllustrationColors {
-    return if (selected) {
-        IllustrationColors(
-            primary = colorResource(R.color.control_accent_50),
-            secondary = colorResource(R.color.control_accent_25)
-        )
-    } else {
-        IllustrationColors(
-            primary = colorResource(R.color.control_tertiary),
-            secondary = colorResource(R.color.shape_secondary)
-        )
-    }
+    return IllustrationColors(
+        primary = if (selected) {
+            colorResource(R.color.control_accent_50)
+        } else {
+            colorResource(R.color.control_tertiary)
+        },
+        secondary = colorResource(R.color.shape_secondary)
+    )
 }
 
 // --- Shape helper ---
@@ -267,11 +270,7 @@ private fun Pill(
     )
 }
 
-private val illustrationTitleStyle = TextStyle(
-    fontSize = 15.sp,
-    fontWeight = FontWeight.W500,
-    lineHeight = 20.sp
-)
+private val illustrationTitleStyle = Title2
 
 // --- Chat Illustration ---
 
@@ -320,7 +319,7 @@ private fun PageIllustration(selected: Boolean) {
         Pill(10.dp, 24.dp, 18.dp, 22.dp, c.primary.copy(alpha = 0.7f), 3.dp)
         Pill(22.dp, 24.dp, 6.dp, 6.dp, c.secondary, 1.dp)
         // Title
-        androidx.compose.material3.Text(
+        Text(
             text = "Idea",
             modifier = Modifier.offset(11.dp, 53.dp),
             style = illustrationTitleStyle,
@@ -344,11 +343,11 @@ private fun PageIllustration(selected: Boolean) {
 @Composable
 private fun CollectionIllustration(selected: Boolean) {
     val c = illustrationColors(selected)
-    val badgeColor = if (selected) colorResource(R.color.control_accent) else c.primary
+    val badgeColor = colorResource(R.color.control_accent_50)
 
     Box(Modifier.fillMaxSize()) {
         // Title
-        androidx.compose.material3.Text(
+        Text(
             text = "Tasks",
             modifier = Modifier.offset(11.dp, 27.dp),
             style = illustrationTitleStyle,

@@ -554,6 +554,8 @@ class NewCreateObjectViewModelTest {
         return NewCreateObjectViewModel(
             storeOfObjectTypes = storeOfObjectTypes,
             spaceViewContainer = spaceViewContainer,
+            uploadFile = org.mockito.kotlin.mock(),
+            fileSharer = org.mockito.kotlin.mock(),
             vmParams = vmParams
         )
     }

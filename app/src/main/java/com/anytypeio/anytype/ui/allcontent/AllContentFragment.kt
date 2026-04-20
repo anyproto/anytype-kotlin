@@ -16,6 +16,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -29,7 +32,6 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -43,27 +45,34 @@ import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModelFactory
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentNavigation.ALL_CONTENT_MAIN
 import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
+import com.anytypeio.anytype.feature_create_object.ui.CreateObjectSheetHost
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
-import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import timber.log.Timber
 
-class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
+class AllContentFragment : BaseComposeFragment() {
 
     @Inject
     lateinit var factory: AllContentViewModelFactory
 
     private val vm by viewModels<AllContentViewModel> { factory }
 
+    private lateinit var createObjectFactory: CreateObjectViewModelFactory
+
+    private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
     private val space get() = argString(ARG_SPACE)
+
+    private fun createObjectComponentKey(): String = "all-content-create-object:$space"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -254,6 +263,7 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
             startDestination = ALL_CONTENT_MAIN
         ) {
             composable(route = ALL_CONTENT_MAIN) {
+                var createObjectSheetVisible by remember { mutableStateOf(false) }
                 AllContentWrapperScreen(
                     uiItemsState = vm.uiItemsState.collectAsStateWithLifecycle().value,
                     onTabClick = vm::onTabClicked,
@@ -272,11 +282,7 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
                     onUpdateLimitSearch = vm::updateLimit,
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
-                    onAddDocClicked = vm::onAddDockClicked,
-                    onCreateObjectLongClicked = {
-                        val dialog = ObjectTypeSelectionFragment.new(space = space)
-                        dialog.show(childFragmentManager, null)
-                    },
+                    onAddDocClicked = { createObjectSheetVisible = true },
                     onBackClicked = vm::onBackClicked,
                     onTitleClick = vm::onTopBarTitleClicked,
                     onSyncStatusClick = vm::onSyncStatusBadgeClicked,
@@ -290,12 +296,16 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     uiSyncStatusState = syncStatusWidgetState,
                     onDismiss = vm::onSyncStatusDismiss
                 )
+                CreateObjectSheetHost(
+                    vm = createObjectVm,
+                    visible = createObjectSheetVisible,
+                    onDismiss = { createObjectSheetVisible = false },
+                    onCreateObjectOfType = { objType ->
+                        vm.onCreateObjectOfTypeClicked(objType = objType)
+                    }
+                )
             }
         }
-    }
-
-    override fun onSelectObjectType(objType: ObjectWrapper.Type) {
-        vm.onCreateObjectOfTypeClicked(objType = objType)
     }
 
     override fun onStart() {
@@ -311,10 +321,20 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
     override fun injectDependencies() {
         val vmParams = AllContentViewModel.VmParams(spaceId = SpaceId(space))
         componentManager().allContentComponent.get(vmParams).inject(this)
+        val createObjectVmParams = NewCreateObjectViewModel.VmParams(
+            spaceId = SpaceId(space),
+            showAttachObject = false,
+            showMediaSection = true
+        )
+        createObjectFactory = componentManager()
+            .createObjectFeatureComponent
+            .get(key = createObjectComponentKey(), param = createObjectVmParams)
+            .viewModelFactory()
     }
 
     override fun releaseDependencies() {
         componentManager().allContentComponent.release()
+        componentManager().createObjectFeatureComponent.release(createObjectComponentKey())
     }
 
     override fun onApplyWindowRootInsets(view: View) {

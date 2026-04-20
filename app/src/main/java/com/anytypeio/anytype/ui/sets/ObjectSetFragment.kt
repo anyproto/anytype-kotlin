@@ -100,6 +100,9 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
+import com.anytypeio.anytype.feature_create_object.ui.CreateObjectSheetHost
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
@@ -157,6 +160,17 @@ open class ObjectSetFragment :
     OnDataViewSelectSourceAction,
     ObjectTypeSelectionListener,
     CollectionObjectTypeSelectionListener {
+
+    private lateinit var createObjectFactory: CreateObjectViewModelFactory
+
+    private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
+    private fun createObjectComponentKey(): String = "object-set-create-object:$ctx"
+
+    // Owned outside the ComposeView's setContent so the first tap isn't lost
+    // while composition is still pending.
+    private val createObjectSheetVisible = androidx.compose.runtime.mutableStateOf(false)
+    private var isSheetHostInstalled = false
 
     // Controls
 
@@ -339,16 +353,8 @@ open class ObjectSetFragment :
             // Create (right) — mirrors the editor. Buttons stay fixed at
             // all times; visibility comes from VM state, not scroll.
             subscribe(binding.fabCreate.clicks().throttleFirst()) {
-                vm.onAddNewDocumentClicked()
+                showCreateObjectSheet()
             }
-
-            binding.fabCreate
-                .longClicks(withHaptic = true)
-                .onEach {
-                    val dialog = ObjectTypeSelectionFragment.new(space = space)
-                    dialog.show(childFragmentManager, "set-create-object-of-type-dialog")
-                }
-                .launchIn(lifecycleScope)
 
             subscribe(binding.discussionButton.clicks().throttleFirst()) {
                 vm.onDiscussionButtonClicked()
@@ -1535,6 +1541,7 @@ open class ObjectSetFragment :
 
     override fun onDestroyView() {
         viewerGridAdapter.clear()
+        isSheetHostInstalled = false
         super.onDestroyView()
     }
 
@@ -1662,6 +1669,30 @@ open class ObjectSetFragment :
         }
     }
 
+    private fun installCreateObjectSheetHost() {
+        if (isSheetHostInstalled) return
+        val composeView = binding.createObjectSheetHost
+        composeView.setViewCompositionStrategy(
+            androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+        composeView.setContent {
+            CreateObjectSheetHost(
+                vm = createObjectVm,
+                visible = createObjectSheetVisible.value,
+                onDismiss = { createObjectSheetVisible.value = false },
+                onCreateObjectOfType = { objType ->
+                    vm.onAddNewDocumentClicked(objType = objType)
+                }
+            )
+        }
+        isSheetHostInstalled = true
+    }
+
+    private fun showCreateObjectSheet() {
+        installCreateObjectSheetHost()
+        createObjectSheetVisible.value = true
+    }
+
     override fun injectDependencies() {
         componentManager().objectSetComponent
             .get(
@@ -1672,10 +1703,20 @@ open class ObjectSetFragment :
                 )
             )
             .inject(this)
+        val createObjectVmParams = NewCreateObjectViewModel.VmParams(
+            spaceId = SpaceId(space),
+            showAttachObject = false,
+            showMediaSection = true
+        )
+        createObjectFactory = componentManager()
+            .createObjectFeatureComponent
+            .get(key = createObjectComponentKey(), param = createObjectVmParams)
+            .viewModelFactory()
     }
 
     override fun releaseDependencies() {
         componentManager().objectSetComponent.release(ctx)
+        componentManager().createObjectFeatureComponent.release(createObjectComponentKey())
     }
 
     private fun showObjectHeaderContextMenu(

@@ -43,7 +43,9 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.core_models.ui.spaceIcon
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.ext.replace
@@ -66,6 +68,7 @@ import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -87,6 +90,7 @@ import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.getByIdOrKey
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -132,6 +136,7 @@ import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.objects.isTemplateObject
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
 import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObjectData
@@ -164,6 +169,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetUiParams
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.presentation.widgets.buildWidgetName
 import com.anytypeio.anytype.presentation.widgets.buildWidgetSections
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
@@ -292,8 +298,9 @@ class HomeScreenViewModel(
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
 
     val showHomepagePicker = MutableStateFlow(vmParams.showHomepagePicker)
-    val showCreateHomeWidget = MutableStateFlow(false)
     val showInviteMembersWidget = MutableStateFlow(false)
+    val spaceHomePickerState: MutableStateFlow<SpaceHomePickerState> =
+        MutableStateFlow(SpaceHomePickerState.Hidden)
 
     private val _createObjectSheetVisible = MutableStateFlow(false)
     val createObjectSheetVisible: StateFlow<Boolean> = _createObjectSheetVisible.asStateFlow()
@@ -476,6 +483,56 @@ class HomeScreenViewModel(
             started = SharingStarted.Eagerly,
             initialValue = null
         )
+
+    // Cached homepage object for tap-to-open navigation
+    private val homepageObject = MutableStateFlow<ObjectWrapper.Basic?>(null)
+
+    // Home widget: shown when the space homepage is an explicit object (Chat / Page / Collection).
+    // Hidden when homepage is "widgets" (or any special sentinel) or unset.
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val homeWidgetView: StateFlow<WidgetView.Home?> = spaceViewSubscriptionContainer
+        .observe(vmParams.spaceId)
+        .map { it.homepage }
+        .distinctUntilChanged()
+        .flatMapLatest { homepage ->
+            if (!SpaceHomepageResolver.isExplicitObjectHomepage(homepage)) {
+                homepageObject.value = null
+                flowOf(null)
+            } else {
+                storelessSubscriptionContainer
+                    .subscribe(
+                        StoreSearchByIdsParams(
+                            space = vmParams.spaceId,
+                            subscription = HOME_WIDGET_SUBSCRIPTION,
+                            keys = ObjectSearchConstants.defaultKeys,
+                            targets = listOf(homepage!!)
+                        )
+                    )
+                    .map { results ->
+                        val obj = results.firstOrNull { it.notDeletedNorArchived }
+                        homepageObject.value = obj
+                        obj?.toHomeWidgetView()
+                    }
+                    .catch { e ->
+                        Timber.e(e, "Failed to observe homepage object")
+                        emit(null)
+                    }
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
+    private suspend fun ObjectWrapper.Basic.toHomeWidgetView(): WidgetView.Home {
+        val objType = storeOfObjectTypes.getTypeOfObject(this)
+        return WidgetView.Home(
+            objectId = id,
+            name = buildWidgetName(obj = this, fieldParser = fieldParser),
+            icon = objectIcon(builder = urlBuilder, objType = objType)
+        )
+    }
 
     // Exposed flow for collapsed sections
     val collapsedSections: StateFlow<Set<Id>> = observeCollapsedSectionIds()
@@ -1610,6 +1667,9 @@ class HomeScreenViewModel(
                     return
                 }
                 onCreateWidgetElementClicked(widgetView)
+            }
+            DropDownMenuAction.ChangeHome -> {
+                onHomeWidgetChangeHomeClicked()
             }
         }
     }
@@ -3818,24 +3878,12 @@ class HomeScreenViewModel(
                 .collect { spaceView ->
                     val homepage = spaceView.homepage
                     if (!homepage.isNullOrEmpty()) {
-                        // Homepage is set. Reset createHomeDismissed so the widget can reappear
-                        // if homepage is later cleared (e.g., homepage object deleted by user,
-                        // middleware resets homepage to empty).
-                        userSettingsRepository.setCreateHomeDismissed(vmParams.spaceId, false)
                         showHomepagePicker.value = false
-                        showCreateHomeWidget.value = false
                     } else {
                         val pickerDismissed = userSettingsRepository
                             .getHomepagePickerDismissed(vmParams.spaceId)
                         if (!pickerDismissed) {
                             showHomepagePicker.value = true
-                        } else {
-                            val createHomeDismissed = userSettingsRepository
-                                .observeCreateHomeDismissed(vmParams.spaceId)
-                                .first()
-                            if (!createHomeDismissed) {
-                                showCreateHomeWidget.value = true
-                            }
                         }
                     }
                 }
@@ -3870,13 +3918,6 @@ class HomeScreenViewModel(
             userSettingsRepository.setHomepagePickerDismissed(vmParams.spaceId, true)
             val spaceId = vmParams.spaceId.id
             when (type) {
-                HomepageType.EMPTY -> {
-                    setHomepage.async(
-                        SetHomepage.Params(spaceId = spaceId, homepage = HOMEPAGE_WIDGETS_VALUE)
-                    ).onFailure {
-                        Timber.e(it, "Failed to set homepage to widgets")
-                    }
-                }
                 HomepageType.CHAT -> {
                     createAndSetHomepage(
                         typeKey = ObjectTypeUniqueKeys.CHAT_DERIVED,
@@ -3921,18 +3962,126 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             showHomepagePicker.value = false
             userSettingsRepository.setHomepagePickerDismissed(vmParams.spaceId, true)
-            // Widget will appear on next visit via proceedWithHomepageObservation
+            setHomepage.async(
+                SetHomepage.Params(
+                    spaceId = vmParams.spaceId.id,
+                    homepage = HOMEPAGE_WIDGETS_VALUE
+                )
+            ).onFailure {
+                Timber.e(it, "Failed to set homepage to widgets on picker dismissal")
+            }
         }
     }
 
-    fun onCreateHomeWidgetClicked() {
-        showHomepagePicker.value = true
+    fun onHomeWidgetClicked() {
+        val obj = homepageObject.value ?: return
+        proceedWithNavigation(obj.navigation())
     }
 
-    fun onCreateHomeWidgetDismissed() {
+    fun onHomeWidgetChangeHomeClicked() {
+        openSpaceHomePicker()
+    }
+
+    fun onSpaceHomePickerDismissed() {
+        spaceHomePickerState.value = SpaceHomePickerState.Hidden
+    }
+
+    fun onSpaceHomePickerQueryChanged(query: String) {
+        val current = spaceHomePickerState.value
+        if (current is SpaceHomePickerState.Visible) {
+            spaceHomePickerState.value = current.copy(query = query, isLoading = true)
+            loadSpaceHomePickerCandidates(query)
+        }
+    }
+
+    fun onSpaceHomePickerObjectSelected(objectId: Id) {
         viewModelScope.launch {
-            showCreateHomeWidget.value = false
-            userSettingsRepository.setCreateHomeDismissed(vmParams.spaceId, true)
+            setHomepage.async(
+                SetHomepage.Params(
+                    spaceId = vmParams.spaceId.id,
+                    homepage = objectId
+                )
+            ).onFailure { Timber.e(it, "Failed to set homepage to object") }
+            spaceHomePickerState.value = SpaceHomePickerState.Hidden
+        }
+    }
+
+    fun onSpaceHomePickerNoHomeSelected() {
+        viewModelScope.launch {
+            setHomepage.async(
+                SetHomepage.Params(
+                    spaceId = vmParams.spaceId.id,
+                    homepage = HOMEPAGE_WIDGETS_VALUE
+                )
+            ).onFailure { Timber.e(it, "Failed to set homepage to widgets") }
+            spaceHomePickerState.value = SpaceHomePickerState.Hidden
+        }
+    }
+
+    private fun openSpaceHomePicker() {
+        val currentHomepage = homepageObject.value?.id
+        spaceHomePickerState.value = SpaceHomePickerState.Visible(
+            query = "",
+            candidates = emptyList(),
+            currentHomepage = currentHomepage,
+            isLoading = true
+        )
+        loadSpaceHomePickerCandidates(query = "")
+    }
+
+    private fun loadSpaceHomePickerCandidates(query: String) {
+        viewModelScope.launch {
+            val isOneToOne =
+                (_spaceViewState.value as? SpaceViewState.Success)?.isOneToOneSpace == true
+            val params = SearchObjects.Params(
+                space = vmParams.spaceId,
+                filters = buildList {
+                    addAll(
+                        ObjectSearchConstants.filterSearchObjects(
+                            excludeTypes = true,
+                            isOneToOneSpace = isOneToOne
+                        )
+                    )
+                    add(
+                        DVFilter(
+                            relation = Relations.LAYOUT,
+                            condition = DVFilterCondition.IN,
+                            value = HOMEPAGE_ELIGIBLE_LAYOUTS.map { it.code.toDouble() }
+                        )
+                    )
+                },
+                fulltext = query,
+                keys = ObjectSearchConstants.defaultKeys,
+                limit = SPACE_HOME_PICKER_LIMIT
+            )
+            searchObjects.invoke(params).proceed(
+                failure = { e ->
+                    Timber.e(e, "Failed to load space home picker candidates")
+                    val current = spaceHomePickerState.value
+                    if (current is SpaceHomePickerState.Visible && current.query == query) {
+                        spaceHomePickerState.value = current.copy(isLoading = false)
+                    }
+                },
+                success = { objects ->
+                    val items = mutableListOf<SpaceHomePickerItem>()
+                    for (obj in objects) {
+                        if (!obj.notDeletedNorArchived) continue
+                        val objType = storeOfObjectTypes.getTypeOfObject(obj)
+                        items += SpaceHomePickerItem(
+                            objectId = obj.id,
+                            name = fieldParser.getObjectName(obj),
+                            icon = obj.objectIcon(builder = urlBuilder, objType = objType)
+                        )
+                    }
+                    val current = spaceHomePickerState.value
+                    if (current is SpaceHomePickerState.Visible && current.query == query) {
+                        spaceHomePickerState.value = current.copy(
+                            candidates = items,
+                            isLoading = false
+                        )
+                    }
+                }
+            )
         }
     }
 
@@ -4094,6 +4243,18 @@ class HomeScreenViewModel(
     companion object {
         const val HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION = "subscription.home-screen.profile-object"
         const val HOMEPAGE_WIDGETS_VALUE = "widgets"
+        const val HOME_WIDGET_SUBSCRIPTION = "subscription.home-screen.home-widget"
+        const val SPACE_HOME_PICKER_LIMIT = 100
+
+        private val HOMEPAGE_ELIGIBLE_LAYOUTS: List<ObjectType.Layout> = listOf(
+            ObjectType.Layout.BASIC,
+            ObjectType.Layout.NOTE,
+            ObjectType.Layout.PROFILE,
+            ObjectType.Layout.TODO,
+            ObjectType.Layout.COLLECTION,
+            ObjectType.Layout.SET,
+            ObjectType.Layout.CHAT_DERIVED
+        )
 
         // Duration in milliseconds to lock type widget event processing after a drag operation
         // This prevents incoming middleware events from overwriting optimistic UI updates

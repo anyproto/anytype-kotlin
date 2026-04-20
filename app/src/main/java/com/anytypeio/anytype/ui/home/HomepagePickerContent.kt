@@ -125,8 +125,7 @@ fun HomepagePickerContent(
             listOf(
                 HomepageType.CHAT,
                 HomepageType.PAGE,
-                HomepageType.COLLECTION,
-                HomepageType.EMPTY
+                HomepageType.COLLECTION
             )
         }
 
@@ -146,7 +145,6 @@ fun HomepagePickerContent(
                         HomepageType.CHAT -> stringResource(id = R.string.homepage_picker_chat)
                         HomepageType.PAGE -> stringResource(id = R.string.homepage_picker_page)
                         HomepageType.COLLECTION -> stringResource(id = R.string.homepage_picker_collection)
-                        HomepageType.EMPTY -> stringResource(id = R.string.homepage_picker_empty)
                     },
                     onClick = { selectedType = type }
                 )
@@ -157,7 +155,7 @@ fun HomepagePickerContent(
 
         ButtonOnboardingPrimaryLarge(
             onClick = { onHomepageSelected(selectedType) },
-            text = stringResource(id = R.string.create),
+            text = stringResource(id = R.string.homepage_picker_continue),
             size = ButtonSize.Large,
             modifierBox = Modifier
                 .fillMaxWidth()
@@ -167,7 +165,7 @@ fun HomepagePickerContent(
         Spacer(modifier = Modifier.height(8.dp))
         ButtonOnboardingSecondaryLarge(
             onClick = onLaterClicked,
-            text = stringResource(id = R.string.later),
+            text = stringResource(id = R.string.homepage_picker_not_now),
             size = ButtonSize.Large,
             modifierBox = Modifier
                 .fillMaxWidth()
@@ -218,7 +216,6 @@ fun HomepageOptionCard(
                 HomepageType.CHAT -> ChatIllustration(selected = selected)
                 HomepageType.PAGE -> PageIllustration(selected = selected)
                 HomepageType.COLLECTION -> CollectionIllustration(selected = selected)
-                HomepageType.EMPTY -> WidgetsIllustration(selected = selected)
             }
         }
         Spacer(Modifier.height(7.dp))
@@ -235,8 +232,7 @@ fun HomepageOptionCard(
 
 private data class IllustrationColors(
     val primary: Color,
-    val secondary: Color,
-    val widgetBg: Color
+    val secondary: Color
 )
 
 @Composable
@@ -244,14 +240,12 @@ private fun illustrationColors(selected: Boolean): IllustrationColors {
     return if (selected) {
         IllustrationColors(
             primary = colorResource(R.color.control_accent_50),
-            secondary = colorResource(R.color.control_accent_25),
-            widgetBg = colorResource(R.color.control_accent_25).copy(alpha = 0.5f)
+            secondary = colorResource(R.color.control_accent_25)
         )
     } else {
         IllustrationColors(
             primary = colorResource(R.color.control_tertiary),
-            secondary = colorResource(R.color.shape_secondary),
-            widgetBg = colorResource(R.color.shape_transparent_tertiary)
+            secondary = colorResource(R.color.shape_secondary)
         )
     }
 }
@@ -309,52 +303,6 @@ private fun ChatIllustration(selected: Boolean) {
             .background(c.primary))
         // Bottom-left text
         Pill(24.dp, 152.dp, 40.dp, 12.dp, c.secondary, 6.dp)
-    }
-}
-
-// --- Widgets Illustration ---
-
-@Composable
-private fun WidgetsIllustration(selected: Boolean) {
-    val c = illustrationColors(selected)
-    Box(Modifier.fillMaxSize()) {
-        // Top widget block background
-        Pill(6.dp, 20.dp, 76.dp, 52.dp, c.widgetBg, 8.dp)
-        // Top block title
-        Pill(12.dp, 25.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 26.dp, 22.dp, 4.dp, c.primary, 3.dp)
-        // Row 1
-        Pill(12.dp, 37.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 38.dp, 54.dp, 4.dp, c.primary, 2.dp)
-        // Row 2
-        Pill(12.dp, 49.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 50.dp, 36.dp, 4.dp, c.primary, 2.dp)
-        // Row 3
-        Pill(12.dp, 61.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 62.dp, 54.dp, 4.dp, c.primary, 2.dp)
-
-        // Section header
-        Pill(6.dp, 78.dp, 76.dp, 16.dp, c.widgetBg, 8.dp)
-        Pill(12.dp, 83.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 84.dp, 36.dp, 4.dp, c.primary, 3.dp)
-
-        // Bottom widget block background
-        Pill(6.dp, 100.dp, 76.dp, 64.dp, c.widgetBg, 8.dp)
-        // Bottom block title
-        Pill(12.dp, 105.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 106.dp, 22.dp, 4.dp, c.primary, 3.dp)
-        // Row 1
-        Pill(12.dp, 117.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 118.dp, 54.dp, 4.dp, c.primary, 2.dp)
-        // Row 2
-        Pill(12.dp, 129.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 130.dp, 36.dp, 4.dp, c.primary, 2.dp)
-        // Row 3
-        Pill(12.dp, 141.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 142.dp, 54.dp, 4.dp, c.primary, 2.dp)
-        // Row 4
-        Pill(12.dp, 153.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 154.dp, 36.dp, 4.dp, c.primary, 2.dp)
     }
 }
 

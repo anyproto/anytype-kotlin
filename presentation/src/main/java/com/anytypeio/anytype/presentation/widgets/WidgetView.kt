@@ -339,15 +339,22 @@ sealed class WidgetView {
     }
 
     /**
-     * "Create Home" widget shown when homepage is not yet configured.
-     * Displayed at the top of the widget list after the homepage picker was dismissed with "Later".
-     * Tapping opens the homepage picker. X button dismisses permanently (until homepage resets).
+     * "Home" widget shown at the top of the widgets overlay when the space homepage
+     * is an object (Chat / Page / Collection). Tapping opens the homepage; long-press
+     * exposes a "Change Home" action. Non-reorderable, non-removable.
      */
-    data object CreateHome : WidgetView() {
-        override val id: Id get() = WIDGET_CREATE_HOME_ID
+    data class Home(
+        val objectId: Id,
+        val name: Name,
+        val icon: ObjectIcon = ObjectIcon.None
+    ) : WidgetView() {
+        override val id: Id get() = WIDGET_HOME_ID
         override val canCreateObjectOfType: Boolean = false
         override val sectionType: SectionType? = null
-        const val WIDGET_CREATE_HOME_ID = "id.widget.create.home"
+
+        companion object {
+            const val WIDGET_HOME_ID = "id.widget.home"
+        }
     }
 
     /**
@@ -400,4 +407,5 @@ sealed class DropDownMenuAction {
     data object RemoveWidget : DropDownMenuAction()
     data object EmptyBin : DropDownMenuAction()
     data class CreateObjectOfType(val widgetId: WidgetId) : DropDownMenuAction()
+    data object ChangeHome : DropDownMenuAction()
 }

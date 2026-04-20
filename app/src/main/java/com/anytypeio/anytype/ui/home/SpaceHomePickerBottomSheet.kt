@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -27,11 +28,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.home.SpaceHomePickerItem
 import com.anytypeio.anytype.presentation.home.SpaceHomePickerState
@@ -74,7 +79,8 @@ private fun SpaceHomePickerContent(
             .background(
                 color = colorResource(id = R.color.background_secondary),
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-            )
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Dragger(modifier = Modifier.padding(vertical = 6.dp))
         androidx.compose.material3.Text(
@@ -151,20 +157,20 @@ private fun SpaceHomePickerRow(
         )
         Spacer(modifier = Modifier.padding(start = 12.dp))
         Column {
-            androidx.compose.material3.Text(
+            Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = item.name,
-                style = BodyRegular,
+                style = PreviewTitle2Medium,
                 color = colorResource(id = R.color.text_primary),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-             Spacer(modifier = Modifier.height(2.dp))
-            androidx.compose.material3.Text(
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = item.name,
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_primary),
+                style = Relations2,
+                color = colorResource(id = R.color.text_secondary),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -172,3 +178,48 @@ private fun SpaceHomePickerRow(
     }
 }
 
+@DefaultPreviews
+@Composable
+private fun SpaceHomePickerContentPreview() {
+    SpaceHomePickerContent(
+        state = SpaceHomePickerState.Visible(
+            query = "",
+            candidates = listOf(
+                SpaceHomePickerItem(
+                    objectId = "obj-1",
+                    name = "Daily Journal",
+                    icon = ObjectIcon.None
+                ),
+                SpaceHomePickerItem(
+                    objectId = "obj-2",
+                    name = "Ideas",
+                    icon = ObjectIcon.None
+                ),
+                SpaceHomePickerItem(
+                    objectId = "obj-3",
+                    name = "Product Roadmap",
+                    icon = ObjectIcon.None
+                )
+            ),
+            currentHomepage = "obj-1",
+            isLoading = false
+        ),
+        onNoHomeClicked = {},
+        onObjectClicked = {}
+    )
+}
+
+@DefaultPreviews
+@Composable
+private fun SpaceHomePickerContentEmptyPreview() {
+    SpaceHomePickerContent(
+        state = SpaceHomePickerState.Visible(
+            query = "",
+            candidates = emptyList(),
+            currentHomepage = null,
+            isLoading = false
+        ),
+        onNoHomeClicked = {},
+        onObjectClicked = {}
+    )
+}

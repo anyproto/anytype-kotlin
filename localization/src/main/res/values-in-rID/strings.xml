@@ -2014,6 +2014,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notifications_all_short">Semua</string>
     <string name="notifications_mentions_short">Sebutan</string>
     <string name="notifications_disable_short">Nonaktifkan</string>
+    <string name="notification_option_enable">Nyalakan</string>
+    <string name="notification_option_mute_and_hide">Senyapkan dan sembunyikan</string>
+    <string name="notification_option_disabled">Nonaktif</string>
     <string name="space_notify_unmute">Lepas senyap</string>
     <string name="space_notify_mute">Senyapkan</string>
     <string name="vault_pinned_limit_message">%1$d ruang yang disematkan adalah batas saat ini. Lepaskan salah satunya untuk menambahkan yang baru.</string>

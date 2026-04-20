@@ -2027,6 +2027,9 @@ En concreto,
     <string name="notifications_all_short">Todo</string>
     <string name="notifications_mentions_short">Menciones</string>
     <string name="notifications_disable_short">Desactivar</string>
+    <string name="notification_option_enable">Habilitar</string>
+    <string name="notification_option_mute_and_hide">Silenciar y ocultar</string>
+    <string name="notification_option_disabled">Deshabilitado</string>
     <string name="space_notify_unmute">No silenciar</string>
     <string name="space_notify_mute">Silenciar</string>
     <string name="vault_pinned_limit_message">Tu límite actual es de %1$d espacios anclados. Desancla alguno si quieres añadir otro nuevo.</string>

@@ -3,7 +3,10 @@ package com.anytypeio.anytype.feature_vault.presentation
 import app.cash.turbine.test
 import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubSpaceView
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -1938,5 +1941,112 @@ class VaultViewModelTest {
         }
     }
 
+    /**
+     * DROID-4359: Muted-and-hidden chat objects must not contribute to the
+     * per-space unread badge counts. A DATA space containing two chats — one
+     * listed in spacePushNotificationForceMuteIds (DISABLE) and one unmuted —
+     * should sum unread messages only from the unmuted chat, and mentions on
+     * the muted chat must NOT flip hasMentions (no @mention exception for the
+     * OS badge).
+     */
+    @Test
+    fun `muted-and-hidden chat should be excluded from unread message and mention counts`() = runTest {
+        turbineScope {
+            // Given
+            val spaceId = "space-with-muted-chat"
+            val mutedChatId = "muted-chat-id"
+            val unmutedChatId = "unmuted-chat-id"
+            val now = System.currentTimeMillis()
+
+            // Build a DATA space view where `mutedChatId` is force-muted.
+            // The space's main chatId points to the unmuted chat so that a
+            // `VaultSpaceView.DataSpaceWithChat` is produced.
+            val baseSpace = StubSpaceView(
+                id = spaceId,
+                targetSpaceId = spaceId,
+                spaceAccessType = SpaceAccessType.SHARED,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                chatId = unmutedChatId,
+                spaceUxType = SpaceUxType.DATA,
+                createdDate = now.toDouble()
+            )
+            val chatSpace = ObjectWrapper.SpaceView(
+                map = baseSpace.map + mapOf(
+                    Relations.PUSH_NOTIFICATION_FORCE_MUTE_IDS to listOf(mutedChatId)
+                )
+            )
+
+            // Muted chat: 5 unread messages + 1 unread mention (must be ignored).
+            val mutedPreview = Chat.Preview(
+                space = com.anytypeio.anytype.core_models.primitives.SpaceId(spaceId),
+                chat = mutedChatId,
+                message = null,
+                state = Chat.State(
+                    unreadMessages = Chat.State.UnreadState(olderOrderId = "o-muted", counter = 5),
+                    unreadMentions = Chat.State.UnreadState(olderOrderId = "o-muted-m", counter = 1)
+                )
+            )
+            // Unmuted chat: 3 unread messages, no mentions (should contribute).
+            val unmutedPreview = Chat.Preview(
+                space = com.anytypeio.anytype.core_models.primitives.SpaceId(spaceId),
+                chat = unmutedChatId,
+                message = com.anytypeio.anytype.core_models.chats.Chat.Message(
+                    id = "msg-unmuted",
+                    creator = "user1",
+                    content = Chat.Message.Content(
+                        text = "hello",
+                        style = com.anytypeio.anytype.core_models.TextStyle.P,
+                        marks = emptyList()
+                    ),
+                    createdAt = now,
+                    attachments = emptyList(),
+                    order = "order-unmuted",
+                    modifiedAt = now,
+                    synced = true
+                ),
+                state = Chat.State(
+                    unreadMessages = Chat.State.UnreadState(olderOrderId = "o-unmuted", counter = 3),
+                    unreadMentions = null
+                )
+            )
+
+            val permissions = mapOf(spaceId to SpaceMemberPermissions.OWNER)
+
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(listOf(chatSpace)))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(listOf(mutedPreview, unmutedPreview)))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+            )
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Shared")
+
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider,
+                getSpaceWallpaper = getSpaceWallpapers,
+                chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                participantSubscriptionContainer = participantSubscriptionContainer
+            )
+
+            // When & Then
+            viewModel.uiState.test {
+                skipItems(1) // Skip loading state
+                val sections = awaitItem() as VaultUiState.Sections
+                val spaceView = sections.mainSpaces.first() as VaultSpaceView.DataSpaceWithChat
+
+                // Only the unmuted chat's 3 unread messages should contribute.
+                assertEquals(3, spaceView.unreadMessageCount)
+                // Mentions on the muted chat must NOT flip hasMentions.
+                assertEquals(0, spaceView.unreadMentionCount)
+            }
+        }
+    }
+
     //endregion
-} 
+}

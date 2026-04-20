@@ -78,7 +78,8 @@ fun LinkWidgetCard(
                 ChatCounterBadges(
                     counter = item.counter,
                     notificationState = item.notificationState,
-                    modifier = Modifier
+                    modifier = Modifier,
+                    isMutedAndHidden = item.isMutedAndHidden
                 )
             }
         }

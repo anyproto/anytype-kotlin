@@ -49,6 +49,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator.calculateChatNotificationState
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.`object`.resolveParticipantName
@@ -403,39 +404,60 @@ class VaultViewModel(
 
         val groupedPreviews = chatPreviews.groupBy { it.space.id }
 
-        // Calculate total unread counts for all chats per space
-        val unreadCountsPerSpace = groupedPreviews
-            .mapValues { (_, previews) ->
-                // Message count: sum all messages and cap at 999 (displayed as number badge in UI)
-                val totalUnreadMessages = previews.sumOf { it.state?.unreadMessages?.counter ?: 0 }.coerceAtMost(999)
-                // Mention count: 1 if ANY chat has mentions, 0 otherwise (displayed as icon-only indicator in UI)
-                val hasMentions = if (previews.any { (it.state?.unreadMentions?.counter ?: 0) > 0 }) 1 else 0
-                UnreadCounts(totalUnreadMessages, hasMentions)
+        // Precompute the muted-and-hidden filter once per space.
+        // Used by both the badge sum and the compact unread-names list so they
+        // stay consistent — see DROID-4359.
+        val visiblePreviewsPerSpace: Map<String, List<Chat.Preview>> = groupedPreviews
+            .mapValues { (spaceId, previews) ->
+                val chatSpace = spacesFromFlow.find { it.targetSpaceId == spaceId }
+                if (chatSpace != null) {
+                    previews.filterNot {
+                        NotificationStateCalculator.isMutedAndHidden(chatSpace, it.chat)
+                    }
+                } else {
+                    previews
+                }
             }
+
+        // Calculate total unread counts for all chats per space
+        val unreadCountsPerSpace = visiblePreviewsPerSpace.mapValues { (_, visible) ->
+            // Message count: sum all messages from visible chats and cap at 999
+            val totalUnreadMessages = visible.sumOf { it.state?.unreadMessages?.counter ?: 0 }
+                .coerceAtMost(999)
+            // Mention count: 1 if ANY visible chat has mentions, 0 otherwise.
+            // Muted chats are excluded from the OS badge even when @mentioned (per DROID-4359 spec).
+            val hasMentions = if (visible.any { (it.state?.unreadMentions?.counter ?: 0) > 0 }) 1 else 0
+            UnreadCounts(totalUnreadMessages, hasMentions)
+        }
 
         // Index chatDetails by chat ID for O(1) lookup of chat names
         val chatDetailsMap = chatDetails.associateBy { it.id }
 
         // Collect chat names with unread messages per space, ordered by most recent first.
         // Falls back to the most recent chat name when no chats have unreads (for non-compact view).
-        val chatNamesPerSpace = groupedPreviews
-            .mapValues { (_, previews) ->
-                val unreadNames = previews
-                    .filter { preview ->
-                        (preview.state?.unreadMessages?.counter ?: 0) > 0 ||
-                        (preview.state?.unreadMentions?.counter ?: 0) > 0
-                    }
-                    .sortedByDescending { it.message?.createdAt ?: 0L }
-                    .mapNotNull { preview ->
-                        chatDetailsMap[preview.chat]?.name?.takeIf { it.isNotEmpty() }
-                    }
-                unreadNames.ifEmpty {
-                    listOfNotNull(
-                        previews.maxByOrNull { it.message?.createdAt ?: 0L }
-                            ?.let { chatDetailsMap[it.chat]?.name?.takeIf { n -> n.isNotEmpty() } }
-                    )
+        // Muted-and-hidden chats are excluded from the unread list so the compact row stays
+        // consistent with the badge count (which also skips them) — see DROID-4359.
+        val chatNamesPerSpace = groupedPreviews.mapValues { (spaceId, previews) ->
+            val visible = visiblePreviewsPerSpace[spaceId] ?: previews
+            val unreadNames = visible
+                .filter { preview ->
+                    (preview.state?.unreadMessages?.counter ?: 0) > 0 ||
+                    (preview.state?.unreadMentions?.counter ?: 0) > 0
                 }
+                .sortedByDescending { it.message?.createdAt ?: 0L }
+                .mapNotNull { preview ->
+                    chatDetailsMap[preview.chat]?.name?.takeIf { it.isNotEmpty() }
+                }
+            unreadNames.ifEmpty {
+                // Fallback: when a space has no unread chats (or all unreads are muted-and-hidden),
+                // show the most recent chat name — including muted chats — so the space card isn't blank.
+                // See DROID-4359.
+                listOfNotNull(
+                    previews.maxByOrNull { it.message?.createdAt ?: 0L }
+                        ?.let { chatDetailsMap[it.chat]?.name?.takeIf { n -> n.isNotEmpty() } }
+                )
             }
+        }
 
         // Map all active spaces to VaultSpaceView objects
         val allSpacesRaw = spacesFromFlow

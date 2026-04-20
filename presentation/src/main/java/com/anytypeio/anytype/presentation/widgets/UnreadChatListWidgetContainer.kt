@@ -182,15 +182,27 @@ class UnreadChatListWidgetContainer(
                     Timber.d("UnreadChatList: Processing ${objects.size} chat objects, ${previewList.size} previews")
                     
                     // Filter to only chats with unread messages
+                    val chatSpaceView = spaces.find { it.targetSpaceId == space.id }
                     val unreadChatIds = previewList
                         .filter { preview ->
-                            val unreadCount = (preview.state?.unreadMessages?.counter ?: 0) +
-                                    (preview.state?.unreadMentions?.counter ?: 0)
-                            val hasUnread = unreadCount > 0
-                            if (hasUnread) {
-                                Timber.d("UnreadChatList: Chat ${preview.chat} has $unreadCount unread messages")
+                            val unreadMessages = preview.state?.unreadMessages?.counter ?: 0
+                            val unreadMentions = preview.state?.unreadMentions?.counter ?: 0
+                            val hasUnread = (unreadMessages + unreadMentions) > 0
+                            if (!hasUnread) return@filter false
+
+                            // @mention exception: muted chat surfaces in Unread on mention.
+                            if (unreadMentions > 0) return@filter true
+
+                            // Hide muted chat objects with only regular unread messages.
+                            val muted = chatSpaceView != null &&
+                                NotificationStateCalculator.isMutedAndHidden(chatSpaceView, preview.chat)
+                            if (muted) {
+                                Timber.d("UnreadChatList: Hiding muted-and-hidden chat ${preview.chat}")
+                                return@filter false
                             }
-                            hasUnread
+
+                            Timber.d("UnreadChatList: Chat ${preview.chat} has ${unreadMessages + unreadMentions} unread messages")
+                            true
                         }
                         .map { it.chat }
                         .toSet()
@@ -250,7 +262,10 @@ class UnreadChatListWidgetContainer(
                                 messageText = messageText,
                                 messageTime = messageTime,
                                 attachmentPreviews = attachmentPreviews,
-                                chatNotificationState = chatNotificationState
+                                chatNotificationState = chatNotificationState,
+                                isMutedAndHidden = chatSpaceView?.let {
+                                    NotificationStateCalculator.isMutedAndHidden(it, obj.id)
+                                } ?: false
                             )
                         } else {
                             // Fallback to regular element if no preview

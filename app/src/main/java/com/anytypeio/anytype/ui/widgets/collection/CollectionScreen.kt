@@ -122,7 +122,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun ScreenContent(
     vm: CollectionViewModel,
     uiState: CollectionUiState,
-    onCreateObjectLongClicked: () -> Unit,
+    onAddDocClicked: () -> Unit,
     onSearchClicked: () -> Unit,
 ) {
     Box(
@@ -150,8 +150,7 @@ fun ScreenContent(
                     .padding(bottom = 20.dp)) {
                 BottomNavigationMenu(
                     onSearchClick = onSearchClicked,
-                    onAddDocClick = { vm.onAddClicked(null) },
-                    onAddDocLongClick = onCreateObjectLongClicked,
+                    onAddDocClick = onAddDocClicked,
                     onShareButtonClicked = vm::onShareButtonClicked,
                     state = vm.navPanelState.collectAsStateWithLifecycle().value,
                     onHomeButtonClicked = vm::onHomeButtonClicked
@@ -622,7 +621,7 @@ fun CollectionItem(
 @Composable
 fun CollectionScreen(
     vm: CollectionViewModel,
-    onCreateObjectLongClicked: () -> Unit,
+    onAddDocClicked: () -> Unit,
     onSearchClicked: () -> Unit
 ) {
 
@@ -645,7 +644,7 @@ fun CollectionScreen(
                 ScreenContent(
                     vm = vm,
                     uiState = state,
-                    onCreateObjectLongClicked = onCreateObjectLongClicked,
+                    onAddDocClicked = onAddDocClicked,
                     onSearchClicked = onSearchClicked
                 )
                 LaunchedEffect(state) {

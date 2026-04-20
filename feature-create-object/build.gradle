@@ -32,6 +32,7 @@ dependencies {
     // Lifecycle
     implementation libs.lifecycleViewModel
     implementation libs.lifecycleRuntime
+    implementation libs.lifecycleCompose
 
     // Compose
     implementation libs.compose
@@ -39,6 +40,7 @@ dependencies {
     implementation libs.composeToolingPreview
     implementation libs.composeMaterial3
     implementation libs.composeMaterial
+    implementation libs.activityCompose
 
     debugImplementation libs.composeTooling
 

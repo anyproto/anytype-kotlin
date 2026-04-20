@@ -6,7 +6,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
@@ -15,7 +22,6 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -30,21 +36,28 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.collection.SubscriptionMapper
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
+import com.anytypeio.anytype.feature_create_object.ui.CreateObjectSheetHost
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
-import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import javax.inject.Inject
 import timber.log.Timber
 
-class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
+class CollectionFragment : BaseComposeFragment() {
 
     @Inject
     lateinit var factory: CollectionViewModel.Factory
 
+    private lateinit var createObjectFactory: CreateObjectViewModelFactory
+
+    private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
     private val navigation get() = navigation()
 
     private val space get() = arg<Id>(SPACE_ID_KEY)
+
+    private fun createObjectComponentKey(): String = "collection-create-object:$space"
 
     private val subscription: Subscription by lazy {
         SubscriptionMapper().map(
@@ -66,16 +79,24 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 DefaultTheme {
-                    CollectionScreen(
-                        vm = vm,
-                        onCreateObjectLongClicked = {
-                            val dialog = ObjectTypeSelectionFragment.new(space = space)
-                            dialog.show(childFragmentManager, "fullscreen-widget-create-object-type-dialog")
-                        },
-                        onSearchClicked = {
-                            vm.onSearchClicked(space)
-                        }
-                    )
+                    var createObjectSheetVisible by remember { mutableStateOf(false) }
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        CollectionScreen(
+                            vm = vm,
+                            onAddDocClicked = { createObjectSheetVisible = true },
+                            onSearchClicked = {
+                                vm.onSearchClicked(space)
+                            }
+                        )
+                        CreateObjectSheetHost(
+                            vm = createObjectVm,
+                            visible = createObjectSheetVisible,
+                            onDismiss = { createObjectSheetVisible = false },
+                            onCreateObjectOfType = { objType ->
+                                vm.onAddClicked(objType = objType)
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -204,10 +225,6 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
         )
     }
 
-    override fun onSelectObjectType(objType: ObjectWrapper.Type) {
-        vm.onAddClicked(objType = objType)
-    }
-
     override fun onStop() {
         vm.onStop()
         super.onStop()
@@ -216,10 +233,20 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
     override fun injectDependencies() {
         val vmParams = CollectionViewModel.VmParams(spaceId = SpaceId(space))
         componentManager().collectionComponent.get(params = vmParams).inject(this)
+        val createObjectVmParams = NewCreateObjectViewModel.VmParams(
+            spaceId = SpaceId(space),
+            showAttachObject = false,
+            showMediaSection = true
+        )
+        createObjectFactory = componentManager()
+            .createObjectFeatureComponent
+            .get(key = createObjectComponentKey(), param = createObjectVmParams)
+            .viewModelFactory()
     }
 
     override fun releaseDependencies() {
         componentManager().collectionComponent.release()
+        componentManager().createObjectFeatureComponent.release(createObjectComponentKey())
     }
 
     override fun onApplyWindowRootInsets(view: View) {

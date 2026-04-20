@@ -6,9 +6,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -22,7 +29,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -31,6 +37,9 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
+import com.anytypeio.anytype.feature_create_object.ui.CreateObjectSheetHost
 import com.anytypeio.anytype.feature_date.viewmodel.UiErrorState
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectViewModel
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVMFactory
@@ -39,8 +48,6 @@ import com.anytypeio.anytype.feature_date.viewmodel.DateObjectCommand
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
-import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -48,15 +55,22 @@ import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
 import timber.log.Timber
 
-class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
+class DateObjectFragment : BaseComposeFragment() {
     @Inject
     lateinit var factory: DateObjectVMFactory
 
     private val vm by viewModels<DateObjectViewModel> { factory }
+
+    private lateinit var createObjectFactory: CreateObjectViewModelFactory
+
+    private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
     private lateinit var navComposeController: NavHostController
 
     private val space get() = argString(ARG_SPACE)
     private val objectId get() = argString(ARG_OBJECT_ID)
+
+    private fun createObjectComponentKey(): String = "date-object-create-object:$space:$objectId"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -175,10 +189,6 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                 is DateObjectCommand.SendToast.Error -> {
                     toast(effect.message)
                 }
-                DateObjectCommand.TypeSelectionScreen -> {
-                    val dialog = ObjectTypeSelectionFragment.new(space = space)
-                    dialog.show(childFragmentManager, null)
-                }
                 is DateObjectCommand.NavigateToParticipant -> {
                     runCatching {
                         findNavController().navigate(
@@ -219,10 +229,6 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
         }
     }
 
-    override fun onSelectObjectType(objType: ObjectWrapper.Type) {
-        vm.onCreateObjectOfTypeClicked(objType = objType)
-    }
-
     override fun onStart() {
         super.onStart()
         vm.onStart()
@@ -243,20 +249,37 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
             startDestination = DATE_MAIN
         ) {
             composable(route = DATE_MAIN) {
-                DateMainScreen(
-                    uiCalendarIconState = vm.uiCalendarIconState.collectAsStateWithLifecycle().value,
-                    uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
-                    uiHeaderState = vm.uiHeaderState.collectAsStateWithLifecycle().value,
-                    uiFieldsState = vm.uiFieldsState.collectAsStateWithLifecycle().value,
-                    uiObjectsListState = vm.uiObjectsListState.collectAsStateWithLifecycle().value,
-                    uiFieldsSheetState = vm.uiFieldsSheetState.collectAsStateWithLifecycle().value,
-                    uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
-                    canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
-                    uiCalendarState = vm.uiCalendarState.collectAsStateWithLifecycle().value,
-                    uiSyncStatusState = vm.uiSyncStatusWidgetState.collectAsStateWithLifecycle().value,
-                    uiSnackbarState = vm.uiSnackbarState.collectAsStateWithLifecycle().value,
-                    onDateEvent = vm::onDateEvent
-                )
+                var createObjectSheetVisible by remember { mutableStateOf(false) }
+                Box(modifier = Modifier.fillMaxSize()) {
+                    DateMainScreen(
+                        uiCalendarIconState = vm.uiCalendarIconState.collectAsStateWithLifecycle().value,
+                        uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
+                        uiHeaderState = vm.uiHeaderState.collectAsStateWithLifecycle().value,
+                        uiFieldsState = vm.uiFieldsState.collectAsStateWithLifecycle().value,
+                        uiObjectsListState = vm.uiObjectsListState.collectAsStateWithLifecycle().value,
+                        uiFieldsSheetState = vm.uiFieldsSheetState.collectAsStateWithLifecycle().value,
+                        uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
+                        canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
+                        uiCalendarState = vm.uiCalendarState.collectAsStateWithLifecycle().value,
+                        uiSyncStatusState = vm.uiSyncStatusWidgetState.collectAsStateWithLifecycle().value,
+                        uiSnackbarState = vm.uiSnackbarState.collectAsStateWithLifecycle().value,
+                        onDateEvent = { event ->
+                            if (event is com.anytypeio.anytype.feature_date.ui.models.DateEvent.NavigationWidget.OnAddDocClick) {
+                                createObjectSheetVisible = true
+                            } else {
+                                vm.onDateEvent(event)
+                            }
+                        }
+                    )
+                    CreateObjectSheetHost(
+                        vm = createObjectVm,
+                        visible = createObjectSheetVisible,
+                        onDismiss = { createObjectSheetVisible = false },
+                        onCreateObjectOfType = { objType ->
+                            vm.onCreateObjectOfTypeClicked(objType = objType)
+                        }
+                    )
+                }
             }
         }
     }
@@ -297,10 +320,20 @@ class DateObjectFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
             objectId = objectId
         )
         componentManager().dateObjectComponent.get(params).inject(this)
+        val createObjectVmParams = NewCreateObjectViewModel.VmParams(
+            spaceId = SpaceId(space),
+            showAttachObject = false,
+            showMediaSection = true
+        )
+        createObjectFactory = componentManager()
+            .createObjectFeatureComponent
+            .get(key = createObjectComponentKey(), param = createObjectVmParams)
+            .viewModelFactory()
     }
 
     override fun releaseDependencies() {
         componentManager().dateObjectComponent.release()
+        componentManager().createObjectFeatureComponent.release(createObjectComponentKey())
     }
 
     override fun onApplyWindowRootInsets(view: View) {

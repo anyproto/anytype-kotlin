@@ -75,7 +75,8 @@ sealed class WidgetView {
         val source: Widget.Source,
         override val sectionType: SectionType? = null,
         val counter: ChatCounter? = null,
-        val notificationState: NotificationState? = null
+        val notificationState: NotificationState? = null,
+        val isMutedAndHidden: Boolean = false
     ) : WidgetView(), Draggable {
         override val canCreateObjectOfType: Boolean
             get() = source.canCreateObjectOfType()
@@ -123,7 +124,8 @@ sealed class WidgetView {
                 val messageText: String? = null,
                 val messageTime: String? = null,
                 val attachmentPreviews: List<AttachmentPreview> = emptyList(),
-                val chatNotificationState: NotificationState = NotificationState.ALL
+                val chatNotificationState: NotificationState = NotificationState.ALL,
+                val isMutedAndHidden: Boolean = false
             ) : Element(), WidgetView.Element.Chat
         }
     }
@@ -257,7 +259,8 @@ sealed class WidgetView {
                 val messageText: String? = null,
                 val messageTime: String? = null,
                 val attachmentPreviews: List<AttachmentPreview> = emptyList(),
-                val chatNotificationState: NotificationState = NotificationState.ALL
+                val chatNotificationState: NotificationState = NotificationState.ALL,
+                val isMutedAndHidden: Boolean = false
             ) : Element(), WidgetView.Element.Chat
         }
 

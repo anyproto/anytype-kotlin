@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.notifications
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 
 /**
  * Utility object for calculating notification states for spaces and chats
@@ -59,5 +60,25 @@ object NotificationStateCalculator {
             in chatSpace.spacePushNotificationForceMentionIds -> NotificationState.MENTIONS
             else -> chatSpace.spacePushNotificationMode
         }
+    }
+
+    /**
+     * Returns true when a chat object should be hidden from the Unread section
+     * and excluded from the app badge count ("Mute and hide" behavior).
+     *
+     * Scope: chat objects inside regular data Spaces only. DM spaces and
+     * Chat Channel spaces always return false here — their notification
+     * semantics are handled separately (see DROID-4361).
+     *
+     * Callers should also apply the @mention exception for the Unread section:
+     * if the chat has unread mentions, it still surfaces with a gray `@`.
+     * The badge caller should apply no exception — muted chats never contribute.
+     */
+    fun isMutedAndHidden(
+        chatSpace: ObjectWrapper.SpaceView,
+        chatId: Id
+    ): Boolean {
+        if (chatSpace.spaceUxType != SpaceUxType.DATA) return false
+        return calculateChatNotificationState(chatSpace, chatId) == NotificationState.DISABLE
     }
 }

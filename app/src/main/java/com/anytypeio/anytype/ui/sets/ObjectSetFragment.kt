@@ -1541,6 +1541,7 @@ open class ObjectSetFragment :
 
     override fun onDestroyView() {
         viewerGridAdapter.clear()
+        isSheetHostInstalled = false
         super.onDestroyView()
     }
 

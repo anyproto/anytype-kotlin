@@ -1005,6 +1005,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         binding.recycler.removeOnScrollListener(fabScrollListener)
         pickerDelegate.clearPickit()
+        isSheetHostInstalled = false
         super.onDestroyView()
     }
 

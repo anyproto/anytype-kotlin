@@ -186,10 +186,7 @@ internal fun launchCameraForCreateObjectUpload(
 ) {
     val tempDir = File(context.cacheDir, CREATE_OBJECT_UPLOAD_TEMP_FOLDER)
     if (!tempDir.exists()) tempDir.mkdirs()
-    val photoFile = File.createTempFile("IMG_", ".jpg", tempDir).apply {
-        createNewFile()
-        deleteOnExit()
-    }
+    val photoFile = File.createTempFile("IMG_", ".jpg", tempDir)
     val uri = FileProvider.getUriForFile(
         context,
         "${context.packageName}.provider",

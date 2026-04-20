@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
 import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -65,6 +66,8 @@ class NewCreateObjectViewModel @Inject constructor(
     )
     val uploadSnackbar: SharedFlow<UploadSuccessSnackbar> = _uploadSnackbar.asSharedFlow()
 
+    private var observeJob: Job? = null
+
     init {
         observeObjectTypes()
     }
@@ -74,7 +77,8 @@ class NewCreateObjectViewModel @Inject constructor(
      * The sort order respects user's custom widget ordering via orderId field.
      */
     private fun observeObjectTypes() {
-        viewModelScope.launch {
+        observeJob?.cancel()
+        observeJob = viewModelScope.launch {
             try {
                 _state.update { it.copy(isLoading = true) }
 

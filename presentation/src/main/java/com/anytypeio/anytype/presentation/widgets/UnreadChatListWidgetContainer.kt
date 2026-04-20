@@ -262,7 +262,10 @@ class UnreadChatListWidgetContainer(
                                 messageText = messageText,
                                 messageTime = messageTime,
                                 attachmentPreviews = attachmentPreviews,
-                                chatNotificationState = chatNotificationState
+                                chatNotificationState = chatNotificationState,
+                                isMutedAndHidden = chatSpaceView?.let {
+                                    NotificationStateCalculator.isMutedAndHidden(it, obj.id)
+                                } ?: false
                             )
                         } else {
                             // Fallback to regular element if no preview

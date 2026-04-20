@@ -88,7 +88,12 @@ fun ListWidgetCard(
                                 is WidgetView.SetOfObjects.Element.Chat -> element.chatNotificationState
                                 else -> null
                             },
-                            hideCounters = hideCounters
+                            hideCounters = hideCounters,
+                            isMutedAndHidden = when (element) {
+                                is WidgetView.ListOfObjects.Element.Chat -> element.isMutedAndHidden
+                                is WidgetView.SetOfObjects.Element.Chat -> element.isMutedAndHidden
+                                else -> false
+                            }
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(
@@ -199,9 +204,15 @@ fun CompactListWidgetList(
                         is WidgetView.SetOfObjects.Element.Chat -> element.chatNotificationState
                         else -> null
                     }
+                    val isMutedAndHidden = when (element) {
+                        is WidgetView.ListOfObjects.Element.Chat -> element.isMutedAndHidden
+                        is WidgetView.SetOfObjects.Element.Chat -> element.isMutedAndHidden
+                        else -> false
+                    }
                     ChatCounterBadges(
                         counter = element.counter,
-                        notificationState = notificationState
+                        notificationState = notificationState,
+                        isMutedAndHidden = isMutedAndHidden
                     )
                 }
             }

@@ -48,12 +48,13 @@ fun ChatCounterBadges(
     notificationState: NotificationState?,
     modifier: Modifier = Modifier,
     badgeSize: Dp = 18.dp,
-    spacing: Dp = 4.dp
+    spacing: Dp = 4.dp,
+    isMutedAndHidden: Boolean = false
 ) {
     if (counter == null) return
     if (counter.unreadMentionCount == 0 && counter.unreadMessageCount == 0) return
 
-    val isMuted = notificationState == NotificationState.DISABLE
+    val isMuted = isMutedAndHidden
 
     Row(
         modifier = modifier,

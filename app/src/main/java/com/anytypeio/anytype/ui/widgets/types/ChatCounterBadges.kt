@@ -53,6 +53,8 @@ fun ChatCounterBadges(
     if (counter == null) return
     if (counter.unreadMentionCount == 0 && counter.unreadMessageCount == 0) return
 
+    val isMuted = notificationState == NotificationState.DISABLE
+
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
@@ -63,13 +65,13 @@ fun ChatCounterBadges(
                 notificationState = notificationState,
                 size = badgeSize
             )
-            if (counter.unreadMessageCount > 0) {
+            if (counter.unreadMessageCount > 0 && !isMuted) {
                 Spacer(modifier = Modifier.width(spacing))
             }
         }
 
-        // Message count badge (number)
-        if (counter.unreadMessageCount > 0) {
+        // Message count badge (number) — hidden entirely when the chat is muted-and-hidden.
+        if (counter.unreadMessageCount > 0 && !isMuted) {
             MessageCountBadge(
                 count = counter.unreadMessageCount,
                 notificationState = notificationState,

@@ -160,6 +160,21 @@ suspend fun toFeaturedPropertiesViews(
             }
         }
 
+        val isTypeMissingOrDeleted = currType == null || currType.isDeleted == true
+        val hasTypeView = views.any { it is ObjectRelationView.ObjectType }
+        if (isTypeMissingOrDeleted && !hasTypeView) {
+            views.add(
+                0,
+                ObjectRelationView.ObjectType.Deleted(
+                    id = currentObject.getProperType().orEmpty(),
+                    key = Relations.TYPE,
+                    featured = true,
+                    readOnly = false,
+                    system = false
+                )
+            )
+        }
+
         val canChangeType = currType?.toObjectPermissionsForTypes(participantCanEdit)?.canChangeType == true
         return BlockView.FeaturedRelation(
             id = block.id,
@@ -218,18 +233,13 @@ private suspend fun ObjectWrapper.Relation.toView(
         Relations.DESCRIPTION -> null
         Relations.TYPE -> {
             if (typeOfCurrentObject == null || typeOfCurrentObject.isDeleted == true) {
-                val id = currentObject.getProperType()
-                if (id == null) {
-                    null
-                } else {
-                    ObjectRelationView.ObjectType.Deleted(
-                        id = id,
-                        key = propertyKey,
-                        featured = true,
-                        readOnly = false,
-                        system = false
-                    )
-                }
+                ObjectRelationView.ObjectType.Deleted(
+                    id = currentObject.getProperType().orEmpty(),
+                    key = propertyKey,
+                    featured = true,
+                    readOnly = false,
+                    system = false
+                )
             } else {
                 ObjectRelationView.ObjectType.Base(
                     id = id,

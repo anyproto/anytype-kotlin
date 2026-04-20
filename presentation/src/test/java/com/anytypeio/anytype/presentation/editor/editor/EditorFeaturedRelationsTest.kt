@@ -942,6 +942,161 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
     }
 
     @Test
+    fun `should render deleted object type as featured relation when object type field is empty`() =
+        runTest {
+
+            val title = MockTypicalDocumentFactory.title
+            val header = MockTypicalDocumentFactory.header
+            val block = MockTypicalDocumentFactory.a
+            val featuredBlock = Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                children = emptyList(),
+                content = Block.Content.FeaturedRelations
+            )
+
+            val page = Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart,
+                children = listOf(header.id, featuredBlock.id, block.id)
+            )
+
+            val doc = listOf(page, header, title, block, featuredBlock)
+
+            val r1 = MockTypicalDocumentFactory.relationObject("Ad")
+            val r2 = MockTypicalDocumentFactory.relationObject("De")
+            val r3 = MockTypicalDocumentFactory.relationObject("HJ")
+
+            val value1 = MockDataFactory.randomString()
+            val value2 = MockDataFactory.randomString()
+            val value3 = MockDataFactory.randomString()
+            val objectFields =
+                mapOf(
+                    Relations.ID to root,
+                    r1.key to value1,
+                    r2.key to value2,
+                    r3.key to value3,
+                    Relations.TYPE to emptyList<String>(),
+                    Relations.FEATURED_RELATIONS to listOf(Relations.TYPE, r3.key)
+                )
+
+            val customDetails = ObjectViewDetails(mapOf(root to objectFields))
+
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+            stubSearchObjects()
+            stubOpenDocument(
+                document = doc,
+                details = customDetails,
+
+            )
+
+            storeOfRelations.merge(
+                listOf(r1, r2, r3)
+            )
+
+            val vm = buildViewModel()
+
+            vm.onStart(id = root, space = defaultSpace)
+
+            advanceUntilIdle()
+
+            val expectedFeatured = BlockView.FeaturedRelation(
+                id = featuredBlock.id,
+                hasFeaturePropertiesConflict = true,
+                relations = listOf(
+                    ObjectRelationView.ObjectType.Deleted(
+                        id = "",
+                        key = Relations.TYPE,
+                        featured = true,
+                        system = false
+                    ),
+                    ObjectRelationView.Default(
+                        id = r3.id,
+                        key = r3.key,
+                        name = r3.name.orEmpty(),
+                        value = value3,
+                        featured = true,
+                        format = Relation.Format.SHORT_TEXT,
+                        system = false
+                    )
+                )
+            )
+
+            val state = vm.state.value as ViewState.Success
+            val actualFeatured = state.blocks.filterIsInstance<BlockView.FeaturedRelation>().single()
+            assertEquals(expected = expectedFeatured, actual = actualFeatured)
+        }
+
+    @Test
+    fun `should inject deleted object type chip when featured relations does not contain type and type is missing`() =
+        runTest {
+
+            val title = MockTypicalDocumentFactory.title
+            val header = MockTypicalDocumentFactory.header
+            val block = MockTypicalDocumentFactory.a
+            val featuredBlock = Block(
+                id = MockDataFactory.randomUuid(),
+                fields = Block.Fields.empty(),
+                children = emptyList(),
+                content = Block.Content.FeaturedRelations
+            )
+
+            val page = Block(
+                id = root,
+                fields = Block.Fields(emptyMap()),
+                content = Block.Content.Smart,
+                children = listOf(header.id, featuredBlock.id, block.id)
+            )
+
+            val doc = listOf(page, header, title, block, featuredBlock)
+
+            val objectTypeId = MockDataFactory.randomString()
+
+            val objectFields =
+                mapOf(
+                    Relations.ID to root,
+                    Relations.TYPE to objectTypeId,
+                    Relations.FEATURED_RELATIONS to emptyList<String>()
+                )
+
+            val customDetails = ObjectViewDetails(mapOf(root to objectFields))
+
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+            stubSearchObjects()
+            stubOpenDocument(
+                document = doc,
+                details = customDetails,
+
+            )
+
+            val vm = buildViewModel()
+
+            vm.onStart(id = root, space = defaultSpace)
+
+            advanceUntilIdle()
+
+            val expectedFeatured = BlockView.FeaturedRelation(
+                id = featuredBlock.id,
+                hasFeaturePropertiesConflict = false,
+                relations = listOf(
+                    ObjectRelationView.ObjectType.Deleted(
+                        id = objectTypeId,
+                        key = Relations.TYPE,
+                        featured = true,
+                        system = false
+                    )
+                )
+            )
+
+            val state = vm.state.value as ViewState.Success
+            val actualFeatured = state.blocks.filterIsInstance<BlockView.FeaturedRelation>().single()
+            assertEquals(expected = expectedFeatured, actual = actualFeatured)
+        }
+
+    @Test
     fun `should render backlinks and links as featured relations`() = runTest {
 
         val title = MockTypicalDocumentFactory.title

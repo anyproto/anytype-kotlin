@@ -177,8 +177,7 @@ fun DateMainScreen(
                         ),
                     iconRes = R.drawable.ic_create_obj_32,
                     contentDescription = stringResource(id = R.string.create),
-                    onClick = { onDateEvent(DateEvent.NavigationWidget.OnAddDocClick) },
-                    onLongClick = { onDateEvent(DateEvent.NavigationWidget.OnAddDocLongClick) }
+                    onClick = { onDateEvent(DateEvent.NavigationWidget.OnAddDocClick) }
                 )
             }
         },

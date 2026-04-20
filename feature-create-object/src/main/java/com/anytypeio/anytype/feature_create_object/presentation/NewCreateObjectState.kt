@@ -21,8 +21,8 @@ data class NewCreateObjectState(
     val searchQuery: String = "",
     val isLoading: Boolean = false,
     val error: String? = null,
-    val showMediaSection: Boolean = true,
-    val showAttachExisting: Boolean = true
+    val showMediaSection: Boolean = false,
+    val showAttachExisting: Boolean = false
 )
 
 /**

@@ -1,22 +1,35 @@
 package com.anytypeio.anytype.ui.home
 
+import android.Manifest
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.FileProvider
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.Lifecycle
@@ -26,9 +39,17 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions.Builder
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_utils.ext.isVideo
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectAction
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
+import com.anytypeio.anytype.feature_create_object.ui.CreateObjectPopup
+import java.io.File
 import com.anytypeio.anytype.core_ui.features.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -39,6 +60,8 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
+import com.anytypeio.anytype.presentation.main.MainViewModel
+import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.ViewerSpaceSettingsState
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
@@ -49,7 +72,6 @@ import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
-import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.creation.WidgetSourceTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
@@ -82,7 +104,13 @@ class WidgetsScreenFragment : Fragment(),
     @Inject
     lateinit var factory: HomeScreenViewModel.Factory
 
+    private lateinit var createObjectFactory: CreateObjectViewModelFactory
+
     private val vm by viewModels<HomeScreenViewModel> { factory }
+
+    private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
+    private val mainVm: MainViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val vmParams = HomeScreenVmParams(
@@ -90,13 +118,25 @@ class WidgetsScreenFragment : Fragment(),
             showHomepagePicker = argOrNull<Boolean>(SHOW_HOMEPAGE_PICKER_KEY) ?: false
         )
         componentManager().homeScreenComponent.get(vmParams).inject(this)
+        val createObjectVmParams = NewCreateObjectViewModel.VmParams(
+            spaceId = SpaceId(space),
+            showAttachObject = false,
+            showMediaSection = true
+        )
+        createObjectFactory = componentManager()
+            .createObjectFeatureComponent
+            .get(key = createObjectComponentKey(), param = createObjectVmParams)
+            .viewModelFactory()
         super.onCreate(savedInstanceState)
     }
 
     override fun onDestroy() {
+        componentManager().createObjectFeatureComponent.release(createObjectComponentKey())
         componentManager().homeScreenComponent.release()
         super.onDestroy()
     }
+
+    private fun createObjectComponentKey(): String = "widgets-create-object:$space"
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
@@ -175,6 +215,108 @@ class WidgetsScreenFragment : Fragment(),
             )
         }
 
+        val createObjectSheetVisible =
+            vm.createObjectSheetVisible.collectAsStateWithLifecycle().value
+        val createObjectState =
+            createObjectVm.state.collectAsStateWithLifecycle().value
+        LaunchedEffect(createObjectSheetVisible) {
+            if (createObjectSheetVisible) createObjectVm.onOpen()
+        }
+
+        val uploadContext = LocalContext.current
+        val uploadMediaLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.PickMultipleVisualMedia()
+        ) { uris ->
+            vm.onUploadFilesToSpace(
+                uris.map { uri ->
+                    val type = if (isVideo(uri, uploadContext))
+                        Block.Content.File.Type.VIDEO
+                    else
+                        Block.Content.File.Type.IMAGE
+                    HomeScreenViewModel.UploadToSpaceTarget(uri.toString(), type)
+                }
+            )
+        }
+        val uploadFileLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.OpenMultipleDocuments()
+        ) { uris ->
+            vm.onUploadFilesToSpace(
+                uris.map { uri ->
+                    HomeScreenViewModel.UploadToSpaceTarget(
+                        uri.toString(),
+                        Block.Content.File.Type.NONE
+                    )
+                }
+            )
+        }
+        var capturedPhotoUri by rememberSaveable { mutableStateOf<String?>(null) }
+        var capturedPhotoPath by rememberSaveable { mutableStateOf<String?>(null) }
+        val takePhotoLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.TakePicture()
+        ) { isSuccess ->
+            val uri = capturedPhotoUri
+            val sourcePath = capturedPhotoPath
+            if (isSuccess && uri != null) {
+                vm.onUploadFilesToSpace(
+                    listOf(
+                        HomeScreenViewModel.UploadToSpaceTarget(
+                            uri = uri,
+                            type = Block.Content.File.Type.IMAGE,
+                            sourceFilePath = sourcePath
+                        )
+                    )
+                )
+            } else if (sourcePath != null) {
+                // Capture cancelled/failed — still clean up the empty temp file.
+                runCatching { File(sourcePath).delete() }
+            }
+            capturedPhotoUri = null
+            capturedPhotoPath = null
+        }
+        val takePhotoPermissionLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                launchCameraForHomeUpload(
+                    context = uploadContext,
+                    launcher = takePhotoLauncher,
+                    onPhotoReady = { uri, file ->
+                        capturedPhotoUri = uri.toString()
+                        capturedPhotoPath = file.absolutePath
+                    }
+                )
+            } else {
+                Timber.w("Camera permission denied for home upload")
+            }
+        }
+
+        CreateObjectPopup(
+            expanded = createObjectSheetVisible,
+            onDismissRequest = { vm.hideCreateObjectSheet() },
+            state = createObjectState,
+            onAction = { action ->
+                when (action) {
+                    CreateObjectAction.SelectPhotos -> {
+                        uploadMediaLauncher.launch(
+                            PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageAndVideo
+                            )
+                        )
+                        vm.hideCreateObjectSheet()
+                    }
+                    CreateObjectAction.TakePhoto -> {
+                        takePhotoPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        vm.hideCreateObjectSheet()
+                    }
+                    CreateObjectAction.SelectFiles -> {
+                        uploadFileLauncher.launch(arrayOf("*/*"))
+                        vm.hideCreateObjectSheet()
+                    }
+                    else -> handleCreateObjectAction(action)
+                }
+            }
+        )
+
         // Homepage Picker - shown as bottom sheet after channel creation or from Create Home widget
         val showHomepagePicker = vm.showHomepagePicker.collectAsStateWithLifecycle().value
         if (showHomepagePicker) {
@@ -208,6 +350,11 @@ class WidgetsScreenFragment : Fragment(),
                 launch { vm.commands.collect { command -> proceed(command) } }
                 launch { vm.navigation.collect { command -> proceed(command) } }
                 launch { vm.toasts.collect { toast(it) } }
+                launch {
+                    vm.uploadSnackbar.collect { variant ->
+                        mainVm.showSnackbarWithOk(uploadSnackbarMessage(variant))
+                    }
+                }
             }
         }
     }
@@ -373,13 +520,6 @@ class WidgetsScreenFragment : Fragment(),
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening space settings")
                 }
-            }
-
-            is Command.OpenObjectCreateDialog -> {
-                val dialog = ObjectTypeSelectionFragment.new(
-                    space = command.space.id
-                )
-                dialog.show(childFragmentManager, "object-create-dialog")
             }
 
             is Command.OpenGlobalSearchScreen -> {
@@ -597,6 +737,28 @@ class WidgetsScreenFragment : Fragment(),
         vm.onCreateNewObjectClicked(objType = objType)
     }
 
+    private fun handleCreateObjectAction(action: CreateObjectAction) {
+        when (action) {
+            is CreateObjectAction.CreateObjectOfType -> {
+                vm.onCreateNewObjectOfTypeKey(typeKey = TypeKey(action.typeKey))
+            }
+            is CreateObjectAction.UpdateSearch,
+            is CreateObjectAction.Retry -> {
+                createObjectVm.onAction(action)
+            }
+            CreateObjectAction.AttachExistingObject -> {
+                Timber.d("CreateObjectPopup attach action received unexpectedly")
+                vm.hideCreateObjectSheet()
+            }
+            CreateObjectAction.SelectPhotos,
+            CreateObjectAction.TakePhoto,
+            CreateObjectAction.SelectFiles -> {
+                // Media actions are handled in the popup's onAction lambda where
+                // the Activity-result launchers live. This branch is unreachable.
+            }
+        }
+    }
+
     override fun onChatObjectCreated(objectId: Id) {
         Timber.d("Chat object created from widget: $objectId")
         navigation().openChat(
@@ -623,3 +785,44 @@ class WidgetsScreenFragment : Fragment(),
         )
     }
 }
+
+/**
+ * Writes a temp JPEG into the app cache, gives the launcher the FileProvider URI,
+ * and reports the URI back via [onUriReceived] so callers can upload on capture.
+ * Mirrors `feature-chats/tools/launchCamera` but lives here so Home/Widgets can
+ * invoke it without depending on the chats module.
+ */
+internal fun launchCameraForHomeUpload(
+    context: android.content.Context,
+    launcher: androidx.activity.compose.ManagedActivityResultLauncher<Uri, Boolean>,
+    onPhotoReady: (uri: Uri, file: File) -> Unit
+) {
+    val tempDir = File(context.cacheDir, HOME_UPLOAD_TEMP_FOLDER)
+    if (!tempDir.exists()) tempDir.mkdirs()
+    val photoFile = File.createTempFile("IMG_", ".jpg", tempDir).apply {
+        createNewFile()
+        deleteOnExit()
+    }
+    val uri = FileProvider.getUriForFile(
+        context,
+        "${context.packageName}.provider",
+        photoFile
+    )
+    onPhotoReady(uri, photoFile)
+    launcher.launch(uri)
+}
+
+private const val HOME_UPLOAD_TEMP_FOLDER = "home_upload_temp_folder"
+
+/**
+ * Resolve the user-facing snackbar message for an [UploadSuccessSnackbar]
+ * variant. Shared by fragments that host upload entry points (Widgets,
+ * Widget Overlay, Chat).
+ */
+internal fun Fragment.uploadSnackbarMessage(variant: UploadSuccessSnackbar): String =
+    when (variant) {
+        UploadSuccessSnackbar.Image -> getString(R.string.upload_success_snackbar_image)
+        UploadSuccessSnackbar.Video -> getString(R.string.upload_success_snackbar_video)
+        UploadSuccessSnackbar.File -> getString(R.string.upload_success_snackbar_file)
+        UploadSuccessSnackbar.Mixed -> getString(R.string.upload_success_snackbar_mixed)
+    }

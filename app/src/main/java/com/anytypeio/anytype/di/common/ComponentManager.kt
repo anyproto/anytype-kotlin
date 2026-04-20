@@ -395,7 +395,7 @@ class ComponentManager(
             .create(params, findComponentDependencies())
     }
 
-    val createObjectFeatureComponent = ComponentWithParams { params: NewCreateObjectViewModel.VmParams ->
+    val createObjectFeatureComponent = ComponentMapWithParam { params: NewCreateObjectViewModel.VmParams ->
         DaggerCreateObjectFeatureComponent
             .factory()
             .create(params, findComponentDependencies())

@@ -2570,7 +2570,10 @@ class HomeScreenViewModel(
             Timber.d("Unsubscribing from widgets: $widgetSubscriptions")
             kotlin.runCatching {
                 storelessSubscriptionContainer.unsubscribe(
-                    subscriptions = widgetSubscriptions + listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION)
+                    subscriptions = widgetSubscriptions + listOf(
+                        HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
+                        HOME_WIDGET_SUBSCRIPTION
+                    )
                 )
             }.onFailure { Timber.w(it, "Error unsubscribing profile object") }
 

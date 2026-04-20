@@ -105,20 +105,23 @@ import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Name
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Notifications
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Spacer
 import javax.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class SpaceSettingsViewModel(
@@ -237,6 +240,17 @@ class SpaceSettingsViewModel(
                         }.catch {
                             Timber.e(it, "Failed to observe space homepage object")
                             emit(null)
+                        }
+                    }
+                }
+                .onCompletion {
+                    withContext(NonCancellable) {
+                        kotlin.runCatching {
+                            storelessSubscriptionContainer.unsubscribe(
+                                listOf(HOME_SETTINGS_OBJECT_SUBSCRIPTION)
+                            )
+                        }.onFailure { t ->
+                            Timber.w(t, "Error unsubscribing space-settings homepage object")
                         }
                     }
                 }

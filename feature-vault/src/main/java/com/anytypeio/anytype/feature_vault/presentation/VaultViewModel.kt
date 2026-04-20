@@ -49,6 +49,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator.calculateChatNotificationState
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.`object`.resolveParticipantName
@@ -405,11 +406,21 @@ class VaultViewModel(
 
         // Calculate total unread counts for all chats per space
         val unreadCountsPerSpace = groupedPreviews
-            .mapValues { (_, previews) ->
-                // Message count: sum all messages and cap at 999 (displayed as number badge in UI)
-                val totalUnreadMessages = previews.sumOf { it.state?.unreadMessages?.counter ?: 0 }.coerceAtMost(999)
-                // Mention count: 1 if ANY chat has mentions, 0 otherwise (displayed as icon-only indicator in UI)
-                val hasMentions = if (previews.any { (it.state?.unreadMentions?.counter ?: 0) > 0 }) 1 else 0
+            .mapValues { (spaceId, previews) ->
+                val chatSpace = spacesFromFlow.find { it.targetSpaceId == spaceId }
+                val visible = if (chatSpace != null) {
+                    previews.filterNot {
+                        NotificationStateCalculator.isMutedAndHidden(chatSpace, it.chat)
+                    }
+                } else {
+                    previews
+                }
+                // Message count: sum all messages from visible chats and cap at 999
+                val totalUnreadMessages = visible.sumOf { it.state?.unreadMessages?.counter ?: 0 }
+                    .coerceAtMost(999)
+                // Mention count: 1 if ANY visible chat has mentions, 0 otherwise.
+                // Muted chats are excluded from the OS badge even when @mentioned (per DROID-4359 spec).
+                val hasMentions = if (visible.any { (it.state?.unreadMentions?.counter ?: 0) > 0 }) 1 else 0
                 UnreadCounts(totalUnreadMessages, hasMentions)
             }
 

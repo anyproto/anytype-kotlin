@@ -263,6 +263,7 @@ fun ChatTopToolbar(
                 SpaceChatMenu(
                     expanded = showDropdownMenu,
                     currentNotificationSetting = header.notificationSetting,
+                    spaceType = header.spaceType,
                     showInviteMembers = header.showAddMembers,
                     showCopyLink = header.showAddMembers,
                     onDismissRequest = {

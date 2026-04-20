@@ -2010,6 +2010,9 @@
     <string name="notifications_all_short">所有</string>
     <string name="notifications_mentions_short">提及</string>
     <string name="notifications_disable_short">禁用</string>
+    <string name="notification_option_enable">启用</string>
+    <string name="notification_option_mute_and_hide">静音并隐藏</string>
+    <string name="notification_option_disabled">已禁用</string>
     <string name="space_notify_unmute">取消静音</string>
     <string name="space_notify_mute">静音</string>
     <string name="vault_pinned_limit_message">最多只能固定 %1$d 个空间。请取消固定一个后再添加新收藏。</string>

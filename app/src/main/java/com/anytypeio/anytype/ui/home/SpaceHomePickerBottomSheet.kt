@@ -5,10 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +20,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -44,11 +46,13 @@ fun SpaceHomePickerBottomSheet(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
-        modifier = Modifier.navigationBarsPadding(),
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding(),
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        containerColor = colorResource(id = R.color.background_primary),
-        dragHandle = { Dragger(modifier = Modifier.padding(vertical = 6.dp)) }
+        containerColor = Color.Transparent,
+        dragHandle = null
     ) {
         SpaceHomePickerContent(
             state = state,
@@ -68,10 +72,11 @@ private fun SpaceHomePickerContent(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = colorResource(id = R.color.background_primary),
+                color = colorResource(id = R.color.background_secondary),
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             )
     ) {
+        Dragger(modifier = Modifier.padding(vertical = 6.dp))
         androidx.compose.material3.Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -134,24 +139,36 @@ private fun SpaceHomePickerRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(72.dp)
             .noRippleThrottledClickable(onClick = onClick)
-            .padding(horizontal = 20.dp, vertical = 12.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         ListWidgetObjectIcon(
             modifier = Modifier,
-            iconSize = 24.dp,
+            iconSize = 48.dp,
             icon = item.icon
         )
         Spacer(modifier = Modifier.padding(start = 12.dp))
-        androidx.compose.material3.Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = item.name,
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_primary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        Column {
+            androidx.compose.material3.Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = item.name,
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+             Spacer(modifier = Modifier.height(2.dp))
+            androidx.compose.material3.Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = item.name,
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 

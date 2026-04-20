@@ -173,7 +173,7 @@ fun BoxScope.ChatMenu(
                 DropdownMenuItem(
                     content = {
                         NotificationOptionItem(
-                            text = stringResource(R.string.chat_notifications_receive_all),
+                            text = stringResource(R.string.notification_option_enable),
                             isSelected = currentNotificationSetting == NotificationSetting.ALL
                         )
                     },
@@ -197,7 +197,7 @@ fun BoxScope.ChatMenu(
                 DropdownMenuItem(
                     content = {
                         NotificationOptionItem(
-                            text = stringResource(R.string.chat_notifications_mute_all),
+                            text = stringResource(R.string.notification_option_mute_and_hide),
                             isSelected = currentNotificationSetting == NotificationSetting.MUTE
                         )
                     },

@@ -2015,6 +2015,9 @@
     <string name="notifications_all_short">すべて</string>
     <string name="notifications_mentions_short">メンション</string>
     <string name="notifications_disable_short">無効</string>
+    <string name="notification_option_enable">有効化</string>
+    <string name="notification_option_mute_and_hide">Mute and hide</string>
+    <string name="notification_option_disabled">無効</string>
     <string name="space_notify_unmute">ミュート解除</string>
     <string name="space_notify_mute">ミュート</string>
     <string name="vault_pinned_limit_message">スペースのピン留めは最大%1$d個です。新しくピン留めするには、どれか一つ解除してください。</string>

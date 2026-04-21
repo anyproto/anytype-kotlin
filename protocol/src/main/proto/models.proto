@@ -55,6 +55,8 @@ enum SmartBlockType {
     ChatDerivedObject = 0x220; // Any-store based object for chat
     AccountObject = 0x221; // Container for account data in tech space
     DiscussionObject = 0x222; // Any-store based object for discussion
+    TechSpaceObject = 0x223; // Any-store based object in tech space for cross-device sync
+    TechSpaceVirtualObject = 0x224; // Per-space virtual object backed by a tech space CRDT document
 }
 
 message Search {

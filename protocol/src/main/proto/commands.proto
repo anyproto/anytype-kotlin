@@ -8956,6 +8956,52 @@ message Rpc {
             }
         }
 
+        message AddNotificationSubscriber {
+            message Request {
+                string chatObjectId = 1;
+                string identity = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message RemoveNotificationSubscriber {
+            message Request {
+                string chatObjectId = 1;
+                string identity = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
         message GetMessages {
             message Request {
                 string chatObjectId = 1;
@@ -8969,6 +9015,7 @@ message Rpc {
                 Error error = 1;
                 repeated model.ChatMessage messages = 2;
                 model.ChatState chatState = 3;
+                int32 messageCount = 4;  // Total number of non-deleted messages in the chat
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -9019,6 +9066,7 @@ message Rpc {
                 repeated model.ChatMessage messages = 2;  // List of messages
                 int32 numMessagesBefore = 3;  // Number of messages before the returned messages
                 model.ChatState chatState = 4;  // Chat state
+                int32 messageCount = 5;  // Total number of non-deleted messages in the chat
                 message Error {
                     Code code = 1;
                     string description = 2;

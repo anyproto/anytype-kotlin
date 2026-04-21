@@ -472,6 +472,12 @@ fun ChatScreen(
 
     val scope = rememberCoroutineScope()
 
+    // Persists the ID of the first visible message across Fragment recreation (e.g. when
+    // returning from MediaActivity triggers Activity/Fragment destruction).  When the
+    // ViewModel is recreated and messages reload, we scroll back to this message instead
+    // of jumping to the bottom.
+    var savedFirstVisibleMessageId by rememberSaveable { mutableStateOf<String?>(null) }
+
     var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
     }
@@ -632,8 +638,44 @@ fun ChatScreen(
             }
     }
 
+    // Track the topmost visible message ID so we can save it for scroll restoration.
+    // In reverseLayout, lastOrNull() is the item at the top of the screen (highest index).
+    LaunchedEffect(lazyListState) {
+        snapshotFlow {
+            val topVisible = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()
+            topVisible?.let { messages.getOrNull(it.index) }
+        }
+            .filterNotNull()
+            .mapNotNull { item -> (item as? ChatView.Message)?.id }
+            .distinctUntilChanged()
+            .collect { id ->
+                savedFirstVisibleMessageId = id
+            }
+    }
+
+    // Whether we have already consumed the saved scroll position after recreation.
+    // Once consumed, normal auto-scroll-to-bottom behaviour resumes.
+    var scrollRestored by remember { mutableStateOf(false) }
+
     // Scrolling to bottom when list size changes and we are at the bottom of the list
     LaunchedEffect(messages.size) {
+        if (messages.isEmpty()) return@LaunchedEffect
+        // After Fragment recreation (e.g. returning from MediaActivity with "Don't Keep
+        // Activities" or under OS memory pressure), restore the scroll position to the
+        // previously visible message instead of jumping to bottom.
+        if (!scrollRestored) {
+            scrollRestored = true
+            val restoreId = savedFirstVisibleMessageId
+            if (restoreId != null && !isPerformingScrollIntent.value) {
+                val index = messages.indexOfFirst {
+                    it is ChatView.Message && it.id == restoreId
+                }
+                if (index >= 0) {
+                    lazyListState.scrollToItem(index)
+                    return@LaunchedEffect
+                }
+            }
+        }
         if (wasAtBottom && !isPerformingScrollIntent.value) {
             lazyListState.animateScrollToItem(0)
         } else {

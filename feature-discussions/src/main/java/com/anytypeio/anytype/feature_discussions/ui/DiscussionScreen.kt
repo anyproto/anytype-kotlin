@@ -47,7 +47,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -113,6 +115,9 @@ import com.anytypeio.anytype.feature_discussions.presentation.DiscussionInputMod
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionView
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel
 import com.anytypeio.anytype.feature_discussions.presentation.DiscussionViewModel.MentionPanelState
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.mapNotNull
 import timber.log.Timber
 
 @Composable
@@ -463,8 +468,41 @@ fun DiscussionCommentList(
 ) {
     val listState = rememberLazyListState()
 
+    // Persists the last visible comment ID across Fragment recreation so we can
+    // restore scroll position when returning from MediaActivity.
+    var savedLastVisibleCommentId by rememberSaveable { mutableStateOf<String?>(null) }
+    var scrollRestored by remember { mutableStateOf(false) }
+
+    // Track the last visible comment ID (bottom of the visible area, i.e. newest).
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+            lastVisible?.let { comments.getOrNull(it.index) }
+        }
+            .filterNotNull()
+            .mapNotNull { item -> (item as? DiscussionView.Comment)?.id }
+            .distinctUntilChanged()
+            .collect { id ->
+                savedLastVisibleCommentId = id
+            }
+    }
+
     LaunchedEffect(comments.isNotEmpty()) {
         if (comments.isNotEmpty()) {
+            // After Fragment recreation, restore to previously visible comment.
+            if (!scrollRestored) {
+                scrollRestored = true
+                val restoreId = savedLastVisibleCommentId
+                if (restoreId != null) {
+                    val index = comments.indexOfFirst {
+                        it is DiscussionView.Comment && it.id == restoreId
+                    }
+                    if (index >= 0) {
+                        listState.scrollToItem(index)
+                        return@LaunchedEffect
+                    }
+                }
+            }
             listState.scrollToItem(comments.lastIndex)
         }
     }

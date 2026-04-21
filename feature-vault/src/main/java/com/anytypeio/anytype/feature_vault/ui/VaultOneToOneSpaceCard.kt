@@ -32,6 +32,7 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
+import com.anytypeio.anytype.domain.notifications.SpaceNotificationMenuShape
 import com.anytypeio.anytype.feature_vault.R
 import com.anytypeio.anytype.feature_vault.presentation.VaultSpaceView
 
@@ -56,6 +57,7 @@ fun VaultOneToOneSpaceCard(
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
     onUnmuteSpace: (Id) -> Unit = {},
+    onSetSpaceNotificationMode: (Id, NotificationState) -> Unit = { _, _ -> },
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
     onSpaceSettings: (Id) -> Unit = {},
@@ -125,16 +127,28 @@ fun VaultOneToOneSpaceCard(
         SpaceActionsDropdownMenu(
             expanded = expandedSpaceId == spaceView.space.id,
             onDismiss = onDismissMenu,
+            menuShape = SpaceNotificationMenuShape.DmToggle,
+            currentNotificationMode = spaceView.spaceNotificationState,
             isMuted = shouldShowAsMuted,
             isPinned = spaceView.isPinned,
             isOwner = spaceView.isOwner,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
-                    if (shouldShowAsMuted) {
-                        onUnmuteSpace(it)
+                    // DmToggle semantic: Mute => DISABLE (fixes pre-existing bug
+                    // where onMuteSpace dispatched MENTIONS for DMs, which is
+                    // wrong per DROID-4361 spec). Route through
+                    // onSetSpaceNotificationMode to get the correct state.
+                    val newState = if (shouldShowAsMuted) {
+                        NotificationState.ALL
                     } else {
-                        onMuteSpace(it)
+                        NotificationState.DISABLE
                     }
+                    onSetSpaceNotificationMode(it, newState)
+                }
+            },
+            onSetSpaceNotificationMode = { mode ->
+                spaceView.space.targetSpaceId?.let {
+                    onSetSpaceNotificationMode(it, mode)
                 }
             },
             onPinToggle = {

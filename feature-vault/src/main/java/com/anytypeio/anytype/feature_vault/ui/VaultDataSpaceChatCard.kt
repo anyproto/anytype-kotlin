@@ -31,6 +31,7 @@ import com.anytypeio.anytype.core_ui.views.CodeChatPreviewMedium
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewRegular
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
+import com.anytypeio.anytype.domain.notifications.notificationMenuShape
 import com.anytypeio.anytype.feature_vault.R
 import com.anytypeio.anytype.feature_vault.presentation.VaultSpaceView
 
@@ -58,6 +59,7 @@ fun VaultDataSpaceChatCard(
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
     onUnmuteSpace: (Id) -> Unit = {},
+    onSetSpaceNotificationMode: (Id, NotificationState) -> Unit = { _, _ -> },
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
     onSpaceSettings: (Id) -> Unit = {},
@@ -129,6 +131,8 @@ fun VaultDataSpaceChatCard(
         SpaceActionsDropdownMenu(
             expanded = expandedSpaceId == spaceView.space.id,
             onDismiss = onDismissMenu,
+            menuShape = spaceView.space.spaceType.notificationMenuShape(),
+            currentNotificationMode = spaceView.spaceNotificationState,
             isMuted = shouldShowAsMuted,
             isPinned = spaceView.isPinned,
             isOwner = spaceView.isOwner,
@@ -139,6 +143,11 @@ fun VaultDataSpaceChatCard(
                     } else {
                         onMuteSpace(it)
                     }
+                }
+            },
+            onSetSpaceNotificationMode = { mode ->
+                spaceView.space.targetSpaceId?.let {
+                    onSetSpaceNotificationMode(it, mode)
                 }
             },
             onPinToggle = {

@@ -28,6 +28,7 @@ import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -328,7 +329,8 @@ class ChatViewModel @Inject constructor(
                         notificationSetting = notificationSetting,
                         canEdit = canEdit,
                         showAddMembers = spaceView.spaceUxType != SpaceUxType.ONE_TO_ONE,
-                        showDropDownMenu = false
+                        showDropDownMenu = false,
+                        spaceType = spaceView.spaceType
                     )
                 } else if (chatObject != null) {
                     // Chat object - use wrapper from ObjectWatcher
@@ -2693,7 +2695,8 @@ class ChatViewModel @Inject constructor(
             val showDropDownMenu: Boolean = true,
             val showAddMembers: Boolean = true,
             val notificationSetting: NotificationSetting = NotificationSetting.ALL,
-            val canEdit: Boolean = true
+            val canEdit: Boolean = true,
+            val spaceType: SpaceType? = null
         ) : HeaderView()
         data class ChatObject(
             val icon: ObjectIcon,

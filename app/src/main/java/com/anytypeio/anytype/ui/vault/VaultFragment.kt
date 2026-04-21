@@ -109,6 +109,9 @@ class VaultFragment : BaseComposeFragment() {
                 profile = vm.profileView.collectAsStateWithLifecycle().value,
                 onMuteSpace = onMuteSpace,
                 onUnmuteSpace = onUnmuteSpace,
+                onSetSpaceNotificationMode = { spaceId, state ->
+                    vm.setSpaceNotificationState(spaceId, state)
+                },
                 onPinSpace = vm::onPinSpaceClicked,
                 onUnpinSpace = vm::onUnpinSpaceClicked,
                 onOrderChanged = vm::onOrderChanged,

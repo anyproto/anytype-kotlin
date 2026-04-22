@@ -329,6 +329,19 @@ fun NewSpaceSettingsScreen(
                             )
                         }
 
+                        is UiSpaceSettingsItem.SpaceHome -> {
+                            SpaceHomeItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable { uiEvent(UiEvent.OnSpaceHomeClicked) },
+                                name = item.name,
+                                icon = item.icon,
+                                isNoHome = item.isNoHome
+                            )
+                        }
+
                         UiSpaceSettingsItem.DeleteSpace -> {
                             DeleteSpaceItem(
                                 modifier = Modifier

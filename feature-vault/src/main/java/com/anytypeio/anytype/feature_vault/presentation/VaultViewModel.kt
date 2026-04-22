@@ -35,6 +35,7 @@ import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionMana
 import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -60,6 +61,7 @@ import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
+import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
@@ -142,6 +144,7 @@ class VaultViewModel(
     private val networkModeProvider: NetworkModeProvider,
     private val getMembershipFeatures: GetMembershipFeatures,
     private val resolveSpaceHomepage: ResolveSpaceHomepage,
+    private val setHomepage: SetHomepage,
     private val userSettingsRepository: UserSettingsRepository
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -1640,6 +1643,7 @@ class VaultViewModel(
         createSpace.async(params).fold(
             onSuccess = { response ->
                 Timber.d("Successfully created 1-1 space: ${response.space.id}")
+                setOneToOneHomepageToChat(response.space)
                 navigateToOneToOneChat(response.space)
             },
             onFailure = { error ->
@@ -1649,6 +1653,32 @@ class VaultViewModel(
                 )
             }
         )
+    }
+
+    /**
+     * DROID-4467: 1-on-1 spaces skip the Homepage picker; homepage is set to the Chat
+     * object automatically. Polls the space view until the chat object ID is available
+     * (typically immediately after creation) and writes it as the space's homepage.
+     */
+    private suspend fun setOneToOneHomepageToChat(space: SpaceId) {
+        val chatId = awaitSpaceChatId(space) ?: run {
+            Timber.w("1-1 homepage: chat object id not found for space=${space.id}")
+            return
+        }
+        setHomepage.async(
+            SetHomepage.Params(spaceId = space.id, homepage = chatId)
+        ).onFailure {
+            Timber.e(it, "1-1 homepage: failed to set homepage to chat=$chatId")
+        }
+    }
+
+    private suspend fun awaitSpaceChatId(space: SpaceId): Id? {
+        repeat(times = ONE_TO_ONE_HOMEPAGE_MAX_ATTEMPTS) {
+            val chatId = spaceViewSubscriptionContainer.get(space)?.chatId
+            if (!chatId.isNullOrEmpty()) return chatId
+            delay(ONE_TO_ONE_HOMEPAGE_POLL_DELAY_MS)
+        }
+        return null
     }
 
     /**
@@ -1677,5 +1707,7 @@ class VaultViewModel(
 
     companion object {
         private const val OS_WIDGET_SYNC_DEBOUNCE_MS = 2000L
+        private const val ONE_TO_ONE_HOMEPAGE_POLL_DELAY_MS = 100L
+        private const val ONE_TO_ONE_HOMEPAGE_MAX_ATTEMPTS = 30
     }
 }

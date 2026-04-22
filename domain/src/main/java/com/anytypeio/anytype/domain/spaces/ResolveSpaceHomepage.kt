@@ -60,6 +60,7 @@ class ResolveSpaceHomepage @Inject constructor(
     }
 
     companion object {
-        val HOMEPAGE_SPECIAL_CONSTANTS = setOf("widgets", "graph", "lastOpened")
+        const val HOMEPAGE_WIDGETS_VALUE = "widgets"
+        val HOMEPAGE_SPECIAL_CONSTANTS = setOf(HOMEPAGE_WIDGETS_VALUE, "graph", "lastOpened")
     }
 }

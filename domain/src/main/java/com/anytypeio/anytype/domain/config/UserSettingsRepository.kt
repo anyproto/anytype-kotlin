@@ -100,8 +100,6 @@ interface UserSettingsRepository {
 
     suspend fun setHomepagePickerDismissed(space: SpaceId, dismissed: Boolean)
     suspend fun getHomepagePickerDismissed(space: SpaceId): Boolean
-    suspend fun setCreateHomeDismissed(space: SpaceId, dismissed: Boolean)
-    fun observeCreateHomeDismissed(space: SpaceId): Flow<Boolean>
     suspend fun setInviteMembersDismissed(space: SpaceId, dismissed: Boolean)
     fun observeInviteMembersDismissed(space: SpaceId): Flow<Boolean>
 }

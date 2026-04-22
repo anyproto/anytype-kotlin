@@ -100,7 +100,10 @@ private fun SpaceHomePickerContent(
             contentPadding = PaddingValues(bottom = 24.dp)
         ) {
             item(key = "no-home") {
-                NoHomeRow(onClick = onNoHomeClicked)
+                NoHomeRow(
+                    onClick = onNoHomeClicked,
+                    isSelected = state.currentHomepage == null
+                )
                 com.anytypeio.anytype.core_ui.foundation.Divider()
             }
             item(
@@ -118,6 +121,7 @@ private fun SpaceHomePickerContent(
             items(items = state.candidates, key = { it.objectId }) { item ->
                 SpaceHomePickerRow(
                     item = item,
+                    isSelected = state.currentHomepage == item.objectId,
                     onClick = { onObjectClicked(item.objectId) }
                 )
                 com.anytypeio.anytype.core_ui.foundation.Divider()
@@ -132,7 +136,10 @@ private fun SpaceHomePickerContent(
 }
 
 @Composable
-private fun NoHomeRow(onClick: () -> Unit) {
+private fun NoHomeRow(
+    onClick: () -> Unit,
+    isSelected: Boolean
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -148,11 +155,7 @@ private fun NoHomeRow(onClick: () -> Unit) {
             contentScale = ContentScale.Inside
         )
         Spacer(modifier = Modifier.padding(start = 12.dp))
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .noRippleThrottledClickable(onClick = onClick)
-        ) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = stringResource(id = R.string.space_home_no_home_title),
                 style = BodyRegular,
@@ -165,12 +168,20 @@ private fun NoHomeRow(onClick: () -> Unit) {
                 color = colorResource(id = R.color.text_secondary)
             )
         }
+        if (isSelected) {
+            Image(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = R.drawable.ic_checkbox_checked),
+                contentDescription = null
+            )
+        }
     }
 }
 
 @Composable
 private fun SpaceHomePickerRow(
     item: SpaceHomePickerItem,
+    isSelected: Boolean,
     onClick: () -> Unit
 ) {
     Row(
@@ -187,7 +198,7 @@ private fun SpaceHomePickerRow(
             icon = item.icon
         )
         Spacer(modifier = Modifier.padding(start = 12.dp))
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = item.name,
@@ -204,6 +215,13 @@ private fun SpaceHomePickerRow(
                 color = colorResource(id = R.color.text_secondary),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
+            )
+        }
+        if (isSelected) {
+            Image(
+                modifier = Modifier.size(24.dp),
+                painter = painterResource(id = R.drawable.ic_checkbox_checked),
+                contentDescription = null
             )
         }
     }

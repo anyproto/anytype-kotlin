@@ -41,6 +41,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.core_ui.widgets.SearchField
 import com.anytypeio.anytype.presentation.home.SpaceHomePickerItem
 import com.anytypeio.anytype.presentation.home.SpaceHomePickerState
 
@@ -50,6 +51,7 @@ fun SpaceHomePickerBottomSheet(
     state: SpaceHomePickerState.Visible,
     onNoHomeClicked: () -> Unit,
     onObjectClicked: (String) -> Unit,
+    onQueryChanged: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -65,7 +67,8 @@ fun SpaceHomePickerBottomSheet(
         SpaceHomePickerContent(
             state = state,
             onNoHomeClicked = onNoHomeClicked,
-            onObjectClicked = onObjectClicked
+            onObjectClicked = onObjectClicked,
+            onQueryChanged = onQueryChanged
         )
     }
 }
@@ -74,7 +77,8 @@ fun SpaceHomePickerBottomSheet(
 private fun SpaceHomePickerContent(
     state: SpaceHomePickerState.Visible,
     onNoHomeClicked: () -> Unit,
-    onObjectClicked: (String) -> Unit
+    onObjectClicked: (String) -> Unit,
+    onQueryChanged: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -94,6 +98,11 @@ private fun SpaceHomePickerContent(
             style = HeadlineHeading,
             color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center
+        )
+        SearchField(
+            query = state.query,
+            onQueryChanged = onQueryChanged,
+            onFocused = {}
         )
         LazyColumn(
             modifier = Modifier.fillMaxWidth(),
@@ -257,7 +266,8 @@ private fun SpaceHomePickerContentPreview() {
             isLoading = false
         ),
         onNoHomeClicked = {},
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onQueryChanged = {}
     )
 }
 
@@ -272,6 +282,7 @@ private fun SpaceHomePickerContentEmptyPreview() {
             isLoading = false
         ),
         onNoHomeClicked = {},
-        onObjectClicked = {}
+        onObjectClicked = {},
+        onQueryChanged = {}
     )
 }

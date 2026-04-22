@@ -100,6 +100,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
+import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
 import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -3979,7 +3980,7 @@ class HomeScreenViewModel(
             setHomepage.async(
                 SetHomepage.Params(
                     spaceId = vmParams.spaceId.id,
-                    homepage = HOMEPAGE_WIDGETS_VALUE
+                    homepage = ResolveSpaceHomepage.HOMEPAGE_WIDGETS_VALUE
                 )
             ).onFailure {
                 Timber.e(it, "Failed to set homepage to widgets on picker dismissal")
@@ -4167,7 +4168,6 @@ class HomeScreenViewModel(
 
     companion object {
         const val HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION = "subscription.home-screen.profile-object"
-        const val HOMEPAGE_WIDGETS_VALUE = "widgets"
         const val HOME_WIDGET_SUBSCRIPTION = "subscription.home-screen.home-widget"
 
         // Duration in milliseconds to lock type widget event processing after a drag operation

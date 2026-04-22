@@ -335,6 +335,7 @@ class WidgetsScreenFragment : Fragment(),
                 state = spaceHomePickerState,
                 onNoHomeClicked = vm::onSpaceHomePickerNoHomeSelected,
                 onObjectClicked = vm::onSpaceHomePickerObjectSelected,
+                onQueryChanged = vm::onSpaceHomePickerQueryChanged,
                 onDismiss = vm::onSpaceHomePickerDismissed
             )
         }

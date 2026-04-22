@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
 import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.CoroutineScope
@@ -79,7 +80,7 @@ class SpaceHomePickerDelegate(
     fun onNoHomeSelected(scope: CoroutineScope) {
         scope.launch {
             setHomepage.async(
-                SetHomepage.Params(spaceId = space.id, homepage = HOMEPAGE_WIDGETS_VALUE)
+                SetHomepage.Params(spaceId = space.id, homepage = ResolveSpaceHomepage.HOMEPAGE_WIDGETS_VALUE)
             ).onFailure { Timber.e(it, "Failed to set homepage to widgets") }
             _state.value = SpaceHomePickerState.Hidden
         }
@@ -141,7 +142,6 @@ class SpaceHomePickerDelegate(
     }
 
     companion object {
-        const val HOMEPAGE_WIDGETS_VALUE = "widgets"
         private const val LIMIT = 100
 
         private val HOMEPAGE_ELIGIBLE_LAYOUTS: List<ObjectType.Layout> = listOf(

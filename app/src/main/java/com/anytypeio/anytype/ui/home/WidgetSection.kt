@@ -708,6 +708,41 @@ fun UnreadChatListWidget(
     }
 }
 
+/**
+ * Displays the My Favorites widget content — Unread-style compact rows.
+ * Renders nothing when [item] has no elements; WidgetsScreen already gates on
+ * emptiness, but double-check here too for flicker safety.
+ */
+@Composable
+fun MyFavoritesWidget(
+    item: WidgetView.SetOfObjects,
+    mode: InteractionMode,
+    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 6.dp)
+            .background(
+                shape = RoundedCornerShape(24.dp),
+                color = colorResource(id = R.color.dashboard_card_background)
+            )
+            .clip(RoundedCornerShape(24.dp))
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
+            if (item.elements.isNotEmpty()) {
+                CompactListWidgetList(
+                    mode = mode,
+                    elements = item.elements,
+                    onWidgetElementClicked = onWidgetObjectClicked,
+                    onObjectCheckboxClicked = onObjectCheckboxClicked
+                )
+            }
+        }
+    }
+}
+
 @Composable
 fun RecentlyEditedSectionHeader(
     onSectionClicked: () -> Unit,

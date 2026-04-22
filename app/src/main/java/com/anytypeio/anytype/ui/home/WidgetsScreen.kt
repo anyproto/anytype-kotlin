@@ -39,6 +39,7 @@ import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.OBJECT_TYPES_GROUP_ID
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_MY_FAVORITES
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_RECENTLY_EDITED
@@ -70,6 +71,7 @@ fun WidgetsScreen(
     val pinnedWidgets = viewModel.pinnedViews.collectAsState().value
     val typeWidgets = viewModel.typeViews.collectAsState().value
     val unreadWidget = viewModel.unreadView.collectAsState().value
+    val personalFavoritesWidget = viewModel.personalFavoritesView.collectAsState().value
     val chatWidget = viewModel.chatView.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
     val recentlyEditedWidget = viewModel.recentlyEditedView.collectAsState().value
@@ -136,8 +138,15 @@ fun WidgetsScreen(
     }
     
     // Show header if: has items OR is collapsed OR was previously shown
-    val shouldShowUnreadSection = unreadWidgetView != null && 
+    val shouldShowUnreadSection = unreadWidgetView != null &&
         (unreadWidgetView.elements.isNotEmpty() || isUnreadSectionCollapsed || hadUnreadItems.value)
+
+    // My Favorites section visibility: purely data-driven — shown iff the
+    // user has at least one personal favorite in this space. No user-toggle
+    // collapse (see SectionSettings.isUserConfigurable).
+    val personalFavoritesWidgetView = personalFavoritesWidget as? WidgetView.SetOfObjects
+    val shouldShowPersonalFavoritesSection =
+        personalFavoritesWidgetView != null && personalFavoritesWidgetView.elements.isNotEmpty()
 
     // Recently Edited section visibility logic
     val recentlyEditedView = recentlyEditedWidget as? WidgetView.RecentlyEdited
@@ -505,8 +514,37 @@ fun WidgetsScreen(
                     }
 
                     WidgetSectionType.MY_FAVORITES -> {
-                        // TODO (DROID-4397, Tasks 15-16): render My Favorites section header
-                        // and content when the user has at least one personal favorite.
+                        if (shouldShowPersonalFavoritesSection && personalFavoritesWidgetView != null) {
+                            item(key = SECTION_MY_FAVORITES) {
+                                ReorderableItem(
+                                    enabled = false,
+                                    state = reorderableState,
+                                    key = SECTION_MY_FAVORITES,
+                                ) {
+                                    MyFavoritesSectionHeader(
+                                        onSectionClicked = {} // Not user-collapsible per spec
+                                    )
+                                }
+                            }
+                            item(key = "my_favorites_widget_content") {
+                                ReorderableItem(
+                                    enabled = false,
+                                    state = reorderableState,
+                                    key = "my_favorites_widget_content",
+                                ) {
+                                    MyFavoritesWidget(
+                                        item = personalFavoritesWidgetView,
+                                        mode = mode,
+                                        onWidgetObjectClicked = { obj ->
+                                            viewModel.onWidgetElementClicked(
+                                                personalFavoritesWidgetView.id, obj
+                                            )
+                                        },
+                                        onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }

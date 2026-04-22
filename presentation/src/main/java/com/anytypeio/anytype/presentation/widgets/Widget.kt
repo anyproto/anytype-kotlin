@@ -243,6 +243,7 @@ sealed class Widget {
             const val WIDGET_PERSONAL_FAVORITES_ID = "widget_personal_favorites_id"
             const val SECTION_PINNED = "pinned_section"
             const val SECTION_UNREAD = "unread_section"
+            const val SECTION_MY_FAVORITES = "my_favorites_section"
             const val SECTION_OBJECT_TYPE = "object_type_section"
             const val SECTION_RECENTLY_EDITED = "recently_edited_section"
             const val OBJECT_TYPES_GROUP_ID = "object_types_group"

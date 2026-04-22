@@ -208,6 +208,63 @@ fun DefaultTypeItem(
 }
 
 @Composable
+fun SpaceHomeItem(
+    modifier: Modifier = Modifier,
+    name: String,
+    icon: ObjectIcon,
+    isNoHome: Boolean
+) {
+    Row(
+        modifier = modifier
+            .border(
+                shape = RoundedCornerShape(16.dp),
+                width = 0.5.dp,
+                color = colorResource(id = R.color.shape_primary)
+            )
+            .padding(vertical = 20.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = stringResource(id = R.string.space_home_row_title),
+            style = PreviewTitle1Regular,
+            color = colorResource(id = R.color.text_primary),
+        )
+        if (isNoHome) {
+            Text(
+                modifier = Modifier.padding(end = 4.dp),
+                text = stringResource(id = R.string.space_home_no_home_title),
+                style = PreviewTitle1Regular,
+                color = colorResource(id = R.color.text_secondary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        } else {
+            ListWidgetObjectIcon(
+                modifier = Modifier,
+                iconSize = 20.dp,
+                icon = icon
+            )
+            Text(
+                modifier = Modifier.padding(start = 8.dp),
+                text = name,
+                style = PreviewTitle1Regular,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                color = colorResource(id = R.color.text_primary)
+            )
+        }
+        Image(
+            painter = painterResource(id = R.drawable.ic_disclosure_8_24),
+            contentDescription = null,
+            modifier = Modifier.size(24.dp)
+        )
+    }
+}
+
+@Composable
 fun WallpaperItem(
     modifier: Modifier = Modifier,
     item: UiSpaceSettingsItem.Wallpapers

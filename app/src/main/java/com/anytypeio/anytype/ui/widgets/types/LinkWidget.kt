@@ -93,7 +93,7 @@ fun LinkWidgetCard(
 
 @Preview(name = "Link Widget Card Preview", showBackground = true)
 @Composable
-private fun LinkWidgetCardPreview() {
+fun LinkWidgetCardPreview1() {
     val previewLinkItem = WidgetView.Link(
         source = Widget.Source.Default(
             obj = ObjectWrapper.Basic(

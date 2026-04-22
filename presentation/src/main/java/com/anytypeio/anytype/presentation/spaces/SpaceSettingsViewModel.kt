@@ -52,6 +52,7 @@ import com.anytypeio.anytype.domain.invite.GetCurrentInviteAccessLevel
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.media.UploadFile
@@ -67,7 +68,10 @@ import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
+import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails.Params
 import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
@@ -78,6 +82,9 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.multiplayer.SpaceLimitsState
 import com.anytypeio.anytype.presentation.multiplayer.spaceLimitsState
+import com.anytypeio.anytype.presentation.home.SpaceHomePickerDelegate
+import com.anytypeio.anytype.presentation.home.SpaceHomePickerState
+import com.anytypeio.anytype.presentation.home.SpaceHomepageResolver
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageBin
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageRemoteStorage
@@ -99,16 +106,23 @@ import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Name
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Notifications
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Spacer
 import javax.inject.Inject
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class SpaceSettingsViewModel(
@@ -139,7 +153,10 @@ class SpaceSettingsViewModel(
     private val getGradients: GetCoverGradientCollection,
     private val setWallpaper: SetWallpaper,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val resetSpaceChatNotification: ResetSpaceChatNotification
+    private val resetSpaceChatNotification: ResetSpaceChatNotification,
+    private val searchObjects: SearchObjects,
+    private val setHomepage: SetHomepage,
+    private val fieldParser: FieldParser
 ) : BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -171,6 +188,23 @@ class SpaceSettingsViewModel(
     val chatsWithCustomNotifications = MutableStateFlow<List<ChatNotificationItem>>(emptyList())
     private var chatNotificationsJob: Job? = null
 
+    // DROID-4467: Current homepage object for the "Home" settings row. Null when homepage
+    // is null/empty, a special sentinel (e.g. "widgets"), or the object can't be resolved.
+    private val homepageObjectFlow = MutableStateFlow<ObjectWrapper.Basic?>(null)
+
+    private val spaceHomePickerDelegate: SpaceHomePickerDelegate = SpaceHomePickerDelegate(
+        space = vmParams.space,
+        setHomepage = setHomepage,
+        searchObjects = searchObjects,
+        fieldParser = fieldParser,
+        storeOfObjectTypes = storeOfObjectTypes,
+        urlBuilder = urlBuilder,
+        isOneToOneSpaceProvider = {
+            spaceViewContainer.get(vmParams.space)?.isOneToOneSpace == true
+        }
+    )
+    val spaceHomePickerState: StateFlow<SpaceHomePickerState> = spaceHomePickerDelegate.state
+
     init {
         Timber.d("SpaceSettingsViewModel, Init, vmParams: $vmParams")
         viewModelScope.launch {
@@ -179,8 +213,62 @@ class SpaceSettingsViewModel(
             )
         }
         proceedWithObservingSpaceView()
+        proceedWithObservingHomepageObject()
         subscribeToInviteLinkState()
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun proceedWithObservingHomepageObject() {
+        viewModelScope.launch {
+            spaceViewContainer
+                .observe(vmParams.space)
+                .map { it.homepage }
+                .distinctUntilChanged()
+                .flatMapLatest { homepage ->
+                    if (!SpaceHomepageResolver.isExplicitObjectHomepage(homepage)) {
+                        homepageObjectFlow.value = null
+                        flowOf(null)
+                    } else {
+                        storelessSubscriptionContainer.subscribe(
+                            StoreSearchByIdsParams(
+                                space = vmParams.space,
+                                subscription = HOME_SETTINGS_OBJECT_SUBSCRIPTION,
+                                keys = ObjectSearchConstants.defaultKeys,
+                                targets = listOf(homepage!!)
+                            )
+                        ).map { results ->
+                            results.firstOrNull { it.notDeletedNorArchived }
+                        }.catch {
+                            Timber.e(it, "Failed to observe space homepage object")
+                            emit(null)
+                        }
+                    }
+                }
+                .onCompletion {
+                    withContext(NonCancellable) {
+                        kotlin.runCatching {
+                            storelessSubscriptionContainer.unsubscribe(
+                                listOf(HOME_SETTINGS_OBJECT_SUBSCRIPTION)
+                            )
+                        }.onFailure { t ->
+                            Timber.w(t, "Error unsubscribing space-settings homepage object")
+                        }
+                    }
+                }
+                .collect { obj -> homepageObjectFlow.value = obj }
+        }
+    }
+
+    fun onSpaceHomePickerDismissed() = spaceHomePickerDelegate.dismiss()
+
+    fun onSpaceHomePickerQueryChanged(query: String) =
+        spaceHomePickerDelegate.onQueryChanged(viewModelScope, query)
+
+    fun onSpaceHomePickerObjectSelected(objectId: Id) =
+        spaceHomePickerDelegate.onObjectSelected(viewModelScope, objectId)
+
+    fun onSpaceHomePickerNoHomeSelected() =
+        spaceHomePickerDelegate.onNoHomeSelected(viewModelScope)
 
     fun onStart() {
         chatNotificationsJob = subscribeToChatsWithCustomNotifications()
@@ -239,8 +327,10 @@ class SpaceSettingsViewModel(
                 otherFlows,
                 spaceInfoTitleClickCount,
                 inviteLinkAccessLevel,
-                selectedDefaultObjectType
-            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), clickCount, inviteLink, selectedType ->
+                combine(selectedDefaultObjectType, homepageObjectFlow) { selected, home ->
+                    selected to home
+                }
+            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), clickCount, inviteLink, (selectedType, homepageObject) ->
 
                 // Use selected type if available, otherwise fall back to initial default type
                 val effectiveDefaultType = selectedType ?: initialDefaultType
@@ -257,6 +347,11 @@ class SpaceSettingsViewModel(
                         icon = ObjectIcon.None
                     )
                 }
+
+                val spaceHomeSettingItem = buildSpaceHomeSettingItem(
+                    homepage = spaceView.homepage,
+                    homepageObject = homepageObject
+                )
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
 
@@ -470,6 +565,8 @@ class SpaceSettingsViewModel(
                     add(UiSpaceSettingsItem.Fields)
 
                     add(UiSpaceSettingsItem.Section.Preferences)
+                    add(spaceHomeSettingItem)
+                    add(Spacer(id = "after-space-home", height = 8))
                     add(defaultObjectTypeSettingItem)
                     add(Spacer(id = "after-default-type", height = 8))
                     add(
@@ -629,6 +726,13 @@ class SpaceSettingsViewModel(
                         SelectDefaultObjectType(space = vmParams.space)
                     )
                 }
+            }
+
+            UiEvent.OnSpaceHomeClicked -> {
+                spaceHomePickerDelegate.show(
+                    scope = viewModelScope,
+                    currentHomepageObjectId = homepageObjectFlow.value?.id
+                )
             }
 
             UiEvent.OnObjectTypesClicked -> {
@@ -1085,6 +1189,29 @@ class SpaceSettingsViewModel(
         return "space-chats-custom-notifications-${vmParams.space.id}"
     }
 
+    private suspend fun buildSpaceHomeSettingItem(
+        homepage: String?,
+        homepageObject: ObjectWrapper.Basic?
+    ): UiSpaceSettingsItem.SpaceHome {
+        if (!SpaceHomepageResolver.isExplicitObjectHomepage(homepage) || homepageObject == null) {
+            return UiSpaceSettingsItem.SpaceHome(
+                name = EMPTY_STRING_VALUE,
+                icon = ObjectIcon.None,
+                isNoHome = true
+            )
+        }
+        val objType = storeOfObjectTypes.getTypeOfObject(homepageObject)
+        return UiSpaceSettingsItem.SpaceHome(
+            name = fieldParser.getObjectName(homepageObject),
+            icon = homepageObject.objectIcon(builder = urlBuilder, objType = objType),
+            isNoHome = false
+        )
+    }
+
+    companion object {
+        private const val HOME_SETTINGS_OBJECT_SUBSCRIPTION = "subscription.space-settings.home-object"
+    }
+
     /**
      * Subscribes to chats with custom notification states and filters them to show only those
      * with notification states different from the space default.
@@ -1264,7 +1391,10 @@ class SpaceSettingsViewModel(
         private val getGradients: GetCoverGradientCollection,
         private val setWallpaper: SetWallpaper,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-        private val resetSpaceChatNotification: ResetSpaceChatNotification
+        private val resetSpaceChatNotification: ResetSpaceChatNotification,
+        private val searchObjects: SearchObjects,
+        private val setHomepage: SetHomepage,
+        private val fieldParser: FieldParser
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -1297,7 +1427,10 @@ class SpaceSettingsViewModel(
             getGradients = getGradients,
             setWallpaper = setWallpaper,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            resetSpaceChatNotification = resetSpaceChatNotification
+            resetSpaceChatNotification = resetSpaceChatNotification,
+            searchObjects = searchObjects,
+            setHomepage = setHomepage,
+            fieldParser = fieldParser
         ) as T
     }
 

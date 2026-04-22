@@ -262,14 +262,6 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         return cache.getHomepagePickerDismissed(space)
     }
 
-    override suspend fun setCreateHomeDismissed(space: SpaceId, dismissed: Boolean) {
-        cache.setCreateHomeDismissed(space, dismissed)
-    }
-
-    override fun observeCreateHomeDismissed(space: SpaceId): Flow<Boolean> {
-        return cache.observeCreateHomeDismissed(space)
-    }
-
     override suspend fun setInviteMembersDismissed(space: SpaceId, dismissed: Boolean) {
         cache.setInviteMembersDismissed(space, dismissed)
     }

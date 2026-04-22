@@ -698,33 +698,6 @@ class DefaultUserSettingsCache(
             ?.homepagePickerDismissed ?: false
     }
 
-    override suspend fun setCreateHomeDismissed(space: SpaceId, dismissed: Boolean) {
-        context.spacePrefsStore.updateData { existingPreferences ->
-            val givenSpacePreference = existingPreferences
-                .preferences
-                .getOrDefault(key = space.id, defaultValue = SpacePreference())
-            val updated = givenSpacePreference.copy(
-                createHomeDismissed = dismissed
-            )
-            val result = buildMap {
-                putAll(existingPreferences.preferences)
-                put(key = space.id, updated)
-            }
-            SpacePreferences(preferences = result)
-        }
-    }
-
-    override fun observeCreateHomeDismissed(space: SpaceId): Flow<Boolean> {
-        return context.spacePrefsStore
-            .data
-            .map { preferences ->
-                preferences.preferences[space.id]?.createHomeDismissed ?: false
-            }.catch {
-                Timber.e("Error observing createHomeDismissed for space ${space.id}: $this")
-                emit(false)
-            }
-    }
-
     override suspend fun setInviteMembersDismissed(space: SpaceId, dismissed: Boolean) {
         context.spacePrefsStore.updateData { existingPreferences ->
             val givenSpacePreference = existingPreferences

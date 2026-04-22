@@ -49,6 +49,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.feature_chats.presentation.ChatInfoUpdate
 import com.anytypeio.anytype.feature_chats.presentation.ChatObjectIcon
 
@@ -190,28 +191,30 @@ fun EditChatInfoScreen(
                     }
                 )
             }
+            Spacer(modifier = Modifier.height(32.dp))
+            ButtonOnboardingPrimaryLarge(
+                onClick = {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                    if (isEditMode) {
+                        onSave(ChatInfoUpdate(name = innerValue.text, chatIcon = selectedIcon))
+                    } else if (isCreateMode) {
+                        onCreate(innerValue.text)
+                    }
+                },
+                text = stringResource(
+                    id = if (isEditMode) R.string.save else R.string.create
+                ),
+                size = ButtonSize.Large,
+                modifierBox = Modifier
+                    .fillMaxWidth()
+                    .windowInsetsPadding(WindowInsets.ime)
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp),
+                loading = isLoading,
+                enabled = isSaveEnabled
+            )
         }
-        ButtonOnboardingPrimaryLarge(
-            onClick = {
-                focusManager.clearFocus()
-                keyboardController?.hide()
-                if (isEditMode) {
-                    onSave(ChatInfoUpdate(name = innerValue.text, chatIcon = selectedIcon))
-                } else if (isCreateMode) {
-                    onCreate(innerValue.text)
-                }
-            },
-            text = if (isEditMode) "Save" else "Create",
-            size = ButtonSize.Large,
-            modifierBox = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .windowInsetsPadding(WindowInsets.ime)
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 16.dp),
-            loading = isLoading,
-            enabled = isSaveEnabled
-        )
     }
 
     LaunchedEffect(Unit) {
@@ -237,4 +240,20 @@ private fun Header(isEditMode: Boolean, isCreateMode: Boolean) {
             color = colorResource(id = R.color.text_primary)
         )
     }
+}
+
+@DefaultPreviews
+@Composable
+fun EditInfoPreview() {
+    EditChatInfoScreen(
+        state = ChatInfoScreenState.Edit(
+            currentName = "Chat name",
+            currentIcon = ObjectIcon.Profile.Image(hash = "hash", name = "name")
+        ),
+        icon = ObjectIcon.Profile.Image(hash = "hash", name = "name"),
+        onSave = {},
+        onCreate = {},
+        onIconUploadClicked = {},
+        onIconRemoveClicked = {}
+    )
 }

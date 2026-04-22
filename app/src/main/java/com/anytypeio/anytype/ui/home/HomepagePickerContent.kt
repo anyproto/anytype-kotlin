@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.home
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -19,9 +20,9 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,13 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -49,6 +48,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonOnboardingSecondaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.presentation.spaces.HomepageType
 
@@ -125,8 +125,7 @@ fun HomepagePickerContent(
             listOf(
                 HomepageType.CHAT,
                 HomepageType.PAGE,
-                HomepageType.COLLECTION,
-                HomepageType.EMPTY
+                HomepageType.COLLECTION
             )
         }
 
@@ -146,18 +145,17 @@ fun HomepagePickerContent(
                         HomepageType.CHAT -> stringResource(id = R.string.homepage_picker_chat)
                         HomepageType.PAGE -> stringResource(id = R.string.homepage_picker_page)
                         HomepageType.COLLECTION -> stringResource(id = R.string.homepage_picker_collection)
-                        HomepageType.EMPTY -> stringResource(id = R.string.homepage_picker_empty)
                     },
                     onClick = { selectedType = type }
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(31.dp))
+        Spacer(modifier = Modifier.height(28.dp))
 
         ButtonOnboardingPrimaryLarge(
             onClick = { onHomepageSelected(selectedType) },
-            text = stringResource(id = R.string.create),
+            text = stringResource(id = R.string.homepage_picker_continue),
             size = ButtonSize.Large,
             modifierBox = Modifier
                 .fillMaxWidth()
@@ -167,7 +165,7 @@ fun HomepagePickerContent(
         Spacer(modifier = Modifier.height(8.dp))
         ButtonOnboardingSecondaryLarge(
             onClick = onLaterClicked,
-            text = stringResource(id = R.string.later),
+            text = stringResource(id = R.string.homepage_picker_not_now),
             size = ButtonSize.Large,
             modifierBox = Modifier
                 .fillMaxWidth()
@@ -177,15 +175,6 @@ fun HomepagePickerContent(
     }
 }
 
-/**
- * A selectable card displaying a channel type illustration with a label.
- * Used on the channel creation screen to let users pick a channel type.
- *
- * @param type the channel type determining which illustration to show
- * @param selected whether this card is currently selected (blue accent border/colors)
- * @param label the text label shown below the card
- * @param onClick called when the card is tapped
- */
 @Composable
 fun HomepageOptionCard(
     type: HomepageType,
@@ -194,16 +183,6 @@ fun HomepageOptionCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val borderColor = if (selected) {
-        colorResource(R.color.control_accent_50)
-    } else {
-        colorResource(R.color.shape_secondary)
-    }
-    val borderWidth = if (selected) 1.5.dp else 1.dp
-    val labelColor =
-        if (selected) colorResource(R.color.control_accent_50) else colorResource(R.color.text_secondary)
-
-
     Column(
         modifier = modifier.noRippleThrottledClickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -212,21 +191,36 @@ fun HomepageOptionCard(
             modifier = Modifier
                 .size(88.dp, 176.dp)
                 .clip(RoundedCornerShape(14.dp))
-                .border(borderWidth, borderColor, RoundedCornerShape(14.dp))
+                .border(
+                    width = 1.dp,
+                    color = colorResource(R.color.control_tertiary),
+                    shape = RoundedCornerShape(14.dp)
+                )
         ) {
             when (type) {
                 HomepageType.CHAT -> ChatIllustration(selected = selected)
                 HomepageType.PAGE -> PageIllustration(selected = selected)
                 HomepageType.COLLECTION -> CollectionIllustration(selected = selected)
-                HomepageType.EMPTY -> WidgetsIllustration(selected = selected)
             }
         }
         Spacer(Modifier.height(7.dp))
-        androidx.compose.material3.Text(
+        Text(
             text = label,
             style = Caption1Medium,
-            color = labelColor,
+            color = colorResource(R.color.text_primary),
             textAlign = TextAlign.Center
+        )
+        Spacer(Modifier.height(7.dp))
+        Image(
+            painter = painterResource(
+                id = if (selected) {
+                    R.drawable.ic_checkbox_checked
+                } else {
+                    R.drawable.ic_checkbox_default
+                }
+            ),
+            contentDescription = null,
+            modifier = Modifier.size(20.dp)
         )
     }
 }
@@ -235,25 +229,19 @@ fun HomepageOptionCard(
 
 private data class IllustrationColors(
     val primary: Color,
-    val secondary: Color,
-    val widgetBg: Color
+    val secondary: Color
 )
 
 @Composable
 private fun illustrationColors(selected: Boolean): IllustrationColors {
-    return if (selected) {
-        IllustrationColors(
-            primary = colorResource(R.color.control_accent_50),
-            secondary = colorResource(R.color.control_accent_25),
-            widgetBg = colorResource(R.color.control_accent_25).copy(alpha = 0.5f)
-        )
-    } else {
-        IllustrationColors(
-            primary = colorResource(R.color.control_tertiary),
-            secondary = colorResource(R.color.shape_secondary),
-            widgetBg = colorResource(R.color.shape_transparent_tertiary)
-        )
-    }
+    return IllustrationColors(
+        primary = if (selected) {
+            colorResource(R.color.control_accent_50)
+        } else {
+            colorResource(R.color.control_tertiary)
+        },
+        secondary = colorResource(R.color.shape_secondary)
+    )
 }
 
 // --- Shape helper ---
@@ -273,11 +261,7 @@ private fun Pill(
     )
 }
 
-private val illustrationTitleStyle = TextStyle(
-    fontSize = 15.sp,
-    fontWeight = FontWeight.W500,
-    lineHeight = 20.sp
-)
+private val illustrationTitleStyle = Title2
 
 // --- Chat Illustration ---
 
@@ -312,52 +296,6 @@ private fun ChatIllustration(selected: Boolean) {
     }
 }
 
-// --- Widgets Illustration ---
-
-@Composable
-private fun WidgetsIllustration(selected: Boolean) {
-    val c = illustrationColors(selected)
-    Box(Modifier.fillMaxSize()) {
-        // Top widget block background
-        Pill(6.dp, 20.dp, 76.dp, 52.dp, c.widgetBg, 8.dp)
-        // Top block title
-        Pill(12.dp, 25.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 26.dp, 22.dp, 4.dp, c.primary, 3.dp)
-        // Row 1
-        Pill(12.dp, 37.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 38.dp, 54.dp, 4.dp, c.primary, 2.dp)
-        // Row 2
-        Pill(12.dp, 49.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 50.dp, 36.dp, 4.dp, c.primary, 2.dp)
-        // Row 3
-        Pill(12.dp, 61.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 62.dp, 54.dp, 4.dp, c.primary, 2.dp)
-
-        // Section header
-        Pill(6.dp, 78.dp, 76.dp, 16.dp, c.widgetBg, 8.dp)
-        Pill(12.dp, 83.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 84.dp, 36.dp, 4.dp, c.primary, 3.dp)
-
-        // Bottom widget block background
-        Pill(6.dp, 100.dp, 76.dp, 64.dp, c.widgetBg, 8.dp)
-        // Bottom block title
-        Pill(12.dp, 105.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 106.dp, 22.dp, 4.dp, c.primary, 3.dp)
-        // Row 1
-        Pill(12.dp, 117.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 118.dp, 54.dp, 4.dp, c.primary, 2.dp)
-        // Row 2
-        Pill(12.dp, 129.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 130.dp, 36.dp, 4.dp, c.primary, 2.dp)
-        // Row 3
-        Pill(12.dp, 141.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 142.dp, 54.dp, 4.dp, c.primary, 2.dp)
-        // Row 4
-        Pill(12.dp, 153.dp, 6.dp, 6.dp, c.primary, 3.dp)
-        Pill(22.dp, 154.dp, 36.dp, 4.dp, c.primary, 2.dp)
-    }
-}
-
 // --- Page Illustration ---
 
 @Composable
@@ -372,7 +310,7 @@ private fun PageIllustration(selected: Boolean) {
         Pill(10.dp, 24.dp, 18.dp, 22.dp, c.primary.copy(alpha = 0.7f), 3.dp)
         Pill(22.dp, 24.dp, 6.dp, 6.dp, c.secondary, 1.dp)
         // Title
-        androidx.compose.material3.Text(
+        Text(
             text = "Idea",
             modifier = Modifier.offset(11.dp, 53.dp),
             style = illustrationTitleStyle,
@@ -396,11 +334,11 @@ private fun PageIllustration(selected: Boolean) {
 @Composable
 private fun CollectionIllustration(selected: Boolean) {
     val c = illustrationColors(selected)
-    val badgeColor = if (selected) colorResource(R.color.control_accent) else c.primary
+    val badgeColor = colorResource(R.color.control_accent_50)
 
     Box(Modifier.fillMaxSize()) {
         // Title
-        androidx.compose.material3.Text(
+        Text(
             text = "Tasks",
             modifier = Modifier.offset(11.dp, 27.dp),
             style = illustrationTitleStyle,

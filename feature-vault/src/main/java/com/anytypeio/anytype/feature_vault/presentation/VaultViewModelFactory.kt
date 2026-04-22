@@ -28,6 +28,7 @@ import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
+import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
@@ -78,6 +79,7 @@ class VaultViewModelFactory @Inject constructor(
     private val networkModeProvider: NetworkModeProvider,
     private val getMembershipFeatures: GetMembershipFeatures,
     private val resolveSpaceHomepage: ResolveSpaceHomepage,
+    private val setHomepage: SetHomepage,
     private val userSettingsRepository: UserSettingsRepository
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
@@ -120,6 +122,7 @@ class VaultViewModelFactory @Inject constructor(
         networkModeProvider = networkModeProvider,
         getMembershipFeatures = getMembershipFeatures,
         resolveSpaceHomepage = resolveSpaceHomepage,
+        setHomepage = setHomepage,
         userSettingsRepository = userSettingsRepository
     ) as T
 }

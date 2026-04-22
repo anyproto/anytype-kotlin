@@ -2,7 +2,6 @@ package com.anytypeio.anytype.ui.home
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +21,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -51,7 +49,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.extractWidgetId
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
-import com.anytypeio.anytype.ui.widgets.types.CreateHomeWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.HomeWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.InviteMembersWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ObjectTypesGroupWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
@@ -75,8 +73,7 @@ fun WidgetsScreen(
     val chatWidget = viewModel.chatView.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
     val recentlyEditedWidget = viewModel.recentlyEditedView.collectAsState().value
-    val showHomepagePicker = viewModel.showHomepagePicker.collectAsState().value // used for guard
-    val showCreateHomeWidget = viewModel.showCreateHomeWidget.collectAsState().value
+    val homeWidget = viewModel.homeWidgetView.collectAsState().value
     val showInviteMembersWidget = viewModel.showInviteMembersWidget.collectAsState().value
     val collapsedSections = viewModel.collapsedSections.collectAsState().value
     val sectionConfig = viewModel.widgetSections.collectAsState().value
@@ -304,17 +301,14 @@ fun WidgetsScreen(
                 }
             }
 
-            // "Create Home" widget — shown when homepage is not set and picker was dismissed
-            // Stays visible at 50% opacity while homepage picker is open
-            if (showCreateHomeWidget) {
-                item {
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-                item(key = WidgetView.CreateHome.WIDGET_CREATE_HOME_ID) {
-                    CreateHomeWidgetCard(
-                        onWidgetClicked = viewModel::onCreateHomeWidgetClicked,
-                        onDismissClicked = viewModel::onCreateHomeWidgetDismissed,
-                        modifier = Modifier.alpha(if (showHomepagePicker) 0.5f else 1f)
+            // "Home" widget — shortcut back to the space homepage (Chat / Page / Collection).
+            // Hidden when homepage is widgets. Non-reorderable.
+            if (homeWidget != null) {
+                item(key = WidgetView.Home.WIDGET_HOME_ID) {
+                    HomeWidgetCard(
+                        item = homeWidget,
+                        onWidgetClicked = viewModel::onHomeWidgetClicked,
+                        onChangeHomeClicked = viewModel::onHomeWidgetChangeHomeClicked
                     )
                 }
             }

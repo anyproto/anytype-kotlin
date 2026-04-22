@@ -65,6 +65,7 @@ import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.ViewerSpaceSettingsState
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
+import com.anytypeio.anytype.presentation.home.SpaceHomePickerState
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.ui.base.navigation
@@ -324,6 +325,18 @@ class WidgetsScreenFragment : Fragment(),
                 onHomepageSelected = vm::onHomepageSelected,
                 onLaterClicked = vm::onHomepagePickerDismissed,
                 onDismiss = vm::onHomepagePickerDismissed
+            )
+        }
+
+        // Space Home Picker - shown from Home widget long-press "Change Home" action
+        val spaceHomePickerState = vm.spaceHomePickerState.collectAsStateWithLifecycle().value
+        if (spaceHomePickerState is SpaceHomePickerState.Visible) {
+            SpaceHomePickerBottomSheet(
+                state = spaceHomePickerState,
+                onNoHomeClicked = vm::onSpaceHomePickerNoHomeSelected,
+                onObjectClicked = vm::onSpaceHomePickerObjectSelected,
+                onQueryChanged = vm::onSpaceHomePickerQueryChanged,
+                onDismiss = vm::onSpaceHomePickerDismissed
             )
         }
 

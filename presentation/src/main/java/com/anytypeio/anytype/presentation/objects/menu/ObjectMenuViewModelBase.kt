@@ -141,10 +141,11 @@ abstract class ObjectMenuViewModelBase(
         viewModelScope.launch {
             combine(
                 pinnedWidgetBlockId,
-                _options.map { it.isFavorited }.distinctUntilChanged()
-            ) { widgetId, isInMyFavorites ->
-                widgetId to isInMyFavorites
-            }.collect { (widgetId, isInMyFavorites) ->
+                _options.map { it.isFavorited }.distinctUntilChanged(),
+                _options.map { it.canToggleChannelPin }.distinctUntilChanged()
+            ) { widgetId, isInMyFavorites, canTogglePin ->
+                Triple(widgetId, isInMyFavorites, canTogglePin)
+            }.collect { (widgetId, isInMyFavorites, canTogglePin) ->
                 actions.value = buildActions(
                     ctx = ctx,
                     isArchived = isArchived,
@@ -153,7 +154,8 @@ abstract class ObjectMenuViewModelBase(
                     isLocked = isLocked,
                     isReadOnly = isReadOnly,
                     isCurrentObjectPinned = widgetId != null,
-                    isInMyFavorites = isInMyFavorites
+                    isInMyFavorites = isInMyFavorites,
+                    canToggleChannelPin = canTogglePin
                 )
             }
         }
@@ -179,7 +181,9 @@ abstract class ObjectMenuViewModelBase(
         isReadOnly: Boolean,
         isCurrentObjectPinned: Boolean,
         /** DROID-4397: true iff [ctx] is in the current user's personal favorites for the space. */
-        isInMyFavorites: Boolean = false
+        isInMyFavorites: Boolean = false,
+        /** DROID-4397: true iff the current user has Owner/Editor role. Gates PIN/UNPIN. */
+        canToggleChannelPin: Boolean = false
     ): List<ObjectAction>
 
     protected fun proceedWithRemovingFromFavorites(ctx: Id) {

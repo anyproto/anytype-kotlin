@@ -11,7 +11,9 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.favorites.AddPersonalFavorite
+import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.favorites.RemovePersonalFavorite
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.core_models.UrlBuilder
@@ -57,6 +59,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 
 
 @Subcomponent(modules = [ObjectMenuModuleBase::class, ObjectMenuModule::class])
@@ -195,16 +198,32 @@ object ObjectMenuModule {
         dispatchers
     )
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Provides
     @PerDialog
     @JvmStatic
     fun provideMenuOptionsProvider(
-        storage: Editor.Storage
-    ): ObjectMenuOptionsProvider =
-        ObjectMenuOptionsProviderImpl(
+        storage: Editor.Storage,
+        spaceManager: SpaceManager,
+        observePersonalFavoriteTargets: ObservePersonalFavoriteTargets,
+        userPermissionProvider: UserPermissionProvider
+    ): ObjectMenuOptionsProvider {
+        val spaceIdFlow = spaceManager.observe()
+            .map { SpaceId(it.space) }
+            .distinctUntilChanged()
+        val personalFavoriteTargets = spaceIdFlow.flatMapLatest { space ->
+            observePersonalFavoriteTargets(space).map { it.toSet() }
+        }
+        val canToggleChannelPin = spaceIdFlow.flatMapLatest { space ->
+            userPermissionProvider.observe(space).map { it?.isOwnerOrEditor() == true }
+        }
+        return ObjectMenuOptionsProviderImpl(
             objectViewDetailsFlow = storage.details.stream(),
-            hasObjectLayoutConflict = storage.hasLayoutOrRelationConflict.stream()
+            hasObjectLayoutConflict = storage.hasLayoutOrRelationConflict.stream(),
+            personalFavoriteTargets = personalFavoriteTargets,
+            canToggleChannelPin = canToggleChannelPin
         )
+    }
 
     @JvmStatic
     @Provides
@@ -362,6 +381,9 @@ object ObjectSetMenuModule {
     @PerDialog
     fun provideMenuOptionsProvider(
         state: MutableStateFlow<ObjectState>,
+        spaceManager: SpaceManager,
+        observePersonalFavoriteTargets: ObservePersonalFavoriteTargets,
+        userPermissionProvider: UserPermissionProvider
     ): ObjectMenuOptionsProvider {
         val objectViewDetailsFlow = state
             .flatMapLatest { currentState ->
@@ -383,9 +405,21 @@ object ObjectSetMenuModule {
             }
             .distinctUntilChanged()
 
+        val spaceIdFlow = spaceManager.observe()
+            .map { SpaceId(it.space) }
+            .distinctUntilChanged()
+        val personalFavoriteTargets = spaceIdFlow.flatMapLatest { space ->
+            observePersonalFavoriteTargets(space).map { it.toSet() }
+        }
+        val canToggleChannelPin = spaceIdFlow.flatMapLatest { space ->
+            userPermissionProvider.observe(space).map { it?.isOwnerOrEditor() == true }
+        }
+
         return ObjectMenuOptionsProviderImpl(
             objectViewDetailsFlow = objectViewDetailsFlow,
-            hasObjectLayoutConflict = hasObjectLayoutConflictFlow
+            hasObjectLayoutConflict = hasObjectLayoutConflictFlow,
+            personalFavoriteTargets = personalFavoriteTargets,
+            canToggleChannelPin = canToggleChannelPin
         )
     }
 

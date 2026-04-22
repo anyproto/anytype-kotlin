@@ -271,7 +271,8 @@ class ObjectSetMenuViewModel(
         isLocked: Boolean,
         isReadOnly: Boolean,
         isCurrentObjectPinned: Boolean,
-        isInMyFavorites: Boolean
+        isInMyFavorites: Boolean,
+        canToggleChannelPin: Boolean
     ): List<ObjectAction> = buildList {
         if (!isReadOnly) {
             if (isArchived) {
@@ -284,10 +285,12 @@ class ObjectSetMenuViewModel(
             } else {
                 add(ObjectAction.ADD_TO_MY_FAVORITES)
             }
-            if (isCurrentObjectPinned) {
-                add(ObjectAction.UNPIN)
-            } else {
-                add(ObjectAction.PIN)
+            if (canToggleChannelPin) {
+                if (isCurrentObjectPinned) {
+                    add(ObjectAction.UNPIN)
+                } else {
+                    add(ObjectAction.PIN)
+                }
             }
             val dataViewState = objectState.value.dataViewState()
             if (dataViewState != null && !dataViewState.objectRestrictions.contains(

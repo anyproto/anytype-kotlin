@@ -145,7 +145,8 @@ class ObjectMenuViewModel(
         isLocked: Boolean,
         isReadOnly: Boolean,
         isCurrentObjectPinned: Boolean,
-        isInMyFavorites: Boolean
+        isInMyFavorites: Boolean,
+        canToggleChannelPin: Boolean
     ): List<ObjectAction> = buildList {
 
         val wrapper = storage.details.current().getObject(ctx)
@@ -173,10 +174,12 @@ class ObjectMenuViewModel(
                 } else {
                     add(ObjectAction.ADD_TO_MY_FAVORITES)
                 }
-                if (isCurrentObjectPinned) {
-                    add(ObjectAction.UNPIN)
-                } else {
-                    add(ObjectAction.PIN)
+                if (canToggleChannelPin) {
+                    if (isCurrentObjectPinned) {
+                        add(ObjectAction.UNPIN)
+                    } else {
+                        add(ObjectAction.PIN)
+                    }
                 }
             }
 
@@ -226,10 +229,12 @@ class ObjectMenuViewModel(
                 } else {
                     add(ObjectAction.ADD_TO_MY_FAVORITES)
                 }
-                if (isCurrentObjectPinned) {
-                    add(ObjectAction.UNPIN)
-                } else {
-                    add(ObjectAction.PIN)
+                if (canToggleChannelPin) {
+                    if (isCurrentObjectPinned) {
+                        add(ObjectAction.UNPIN)
+                    } else {
+                        add(ObjectAction.PIN)
+                    }
                 }
                 add(ObjectAction.LINK_TO)
                 add(ObjectAction.COPY_LINK)

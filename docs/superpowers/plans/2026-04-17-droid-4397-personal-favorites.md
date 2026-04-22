@@ -4,11 +4,13 @@
 
 **Goal:** Split channel-wide pinning into two independent mechanisms — a per-user "My Favorites" Unread-style section, and an Owner/Admin-only "Pinned" flat-row block under the Home widget.
 
-**Architecture:** My Favorites is a new mechanism backed by GO-6962 RPCs that store references in the user's Tech Space (per-user, per-space). A new widget container (`PersonalFavoritesWidgetContainer`) subscribes to those refs and emits Unread-style compact rows. The existing Pinned-widget-section mechanism is re-used for channel pins, with rendering changed to flat object rows (no section header) and its mutating actions gated to Owner/Admin via `UserPermissionProvider`. All action surfaces (object `...` menu, widget long-press menu) get a Favorite/Unfavorite action (star icon, all roles) and Pin/Unpin-to-channel (pin icon, Owner/Admin only).
+**Architecture:** GO-6962 introduces a **per-user, per-space virtual object** at ID `_personalWidgets_<encodedSpaceId>` (first `.` in spaceId replaced with `_`), stored in the user's Tech Space as a CRDT-synced block tree. It uses the **same Widgets API as the shared widgets document** (`Rpc.Block.CreateWidget`, `Rpc.Block.ListDelete`, `Rpc.Block.ListMoveToExistingObject`, `Rpc.Object.Open`, `Rpc.Object.Close`) — just with a different `contextId`. No dedicated "favorite" RPCs exist. Personal favorites are modeled as Link-layout widgets in this virtual doc whose inner `targetBlockId` is the favorited object's ID; the order of wrapper children under root determines display order. A new widget container (`PersonalFavoritesWidgetContainer`) opens the personal-widgets doc the same way `HomeScreenViewModel` opens the shared widgets doc (via `OpenObject` + `InterceptEvents`), walks the block tree, filters to real-object link targets, and emits Unread-style compact rows. The existing Pinned-widget-section mechanism is re-used for channel pins, with rendering changed to flat object rows (no section header) and its mutating actions gated to Owner/Admin via `UserPermissionProvider`. All action surfaces (object `...` menu, widget long-press menu) get a Favorite/Unfavorite action (star icon, all roles) and Pin/Unpin-to-channel (pin icon, Owner/Admin only).
+
+**Desktop reference:** `anyproto/anytype-ts#2161` (merged 2026-04-21). Key patterns: `U.Object.getPersonalWidgetsId(space)` helper; `C.ObjectOpen(personalId, '', space)` on space init; `createWidgetFromObjectIn(personalId, personalId, objectId, '', BlockPosition.InnerFirst)` for adding a favorite (inserts at TOP — matches desktop, contradicts the older Linear-spec line "appended to the end"; we match desktop); `C.BlockListDelete(personalId, wrapperIds)` for unfavorite; block moves for reorder.
 
 **Tech Stack:** Kotlin, Dagger 2, Jetpack Compose, Coroutines + Flow, `sh.calvin.reorderable` for drag-and-drop, Mockito + Turbine for tests, protobuf via Go middleware.
 
-**Blocker:** GO-6962 (middleware-side API on branch `go-6962-personal-favorites`). This plan **cannot begin Task 2 onward until GO-6962 is merged** and the Kotlin proto bindings are regenerated in this branch. Task 1 integrates the middleware bindings.
+**Middleware status:** GO-6962 merged into `anytype-heart` as v0.50.0-rc02 (the merge commit IS the tag). This branch already pins `middlewareVersion = "v0.50.0-rc02"` in `gradle/libs.versions.toml`, so the full RPC surface is available. No `make update_mw` needed; no new `MiddlewareService` wrappers needed — `objectOpen`, `blockCreateWidget`, `blockListDelete`, `blockListMoveToExistingObject`, `objectClose` already exist.
 
 **Vocabulary:** The Linear issue says "channel"; in this repo it is a **Space** (`SpaceId`). The widget screen is scoped by `SpaceId`. There is no per-Chat scoping — favorites and pins live at the Space level.
 
@@ -17,15 +19,15 @@
 ## File Structure
 
 **Create:**
-- `domain/src/main/java/com/anytypeio/anytype/domain/favorites/PersonalFavoritesRepository.kt` — repo interface (4 methods: add, remove, reorder, observe)
+- `domain/src/main/java/com/anytypeio/anytype/domain/favorites/PersonalWidgetsId.kt` — helper `fun personalWidgetsId(space: SpaceId): Id` that returns `"_personalWidgets_" + spaceId.replaceFirst('.', '_')`
+- `domain/src/main/java/com/anytypeio/anytype/domain/favorites/PersonalFavoritesRepository.kt` — repo interface (3 methods: add, remove, reorder). Observation is container-owned — see Task 12.
 - `domain/src/main/java/com/anytypeio/anytype/domain/favorites/AddPersonalFavorite.kt` — use case
 - `domain/src/main/java/com/anytypeio/anytype/domain/favorites/RemovePersonalFavorite.kt` — use case
 - `domain/src/main/java/com/anytypeio/anytype/domain/favorites/ReorderPersonalFavorites.kt` — use case
-- `domain/src/main/java/com/anytypeio/anytype/domain/favorites/ObservePersonalFavorites.kt` — Flow-emitting use case wrapping the subscription
 - `data/src/main/java/com/anytypeio/anytype/data/auth/repo/favorites/PersonalFavoritesDataRepository.kt` — `PersonalFavoritesRepository` impl delegating to a `PersonalFavoritesRemoteDataSource`
 - `data/src/main/java/com/anytypeio/anytype/data/auth/repo/favorites/PersonalFavoritesRemoteDataSource.kt` — thin interface implemented in `middleware/`
-- `middleware/src/main/java/com/anytypeio/anytype/middleware/favorites/PersonalFavoritesMiddleware.kt` — calls proto-generated RPCs
-- `presentation/src/main/java/com/anytypeio/anytype/presentation/widgets/PersonalFavoritesWidgetContainer.kt` — new container, Unread-style compact rows
+- `middleware/src/main/java/com/anytypeio/anytype/middleware/favorites/PersonalFavoritesMiddleware.kt` — implements the remote data source by building requests for the existing `Rpc.Block.CreateWidget` / `Rpc.Block.ListDelete` / `Rpc.Block.ListMoveToExistingObject` commands against the personal-widgets doc
+- `presentation/src/main/java/com/anytypeio/anytype/presentation/widgets/PersonalFavoritesWidgetContainer.kt` — new container, Unread-style compact rows. Opens the personal-widgets doc via `OpenObject` + `InterceptEvents` (mirroring the shared-widgets pipeline in `HomeScreenViewModel`), walks the block tree, emits ordered rows.
 - `presentation/src/main/java/com/anytypeio/anytype/presentation/widgets/Widget.kt` — add `Widget.PersonalFavorites` data class (modified, see below)
 - `app/src/main/java/com/anytypeio/anytype/ui/home/PersonalFavoritesSection.kt` — `MyFavoritesSectionHeader` + compact row rendering
 - Tests mirroring each new domain/presentation file
@@ -45,56 +47,85 @@
 
 ---
 
-## Phase 0 — Prerequisite: Middleware Integration
+## Phase 0 — Personal-Widgets ID Helper
 
-### Task 1: Pull GO-6962 proto bindings into this branch
+> **Status:** The original Phase 0 was "integrate GO-6962 RPCs". That turned out to be unnecessary — GO-6962 did NOT introduce dedicated personal-favorite RPCs. Instead it added a virtual per-user object (`_personalWidgets_<encodedSpaceId>`) that reuses the existing widgets API. The middleware is already available at v0.50.0-rc02. All we need in Phase 0 is a Kotlin helper to derive the personal-widgets doc ID from a `SpaceId`.
+
+### Task 1: `PersonalWidgetsId` helper
 
 **Files:**
-- Modify: `middleware/src/main/proto/` (regenerated from GO-6962)
-- Modify: `middleware/src/main/java/com/anytypeio/anytype/middleware/service/MiddlewareServiceImplementation.kt`
-- Modify: `middleware/src/main/java/com/anytypeio/anytype/middleware/service/MiddlewareService.kt`
+- Create: `domain/src/main/java/com/anytypeio/anytype/domain/favorites/PersonalWidgetsId.kt`
+- Test: `domain/src/test/java/com/anytypeio/anytype/domain/favorites/PersonalWidgetsIdTest.kt`
 
-- [ ] **Step 1: Confirm GO-6962 RPC names**
-
-Open the middleware branch `go-6962-personal-favorites` and record the exact RPC names (expected set: `ObjectPersonalFavoriteAdd`, `ObjectPersonalFavoriteRemove`, `ObjectPersonalFavoriteReorder`, plus subscription shape). Paste the list into a scratch note — you will reference these in Task 2.
-
-Run: `grep -r "PersonalFavorite" --include="*.proto" .`
-Expected: new `Rpc.Object.PersonalFavorite.Add`, `Rpc.Object.PersonalFavorite.Remove`, `Rpc.Object.PersonalFavorite.Reorder` commands.
-
-- [ ] **Step 2: Regenerate Kotlin proto stubs**
-
-Run: `make update_mw`
-Expected: `middleware/src/main/proto/` updated; `./gradlew :middleware:compileDebugKotlin` succeeds; generated classes for the new RPCs appear under `anytype.Rpc.Object.PersonalFavorite`.
-
-- [ ] **Step 3: Add RPC wrapper signatures to MiddlewareService**
-
-Open `MiddlewareService.kt`. Add three new method signatures matching the existing style (search for `objectListSetIsFavorite` as a template):
+- [ ] **Step 1: Write the failing test**
 
 ```kotlin
-@Throws(Exception::class)
-fun personalFavoriteAdd(request: Rpc.Object.PersonalFavorite.Add.Request): Rpc.Object.PersonalFavorite.Add.Response
+package com.anytypeio.anytype.domain.favorites
 
-@Throws(Exception::class)
-fun personalFavoriteRemove(request: Rpc.Object.PersonalFavorite.Remove.Request): Rpc.Object.PersonalFavorite.Remove.Response
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import org.junit.Test
+import kotlin.test.assertEquals
 
-@Throws(Exception::class)
-fun personalFavoriteReorder(request: Rpc.Object.PersonalFavorite.Reorder.Request): Rpc.Object.PersonalFavorite.Reorder.Response
+class PersonalWidgetsIdTest {
+
+    @Test
+    fun `replaces the first dot with an underscore and prepends the prefix`() {
+        val result = personalWidgetsId(SpaceId("bafyreig5abc.2f7dexample"))
+        assertEquals("_personalWidgets_bafyreig5abc_2f7dexample", result)
+    }
+
+    @Test
+    fun `only replaces the first dot when multiple are present`() {
+        val result = personalWidgetsId(SpaceId("aaa.bbb.ccc"))
+        assertEquals("_personalWidgets_aaa_bbb.ccc", result)
+    }
+
+    @Test
+    fun `returns prefix plus raw id when spaceId has no dot`() {
+        val result = personalWidgetsId(SpaceId("nodot"))
+        assertEquals("_personalWidgets_nodot", result)
+    }
+}
 ```
 
-- [ ] **Step 4: Implement wrappers in MiddlewareServiceImplementation**
+- [ ] **Step 2: Run test — should fail**
 
-In `MiddlewareServiceImplementation.kt`, implement each by calling the generated JNI bridge the same way existing methods do (copy the pattern from `objectListSetIsFavorite`).
+Run: `./gradlew :domain:testDebugUnitTest --tests "*PersonalWidgetsIdTest*"`
+Expected: FAIL (function not found).
 
-- [ ] **Step 5: Build**
+- [ ] **Step 3: Implement**
 
-Run: `./gradlew :middleware:assembleDebug`
-Expected: BUILD SUCCESSFUL. No new code paths exercised yet.
+```kotlin
+package com.anytypeio.anytype.domain.favorites
 
-- [ ] **Step 6: Commit**
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+
+/**
+ * Derives the ID of the per-user personal-widgets virtual object for [space].
+ *
+ * Middleware exposes a per-user, per-space block-tree document stored in the user's
+ * Tech Space. Its ID is `_personalWidgets_<encodedSpaceId>`, where the first `.` in
+ * the SpaceId is replaced with `_` (the same encoding used for participant IDs).
+ * See anytype-heart PR #3092 (GO-6962).
+ */
+fun personalWidgetsId(space: SpaceId): Id =
+    PREFIX + space.id.replaceFirst('.', '_')
+
+private const val PREFIX = "_personalWidgets_"
+```
+
+- [ ] **Step 4: Run test — should pass**
+
+Run: `./gradlew :domain:testDebugUnitTest --tests "*PersonalWidgetsIdTest*"`
+Expected: PASS.
+
+- [ ] **Step 5: Commit**
 
 ```bash
-git add middleware/
-git commit -m "DROID-4397 Integrate GO-6962 personal-favorites RPCs"
+git add domain/src/main/java/com/anytypeio/anytype/domain/favorites/PersonalWidgetsId.kt \
+         domain/src/test/java/com/anytypeio/anytype/domain/favorites/PersonalWidgetsIdTest.kt
+git commit -m "DROID-4397 Add PersonalWidgetsId helper"
 ```
 
 ---
@@ -113,27 +144,30 @@ package com.anytypeio.anytype.domain.favorites
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import kotlinx.coroutines.flow.Flow
 
 interface PersonalFavoritesRepository {
 
+    /**
+     * Add [target] as a personal favorite in [space].
+     * Inserts at the TOP of the list (matches desktop `BlockPosition.InnerFirst`).
+     */
     suspend fun add(space: SpaceId, target: Id)
 
+    /**
+     * Remove [target] from the user's personal favorites in [space]. No-op if absent.
+     */
     suspend fun remove(space: SpaceId, target: Id)
 
     /**
      * Reorder the full favorites list for [space] to [orderedTargets].
-     * Caller owns the complete new order; repository does not diff.
+     * Caller owns the complete new order; repository diffs internally and issues
+     * block-move RPCs as needed.
      */
     suspend fun reorder(space: SpaceId, orderedTargets: List<Id>)
-
-    /**
-     * Emits the current user's favorites in [space] as an ordered list of object IDs.
-     * Must survive add/remove/reorder emitted by the middleware.
-     */
-    fun observe(space: SpaceId): Flow<List<Id>>
 }
 ```
+
+> **Why no `observe` method?** Personal favorites live in a virtual block-tree document (`_personalWidgets_<encodedSpaceId>`) that is observed via the same `OpenObject` + `InterceptEvents` pipeline that `HomeScreenViewModel` already uses for the shared widgets doc. The widget container (Task 12) owns that observation and extracts link targets directly from the block tree — there's no separate favorites subscription to wrap in a Flow at the data layer.
 
 - [ ] **Step 2: Build**
 
@@ -333,50 +367,17 @@ git add domain/src/main/java/com/anytypeio/anytype/domain/favorites/ReorderPerso
 git commit -m "DROID-4397 Add ReorderPersonalFavorites use case"
 ```
 
-### Task 6: `ObservePersonalFavorites` use case (TDD)
+### Task 6: REMOVED — `ObservePersonalFavorites` use case no longer needed
 
-**Files:**
-- Create: `domain/src/main/java/com/anytypeio/anytype/domain/favorites/ObservePersonalFavorites.kt`
-- Test: `domain/src/test/java/com/anytypeio/anytype/domain/favorites/ObservePersonalFavoritesTest.kt`
+This task previously defined a Flow-emitting use case wrapping `PersonalFavoritesRepository.observe()`. Both are removed in the revised design: personal favorites are observed by the widget container directly via the shared-widget-object pipeline (`OpenObject` + `InterceptEvents` on the personal-widgets doc, block-tree walk). The container already has access to the full block tree — re-projecting it through a repo-level Flow adds no value and would duplicate the widget-tree reduction logic.
 
-- [ ] **Step 1: Write the failing test**
-
-```kotlin
-@Test
-fun `emits repo flow values`() = runTest {
-    val space = SpaceId(MockDataFactory.randomUuid())
-    val order = listOf("a", "b")
-    given(repo.observe(space)).willReturn(flowOf(order))
-
-    val result = usecase.build(ObservePersonalFavorites.Params(space)).first()
-
-    assertEquals(order, result)
-}
-```
-
-- [ ] **Step 2: Run test — should fail**
-
-Run: `./gradlew :domain:testDebugUnitTest --tests "*ObservePersonalFavoritesTest*"`
-Expected: FAIL.
-
-- [ ] **Step 3: Implement**
-
-```kotlin
-class ObservePersonalFavorites(
-    private val repo: PersonalFavoritesRepository
-) {
-    data class Params(val space: SpaceId)
-    fun build(params: Params): Flow<List<Id>> = repo.observe(params.space)
-}
-```
-
-- [ ] **Step 4: Run test — should pass**
-- [ ] **Step 5: Commit**
+If the existing `ObservePersonalFavorites.kt` + test files are still present in the branch from earlier scaffolding, delete them:
 
 ```bash
-git add domain/src/main/java/com/anytypeio/anytype/domain/favorites/ObservePersonalFavorites.kt \
-         domain/src/test/java/com/anytypeio/anytype/domain/favorites/ObservePersonalFavoritesTest.kt
-git commit -m "DROID-4397 Add ObservePersonalFavorites use case"
+git rm domain/src/main/java/com/anytypeio/anytype/domain/favorites/ObservePersonalFavorites.kt \
+       domain/src/test/java/com/anytypeio/anytype/domain/favorites/ObservePersonalFavoritesTest.kt
+./gradlew :domain:compileDebugKotlin :domain:testDebugUnitTest
+git commit -m "DROID-4397 Drop ObservePersonalFavorites (container owns personal-widgets block-tree observation)"
 ```
 
 ---
@@ -388,6 +389,9 @@ git commit -m "DROID-4397 Add ObservePersonalFavorites use case"
 **Files:**
 - Create: `data/src/main/java/com/anytypeio/anytype/data/auth/repo/favorites/PersonalFavoritesRemoteDataSource.kt`
 - Create: `middleware/src/main/java/com/anytypeio/anytype/middleware/favorites/PersonalFavoritesMiddleware.kt`
+- Test: `middleware/src/test/java/com/anytypeio/anytype/middleware/favorites/PersonalFavoritesMiddlewareTest.kt`
+
+> **Context:** The middleware layer already wraps `blockCreateWidget`, `blockListDelete`, `blockListMoveToExistingObject`, and `objectOpen` via `MiddlewareService` (already tested). We build `PersonalFavoritesMiddleware` as a thin composition on top: open the personal-widgets doc on each mutation to resolve `target → blockIds`, then issue the right block RPC. The doc is small (O(favorites)) and mutations are user-driven — the extra open round-trip is acceptable and keeps the data layer self-contained (no shared state with the widget container).
 
 - [ ] **Step 1: Define remote data source interface**
 
@@ -399,8 +403,22 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 interface PersonalFavoritesRemoteDataSource {
+
+    /** Create a Link-layout widget at the TOP of the personal-widgets doc for [space]. */
     suspend fun add(space: SpaceId, target: Id)
+
+    /**
+     * Remove every wrapper whose inner link targets [target]. No-op if absent.
+     * Implementation: open the personal-widgets doc, find matching inner-link block IDs,
+     * issue `Rpc.Block.ListDelete` (middleware unlinks both link + parent wrapper).
+     */
     suspend fun remove(space: SpaceId, target: Id)
+
+    /**
+     * Reorder the personal-widgets doc so wrappers for [orderedTargets] appear in that
+     * order. Targets not currently present in the doc are ignored. Implementation:
+     * open doc, resolve target → wrapper IDs, issue block moves.
+     */
     suspend fun reorder(space: SpaceId, orderedTargets: List<Id>)
 }
 ```
@@ -412,9 +430,11 @@ interface PersonalFavoritesRemoteDataSource {
 package com.anytypeio.anytype.middleware.favorites
 
 import anytype.Rpc
+import anytype.model.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.data.auth.repo.favorites.PersonalFavoritesRemoteDataSource
+import com.anytypeio.anytype.domain.favorites.personalWidgetsId
 import com.anytypeio.anytype.middleware.service.MiddlewareService
 
 class PersonalFavoritesMiddleware(
@@ -422,32 +442,65 @@ class PersonalFavoritesMiddleware(
 ) : PersonalFavoritesRemoteDataSource {
 
     override suspend fun add(space: SpaceId, target: Id) {
-        val req = Rpc.Object.PersonalFavorite.Add.Request.newBuilder()
-            .setSpaceId(space.id)
-            .setObjectId(target)
+        val ctx = personalWidgetsId(space)
+        val request = Rpc.Block.CreateWidget.Request.newBuilder()
+            .setContextId(ctx)
+            .setTargetId(ctx)                         // insert relative to root
+            .setBlock(linkBlockTo(target))
+            .setPosition(anytype.model.Block.Position.InnerFirst)  // desktop match: TOP
+            .setWidgetLayout(anytype.model.Block.Content.Widget.Layout.Link)
+            .setObjectLimit(0)
             .build()
-        val resp = service.personalFavoriteAdd(req)
-        if (resp.error.code != Rpc.Object.PersonalFavorite.Add.Response.Error.Code.NULL) {
-            throw Exception(resp.error.description)
-        }
+        service.blockCreateWidget(request)
+        // MiddlewareService impls throw on non-NULL errors (see BlockMiddleware); match that.
     }
 
-    override suspend fun remove(space: SpaceId, target: Id) { /* mirror add */ }
+    override suspend fun remove(space: SpaceId, target: Id) {
+        val tree = openPersonalWidgets(space)
+        val linkIds = tree.innerLinkBlockIdsFor(target)
+        if (linkIds.isEmpty()) return
+        val request = Rpc.Block.ListDelete.Request.newBuilder()
+            .setContextId(personalWidgetsId(space))
+            .addAllBlockIds(linkIds)
+            .build()
+        service.blockListDelete(request)
+    }
 
     override suspend fun reorder(space: SpaceId, orderedTargets: List<Id>) {
-        val req = Rpc.Object.PersonalFavorite.Reorder.Request.newBuilder()
-            .setSpaceId(space.id)
-            .addAllObjectIds(orderedTargets)
-            .build()
-        val resp = service.personalFavoriteReorder(req)
-        if (resp.error.code != Rpc.Object.PersonalFavorite.Reorder.Response.Error.Code.NULL) {
-            throw Exception(resp.error.description)
+        if (orderedTargets.isEmpty()) return
+        val ctx = personalWidgetsId(space)
+        val tree = openPersonalWidgets(space)
+        // Move each wrapper, in order, to the END of root children.
+        // Net effect: the final child-order under root == orderedTargets.
+        orderedTargets.forEach { target ->
+            val wrapperId = tree.wrapperIdFor(target) ?: return@forEach
+            val request = Rpc.Block.ListMoveToExistingObject.Request.newBuilder()
+                .setContextId(ctx)
+                .addBlockIds(wrapperId)
+                .setTargetContextId(ctx)
+                .setDropTargetId(ctx)
+                .setPosition(anytype.model.Block.Position.InnerLast)
+                .build()
+            service.blockListMoveToExistingObject(request)
         }
     }
+
+    private fun openPersonalWidgets(space: SpaceId): PersonalWidgetsTree {
+        val request = Rpc.Object.Open.Request.newBuilder()
+            .setObjectId(personalWidgetsId(space))
+            .setSpaceId(space.id)
+            .build()
+        val response = service.objectOpen(request)
+        return PersonalWidgetsTree.from(response.objectView)
+    }
+
+    private fun linkBlockTo(target: Id): anytype.model.Block { /* see impl */ }
 }
 ```
 
-Note: the exact proto field names depend on GO-6962. Match what the generated Kotlin stubs declare. Remove/Reorder follow the same shape as Add.
+> **Exact proto field names:** confirm from the generated Kotlin stubs before copy-pasting. Consult `MiddlewareService.kt` for the current signatures — `blockCreateWidget`, `blockListDelete`, `blockListMoveToExistingObject`, `objectOpen` are all already wrapped. Enums for position/layout may come via project mappers (`middleware/src/main/java/com/anytypeio/anytype/middleware/mappers/`) — use those if available rather than raw proto enum refs.
+>
+> `PersonalWidgetsTree` is a small helper class (same file or adjacent): given a decoded `ObjectView`, walk the `blocks` list to find wrapper blocks whose child is a Link block, and build two maps: wrapperId → targetId and targetId → List<linkBlockId>. Expose `wrapperIdFor(target): Id?` and `innerLinkBlockIdsFor(target): List<Id>`. Filter out built-in targets (`"favorite"`, `"set"`, `"recent"`, `"recentOpen"`, `"collection"`, `"allObjects"`).
 
 - [ ] **Step 3: Build**
 
@@ -459,10 +512,10 @@ Expected: BUILD SUCCESSFUL.
 ```bash
 git add data/src/main/java/com/anytypeio/anytype/data/auth/repo/favorites/ \
          middleware/src/main/java/com/anytypeio/anytype/middleware/favorites/
-git commit -m "DROID-4397 Wire GO-6962 RPCs via data/middleware layers"
+git commit -m "DROID-4397 Wire personal-favorites via existing block-widget RPCs"
 ```
 
-### Task 8: `PersonalFavoritesDataRepository` — subscription-backed `observe`
+### Task 8: `PersonalFavoritesDataRepository`
 
 **Files:**
 - Create: `data/src/main/java/com/anytypeio/anytype/data/auth/repo/favorites/PersonalFavoritesDataRepository.kt`
@@ -480,15 +533,18 @@ fun `add delegates to remote`() = runTest {
 }
 
 @Test
-fun `observe emits ordered list from subscription`() = runTest {
+fun `remove delegates to remote`() = runTest {
     val space = SpaceId("space-1")
-    given(subscriptionContainer.subscribe(any<StoreSearchParams>()))
-        .willReturn(flowOf(listOf(stubObject("b"), stubObject("a"))))
-    // Assume order is returned via relation on the subscribed object; if so test that ordering is preserved
+    repo.remove(space, "obj-1")
+    verify(remote).remove(space, "obj-1")
+}
 
-    val result = repo.observe(space).first()
-
-    assertEquals(listOf("b", "a"), result)
+@Test
+fun `reorder delegates to remote`() = runTest {
+    val space = SpaceId("space-1")
+    val order = listOf("a", "b", "c")
+    repo.reorder(space, order)
+    verify(remote).reorder(space, order)
 }
 ```
 
@@ -504,37 +560,19 @@ package com.anytypeio.anytype.data.auth.repo.favorites
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.favorites.PersonalFavoritesRepository
-import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.library.StoreSearchParams
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 
 class PersonalFavoritesDataRepository(
-    private val remote: PersonalFavoritesRemoteDataSource,
-    private val subscriptionContainer: StorelessSubscriptionContainer
+    private val remote: PersonalFavoritesRemoteDataSource
 ) : PersonalFavoritesRepository {
 
     override suspend fun add(space: SpaceId, target: Id) = remote.add(space, target)
     override suspend fun remove(space: SpaceId, target: Id) = remote.remove(space, target)
     override suspend fun reorder(space: SpaceId, orderedTargets: List<Id>) =
         remote.reorder(space, orderedTargets)
-
-    override fun observe(space: SpaceId): Flow<List<Id>> {
-        val params = StoreSearchParams(
-            space = space,
-            subscription = "subscription.personal.favorites.${space.id}",
-            filters = PersonalFavoriteFilters.filters(space),
-            sorts = PersonalFavoriteFilters.sorts(),
-            keys = listOf("id", "personalFavoriteOrder")
-        )
-        return subscriptionContainer.subscribe(params).map { list ->
-            list.map { it.id }
-        }
-    }
 }
 ```
 
-`PersonalFavoriteFilters` is a small helper (same file) that builds the filters + sorts for the tech-space subscription. Exact filter keys depend on GO-6962 spec — inspect the desktop impl at `anyproto/anytype-ts#2161` and mirror.
+Pure pass-through. All block-tree lookup logic lives in `PersonalFavoritesMiddleware` (Task 7) where the `MiddlewareService` is available. The repo is only here to satisfy Clean Architecture (domain interface, data impl).
 
 - [ ] **Step 4: Run test — should pass**
 - [ ] **Step 5: Commit**
@@ -542,19 +580,19 @@ class PersonalFavoritesDataRepository(
 ```bash
 git add data/src/main/java/com/anytypeio/anytype/data/auth/repo/favorites/PersonalFavoritesDataRepository.kt \
          data/src/test/java/com/anytypeio/anytype/data/auth/repo/favorites/PersonalFavoritesDataRepositoryTest.kt
-git commit -m "DROID-4397 Personal favorites repo with subscription-driven observe"
+git commit -m "DROID-4397 Personal favorites data repository (pass-through)"
 ```
 
 ### Task 9: DI bindings
 
 **Files:**
-- Modify: `di/src/main/java/com/anytypeio/anytype/di/main/DataModule.kt` (or nearest equivalent module that binds repos)
-- Modify: `di/src/main/java/com/anytypeio/anytype/di/feature/home/HomescreenDI.kt` (binds use cases + container)
+- Modify: Dagger module(s) binding repos (likely `di/src/main/java/com/anytypeio/anytype/di/main/DataModule.kt` or equivalent — grep first)
+- Modify: module binding home/widget-screen use cases (likely `di/src/main/java/com/anytypeio/anytype/di/feature/home/HomescreenDI.kt` — grep first)
 
 - [ ] **Step 1: Locate the module binding repos**
 
-Run: `grep -rn "fun provideBlockRepository" di/`
-Expected: one or two matches in `DataModule.kt`. Add `PersonalFavoritesRepository` provide function there next to the block repo, using the same scope.
+Run: `grep -rn "fun provideBlockRepository\|BlockDataRepository(" di/ app/ data/`
+Expected: matches that show how `BlockRepository` is wired (`BlockDataRepository` ← `BlockRemote` ← `BlockMiddleware(service)`). Mirror this pattern for personal favorites. Note the `@Singleton` scope and whether providers use `@JvmStatic`.
 
 - [ ] **Step 2: Add provides for repo + remote data source**
 
@@ -570,23 +608,33 @@ fun providePersonalFavoritesRemoteDataSource(
 @Provides
 @Singleton
 fun providePersonalFavoritesRepository(
-    remote: PersonalFavoritesRemoteDataSource,
-    subscription: StorelessSubscriptionContainer
-): PersonalFavoritesRepository = PersonalFavoritesDataRepository(remote, subscription)
+    remote: PersonalFavoritesRemoteDataSource
+): PersonalFavoritesRepository = PersonalFavoritesDataRepository(remote)
 ```
 
-- [ ] **Step 3: Add provides for the 4 use cases in HomescreenDI (scoped to the home-screen component)**
+- [ ] **Step 3: Add provides for the 3 use cases in HomescreenDI (scoped to the home-screen component)**
 
 ```kotlin
 @Provides
-fun provideAddPersonalFavorite(repo: PersonalFavoritesRepository) = AddPersonalFavorite(repo)
+fun provideAddPersonalFavorite(
+    repo: PersonalFavoritesRepository,
+    dispatchers: AppCoroutineDispatchers
+) = AddPersonalFavorite(repo, dispatchers)
+
 @Provides
-fun provideRemovePersonalFavorite(repo: PersonalFavoritesRepository) = RemovePersonalFavorite(repo)
+fun provideRemovePersonalFavorite(
+    repo: PersonalFavoritesRepository,
+    dispatchers: AppCoroutineDispatchers
+) = RemovePersonalFavorite(repo, dispatchers)
+
 @Provides
-fun provideReorderPersonalFavorites(repo: PersonalFavoritesRepository) = ReorderPersonalFavorites(repo)
-@Provides
-fun provideObservePersonalFavorites(repo: PersonalFavoritesRepository) = ObservePersonalFavorites(repo)
+fun provideReorderPersonalFavorites(
+    repo: PersonalFavoritesRepository,
+    dispatchers: AppCoroutineDispatchers
+) = ReorderPersonalFavorites(repo, dispatchers)
 ```
+
+(Check the actual use-case constructor signatures before wiring — the Phase 1 scaffolding may use `@Inject` constructor injection instead, in which case only the repo + remote data source provides are needed.)
 
 - [ ] **Step 4: Build**
 
@@ -596,7 +644,7 @@ Expected: BUILD SUCCESSFUL.
 - [ ] **Step 5: Commit**
 
 ```bash
-git add di/
+git add di/ app/ data/   # whichever module was actually modified
 git commit -m "DROID-4397 DI bindings for personal favorites"
 ```
 
@@ -687,18 +735,29 @@ git commit -m "DROID-4397 Add Widget.PersonalFavorites model"
 - Create: `presentation/src/main/java/com/anytypeio/anytype/presentation/widgets/PersonalFavoritesWidgetContainer.kt`
 - Test: `presentation/src/test/java/com/anytypeio/anytype/presentation/widgets/PersonalFavoritesWidgetContainerTest.kt`
 
+> **Architecture:** The container observes the personal-widgets virtual doc directly — **no `ObservePersonalFavorites` use case exists** (see Task 6 — removed). Open the doc with `OpenObject` and listen for block events via `InterceptEvents`, mirroring `HomeScreenViewModel`'s existing treatment of the shared widgets doc (see `HomeScreenViewModel.kt:648` and `observeExternalPayloadEvents()` at line 907). Reduce block events against the doc state, walk the root's children to extract ordered target IDs (filter out built-in targets `favorite`, `set`, `recent`, `recentOpen`, `collection`, `allObjects`), then join with object subscriptions to produce `WidgetView.SetOfObjects.Element` rows.
+
 - [ ] **Step 1: Write the failing test — emits WidgetView with ordered objects**
 
 ```kotlin
 @Test
-fun `emits ordered object rows from observe`() = runTest {
+fun `emits ordered object rows from block tree`() = runTest {
     val spaceId = SpaceId("space-1")
     val widget = stubPersonalFavoritesWidget()
-    val order = listOf("obj-1", "obj-2")
 
-    given(observePersonalFavorites.build(ObservePersonalFavorites.Params(spaceId)))
-        .willReturn(flowOf(order))
-    given(storeOfObjectTypes.get(any())).willReturn(stubType())
+    // Stub OpenObject for the personal-widgets doc to return an ObjectView whose
+    // root has two wrapper->link children targeting obj-1 then obj-2, in that order.
+    given(openObject.stream(eq(OpenObject.Params(
+        obj = personalWidgetsId(spaceId),
+        saveAsLastOpened = false,
+        spaceId = spaceId
+    )))).willReturn(flowOf(Resultat.Success(
+        stubPersonalWidgetsObjectView(orderedTargets = listOf("obj-1", "obj-2"))
+    )))
+    // No events after initial state
+    given(interceptEvents.build(InterceptEvents.Params(personalWidgetsId(spaceId))))
+        .willReturn(flowOf(emptyList()))
+    // Object subscription returns the two objects
     given(storage.subscribe(any<StoreSearchParams>())).willReturn(
         flowOf(listOf(stubObject("obj-1"), stubObject("obj-2")))
     )
@@ -706,7 +765,8 @@ fun `emits ordered object rows from observe`() = runTest {
     val container = PersonalFavoritesWidgetContainer(
         space = spaceId,
         widget = widget,
-        observePersonalFavorites = observePersonalFavorites,
+        openObject = openObject,
+        interceptEvents = interceptEvents,
         storage = storage,
         urlBuilder = urlBuilder,
         fieldParser = fieldParser,
@@ -730,16 +790,20 @@ Expected: FAIL (class not found).
 
 - [ ] **Step 3: Implement minimal container**
 
-Use `UnreadChatListWidgetContainer` as the template. Key differences:
-- Source of truth is `ObservePersonalFavorites` (ordered ID list), not a raw subscription query
-- Join each ID with an object-store subscription (or `storage.subscribe` with `filters = [idIn(order)]`) to get full objects
-- Preserve the order emitted by `ObservePersonalFavorites`
+Use `HomeScreenViewModel.observeExternalPayloadEvents()` and `proceedWithObjectViewStatePipeline()` as the reference. Key points:
+- `OpenObject.stream(Params(obj = personalWidgetsId(space), ...))` gives initial `ObjectView` (block tree).
+- `InterceptEvents.build(Params(personalWidgetsId(space)))` gives live block events.
+- Merge the two with `scan { state, payload -> reduce(state, payload) }` — `reduce()` already exists for the shared widgets doc; reuse it.
+- From the reduced `ObjectView`, walk root's children, collect `(childBlockId → targetBlockId)` pairs. Filter out built-in target IDs.
+- Subscribe to the `[id IN orderedTargets]` object store to fetch the full object details.
+- Emit `WidgetView.SetOfObjects(widget.id, widget.source, elements, isCompact = true)`.
 
 ```kotlin
 class PersonalFavoritesWidgetContainer(
     private val space: SpaceId,
     private val widget: Widget.PersonalFavorites,
-    private val observePersonalFavorites: ObservePersonalFavorites,
+    private val openObject: OpenObject,
+    private val interceptEvents: InterceptEvents,
     private val storage: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
     private val fieldParser: FieldParser,
@@ -748,33 +812,28 @@ class PersonalFavoritesWidgetContainer(
 ) : WidgetContainer {
 
     override val view: Flow<WidgetView> = isSessionActiveFlow.flatMapLatest { active ->
-        if (!active) flowOf(WidgetView.SetOfObjects(widget.id, widget.source, emptyList(), isCompact = true))
-        else observePersonalFavorites.build(ObservePersonalFavorites.Params(space))
+        if (!active) flowOf(emptyView())
+        else personalWidgetsBlockTree(space)
+            .map { tree -> tree.orderedRealTargetIds() }
+            .distinctUntilChanged()
             .flatMapLatest { ids ->
-                if (ids.isEmpty()) flowOf(WidgetView.SetOfObjects(widget.id, widget.source, emptyList(), isCompact = true))
-                else storage.subscribe(
-                    StoreSearchParams(
-                        space = space,
-                        subscription = "subscription.personal.favorites.objects.${widget.id}",
-                        filters = listOf(DVFilter(Relations.ID, DVFilterCondition.IN, ids)),
-                        keys = ObjectSearchConstants.defaultKeys
-                    )
-                ).map { objects ->
-                    val byId = objects.associateBy { it.id }
-                    val ordered = ids.mapNotNull { byId[it] }
-                    WidgetView.SetOfObjects(
-                        widget.id,
-                        widget.source,
-                        ordered.map { obj -> WidgetView.SetOfObjects.Element(obj, /*icon derived via urlBuilder/fieldParser*/) },
-                        isCompact = true
-                    )
-                }
+                if (ids.isEmpty()) flowOf(emptyView())
+                else joinWithObjects(ids)
             }
     }.catch { Timber.e(it, "personal favorites container failed") }
+
+    private fun personalWidgetsBlockTree(space: SpaceId): Flow<ObjectView> { /* open + reduce events */ }
+    private fun joinWithObjects(ids: List<Id>): Flow<WidgetView> { /* storage.subscribe + map */ }
+    private fun emptyView() = WidgetView.SetOfObjects(widget.id, widget.source, emptyList(), isCompact = true)
 }
 ```
 
-`isCompact = true` is the UI flag instructing `WidgetSection.kt` to render Unread-style rows, not card widgets. If `WidgetView.SetOfObjects` does not already have this flag, add it (see Task 13).
+`isCompact = true` is the UI flag instructing `WidgetSection.kt` to render Unread-style rows, not card widgets (`WidgetView.SetOfObjects.isCompact` — added in Task 13, already shipped).
+
+**Built-in targets to filter out** (copied from the GO-6962 PR description — these are valid link `targetBlockId` values that represent views, not real objects):
+```kotlin
+private val BUILTIN_TARGETS = setOf("favorite", "set", "recent", "recentOpen", "collection", "allObjects")
+```
 
 - [ ] **Step 4: Run test — should pass**
 

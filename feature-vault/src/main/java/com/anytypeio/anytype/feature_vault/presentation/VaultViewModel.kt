@@ -35,6 +35,7 @@ import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionMana
 import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -49,6 +50,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator.calculateChatNotificationState
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.`object`.resolveParticipantName
@@ -59,6 +61,7 @@ import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
+import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
@@ -74,9 +77,11 @@ import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -139,11 +144,15 @@ class VaultViewModel(
     private val networkModeProvider: NetworkModeProvider,
     private val getMembershipFeatures: GetMembershipFeatures,
     private val resolveSpaceHomepage: ResolveSpaceHomepage,
+    private val setHomepage: SetHomepage,
     private val userSettingsRepository: UserSettingsRepository
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
+
+    private val _inviteCommands = Channel<VaultCommand>(capacity = Channel.BUFFERED)
+    val inviteCommands = _inviteCommands.receiveAsFlow()
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showCreateChannelMenu = MutableStateFlow(false)
     val notificationError = MutableStateFlow<String?>(null)
@@ -398,39 +407,60 @@ class VaultViewModel(
 
         val groupedPreviews = chatPreviews.groupBy { it.space.id }
 
-        // Calculate total unread counts for all chats per space
-        val unreadCountsPerSpace = groupedPreviews
-            .mapValues { (_, previews) ->
-                // Message count: sum all messages and cap at 999 (displayed as number badge in UI)
-                val totalUnreadMessages = previews.sumOf { it.state?.unreadMessages?.counter ?: 0 }.coerceAtMost(999)
-                // Mention count: 1 if ANY chat has mentions, 0 otherwise (displayed as icon-only indicator in UI)
-                val hasMentions = if (previews.any { (it.state?.unreadMentions?.counter ?: 0) > 0 }) 1 else 0
-                UnreadCounts(totalUnreadMessages, hasMentions)
+        // Precompute the muted-and-hidden filter once per space.
+        // Used by both the badge sum and the compact unread-names list so they
+        // stay consistent — see DROID-4359.
+        val visiblePreviewsPerSpace: Map<String, List<Chat.Preview>> = groupedPreviews
+            .mapValues { (spaceId, previews) ->
+                val chatSpace = spacesFromFlow.find { it.targetSpaceId == spaceId }
+                if (chatSpace != null) {
+                    previews.filterNot {
+                        NotificationStateCalculator.isMutedAndHidden(chatSpace, it.chat)
+                    }
+                } else {
+                    previews
+                }
             }
+
+        // Calculate total unread counts for all chats per space
+        val unreadCountsPerSpace = visiblePreviewsPerSpace.mapValues { (_, visible) ->
+            // Message count: sum all messages from visible chats and cap at 999
+            val totalUnreadMessages = visible.sumOf { it.state?.unreadMessages?.counter ?: 0 }
+                .coerceAtMost(999)
+            // Mention count: 1 if ANY visible chat has mentions, 0 otherwise.
+            // Muted chats are excluded from the OS badge even when @mentioned (per DROID-4359 spec).
+            val hasMentions = if (visible.any { (it.state?.unreadMentions?.counter ?: 0) > 0 }) 1 else 0
+            UnreadCounts(totalUnreadMessages, hasMentions)
+        }
 
         // Index chatDetails by chat ID for O(1) lookup of chat names
         val chatDetailsMap = chatDetails.associateBy { it.id }
 
         // Collect chat names with unread messages per space, ordered by most recent first.
         // Falls back to the most recent chat name when no chats have unreads (for non-compact view).
-        val chatNamesPerSpace = groupedPreviews
-            .mapValues { (_, previews) ->
-                val unreadNames = previews
-                    .filter { preview ->
-                        (preview.state?.unreadMessages?.counter ?: 0) > 0 ||
-                        (preview.state?.unreadMentions?.counter ?: 0) > 0
-                    }
-                    .sortedByDescending { it.message?.createdAt ?: 0L }
-                    .mapNotNull { preview ->
-                        chatDetailsMap[preview.chat]?.name?.takeIf { it.isNotEmpty() }
-                    }
-                unreadNames.ifEmpty {
-                    listOfNotNull(
-                        previews.maxByOrNull { it.message?.createdAt ?: 0L }
-                            ?.let { chatDetailsMap[it.chat]?.name?.takeIf { n -> n.isNotEmpty() } }
-                    )
+        // Muted-and-hidden chats are excluded from the unread list so the compact row stays
+        // consistent with the badge count (which also skips them) — see DROID-4359.
+        val chatNamesPerSpace = groupedPreviews.mapValues { (spaceId, previews) ->
+            val visible = visiblePreviewsPerSpace[spaceId] ?: previews
+            val unreadNames = visible
+                .filter { preview ->
+                    (preview.state?.unreadMessages?.counter ?: 0) > 0 ||
+                    (preview.state?.unreadMentions?.counter ?: 0) > 0
                 }
+                .sortedByDescending { it.message?.createdAt ?: 0L }
+                .mapNotNull { preview ->
+                    chatDetailsMap[preview.chat]?.name?.takeIf { it.isNotEmpty() }
+                }
+            unreadNames.ifEmpty {
+                // Fallback: when a space has no unread chats (or all unreads are muted-and-hidden),
+                // show the most recent chat name — including muted chats — so the space card isn't blank.
+                // See DROID-4359.
+                listOfNotNull(
+                    previews.maxByOrNull { it.message?.createdAt ?: 0L }
+                        ?.let { chatDetailsMap[it.chat]?.name?.takeIf { n -> n.isNotEmpty() } }
+                )
             }
+        }
 
         // Map all active spaces to VaultSpaceView objects
         val allSpacesRaw = spacesFromFlow
@@ -967,7 +997,7 @@ class VaultViewModel(
                     }
 
                     is DeepLinkResolver.Action.Invite -> {
-                        commands.emit(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
+                        _inviteCommands.send(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
                     }
 
                     else -> {
@@ -976,7 +1006,7 @@ class VaultViewModel(
                         val fileKey = spaceInviteResolver.parseFileKey(qrCode)
                         val contentId = spaceInviteResolver.parseContentId(qrCode)
                         if (fileKey != null && contentId != null) {
-                            commands.emit(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
+                            _inviteCommands.send(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
                         } else {
                             Timber.e("Failed to parse QR code: invalid format")
                             vaultErrors.value = VaultErrors.QrCodeIsNotValid
@@ -1613,6 +1643,7 @@ class VaultViewModel(
         createSpace.async(params).fold(
             onSuccess = { response ->
                 Timber.d("Successfully created 1-1 space: ${response.space.id}")
+                setOneToOneHomepageToChat(response.space)
                 navigateToOneToOneChat(response.space)
             },
             onFailure = { error ->
@@ -1622,6 +1653,32 @@ class VaultViewModel(
                 )
             }
         )
+    }
+
+    /**
+     * DROID-4467: 1-on-1 spaces skip the Homepage picker; homepage is set to the Chat
+     * object automatically. Polls the space view until the chat object ID is available
+     * (typically immediately after creation) and writes it as the space's homepage.
+     */
+    private suspend fun setOneToOneHomepageToChat(space: SpaceId) {
+        val chatId = awaitSpaceChatId(space) ?: run {
+            Timber.w("1-1 homepage: chat object id not found for space=${space.id}")
+            return
+        }
+        setHomepage.async(
+            SetHomepage.Params(spaceId = space.id, homepage = chatId)
+        ).onFailure {
+            Timber.e(it, "1-1 homepage: failed to set homepage to chat=$chatId")
+        }
+    }
+
+    private suspend fun awaitSpaceChatId(space: SpaceId): Id? {
+        repeat(times = ONE_TO_ONE_HOMEPAGE_MAX_ATTEMPTS) {
+            val chatId = spaceViewSubscriptionContainer.get(space)?.chatId
+            if (!chatId.isNullOrEmpty()) return chatId
+            delay(ONE_TO_ONE_HOMEPAGE_POLL_DELAY_MS)
+        }
+        return null
     }
 
     /**
@@ -1650,5 +1707,7 @@ class VaultViewModel(
 
     companion object {
         private const val OS_WIDGET_SYNC_DEBOUNCE_MS = 2000L
+        private const val ONE_TO_ONE_HOMEPAGE_POLL_DELAY_MS = 100L
+        private const val ONE_TO_ONE_HOMEPAGE_MAX_ATTEMPTS = 30
     }
 }

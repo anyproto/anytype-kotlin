@@ -102,7 +102,7 @@ fun NotificationsPreferenceSheet(
             }
             item {
                 NotificationOption(
-                    title = stringResource(R.string.notifications_all),
+                    title = stringResource(R.string.notification_option_enable),
                     checked = currentState == NotificationState.ALL,
                     onClick = { uiEvent(UiEvent.OnNotificationsSetting.All(targetSpaceId)) }
                 )
@@ -128,7 +128,7 @@ fun NotificationsPreferenceSheet(
             }
             item {
                 NotificationOption(
-                    title = stringResource(R.string.notifications_disable),
+                    title = stringResource(R.string.notification_option_disabled),
                     checked = currentState == NotificationState.DISABLE,
                     onClick = { uiEvent(UiEvent.OnNotificationsSetting.None(targetSpaceId)) }
                 )

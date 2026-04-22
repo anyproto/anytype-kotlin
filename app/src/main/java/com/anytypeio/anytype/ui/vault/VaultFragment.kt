@@ -109,6 +109,9 @@ class VaultFragment : BaseComposeFragment() {
                 profile = vm.profileView.collectAsStateWithLifecycle().value,
                 onMuteSpace = onMuteSpace,
                 onUnmuteSpace = onUnmuteSpace,
+                onSetSpaceNotificationMode = { spaceId, state ->
+                    vm.setSpaceNotificationState(spaceId, state)
+                },
                 onPinSpace = vm::onPinSpaceClicked,
                 onUnpinSpace = vm::onUnpinSpaceClicked,
                 onOrderChanged = vm::onOrderChanged,
@@ -192,6 +195,9 @@ class VaultFragment : BaseComposeFragment() {
         }
         LaunchedEffect(Unit) {
             vm.commands.collect { command -> proceed(command) }
+        }
+        LaunchedEffect(Unit) {
+            vm.inviteCommands.collect { command -> proceed(command) }
         }
         LaunchedEffect(Unit) {
             vm.navigations.collect { command -> proceed(command) }

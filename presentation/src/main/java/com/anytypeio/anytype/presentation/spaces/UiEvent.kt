@@ -12,6 +12,7 @@ sealed class UiEvent {
 
     data object OnSpaceMembersClicked : UiEvent()
     data class OnDefaultObjectTypeClicked(val currentDefaultObjectTypeId: Id?) : UiEvent()
+    data object OnSpaceHomeClicked : UiEvent()
 
     data object OnObjectTypesClicked : UiEvent()
     data object OnPropertiesClicked : UiEvent()

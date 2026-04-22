@@ -60,7 +60,7 @@
     <string name="remove_image">画像を削除</string>
     <string name="delete_space">スペースを削除</string>
     <string name="you_can_store">無料で%1$sまで、データを暗号化した上でノードにバックアップできます。上限に達すると、お使いのデバイス内にのみ保存されるようになります。</string>
-    <string name="in_order_to_save">お使いのデバイスの空き容量を増やしたい場合は、すべてのファイルを暗号化されたバックアップノードに移行できます。ファイルは開く際に自動的に読み込まれます。</string>
+    <string name="in_order_to_save">Free up space by offloading files to encrypted backup. They’ll load when you open them.</string>
     <string name="manage_files">ファイル管理</string>
     <string name="local_storage">ローカルストレージ</string>
     <string name="offload_files">ファイルを移行</string>
@@ -2070,6 +2070,8 @@
     </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="private_channel">Direct channel</string>
+    <string name="space_header_private_channel">Private channel</string>
+    <string name="space_header_group_channel">Group channel</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Web公開</string>
     <string name="preferences">環境設定</string>
@@ -2170,4 +2172,16 @@
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
     <string name="chats_search_close_content_description">Close search</string>
+    <!-- DROID-4358 Offline Downloads settings -->
+    <string name="offline_downloads_section_title">Offline access</string>
+    <string name="offline_downloads_title">Offline Downloads</string>
+    <string name="offline_downloads_subtitle">Auto sync files up to a selected size</string>
+    <string name="offline_downloads_use_cellular">Use Cellular Data</string>
+    <string name="offline_downloads_value_off">Off</string>
+    <string name="offline_downloads_value_20mb">20 MB</string>
+    <string name="offline_downloads_value_100mb">100 MB</string>
+    <string name="offline_downloads_value_250mb">250 MB</string>
+    <string name="offline_downloads_value_1gb">1 GB</string>
+    <string name="offline_downloads_value_unlimited">無制限</string>
+    <string name="device_storage_used">Device storage used</string>
 </resources>

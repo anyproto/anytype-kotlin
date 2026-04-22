@@ -128,6 +128,9 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentEditorBinding
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
+import com.anytypeio.anytype.feature_create_object.ui.CreateObjectSheetHost
 import com.anytypeio.anytype.device.launchMediaPicker
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
@@ -210,6 +213,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     ObjectTypeUpdateListener {
 
     private val keyboardDelayJobs = mutableListOf<Job>()
+
+    private lateinit var createObjectFactory: CreateObjectViewModelFactory
+
+    private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
+    private fun createObjectComponentKey(): String = "editor-create-object:$ctx"
 
     protected val ctx get() = arg<Id>(CTX_KEY)
     protected val space get() = arg<Id>(SPACE_ID_KEY)
@@ -634,15 +643,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         // wiring.
         binding.fabCreate
             .clicks()
-            .onEach { vm.onAddNewDocumentClicked() }
-            .launchIn(lifecycleScope)
-
-        binding.fabCreate
-            .longClicks(withHaptic = true)
-            .onEach {
-                val dialog = ObjectTypeSelectionFragment.new(space = space)
-                dialog.show(childFragmentManager, "editor-create-object-of-type-dialog")
-            }
+            .onEach { showCreateObjectSheet() }
             .launchIn(lifecycleScope)
 
         binding.recycler.addOnScrollListener(fabScrollListener)
@@ -1004,6 +1005,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         binding.recycler.removeOnScrollListener(fabScrollListener)
         pickerDelegate.clearPickit()
+        isSheetHostInstalled = false
         super.onDestroyView()
     }
 
@@ -2411,6 +2413,37 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         inflater, container, false
     )
 
+    // Owned outside the ComposeView's setContent lambda so the first click
+    // isn't lost: `setContent` schedules composition asynchronously, so if
+    // we created the state inside the composable we'd still see null when
+    // toggling visibility on the same tick.
+    private val createObjectSheetVisible = androidx.compose.runtime.mutableStateOf(false)
+    private var isSheetHostInstalled = false
+
+    private fun installCreateObjectSheetHost() {
+        if (isSheetHostInstalled) return
+        val composeView = binding.createObjectSheetHost
+        composeView.setViewCompositionStrategy(
+            androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+        composeView.setContent {
+            CreateObjectSheetHost(
+                vm = createObjectVm,
+                visible = createObjectSheetVisible.value,
+                onDismiss = { createObjectSheetVisible.value = false },
+                onCreateObjectOfType = { objType ->
+                    vm.onAddNewDocumentClicked(objType = objType)
+                }
+            )
+        }
+        isSheetHostInstalled = true
+    }
+
+    private fun showCreateObjectSheet() {
+        installCreateObjectSheetHost()
+        createObjectSheetVisible.value = true
+    }
+
     override fun injectDependencies() {
         componentManager().editorComponent
             .get(
@@ -2421,10 +2454,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 )
             )
             .inject(this)
+        val createObjectVmParams = NewCreateObjectViewModel.VmParams(
+            spaceId = SpaceId(space),
+            showAttachObject = false,
+            showMediaSection = true
+        )
+        createObjectFactory = componentManager()
+            .createObjectFeatureComponent
+            .get(key = createObjectComponentKey(), param = createObjectVmParams)
+            .viewModelFactory()
     }
 
     override fun releaseDependencies() {
         componentManager().editorComponent.release(ctx)
+        componentManager().createObjectFeatureComponent.release(createObjectComponentKey())
     }
 
     //region Media Picker

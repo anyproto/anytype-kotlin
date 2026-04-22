@@ -205,7 +205,8 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
                 type = pageTypeKey,
                 template = null,
                 filters = emptyList(),
-                prefilled = emptyMap()
+                prefilled = emptyMap(),
+                createdInContext = root
             )
             async(params)
         }
@@ -306,7 +307,8 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
                 type = pageTypeKey,
                 template = null,
                 filters = emptyList(),
-                prefilled = emptyMap()
+                prefilled = emptyMap(),
+                createdInContext = root
             )
             async(params)
         }
@@ -407,7 +409,8 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
                 type = pageTypeKey,
                 template = pageTemplate2.id,
                 filters = emptyList(),
-                prefilled = emptyMap()
+                prefilled = emptyMap(),
+                createdInContext = root
             )
             async(params)
         }
@@ -508,7 +511,8 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
                 type = TypeKey(customType1Key.key),
                 template = template1.id,
                 filters = emptyList(),
-                prefilled = emptyMap()
+                prefilled = emptyMap(),
+                createdInContext = root
             )
             async(params)
         }
@@ -609,7 +613,8 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
                 type = TypeKey(customType1Key.key),
                 template = DEFAULT_TEMPLATE_ID_BLANK,
                 filters = emptyList(),
-                prefilled = emptyMap()
+                prefilled = emptyMap(),
+                createdInContext = root
             )
             async(params)
         }
@@ -710,7 +715,8 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
                 type = TypeKey(customType1Key.key),
                 template = template2.id,
                 filters = emptyList(),
-                prefilled = emptyMap()
+                prefilled = emptyMap(),
+                createdInContext = root
             )
             async(params)
         }

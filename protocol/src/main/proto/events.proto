@@ -128,6 +128,9 @@ message Event {
       Chat.UpdateReactionReadStatus chatUpdateReactionReadStatus = 141;
       Object.AutoArchive objectAutoArchive = 142;
       Object.AutoRestore objectAutoRestore = 143;
+      Chat.UpdateMessageCount chatUpdateMessageCount =
+          144; // received whenever the total number of non-deleted messages in
+               // the chat changes
 
       Chat.Delete chatDelete = 131;
       Chat.UpdateState chatStateUpdate =
@@ -192,6 +195,10 @@ message Event {
       repeated string ids = 1;
       bool isUnread = 2;
       repeated string subIds = 3;
+    }
+    message UpdateMessageCount {
+      int32 messageCount = 1; // total number of non-deleted messages (includes replies)
+      repeated string subIds = 2;
     }
   }
 

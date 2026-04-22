@@ -31,6 +31,7 @@ import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -442,6 +443,74 @@ class SharingViewModelTest {
             val dismissCommand = awaitItem()
             assertIs<SharingCommand.Dismiss>(dismissCommand)
         }
+    }
+
+    // endregion
+
+    // region Back Navigation Tests
+
+    @Test
+    fun `onBackPressed from ObjectSelection returns true and transitions to SpaceSelection`() = runTest {
+        // Given
+        stubAwaitAccountStart()
+        stubSpaceViewSubscription(listOf(testDataSpace))
+        stubPermissions(mapOf(testDataSpace.id to SpaceMemberPermissions.OWNER))
+
+        val vm = buildViewModel()
+        vm.onSharedDataReceived(SharedContent.Text("Test text"))
+        advanceUntilIdle()
+
+        vm.onSpaceSelected(selectableDataSpace)
+        advanceUntilIdle()
+
+        assertIs<SharingScreenState.ObjectSelection>(
+            vm.screenState.value,
+            "Expected ObjectSelection before back press, got ${vm.screenState.value}"
+        )
+
+        // When
+        val handled = vm.onBackPressed()
+        advanceUntilIdle()
+
+        // Then
+        assertTrue("onBackPressed should return true from ObjectSelection", handled)
+        assertIs<SharingScreenState.SpaceSelection>(
+            vm.screenState.value,
+            "Expected SpaceSelection after back press, got ${vm.screenState.value}"
+        )
+    }
+
+    @Test
+    fun `subscription update does not reset ObjectSelection back to SpaceSelection`() = runTest {
+        // Given - use a replay-capable flow so we can emit multiple values
+        val spacesFlow = MutableSharedFlow<List<ObjectWrapper.SpaceView>>(replay = 1)
+        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(spacesFlow)
+        stubAwaitAccountStart()
+        stubPermissions(mapOf(testDataSpace.id to SpaceMemberPermissions.OWNER))
+
+        spacesFlow.emit(listOf(testDataSpace))
+
+        val vm = buildViewModel()
+        vm.onSharedDataReceived(SharedContent.Text("Test text"))
+        advanceUntilIdle()
+
+        vm.onSpaceSelected(selectableDataSpace)
+        advanceUntilIdle()
+
+        assertIs<SharingScreenState.ObjectSelection>(
+            vm.screenState.value,
+            "Expected ObjectSelection before subscription update, got ${vm.screenState.value}"
+        )
+
+        // When - subscription emits an update while on ObjectSelection
+        spacesFlow.emit(listOf(testDataSpace))
+        advanceUntilIdle()
+
+        // Then - ObjectSelection should not be overwritten
+        assertIs<SharingScreenState.ObjectSelection>(
+            vm.screenState.value,
+            "Expected ObjectSelection to remain after subscription update, got ${vm.screenState.value}"
+        )
     }
 
     // endregion

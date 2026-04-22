@@ -1,9 +1,7 @@
 package com.anytypeio.anytype.ui.home
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -24,11 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -55,7 +49,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.extractWidgetId
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
-import com.anytypeio.anytype.ui.widgets.types.CreateHomeWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.HomeWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.InviteMembersWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ObjectTypesGroupWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
@@ -79,8 +73,7 @@ fun WidgetsScreen(
     val chatWidget = viewModel.chatView.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
     val recentlyEditedWidget = viewModel.recentlyEditedView.collectAsState().value
-    val showHomepagePicker = viewModel.showHomepagePicker.collectAsState().value // used for guard
-    val showCreateHomeWidget = viewModel.showCreateHomeWidget.collectAsState().value
+    val homeWidget = viewModel.homeWidgetView.collectAsState().value
     val showInviteMembersWidget = viewModel.showInviteMembersWidget.collectAsState().value
     val collapsedSections = viewModel.collapsedSections.collectAsState().value
     val sectionConfig = viewModel.widgetSections.collectAsState().value
@@ -308,17 +301,14 @@ fun WidgetsScreen(
                 }
             }
 
-            // "Create Home" widget — shown when homepage is not set and picker was dismissed
-            // Stays visible at 50% opacity while homepage picker is open
-            if (showCreateHomeWidget) {
-                item {
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-                item(key = WidgetView.CreateHome.WIDGET_CREATE_HOME_ID) {
-                    CreateHomeWidgetCard(
-                        onWidgetClicked = viewModel::onCreateHomeWidgetClicked,
-                        onDismissClicked = viewModel::onCreateHomeWidgetDismissed,
-                        modifier = Modifier.alpha(if (showHomepagePicker) 0.5f else 1f)
+            // "Home" widget — shortcut back to the space homepage (Chat / Page / Collection).
+            // Hidden when homepage is widgets. Non-reorderable.
+            if (homeWidget != null) {
+                item(key = WidgetView.Home.WIDGET_HOME_ID) {
+                    HomeWidgetCard(
+                        item = homeWidget,
+                        onWidgetClicked = viewModel::onHomeWidgetClicked,
+                        onChangeHomeClicked = viewModel::onHomeWidgetChangeHomeClicked
                     )
                 }
             }
@@ -566,25 +556,25 @@ fun WidgetsScreen(
             onClick = viewModel::onSearchIconClicked,
         )
 
-        // Create-object FAB (bottom-end). Tap creates a new object;
-        // long-press surfaces the type picker. Uses the same icon as the
-        // editor / set screens. Disabled visual reflects
-        // NavPanelState.Default.isCreateEnabled.
-        CircularFabButton(
-            iconRes = R.drawable.ic_create_obj_32,
-            contentDescription = stringResource(
-                id = R.string.main_navigation_content_desc_create_button
-            ),
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .navigationBarsPadding()
-                .padding(
-                    end = dimensionResource(R.dimen.nav_fab_margin),
-                    bottom = dimensionResource(R.dimen.nav_fab_margin),
+        // Create-object FAB (bottom-end). Tap surfaces the create-object
+        // popup (type picker + media rows). Uses the same icon as the
+        // editor / set screens. Hidden entirely when creation is not
+        // permitted (NavPanelState.Default.isCreateEnabled == false).
+        if (isCreateEnabled) {
+            CircularFabButton(
+                iconRes = R.drawable.ic_create_obj_32,
+                contentDescription = stringResource(
+                    id = R.string.main_navigation_content_desc_create_button
                 ),
-            isEnabled = isCreateEnabled,
-            onClick = viewModel::onCreateNewObjectClicked,
-            onLongClick = viewModel::onCreateNewObjectLongClicked,
-        )
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .navigationBarsPadding()
+                    .padding(
+                        end = dimensionResource(R.dimen.nav_fab_margin),
+                        bottom = dimensionResource(R.dimen.nav_fab_margin),
+                    ),
+                onClick = viewModel::onCreateObjectMenuClicked,
+            )
+        }
     }
 }

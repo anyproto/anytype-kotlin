@@ -40,6 +40,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.BottomSheetScaffold
@@ -60,9 +61,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
 import androidx.compose.ui.Alignment.Companion.CenterEnd
+import androidx.compose.ui.Alignment.Companion.CenterStart
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
@@ -85,7 +88,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.keyboardAsState
-import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -122,8 +124,6 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun ScreenContent(
     vm: CollectionViewModel,
     uiState: CollectionUiState,
-    onCreateObjectLongClicked: () -> Unit,
-    onSearchClicked: () -> Unit,
 ) {
     Box(
         Modifier.background(color = colorResource(R.color.background_primary))
@@ -143,19 +143,6 @@ fun ScreenContent(
                 TopBar(vm, uiState)
                 SearchBar(vm, uiState)
                 ListView(vm, uiState, stringResource(id = R.string.search_no_results_try))
-            }
-            Box(
-                Modifier
-                    .align(BottomCenter)
-                    .padding(bottom = 20.dp)) {
-                BottomNavigationMenu(
-                    onSearchClick = onSearchClicked,
-                    onAddDocClick = { vm.onAddClicked(null) },
-                    onAddDocLongClick = onCreateObjectLongClicked,
-                    onShareButtonClicked = vm::onShareButtonClicked,
-                    state = vm.navPanelState.collectAsStateWithLifecycle().value,
-                    onHomeButtonClicked = vm::onHomeButtonClicked
-                )
             }
         }
         if (uiState.operationInProgress) {
@@ -178,6 +165,29 @@ fun TopBar(
             .fillMaxWidth()
             .height(48.dp)
     ) {
+        Box(
+            modifier = Modifier
+                .align(CenterStart)
+                .padding(start = 16.dp)
+                .size(44.dp)
+                .shadow(
+                    elevation = 20.dp,
+                    shape = CircleShape,
+                    clip = false
+                )
+                .background(
+                    color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.navigation_panel),
+                    shape = CircleShape
+                )
+                .noRippleThrottledClickable { vm.onPrevClicked() },
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                modifier = Modifier.wrapContentSize(),
+                painter = painterResource(R.drawable.ic_default_top_back),
+                contentDescription = stringResource(R.string.content_desc_back_button)
+            )
+        }
         Text(
             modifier = Modifier
                 .align(Alignment.Center),
@@ -621,9 +631,7 @@ fun CollectionItem(
 @ExperimentalMaterialApi
 @Composable
 fun CollectionScreen(
-    vm: CollectionViewModel,
-    onCreateObjectLongClicked: () -> Unit,
-    onSearchClicked: () -> Unit
+    vm: CollectionViewModel
 ) {
 
     val uiState by vm.uiState.collectAsStateWithLifecycle()
@@ -644,9 +652,7 @@ fun CollectionScreen(
             ) {
                 ScreenContent(
                     vm = vm,
-                    uiState = state,
-                    onCreateObjectLongClicked = onCreateObjectLongClicked,
-                    onSearchClicked = onSearchClicked
+                    uiState = state
                 )
                 LaunchedEffect(state) {
 

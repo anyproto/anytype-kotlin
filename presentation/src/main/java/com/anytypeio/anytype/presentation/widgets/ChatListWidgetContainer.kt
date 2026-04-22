@@ -230,9 +230,13 @@ class ChatListWidgetContainer(
                                                                     mapToAttachmentPreview(attachment, dependency)
                                                                 } ?: emptyList()
                                                                 val chatNotificationState = getChatNotificationState(element.obj.id, spaces)
-                                                                
+                                                                val chatSpaceView = spaces.firstOrNull { it.targetSpaceId == space.id }
+                                                                val isMutedAndHidden = chatSpaceView?.let {
+                                                                    NotificationStateCalculator.isMutedAndHidden(it, element.obj.id)
+                                                                } ?: false
+
                                                                 Timber.d("Creating Chat element with preview: chatId=${element.obj.id}, creator=$creatorName, message=${messageText?.take(30)}, time=$messageTime")
-                                                                
+
                                                                 WidgetView.SetOfObjects.Element.Chat(
                                                                     obj = element.obj,
                                                                     objectIcon = element.objectIcon,
@@ -246,7 +250,8 @@ class ChatListWidgetContainer(
                                                                     messageText = messageText,
                                                                     messageTime = messageTime,
                                                                     attachmentPreviews = attachmentPreviews,
-                                                                    chatNotificationState = chatNotificationState
+                                                                    chatNotificationState = chatNotificationState,
+                                                                    isMutedAndHidden = isMutedAndHidden
                                                                 )
                                                             } else {
                                                                 element

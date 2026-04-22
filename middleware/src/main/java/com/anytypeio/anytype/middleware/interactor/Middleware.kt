@@ -924,8 +924,17 @@ class Middleware @Inject constructor(
     fun objectCreate(
         command: Command.CreateObject
     ): CreateObjectResult {
+        val details: Map<String, Any?> = buildMap {
+            putAll(command.prefilled)
+            if (!command.createdInContext.isNullOrEmpty()) {
+                put(Relations.CREATED_IN_CONTEXT, command.createdInContext)
+            }
+            if (!command.createdInContextRef.isNullOrEmpty()) {
+                put(Relations.CREATED_IN_CONTEXT_REF, command.createdInContextRef)
+            }
+        }
         val request = Rpc.Object.Create.Request(
-            details = command.prefilled,
+            details = details,
             templateId = command.template.orEmpty(),
             internalFlags = command.internalFlags.toMiddlewareModel(),
             spaceId = command.space.id,
@@ -971,12 +980,16 @@ class Middleware @Inject constructor(
     fun objectCreateBookmark(
         space: Id,
         url: Url,
-        details: Struct
+        details: Struct,
+        createdInContext: Id? = null
     ): Id {
         val request = Rpc.Object.CreateBookmark.Request(
             details = buildMap {
                 put(Relations.SOURCE, url)
                 putAll(details)
+                if (!createdInContext.isNullOrEmpty()) {
+                    put(Relations.CREATED_IN_CONTEXT, createdInContext)
+                }
             },
             spaceId = space
         )

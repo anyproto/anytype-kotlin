@@ -117,7 +117,6 @@ fun AllContentWrapperScreen(
     onUpdateLimitSearch: () -> Unit,
     uiContentState: UiContentState,
     onAddDocClicked: () -> Unit,
-    onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
     onTitleClick: () -> Unit,
     onSyncStatusClick: (SpaceSyncAndP2PStatusState) -> Unit,
@@ -141,7 +140,6 @@ fun AllContentWrapperScreen(
         uiItemsState = uiItemsState,
         uiContentState = uiContentState,
         onAddDocClicked = onAddDocClicked,
-        onCreateObjectLongClicked = onCreateObjectLongClicked,
         onBackClicked = onBackClicked,
         onTitleClick = onTitleClick,
         onSyncStatusClick = onSyncStatusClick,
@@ -172,7 +170,6 @@ fun AllContentMainScreen(
     onBinClick: () -> Unit,
     uiContentState: UiContentState,
     onAddDocClicked: () -> Unit,
-    onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
     onTitleClick: () -> Unit,
     onSyncStatusClick: (SpaceSyncAndP2PStatusState) -> Unit,
@@ -305,8 +302,7 @@ fun AllContentMainScreen(
                         ),
                     iconRes = com.anytypeio.anytype.core_ui.R.drawable.ic_create_obj_32,
                     contentDescription = stringResource(id = R.string.create),
-                    onClick = onAddDocClicked,
-                    onLongClick = onCreateObjectLongClicked
+                    onClick = onAddDocClicked
                 )
             }
         },
@@ -535,7 +531,6 @@ fun PreviewMainScreen() {
         onBinClick = {},
         uiContentState = UiContentState.Error("Error message"),
         onAddDocClicked = {},
-        onCreateObjectLongClicked = {},
         onBackClicked = {},
         onTitleClick = {},
         onSyncStatusClick = {},

@@ -78,7 +78,8 @@ fun LinkWidgetCard(
                 ChatCounterBadges(
                     counter = item.counter,
                     notificationState = item.notificationState,
-                    modifier = Modifier
+                    modifier = Modifier,
+                    isMutedAndHidden = item.isMutedAndHidden
                 )
             }
         }
@@ -92,7 +93,7 @@ fun LinkWidgetCard(
 
 @Preview(name = "Link Widget Card Preview", showBackground = true)
 @Composable
-private fun LinkWidgetCardPreview() {
+fun LinkWidgetCardPreview1() {
     val previewLinkItem = WidgetView.Link(
         source = Widget.Source.Default(
             obj = ObjectWrapper.Basic(

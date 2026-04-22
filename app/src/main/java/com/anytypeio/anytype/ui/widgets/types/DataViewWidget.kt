@@ -127,7 +127,8 @@ fun DataViewListWidgetCard(
                             name = element.getPrettyName(),
                             counter = (element as? WidgetView.SetOfObjects.Element.Chat)?.counter,
                             notificationState = (element as? WidgetView.SetOfObjects.Element.Chat)?.chatNotificationState,
-                            hideCounters = hideCounters
+                            hideCounters = hideCounters,
+                            isMutedAndHidden = (element as? WidgetView.SetOfObjects.Element.Chat)?.isMutedAndHidden ?: false
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(
@@ -250,7 +251,8 @@ fun ChatListWidgetCard(
                                 name = element.getPrettyName(),
                                 counter = (element as? WidgetView.SetOfObjects.Element.Chat)?.counter,
                                 notificationState = (element as? WidgetView.SetOfObjects.Element.Chat)?.chatNotificationState,
-                                hideCounters = hideCounters
+                                hideCounters = hideCounters,
+                                isMutedAndHidden = (element as? WidgetView.SetOfObjects.Element.Chat)?.isMutedAndHidden ?: false
                             )
                             if (idx != item.elements.lastIndex) {
                                 Divider(
@@ -454,7 +456,8 @@ fun ListWidgetElement(
     name: String,
     counter: WidgetView.ChatCounter? = null,
     notificationState: com.anytypeio.anytype.core_models.chats.NotificationState? = null,
-    hideCounters: Boolean = false
+    hideCounters: Boolean = false,
+    isMutedAndHidden: Boolean = false
 ) {
     Box(
         modifier = Modifier
@@ -522,7 +525,8 @@ fun ListWidgetElement(
             ChatCounterBadges(
                 counter = counter,
                 notificationState = notificationState,
-                modifier = Modifier.align(Alignment.CenterEnd)
+                modifier = Modifier.align(Alignment.CenterEnd),
+                isMutedAndHidden = isMutedAndHidden
             )
         }
     }

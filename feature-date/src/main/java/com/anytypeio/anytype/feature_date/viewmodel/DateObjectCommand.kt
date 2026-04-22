@@ -11,7 +11,6 @@ sealed class DateObjectCommand {
     data class NavigateToDateObject(val objectId: Id, val space: SpaceId) : DateObjectCommand()
     data class NavigateToParticipant(val objectId: Id, val space: SpaceId) : DateObjectCommand()
     data class OpenUrl(val url: String) : DateObjectCommand()
-    data object TypeSelectionScreen : DateObjectCommand()
     data object ExitToHomeOrChat : DateObjectCommand()
     sealed class SendToast : DateObjectCommand() {
         data class Error(val message: String) : SendToast()

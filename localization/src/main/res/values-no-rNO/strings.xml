@@ -60,7 +60,7 @@
     <string name="remove_image">Remove image</string>
     <string name="delete_space">Slett rom</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
-    <string name="in_order_to_save">For å spare plass på den lokale enheten din, kan du slette alle lokale filer og beholde dem på vår krypterte sikkerhetskopi-node. Filene vil bli lastet ned igjen når du åpner dem.</string>
+    <string name="in_order_to_save">Free up space by offloading files to encrypted backup. They’ll load when you open them.</string>
     <string name="manage_files">Administrer filer</string>
     <string name="local_storage">Lokal lagring</string>
     <string name="offload_files">Slett lokale filer</string>
@@ -2082,6 +2082,8 @@ Please provide specific details of your needs here.</string>
     </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="private_channel">Direct channel</string>
+    <string name="space_header_private_channel">Private channel</string>
+    <string name="space_header_group_channel">Group channel</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Preferences</string>
@@ -2183,4 +2185,16 @@ Please provide specific details of your needs here.</string>
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
     <string name="chats_search_close_content_description">Close search</string>
+    <!-- DROID-4358 Offline Downloads settings -->
+    <string name="offline_downloads_section_title">Offline access</string>
+    <string name="offline_downloads_title">Offline Downloads</string>
+    <string name="offline_downloads_subtitle">Auto sync files up to a selected size</string>
+    <string name="offline_downloads_use_cellular">Use Cellular Data</string>
+    <string name="offline_downloads_value_off">Off</string>
+    <string name="offline_downloads_value_20mb">20 MB</string>
+    <string name="offline_downloads_value_100mb">100 MB</string>
+    <string name="offline_downloads_value_250mb">250 MB</string>
+    <string name="offline_downloads_value_1gb">1 GB</string>
+    <string name="offline_downloads_value_unlimited">Ubegrenset</string>
+    <string name="device_storage_used">Device storage used</string>
 </resources>

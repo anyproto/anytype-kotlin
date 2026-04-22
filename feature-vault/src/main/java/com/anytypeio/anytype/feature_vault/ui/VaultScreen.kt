@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ui.AccountProfile
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
@@ -55,6 +56,7 @@ fun VaultScreen(
     onSettingsClicked: () -> Unit,
     onMuteSpace: (Id) -> Unit,
     onUnmuteSpace: (Id) -> Unit,
+    onSetSpaceNotificationMode: (Id, NotificationState) -> Unit,
     onPinSpace: (Id) -> Unit,
     onUnpinSpace: (Id) -> Unit,
     onOrderChanged: (String, String) -> Unit,
@@ -107,6 +109,7 @@ fun VaultScreen(
                     onCreateSpaceClicked = onCreateChannelMenuClicked,
                     onMuteSpace = onMuteSpace,
                     onUnmuteSpace = onUnmuteSpace,
+                    onSetSpaceNotificationMode = onSetSpaceNotificationMode,
                     onPinSpace = onPinSpace,
                     onUnpinSpace = onUnpinSpace,
                     onOrderChanged = onOrderChanged,
@@ -130,6 +133,7 @@ fun VaultScreenContent(
     onCreateSpaceClicked: () -> Unit,
     onMuteSpace: (Id) -> Unit,
     onUnmuteSpace: (Id) -> Unit,
+    onSetSpaceNotificationMode: (Id, NotificationState) -> Unit,
     onPinSpace: (Id) -> Unit,
     onUnpinSpace: (Id) -> Unit,
     onOrderChanged: (String, String) -> Unit,
@@ -320,6 +324,7 @@ fun VaultScreenContent(
                                     onDismissMenu = { expandedSpaceId = null },
                                     onMuteSpace = onMuteSpace,
                                     onUnmuteSpace = onUnmuteSpace,
+                                    onSetSpaceNotificationMode = onSetSpaceNotificationMode,
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
                                     onSpaceSettings = onSpaceSettings,
@@ -370,6 +375,7 @@ fun VaultScreenContent(
                                     onDismissMenu = { expandedSpaceId = null },
                                     onMuteSpace = onMuteSpace,
                                     onUnmuteSpace = onUnmuteSpace,
+                                    onSetSpaceNotificationMode = onSetSpaceNotificationMode,
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
                                     onSpaceSettings = onSpaceSettings,
@@ -431,6 +437,7 @@ fun VaultScreenContent(
                                 onDismissMenu = { expandedSpaceId = null },
                                 onMuteSpace = onMuteSpace,
                                 onUnmuteSpace = onUnmuteSpace,
+                                onSetSpaceNotificationMode = onSetSpaceNotificationMode,
                                 onPinSpace = onPinSpace,
                                 onUnpinSpace = onUnpinSpace,
                                 onSpaceSettings = onSpaceSettings,
@@ -493,6 +500,7 @@ fun VaultScreenContent(
                                 onDismissMenu = { expandedSpaceId = null },
                                 onMuteSpace = onMuteSpace,
                                 onUnmuteSpace = onUnmuteSpace,
+                                onSetSpaceNotificationMode = onSetSpaceNotificationMode,
                                 onPinSpace = onPinSpace,
                                 onUnpinSpace = onUnpinSpace,
                                 onSpaceSettings = onSpaceSettings,

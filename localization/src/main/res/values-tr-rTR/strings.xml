@@ -77,7 +77,7 @@
     <string name="space_settings_error_icon">Alan simgesi değiştirilemedi. Lütfen tekrar deneyin.</string>
     <string name="manage_sections_title">Bölümleri yönet</string>
     <string name="section_unread">Okunmamış</string>
-    <string name="section_my_favorites">My Favorites</string>
+    <string name="section_my_favorites">Favorilerim</string>
     <string name="section_pinned">Sabitlendi</string>
     <string name="section_objects">Nesneler</string>
     <string name="section_recently_edited">Yakın zamanda düzenlenen</string>
@@ -868,7 +868,7 @@
     <string name="create_space_space_name">Alan ismi</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Ana Sayfa Oluştur</string>
-    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
+    <string name="homepage_picker_description">Üyeler gezinme menüsünü kullanmak yerine doğrudan buraya yönlendirilecek.</string>
     <string name="homepage_picker_chat">Sohbet</string>
     <string name="homepage_picker_page">Sayfa</string>
     <string name="homepage_picker_collection">Koleksiyon</string>
@@ -1092,7 +1092,7 @@
     <string name="onboarding_void_title">Bu senin boşluğun</string>
     <string name="onboarding_void_description">Oluşturduğunuz her şey için şifrelenmiş bir konumdur. Her şey cihazınızda saklanır ve dağıtılmış ağda yedeklenir.</string>
     <string name="onboarding_this_is_your_key_title">Bu senin anahtarın</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">Kullanıcı adı ve şifrenin yerini alır. Güvenli bir yerde sakla — verilerinden yalnızca sen sorumlusun. Bu Anahtarı daha sonra uygulama ayarlarında bulabilirsin.</string>
     <string name="onboarding_show_my_key">Anahtarımı Göster</string>
     <string name="onboarding_tap_to_reveal">Göster ve Kopyala</string>
     <string name="onboarding_key_skip">Atla</string>
@@ -1113,7 +1113,7 @@
     <string name="onboarding_recovery_phrase_description">Anahtarınız, bu cihazda kasayı oluşturan 12 rastgele kelimeden oluşan bir kurtarma cümlesi ile temsil edilir.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Anahtara kim sahip olursa erişim hakkı elde eder</string>
     <string name="onboarding_recovery_phrase_description_2">Bu kelimelere sahip olan herkes kasana erişebilir. Şu anda bunları bilen tek kişi sensin.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Bunun sorumluluğu tamamen sana aittir</string>
     <string name="onboarding_recovery_phrase_description_3">Dünyadaki tüm hesaplama kaynakları bile bu anahtarı kırmaya yetmez. Anahtarını kaybedersen verilerine erişemezsin. Anahtarını güvenli bir yerde sakla. Bir şifre yöneticisinde veya kağıda yazarak saklayabilirsin.</string>
     <string name="onboarding_recovery_phrase_description_4">Dünya üzerindeki tüm hesaplama kaynakları içeri girmek için yeterli değildir. Kaybederseniz, kurtarılamaz. Bu yüzden güvenli bir yerde saklayın!</string>
     <string name="onboarding_how_to_save_my_phrase">Anahtarımı nasıl kaydedebilirim?</string>
@@ -2113,7 +2113,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="web_publishing_copy_web_link">Web Bağlantısını Kopyala</string>
     <string name="widgets_section_pinned">Sabitlendi</string>
     <string name="widgets_section_unread">Okunmamış</string>
-    <string name="widgets_section_my_favorites">My Favorites</string>
+    <string name="widgets_section_my_favorites">Favorilerim</string>
     <string name="widgets_section_object_types">Nesneler</string>
     <string name="widgets_section_recently_edited">Yakın Zamanda Düzenlenen</string>
     <string name="widgets_menu_new_object_type">Yeni</string>

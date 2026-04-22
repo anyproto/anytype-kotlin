@@ -24,6 +24,15 @@ class PersonalFavoritesDataRepository(
         )
     }
 
+    // Note on [openObject] calls in remove/reorder:
+    // ObservePersonalFavoriteTargets (domain layer) already holds the personal-
+    // widgets doc open via its own OpenObject for the reactive subscription.
+    // Each openObject call below adds an extra reference-counted open to the
+    // same doc. Middleware handles this (ref-counted, never negative), but the
+    // ideal shape would accept a snapshot of wrapper/link IDs from the caller
+    // (which already has them via the reactive flow) rather than re-fetching.
+    // Follow-up: pass a snapshot through the use-case boundary.
+
     override suspend fun remove(space: SpaceId, target: Id) {
         val ctx = personalWidgetsId(space)
         val view = blocks.openObject(ctx, space)
@@ -37,6 +46,10 @@ class PersonalFavoritesDataRepository(
         val ctx = personalWidgetsId(space)
         val view = blocks.openObject(ctx, space)
         val root = view.root
+        // TODO(DROID-4397 follow-up): this emits O(n) sequential move RPCs.
+        // GO-6962 did not include a batch-move endpoint; when one lands (or
+        // once widget-doc snapshots are accepted here), collapse into a single
+        // round-trip. Acceptable today since favorite counts stay small.
         orderedTargets.forEach { target ->
             val wrapperId = view.wrapperIdTargeting(target) ?: return@forEach
             blocks.move(

@@ -495,6 +495,15 @@ class HomeScreenViewModel(
     val favoriteTargets: StateFlow<Set<Id>> =
         observePersonalFavoriteTargets(vmParams.spaceId)
             .map { it.toSet() }
+            .catch { e ->
+                // DROID-4397: OpenObject on the personal-widgets virtual doc
+                // can fail on first load (middleware not ready, network blip,
+                // etc.). Degrade to empty rather than terminating the flow —
+                // PersonalFavoritesWidgetContainer does the same with its
+                // own .catch on a parallel observation.
+                Timber.e(e, "Failed to observe personal favorite targets; emitting empty")
+                emit(emptySet())
+            }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.Eagerly,

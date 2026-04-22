@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
@@ -18,6 +19,7 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 
@@ -83,6 +85,27 @@ class ObservePersonalFavoriteTargetsTest {
         val result = observe(space).first()
 
         assertEquals(emptyList(), result)
+    }
+
+    /**
+     * DROID-4397: the helper itself doesn't swallow exceptions — callers are
+     * expected to (and do, in HomeScreenViewModel.favoriteTargets and
+     * PersonalFavoritesWidgetContainer.view, both of which wrap with .catch).
+     * This test documents that contract: when OpenObject fails, the flow
+     * propagates the exception rather than silently emitting, so callers get
+     * a clear signal to fall back.
+     */
+    @Test
+    fun `propagates openObject failure so callers can catch`() = runTest {
+        val boom = RuntimeException("middleware not ready")
+        openObject.stub {
+            onBlocking { run(any()) } doAnswer { throw boom }
+        }
+        stubEvents(emptyFlow())
+
+        val thrown = kotlin.runCatching { observe(space).first() }.exceptionOrNull()
+
+        assertTrue(thrown === boom, "Expected OpenObject exception to propagate")
     }
 
     // --- helpers ---

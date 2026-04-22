@@ -17,13 +17,11 @@ class ObjectMenuOptionsProviderImplTest {
     private val details = MutableStateFlow<ObjectViewDetails>(ObjectViewDetails.EMPTY)
     private val hasObjectLayoutConflict = MutableStateFlow(false)
     private val personalFavoriteTargets = MutableStateFlow<Set<String>>(emptySet())
-    private val sharedPinnedTargets = MutableStateFlow<Set<String>>(emptySet())
     private val canToggleChannelPin = MutableStateFlow(false)
     private val provider = ObjectMenuOptionsProviderImpl(
         objectViewDetailsFlow = details,
         hasObjectLayoutConflict = hasObjectLayoutConflict,
         personalFavoriteTargets = personalFavoriteTargets,
-        sharedPinnedTargets = sharedPinnedTargets,
         canToggleChannelPin = canToggleChannelPin
     )
 
@@ -178,7 +176,6 @@ class ObjectMenuOptionsProviderImplTest {
         provider.provide(objectId, isLocked = false, isReadOnly = false).test {
             val options = awaitItem()
             assertEquals(true, options.isFavorited)
-            assertEquals(false, options.isPinnedToChannel)
             assertEquals(false, options.canToggleChannelPin)
         }
     }
@@ -190,16 +187,6 @@ class ObjectMenuOptionsProviderImplTest {
 
         provider.provide(objectId, isLocked = false, isReadOnly = false).test {
             assertEquals(false, awaitItem().isFavorited)
-        }
-    }
-
-    @Test
-    fun `isPinnedToChannel reflects shared pinned targets`() = runTest {
-        details.value = basicDetails()
-        sharedPinnedTargets.value = setOf(objectId)
-
-        provider.provide(objectId, isLocked = false, isReadOnly = false).test {
-            assertEquals(true, awaitItem().isPinnedToChannel)
         }
     }
 
@@ -224,7 +211,6 @@ class ObjectMenuOptionsProviderImplTest {
         plainProvider.provide(objectId, isLocked = false, isReadOnly = false).test {
             val options = awaitItem()
             assertEquals(false, options.isFavorited)
-            assertEquals(false, options.isPinnedToChannel)
             assertEquals(false, options.canToggleChannelPin)
         }
     }

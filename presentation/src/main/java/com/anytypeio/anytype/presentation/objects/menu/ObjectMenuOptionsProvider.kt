@@ -21,13 +21,10 @@ interface ObjectMenuOptionsProvider {
          */
         val isFavorited: Boolean = false,
         /**
-         * DROID-4397: whether the object is in the space's shared pinned list.
-         * Drives the "Pin to channel" ↔ "Unpin from channel" menu item toggle.
-         */
-        val isPinnedToChannel: Boolean = false,
-        /**
          * DROID-4397: whether the current user has Owner/Admin role in the space.
-         * Pin/Unpin menu items are hidden entirely when false.
+         * Pin/Unpin menu items are hidden entirely when false. The *which* of
+         * Pin vs Unpin is decided by the existing `pinnedWidgetBlockId` state
+         * in `ObjectMenuViewModelBase` — we don't duplicate it here.
          */
         val canToggleChannelPin: Boolean = false
     ) {

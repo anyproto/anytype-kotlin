@@ -19,8 +19,6 @@ import timber.log.Timber
  *  personal favorites for the active space. Used to flip the Favorite ↔ Unfavorite
  *  menu item. Defaults to [emptySet] when the caller hasn't wired personal favorites
  *  (e.g. legacy callers not yet updated for DROID-4397).
- * @param sharedPinnedTargets emits the set of object IDs currently in the space's
- *  shared pinned list. Used to flip Pin ↔ Unpin. Defaults to [emptySet].
  * @param canToggleChannelPin emits true iff the current user has Owner/Admin role in
  *  the active space. Gates visibility of the Pin/Unpin menu items. Defaults to false.
  */
@@ -28,7 +26,6 @@ class ObjectMenuOptionsProviderImpl(
     private val objectViewDetailsFlow: Flow<ObjectViewDetails>,
     private val hasObjectLayoutConflict: Flow<Boolean>,
     private val personalFavoriteTargets: Flow<Set<Id>> = flowOf(emptySet()),
-    private val sharedPinnedTargets: Flow<Set<Id>> = flowOf(emptySet()),
     private val canToggleChannelPin: Flow<Boolean> = flowOf(false)
 ) : ObjectMenuOptionsProvider {
 
@@ -67,12 +64,10 @@ class ObjectMenuOptionsProviderImpl(
 
     private fun observeFavoritesPinState(ctx: Id): Flow<FavoritesPinState> = combine(
         personalFavoriteTargets,
-        sharedPinnedTargets,
         canToggleChannelPin
-    ) { favorites, pinned, canPin ->
+    ) { favorites, canPin ->
         FavoritesPinState(
             isFavorited = ctx in favorites,
-            isPinnedToChannel = ctx in pinned,
             canToggleChannelPin = canPin
         )
     }
@@ -99,7 +94,6 @@ class ObjectMenuOptionsProviderImpl(
 
     private data class FavoritesPinState(
         val isFavorited: Boolean,
-        val isPinnedToChannel: Boolean,
         val canToggleChannelPin: Boolean
     )
 
@@ -211,7 +205,6 @@ class ObjectMenuOptionsProviderImpl(
         }
         return options.copy(
             isFavorited = favPin.isFavorited,
-            isPinnedToChannel = favPin.isPinnedToChannel,
             canToggleChannelPin = favPin.canToggleChannelPin
         )
     }

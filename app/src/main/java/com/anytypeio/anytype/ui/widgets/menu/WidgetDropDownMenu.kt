@@ -305,8 +305,15 @@ private fun WidgetView.canChangeWidgetType(): Boolean {
 /**
  * Determines which menu items should be shown for this widget.
  * Returns a list of menu items, or an empty list if no menu should be displayed.
+ *
+ * @param canToggleChannelPin DROID-4397: when false, hides [RemoveWidget] for
+ *  widgets in the PINNED section (since RemoveWidget = "Unpin from channel",
+ *  which is Owner/Admin only per spec). Defaults to true so legacy call sites
+ *  keep existing behavior.
  */
-fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
+fun WidgetView.getWidgetMenuItems(
+    canToggleChannelPin: Boolean = true
+): List<WidgetMenuItem> {
     val menuItems = when (sectionType) {
         SectionType.UNREAD -> {
             // Unread section widgets have no menu
@@ -316,13 +323,13 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
             buildList {
                 when (this@getWidgetMenuItems) {
                     is WidgetView.AllContent -> {
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.Bin -> {
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.ChatList -> {
                         if (canCreateObjectOfType) {
@@ -331,7 +338,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     WidgetView.EmptyState -> {}
                     is WidgetView.Gallery -> {
@@ -341,7 +348,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.Link -> {
                         // DROID-4397: favorite/unfavorite the underlying object,
@@ -355,7 +362,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.ListOfObjects -> {
                         if (canCreateObjectOfType) {
@@ -364,7 +371,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.SetOfObjects -> {
                         if (canCreateObjectOfType) {
@@ -373,7 +380,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.SpaceChat -> {}
                     is WidgetView.UnreadChatList -> {
@@ -386,7 +393,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.ObjectTypesGroup -> {
                         // Object types group has no menu - interactions are per-row

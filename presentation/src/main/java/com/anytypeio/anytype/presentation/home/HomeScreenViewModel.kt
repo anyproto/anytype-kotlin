@@ -468,6 +468,21 @@ class HomeScreenViewModel(
             initialValue = null
         )
 
+    /**
+     * DROID-4397: true iff the current user has Owner or Editor (Admin)
+     * permissions in the active space. Drives whether PIN/UNPIN
+     * (Pin-to-channel / Unpin-from-channel) actions are shown in widget
+     * menus. Reactive — role downgrades live-remove the actions.
+     */
+    val canToggleChannelPin: StateFlow<Boolean> =
+        userPermissionProvider.observe(vmParams.spaceId)
+            .map { it?.isOwnerOrEditor() == true }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Eagerly,
+                initialValue = false
+            )
+
     // Exposed flow for bin widget
     @OptIn(ExperimentalCoroutinesApi::class)
     val binView: StateFlow<WidgetView?> = binWidget

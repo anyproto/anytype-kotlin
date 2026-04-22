@@ -71,6 +71,7 @@ fun WidgetsScreen(
     val typeWidgets = viewModel.typeViews.collectAsState().value
     val unreadWidget = viewModel.unreadView.collectAsState().value
     val personalFavoritesWidget = viewModel.personalFavoritesView.collectAsState().value
+    val canToggleChannelPin = viewModel.canToggleChannelPin.collectAsState().value
     val chatWidget = viewModel.chatView.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
     val recentlyEditedWidget = viewModel.recentlyEditedView.collectAsState().value
@@ -358,6 +359,7 @@ fun WidgetsScreen(
                                 sectionType = SectionType.PINNED,
                                 isOtherSectionDragging = isDraggingTypes.value,
                                 hideCounters = hideCountersInOtherSections,
+                                canToggleChannelPin = canToggleChannelPin,
                                 onExpand = viewModel::onExpand,
                                 onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
                                     viewModel.onDropDownMenuAction(widget, action)

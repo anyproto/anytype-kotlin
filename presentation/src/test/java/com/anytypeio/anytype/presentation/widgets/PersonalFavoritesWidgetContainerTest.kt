@@ -147,6 +147,27 @@ class PersonalFavoritesWidgetContainerTest {
         // confirm we got the expected element count for the single target.
     }
 
+    /**
+     * DROID-4397 Task 23: when a favorited object is deleted or moved to bin,
+     * the object store's subscription stops emitting it. The container must
+     * skip it in the final element list rather than rendering a stale row.
+     */
+    @Test
+    fun `drops targets whose objects are missing from the store subscription`() = runTest {
+        val widget = createWidget()
+        stubTargets(listOf("obj-a", "deleted-obj", "obj-c"))
+        // Store returns only obj-a and obj-c — deleted-obj is gone (archived or binned)
+        stubSubscription(listOf(stubBasic("obj-a"), stubBasic("obj-c")))
+
+        val container = newContainer(widget = widget)
+
+        container.view.test {
+            val view = awaitItem() as WidgetView.SetOfObjects
+            assertEquals(listOf("obj-a", "obj-c"), view.elements.map { it.obj.id })
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
     // --- helpers ---
 
     private fun newContainer(

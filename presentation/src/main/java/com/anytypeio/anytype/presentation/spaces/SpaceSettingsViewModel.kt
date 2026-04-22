@@ -82,6 +82,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.multiplayer.SpaceLimitsState
 import com.anytypeio.anytype.presentation.multiplayer.spaceLimitsState
+import com.anytypeio.anytype.presentation.home.HomepageManagementRule
 import com.anytypeio.anytype.presentation.home.SpaceHomePickerDelegate
 import com.anytypeio.anytype.presentation.home.SpaceHomePickerState
 import com.anytypeio.anytype.presentation.home.SpaceHomepageResolver
@@ -565,10 +566,14 @@ class SpaceSettingsViewModel(
                     add(UiSpaceSettingsItem.Fields)
 
                     add(UiSpaceSettingsItem.Section.Preferences)
-                    // DROID-4469: Hide the "Home" row entirely in 1-on-1 channels.
-                    // 1-on-1 channels always open on Chat and have no
-                    // homepage-change UI.
-                    if (!spaceView.isOneToOneSpace) {
+                    // DROID-4463: Home row only for owners of regular channels.
+                    // Editors/Viewers cannot change the homepage; 1-on-1 channels
+                    // always open on Chat and have no homepage-change UI (DROID-4469).
+                    if (HomepageManagementRule.canManageHomepage(
+                            isOneToOneSpace = spaceView.isOneToOneSpace,
+                            permission = permission
+                        )
+                    ) {
                         add(spaceHomeSettingItem)
                         add(Spacer(id = "after-space-home", height = 8))
                     }

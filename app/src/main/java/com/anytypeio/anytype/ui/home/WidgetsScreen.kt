@@ -303,14 +303,16 @@ fun WidgetsScreen(
 
             // "Home" widget — shortcut back to the space homepage (Chat / Page / Collection).
             // Hidden when homepage is widgets. Non-reorderable.
-            if (homeWidget != null) {
+            // DROID-4463: hidden entirely in 1-on-1 channels (Chat is always home);
+            // long-press Change Home menu gated to owners of regular channels.
+            val spaceViewSuccess = spaceView as? HomeScreenViewModel.SpaceViewState.Success
+            if (homeWidget != null && spaceViewSuccess?.isOneToOneSpace != true) {
                 item(key = WidgetView.Home.WIDGET_HOME_ID) {
                     HomeWidgetCard(
                         item = homeWidget,
                         onWidgetClicked = viewModel::onHomeWidgetClicked,
                         onChangeHomeClicked = viewModel::onHomeWidgetChangeHomeClicked,
-                        isOneToOneSpace = (spaceView as? HomeScreenViewModel.SpaceViewState.Success)
-                            ?.isOneToOneSpace == true
+                        canChangeHome = spaceViewSuccess?.canChangeHome == true
                     )
                 }
             }

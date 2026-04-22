@@ -753,6 +753,10 @@ class HomeScreenViewModel(
                         membersCount = spaceMemberCount,
                         spaceChatId = spaceView.getSingleValue<String>(Relations.CHAT_ID),
                         isOneToOneSpace = spaceView.isOneToOneSpace,
+                        canChangeHome = HomepageManagementRule.canManageHomepage(
+                            isOneToOneSpace = spaceView.isOneToOneSpace,
+                            permission = permissions
+                        ),
                         spaceAccessType = spaceView.spaceAccessType ?: SpaceAccessType.PRIVATE,
                         memberGlobalName = otherMember?.globalName,
                         memberIdentity = otherMember?.identity
@@ -3844,6 +3848,7 @@ class HomeScreenViewModel(
             val spaceChatId: Id? = null,
             val spaceAccessType: SpaceAccessType,
             val isOneToOneSpace: Boolean,
+            val canChangeHome: Boolean = false,
             val memberGlobalName: String? = null,
             val memberIdentity: String? = null,
         ) : SpaceViewState() {
@@ -3888,12 +3893,19 @@ class HomeScreenViewModel(
 
     private fun proceedWithHomepageObservation() {
         viewModelScope.launch {
-            spaceViewSubscriptionContainer
-                .observe(vmParams.spaceId)
-                .collect { spaceView ->
-                    // 1-on-1 channels always open on Chat and have no homepage-change UI.
-                    // See DROID-4469.
-                    if (spaceView.isOneToOneSpace) {
+            combine(
+                spaceViewSubscriptionContainer.observe(vmParams.spaceId),
+                userPermissions
+            ) { spaceView, permission -> spaceView to permission }
+                .collect { (spaceView, permission) ->
+                    // DROID-4463: only the space owner may configure the homepage in
+                    // regular channels; 1-on-1 channels always open on Chat and have
+                    // no homepage-change UI (DROID-4469).
+                    val canManage = HomepageManagementRule.canManageHomepage(
+                        isOneToOneSpace = spaceView.isOneToOneSpace,
+                        permission = permission
+                    )
+                    if (!canManage) {
                         showHomepagePicker.value = false
                         return@collect
                     }

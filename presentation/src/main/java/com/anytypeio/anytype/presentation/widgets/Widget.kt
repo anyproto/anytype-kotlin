@@ -240,6 +240,7 @@ sealed class Widget {
         companion object {
             const val WIDGET_BIN_ID = "widget_bin_id"
             const val WIDGET_RECENTLY_EDITED_ID = "widget_recently_edited_id"
+            const val WIDGET_PERSONAL_FAVORITES_ID = "widget_personal_favorites_id"
             const val SECTION_PINNED = "pinned_section"
             const val SECTION_UNREAD = "unread_section"
             const val SECTION_OBJECT_TYPE = "object_type_section"
@@ -469,6 +470,7 @@ data class WidgetSections(
     val typeWidgets: List<Widget>,
     val chatWidget: Widget.Chat? = null,
     val unreadWidget: Widget.UnreadChatList? = null,
+    val personalFavoritesWidget: Widget.PersonalFavorites? = null,
     val recentlyEditedWidget: Widget.RecentlyEdited? = null,
     val binWidget: Widget.Bin? = null
 )
@@ -535,6 +537,16 @@ suspend fun buildWidgetSections(
         null
     }
 
+    // My Favorites is data-driven — visibility also depends on the user having
+    // any personal favorites in this space. Visibility in this config reflects
+    // the section-level toggle only; the actual emptiness gate lives in the
+    // container (WidgetSection hides the header when elements are empty).
+    val personalFavoritesWidget = if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.MY_FAVORITES)) {
+        buildPersonalFavoritesWidget(state = state)
+    } else {
+        null
+    }
+
     // Chat widget is always shown for single-chat spaces (CHAT, ONE_TO_ONE),
     // independent of section visibility config.
     val chatWidget = buildChatWidget(spaceView = spaceView, state = state)
@@ -544,8 +556,24 @@ suspend fun buildWidgetSections(
         typeWidgets = typeWidgets,
         chatWidget = chatWidget,
         unreadWidget = unreadWidget,
+        personalFavoritesWidget = personalFavoritesWidget,
         recentlyEditedWidget = recentlyEditedWidget,
         binWidget = binWidget
+    )
+}
+
+/**
+ * Builds the per-user "My Favorites" widget, backed by the virtual
+ * _personalWidgets_<spaceId> document (GO-6962).
+ */
+private fun buildPersonalFavoritesWidget(
+    state: ObjectViewState.Success
+): Widget.PersonalFavorites {
+    return Widget.PersonalFavorites(
+        id = Widget.Source.WIDGET_PERSONAL_FAVORITES_ID,
+        source = Widget.Source.Bundled.PersonalFavorites,
+        config = state.config,
+        icon = ObjectIcon.None
     )
 }
 

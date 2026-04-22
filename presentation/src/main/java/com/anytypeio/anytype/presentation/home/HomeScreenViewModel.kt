@@ -342,6 +342,7 @@ class HomeScreenViewModel(
     private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val unreadWidget = MutableStateFlow<Widget.UnreadChatList?>(null)
+    private val personalFavoritesWidget = MutableStateFlow<Widget.PersonalFavorites?>(null)
     private val recentlyEditedWidget = MutableStateFlow<Widget.RecentlyEdited?>(null)
     private val chatWidget = MutableStateFlow<Widget.Chat?>(null)
     private val binWidget = MutableStateFlow<Widget.Bin?>(null)
@@ -350,6 +351,7 @@ class HomeScreenViewModel(
     private val pinnedContainers = MutableStateFlow<Containers>(null)
     private val typeContainers = MutableStateFlow<Containers>(null)
     private val unreadContainer = MutableStateFlow<WidgetContainer?>(null)
+    private val personalFavoritesContainer = MutableStateFlow<WidgetContainer?>(null)
 
     // Drag-and-drop state tracking for type widgets
     private var pendingTypeWidgetOrder: List<Id>? = null
@@ -437,6 +439,18 @@ class HomeScreenViewModel(
     // Exposed flow for unread widget
     @OptIn(ExperimentalCoroutinesApi::class)
     val unreadView: StateFlow<WidgetView?> = unreadContainer
+        .flatMapLatest { container ->
+            container?.view ?: flowOf(null)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
+    // Exposed flow for personal favorites widget
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val personalFavoritesView: StateFlow<WidgetView?> = personalFavoritesContainer
         .flatMapLatest { container ->
             container?.view ?: flowOf(null)
         }
@@ -824,6 +838,7 @@ class HomeScreenViewModel(
         buildPinnedContainerPipeline()
         buildTypeContainerPipeline()
         buildUnreadContainerPipeline()
+        buildPersonalFavoritesContainerPipeline()
     }
 
     private fun buildPinnedContainerPipeline() {
@@ -872,6 +887,22 @@ class HomeScreenViewModel(
                 .collect { container ->
                     Timber.d("Emitting unread container: ${container != null}")
                     unreadContainer.value = container
+                }
+        }
+    }
+
+    private fun buildPersonalFavoritesContainerPipeline() {
+        viewModelScope.launch {
+            personalFavoritesWidget
+                .map { widget ->
+                    if (widget != null) {
+                        widgetContainerDelegate.createContainer(widget, emptyList())
+                    } else {
+                        null
+                    }
+                }
+                .collect { container ->
+                    personalFavoritesContainer.value = container
                 }
         }
     }
@@ -1037,6 +1068,7 @@ class HomeScreenViewModel(
 
                     chatWidget.value = sections.chatWidget
                     unreadWidget.value = sections.unreadWidget
+                    personalFavoritesWidget.value = sections.personalFavoritesWidget
                     recentlyEditedWidget.value = sections.recentlyEditedWidget
                     binWidget.value = sections.binWidget
                 } else {
@@ -1051,6 +1083,7 @@ class HomeScreenViewModel(
 
                     chatWidget.value = null
                     unreadWidget.value = null
+                    personalFavoritesWidget.value = null
                     recentlyEditedWidget.value = null
                     binWidget.value = null
                 }
@@ -3889,6 +3922,8 @@ class HomeScreenViewModel(
             dateProvider = dateProvider,
             stringResourceProvider = stringResourceProvider,
             dispatchers = appCoroutineDispatchers,
+            openObject = openObject,
+            interceptEvents = interceptEvents,
             observeCurrentWidgetView = ::observeCurrentWidgetView,
             isWidgetCollapsed = ::isWidgetCollapsed
         )

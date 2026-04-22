@@ -164,7 +164,7 @@ fun LazyListScope.renderWidgetSection(
 
             is WidgetView.Link -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
-                val menuItems = remember(item.id, item.sectionType, item.source) {
+                val menuItems = remember(item.id, item.sectionType, item.source, item.isFavorited) {
                     item.getWidgetMenuItems()
                 }
                 val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging

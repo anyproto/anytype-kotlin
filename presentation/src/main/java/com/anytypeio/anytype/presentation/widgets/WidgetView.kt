@@ -76,7 +76,13 @@ sealed class WidgetView {
         override val sectionType: SectionType? = null,
         val counter: ChatCounter? = null,
         val notificationState: NotificationState? = null,
-        val isMutedAndHidden: Boolean = false
+        val isMutedAndHidden: Boolean = false,
+        /**
+         * DROID-4397: true iff the underlying source object is in the current
+         * user's personal favorites for the active space. Drives the Favorite
+         * ↔ Unfavorite widget long-press menu toggle.
+         */
+        val isFavorited: Boolean = false
     ) : WidgetView(), Draggable {
         override val canCreateObjectOfType: Boolean
             get() = source.canCreateObjectOfType()
@@ -411,4 +417,8 @@ sealed class DropDownMenuAction {
     data object EmptyBin : DropDownMenuAction()
     data class CreateObjectOfType(val widgetId: WidgetId) : DropDownMenuAction()
     data object ChangeHome : DropDownMenuAction()
+    /** DROID-4397: add the widget's source object to the user's personal favorites. */
+    data class FavoriteObject(val widgetId: WidgetId) : DropDownMenuAction()
+    /** DROID-4397: remove the widget's source object from the user's personal favorites. */
+    data class UnfavoriteObject(val widgetId: WidgetId) : DropDownMenuAction()
 }

@@ -44,6 +44,10 @@ sealed class WidgetMenuItem {
     data class CreateObjectOfType(val widgetId: WidgetId) : WidgetMenuItem()
     data object ChangeWidgetType : WidgetMenuItem()
     data object RemoveWidget : WidgetMenuItem()
+    /** DROID-4397: add the widget's source object to personal favorites. */
+    data class FavoriteObject(val widgetId: WidgetId) : WidgetMenuItem()
+    /** DROID-4397: remove the widget's source object from personal favorites. */
+    data class UnfavoriteObject(val widgetId: WidgetId) : WidgetMenuItem()
 }
 
 @Composable
@@ -185,6 +189,84 @@ fun WidgetLongClickMenu(
                         }
                     )
                 }
+                is WidgetMenuItem.FavoriteObject -> {
+                    DropdownMenuItem(
+                        onClick = {
+                            onDropDownMenuAction(DropDownMenuAction.FavoriteObject(menuItem.widgetId)).also {
+                                isCardMenuExpanded.value = false
+                            }
+                        },
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.text_primary),
+                                    text = stringResource(R.string.favourite)
+                                )
+                                Image(
+                                    painter = painterResource(
+                                        id = R.drawable.ic_object_action_add_to_favorites
+                                    ),
+                                    contentDescription = "Favorite icon",
+                                    modifier = Modifier.size(24.dp),
+                                    colorFilter = ColorFilter.tint(
+                                        colorResource(id = R.color.text_primary)
+                                    )
+                                )
+                            }
+                        }
+                    )
+                    if (index < menuItems.lastIndex) {
+                        Divider(
+                            thickness = 0.5.dp,
+                            color = colorResource(id = R.color.shape_primary)
+                        )
+                    }
+                }
+                is WidgetMenuItem.UnfavoriteObject -> {
+                    DropdownMenuItem(
+                        onClick = {
+                            onDropDownMenuAction(DropDownMenuAction.UnfavoriteObject(menuItem.widgetId)).also {
+                                isCardMenuExpanded.value = false
+                            }
+                        },
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.text_primary),
+                                    text = stringResource(R.string.unfavorite)
+                                )
+                                // TODO(DROID-4397): Spec calls for a filled-star icon.
+                                // Reusing the strikethrough-unfavorite asset for now.
+                                Image(
+                                    painter = painterResource(
+                                        id = R.drawable.ic_object_action_unfavorite
+                                    ),
+                                    contentDescription = "Unfavorite icon",
+                                    modifier = Modifier.size(24.dp),
+                                    colorFilter = ColorFilter.tint(
+                                        colorResource(id = R.color.text_primary)
+                                    )
+                                )
+                            }
+                        }
+                    )
+                    if (index < menuItems.lastIndex) {
+                        Divider(
+                            thickness = 0.5.dp,
+                            color = colorResource(id = R.color.shape_primary)
+                        )
+                    }
+                }
             }
         }
     }
@@ -262,6 +344,14 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.Link -> {
+                        // DROID-4397: favorite/unfavorite the underlying object,
+                        // available to all roles. Pin is implicit (widget already
+                        // exists in the shared pinned doc).
+                        if (isFavorited) {
+                            add(WidgetMenuItem.UnfavoriteObject(id))
+                        } else {
+                            add(WidgetMenuItem.FavoriteObject(id))
+                        }
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }

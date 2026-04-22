@@ -160,7 +160,8 @@ class WidgetContainerDelegateImpl(
             widget = widget,
             fieldParser = fieldParser,
             chatPreviewContainer = chatPreviews,
-            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            observePersonalFavoriteTargets = observePersonalFavoriteTargets
         )
     }
 

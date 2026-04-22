@@ -67,7 +67,9 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.favorites.AddPersonalFavorite
 import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
+import com.anytypeio.anytype.domain.favorites.RemovePersonalFavorite
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -231,6 +233,8 @@ class HomeScreenViewModel(
     private val objectPayloadDispatcher: Dispatcher<Payload>,
     private val interceptEvents: InterceptEvents,
     private val observePersonalFavoriteTargets: ObservePersonalFavoriteTargets,
+    private val addPersonalFavorite: AddPersonalFavorite,
+    private val removePersonalFavorite: RemovePersonalFavorite,
     private val widgetSessionStateHolder: WidgetSessionStateHolder,
     private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
     private val urlBuilder: UrlBuilder,
@@ -1721,6 +1725,42 @@ class HomeScreenViewModel(
             }
             DropDownMenuAction.ChangeHome -> {
                 onHomeWidgetChangeHomeClicked()
+            }
+            is DropDownMenuAction.FavoriteObject -> {
+                proceedWithWidgetFavoriteToggle(action.widgetId, isFavorite = true)
+            }
+            is DropDownMenuAction.UnfavoriteObject -> {
+                proceedWithWidgetFavoriteToggle(action.widgetId, isFavorite = false)
+            }
+        }
+    }
+
+    /**
+     * DROID-4397: add or remove the source object of a widget to/from the
+     * current user's personal favorites. Invoked from the widget long-press menu.
+     */
+    private fun proceedWithWidgetFavoriteToggle(widgetId: Id, isFavorite: Boolean) {
+        val targetWidget = currentWidgets.orEmpty().find { it.id == widgetId }
+        val targetObjectId = targetWidget?.source?.id
+        if (targetObjectId.isNullOrEmpty()) {
+            Timber.w("Widget $widgetId has no source object id; skipping favorite toggle")
+            return
+        }
+        viewModelScope.launch {
+            if (isFavorite) {
+                addPersonalFavorite.async(
+                    AddPersonalFavorite.Params(space = vmParams.spaceId, target = targetObjectId)
+                ).fold(
+                    onSuccess = { Timber.d("Favorited $targetObjectId via widget menu") },
+                    onFailure = { Timber.e(it, "Error favoriting $targetObjectId via widget menu") }
+                )
+            } else {
+                removePersonalFavorite.async(
+                    RemovePersonalFavorite.Params(space = vmParams.spaceId, target = targetObjectId)
+                ).fold(
+                    onSuccess = { Timber.d("Unfavorited $targetObjectId via widget menu") },
+                    onFailure = { Timber.e(it, "Error unfavoriting $targetObjectId via widget menu") }
+                )
             }
         }
     }
@@ -4086,6 +4126,8 @@ class HomeScreenViewModel(
         private val objectPayloadDispatcher: Dispatcher<Payload>,
         private val interceptEvents: InterceptEvents,
         private val observePersonalFavoriteTargets: ObservePersonalFavoriteTargets,
+        private val addPersonalFavorite: AddPersonalFavorite,
+        private val removePersonalFavorite: RemovePersonalFavorite,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val widgetSessionStateHolder: WidgetSessionStateHolder,
         private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
@@ -4157,6 +4199,8 @@ class HomeScreenViewModel(
             objectPayloadDispatcher = objectPayloadDispatcher,
             interceptEvents = interceptEvents,
             observePersonalFavoriteTargets = observePersonalFavoriteTargets,
+            addPersonalFavorite = addPersonalFavorite,
+            removePersonalFavorite = removePersonalFavorite,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             widgetSessionStateHolder = widgetSessionStateHolder,
             widgetActiveViewStateHolder = widgetActiveViewStateHolder,

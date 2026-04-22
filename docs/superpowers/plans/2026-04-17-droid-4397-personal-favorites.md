@@ -24,9 +24,7 @@
 - `domain/src/main/java/com/anytypeio/anytype/domain/favorites/AddPersonalFavorite.kt` — use case
 - `domain/src/main/java/com/anytypeio/anytype/domain/favorites/RemovePersonalFavorite.kt` — use case
 - `domain/src/main/java/com/anytypeio/anytype/domain/favorites/ReorderPersonalFavorites.kt` — use case
-- `data/src/main/java/com/anytypeio/anytype/data/auth/repo/favorites/PersonalFavoritesDataRepository.kt` — `PersonalFavoritesRepository` impl delegating to a `PersonalFavoritesRemoteDataSource`
-- `data/src/main/java/com/anytypeio/anytype/data/auth/repo/favorites/PersonalFavoritesRemoteDataSource.kt` — thin interface implemented in `middleware/`
-- `middleware/src/main/java/com/anytypeio/anytype/middleware/favorites/PersonalFavoritesMiddleware.kt` — implements the remote data source by building requests for the existing `Rpc.Block.CreateWidget` / `Rpc.Block.ListDelete` / `Rpc.Block.ListMoveToExistingObject` commands against the personal-widgets doc
+- `data/src/main/java/com/anytypeio/anytype/data/auth/repo/favorites/PersonalFavoritesDataRepository.kt` — `PersonalFavoritesRepository` impl built on top of `BlockRepository` (`createWidget` / `openObject` / `unlink` / `move`). No separate remote-data-source or middleware class is needed; the existing `BlockMiddleware` → `Middleware` → `MiddlewareService` chain already covers all four RPCs.
 - `presentation/src/main/java/com/anytypeio/anytype/presentation/widgets/PersonalFavoritesWidgetContainer.kt` — new container, Unread-style compact rows. Opens the personal-widgets doc via `OpenObject` + `InterceptEvents` (mirroring the shared-widgets pipeline in `HomeScreenViewModel`), walks the block tree, emits ordered rows.
 - `presentation/src/main/java/com/anytypeio/anytype/presentation/widgets/Widget.kt` — add `Widget.PersonalFavorites` data class (modified, see below)
 - `app/src/main/java/com/anytypeio/anytype/ui/home/PersonalFavoritesSection.kt` — `MyFavoritesSectionHeader` + compact row rendering
@@ -384,14 +382,49 @@ git commit -m "DROID-4397 Drop ObservePersonalFavorites (container owns personal
 
 ## Phase 2 — Data + Middleware Wiring
 
-### Task 7: `PersonalFavoritesRemoteDataSource` + middleware impl
+### Task 7: Extend `Position` enum with `INNER_FIRST`
+
+> **Why a new enum value?** Desktop inserts new personal favorites at the TOP via `BlockPosition.InnerFirst`. The proto has `Inner = 5` (insert as LAST child) and `InnerFirst = 7` (insert as FIRST child), but the Kotlin `Position` enum in `core-models` only maps `Inner`. We need `INNER_FIRST` to express "insert at top" via the existing `BlockRepository.createWidget` API. The rest of Task 7's work (a dedicated `PersonalFavoritesRemoteDataSource` + `PersonalFavoritesMiddleware`) is collapsed into Task 8 — `PersonalFavoritesDataRepository` depends directly on `BlockRepository`, which already exposes `createWidget`/`openObject`/`unlink`/`move`.
 
 **Files:**
-- Create: `data/src/main/java/com/anytypeio/anytype/data/auth/repo/favorites/PersonalFavoritesRemoteDataSource.kt`
-- Create: `middleware/src/main/java/com/anytypeio/anytype/middleware/favorites/PersonalFavoritesMiddleware.kt`
-- Test: `middleware/src/test/java/com/anytypeio/anytype/middleware/favorites/PersonalFavoritesMiddlewareTest.kt`
+- Modify: `core-models/src/main/java/com/anytypeio/anytype/core_models/Position.kt`
+- Modify: `middleware/src/main/java/com/anytypeio/anytype/middleware/mappers/ToMiddlewareModelMappers.kt`
 
-> **Context:** The middleware layer already wraps `blockCreateWidget`, `blockListDelete`, `blockListMoveToExistingObject`, and `objectOpen` via `MiddlewareService` (already tested). We build `PersonalFavoritesMiddleware` as a thin composition on top: open the personal-widgets doc on each mutation to resolve `target → blockIds`, then issue the right block RPC. The doc is small (O(favorites)) and mutations are user-driven — the extra open round-trip is acceptable and keeps the data layer self-contained (no shared state with the widget container).
+- [ ] **Step 1: Add `INNER_FIRST` to the enum**
+
+```kotlin
+enum class Position { NONE, TOP, BOTTOM, LEFT, RIGHT, INNER, INNER_FIRST, REPLACE }
+```
+
+- [ ] **Step 2: Map to proto `InnerFirst`**
+
+```kotlin
+fun Position.toMiddlewareModel(): MBPosition = when (this) {
+    Position.NONE -> MBPosition.None
+    Position.TOP -> MBPosition.Top
+    Position.BOTTOM -> MBPosition.Bottom
+    Position.LEFT -> MBPosition.Left
+    Position.RIGHT -> MBPosition.Right
+    Position.INNER -> MBPosition.Inner
+    Position.INNER_FIRST -> MBPosition.InnerFirst
+    Position.REPLACE -> MBPosition.Replace
+}
+```
+
+- [ ] **Step 3: Build**
+
+Run: `./gradlew :core-models:compileKotlin :middleware:compileDebugKotlin`
+Expected: BUILD SUCCESSFUL. No other `when(Position)` expressions exist elsewhere in the codebase, so the change is safe.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add core-models/src/main/java/com/anytypeio/anytype/core_models/Position.kt \
+         middleware/src/main/java/com/anytypeio/anytype/middleware/mappers/ToMiddlewareModelMappers.kt
+git commit -m "DROID-4397 Add Position.INNER_FIRST for personal-favorites top insert"
+```
+
+> **Context (retained for reference):** The middleware layer already wraps `blockCreateWidget`, `blockListDelete`, `blockListMoveToExistingObject`, and `objectOpen` via `MiddlewareService`. These are already exposed through the existing `BlockRepository` interface (`createWidget`, `unlink`, `move`, `openObject`). The data-layer repository consumes `BlockRepository` directly — no new `PersonalFavoritesRemoteDataSource`/`PersonalFavoritesMiddleware` layer is introduced. Task 7 is now the `Position.INNER_FIRST` extension (above). The historical "remote data source + middleware impl" steps below are obsolete — **skip them** and go straight to Task 8.
 
 - [ ] **Step 1: Define remote data source interface**
 
@@ -515,37 +548,57 @@ git add data/src/main/java/com/anytypeio/anytype/data/auth/repo/favorites/ \
 git commit -m "DROID-4397 Wire personal-favorites via existing block-widget RPCs"
 ```
 
-### Task 8: `PersonalFavoritesDataRepository`
+### Task 8: `PersonalFavoritesDataRepository` on top of `BlockRepository`
 
 **Files:**
 - Create: `data/src/main/java/com/anytypeio/anytype/data/auth/repo/favorites/PersonalFavoritesDataRepository.kt`
 - Test: `data/src/test/java/com/anytypeio/anytype/data/auth/repo/favorites/PersonalFavoritesDataRepositoryTest.kt`
 
+> **Why this shape:** `BlockRepository` already exposes `createWidget(ctx, source, layout, target, position)`, `openObject(id, space)`, `unlink(Command.Unlink)`, and `move(Command.Move)`. Those are exactly the primitives we need for personal-favorites add/remove/reorder. Consuming them directly avoids a redundant "remote data source" layer that would be pure pass-through to another pure pass-through.
+
 - [ ] **Step 1: Write the failing test**
 
 ```kotlin
 @Test
-fun `add delegates to remote`() = runTest {
+fun `add creates a Link widget at INNER_FIRST in the personal-widgets doc`() = runTest {
     val space = SpaceId("space-1")
-    val target = "obj-1"
-    repo.add(space, target)
-    verify(remote).add(space, target)
+    repo.add(space, "obj-1")
+
+    verify(blocks).createWidget(
+        ctx = personalWidgetsId(space),
+        source = "obj-1",
+        layout = WidgetLayout.LINK,
+        target = personalWidgetsId(space),
+        position = Position.INNER_FIRST
+    )
 }
 
 @Test
-fun `remove delegates to remote`() = runTest {
+fun `remove unlinks every wrapper whose inner link targets the removed id`() = runTest {
     val space = SpaceId("space-1")
+    val ctx = personalWidgetsId(space)
+    given(blocks.openObject(ctx, space)).willReturn(
+        stubPersonalWidgetsObjectView(
+            wrappers = listOf(
+                stubWrapper(id = "w-1", innerLinkId = "l-1", target = "obj-1"),
+                stubWrapper(id = "w-2", innerLinkId = "l-2", target = "obj-2")
+            )
+        )
+    )
+
     repo.remove(space, "obj-1")
-    verify(remote).remove(space, "obj-1")
+
+    verify(blocks).unlink(Command.Unlink(context = ctx, targets = listOf("w-1")))
 }
 
 @Test
-fun `reorder delegates to remote`() = runTest {
-    val space = SpaceId("space-1")
-    val order = listOf("a", "b", "c")
-    repo.reorder(space, order)
-    verify(remote).reorder(space, order)
-}
+fun `remove is a no-op when the target is not present`() = runTest { /* ... */ }
+
+@Test
+fun `reorder moves each wrapper to INNER at the root in order`() = runTest { /* ... */ }
+
+@Test
+fun `reorder skips targets that are not present`() = runTest { /* ... */ }
 ```
 
 - [ ] **Step 2: Run test — should fail**
@@ -557,22 +610,63 @@ Expected: FAIL (class not found).
 ```kotlin
 package com.anytypeio.anytype.data.auth.repo.favorites
 
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectView
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.favorites.PersonalFavoritesRepository
+import com.anytypeio.anytype.domain.favorites.personalWidgetsId
 
 class PersonalFavoritesDataRepository(
-    private val remote: PersonalFavoritesRemoteDataSource
+    private val blocks: BlockRepository
 ) : PersonalFavoritesRepository {
 
-    override suspend fun add(space: SpaceId, target: Id) = remote.add(space, target)
-    override suspend fun remove(space: SpaceId, target: Id) = remote.remove(space, target)
-    override suspend fun reorder(space: SpaceId, orderedTargets: List<Id>) =
-        remote.reorder(space, orderedTargets)
-}
-```
+    override suspend fun add(space: SpaceId, target: Id) {
+        val ctx = personalWidgetsId(space)
+        blocks.createWidget(
+            ctx = ctx,
+            source = target,
+            layout = WidgetLayout.LINK,
+            target = ctx,
+            position = Position.INNER_FIRST
+        )
+    }
 
-Pure pass-through. All block-tree lookup logic lives in `PersonalFavoritesMiddleware` (Task 7) where the `MiddlewareService` is available. The repo is only here to satisfy Clean Architecture (domain interface, data impl).
+    override suspend fun remove(space: SpaceId, target: Id) {
+        val ctx = personalWidgetsId(space)
+        val wrappers = blocks.openObject(ctx, space).wrapperIdsTargeting(target)
+        if (wrappers.isEmpty()) return
+        blocks.unlink(Command.Unlink(context = ctx, targets = wrappers))
+    }
+
+    override suspend fun reorder(space: SpaceId, orderedTargets: List<Id>) {
+        if (orderedTargets.isEmpty()) return
+        val ctx = personalWidgetsId(space)
+        val view = blocks.openObject(ctx, space)
+        orderedTargets.forEach { target ->
+            val wrapperId = view.wrapperIdFor(target) ?: return@forEach
+            blocks.move(
+                Command.Move(
+                    ctx = ctx,
+                    targetContextId = ctx,
+                    blockIds = listOf(wrapperId),
+                    targetId = ctx,
+                    position = Position.INNER // proto `Inner` == "last child"
+                )
+            )
+        }
+    }
+}
+
+// Helpers (same file or adjacent):
+// - ObjectView.wrapperIdsTargeting(target): finds wrapper blocks whose inner link's
+//   targetBlockId == target. Matches desktop's getWidgetsForTargetIn.
+// - ObjectView.wrapperIdFor(target): first wrapper ID whose inner link targets target.
+```
 
 - [ ] **Step 4: Run test — should pass**
 - [ ] **Step 5: Commit**
@@ -580,7 +674,7 @@ Pure pass-through. All block-tree lookup logic lives in `PersonalFavoritesMiddle
 ```bash
 git add data/src/main/java/com/anytypeio/anytype/data/auth/repo/favorites/PersonalFavoritesDataRepository.kt \
          data/src/test/java/com/anytypeio/anytype/data/auth/repo/favorites/PersonalFavoritesDataRepositoryTest.kt
-git commit -m "DROID-4397 Personal favorites data repository (pass-through)"
+git commit -m "DROID-4397 Personal favorites data repository on BlockRepository"
 ```
 
 ### Task 9: DI bindings
@@ -594,23 +688,18 @@ git commit -m "DROID-4397 Personal favorites data repository (pass-through)"
 Run: `grep -rn "fun provideBlockRepository\|BlockDataRepository(" di/ app/ data/`
 Expected: matches that show how `BlockRepository` is wired (`BlockDataRepository` ← `BlockRemote` ← `BlockMiddleware(service)`). Mirror this pattern for personal favorites. Note the `@Singleton` scope and whether providers use `@JvmStatic`.
 
-- [ ] **Step 2: Add provides for repo + remote data source**
+- [ ] **Step 2: Add provides for the repository**
 
 ```kotlin
 @JvmStatic
 @Provides
 @Singleton
-fun providePersonalFavoritesRemoteDataSource(
-    service: MiddlewareService
-): PersonalFavoritesRemoteDataSource = PersonalFavoritesMiddleware(service)
-
-@JvmStatic
-@Provides
-@Singleton
 fun providePersonalFavoritesRepository(
-    remote: PersonalFavoritesRemoteDataSource
-): PersonalFavoritesRepository = PersonalFavoritesDataRepository(remote)
+    blocks: BlockRepository
+): PersonalFavoritesRepository = PersonalFavoritesDataRepository(blocks)
 ```
+
+(No `PersonalFavoritesRemoteDataSource` binding — the repository depends on `BlockRepository` directly, which is already wired.)
 
 - [ ] **Step 3: Add provides for the 3 use cases in HomescreenDI (scoped to the home-screen component)**
 

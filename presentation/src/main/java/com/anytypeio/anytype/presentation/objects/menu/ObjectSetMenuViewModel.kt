@@ -270,13 +270,19 @@ class ObjectSetMenuViewModel(
         isTemplate: Boolean,
         isLocked: Boolean,
         isReadOnly: Boolean,
-        isCurrentObjectPinned: Boolean
+        isCurrentObjectPinned: Boolean,
+        isInMyFavorites: Boolean
     ): List<ObjectAction> = buildList {
         if (!isReadOnly) {
             if (isArchived) {
                 add(ObjectAction.RESTORE)
             } else {
                 add(ObjectAction.MOVE_TO_BIN)
+            }
+            if (isInMyFavorites) {
+                add(ObjectAction.REMOVE_FROM_MY_FAVORITES)
+            } else {
+                add(ObjectAction.ADD_TO_MY_FAVORITES)
             }
             if (isCurrentObjectPinned) {
                 add(ObjectAction.UNPIN)

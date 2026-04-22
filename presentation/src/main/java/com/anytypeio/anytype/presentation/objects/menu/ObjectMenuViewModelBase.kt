@@ -55,7 +55,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -137,7 +139,12 @@ abstract class ObjectMenuViewModelBase(
     ) {
         Timber.d("ObjectMenuViewModelBase, onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isLocked:[$isLocked], isReadOnly: [$isReadOnly]")
         viewModelScope.launch {
-            pinnedWidgetBlockId.collect { widgetId ->
+            combine(
+                pinnedWidgetBlockId,
+                _options.map { it.isFavorited }.distinctUntilChanged()
+            ) { widgetId, isInMyFavorites ->
+                widgetId to isInMyFavorites
+            }.collect { (widgetId, isInMyFavorites) ->
                 actions.value = buildActions(
                     ctx = ctx,
                     isArchived = isArchived,
@@ -145,7 +152,8 @@ abstract class ObjectMenuViewModelBase(
                     isTemplate = isTemplate,
                     isLocked = isLocked,
                     isReadOnly = isReadOnly,
-                    isCurrentObjectPinned = widgetId != null
+                    isCurrentObjectPinned = widgetId != null,
+                    isInMyFavorites = isInMyFavorites
                 )
             }
         }
@@ -169,7 +177,9 @@ abstract class ObjectMenuViewModelBase(
         isTemplate: Boolean = false,
         isLocked: Boolean,
         isReadOnly: Boolean,
-        isCurrentObjectPinned: Boolean
+        isCurrentObjectPinned: Boolean,
+        /** DROID-4397: true iff [ctx] is in the current user's personal favorites for the space. */
+        isInMyFavorites: Boolean = false
     ): List<ObjectAction>
 
     protected fun proceedWithRemovingFromFavorites(ctx: Id) {

@@ -144,7 +144,8 @@ class ObjectMenuViewModel(
         isTemplate: Boolean,
         isLocked: Boolean,
         isReadOnly: Boolean,
-        isCurrentObjectPinned: Boolean
+        isCurrentObjectPinned: Boolean,
+        isInMyFavorites: Boolean
     ): List<ObjectAction> = buildList {
 
         val wrapper = storage.details.current().getObject(ctx)
@@ -167,6 +168,11 @@ class ObjectMenuViewModel(
             }
 
             if (!isTemplate && !systemLayouts.contains(layout) && !fileLayouts.contains(layout)) {
+                if (isInMyFavorites) {
+                    add(ObjectAction.REMOVE_FROM_MY_FAVORITES)
+                } else {
+                    add(ObjectAction.ADD_TO_MY_FAVORITES)
+                }
                 if (isCurrentObjectPinned) {
                     add(ObjectAction.UNPIN)
                 } else {
@@ -215,6 +221,11 @@ class ObjectMenuViewModel(
                 clear()
                 add(ObjectAction.MOVE_TO_BIN)
                 add(ObjectAction.DOWNLOAD_FILE)
+                if (isInMyFavorites) {
+                    add(ObjectAction.REMOVE_FROM_MY_FAVORITES)
+                } else {
+                    add(ObjectAction.ADD_TO_MY_FAVORITES)
+                }
                 if (isCurrentObjectPinned) {
                     add(ObjectAction.UNPIN)
                 } else {

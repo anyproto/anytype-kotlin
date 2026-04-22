@@ -5,21 +5,26 @@ package com.anytypeio.anytype.core_models
  */
 enum class WidgetSectionType {
     UNREAD,
+    MY_FAVORITES,
     PINNED,
     OBJECTS,
     RECENTLY_EDITED,
     BIN;
 
     companion object {
-        val DEFAULT_ORDER = listOf(UNREAD, PINNED, OBJECTS, RECENTLY_EDITED, BIN)
+        // DROID-4397: Pinned moves to the top (directly under Home) and is
+        // rendered without a section header. Unread and My Favorites remain
+        // below. See WidgetsScreen.kt for the actual rendering.
+        val DEFAULT_ORDER = listOf(PINNED, UNREAD, MY_FAVORITES, OBJECTS, RECENTLY_EDITED, BIN)
     }
 
     /**
      * Determines if this section type can be configured by the user
      * UNREAD: Always visible, can't be toggled
+     * MY_FAVORITES: Driven by data (visible iff user has personal favorites); not a user toggle
      */
     fun isUserConfigurable(): Boolean {
-        return this != UNREAD
+        return this != UNREAD && this != MY_FAVORITES
     }
 }
 

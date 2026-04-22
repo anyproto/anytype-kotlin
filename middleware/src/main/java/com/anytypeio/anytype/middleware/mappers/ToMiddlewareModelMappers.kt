@@ -317,6 +317,7 @@ fun Position.toMiddlewareModel(): MBPosition = when (this) {
     Position.LEFT -> MBPosition.Left
     Position.RIGHT -> MBPosition.Right
     Position.INNER -> MBPosition.Inner
+    Position.INNER_FIRST -> MBPosition.InnerFirst
     Position.REPLACE -> MBPosition.Replace
 }
 

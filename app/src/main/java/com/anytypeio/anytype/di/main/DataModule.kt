@@ -17,6 +17,7 @@ import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
 import com.anytypeio.anytype.data.auth.repo.UserSettingsDataRepository
 import com.anytypeio.anytype.data.auth.repo.block.BlockDataRepository
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
+import com.anytypeio.anytype.data.auth.repo.favorites.PersonalFavoritesDataRepository
 import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashDataRepository
 import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashRemote
 import com.anytypeio.anytype.data.auth.types.DefaultObjectTypesProvider
@@ -26,6 +27,7 @@ import com.anytypeio.anytype.presentation.device.DefaultBuildProvider
 import com.anytypeio.anytype.device.DefaultPathProvider
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.favorites.PersonalFavoritesRepository
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugConfig
@@ -232,6 +234,13 @@ object DataModule {
     fun provideBlockRemote(
         middleware: Middleware
     ): BlockRemote = BlockMiddleware(middleware = middleware)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun providePersonalFavoritesRepository(
+        blocks: BlockRepository
+    ): PersonalFavoritesRepository = PersonalFavoritesDataRepository(blocks = blocks)
 
     @JvmStatic
     @Provides

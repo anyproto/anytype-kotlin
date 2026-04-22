@@ -411,4 +411,8 @@ sealed class DropDownMenuAction {
     data object EmptyBin : DropDownMenuAction()
     data class CreateObjectOfType(val widgetId: WidgetId) : DropDownMenuAction()
     data object ChangeHome : DropDownMenuAction()
+    /** DROID-4397: add the widget's source object to the user's personal favorites. */
+    data class FavoriteObject(val widgetId: WidgetId) : DropDownMenuAction()
+    /** DROID-4397: remove the widget's source object from the user's personal favorites. */
+    data class UnfavoriteObject(val widgetId: WidgetId) : DropDownMenuAction()
 }

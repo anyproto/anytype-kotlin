@@ -233,8 +233,14 @@ class WidgetSectionsTest {
     }
 
     @Test
-    fun `all sections except UNREAD are user configurable`() {
-        val configurableTypes = WidgetSectionType.entries.filter { it != WidgetSectionType.UNREAD }
+    fun `MY_FAVORITES is not user configurable`() {
+        assertFalse(WidgetSectionType.MY_FAVORITES.isUserConfigurable())
+    }
+
+    @Test
+    fun `all sections except UNREAD and MY_FAVORITES are user configurable`() {
+        val configurableTypes = WidgetSectionType.entries
+            .filter { it != WidgetSectionType.UNREAD && it != WidgetSectionType.MY_FAVORITES }
         configurableTypes.forEach { type ->
             assertTrue(type.isUserConfigurable(), "$type should be user configurable")
         }

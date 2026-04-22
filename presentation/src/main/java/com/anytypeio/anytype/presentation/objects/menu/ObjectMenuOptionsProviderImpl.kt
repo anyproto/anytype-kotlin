@@ -10,12 +10,23 @@ import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 
+/**
+ * @param personalFavoriteTargets emits the set of object IDs currently in the user's
+ *  personal favorites for the active space. Used to flip the Favorite ↔ Unfavorite
+ *  menu item. Defaults to [emptySet] when the caller hasn't wired personal favorites
+ *  (e.g. legacy callers not yet updated for DROID-4397).
+ * @param canToggleChannelPin emits true iff the current user has Owner/Admin role in
+ *  the active space. Gates visibility of the Pin/Unpin menu items. Defaults to false.
+ */
 class ObjectMenuOptionsProviderImpl(
     private val objectViewDetailsFlow: Flow<ObjectViewDetails>,
-    private val hasObjectLayoutConflict: Flow<Boolean>
+    private val hasObjectLayoutConflict: Flow<Boolean>,
+    private val personalFavoriteTargets: Flow<Set<Id>> = flowOf(emptySet()),
+    private val canToggleChannelPin: Flow<Boolean> = flowOf(false)
 ) : ObjectMenuOptionsProvider {
 
     private fun observeLayout(ctx: Id): Flow<ObjectType.Layout?> = objectViewDetailsFlow
@@ -51,23 +62,40 @@ class ObjectMenuOptionsProviderImpl(
                 details.getObject(ctx)?.isNamePrefillEnabled ?: false
             }
 
+    private fun observeFavoritesPinState(ctx: Id): Flow<FavoritesPinState> = combine(
+        personalFavoriteTargets,
+        canToggleChannelPin
+    ) { favorites, canPin ->
+        FavoritesPinState(
+            isFavorited = ctx in favorites,
+            canToggleChannelPin = canPin
+        )
+    }
+
     override fun provide(ctx: Id, isLocked: Boolean, isReadOnly: Boolean): Flow<Options> {
         return combine(
             observeLayout(ctx),
             observeFeatureFieldsContainsDescription(ctx),
             observeHasObjectLayoutConflict(),
-            observeTemplateNamePrefillEnabled(ctx)
-        ) { layout, featuredContainsDescription, hasObjectLayoutConflict, isTemplateNamePrefillEnabled ->
+            observeTemplateNamePrefillEnabled(ctx),
+            observeFavoritesPinState(ctx)
+        ) { layout, featuredContainsDescription, hasObjectLayoutConflict, isTemplateNamePrefillEnabled, favPin ->
             createOptions(
                 layout = layout,
                 isLocked = isLocked,
                 isReadOnly = isReadOnly,
                 featuredContainsDescription = featuredContainsDescription,
                 hasObjectLayoutConflict = hasObjectLayoutConflict,
-                isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
+                isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled,
+                favPin = favPin
             )
         }
     }
+
+    private data class FavoritesPinState(
+        val isFavorited: Boolean,
+        val canToggleChannelPin: Boolean
+    )
 
     private fun createOptions(
         layout: ObjectType.Layout?,
@@ -75,7 +103,8 @@ class ObjectMenuOptionsProviderImpl(
         isReadOnly: Boolean,
         featuredContainsDescription: Boolean,
         hasObjectLayoutConflict: Boolean,
-        isTemplateNamePrefillEnabled: Boolean
+        isTemplateNamePrefillEnabled: Boolean,
+        favPin: FavoritesPinState
     ): Options {
         val hasIcon = !isLocked && !isReadOnly
         val hasCover = !isLocked && !isReadOnly
@@ -174,6 +203,9 @@ class ObjectMenuOptionsProviderImpl(
                 isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
             )
         }
-        return options
+        return options.copy(
+            isFavorited = favPin.isFavorited,
+            canToggleChannelPin = favPin.canToggleChannelPin
+        )
     }
 }

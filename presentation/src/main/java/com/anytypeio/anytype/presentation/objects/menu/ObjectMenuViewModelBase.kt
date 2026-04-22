@@ -19,6 +19,8 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
+import com.anytypeio.anytype.domain.favorites.AddPersonalFavorite
+import com.anytypeio.anytype.domain.favorites.RemovePersonalFavorite
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
@@ -53,7 +55,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -78,7 +82,9 @@ abstract class ObjectMenuViewModelBase(
     private val getSpaceInviteLink: GetSpaceInviteLink,
     private val deepLinkResolver: DeepLinkResolver,
     private val showObject: GetObject,
-    private val deleteWidget: DeleteWidget
+    private val deleteWidget: DeleteWidget,
+    private val addPersonalFavorite: AddPersonalFavorite,
+    private val removePersonalFavorite: RemovePersonalFavorite
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     protected val jobs = mutableListOf<Job>()
@@ -133,7 +139,13 @@ abstract class ObjectMenuViewModelBase(
     ) {
         Timber.d("ObjectMenuViewModelBase, onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isLocked:[$isLocked], isReadOnly: [$isReadOnly]")
         viewModelScope.launch {
-            pinnedWidgetBlockId.collect { widgetId ->
+            combine(
+                pinnedWidgetBlockId,
+                _options.map { it.isFavorited }.distinctUntilChanged(),
+                _options.map { it.canToggleChannelPin }.distinctUntilChanged()
+            ) { widgetId, isInMyFavorites, canTogglePin ->
+                Triple(widgetId, isInMyFavorites, canTogglePin)
+            }.collect { (widgetId, isInMyFavorites, canTogglePin) ->
                 actions.value = buildActions(
                     ctx = ctx,
                     isArchived = isArchived,
@@ -141,7 +153,9 @@ abstract class ObjectMenuViewModelBase(
                     isTemplate = isTemplate,
                     isLocked = isLocked,
                     isReadOnly = isReadOnly,
-                    isCurrentObjectPinned = widgetId != null
+                    isCurrentObjectPinned = widgetId != null,
+                    isInMyFavorites = isInMyFavorites,
+                    canToggleChannelPin = canTogglePin
                 )
             }
         }
@@ -165,7 +179,11 @@ abstract class ObjectMenuViewModelBase(
         isTemplate: Boolean = false,
         isLocked: Boolean,
         isReadOnly: Boolean,
-        isCurrentObjectPinned: Boolean
+        isCurrentObjectPinned: Boolean,
+        /** DROID-4397: true iff [ctx] is in the current user's personal favorites for the space. */
+        isInMyFavorites: Boolean = false,
+        /** DROID-4397: true iff the current user has Owner/Editor role. Gates PIN/UNPIN. */
+        canToggleChannelPin: Boolean = false
     ): List<ObjectAction>
 
     protected fun proceedWithRemovingFromFavorites(ctx: Id) {
@@ -206,6 +224,46 @@ abstract class ObjectMenuViewModelBase(
                 },
                 onFailure = {
                     Timber.e(it, "Error while removing from favorite.")
+                    _toasts.emit(SOMETHING_WENT_WRONG_MSG)
+                }
+            )
+        }
+    }
+
+    /** DROID-4397: add [ctx] to the current user's personal favorites in [space]. */
+    protected fun proceedWithAddingToMyFavorites(ctx: Id, space: SpaceId) {
+        Timber.d("proceedWithAddingToMyFavorites, ctx:[$ctx], space:[${space.id}]")
+        viewModelScope.launch {
+            addPersonalFavorite.async(
+                AddPersonalFavorite.Params(space = space, target = ctx)
+            ).fold(
+                onSuccess = {
+                    _toasts.emit(ADD_TO_MY_FAVORITES_SUCCESS_MSG).also {
+                        isDismissed.value = true
+                    }
+                },
+                onFailure = {
+                    Timber.e(it, "Error while adding to my favorites.")
+                    _toasts.emit(SOMETHING_WENT_WRONG_MSG)
+                }
+            )
+        }
+    }
+
+    /** DROID-4397: remove [ctx] from the current user's personal favorites in [space]. */
+    protected fun proceedWithRemovingFromMyFavorites(ctx: Id, space: SpaceId) {
+        Timber.d("proceedWithRemovingFromMyFavorites, ctx:[$ctx], space:[${space.id}]")
+        viewModelScope.launch {
+            removePersonalFavorite.async(
+                RemovePersonalFavorite.Params(space = space, target = ctx)
+            ).fold(
+                onSuccess = {
+                    _toasts.emit(REMOVE_FROM_MY_FAVORITES_SUCCESS_MSG).also {
+                        isDismissed.value = true
+                    }
+                },
+                onFailure = {
+                    Timber.e(it, "Error while removing from my favorites.")
                     _toasts.emit(SOMETHING_WENT_WRONG_MSG)
                 }
             )
@@ -641,6 +699,8 @@ abstract class ObjectMenuViewModelBase(
             "Error while moving object to bin. Please, try again later."
         const val ADD_TO_FAVORITE_SUCCESS_MSG = "Object added to favorites."
         const val REMOVE_FROM_FAVORITE_SUCCESS_MSG = "Object removed from favorites."
+        const val ADD_TO_MY_FAVORITES_SUCCESS_MSG = "Added to My Favorites."
+        const val REMOVE_FROM_MY_FAVORITES_SUCCESS_MSG = "Removed from My Favorites."
         const val NOT_ALLOWED = "Not allowed for this object"
         const val OBJECT_IS_LOCKED_MSG = "Your object is locked"
         const val OBJECT_IS_UNLOCKED_MSG = "Your object is locked"

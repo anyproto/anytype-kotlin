@@ -36,6 +36,7 @@ import timber.log.Timber
 enum class SectionType {
     PINNED,
     UNREAD,
+    MY_FAVORITES,
     TYPES,
     RECENTLY_EDITED,
     NONE
@@ -131,6 +132,15 @@ sealed class Widget {
         override val sectionType: SectionType = SectionType.UNREAD
     ) : Widget()
 
+    data class PersonalFavorites(
+        override val id: Id,
+        override val source: Source.Bundled.PersonalFavorites,
+        override val config: Config,
+        override val isAutoCreated: Boolean = false,
+        override val icon: ObjectIcon = ObjectIcon.None,
+        override val sectionType: SectionType = SectionType.MY_FAVORITES
+    ) : Widget()
+
     data class Bin(
         override val id: Id ,
         override val source: Source.Bundled.Bin,
@@ -215,6 +225,11 @@ sealed class Widget {
                 override val id: Id = BundledWidgetSourceIds.CHAT
                 override val type: Id? = null
             }
+
+            data object PersonalFavorites : Bundled() {
+                override val id: Id = BundledWidgetSourceIds.PERSONAL_FAVORITES
+                override val type: Id? = null
+            }
         }
 
         data object Other : Source() {
@@ -225,8 +240,10 @@ sealed class Widget {
         companion object {
             const val WIDGET_BIN_ID = "widget_bin_id"
             const val WIDGET_RECENTLY_EDITED_ID = "widget_recently_edited_id"
+            const val WIDGET_PERSONAL_FAVORITES_ID = "widget_personal_favorites_id"
             const val SECTION_PINNED = "pinned_section"
             const val SECTION_UNREAD = "unread_section"
+            const val SECTION_MY_FAVORITES = "my_favorites_section"
             const val SECTION_OBJECT_TYPE = "object_type_section"
             const val SECTION_RECENTLY_EDITED = "recently_edited_section"
             const val OBJECT_TYPES_GROUP_ID = "object_types_group"
@@ -265,6 +282,7 @@ fun Widget.Source.hasValidSource(): Boolean = when (this) {
 fun Widget.Source.canCreateObjectOfType(): Boolean {
     return when (this) {
         Widget.Source.Bundled.Favorites -> true
+        Widget.Source.Bundled.PersonalFavorites -> false
         is Widget.Source.Default -> {
             if (obj.layout == ObjectType.Layout.OBJECT_TYPE) {
                 val wrapper = Type(obj.map)
@@ -453,6 +471,7 @@ data class WidgetSections(
     val typeWidgets: List<Widget>,
     val chatWidget: Widget.Chat? = null,
     val unreadWidget: Widget.UnreadChatList? = null,
+    val personalFavoritesWidget: Widget.PersonalFavorites? = null,
     val recentlyEditedWidget: Widget.RecentlyEdited? = null,
     val binWidget: Widget.Bin? = null
 )
@@ -519,6 +538,16 @@ suspend fun buildWidgetSections(
         null
     }
 
+    // My Favorites is data-driven — visibility also depends on the user having
+    // any personal favorites in this space. Visibility in this config reflects
+    // the section-level toggle only; the actual emptiness gate lives in the
+    // container (WidgetSection hides the header when elements are empty).
+    val personalFavoritesWidget = if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.MY_FAVORITES)) {
+        buildPersonalFavoritesWidget(state = state)
+    } else {
+        null
+    }
+
     // Chat widget is always shown for single-chat spaces (CHAT, ONE_TO_ONE),
     // independent of section visibility config.
     val chatWidget = buildChatWidget(spaceView = spaceView, state = state)
@@ -528,8 +557,24 @@ suspend fun buildWidgetSections(
         typeWidgets = typeWidgets,
         chatWidget = chatWidget,
         unreadWidget = unreadWidget,
+        personalFavoritesWidget = personalFavoritesWidget,
         recentlyEditedWidget = recentlyEditedWidget,
         binWidget = binWidget
+    )
+}
+
+/**
+ * Builds the per-user "My Favorites" widget, backed by the virtual
+ * _personalWidgets_<spaceId> document (GO-6962).
+ */
+private fun buildPersonalFavoritesWidget(
+    state: ObjectViewState.Success
+): Widget.PersonalFavorites {
+    return Widget.PersonalFavorites(
+        id = Widget.Source.WIDGET_PERSONAL_FAVORITES_ID,
+        source = Widget.Source.Bundled.PersonalFavorites,
+        config = state.config,
+        icon = ObjectIcon.None
     )
 }
 
@@ -795,6 +840,7 @@ fun Id.bundled(): Widget.Source.Bundled = when (this) {
     BundledWidgetSourceIds.BIN -> Widget.Source.Bundled.Bin
     BundledWidgetSourceIds.ALL_OBJECTS -> Widget.Source.Bundled.AllObjects
     BundledWidgetSourceIds.CHAT -> Widget.Source.Bundled.Chat
+    BundledWidgetSourceIds.PERSONAL_FAVORITES -> Widget.Source.Bundled.PersonalFavorites
     else -> throw IllegalStateException("Widget bundled id can't be $this")
 }
 

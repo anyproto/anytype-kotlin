@@ -18,6 +18,8 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
+import com.anytypeio.anytype.domain.favorites.AddPersonalFavorite
+import com.anytypeio.anytype.domain.favorites.RemovePersonalFavorite
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
@@ -89,7 +91,9 @@ class ObjectMenuViewModel(
     private val userPermissionProvider: UserPermissionProvider,
     private val deleteRelationFromObject: DeleteRelationFromObject,
     private val showObject: GetObject,
-    private val deleteWidget: DeleteWidget
+    private val deleteWidget: DeleteWidget,
+    private val addPersonalFavorite: AddPersonalFavorite,
+    private val removePersonalFavorite: RemovePersonalFavorite
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addBackLinkToObject = addBackLinkToObject,
@@ -111,7 +115,9 @@ class ObjectMenuViewModel(
     deepLinkResolver = deepLinkResolver,
     getSpaceInviteLink = getSpaceInviteLink,
     showObject = showObject,
-    deleteWidget = deleteWidget
+    deleteWidget = deleteWidget,
+    addPersonalFavorite = addPersonalFavorite,
+    removePersonalFavorite = removePersonalFavorite
 ) {
 
     init {
@@ -138,7 +144,9 @@ class ObjectMenuViewModel(
         isTemplate: Boolean,
         isLocked: Boolean,
         isReadOnly: Boolean,
-        isCurrentObjectPinned: Boolean
+        isCurrentObjectPinned: Boolean,
+        isInMyFavorites: Boolean,
+        canToggleChannelPin: Boolean
     ): List<ObjectAction> = buildList {
 
         val wrapper = storage.details.current().getObject(ctx)
@@ -161,10 +169,17 @@ class ObjectMenuViewModel(
             }
 
             if (!isTemplate && !systemLayouts.contains(layout) && !fileLayouts.contains(layout)) {
-                if (isCurrentObjectPinned) {
-                    add(ObjectAction.UNPIN)
+                if (isInMyFavorites) {
+                    add(ObjectAction.REMOVE_FROM_MY_FAVORITES)
                 } else {
-                    add(ObjectAction.PIN)
+                    add(ObjectAction.ADD_TO_MY_FAVORITES)
+                }
+                if (canToggleChannelPin) {
+                    if (isCurrentObjectPinned) {
+                        add(ObjectAction.UNPIN)
+                    } else {
+                        add(ObjectAction.PIN)
+                    }
                 }
             }
 
@@ -209,10 +224,17 @@ class ObjectMenuViewModel(
                 clear()
                 add(ObjectAction.MOVE_TO_BIN)
                 add(ObjectAction.DOWNLOAD_FILE)
-                if (isCurrentObjectPinned) {
-                    add(ObjectAction.UNPIN)
+                if (isInMyFavorites) {
+                    add(ObjectAction.REMOVE_FROM_MY_FAVORITES)
                 } else {
-                    add(ObjectAction.PIN)
+                    add(ObjectAction.ADD_TO_MY_FAVORITES)
+                }
+                if (canToggleChannelPin) {
+                    if (isCurrentObjectPinned) {
+                        add(ObjectAction.UNPIN)
+                    } else {
+                        add(ObjectAction.PIN)
+                    }
                 }
                 add(ObjectAction.LINK_TO)
                 add(ObjectAction.COPY_LINK)
@@ -376,6 +398,12 @@ class ObjectMenuViewModel(
             }
             ObjectAction.REMOVE_FROM_FAVOURITE -> {
                 proceedWithRemovingFromFavorites(ctx)
+            }
+            ObjectAction.ADD_TO_MY_FAVORITES -> {
+                proceedWithAddingToMyFavorites(ctx = ctx, space = SpaceId(space))
+            }
+            ObjectAction.REMOVE_FROM_MY_FAVORITES -> {
+                proceedWithRemovingFromMyFavorites(ctx = ctx, space = SpaceId(space))
             }
             ObjectAction.LINK_TO -> {
                 proceedWithLinkTo()
@@ -677,7 +705,9 @@ class ObjectMenuViewModel(
         private val userPermissionProvider: UserPermissionProvider,
         private val deleteRelationFromObject: DeleteRelationFromObject,
         private val showObject: GetObject,
-        private val deleteWidget: DeleteWidget
+        private val deleteWidget: DeleteWidget,
+        private val addPersonalFavorite: AddPersonalFavorite,
+        private val removePersonalFavorite: RemovePersonalFavorite
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -710,7 +740,9 @@ class ObjectMenuViewModel(
                 userPermissionProvider = userPermissionProvider,
                 deleteRelationFromObject = deleteRelationFromObject,
                 showObject = showObject,
-                deleteWidget = deleteWidget
+                deleteWidget = deleteWidget,
+                addPersonalFavorite = addPersonalFavorite,
+                removePersonalFavorite = removePersonalFavorite
             ) as T
         }
     }

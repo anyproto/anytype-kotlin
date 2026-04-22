@@ -12,7 +12,10 @@ enum class WidgetSectionType {
     BIN;
 
     companion object {
-        val DEFAULT_ORDER = listOf(UNREAD, MY_FAVORITES, PINNED, OBJECTS, RECENTLY_EDITED, BIN)
+        // DROID-4397: Pinned moves to the top (directly under Home) and is
+        // rendered without a section header. Unread and My Favorites remain
+        // below. See WidgetsScreen.kt for the actual rendering.
+        val DEFAULT_ORDER = listOf(PINNED, UNREAD, MY_FAVORITES, OBJECTS, RECENTLY_EDITED, BIN)
     }
 
     /**

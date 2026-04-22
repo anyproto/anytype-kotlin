@@ -41,7 +41,6 @@ import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.OBJECT_TYPES_GROUP_ID
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_MY_FAVORITES
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
-import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_RECENTLY_EDITED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_UNREAD
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
@@ -183,35 +182,9 @@ fun WidgetsScreen(
     val hideCountersInOtherSections = !isUnreadSectionCollapsed
             && unreadWidgetView?.elements?.isNotEmpty() == true
 
-    // Determine if sections should be visible
-    val isPinnedSectionCollapsed = collapsedSections.contains(SECTION_PINNED)
+    // DROID-4397: Pinned has no section header and no collapse behavior. The
+    // block is simply hidden when there are no pins, shown otherwise.
     val isObjectsSectionCollapsed = collapsedSections.contains(SECTION_OBJECT_TYPE)
-
-    // Track previous collapse state to detect expand transitions
-    val wasCollapsed = remember { mutableStateOf(isPinnedSectionCollapsed) }
-    val hadPinnedItems = remember { mutableStateOf(pinnedUi.isNotEmpty()) }
-
-    // When section becomes expanded (transition from collapsed to expanded)
-    // Keep the flag true to prevent flicker until items load
-    if (!isPinnedSectionCollapsed && wasCollapsed.value) {
-        hadPinnedItems.value = true
-    }
-
-    // Update previous state for next composition
-    wasCollapsed.value = isPinnedSectionCollapsed
-
-    // Set flag when items are present
-    if (pinnedUi.isNotEmpty()) {
-        hadPinnedItems.value = true
-    }
-
-    // Reset flag when section is collapsed and has no items
-    if (isPinnedSectionCollapsed && pinnedUi.isEmpty()) {
-        hadPinnedItems.value = false
-    }
-
-    // Show header if: has items OR is collapsed OR was previously shown (prevents flicker on expand)
-    val shouldShowPinnedHeader = pinnedUi.isNotEmpty() || isPinnedSectionCollapsed || hadPinnedItems.value
 
     val isDraggingPinned = remember { mutableStateOf(false) }
     val isDraggingTypes = remember { mutableStateOf(false) }
@@ -373,42 +346,32 @@ fun WidgetsScreen(
                     }
 
                     WidgetSectionType.PINNED -> {
-                        // Pinned section header
-                        if (shouldShowPinnedHeader) {
-                            item {
-                                ReorderableItem(
-                                    enabled = false,
-                                    state = reorderableState,
-                                    key = SECTION_PINNED,
-                                ) {
-                                    PinnedSectionHeader(
-                                        onSectionClicked = viewModel::onSectionPinnedClicked
-                                    )
-                                }
-                            }
+                        // DROID-4397: Pinned block — no section header, no collapse.
+                        // Hidden entirely when there are no pins. Rendered directly
+                        // under the Home widget (position 0 in DEFAULT_ORDER).
+                        if (pinnedUi.isNotEmpty()) {
+                            renderWidgetSection(
+                                widgets = pinnedUi,
+                                reorderableState = reorderableState,
+                                view = view,
+                                mode = mode,
+                                sectionType = SectionType.PINNED,
+                                isOtherSectionDragging = isDraggingTypes.value,
+                                hideCounters = hideCountersInOtherSections,
+                                onExpand = viewModel::onExpand,
+                                onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
+                                    viewModel.onDropDownMenuAction(widget, action)
+                                },
+                                onWidgetElementClicked = viewModel::onWidgetElementClicked,
+                                onWidgetSourceClicked = viewModel::onWidgetSourceClicked,
+                                onSeeAllClicked = viewModel::onSeeAllClicked,
+                                onToggleExpandedWidgetState = viewModel::onToggleWidgetExpandedState,
+                                onChangeWidgetView = viewModel::onChangeCurrentWidgetView,
+                                onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
+                                onCreateElement = viewModel::onCreateWidgetElementClicked,
+                                onCreateWidget = viewModel::onCreateWidgetClicked
+                            )
                         }
-                        // Pinned widgets (hidden when section is collapsed)
-                        if (!isPinnedSectionCollapsed) renderWidgetSection(
-                            widgets = pinnedUi,
-                            reorderableState = reorderableState,
-                            view = view,
-                            mode = mode,
-                            sectionType = SectionType.PINNED,
-                            isOtherSectionDragging = isDraggingTypes.value,
-                            hideCounters = hideCountersInOtherSections,
-                            onExpand = viewModel::onExpand,
-                            onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
-                                viewModel.onDropDownMenuAction(widget, action)
-                            },
-                            onWidgetElementClicked = viewModel::onWidgetElementClicked,
-                            onWidgetSourceClicked = viewModel::onWidgetSourceClicked,
-                            onSeeAllClicked = viewModel::onSeeAllClicked,
-                            onToggleExpandedWidgetState = viewModel::onToggleWidgetExpandedState,
-                            onChangeWidgetView = viewModel::onChangeCurrentWidgetView,
-                            onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
-                            onCreateElement = viewModel::onCreateWidgetElementClicked,
-                            onCreateWidget = viewModel::onCreateWidgetClicked
-                        )
                     }
 
                     WidgetSectionType.OBJECTS -> {

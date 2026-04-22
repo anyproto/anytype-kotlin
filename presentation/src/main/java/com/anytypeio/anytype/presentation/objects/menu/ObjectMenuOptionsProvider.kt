@@ -14,7 +14,22 @@ interface ObjectMenuOptionsProvider {
         val hasDescriptionShow: Boolean,
         val hasObjectLayoutConflict: Boolean,
         val hasTemplateNamePrefill: Boolean = false,
-        val isTemplateNamePrefillEnabled: Boolean = false
+        val isTemplateNamePrefillEnabled: Boolean = false,
+        /**
+         * DROID-4397: whether the object is in the current user's personal favorites
+         * for the active space. Drives the Favorite ↔ Unfavorite menu item toggle.
+         */
+        val isFavorited: Boolean = false,
+        /**
+         * DROID-4397: whether the object is in the space's shared pinned list.
+         * Drives the "Pin to channel" ↔ "Unpin from channel" menu item toggle.
+         */
+        val isPinnedToChannel: Boolean = false,
+        /**
+         * DROID-4397: whether the current user has Owner/Admin role in the space.
+         * Pin/Unpin menu items are hidden entirely when false.
+         */
+        val canToggleChannelPin: Boolean = false
     ) {
         companion object {
             val ALL = Options(

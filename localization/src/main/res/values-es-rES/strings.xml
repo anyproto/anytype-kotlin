@@ -867,12 +867,17 @@
     <string name="create_space_space_name">Nombre del espacio</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Crear Inicio</string>
-    <string name="homepage_picker_description">Elige lo que veréis tú y otros miembros del canal al abrirlo. Puedes cambiarlo en los ajustes en cualquier momento.</string>
+    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
     <string name="homepage_picker_chat">Chat</string>
     <string name="homepage_picker_page">Página</string>
     <string name="homepage_picker_collection">Colección</string>
-    <string name="homepage_picker_empty">Vacío</string>
-    <string name="homepage_picker_later">Más tarde</string>
+    <string name="homepage_picker_continue">Continuar</string>
+    <string name="homepage_picker_not_now">Ahora no</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Inicio</string>
+    <string name="space_home_no_home_title">Sin Inicio </string>
+    <string name="space_home_no_home_subtitle">Al entrar, se abre la navegación </string>
+    <string name="widget_menu_change_home">Cambiar Inicio</string>
     <string name="invite_members_widget_title">Invitar a otras personas</string>
     <string name="invite_members_widget_description">Invita a otras personas a este canal para empezar a colaborar. </string>
     <string name="generic_error">Algo ha salido mal. Inténtalo de nuevo.</string>
@@ -1086,7 +1091,7 @@
     <string name="onboarding_void_title">Esta es tu arca</string>
     <string name="onboarding_void_description">Se trata de una ubicación cifrada para toda tu creación. Todo se guarda en tu dispositivo y se respalda en la red distribuida.</string>
     <string name="onboarding_this_is_your_key_title">Esta es tu clave</string>
-    <string name="onboarding_key_description">Es lo que usamos en lugar de usuario y contraseña. Guárdala bien; la responsabilidad sobre tus datos es solo tuya. Podrás volver a ver esta clave en los ajustes de la aplicación.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Ver mi clave</string>
     <string name="onboarding_tap_to_reveal">Mostrar y copiar</string>
     <string name="onboarding_key_skip">Omitir</string>
@@ -1107,7 +1112,7 @@
     <string name="onboarding_recovery_phrase_description">Tu clave está representada por una frase de recuperación compuesta con 12 palabras aleatorias que generan tu arca en este dispositivo.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Quien tiene la clave, tiene el acceso</string>
     <string name="onboarding_recovery_phrase_description_2">Cualquiera que conozca esas palabras puede acceder a tu arca. Ahora mismo, tú eres la única persona del mundo que las conoce.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Solo tú eres responsable de ella</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
     <string name="onboarding_recovery_phrase_description_3">No hay recursos computacionales en la Tierra suficientes para descifrarla. Si pierdes tu clave, es imposible recuperarla. Guárdala en un lugar seguro: en un gestor de contraseñas o escrita en un papel.</string>
     <string name="onboarding_recovery_phrase_description_4">No hay recursos computacionales en la Tierra suficientes para descifrarla. Si la pierdes, es imposible recuperarla. ¡Guárdala en un lugar seguro!</string>
     <string name="onboarding_how_to_save_my_phrase">¿Cómo guardo mi clave?</string>

@@ -30,12 +30,12 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Divider as MaterialDivider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -51,6 +51,7 @@ import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -96,7 +97,6 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
-import com.anytypeio.anytype.ui.settings.typography
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -573,169 +573,230 @@ private fun GlobalSearchItem(
                 modifier = Modifier.align(Alignment.CenterEnd)
             )
         }
-        MaterialTheme(
-            typography = typography,
-            shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
-            colors = MaterialTheme.colors.copy(
-                surface = colorResource(id = R.color.background_secondary)
+        val isBookmark = globalSearchItemView.layout == ObjectType.Layout.BOOKMARK
+        val isFile = SupportedLayouts.isFileLayout(globalSearchItemView.layout)
+        val isImageLayout = globalSearchItemView.layout == ObjectType.Layout.IMAGE
+        DropdownMenu(
+            modifier = Modifier.width(254.dp),
+            expanded = isMenuExpanded,
+            onDismissRequest = {
+                isMenuExpanded = false
+            },
+            containerColor = colorResource(id = R.color.background_secondary),
+            shape = RoundedCornerShape(12.dp),
+            tonalElevation = 8.dp,
+            offset = DpOffset(
+                x = 8.dp,
+                y = 8.dp
             )
         ) {
-            val isBookmark = globalSearchItemView.layout == ObjectType.Layout.BOOKMARK
-            val isFile = SupportedLayouts.isFileLayout(globalSearchItemView.layout)
-            val isImageLayout = globalSearchItemView.layout == ObjectType.Layout.IMAGE
-            DropdownMenu(
-                expanded = isMenuExpanded,
-                onDismissRequest = {
+            // Group 1: Open in Browser / Open File + Open Object
+            if (isBookmark) {
+                DropdownMenuItem(
+                    onClick = {
+                        onOpenInBrowser(globalSearchItemView)
+                        isMenuExpanded = false
+                    },
+                    text = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(R.string.open_in_browser),
+                                modifier = Modifier.weight(1f),
+                                style = PreviewTitle1Regular,
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_dropdown_menu_language),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                )
+            }
+            if (isFile) {
+                DropdownMenuItem(
+                    onClick = {
+                        onOpenFile(globalSearchItemView)
+                        isMenuExpanded = false
+                    },
+                    text = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(R.string.open_file),
+                                modifier = Modifier.weight(1f),
+                                style = PreviewTitle1Regular,
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                            Image(
+                                painter = painterResource(
+                                    id = if (isImageLayout)
+                                        R.drawable.ic_dropdown_menu_image
+                                    else
+                                        R.drawable.ic_dropdown_menu_draft
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                )
+            }
+            if (isBookmark || isFile) {
+                MaterialDivider(
+                    thickness = 0.5.dp,
+                    color = colorResource(id = R.color.shape_primary)
+                )
+                DropdownMenuItem(
+                    onClick = {
+                        onOpenObjectAsObject(globalSearchItemView)
+                        isMenuExpanded = false
+                    },
+                    text = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(R.string.open_object),
+                                modifier = Modifier.weight(1f),
+                                style = PreviewTitle1Regular,
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_dropdown_menu_open_in_full),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                )
+                // 8dp thick section separator after Group 1
+                MaterialDivider(
+                    thickness = 8.dp,
+                    color = colorResource(id = R.color.shape_primary)
+                )
+            }
+            // Group 2: Pin + Copy Link
+            DropdownMenuItem(
+                onClick = {
+                    onPinObject(globalSearchItemView)
                     isMenuExpanded = false
                 },
-                offset = DpOffset(
-                    x = 8.dp,
-                    y = 8.dp
-                )
-            ) {
-                // Group 1: Open in Browser / Open File + Open Object
-                if (isBookmark) {
-                    DropdownMenuItem(
-                        onClick = {
-                            onOpenInBrowser(globalSearchItemView)
-                            isMenuExpanded = false
-                        }
+                text = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = stringResource(R.string.open_in_browser),
+                            text = stringResource(R.string.favourite),
                             modifier = Modifier.weight(1f),
                             style = PreviewTitle1Regular,
                             color = colorResource(id = R.color.text_primary)
                         )
                         Image(
-                            painter = painterResource(id = R.drawable.ic_dropdown_menu_language),
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_keep),
                             contentDescription = null,
                             modifier = Modifier.size(24.dp)
                         )
                     }
                 }
-                if (isFile) {
-                    DropdownMenuItem(
-                        onClick = {
-                            onOpenFile(globalSearchItemView)
-                            isMenuExpanded = false
-                        }
+            )
+            MaterialDivider(
+                thickness = 0.5.dp,
+                color = colorResource(id = R.color.shape_primary)
+            )
+            DropdownMenuItem(
+                onClick = {
+                    onCopyLink(globalSearchItemView)
+                    isMenuExpanded = false
+                },
+                text = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = stringResource(R.string.open_file),
+                            text = stringResource(R.string.copy_link),
                             modifier = Modifier.weight(1f),
                             style = PreviewTitle1Regular,
                             color = colorResource(id = R.color.text_primary)
                         )
                         Image(
-                            painter = painterResource(
-                                id = if (isImageLayout)
-                                    R.drawable.ic_dropdown_menu_image
-                                else
-                                    R.drawable.ic_dropdown_menu_draft
-                            ),
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_link),
                             contentDescription = null,
                             modifier = Modifier.size(24.dp)
                         )
                     }
                 }
-                if (isBookmark || isFile) {
-                    DropdownMenuItem(
-                        onClick = {
-                            onOpenObjectAsObject(globalSearchItemView)
-                            isMenuExpanded = false
-                        }
+            )
+            // 8dp thick section separator between Group 2 and Group 3
+            MaterialDivider(
+                thickness = 8.dp,
+                color = colorResource(id = R.color.shape_primary)
+            )
+            // Group 3: Duplicate + Move to Bin
+            DropdownMenuItem(
+                onClick = {
+                    onDuplicateObject(globalSearchItemView)
+                    isMenuExpanded = false
+                },
+                text = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = stringResource(R.string.open_object),
+                            text = stringResource(R.string.duplicate),
                             modifier = Modifier.weight(1f),
                             style = PreviewTitle1Regular,
                             color = colorResource(id = R.color.text_primary)
                         )
                         Image(
-                            painter = painterResource(id = R.drawable.ic_dropdown_menu_open_in_full),
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
                             contentDescription = null,
                             modifier = Modifier.size(24.dp)
                         )
                     }
                 }
-                // Group 2: Pin + Copy Link
-                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                DropdownMenuItem(
-                    onClick = {
-                        onPinObject(globalSearchItemView)
-                        isMenuExpanded = false
+            )
+            MaterialDivider(
+                thickness = 0.5.dp,
+                color = colorResource(id = R.color.shape_primary)
+            )
+            DropdownMenuItem(
+                onClick = {
+                    onMoveToBin(globalSearchItemView)
+                    isMenuExpanded = false
+                },
+                text = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.move_to_bin),
+                            modifier = Modifier.weight(1f),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.palette_system_red)
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_delete),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            colorFilter = ColorFilter.tint(
+                                colorResource(id = R.color.palette_system_red)
+                            )
+                        )
                     }
-                ) {
-                    Text(
-                        text = stringResource(R.string.favourite),
-                        modifier = Modifier.weight(1f),
-                        style = PreviewTitle1Regular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_dropdown_menu_keep),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
                 }
-                DropdownMenuItem(
-                    onClick = {
-                        onCopyLink(globalSearchItemView)
-                        isMenuExpanded = false
-                    }
-                ) {
-                    Text(
-                        text = stringResource(R.string.copy_link),
-                        modifier = Modifier.weight(1f),
-                        style = PreviewTitle1Regular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_dropdown_menu_link),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                // Group 3: Duplicate + Move to Bin
-                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                DropdownMenuItem(
-                    onClick = {
-                        onDuplicateObject(globalSearchItemView)
-                        isMenuExpanded = false
-                    }
-                ) {
-                    Text(
-                        text = stringResource(R.string.duplicate),
-                        modifier = Modifier.weight(1f),
-                        style = PreviewTitle1Regular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-                DropdownMenuItem(
-                    onClick = {
-                        onMoveToBin(globalSearchItemView)
-                        isMenuExpanded = false
-                    }
-                ) {
-                    Text(
-                        text = stringResource(R.string.move_to_bin),
-                        modifier = Modifier.weight(1f),
-                        style = PreviewTitle1Regular,
-                        color = colorResource(id = R.color.palette_system_red)
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_dropdown_menu_delete),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
+            )
         }
     }
 }

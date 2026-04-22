@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.UrlBuilder
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 
 /**
  * Represents the visual icon for a space in the UI.
@@ -43,18 +42,19 @@ private val DEFAULT_PLACEHOLDER_COLOR = SystemColor.SKY
 fun ObjectWrapper.SpaceView.spaceIcon(
     builder: UrlBuilder,
 ): SpaceIconView {
-    val isChat = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
+    // Only ONE_TO_ONE spaces get the round ChatSpace-variant icon now.
+    val isOneToOne = isOneToOneSpace
 
     // Helpers to eliminate duplication between Chat and Data branches
     val makeImage: (SystemColor, Url) -> SpaceIconView = { color, url ->
-        if (isChat) {
+        if (isOneToOne) {
             SpaceIconView.ChatSpace.Image(url, color)
         } else {
             SpaceIconView.DataSpace.Image(url, color)
         }
     }
     val makePlaceholder: (SystemColor, String) -> SpaceIconView = { color, title ->
-        if (isChat) {
+        if (isOneToOne) {
             SpaceIconView.ChatSpace.Placeholder(color = color, name = title)
         } else {
             SpaceIconView.DataSpace.Placeholder(color = color, name = title)

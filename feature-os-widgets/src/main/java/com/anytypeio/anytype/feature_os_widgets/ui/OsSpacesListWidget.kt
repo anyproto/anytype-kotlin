@@ -57,12 +57,22 @@ class OsSpacesListWidget : GlanceAppWidget() {
         Timber.tag(TAG).d("provideGlance called, glanceId=$id")
         val appContext = context.applicationContext
         val dataStore = OsWidgetsDataStore(appContext)
-        val entities = dataStore.observeSpaces().first()
-        val spaces = entities.toDomain()
-        Timber.tag(TAG).d("Read ${entities.size} space entities from DataStore, mapped to ${spaces.size} domain items")
-        entities.forEachIndexed { i, e ->
-            Timber.tag(TAG).d("  entity[$i]: spaceId=${e.spaceId}, name=${e.name}, icon=${e.iconImageUrl != null}")
+        val allEntities = dataStore.observeSpaces().first()
+        Timber.tag(TAG).d("Read ${allEntities.size} space entities from DataStore")
+
+        val pinnedEntities = allEntities
+            .filter { !it.spaceOrder.isNullOrEmpty() }
+            .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
+
+        val entriesToShow = pinnedEntities.ifEmpty {
+            allEntities.filter {
+                it.spaceUxType != SpaceUxType.CHAT.ordinal
+                        && it.spaceUxType != SpaceUxType.ONE_TO_ONE.ordinal
+            }
         }
+
+        val spaces = entriesToShow.toDomain()
+        Timber.tag(TAG).d("Showing ${spaces.size} spaces (${pinnedEntities.size} pinned)")
         val strings = SpacesListWidgetStrings(
             emptyState = appContext.getString(R.string.os_widget_open_app_to_see_spaces),
             untitled = appContext.getString(R.string.untitled)
@@ -154,7 +164,7 @@ private fun SpaceCard(space: OsWidgetSpaceItem, untitledFallback: String) {
             SpaceIcon(
                 icon = space.icon,
                 name = space.name,
-                spaceUxType = space.spaceUxType
+                isOneToOneSpace = space.isOneToOneSpace
             )
             Spacer(modifier = GlanceModifier.width(12.dp))
             Text(
@@ -180,7 +190,7 @@ private data class SpacesListWidgetStrings(
 private fun SpaceIcon(
     icon: OsWidgetSpaceIcon,
     name: String,
-    spaceUxType: SpaceUxType
+    isOneToOneSpace: Boolean
 ) {
     val backgroundColor = when (icon) {
         is OsWidgetSpaceIcon.Image -> icon.color.toWidgetColor()
@@ -194,10 +204,12 @@ private fun SpaceIcon(
 
     val initial = name.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
 
-    // Determine corner radius based on space type (chat spaces use circle, data spaces use rounded rect)
-    val cornerRadius = when (spaceUxType) {
-        SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> 20  // Circle for 40dp (half of size)
-        else -> SPACE_ICON_CORNER_RADIUS  // 6dp for data spaces
+    // Determine corner radius based on space kind (1-1 spaces use circle,
+    // regular data spaces use a rounded rect).
+    val cornerRadius = if (isOneToOneSpace) {
+        20  // Circle for 40dp (half of size)
+    } else {
+        SPACE_ICON_CORNER_RADIUS  // 6dp for data spaces
     }
 
     // Try to load cached image, fallback to placeholder

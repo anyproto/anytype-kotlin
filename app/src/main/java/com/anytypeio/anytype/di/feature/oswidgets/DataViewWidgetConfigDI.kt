@@ -4,12 +4,20 @@ import android.content.Context
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
+import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
+import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_os_widgets.persistence.DataViewItemsFetcher
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetDataViewEntity
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
@@ -79,6 +87,38 @@ object DataViewWidgetConfigModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideLaunchWallet(
+        authRepository: AuthRepository,
+        pathProvider: PathProvider
+    ): LaunchWallet = LaunchWallet(
+        repository = authRepository,
+        pathProvider = pathProvider
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideLaunchAccount(
+        authRepository: AuthRepository,
+        pathProvider: PathProvider,
+        configStorage: ConfigStorage,
+        spaceManager: SpaceManager,
+        initialParamsProvider: InitialParamsProvider,
+        userSettings: UserSettingsRepository,
+        awaitAccountStartManager: AwaitAccountStartManager
+    ): LaunchAccount = LaunchAccount(
+        repository = authRepository,
+        pathProvider = pathProvider,
+        configStorage = configStorage,
+        spaceManager = spaceManager,
+        initialParamsProvider = initialParamsProvider,
+        settings = userSettings,
+        awaitAccountStartManager = awaitAccountStartManager
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideDataViewWidgetViewModelFactory(
         spaceViews: SpaceViewSubscriptionContainer,
         urlBuilder: UrlBuilder,
@@ -86,7 +126,9 @@ object DataViewWidgetConfigModule {
         getObject: GetObject,
         dataStore: DataViewWidgetConfigStore,
         itemsFetcher: DataViewItemsFetcher,
-        widgetUpdater: DataViewWidgetUpdater
+        widgetUpdater: DataViewWidgetUpdater,
+        launchWallet: LaunchWallet,
+        launchAccount: LaunchAccount
     ): DataViewWidgetConfigViewModel.Factory = DataViewWidgetConfigViewModel.Factory(
         spaceViews = spaceViews,
         urlBuilder = urlBuilder,
@@ -94,7 +136,9 @@ object DataViewWidgetConfigModule {
         getObject = getObject,
         dataStore = dataStore,
         itemsFetcher = itemsFetcher,
-        widgetUpdater = widgetUpdater
+        widgetUpdater = widgetUpdater,
+        launchWallet = launchWallet,
+        launchAccount = launchAccount
     )
 }
 
@@ -106,4 +150,10 @@ interface DataViewWidgetConfigDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
     fun userSettingsRepository(): UserSettingsRepository
     fun dispatchers(): AppCoroutineDispatchers
+    fun authRepository(): AuthRepository
+    fun pathProvider(): PathProvider
+    fun configStorage(): ConfigStorage
+    fun spaceManager(): SpaceManager
+    fun metricsProvider(): InitialParamsProvider
+    fun awaitAccountStartManager(): AwaitAccountStartManager
 }

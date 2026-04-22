@@ -23,9 +23,10 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
+import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
+import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
@@ -91,7 +92,8 @@ object VaultViewModelFabric {
         osWidgetDataViewSync: OsWidgetDataViewSync = mock(),
         networkModeProvider: NetworkModeProvider = mock(),
         getMembershipFeatures: GetMembershipFeatures = mock(),
-        searchObjects: SearchObjects = mock(),
+        resolveSpaceHomepage: ResolveSpaceHomepage = mock(),
+        setHomepage: SetHomepage = mock(),
         userSettingsRepository: UserSettingsRepository = mock {
             on { observeCompactModeEnabled() }.thenReturn(flowOf(false))
         }
@@ -131,7 +133,8 @@ object VaultViewModelFabric {
         osWidgetDataViewSync = osWidgetDataViewSync,
         networkModeProvider = networkModeProvider,
         getMembershipFeatures = getMembershipFeatures,
-        searchObjects = searchObjects,
+        resolveSpaceHomepage = resolveSpaceHomepage,
+        setHomepage = setHomepage,
         userSettingsRepository = userSettingsRepository
     )
 }

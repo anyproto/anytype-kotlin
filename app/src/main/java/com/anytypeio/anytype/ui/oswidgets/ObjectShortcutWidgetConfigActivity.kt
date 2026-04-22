@@ -108,6 +108,11 @@ class ObjectShortcutWidgetConfigActivity : AppCompatActivity() {
                                 is ObjectShortcutWidgetConfigViewModel.Command.ShowError -> {
                                     Toast.makeText(this@ObjectShortcutWidgetConfigActivity, "Error: ${command.message}", Toast.LENGTH_LONG).show()
                                 }
+                                is ObjectShortcutWidgetConfigViewModel.Command.FinishWithFailure -> {
+                                    Toast.makeText(this@ObjectShortcutWidgetConfigActivity, "Error: ${command.message}", Toast.LENGTH_LONG).show()
+                                    setResult(Activity.RESULT_CANCELED)
+                                    finish()
+                                }
                             }
                         }
                     }

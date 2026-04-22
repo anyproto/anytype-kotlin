@@ -137,11 +137,11 @@ class ObjectValueViewModel(
             }
             else -> {
                 if (isEditableRelation) {
-                    val spaceUxType = spaceViews.get(viewModelParams.space)?.spaceUxType
+                    val isOneToOneSpace = spaceViews.get(viewModelParams.space)?.isOneToOneSpace == true
                     ObjectSearchConstants.filterAddObjectToRelation(
                         space = viewModelParams.space.id,
                         targetTypes = relation.relationFormatObjectTypes,
-                        spaceUxType = spaceUxType
+                        isOneToOneSpace = isOneToOneSpace
                     )
                 } else {
                     ObjectSearchConstants.filterObjectsByIds(

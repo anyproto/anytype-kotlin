@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.date.DateFormatter
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
@@ -127,7 +126,10 @@ class MySitesViewModel(
         viewModelScope.launch {
             val view = awaitActiveSpaceView(item.space)
             if (view != null) {
-                val chatId = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
+                // Pre-refactor this branch only populated chatId for legacy
+                // SpaceUxType.CHAT spaces. CHAT-type spaces no longer exist, so
+                // the chatId is now always null here to preserve the original
+                // behavior for the remaining (DATA / ONE_TO_ONE) space kinds.
                 spaceManager.set(
                     item.space.id
                 ).onSuccess {
@@ -135,7 +137,7 @@ class MySitesViewModel(
                         Command.OpenObject(
                             objectId = item.obj,
                             spaceId = item.space,
-                            chatId = chatId
+                            chatId = null
                         )
                     )
                 }.onFailure {

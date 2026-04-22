@@ -137,14 +137,13 @@ fun AttachmentMenuContent(
             )
         }
 
-        // See all option (only show if there are quick create types)
-        if (quickCreateTypes.isNotEmpty()) {
-            AttachmentMenuItem(
-                icon = R.drawable.ic_attachment_menu_see_all,
-                text = stringResource(R.string.attachment_menu_see_all),
-                onClick = { onAction(AttachmentMenuAction.SeeAll) }
-            )
-        }
+        // See all: always shown so the user always has a create-object
+        // fallback, even before quickCreateTypes has emitted.
+        AttachmentMenuItem(
+            icon = R.drawable.ic_attachment_menu_see_all,
+            text = stringResource(R.string.attachment_menu_see_all),
+            onClick = { onAction(AttachmentMenuAction.SeeAll) }
+        )
     }
 }
 

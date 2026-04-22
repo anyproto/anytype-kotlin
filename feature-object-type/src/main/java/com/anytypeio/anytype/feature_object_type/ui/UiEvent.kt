@@ -16,6 +16,7 @@ sealed class TypeEvent {
     data object OnAlertDeleteDismiss : TypeEvent()
     data object OnAlertDeleteConfirm : TypeEvent()
     data object OnBackClick : TypeEvent()
+    data object OnTopBarTitleClick : TypeEvent()
     //endregion
 
     //region Delete Type Alert (Move to Bin confirmation)

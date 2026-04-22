@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.core_models.UrlBuilder
@@ -36,7 +37,8 @@ class AllContentViewModelFactory @Inject constructor(
     private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
     private val userPermissionProvider: UserPermissionProvider,
     private val fieldParser: FieldParser,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -56,6 +58,7 @@ class AllContentViewModelFactory @Inject constructor(
             removeObjectsFromWorkspace = removeObjectsFromWorkspace,
             userPermissionProvider = userPermissionProvider,
             fieldParser = fieldParser,
-            spaceViews = spaceViews
+            spaceViews = spaceViews,
+            spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider
         ) as T
 }

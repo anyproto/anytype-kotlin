@@ -4,7 +4,16 @@ import android.content.Context
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
+import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
+import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.platform.InitialParamsProvider
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetCreateObjectEntity
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetIconCache
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetSpaceShortcutEntity
@@ -24,6 +33,13 @@ import dagger.Component
 import dagger.Module
 import dagger.Provides
 
+/**
+ * Shared DI component for the CreateObject and SpaceShortcut widget config
+ * activities. These two activities are intentionally grouped here because
+ * they share the same set of dependencies and @PerScreen scope — keeping
+ * them on a single component avoids duplicating the entire module graph.
+ * Despite the name, this component also injects [SpaceShortcutWidgetConfigActivity].
+ */
 @Component(
     dependencies = [CreateObjectWidgetConfigDependencies::class],
     modules = [CreateObjectWidgetConfigModule::class]
@@ -109,18 +125,54 @@ object CreateObjectWidgetConfigModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideLaunchWallet(
+        authRepository: AuthRepository,
+        pathProvider: PathProvider
+    ): LaunchWallet = LaunchWallet(
+        repository = authRepository,
+        pathProvider = pathProvider
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideLaunchAccount(
+        authRepository: AuthRepository,
+        pathProvider: PathProvider,
+        configStorage: ConfigStorage,
+        spaceManager: SpaceManager,
+        initialParamsProvider: InitialParamsProvider,
+        userSettings: UserSettingsRepository,
+        awaitAccountStartManager: AwaitAccountStartManager
+    ): LaunchAccount = LaunchAccount(
+        repository = authRepository,
+        pathProvider = pathProvider,
+        configStorage = configStorage,
+        spaceManager = spaceManager,
+        initialParamsProvider = initialParamsProvider,
+        settings = userSettings,
+        awaitAccountStartManager = awaitAccountStartManager
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideSpaceShortcutViewModelFactory(
         spaceViews: SpaceViewSubscriptionContainer,
         urlBuilder: UrlBuilder,
         configStore: SpaceShortcutWidgetConfigStore,
         iconCache: SpaceShortcutIconCache,
-        widgetUpdater: SpaceShortcutWidgetUpdater
+        widgetUpdater: SpaceShortcutWidgetUpdater,
+        launchWallet: LaunchWallet,
+        launchAccount: LaunchAccount
     ): SpaceShortcutWidgetConfigViewModel.Factory = SpaceShortcutWidgetConfigViewModel.Factory(
         spaceViews = spaceViews,
         urlBuilder = urlBuilder,
         configStore = configStore,
         iconCache = iconCache,
-        widgetUpdater = widgetUpdater
+        widgetUpdater = widgetUpdater,
+        launchWallet = launchWallet,
+        launchAccount = launchAccount
     )
 
     @JvmStatic
@@ -130,12 +182,16 @@ object CreateObjectWidgetConfigModule {
         spaceViews: SpaceViewSubscriptionContainer,
         urlBuilder: UrlBuilder,
         configStore: CreateObjectWidgetConfigStore,
-        widgetUpdater: CreateObjectWidgetUpdater
+        widgetUpdater: CreateObjectWidgetUpdater,
+        launchWallet: LaunchWallet,
+        launchAccount: LaunchAccount
     ): CreateObjectWidgetConfigViewModel.Factory = CreateObjectWidgetConfigViewModel.Factory(
         spaceViews = spaceViews,
         urlBuilder = urlBuilder,
         configStore = configStore,
-        widgetUpdater = widgetUpdater
+        widgetUpdater = widgetUpdater,
+        launchWallet = launchWallet,
+        launchAccount = launchAccount
     )
 }
 
@@ -143,4 +199,11 @@ interface CreateObjectWidgetConfigDependencies : ComponentDependencies {
     fun context(): Context
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
     fun urlBuilder(): UrlBuilder
+    fun authRepository(): AuthRepository
+    fun pathProvider(): PathProvider
+    fun configStorage(): ConfigStorage
+    fun spaceManager(): SpaceManager
+    fun metricsProvider(): InitialParamsProvider
+    fun userSettingsRepository(): UserSettingsRepository
+    fun awaitAccountStartManager(): AwaitAccountStartManager
 }

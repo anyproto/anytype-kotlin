@@ -64,6 +64,8 @@
     <color name="background_multiplayer_request">#252525</color>
 
     <color name="shape_primary">#E3E3E3</color>
+    <!-- Drop shadow under circular chips and pills in the DROID-4318 top bars / FABs. 12% black. -->
+    <color name="nav_chip_shadow">#1F000000</color>
     <color name="shape_secondary">#EBEBEB</color>
     <color name="shape_tertiary">#F2F2F2</color>
     <color name="shape_transparent">#14535353</color>

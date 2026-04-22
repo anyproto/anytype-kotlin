@@ -27,6 +27,8 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.wallpaper.SetWallpaper
@@ -105,6 +107,13 @@ object SpaceSettingsModule {
     fun provideGetCoverGradientCollectionUseCase(
     ): GetCoverGradientCollection = GetCoverGradientCollection(DefaultGradientCollectionProvider)
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSearchObjects(
+        repository: BlockRepository
+    ): SearchObjects = SearchObjects(repo = repository)
+
     @Module
     interface Bindings {
 
@@ -143,4 +152,5 @@ interface SpaceSettingsDependencies : ComponentDependencies {
     fun logger(): Logger
     fun spaceInviteLinkStore() : SpaceInviteLinkStore
     fun stringResourceProvider(): StringResourceProvider
+    fun fieldParser(): FieldParser
 }

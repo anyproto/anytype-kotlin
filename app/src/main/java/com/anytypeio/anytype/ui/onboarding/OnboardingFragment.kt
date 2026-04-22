@@ -691,9 +691,7 @@ class OnboardingFragment : Fragment() {
                 }
             }
             clipboard.setPrimaryClip(clip)
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S_V2) {
-                toast("Mnemonic phrase copied")
-            }
+            toast("Mnemonic phrase copied")
         } catch (e: Exception) {
             toast("Could not copy your mnemonic phrase. Please try again later, or copy it manually.")
         }

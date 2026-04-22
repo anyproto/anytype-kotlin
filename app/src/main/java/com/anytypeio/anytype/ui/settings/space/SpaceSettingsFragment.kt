@@ -37,9 +37,11 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.presentation.search.Subscriptions
+import com.anytypeio.anytype.presentation.home.SpaceHomePickerState
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.SpaceSettingsErrors
+import com.anytypeio.anytype.ui.home.SpaceHomePickerBottomSheet
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
@@ -109,6 +111,17 @@ class SpaceSettingsFragment : Fragment(), ObjectTypeSelectionListener {
             locale = locale,
             uiEvent = vm::onUiEvent
         )
+
+        val spaceHomePickerState = vm.spaceHomePickerState.collectAsStateWithLifecycle().value
+        if (spaceHomePickerState is SpaceHomePickerState.Visible) {
+            SpaceHomePickerBottomSheet(
+                state = spaceHomePickerState,
+                onNoHomeClicked = vm::onSpaceHomePickerNoHomeSelected,
+                onObjectClicked = vm::onSpaceHomePickerObjectSelected,
+                onQueryChanged = vm::onSpaceHomePickerQueryChanged,
+                onDismiss = vm::onSpaceHomePickerDismissed
+            )
+        }
 
         LaunchedEffect(Unit) {
             vm.toasts.collect { toast(it) }

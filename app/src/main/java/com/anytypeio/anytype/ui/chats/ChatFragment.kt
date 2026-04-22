@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -47,13 +48,19 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectAction
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
+import com.anytypeio.anytype.feature_create_object.ui.CreateObjectPopup
 import com.anytypeio.anytype.core_ui.features.multiplayer.ShareSpaceQrCodeScreen
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
+import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
@@ -69,6 +76,8 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatObjectIcon
 import com.anytypeio.anytype.feature_chats.presentation.ChatSearchState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
+import com.anytypeio.anytype.presentation.main.MainViewModel
+import com.anytypeio.anytype.ui.home.uploadSnackbarMessage
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.ANYTYPE_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.FILE_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.MAILTO_PREFIX
@@ -82,11 +91,13 @@ import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.feature_vault.ui.AlertScreenModals
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
+import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -100,8 +111,16 @@ class ChatFragment : Fragment() {
 
     private val vm by viewModels<ChatViewModel> { factory }
 
+    private lateinit var createObjectFactory: CreateObjectViewModelFactory
+
+    private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
+    private val mainVm: MainViewModel by activityViewModels()
+
     val ctx get() = arg<Id>(CTX_KEY)
     private val space get() = arg<Id>(SPACE_KEY)
+
+    private fun createObjectComponentKey(): String = "chat-create-object:$ctx"
 
     private val triggeredByPush get() = arg<Boolean>(TRIGGERED_BY_PUSH_KEY)
     private val popUpToVault get() = arg<Boolean>(POP_UP_TO_VAULT_KEY)
@@ -157,7 +176,9 @@ class ChatFragment : Fragment() {
                         onBackButtonClicked = {
                             vm.onBackButtonPressed(isExitingVault = popUpToVault)
                         },
-                        onSpaceNameClicked = vm::onSpaceIconClicked,
+                        onTitleClick = {
+                            WidgetOverlayFragment.show(parentFragmentManager, space)
+                        },
                         onSpaceIconClicked = vm::onSpaceIconClicked,
                         onInviteMembersClicked = vm::onInviteMembersClicked,
                         onEditInfo = vm::onEditInfo,
@@ -165,7 +186,8 @@ class ChatFragment : Fragment() {
                         onCopyLink = vm::onCopyChatLink,
                         onMoveToBin = vm::onMoveToBin,
                         onNotificationSettingChanged = vm::onNotificationSettingChanged,
-                        onSearchClick = vm::onSearchTriggered
+                        onSearchClick = vm::onSearchTriggered,
+                        onSpaceSettingsClicked = vm::onOpenSpaceSettings
                     )
                 }
             ) { paddingValues ->
@@ -304,6 +326,38 @@ class ChatFragment : Fragment() {
                 }
             }
 
+            // "See all" create-object popup for the chat attachment menu.
+            val seeAllCreateSheetVisible =
+                vm.seeAllCreateSheetVisible.collectAsStateWithLifecycle().value
+            val createObjectState =
+                createObjectVm.state.collectAsStateWithLifecycle().value
+            LaunchedEffect(seeAllCreateSheetVisible) {
+                if (seeAllCreateSheetVisible) createObjectVm.onOpen()
+            }
+            CreateObjectPopup(
+                expanded = seeAllCreateSheetVisible,
+                onDismissRequest = { vm.onSeeAllCreateSheetDismissed() },
+                state = createObjectState,
+                onAction = { action ->
+                    when (action) {
+                        is CreateObjectAction.CreateObjectOfType ->
+                            vm.onCreateAndAttachObjectOfType(TypeKey(action.typeKey))
+                        is CreateObjectAction.UpdateSearch,
+                        is CreateObjectAction.Retry ->
+                            createObjectVm.onAction(action)
+                        CreateObjectAction.SelectPhotos,
+                        CreateObjectAction.TakePhoto,
+                        CreateObjectAction.SelectFiles,
+                        CreateObjectAction.AttachExistingObject -> {
+                            // Not reachable: showMediaSection/showAttachObject = false.
+                            Timber.d("ChatFragment see-all popup unexpected action: $action")
+                            vm.onSeeAllCreateSheetDismissed()
+                        }
+                    }
+                },
+                onBack = { vm.onSeeAllBackToAttachmentMenu() }
+            )
+
             if (showGlobalSearchBottomSheet) {
                 ModalBottomSheet(
                     onDismissRequest = {
@@ -425,6 +479,12 @@ class ChatFragment : Fragment() {
                             }
                         }
                     }
+                }
+            }
+
+            LaunchedEffect(Unit) {
+                vm.uploadSnackbar.collect { variant ->
+                    mainVm.showSnackbarWithOk(uploadSnackbarMessage(variant))
                 }
             }
 
@@ -582,6 +642,25 @@ class ChatFragment : Fragment() {
                             toast(
                                 getString(R.string.chat_pinned_as_widget_success)
                             )
+                        }
+
+                        is ChatViewModel.ViewModelCommand.CopyLinkToClipboard -> {
+                            requireContext().copyPlainTextToClipboard(
+                                plainText = command.link,
+                                label = "Object link",
+                                successToast = getString(R.string.link_copied)
+                            )
+                        }
+
+                        is ChatViewModel.ViewModelCommand.OpenSpaceSettings -> {
+                            runCatching {
+                                findNavController().navigate(
+                                    R.id.action_open_space_settings_from_chat,
+                                    SpaceSettingsFragment.args(space = command.space)
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while opening space settings from chat")
+                            }
                         }
                     }
                 }
@@ -752,9 +831,22 @@ class ChatFragment : Fragment() {
                 )
             )
             .inject(this)
+        // See-all popup: full type list, no media rows, no attach-existing row.
+        createObjectFactory = componentManager()
+            .createObjectFeatureComponent
+            .get(
+                key = createObjectComponentKey(),
+                param = NewCreateObjectViewModel.VmParams(
+                    spaceId = SpaceId(space),
+                    showAttachObject = false,
+                    showMediaSection = false
+                )
+            )
+            .viewModelFactory()
     }
 
     private fun releaseDependencies() {
+        componentManager().createObjectFeatureComponent.release(createObjectComponentKey())
         componentManager().chatComponent.release(ctx)
     }
 

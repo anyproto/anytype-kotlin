@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ui.AccountProfile
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
@@ -55,6 +56,7 @@ fun VaultScreen(
     onSettingsClicked: () -> Unit,
     onMuteSpace: (Id) -> Unit,
     onUnmuteSpace: (Id) -> Unit,
+    onSetSpaceNotificationMode: (Id, NotificationState) -> Unit,
     onPinSpace: (Id) -> Unit,
     onUnpinSpace: (Id) -> Unit,
     onOrderChanged: (String, String) -> Unit,
@@ -107,6 +109,7 @@ fun VaultScreen(
                     onCreateSpaceClicked = onCreateChannelMenuClicked,
                     onMuteSpace = onMuteSpace,
                     onUnmuteSpace = onUnmuteSpace,
+                    onSetSpaceNotificationMode = onSetSpaceNotificationMode,
                     onPinSpace = onPinSpace,
                     onUnpinSpace = onUnpinSpace,
                     onOrderChanged = onOrderChanged,
@@ -130,6 +133,7 @@ fun VaultScreenContent(
     onCreateSpaceClicked: () -> Unit,
     onMuteSpace: (Id) -> Unit,
     onUnmuteSpace: (Id) -> Unit,
+    onSetSpaceNotificationMode: (Id, NotificationState) -> Unit,
     onPinSpace: (Id) -> Unit,
     onUnpinSpace: (Id) -> Unit,
     onOrderChanged: (String, String) -> Unit,
@@ -217,7 +221,6 @@ fun VaultScreenContent(
                     key = { _, item -> item.space.id },
                     contentType = { _, item ->
                         when (item) {
-                            is VaultSpaceView.ChatSpace -> TYPE_CHAT
                             is VaultSpaceView.DataSpace -> TYPE_SPACE
                             is VaultSpaceView.DataSpaceWithChat -> TYPE_DATA_SPACE_WITH_CHAT
                             is VaultSpaceView.OneToOneSpace -> TYPE_ONE_TO_ONE
@@ -236,57 +239,6 @@ fun VaultScreenContent(
                         val spaceBackgroundValue = remember { mutableStateOf(spaceBackground) }
 
                         when (item) {
-                            is VaultSpaceView.ChatSpace -> {
-                                VaultChatSpaceCard(
-                                    modifier = Modifier
-                                        .combinedClickable(
-                                            onClick = {
-                                                onSpaceClicked(item)
-                                            },
-                                            onLongClick = {
-                                                expandedSpaceId = item.space.id
-                                            }
-                                        )
-                                        .graphicsLayer(alpha = alpha.value)
-                                        .animateItem()
-                                        .longPressDraggableHandle(
-                                            onDragStarted = {
-                                                hapticFeedback.performHapticFeedback(
-                                                    ReorderHapticFeedbackType.START
-                                                )
-                                            },
-                                            onDragStopped = {
-                                                hapticFeedback.performHapticFeedback(
-                                                    ReorderHapticFeedbackType.MOVE
-                                                )
-                                            }
-                                        ),
-                                    title = item.space.name.orEmpty(),
-                                    icon = item.icon,
-                                    spaceBackground = spaceBackgroundValue.value,
-                                    creatorName = item.creatorName,
-                                    messageText = item.messageText,
-                                    messageTime = item.messageTime,
-                                    chatPreview = item.chatPreview,
-                                    unreadMessageCount = item.unreadMessageCount,
-                                    unreadMentionCount = item.unreadMentionCount,
-                                    attachmentPreviews = item.attachmentPreviews,
-                                    isPinned = item.isPinned,
-                                    spaceView = item,
-                                    expandedSpaceId = expandedSpaceId,
-                                    isLastMessageOutgoing = item.isLastMessageOutgoing,
-                                    isLastMessageSynced = item.isLastMessageSynced,
-                                    isCompactMode = isCompactMode,
-                                    onDismissMenu = { expandedSpaceId = null },
-                                    onMuteSpace = onMuteSpace,
-                                    onUnmuteSpace = onUnmuteSpace,
-                                    onPinSpace = onPinSpace,
-                                    onUnpinSpace = onUnpinSpace,
-                                    onSpaceSettings = onSpaceSettings,
-                                    onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
-                                )
-                            }
-
                             is VaultSpaceView.DataSpace -> {
                                 DataSpaceCard(
                                     modifier = Modifier
@@ -358,7 +310,7 @@ fun VaultScreenContent(
                                     creatorName = item.creatorName,
                                     messageText = item.messageText,
                                     messageTime = item.messageTime,
-                                    chatName = item.chatName,
+                                    chatNames = item.chatNames,
                                     unreadMessageCount = item.unreadMessageCount,
                                     unreadMentionCount = item.unreadMentionCount,
                                     attachmentPreviews = item.attachmentPreviews,
@@ -372,6 +324,7 @@ fun VaultScreenContent(
                                     onDismissMenu = { expandedSpaceId = null },
                                     onMuteSpace = onMuteSpace,
                                     onUnmuteSpace = onUnmuteSpace,
+                                    onSetSpaceNotificationMode = onSetSpaceNotificationMode,
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
                                     onSpaceSettings = onSpaceSettings,
@@ -422,6 +375,7 @@ fun VaultScreenContent(
                                     onDismissMenu = { expandedSpaceId = null },
                                     onMuteSpace = onMuteSpace,
                                     onUnmuteSpace = onUnmuteSpace,
+                                    onSetSpaceNotificationMode = onSetSpaceNotificationMode,
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
                                     onSpaceSettings = onSpaceSettings,
@@ -440,7 +394,6 @@ fun VaultScreenContent(
                     key = { _, item -> item.space.id },
                     contentType = { _, item ->
                         when (item) {
-                            is VaultSpaceView.ChatSpace -> TYPE_CHAT
                             is VaultSpaceView.DataSpace -> TYPE_SPACE
                             is VaultSpaceView.DataSpaceWithChat -> TYPE_DATA_SPACE_WITH_CHAT
                             is VaultSpaceView.OneToOneSpace -> TYPE_ONE_TO_ONE
@@ -453,41 +406,6 @@ fun VaultScreenContent(
                     val spaceBackgroundValue = remember { mutableStateOf(spaceBackground) }
 
                     when (item) {
-                        is VaultSpaceView.ChatSpace -> {
-                            VaultChatSpaceCard(
-                                modifier = Modifier
-                                    .animateItem()
-                                    .then(
-                                        createCombinedClickableModifier(
-                                            onClick = { onSpaceClicked(item) },
-                                            onLongClick = { expandedSpaceId = item.space.id }
-                                        )),
-                                title = item.space.name.orEmpty(),
-                                icon = item.icon,
-                                spaceBackground = spaceBackgroundValue.value,
-                                creatorName = item.creatorName,
-                                messageText = item.messageText,
-                                messageTime = item.messageTime,
-                                chatPreview = item.chatPreview,
-                                unreadMessageCount = item.unreadMessageCount,
-                                unreadMentionCount = item.unreadMentionCount,
-                                attachmentPreviews = item.attachmentPreviews,
-                                isPinned = item.isPinned,
-                                spaceView = item,
-                                expandedSpaceId = expandedSpaceId,
-                                isLastMessageOutgoing = item.isLastMessageOutgoing,
-                                isLastMessageSynced = item.isLastMessageSynced,
-                                isCompactMode = isCompactMode,
-                                onDismissMenu = { expandedSpaceId = null },
-                                onMuteSpace = onMuteSpace,
-                                onUnmuteSpace = onUnmuteSpace,
-                                onPinSpace = onPinSpace,
-                                onUnpinSpace = onUnpinSpace,
-                                onSpaceSettings = onSpaceSettings,
-                                onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
-                            )
-                        }
-
                         is VaultSpaceView.DataSpaceWithChat -> {
                             VaultDataSpaceChatCard(
                                 modifier = Modifier
@@ -505,7 +423,7 @@ fun VaultScreenContent(
                                 creatorName = item.creatorName,
                                 messageText = item.messageText,
                                 messageTime = item.messageTime,
-                                chatName = item.chatName,
+                                chatNames = item.chatNames,
                                 unreadMessageCount = item.unreadMessageCount,
                                 unreadMentionCount = item.unreadMentionCount,
                                 attachmentPreviews = item.attachmentPreviews,
@@ -519,6 +437,7 @@ fun VaultScreenContent(
                                 onDismissMenu = { expandedSpaceId = null },
                                 onMuteSpace = onMuteSpace,
                                 onUnmuteSpace = onUnmuteSpace,
+                                onSetSpaceNotificationMode = onSetSpaceNotificationMode,
                                 onPinSpace = onPinSpace,
                                 onUnpinSpace = onUnpinSpace,
                                 onSpaceSettings = onSpaceSettings,
@@ -581,6 +500,7 @@ fun VaultScreenContent(
                                 onDismissMenu = { expandedSpaceId = null },
                                 onMuteSpace = onMuteSpace,
                                 onUnmuteSpace = onUnmuteSpace,
+                                onSetSpaceNotificationMode = onSetSpaceNotificationMode,
                                 onPinSpace = onPinSpace,
                                 onUnpinSpace = onUnpinSpace,
                                 onSpaceSettings = onSpaceSettings,
@@ -594,7 +514,6 @@ fun VaultScreenContent(
     }
 }
 
-const val TYPE_CHAT = "chat"
 const val TYPE_SPACE = "space"
 const val TYPE_DATA_SPACE_WITH_CHAT = "data_space_with_chat"
 const val TYPE_ONE_TO_ONE = "one_to_one"

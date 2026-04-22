@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.core_models
 
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
-
 object SupportedLayouts {
 
     /**
@@ -125,63 +123,66 @@ object SupportedLayouts {
     /**
      * Get system layouts for a specific space context.
      *
-     * In chat and 1-1 spaces, CHAT_DERIVED is a system layout.
-     * In data spaces, CHAT_DERIVED should be treated as a regular object type.
+     * In 1-1 spaces, CHAT and CHAT_DERIVED are system layouts (the space has a
+     * single built-in chat and is never surfaced as a regular object).
+     * In regular spaces, CHAT_DERIVED is a normal object type.
      *
-     * @param spaceUxType The UX type of the current space
-     * @return List of layouts that should be filtered out as system layouts
+     * @param isOneToOneSpace Whether the current space is a 1-1 (DM) space.
+     * @return List of layouts that should be filtered out as system layouts.
      */
-    fun getSystemLayouts(spaceUxType: SpaceUxType?): List<ObjectType.Layout> {
-        return when (spaceUxType) {
-            SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> 
-                baseSystemLayouts + listOf(ObjectType.Layout.CHAT_DERIVED, ObjectType.Layout.CHAT)
-            else -> baseSystemLayouts
+    fun getSystemLayouts(isOneToOneSpace: Boolean): List<ObjectType.Layout> {
+        return if (isOneToOneSpace) {
+            baseSystemLayouts + listOf(ObjectType.Layout.CHAT_DERIVED, ObjectType.Layout.CHAT)
+        } else {
+            baseSystemLayouts
         }
     }
 
     /**
      * Get create object layouts for a specific space context.
      *
-     * In data spaces, users should be able to create CHAT_DERIVED objects.
-     * In chat and 1-1 spaces, CHAT_DERIVED creation is handled separately.
+     * In regular spaces, users should be able to create CHAT_DERIVED objects.
+     * In 1-1 spaces, CHAT_DERIVED creation is handled separately.
      *
-     * @param spaceUxType The UX type of the current space
-     * @return List of layouts that can be created in the "New Object" flow
+     * @param isOneToOneSpace Whether the current space is a 1-1 (DM) space.
+     * @return List of layouts that can be created in the "New Object" flow.
      */
-    fun getCreateObjectLayouts(spaceUxType: SpaceUxType?): List<ObjectType.Layout> {
-        return when (spaceUxType) {
-            SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> baseCreateObjectLayouts
-            else -> baseCreateObjectLayouts + listOf(ObjectType.Layout.CHAT_DERIVED)
+    fun getCreateObjectLayouts(isOneToOneSpace: Boolean): List<ObjectType.Layout> {
+        return if (isOneToOneSpace) {
+            baseCreateObjectLayouts
+        } else {
+            baseCreateObjectLayouts + listOf(ObjectType.Layout.CHAT_DERIVED)
         }
     }
 
     /**
      * Get supported layouts for a specific space context.
      *
-     * In data spaces, CHAT_DERIVED objects should be visible and manageable.
-     * In chat and 1-1 spaces, CHAT_DERIVED is handled through special UI.
+     * In regular spaces, CHAT_DERIVED objects should be visible and manageable.
+     * In 1-1 spaces, CHAT_DERIVED is handled through special UI.
      *
-     * @param spaceUxType The UX type of the current space
-     * @return List of layouts that are supported for display/interaction
+     * @param isOneToOneSpace Whether the current space is a 1-1 (DM) space.
+     * @return List of layouts that are supported for display/interaction.
      */
-    fun getLayouts(spaceUxType: SpaceUxType? = null): List<ObjectType.Layout> {
-        return when (spaceUxType) {
-            SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> baseLayouts
-            else -> baseLayouts + listOf(ObjectType.Layout.CHAT_DERIVED)
+    fun getLayouts(isOneToOneSpace: Boolean = false): List<ObjectType.Layout> {
+        return if (isOneToOneSpace) {
+            baseLayouts
+        } else {
+            baseLayouts + listOf(ObjectType.Layout.CHAT_DERIVED)
         }
     }
 
     /**
      * Get layouts for object search (global search, link to, etc.).
-     * 
+     *
      * Combines base layouts, file layouts, date layouts, and object type layout,
-     * filtered by space UX type.
-     * 
-     * @param spaceUxType The UX type of the current space
-     * @return List of layouts for object search operations
+     * filtered by whether the current space is a 1-1 space.
+     *
+     * @param isOneToOneSpace Whether the current space is a 1-1 (DM) space.
+     * @return List of layouts for object search operations.
      */
-    fun getObjectSearchLayouts(spaceUxType: SpaceUxType? = null): List<ObjectType.Layout> {
-        return getLayouts(spaceUxType)
+    fun getObjectSearchLayouts(isOneToOneSpace: Boolean = false): List<ObjectType.Layout> {
+        return getLayouts(isOneToOneSpace)
             .plus(fileLayouts)
             .plus(dateLayouts)
             .plus(listOf(ObjectType.Layout.OBJECT_TYPE))

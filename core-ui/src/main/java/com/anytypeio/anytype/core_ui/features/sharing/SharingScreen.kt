@@ -26,7 +26,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.R
@@ -530,7 +529,7 @@ fun StubSelectableSpaceView(
     targetSpaceId: Id = "stub-target-id",
     name: String = "Stub Space",
     icon: SpaceIconView = SpaceIconView.DataSpace.Placeholder(name = "K"),
-    uxType: SpaceUxType? = null,
+    isOneToOneSpace: Boolean = false,
     chatId: Id? = null,
     isSelected: Boolean = false
 ): SelectableSpaceView {
@@ -539,7 +538,7 @@ fun StubSelectableSpaceView(
         targetSpaceId = targetSpaceId,
         name = name,
         icon = icon,
-        uxType = uxType,
+        isOneToOneSpace = isOneToOneSpace,
         chatId = chatId,
         isSelected = isSelected
     )

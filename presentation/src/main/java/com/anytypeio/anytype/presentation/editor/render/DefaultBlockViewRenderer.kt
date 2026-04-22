@@ -1472,6 +1472,12 @@ class DefaultBlockViewRenderer @Inject constructor(
             if (mode == EditorMode.Edit) Mode.EDIT else Mode.READ
         }
 
+        val resolvedTitleObjType = currentObject?.let { storeOfObjectTypes.getTypeOfObject(it) }
+        val resolvedTitleIcon = currentObject?.objectIcon(
+            builder = urlBuilder,
+            objType = resolvedTitleObjType
+        ) ?: ObjectIcon.None
+
         return when (currentObject?.layout) {
             ObjectType.Layout.BASIC -> {
                 BlockView.Title.Basic(
@@ -1487,7 +1493,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverImage = coverContainer.coverImage,
                     coverGradient = coverContainer.coverGradient,
                     background = block.parseThemeBackgroundColor(),
-                    color = block.textColor()
+                    color = block.textColor(),
+                    icon = resolvedTitleIcon
                 )
             }
             ObjectType.Layout.TODO -> {
@@ -1502,7 +1509,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverGradient = coverContainer.coverGradient,
                     isChecked = content.isChecked == true,
                     background = block.parseThemeBackgroundColor(),
-                    color = block.textColor()
+                    color = block.textColor(),
+                    icon = resolvedTitleIcon
                 )
             }
             ObjectType.Layout.PROFILE, ObjectType.Layout.PARTICIPANT -> {
@@ -1519,7 +1527,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverImage = coverContainer.coverImage,
                     coverGradient = coverContainer.coverGradient,
                     background = block.parseThemeBackgroundColor(),
-                    color = block.textColor()
+                    color = block.textColor(),
+                    icon = resolvedTitleIcon
                 )
             }
             ObjectType.Layout.VIDEO -> {
@@ -1592,7 +1601,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     coverImage = coverContainer.coverImage,
                     coverGradient = coverContainer.coverGradient,
                     background = block.parseThemeBackgroundColor(),
-                    color = block.textColor()
+                    color = block.textColor(),
+                    icon = resolvedTitleIcon
                 ).also {
                     Timber.w("Unexpected layout for title: ${currentObject?.layout}")
                 }

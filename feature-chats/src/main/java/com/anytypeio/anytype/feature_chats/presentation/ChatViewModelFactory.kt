@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.media.DiscardPreloadedFile
 import com.anytypeio.anytype.domain.media.PreloadFile
 import com.anytypeio.anytype.domain.media.UploadFile
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.GetLinkPreview
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -72,7 +73,8 @@ class ChatViewModelFactory @Inject constructor(
     private val setSpaceDetails: SetSpaceDetails,
     private val setChatNotificationMode: SetChatNotificationMode,
     private val fieldParser: FieldParser,
-    private val chatSearchDelegate: ChatSearchDelegate
+    private val chatSearchDelegate: ChatSearchDelegate,
+    private val deepLinkResolver: DeepLinkResolver
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -110,6 +112,7 @@ class ChatViewModelFactory @Inject constructor(
         setSpaceDetails = setSpaceDetails,
         setChatNotificationMode = setChatNotificationMode,
         fieldParser = fieldParser,
-        chatSearchDelegate = chatSearchDelegate
+        chatSearchDelegate = chatSearchDelegate,
+        deepLinkResolver = deepLinkResolver
     ) as T
 }

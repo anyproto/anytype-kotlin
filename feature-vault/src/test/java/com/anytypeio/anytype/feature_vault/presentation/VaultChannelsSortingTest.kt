@@ -210,7 +210,7 @@ class VaultChannelsSortingTest {
                 id = space1Id,
                 targetSpaceId = space1Id,
                 chatId = chatId1,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.DATA,
                 createdDate = baseTime.toDouble(),
                 spaceJoinDate = oldTime.toDouble()
             )
@@ -220,7 +220,7 @@ class VaultChannelsSortingTest {
                 id = space2Id,
                 targetSpaceId = space2Id,
                 chatId = chatId2,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.DATA,
                 createdDate = baseTime.toDouble(),
                 spaceJoinDate = recentTime.toDouble()
             )
@@ -312,7 +312,7 @@ class VaultChannelsSortingTest {
                 id = space1Id,
                 targetSpaceId = space1Id,
                 chatId = chatId1,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.DATA,
                 createdDate = 500000.0
                 // No spaceJoinDate
             )
@@ -321,7 +321,7 @@ class VaultChannelsSortingTest {
                 id = space2Id,
                 targetSpaceId = space2Id,
                 chatId = chatId2,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.DATA,
                 createdDate = 500000.0
                 // No spaceJoinDate
             )
@@ -377,7 +377,7 @@ class VaultChannelsSortingTest {
                 id = oldSpaceId,
                 targetSpaceId = oldSpaceId,
                 chatId = chatId,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.DATA,
                 createdDate = oldSpaceCreatedDate.toDouble()
                 // No spaceJoinDate but has messages
             )
@@ -474,7 +474,7 @@ class VaultChannelsSortingTest {
                 id = bothDatesSpaceId,
                 targetSpaceId = bothDatesSpaceId,
                 chatId = chatId1,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.DATA,
                 createdDate = baseTime.toDouble(),
                 spaceJoinDate = (baseTime + 500).toDouble()
             )
@@ -485,7 +485,7 @@ class VaultChannelsSortingTest {
                 id = onlyMsgSpaceId,
                 targetSpaceId = onlyMsgSpaceId,
                 chatId = chatId2,
-                spaceUxType = SpaceUxType.CHAT,
+                spaceUxType = SpaceUxType.DATA,
                 createdDate = baseTime.toDouble()
             )
             val chatPreview2 = stubChatPreview(onlyMsgSpaceId, chatId2, baseTime + 800)

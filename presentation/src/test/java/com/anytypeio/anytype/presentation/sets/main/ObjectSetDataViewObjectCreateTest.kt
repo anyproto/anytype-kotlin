@@ -530,7 +530,8 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
                             type = spaceDefaultTypeKey,
                             filters = mockObjectCollection.filters,
                             template = spaceDefaultTemplateId,  // Should use space default template
-                            prefilled = mapOf()
+                            prefilled = mapOf(),
+                            createdInContext = root
                         )
                     )
                 } doReturn Resultat.success(
@@ -555,7 +556,8 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
                         type = spaceDefaultTypeKey,
                         filters = mockObjectCollection.filters,
                         template = spaceDefaultTemplateId,
-                        prefilled = mapOf()
+                        prefilled = mapOf(),
+                        createdInContext = root
                     )
                 )
             }

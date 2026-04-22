@@ -8,8 +8,6 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Config
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -37,6 +35,7 @@ import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionMana
 import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -51,6 +50,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator.calculateChatNotificationState
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.`object`.resolveParticipantName
@@ -58,9 +58,10 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
+import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
+import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
@@ -76,9 +77,11 @@ import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -140,12 +143,16 @@ class VaultViewModel(
     private val osWidgetDataViewSync: OsWidgetDataViewSync,
     private val networkModeProvider: NetworkModeProvider,
     private val getMembershipFeatures: GetMembershipFeatures,
-    private val searchObjects: SearchObjects,
+    private val resolveSpaceHomepage: ResolveSpaceHomepage,
+    private val setHomepage: SetHomepage,
     private val userSettingsRepository: UserSettingsRepository
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     val commands = MutableSharedFlow<VaultCommand>(replay = 0)
+
+    private val _inviteCommands = Channel<VaultCommand>(capacity = Channel.BUFFERED)
+    val inviteCommands = _inviteCommands.receiveAsFlow()
     val navigations = MutableSharedFlow<VaultNavigation>(replay = 0)
     val showCreateChannelMenu = MutableStateFlow(false)
     val notificationError = MutableStateFlow<String?>(null)
@@ -225,7 +232,7 @@ class VaultViewModel(
         _membershipFeatures
     ) { spaces, query, selectedIds, features ->
         val oneToOneSpaces = spaces.filter { space ->
-            space.spaceUxType == SpaceUxType.ONE_TO_ONE
+            space.isOneToOneSpace
                 && space.isActive
                 && !space.oneToOneIdentity.isNullOrEmpty()
         }
@@ -398,18 +405,63 @@ class VaultViewModel(
                 previews.maxByOrNull { it.message?.createdAt ?: 0L } ?: previews.firstOrNull()
             }
 
-        // Calculate total unread counts for all chats per space
-        val unreadCountsPerSpace = chatPreviews.groupBy { it.space.id }
-            .mapValues { (_, previews) ->
-                // Message count: sum all messages and cap at 999 (displayed as number badge in UI)
-                val totalUnreadMessages = previews.sumOf { it.state?.unreadMessages?.counter ?: 0 }.coerceAtMost(999)
-                // Mention count: 1 if ANY chat has mentions, 0 otherwise (displayed as icon-only indicator in UI)
-                val hasMentions = if (previews.any { (it.state?.unreadMentions?.counter ?: 0) > 0 }) 1 else 0
-                UnreadCounts(totalUnreadMessages, hasMentions)
+        val groupedPreviews = chatPreviews.groupBy { it.space.id }
+
+        // Precompute the muted-and-hidden filter once per space.
+        // Used by both the badge sum and the compact unread-names list so they
+        // stay consistent — see DROID-4359.
+        val visiblePreviewsPerSpace: Map<String, List<Chat.Preview>> = groupedPreviews
+            .mapValues { (spaceId, previews) ->
+                val chatSpace = spacesFromFlow.find { it.targetSpaceId == spaceId }
+                if (chatSpace != null) {
+                    previews.filterNot {
+                        NotificationStateCalculator.isMutedAndHidden(chatSpace, it.chat)
+                    }
+                } else {
+                    previews
+                }
             }
+
+        // Calculate total unread counts for all chats per space
+        val unreadCountsPerSpace = visiblePreviewsPerSpace.mapValues { (_, visible) ->
+            // Message count: sum all messages from visible chats and cap at 999
+            val totalUnreadMessages = visible.sumOf { it.state?.unreadMessages?.counter ?: 0 }
+                .coerceAtMost(999)
+            // Mention count: 1 if ANY visible chat has mentions, 0 otherwise.
+            // Muted chats are excluded from the OS badge even when @mentioned (per DROID-4359 spec).
+            val hasMentions = if (visible.any { (it.state?.unreadMentions?.counter ?: 0) > 0 }) 1 else 0
+            UnreadCounts(totalUnreadMessages, hasMentions)
+        }
 
         // Index chatDetails by chat ID for O(1) lookup of chat names
         val chatDetailsMap = chatDetails.associateBy { it.id }
+
+        // Collect chat names with unread messages per space, ordered by most recent first.
+        // Falls back to the most recent chat name when no chats have unreads (for non-compact view).
+        // Muted-and-hidden chats are excluded from the unread list so the compact row stays
+        // consistent with the badge count (which also skips them) — see DROID-4359.
+        val chatNamesPerSpace = groupedPreviews.mapValues { (spaceId, previews) ->
+            val visible = visiblePreviewsPerSpace[spaceId] ?: previews
+            val unreadNames = visible
+                .filter { preview ->
+                    (preview.state?.unreadMessages?.counter ?: 0) > 0 ||
+                    (preview.state?.unreadMentions?.counter ?: 0) > 0
+                }
+                .sortedByDescending { it.message?.createdAt ?: 0L }
+                .mapNotNull { preview ->
+                    chatDetailsMap[preview.chat]?.name?.takeIf { it.isNotEmpty() }
+                }
+            unreadNames.ifEmpty {
+                // Fallback: when a space has no unread chats (or all unreads are muted-and-hidden),
+                // show the most recent chat name — including muted chats — so the space card isn't blank.
+                // See DROID-4359.
+                listOfNotNull(
+                    previews.maxByOrNull { it.message?.createdAt ?: 0L }
+                        ?.let { chatDetailsMap[it.chat]?.name?.takeIf { n -> n.isNotEmpty() } }
+                )
+            }
+        }
+
         // Map all active spaces to VaultSpaceView objects
         val allSpacesRaw = spacesFromFlow
             .filter { space -> (space.isActive || space.isLoading) }
@@ -421,8 +473,11 @@ class VaultViewModel(
             val unreadCounts = space.targetSpaceId?.let { spaceId ->
                 unreadCountsPerSpace[spaceId]
             }
+            val chatNames = space.targetSpaceId?.let { spaceId ->
+                chatNamesPerSpace[spaceId]
+            } ?: emptyList()
 
-            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
+            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, unreadCounts, chatNames, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
         }
 
         // Loading state is now managed in the main combine flow, not here
@@ -481,6 +536,7 @@ class VaultViewModel(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
         unreadCounts: UnreadCounts?,
+        chatNames: List<String>,
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
@@ -488,19 +544,15 @@ class VaultViewModel(
         accountIdentity: Id?
     ): VaultSpaceView {
         return when {
-            // ONE_TO_ONE space with chat preview → VaultSpaceView.OneToOneSpace
-            space.spaceUxType == SpaceUxType.ONE_TO_ONE -> {
+            // 1-1 (DM) space → VaultSpaceView.OneToOneSpace
+            space.isOneToOneSpace -> {
                 createOneToOneSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
             }
-            // Pure CHAT space with chat preview → VaultSpaceView.ChatSpace
-            space.spaceUxType == SpaceUxType.CHAT -> {
-                createChatSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
-            }
-            // any other space with chat preview → VaultSpaceView.DataSpaceWithChat
+            // Data space with chat preview → VaultSpaceView.DataSpaceWithChat
             chatPreview != null -> {
-                createDataSpaceWithChatView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
+                createDataSpaceWithChatView(space, chatPreview, unreadCounts, chatNames, permissions, wallpapers, participantsByIdentity, accountIdentity)
             }
-            // any other space without chat preview → VaultSpaceView.DataSpace
+            // Data space without chat preview → VaultSpaceView.DataSpace
             else -> {
                 createDataSpaceView(space, permissions, wallpapers)
             }
@@ -575,51 +627,6 @@ class VaultViewModel(
     }
 
     /**
-     * Create a Vault View for a Chat Space with a chat preview
-     */
-    private suspend fun createChatSpaceView(
-        space: ObjectWrapper.SpaceView,
-        chatPreview: Chat.Preview?,
-        unreadCounts: UnreadCounts?,
-        permissions: Map<Id, SpaceMemberPermissions>,
-        wallpapers: Map<Id, Wallpaper>,
-        chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
-        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
-        accountIdentity: Id?
-    ): VaultSpaceView.ChatSpace {
-        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity, accountIdentity)
-
-        val icon = space.spaceIcon(urlBuilder)
-
-        val perms =
-            space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
-        val isOwner = perms.isOwner()
-
-        val wallpaper = space.targetSpaceId.let { wallpapers[it] } ?: Wallpaper.Default
-        val wallpaperResult = computeWallpaperResult(
-            icon = icon,
-            wallpaper = wallpaper
-        )
-
-        return VaultSpaceView.ChatSpace(
-            space = space,
-            icon = icon,
-            chatPreview = chatPreview,
-            creatorName = previewData.creatorName,
-            messageText = previewData.messageText,
-            messageTime = previewData.messageTime,
-            unreadMessageCount = unreadCounts?.unreadMessages ?: 0,
-            unreadMentionCount = unreadCounts?.unreadMentions ?: 0,
-            attachmentPreviews = previewData.attachmentPreviews,
-            isOwner = isOwner,
-            spaceNotificationState = space.spacePushNotificationMode,
-            wallpaper = wallpaperResult,
-            isLastMessageOutgoing = previewData.isOutgoing,
-            isLastMessageSynced = previewData.isSynced
-        )
-    }
-
-    /**
      * Create a Vault View for One-to-One Space with a chat preview
      */
     private suspend fun createOneToOneSpaceView(
@@ -670,9 +677,9 @@ class VaultViewModel(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview,
         unreadCounts: UnreadCounts?,
+        chatNames: List<String>,
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
-        chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
         participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
         accountIdentity: Id?
     ): VaultSpaceView.DataSpaceWithChat {
@@ -689,9 +696,6 @@ class VaultViewModel(
             icon = icon,
             wallpaper = wallpaper
         )
-
-        // Lookup chat name from chat details subscription
-        val chatName = chatDetailsMap[chatPreview.chat]?.name.orEmpty()
 
         return VaultSpaceView.DataSpaceWithChat(
             space = space,
@@ -710,7 +714,7 @@ class VaultViewModel(
             ),
             wallpaper = wallpaperResult,
             spaceNotificationState = space.spacePushNotificationMode,
-            chatName = chatName,
+            chatNames = chatNames,
             isLastMessageOutgoing = previewData.isOutgoing,
             isLastMessageSynced = previewData.isSynced
         )
@@ -781,7 +785,6 @@ class VaultViewModel(
                     proceedWithSavingCurrentSpace(
                         targetSpace = SpaceId(targetSpace),
                         config = config,
-                        spaceUxType = view.space.spaceUxType,
                         emitSettings = emitSettings
                     )
                 }
@@ -994,7 +997,7 @@ class VaultViewModel(
                     }
 
                     is DeepLinkResolver.Action.Invite -> {
-                        commands.emit(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
+                        _inviteCommands.send(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
                     }
 
                     else -> {
@@ -1003,7 +1006,7 @@ class VaultViewModel(
                         val fileKey = spaceInviteResolver.parseFileKey(qrCode)
                         val contentId = spaceInviteResolver.parseContentId(qrCode)
                         if (fileKey != null && contentId != null) {
-                            commands.emit(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
+                            _inviteCommands.send(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
                         } else {
                             Timber.e("Failed to parse QR code: invalid format")
                             vaultErrors.value = VaultErrors.QrCodeIsNotValid
@@ -1150,7 +1153,7 @@ class VaultViewModel(
     private suspend fun proceedWithSavingCurrentSpace(
         targetSpace: SpaceId,
         config: Config,
-        spaceUxType: SpaceUxType?,
+        forceChatNavigation: Boolean = false,
         emitSettings: Boolean = false
     ) {
         saveCurrentSpace.async(
@@ -1160,11 +1163,11 @@ class VaultViewModel(
                 Timber.e(it, "Error while saving current space on vault screen")
             },
             onSuccess = {
-                Timber.d("Successfully saved current space: $targetSpace, Space UX Type: $spaceUxType")
+                Timber.d("Successfully saved current space: $targetSpace")
                 val command = resolveNavigationCommand(
                     targetSpace = targetSpace,
                     config = config,
-                    spaceUxType = spaceUxType,
+                    forceChatNavigation = forceChatNavigation,
                     emitSettings = emitSettings
                 )
                 if (command != null) {
@@ -1177,87 +1180,67 @@ class VaultViewModel(
     /**
      * Resolves which command to emit when entering a space.
      * Returns null if navigation was handled internally (e.g., homepage object).
+     *
+     * [forceChatNavigation] is an override for callers that know the target is
+     * a one-to-one space but whose [ObjectWrapper.SpaceView] is not yet in the
+     * subscription cache (e.g., a brand-new space created moments ago). When
+     * `false`, the function looks up the SpaceView from the subscription and
+     * uses [shouldNavigateDirectlyToChat], which respects the new `spaceType`
+     * relation with the legacy `spaceUxType` fallback.
      */
     private suspend fun resolveNavigationCommand(
         targetSpace: SpaceId,
         config: Config,
-        spaceUxType: SpaceUxType?,
+        forceChatNavigation: Boolean,
         emitSettings: Boolean
     ): VaultCommand? {
         val chat = config.spaceChatId
+        val spaceView = spaceViewSubscriptionContainer.get(targetSpace)
+        val shouldNavigateToChat = forceChatNavigation
+                || spaceView?.shouldNavigateDirectlyToChat == true
         return when {
             emitSettings -> {
                 VaultCommand.OpenSpaceSettings(space = targetSpace)
             }
-            spaceUxType.shouldNavigateDirectlyToChat && chat != null -> {
+            shouldNavigateToChat && chat != null -> {
                 Timber.d("Navigating to chat: $chat")
                 VaultCommand.EnterSpaceLevelChat(space = targetSpace, chat = chat)
             }
             else -> {
-                val spaceView = spaceViewSubscriptionContainer.get(targetSpace)
-                val homepage = spaceView?.homepage
-                resolveHomepageNavigation(homepage, targetSpace)
+                resolveHomepageNavigation(targetSpace)
             }
         }
     }
 
     private suspend fun resolveHomepageNavigation(
-        homepage: String?,
         targetSpace: SpaceId
     ): VaultCommand? {
-        if (homepage.isNullOrEmpty() || homepage in HOMEPAGE_SPECIAL_CONSTANTS) {
-            return VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
-        }
-        // Homepage is an object ID — resolve and navigate
-        val results = searchObjects.invoke(
-            params = SearchObjects.Params(
-                space = targetSpace,
-                filters = listOf(
-                    DVFilter(
-                        relation = Relations.ID,
-                        value = homepage,
-                        condition = DVFilterCondition.EQUAL
-                    )
-                ),
-                keys = listOf(Relations.ID, Relations.LAYOUT, Relations.SPACE_ID),
-                limit = 1
-            )
-        )
-        val obj = results.getOrNull()?.firstOrNull()
-        if (obj == null) {
-            Timber.w("Homepage object $homepage not found, falling back to widgets")
-            return VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
-        }
-        // Navigate to the homepage object via VaultNavigation
-        // (VaultFragment first opens the widgets screen, then the object on top)
-        when (val nav = obj.navigation()) {
-            is OpenObjectNavigation.OpenParticipant -> {
-                return VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
-            }
-            is OpenObjectNavigation.OpenBookmarkUrl -> {
-                // Open bookmark as editor object, not as external URL
-                proceedWithNavigation(
-                    OpenObjectNavigation.OpenEditor(
-                        target = homepage,
-                        space = obj.spaceId ?: targetSpace.id
-                    )
-                )
-                return null
-            }
-            else -> {
-                proceedWithNavigation(nav)
-                return null
+        val result = resolveSpaceHomepage.async(
+            ResolveSpaceHomepage.Params(space = targetSpace)
+        ).getOrNull() ?: ResolveSpaceHomepage.Result.Widgets
+        return when (result) {
+            ResolveSpaceHomepage.Result.Widgets ->
+                VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
+            is ResolveSpaceHomepage.Result.Object -> {
+                // Homepage is an explicit object — open it directly, bypassing
+                // the widgets back-stack entry (DROID-4388).
+                proceedWithNavigation(result.navigation, openTargetDirectly = true)
+                null
             }
         }
     }
 
-    private fun proceedWithNavigation(navigation: OpenObjectNavigation) {
+    private fun proceedWithNavigation(
+        navigation: OpenObjectNavigation,
+        openTargetDirectly: Boolean = false
+    ) {
         val nav = when (navigation) {
             is OpenObjectNavigation.OpenDataView -> {
                 VaultNavigation.OpenSet(
                     ctx = navigation.target,
                     space = navigation.space,
-                    view = null
+                    view = null,
+                    openTargetDirectly = openTargetDirectly
                 )
             }
 
@@ -1265,7 +1248,8 @@ class VaultViewModel(
 
                 VaultNavigation.OpenObject(
                     ctx = navigation.target,
-                    space = navigation.space
+                    space = navigation.space,
+                    openTargetDirectly = openTargetDirectly
                 )
 
             }
@@ -1273,7 +1257,8 @@ class VaultViewModel(
             is OpenObjectNavigation.OpenChat -> {
                 VaultNavigation.OpenChat(
                     ctx = navigation.target,
-                    space = navigation.space
+                    space = navigation.space,
+                    openTargetDirectly = openTargetDirectly
                 )
 
             }
@@ -1289,7 +1274,8 @@ class VaultViewModel(
             is OpenObjectNavigation.OpenDateObject -> {
                 VaultNavigation.OpenDateObject(
                     ctx = navigation.target,
-                    space = navigation.space
+                    space = navigation.space,
+                    openTargetDirectly = openTargetDirectly
                 )
 
             }
@@ -1297,7 +1283,8 @@ class VaultViewModel(
             is OpenObjectNavigation.OpenParticipant -> {
                 VaultNavigation.OpenParticipant(
                     ctx = navigation.target,
-                    space = navigation.space
+                    space = navigation.space,
+                    openTargetDirectly = openTargetDirectly
                 )
 
             }
@@ -1305,7 +1292,8 @@ class VaultViewModel(
             is OpenObjectNavigation.OpenType -> {
                 VaultNavigation.OpenType(
                     target = navigation.target,
-                    space = navigation.space
+                    space = navigation.space,
+                    openTargetDirectly = openTargetDirectly
                 )
             }
 
@@ -1655,6 +1643,7 @@ class VaultViewModel(
         createSpace.async(params).fold(
             onSuccess = { response ->
                 Timber.d("Successfully created 1-1 space: ${response.space.id}")
+                setOneToOneHomepageToChat(response.space)
                 navigateToOneToOneChat(response.space)
             },
             onFailure = { error ->
@@ -1664,6 +1653,32 @@ class VaultViewModel(
                 )
             }
         )
+    }
+
+    /**
+     * DROID-4467: 1-on-1 spaces skip the Homepage picker; homepage is set to the Chat
+     * object automatically. Polls the space view until the chat object ID is available
+     * (typically immediately after creation) and writes it as the space's homepage.
+     */
+    private suspend fun setOneToOneHomepageToChat(space: SpaceId) {
+        val chatId = awaitSpaceChatId(space) ?: run {
+            Timber.w("1-1 homepage: chat object id not found for space=${space.id}")
+            return
+        }
+        setHomepage.async(
+            SetHomepage.Params(spaceId = space.id, homepage = chatId)
+        ).onFailure {
+            Timber.e(it, "1-1 homepage: failed to set homepage to chat=$chatId")
+        }
+    }
+
+    private suspend fun awaitSpaceChatId(space: SpaceId): Id? {
+        repeat(times = ONE_TO_ONE_HOMEPAGE_MAX_ATTEMPTS) {
+            val chatId = spaceViewSubscriptionContainer.get(space)?.chatId
+            if (!chatId.isNullOrEmpty()) return chatId
+            delay(ONE_TO_ONE_HOMEPAGE_POLL_DELAY_MS)
+        }
+        return null
     }
 
     /**
@@ -1682,7 +1697,7 @@ class VaultViewModel(
                 proceedWithSavingCurrentSpace(
                     targetSpace = spaceId,
                     config = config,
-                    spaceUxType = SpaceUxType.ONE_TO_ONE,
+                    forceChatNavigation = true,
                     emitSettings = false
                 )
             }
@@ -1692,6 +1707,7 @@ class VaultViewModel(
 
     companion object {
         private const val OS_WIDGET_SYNC_DEBOUNCE_MS = 2000L
-        private val HOMEPAGE_SPECIAL_CONSTANTS = setOf("widgets", "graph", "lastOpened")
+        private const val ONE_TO_ONE_HOMEPAGE_POLL_DELAY_MS = 100L
+        private const val ONE_TO_ONE_HOMEPAGE_MAX_ATTEMPTS = 30
     }
 }

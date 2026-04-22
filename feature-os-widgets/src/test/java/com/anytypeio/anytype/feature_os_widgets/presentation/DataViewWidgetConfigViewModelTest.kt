@@ -8,6 +8,9 @@ import com.anytypeio.anytype.core_models.StubObjectView
 import com.anytypeio.anytype.core_models.StubSpaceView
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
+import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
+import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -17,6 +20,7 @@ import com.anytypeio.anytype.feature_os_widgets.ui.config.ObjectItemView
 import kotlin.test.assertEquals
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
@@ -26,9 +30,11 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
@@ -46,11 +52,20 @@ class DataViewWidgetConfigViewModelTest {
     private val dataStore: DataViewWidgetConfigStore = mock()
     private val itemsFetcher: DataViewItemsFetcher = mock()
     private val widgetUpdater: DataViewWidgetUpdater = mock()
+    private val launchWallet: LaunchWallet = mock()
+    private val launchAccount: LaunchAccount = mock()
 
     @Before
     fun setUp() {
         Dispatchers.setMain(dispatcher)
         whenever(spaceViews.get()).thenReturn(listOf(selectedSpace))
+        whenever(spaceViews.observe()).thenReturn(flowOf(listOf(selectedSpace)))
+        launchWallet.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+        launchAccount.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Pair("accountId", ""))
+        }
     }
 
     @After
@@ -156,7 +171,9 @@ class DataViewWidgetConfigViewModelTest {
             getObject = getObject,
             dataStore = dataStore,
             itemsFetcher = itemsFetcher,
-            widgetUpdater = widgetUpdater
+            widgetUpdater = widgetUpdater,
+            launchWallet = launchWallet,
+            launchAccount = launchAccount
         )
     }
 }

@@ -9,7 +9,12 @@ import com.anytypeio.anytype.core_models.ui.ObjectIcon
 sealed interface DiscussionView {
 
     sealed class ContentBlock {
-        data class Text(val content: Content) : ContentBlock()
+        data class Text(
+            val content: Content,
+            val style: Block.Content.Text.Style = Block.Content.Text.Style.P,
+            val number: Int = 0,
+            val checked: Boolean = false
+        ) : ContentBlock()
         data class Image(val targetObjectId: Id, val url: Url) : ContentBlock()
         data class Link(
             val targetObjectId: Id,
@@ -70,6 +75,8 @@ sealed interface DiscussionView {
             val isCode = styles.any { it.type == Block.Content.Text.Mark.Type.KEYBOARD }
             val link = styles.find { it.type == Block.Content.Text.Mark.Type.LINK }
             val mention = styles.find { it.type == Block.Content.Text.Mark.Type.MENTION }
+            val textColor = styles.find { it.type == Block.Content.Text.Mark.Type.TEXT_COLOR }
+            val backgroundColor = styles.find { it.type == Block.Content.Text.Mark.Type.BACKGROUND_COLOR }
         }
     }
 

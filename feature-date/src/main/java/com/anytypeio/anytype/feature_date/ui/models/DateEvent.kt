@@ -11,6 +11,8 @@ sealed class DateEvent {
     sealed class TopToolbar : DateEvent() {
         data class OnSyncStatusClick(val status: SpaceSyncAndP2PStatusState) : TopToolbar()
         data class OnCalendarClick(val timestampInSeconds: TimestampInSeconds) : TopToolbar()
+        data object OnBackClick : TopToolbar()
+        data object OnTitleClick : TopToolbar()
     }
 
     sealed class Header : DateEvent() {
@@ -35,7 +37,6 @@ sealed class DateEvent {
     sealed class NavigationWidget : DateEvent() {
         data object OnGlobalSearchClick : NavigationWidget()
         data object OnAddDocClick : NavigationWidget()
-        data object OnAddDocLongClick : NavigationWidget()
         data object OnBackClick : NavigationWidget()
         data object OnBackLongClick : NavigationWidget()
         data object OnHomeClick : NavigationWidget()

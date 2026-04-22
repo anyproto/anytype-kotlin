@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -54,10 +53,9 @@ class ObjectTypeChangeViewModel(
         excludeTypes,
         storeOfObjectTypes.trackChanges()
     ) { query, currentExcludeTypes, _ ->
-        // Determine space UX type to decide whether CHAT types should be shown
+        // Determine whether this is a 1-1 space to drive layout/sort decisions.
         val spaceView = spaceViews.get(vmParams.spaceId)
-        val spaceUxType = spaceView?.spaceUxType
-        val createLayouts = getCreateObjectLayouts(spaceUxType)
+        val createLayouts = getCreateObjectLayouts(spaceView?.isOneToOneSpace == true)
 
         val recommendedLayouts = when (vmParams.screen) {
             Screen.DATA_VIEW_SOURCE,
@@ -79,9 +77,12 @@ class ObjectTypeChangeViewModel(
             recommendedLayouts = recommendedLayouts
         )
 
-        // Sort types by priority before partitioning
-        val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
-        val sortedTypes = filteredTypes.sortByTypePriority(isChatSpace)
+        // Sort types by priority before partitioning.
+        // CHAT-type spaces no longer exist, so the isChatSpace sort flag
+        // collapses to isOneToOneSpace.
+        val sortedTypes = filteredTypes.sortByTypePriority(
+            isChatSpace = spaceView?.isOneToOneSpace == true
+        )
 
         proceedWithBuildingViewState(
             types = sortedTypes,

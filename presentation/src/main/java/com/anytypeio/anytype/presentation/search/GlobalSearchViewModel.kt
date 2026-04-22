@@ -303,8 +303,8 @@ class GlobalSearchViewModel @Inject constructor(
                 offset = 0,
                 keys = DEFAULT_KEYS,
                 filters = buildList {
-                    val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
-                    addAll(filterSearchObjects(spaceUxType = spaceUxType))
+                    val isOneToOneSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
+                    addAll(filterSearchObjects(isOneToOneSpace = isOneToOneSpace))
                     add(
                         DVFilter(
                             relation = Relations.ID,
@@ -334,8 +334,8 @@ class GlobalSearchViewModel @Inject constructor(
                     offset = 0,
                     keys = DEFAULT_KEYS,
                     filters = buildList {
-                        val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
-                        addAll(ObjectSearchConstants.filterSearchObjects(spaceUxType = spaceUxType))
+                        val isOneToOneSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
+                        addAll(ObjectSearchConstants.filterSearchObjects(isOneToOneSpace = isOneToOneSpace))
                     },
                     sorts = ObjectSearchConstants.sortsSearchObjects,
                     withMetaRelationDetails = true,

@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -31,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.UrlBuilder
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -42,7 +43,7 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpaceSelectionScreen(
-    spaces: List<ObjectWrapper.SpaceView>,
+    spaces: List<ObjectWrapper.SpaceView>?,
     urlBuilder: UrlBuilder,
     onSpaceSelected: (ObjectWrapper.SpaceView) -> Unit,
     onCancel: () -> Unit
@@ -78,7 +79,18 @@ fun SpaceSelectionScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (spaces.isEmpty()) {
+            if (spaces == null) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(24.dp),
+                        color = colorResource(id = R.color.glyph_active),
+                        strokeWidth = 2.dp
+                    )
+                }
+            } else if (spaces.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -156,18 +168,19 @@ fun SpaceGridItem(
  * Converts ObjectWrapper.SpaceView to SpaceIconView for rendering.
  */
 fun ObjectWrapper.SpaceView.toSpaceIconView(urlBuilder: UrlBuilder): SpaceIconView {
-    val isChat = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
+    // Only 1-1 spaces get the round ChatSpace-variant icon now.
+    val isOneToOne = isOneToOneSpace
     val color = iconOption?.toInt()?.let { SystemColor.color(it) } ?: SystemColor.SKY
     val imageUrl = iconImage?.takeIf { it.isNotEmpty() }?.let { urlBuilder.medium(it) }
 
     return if (imageUrl != null) {
-        if (isChat) {
+        if (isOneToOne) {
             SpaceIconView.ChatSpace.Image(url = imageUrl, color = color)
         } else {
             SpaceIconView.DataSpace.Image(url = imageUrl, color = color)
         }
     } else {
-        if (isChat) {
+        if (isOneToOne) {
             SpaceIconView.ChatSpace.Placeholder(color = color, name = name.orEmpty())
         } else {
             SpaceIconView.DataSpace.Placeholder(color = color, name = name.orEmpty())

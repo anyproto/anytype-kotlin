@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getSystemLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.canCreateAdditionalChats
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.R
 import com.anytypeio.anytype.core_models.UrlBuilder
@@ -487,17 +486,17 @@ suspend fun buildWidgetSections(
             params = params,
             isObjectTypeSectionCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE),
             storeOfObjectTypes = storeOfObjectTypes,
-            spaceUxType = spaceView.spaceUxType
+            isOneToOneSpace = spaceView.isOneToOneSpace
         )
     } else {
         emptyList()
     }
 
-    // Build unread widget only if visible - only for data spaces
+    // Build unread widget only if visible - only for regular (non-1-1) spaces
     val unreadWidget = if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.UNREAD)) {
         buildUnreadWidget(
             state = state,
-            spaceUxType = spaceView.spaceUxType
+            isOneToOneSpace = spaceView.isOneToOneSpace
         )
     } else {
         null
@@ -544,7 +543,7 @@ private fun buildChatWidget(
 ): Widget.Chat? {
     val spaceChatId = spaceView.chatId
     return if (!spaceChatId.isNullOrEmpty()
-        && !spaceView.spaceUxType.canCreateAdditionalChats
+        && !spaceView.canCreateAdditionalChats
     ) {
         Widget.Chat(config = state.config)
     } else {
@@ -588,7 +587,7 @@ private suspend fun buildTypeSection(
     params: WidgetUiParams,
     isObjectTypeSectionCollapsed: Boolean,
     storeOfObjectTypes: StoreOfObjectTypes,
-    spaceUxType: SpaceUxType?
+    isOneToOneSpace: Boolean
 ): List<Widget> = buildList {
 
     val sectionStateDesc = if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
@@ -598,7 +597,7 @@ private suspend fun buildTypeSection(
             isOwnerOrEditor = params.isOwnerOrEditor,
             config = state.config,
             storeOfObjectTypes = storeOfObjectTypes,
-            spaceUxType = spaceUxType
+            isOneToOneSpace = isOneToOneSpace
         )
         addAll(types)
         Timber.d("ObjectType section: $sectionStateDesc, widgets added: ${types.size}")
@@ -609,10 +608,10 @@ private suspend fun buildTypeSection(
 
 private fun buildUnreadWidget(
     state: ObjectViewState.Success,
-    spaceUxType: SpaceUxType?
+    isOneToOneSpace: Boolean
 ): Widget.UnreadChatList? {
-    return if (spaceUxType == SpaceUxType.DATA) {
-        Timber.d("buildUnreadWidget: Creating unread widget for data space")
+    return if (!isOneToOneSpace) {
+        Timber.d("buildUnreadWidget: Creating unread widget for regular space")
         Widget.UnreadChatList(
             id = "widget_unread_chat_list",
             source = Widget.Source.Bundled.Chat,
@@ -620,7 +619,7 @@ private fun buildUnreadWidget(
             icon = ObjectIcon.SimpleIcon("chatbubble", R.color.control_primary)
         )
     } else {
-        Timber.d("buildUnreadWidget: Skipping unread widget for non-data space")
+        Timber.d("buildUnreadWidget: Skipping unread widget for 1-1 space")
         null
     }
 }
@@ -659,17 +658,17 @@ internal suspend fun mapSpaceTypesToWidgets(
     isOwnerOrEditor: Boolean,
     config: Config,
     storeOfObjectTypes: StoreOfObjectTypes,
-    spaceUxType: SpaceUxType?
+    isOneToOneSpace: Boolean
 ): List<Widget> {
     val allTypes = storeOfObjectTypes.getAll()
-    
+
     // Get system layouts based on space context
-    val systemLayoutsForSpace = getSystemLayouts(spaceUxType)
+    val systemLayoutsForSpace = getSystemLayouts(isOneToOneSpace)
     val excludedLayouts = systemLayoutsForSpace + SupportedLayouts.dateLayouts + listOf(
         ObjectType.Layout.OBJECT_TYPE,
         ObjectType.Layout.PARTICIPANT
     )
-    
+
     val filteredObjectTypes = allTypes
         .mapNotNull { objectType ->
             if (!objectType.isValid ||
@@ -686,9 +685,9 @@ internal suspend fun mapSpaceTypesToWidgets(
 
     Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
 
-    // Sort types by priority using shared extension
-    val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
-    val sortedTypes = filteredObjectTypes.sortByTypePriority(isChatSpace)
+    // Sort types by priority using shared extension. CHAT-type spaces no longer
+    // exist, so the isChatSpace sort flag collapses to isOneToOneSpace.
+    val sortedTypes = filteredObjectTypes.sortByTypePriority(isChatSpace = isOneToOneSpace)
 
     // Create single grouped widget for object types
     // The container (ObjectTypesGroupWidgetContainer) fetches types from StoreOfObjectTypes

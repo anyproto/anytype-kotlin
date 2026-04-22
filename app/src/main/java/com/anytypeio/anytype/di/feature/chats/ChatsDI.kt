@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatEventChannel
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -146,4 +147,5 @@ interface ChatComponentDependencies : ComponentDependencies {
     fun resetSpaceChatNotification(): ResetSpaceChatNotification
     fun payloadDelegator(): PayloadDelegator
     fun fieldParser(): FieldParser
+    fun deepLinkResolver(): DeepLinkResolver
 }

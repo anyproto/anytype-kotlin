@@ -7,6 +7,7 @@ import androidx.datastore.dataStore
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.DEFAULT_RELATIVE_DATES
 import com.anytypeio.anytype.core_models.DEFAULT_SHOW_INTRODUCE_VAULT
+import com.anytypeio.anytype.core_models.FileDownloadLimit
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
@@ -55,6 +56,10 @@ class DefaultUserSettingsCache(
 
     private val _compactModeFlow = MutableStateFlow(
         prefs.getBoolean(COMPACT_MODE_ENABLED_KEY, false)
+    )
+
+    private val _fileDownloadLimitFlow = MutableStateFlow(
+        FileDownloadLimit.fromStorageKey(prefs.getString(FILE_DOWNLOAD_LIMIT_KEY, null))
     )
 
     //region Vault default settings
@@ -693,33 +698,6 @@ class DefaultUserSettingsCache(
             ?.homepagePickerDismissed ?: false
     }
 
-    override suspend fun setCreateHomeDismissed(space: SpaceId, dismissed: Boolean) {
-        context.spacePrefsStore.updateData { existingPreferences ->
-            val givenSpacePreference = existingPreferences
-                .preferences
-                .getOrDefault(key = space.id, defaultValue = SpacePreference())
-            val updated = givenSpacePreference.copy(
-                createHomeDismissed = dismissed
-            )
-            val result = buildMap {
-                putAll(existingPreferences.preferences)
-                put(key = space.id, updated)
-            }
-            SpacePreferences(preferences = result)
-        }
-    }
-
-    override fun observeCreateHomeDismissed(space: SpaceId): Flow<Boolean> {
-        return context.spacePrefsStore
-            .data
-            .map { preferences ->
-                preferences.preferences[space.id]?.createHomeDismissed ?: false
-            }.catch {
-                Timber.e("Error observing createHomeDismissed for space ${space.id}: $this")
-                emit(false)
-            }
-    }
-
     override suspend fun setInviteMembersDismissed(space: SpaceId, dismissed: Boolean) {
         context.spacePrefsStore.updateData { existingPreferences ->
             val givenSpacePreference = existingPreferences
@@ -801,6 +779,28 @@ class DefaultUserSettingsCache(
     }
 
     override fun observeCompactModeEnabled(): Flow<Boolean> = _compactModeFlow.asStateFlow()
+
+    override suspend fun getFileDownloadLimit(): FileDownloadLimit =
+        FileDownloadLimit.fromStorageKey(prefs.getString(FILE_DOWNLOAD_LIMIT_KEY, null))
+
+    override suspend fun setFileDownloadLimit(limit: FileDownloadLimit) {
+        prefs.edit()
+            .putString(FILE_DOWNLOAD_LIMIT_KEY, limit.storageKey)
+            .apply()
+        _fileDownloadLimitFlow.value = limit
+    }
+
+    override fun observeFileDownloadLimit(): Flow<FileDownloadLimit> =
+        _fileDownloadLimitFlow.asStateFlow()
+
+    override suspend fun getUseCellularForDownloads(): Boolean =
+        prefs.getBoolean(USE_CELLULAR_FOR_DOWNLOADS_KEY, false)
+
+    override suspend fun setUseCellularForDownloads(enabled: Boolean) {
+        prefs.edit()
+            .putBoolean(USE_CELLULAR_FOR_DOWNLOADS_KEY, enabled)
+            .apply()
+    }
 
     override suspend fun getInstalledAtDate(account: Account): Long? {
         return context.vaultPrefsStore
@@ -945,5 +945,7 @@ class DefaultUserSettingsCache(
         const val RUN_PROFILER_ON_STARTUP_KEY = "prefs.device.run_profiler_on_startup"
         const val DEBUG_MENU_ENABLED_KEY = "prefs.device.debug_menu_enabled"
         const val COMPACT_MODE_ENABLED_KEY = "prefs.device.compact_mode_enabled"
+        const val FILE_DOWNLOAD_LIMIT_KEY = "prefs.device.file_download_limit"
+        const val USE_CELLULAR_FOR_DOWNLOADS_KEY = "prefs.device.use_cellular_for_downloads"
     }
 }

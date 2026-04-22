@@ -90,7 +90,7 @@ class SelectObjectTypeViewModel(
                 // Get space UX type for context-aware filtering
                 val spaceView = spaceViews.get(vmParams.space)
                 val spaceUxType = spaceView?.spaceUxType
-                val createLayouts = getCreateObjectLayouts(spaceUxType)
+                val createLayouts = getCreateObjectLayouts(spaceView?.isOneToOneSpace == true)
                 
                 val types = getObjectTypes.stream(
                     GetObjectTypes.Params(

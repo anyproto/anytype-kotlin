@@ -150,7 +150,7 @@ private fun HomeWidgetMenu(
 
 @DefaultPreviews    
 @Composable
-fun Preview() {
+fun LinkWidgetCardPreview() {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {

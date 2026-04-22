@@ -202,7 +202,9 @@ fun EditChatInfoScreen(
                         onCreate(innerValue.text)
                     }
                 },
-                text = if (isEditMode) "Save" else "Create",
+                text = stringResource(
+                    id = if (isEditMode) R.string.save else R.string.create
+                ),
                 size = ButtonSize.Large,
                 modifierBox = Modifier
                     .fillMaxWidth()

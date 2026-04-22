@@ -175,15 +175,6 @@ fun HomepagePickerContent(
     }
 }
 
-/**
- * A selectable card displaying a channel type illustration with a label.
- * Used on the channel creation screen to let users pick a channel type.
- *
- * @param type the channel type determining which illustration to show
- * @param selected whether this card is currently selected (blue accent border/colors)
- * @param label the text label shown below the card
- * @param onClick called when the card is tapped
- */
 @Composable
 fun HomepageOptionCard(
     type: HomepageType,

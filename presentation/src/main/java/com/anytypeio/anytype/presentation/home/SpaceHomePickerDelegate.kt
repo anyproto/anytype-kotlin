@@ -17,6 +17,8 @@ import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
 import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,6 +48,8 @@ class SpaceHomePickerDelegate(
     private val _state = MutableStateFlow<SpaceHomePickerState>(SpaceHomePickerState.Hidden)
     val state: StateFlow<SpaceHomePickerState> = _state.asStateFlow()
 
+    private var loadJob: Job? = null
+
     fun show(scope: CoroutineScope, currentHomepageObjectId: Id?) {
         _state.value = SpaceHomePickerState.Visible(
             query = "",
@@ -57,6 +61,8 @@ class SpaceHomePickerDelegate(
     }
 
     fun dismiss() {
+        loadJob?.cancel()
+        loadJob = null
         _state.value = SpaceHomePickerState.Hidden
     }
 
@@ -64,7 +70,7 @@ class SpaceHomePickerDelegate(
         val current = _state.value
         if (current is SpaceHomePickerState.Visible) {
             _state.value = current.copy(query = query, isLoading = true)
-            load(scope, query)
+            load(scope, query, debounceMillis = SEARCH_DEBOUNCE_MS)
         }
     }
 
@@ -86,8 +92,10 @@ class SpaceHomePickerDelegate(
         }
     }
 
-    private fun load(scope: CoroutineScope, query: String) {
-        scope.launch {
+    private fun load(scope: CoroutineScope, query: String, debounceMillis: Long = 0L) {
+        loadJob?.cancel()
+        loadJob = scope.launch {
+            if (debounceMillis > 0) delay(debounceMillis)
             val params = SearchObjects.Params(
                 space = space,
                 filters = buildList {
@@ -143,6 +151,7 @@ class SpaceHomePickerDelegate(
 
     companion object {
         private const val LIMIT = 100
+        private const val SEARCH_DEBOUNCE_MS = 300L
 
         private val HOMEPAGE_ELIGIBLE_LAYOUTS: List<ObjectType.Layout> = listOf(
             ObjectType.Layout.BASIC,

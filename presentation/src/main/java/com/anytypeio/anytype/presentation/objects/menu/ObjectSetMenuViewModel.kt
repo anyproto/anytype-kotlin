@@ -13,6 +13,8 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
+import com.anytypeio.anytype.domain.favorites.AddPersonalFavorite
+import com.anytypeio.anytype.domain.favorites.RemovePersonalFavorite
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
@@ -75,7 +77,9 @@ class ObjectSetMenuViewModel(
     private val updateFields: UpdateFields,
     private val setObjectDetails: SetObjectDetails,
     private val showObject: GetObject,
-    private val deleteWidget: DeleteWidget
+    private val deleteWidget: DeleteWidget,
+    private val addPersonalFavorite: AddPersonalFavorite,
+    private val removePersonalFavorite: RemovePersonalFavorite
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addBackLinkToObject = addBackLinkToObject,
@@ -97,7 +101,9 @@ class ObjectSetMenuViewModel(
     spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
     getSpaceInviteLink = getSpaceInviteLink,
     showObject = showObject,
-    deleteWidget = deleteWidget
+    deleteWidget = deleteWidget,
+    addPersonalFavorite = addPersonalFavorite,
+    removePersonalFavorite = removePersonalFavorite
 ) {
 
     init {
@@ -133,7 +139,9 @@ class ObjectSetMenuViewModel(
         private val updateFields: UpdateFields,
         private val setObjectDetails: SetObjectDetails,
         private val showObject: GetObject,
-        private val deleteWidget: DeleteWidget
+        private val deleteWidget: DeleteWidget,
+        private val addPersonalFavorite: AddPersonalFavorite,
+        private val removePersonalFavorite: RemovePersonalFavorite
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -164,7 +172,9 @@ class ObjectSetMenuViewModel(
                 updateFields = updateFields,
                 setObjectDetails = setObjectDetails,
                 showObject = showObject,
-                deleteWidget = deleteWidget
+                deleteWidget = deleteWidget,
+                addPersonalFavorite = addPersonalFavorite,
+                removePersonalFavorite = removePersonalFavorite
             ) as T
         }
     }
@@ -299,6 +309,12 @@ class ObjectSetMenuViewModel(
             }
             ObjectAction.REMOVE_FROM_FAVOURITE -> {
                 proceedWithRemovingFromFavorites(ctx)
+            }
+            ObjectAction.ADD_TO_MY_FAVORITES -> {
+                proceedWithAddingToMyFavorites(ctx = ctx, space = SpaceId(space))
+            }
+            ObjectAction.REMOVE_FROM_MY_FAVORITES -> {
+                proceedWithRemovingFromMyFavorites(ctx = ctx, space = SpaceId(space))
             }
             ObjectAction.LINK_TO -> {
                 proceedWithLinkTo()

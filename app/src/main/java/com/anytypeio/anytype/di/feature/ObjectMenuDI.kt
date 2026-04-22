@@ -11,6 +11,8 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
+import com.anytypeio.anytype.domain.favorites.AddPersonalFavorite
+import com.anytypeio.anytype.domain.favorites.RemovePersonalFavorite
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
@@ -133,7 +135,9 @@ object ObjectMenuModule {
         deleteRelationFromObject: DeleteRelationFromObject,
         objectMenuOptionsProvider: ObjectMenuOptionsProvider,
         showObject: GetObject,
-        deleteWidget: DeleteWidget
+        deleteWidget: DeleteWidget,
+        addPersonalFavorite: AddPersonalFavorite,
+        removePersonalFavorite: RemovePersonalFavorite
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -164,7 +168,9 @@ object ObjectMenuModule {
         userPermissionProvider = userPermissionProvider,
         deleteRelationFromObject = deleteRelationFromObject,
         showObject = showObject,
-        deleteWidget = deleteWidget
+        deleteWidget = deleteWidget,
+        addPersonalFavorite = addPersonalFavorite,
+        removePersonalFavorite = removePersonalFavorite
     )
 
     @JvmStatic
@@ -282,7 +288,9 @@ object ObjectSetMenuModule {
         setObjectDetails: SetObjectDetails,
         objectMenuOptionsProvider: ObjectMenuOptionsProvider,
         showObject: GetObject,
-        deleteWidget: DeleteWidget
+        deleteWidget: DeleteWidget,
+        addPersonalFavorite: AddPersonalFavorite,
+        removePersonalFavorite: RemovePersonalFavorite
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectListIsArchived = setObjectIsArchived,
         addBackLinkToObject = addBackLinkToObject,
@@ -311,7 +319,9 @@ object ObjectSetMenuModule {
         updateFields = updateFields,
         setObjectDetails = setObjectDetails,
         showObject = showObject,
-        deleteWidget = deleteWidget
+        deleteWidget = deleteWidget,
+        addPersonalFavorite = addPersonalFavorite,
+        removePersonalFavorite = removePersonalFavorite
     )
 
     @JvmStatic

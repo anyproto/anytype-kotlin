@@ -16,5 +16,6 @@ sealed class SpaceHomePickerState {
 data class SpaceHomePickerItem(
     val objectId: Id,
     val name: String,
-    val icon: ObjectIcon
+    val icon: ObjectIcon,
+    val type: String
 )

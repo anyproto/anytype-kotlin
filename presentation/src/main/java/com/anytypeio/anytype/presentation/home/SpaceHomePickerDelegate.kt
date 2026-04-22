@@ -124,7 +124,8 @@ class SpaceHomePickerDelegate(
                         items += SpaceHomePickerItem(
                             objectId = obj.id,
                             name = fieldParser.getObjectName(obj),
-                            icon = obj.objectIcon(builder = urlBuilder, objType = objType)
+                            icon = obj.objectIcon(builder = urlBuilder, objType = objType),
+                            type = objType?.name.orEmpty()
                         )
                     }
                     val current = _state.value

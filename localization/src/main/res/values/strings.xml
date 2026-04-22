@@ -972,7 +972,7 @@
     <string name="homepage_picker_continue">Continue</string>
     <string name="homepage_picker_not_now">Not now</string>
     <!-- Space Settings / Home -->
-    <string name="space_home_row_title">Channel home</string>
+    <string name="space_home_row_title">Home</string>
     <string name="space_home_no_home_title">No home</string>
     <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
     <string name="widget_menu_change_home">Change Home</string>

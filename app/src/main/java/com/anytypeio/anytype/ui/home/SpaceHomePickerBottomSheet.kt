@@ -82,7 +82,7 @@ private fun SpaceHomePickerContent(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .background(
                 color = colorResource(id = R.color.background_secondary),
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)

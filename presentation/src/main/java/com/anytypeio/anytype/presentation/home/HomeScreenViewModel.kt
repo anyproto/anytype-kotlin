@@ -3816,6 +3816,13 @@ class HomeScreenViewModel(
             spaceViewSubscriptionContainer
                 .observe(vmParams.spaceId)
                 .collect { spaceView ->
+                    // 1-on-1 channels always open on Chat and have no homepage-change UI.
+                    // See DROID-4469.
+                    if (spaceView.isOneToOneSpace) {
+                        showHomepagePicker.value = false
+                        showCreateHomeWidget.value = false
+                        return@collect
+                    }
                     val homepage = spaceView.homepage
                     if (!homepage.isNullOrEmpty()) {
                         // Homepage is set. Reset createHomeDismissed so the widget can reappear
@@ -3926,6 +3933,10 @@ class HomeScreenViewModel(
     }
 
     fun onCreateHomeWidgetClicked() {
+        // The Create-Home widget is hidden in 1-on-1 channels, but guard the click
+        // path too so a stale state can't re-open the picker.
+        val currentSpaceState = spaceViewState.value as? SpaceViewState.Success
+        if (currentSpaceState?.isOneToOneSpace == true) return
         showHomepagePicker.value = true
     }
 

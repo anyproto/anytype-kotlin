@@ -77,6 +77,7 @@
     <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="manage_sections_title">Manage sections</string>
     <string name="section_unread">Unread</string>
+    <string name="section_my_favorites">My Favorites</string>
     <string name="section_pinned">Замацавана</string>
     <string name="section_objects">Аб\'екты</string>
     <string name="section_recently_edited">Нядаўна адрэдагаваны</string>
@@ -2138,6 +2139,7 @@
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
     <string name="widgets_section_pinned">Замацавана</string>
     <string name="widgets_section_unread">Unread</string>
+    <string name="widgets_section_my_favorites">My Favorites</string>
     <string name="widgets_section_object_types">Аб\'екты</string>
     <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">Новы</string>

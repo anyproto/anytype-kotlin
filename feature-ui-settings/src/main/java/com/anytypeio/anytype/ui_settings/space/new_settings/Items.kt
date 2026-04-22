@@ -249,7 +249,7 @@ fun SpaceHomeItem(
             )
             Text(
                 modifier = Modifier.padding(start = 8.dp),
-                text = name.take(20),
+                text = name,
                 style = PreviewTitle1Regular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

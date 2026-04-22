@@ -308,7 +308,9 @@ fun WidgetsScreen(
                     HomeWidgetCard(
                         item = homeWidget,
                         onWidgetClicked = viewModel::onHomeWidgetClicked,
-                        onChangeHomeClicked = viewModel::onHomeWidgetChangeHomeClicked
+                        onChangeHomeClicked = viewModel::onHomeWidgetChangeHomeClicked,
+                        isOneToOneSpace = (spaceView as? HomeScreenViewModel.SpaceViewState.Success)
+                            ?.isOneToOneSpace == true
                     )
                 }
             }

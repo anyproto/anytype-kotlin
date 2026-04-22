@@ -3891,6 +3891,12 @@ class HomeScreenViewModel(
             spaceViewSubscriptionContainer
                 .observe(vmParams.spaceId)
                 .collect { spaceView ->
+                    // 1-on-1 channels always open on Chat and have no homepage-change UI.
+                    // See DROID-4469.
+                    if (spaceView.isOneToOneSpace) {
+                        showHomepagePicker.value = false
+                        return@collect
+                    }
                     val homepage = spaceView.homepage
                     if (!homepage.isNullOrEmpty()) {
                         showHomepagePicker.value = false

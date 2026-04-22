@@ -865,12 +865,17 @@
     <string name="create_space_space_name">Nama Ruang</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Create Home</string>
-    <string name="homepage_picker_description">Pilih hal yang dilihat anggota ruang ketika mereka membuka kanal. Ini bisa diubah lagi di setelan.</string>
+    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
     <string name="homepage_picker_chat">Obrolan</string>
     <string name="homepage_picker_page">Halaman</string>
     <string name="homepage_picker_collection">Koleksi</string>
-    <string name="homepage_picker_empty">Kosong</string>
-    <string name="homepage_picker_later">Nanti</string>
+    <string name="homepage_picker_continue">Lanjutkan</string>
+    <string name="homepage_picker_not_now">Tidak dulu</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Beranda</string>
+    <string name="space_home_no_home_title">No home</string>
+    <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
+    <string name="widget_menu_change_home">Change Home</string>
     <string name="invite_members_widget_title">Undang Anggota</string>
     <string name="invite_members_widget_description">Undang orang ke kanal ini untuk mulai berkolaborasi.</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
@@ -1084,7 +1089,7 @@
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Ini Kuncimu</string>
-    <string name="onboarding_key_description">Ini pengganti nama pengguna dan kata sandi. Jaga keamanannya — Anda bertanggung jawab penuh atas data Anda. Anda dapat menemukan Kunci ini di pengaturan aplikasi.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Tampilkan Kunciku</string>
     <string name="onboarding_tap_to_reveal">Tunjukkan dan Salin</string>
     <string name="onboarding_key_skip">Lewati</string>
@@ -1105,7 +1110,7 @@
     <string name="onboarding_recovery_phrase_description">Kuncimu berupa frasa pemulihan yang terdiri dari 12 kata acak yang menghasilkan brankasmu dalam perangkat ini.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Siapa punya kunci, dia punya akses</string>
     <string name="onboarding_recovery_phrase_description_2">Siapa pun yang mengetahui kata-kata ini dapat mengakses brankasmu. Saat ini, kamulah satu-satunya orang di dunia yang mengetahuinya.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Tanggung jawab ada padamu</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
     <string name="onboarding_recovery_phrase_description_3">Seluruh kemampuan komputasi di Bumi tidak akan cukup untuk membobol masuk. Jika kamu kehilangan kuncimu, kami tidak bisa mengembalikannya. Simpanlah kunci di tempat aman, seperti manajer kata sandi atau tulislah di kertas.</string>
     <string name="onboarding_recovery_phrase_description_4">Semua sumber daya komputasi di Bumi tidak cukup untuk membobolnya. Jika Anda kehilangannya, maka tidak dapat dipulihkan. Jadi, sembunyikan di tempat yang aman!</string>
     <string name="onboarding_how_to_save_my_phrase">Bagaimana cara menyimpan kunciku?</string>

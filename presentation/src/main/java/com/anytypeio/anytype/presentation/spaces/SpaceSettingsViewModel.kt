@@ -565,8 +565,13 @@ class SpaceSettingsViewModel(
                     add(UiSpaceSettingsItem.Fields)
 
                     add(UiSpaceSettingsItem.Section.Preferences)
-                    add(spaceHomeSettingItem)
-                    add(Spacer(id = "after-space-home", height = 8))
+                    // DROID-4469: Hide the "Home" row entirely in 1-on-1 channels.
+                    // 1-on-1 channels always open on Chat and have no
+                    // homepage-change UI.
+                    if (!spaceView.isOneToOneSpace) {
+                        add(spaceHomeSettingItem)
+                        add(Spacer(id = "after-space-home", height = 8))
+                    }
                     add(defaultObjectTypeSettingItem)
                     add(Spacer(id = "after-default-type", height = 8))
                     add(

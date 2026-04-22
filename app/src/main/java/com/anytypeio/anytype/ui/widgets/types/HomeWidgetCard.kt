@@ -48,7 +48,8 @@ fun HomeWidgetCard(
     item: WidgetView.Home,
     onWidgetClicked: () -> Unit,
     onChangeHomeClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isOneToOneSpace: Boolean = false
 ) {
     val isMenuExpanded = remember { mutableStateOf(false) }
     val haptic = LocalHapticFeedback.current
@@ -64,9 +65,15 @@ fun HomeWidgetCard(
             .clip(RoundedCornerShape(24.dp))
             .combinedClickable(
                 onClick = onWidgetClicked,
-                onLongClick = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    isMenuExpanded.value = true
+                onLongClick = if (isOneToOneSpace) {
+                    // DROID-4469: no context menu in 1-on-1 (only action would be
+                    // Change Home, which is hidden for 1-on-1 channels).
+                    null
+                } else {
+                    {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        isMenuExpanded.value = true
+                    }
                 }
             )
             .alpha(if (isMenuExpanded.value) 0.8f else 1f),

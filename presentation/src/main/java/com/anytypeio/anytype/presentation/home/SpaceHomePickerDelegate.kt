@@ -51,6 +51,14 @@ class SpaceHomePickerDelegate(
     private var loadJob: Job? = null
 
     fun show(scope: CoroutineScope, currentHomepageObjectId: Id?) {
+        // DROID-4469: 1-on-1 channels always open on Chat and must not offer a
+        // homepage picker. Guard here so every caller (Home widget context
+        // menu, Space Settings Home row, post-creation picker trigger) is
+        // protected by a single check.
+        if (isOneToOneSpaceProvider()) {
+            Timber.d("SpaceHomePickerDelegate.show() skipped: 1-on-1 space")
+            return
+        }
         _state.value = SpaceHomePickerState.Visible(
             query = "",
             candidates = emptyList(),

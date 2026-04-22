@@ -76,6 +76,7 @@ fun LazyListScope.renderWidgetSection(
     isOtherSectionDragging: Boolean = false,
     hideCounters: Boolean = false,
     canToggleChannelPin: Boolean = true,
+    favoriteTargets: Set<Id> = emptySet(),
     onExpand: (TreePath) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
@@ -109,9 +110,10 @@ fun LazyListScope.renderWidgetSection(
                     item.sectionType,
                     item.canCreateObjectOfType,
                     item.source,
-                    canToggleChannelPin
+                    canToggleChannelPin,
+                    favoriteTargets
                 ) {
-                    item.getWidgetMenuItems(canToggleChannelPin)
+                    item.getWidgetMenuItems(canToggleChannelPin, favoriteTargets)
                 }
                 val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
@@ -171,8 +173,8 @@ fun LazyListScope.renderWidgetSection(
 
             is WidgetView.Link -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
-                val menuItems = remember(item.id, item.sectionType, item.source, item.isFavorited, canToggleChannelPin) {
-                    item.getWidgetMenuItems(canToggleChannelPin)
+                val menuItems = remember(item.id, item.sectionType, item.source, canToggleChannelPin, favoriteTargets) {
+                    item.getWidgetMenuItems(canToggleChannelPin, favoriteTargets)
                 }
                 val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
@@ -225,8 +227,8 @@ fun LazyListScope.renderWidgetSection(
 
             is WidgetView.SetOfObjects -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
-                val menuItems = remember(item.id, item.sectionType, item.canCreateObjectOfType, item.source, canToggleChannelPin) {
-                    item.getWidgetMenuItems(canToggleChannelPin)
+                val menuItems = remember(item.id, item.sectionType, item.canCreateObjectOfType, item.source, canToggleChannelPin, favoriteTargets) {
+                    item.getWidgetMenuItems(canToggleChannelPin, favoriteTargets)
                 }
                 val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
@@ -287,8 +289,8 @@ fun LazyListScope.renderWidgetSection(
 
             is WidgetView.Gallery -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
-                val menuItems = remember(item.id, item.sectionType, item.canCreateObjectOfType, item.source, canToggleChannelPin) {
-                    item.getWidgetMenuItems(canToggleChannelPin)
+                val menuItems = remember(item.id, item.sectionType, item.canCreateObjectOfType, item.source, canToggleChannelPin, favoriteTargets) {
+                    item.getWidgetMenuItems(canToggleChannelPin, favoriteTargets)
                 }
                 val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
@@ -347,8 +349,8 @@ fun LazyListScope.renderWidgetSection(
 
             is WidgetView.ChatList -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
-                val menuItems = remember(item.id, item.sectionType, item.canCreateObjectOfType, item.source, canToggleChannelPin) {
-                    item.getWidgetMenuItems(canToggleChannelPin)
+                val menuItems = remember(item.id, item.sectionType, item.canCreateObjectOfType, item.source, canToggleChannelPin, favoriteTargets) {
+                    item.getWidgetMenuItems(canToggleChannelPin, favoriteTargets)
                 }
                 val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
@@ -409,8 +411,8 @@ fun LazyListScope.renderWidgetSection(
 
             is WidgetView.ListOfObjects -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
-                val menuItems = remember(item.id, item.sectionType, item.canCreateObjectOfType, item.source, canToggleChannelPin) {
-                    item.getWidgetMenuItems(canToggleChannelPin)
+                val menuItems = remember(item.id, item.sectionType, item.canCreateObjectOfType, item.source, canToggleChannelPin, favoriteTargets) {
+                    item.getWidgetMenuItems(canToggleChannelPin, favoriteTargets)
                 }
                 val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
@@ -480,8 +482,8 @@ fun LazyListScope.renderWidgetSection(
 
             is WidgetView.AllContent -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
-                val menuItems = remember(item.id, item.sectionType, canToggleChannelPin) {
-                    item.getWidgetMenuItems(canToggleChannelPin)
+                val menuItems = remember(item.id, item.sectionType, canToggleChannelPin, favoriteTargets) {
+                    item.getWidgetMenuItems(canToggleChannelPin, favoriteTargets)
                 }
                 val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
@@ -733,15 +735,24 @@ fun MyFavoritesWidget(
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onReordered: (orderedObjectIds: List<Id>) -> Unit
+    onReordered: (orderedObjectIds: List<Id>) -> Unit,
+    /**
+     * DROID-4397: strictly-increasing counter that bumps whenever a
+     * reorder RPC fails in the VM. Included in the [remember] key below
+     * so the optimistic local row order is discarded and re-seeded from
+     * the authoritative [item.elements] on failure. A successful RPC
+     * causes [item.elements] itself to change (new subscription emission),
+     * so no signal is needed for the success path.
+     */
+    reorderFailedSignal: Int = 0
 ) {
     if (item.elements.isEmpty()) return
     val view = LocalView.current
 
     // Local mutable copy so drag visuals happen immediately; the list is
     // re-synced whenever the upstream [item.elements] changes (recomposition
-    // on new subscription value).
-    val currentElements = remember(item.elements) {
+    // on new subscription value) OR when [reorderFailedSignal] ticks.
+    val currentElements = remember(item.elements, reorderFailedSignal) {
         mutableStateListOf<WidgetView.SetOfObjects.Element>().apply {
             addAll(item.elements)
         }

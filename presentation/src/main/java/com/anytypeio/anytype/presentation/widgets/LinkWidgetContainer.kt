@@ -3,13 +3,13 @@ package com.anytypeio.anytype.presentation.widgets
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
-import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 
 class LinkWidgetContainer(
@@ -17,26 +17,20 @@ class LinkWidgetContainer(
     private val widget: Widget,
     private val fieldParser: FieldParser,
     private val chatPreviewContainer: ChatPreviewContainer,
-    private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
-    private val observePersonalFavoriteTargets: ObservePersonalFavoriteTargets
+    private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
 ) : WidgetContainer {
     override val view: Flow<WidgetView.Link> = run {
         val source = widget.source
         val isChatDerived = source is Widget.Source.Default &&
                 source.obj.layout == ObjectType.Layout.CHAT_DERIVED
 
-        val favoriteTargets = observePersonalFavoriteTargets(space)
-            .map { it.toSet() }
-            .distinctUntilChanged()
-
         if (isChatDerived) {
             combine(
                 chatPreviewContainer.observePreviewsBySpaceId(space),
-                spaceViewSubscriptionContainer.observe(),
-                favoriteTargets
-            ) { previews, spaceViews, favorites -> Triple(previews, spaceViews, favorites) }
+                spaceViewSubscriptionContainer.observe()
+            ) { previews, spaceViews -> previews to spaceViews }
                 .distinctUntilChanged()
-                .map { (previews, spaceViews, favorites) ->
+                .map { (previews, spaceViews) ->
                     val preview = previews.find { it.chat == source.obj.id }
                     val state = preview?.state
 
@@ -66,21 +60,19 @@ class LinkWidgetContainer(
                             )
                         } else null,
                         notificationState = notificationState,
-                        isMutedAndHidden = isMutedAndHidden,
-                        isFavorited = widget.source.id in favorites
+                        isMutedAndHidden = isMutedAndHidden
                     )
                 }
         } else {
-            favoriteTargets.map { favorites ->
+            flowOf(
                 WidgetView.Link(
                     id = widget.id,
                     source = widget.source,
                     icon = widget.icon,
                     name = widget.source.getPrettyName(fieldParser),
-                    sectionType = widget.sectionType,
-                    isFavorited = widget.source.id in favorites
+                    sectionType = widget.sectionType
                 )
-            }
+            )
         }
     }
 }

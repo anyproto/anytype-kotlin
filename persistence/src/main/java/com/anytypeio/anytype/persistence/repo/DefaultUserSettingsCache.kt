@@ -885,6 +885,9 @@ class DefaultUserSettingsCache(
                     .preferences[space.id]
                     ?.sectionSettings
                     ?.toDomain()
+                    ?.withDefaults()   // DROID-4397: backfill section types added after
+                                       // the user's preferences were first persisted
+                                       // (e.g. MY_FAVORITES).
                     ?: WidgetSections.default()
             }
             .first()
@@ -916,6 +919,9 @@ class DefaultUserSettingsCache(
                     .preferences[space.id]
                     ?.sectionSettings
                     ?.toDomain()
+                    ?.withDefaults()   // DROID-4397: backfill section types added after
+                                       // the user's preferences were first persisted
+                                       // (e.g. MY_FAVORITES).
                     ?: WidgetSections.default()
             }
             .catch { e ->

@@ -192,6 +192,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -481,6 +482,23 @@ class HomeScreenViewModel(
                 scope = viewModelScope,
                 started = SharingStarted.Eagerly,
                 initialValue = false
+            )
+
+    /**
+     * DROID-4397: set of object IDs currently in the user's personal favorites
+     * for the active space. Exposed at the VM level so the widget-menu UI can
+     * decide Favorite ↔ Unfavorite for any pinned widget that has a concrete
+     * `source.id` (Link, Tree, Set, List, Gallery, ChatList, …). The underlying
+     * subscription is the same one that feeds the My Favorites section, so
+     * state is consistent across surfaces.
+     */
+    val favoriteTargets: StateFlow<Set<Id>> =
+        observePersonalFavoriteTargets(vmParams.spaceId)
+            .map { it.toSet() }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Eagerly,
+                initialValue = emptySet()
             )
 
     // Exposed flow for bin widget
@@ -1753,11 +1771,24 @@ class HomeScreenViewModel(
     }
 
     /**
+     * DROID-4397: monotonically increments whenever [onMyFavoritesReordered]
+     * returns a failure. The UI observes this counter and uses it as a remember
+     * key so the optimistic local row order is re-seeded from the authoritative
+     * [personalFavoritesView] snapshot. Without this signal, a failed RPC would
+     * leave the UI showing the client-side order indefinitely (the subscription
+     * never emits a new list because the backend didn't change).
+     */
+    private val _myFavoritesReorderFailedCount = MutableStateFlow(0)
+    val myFavoritesReorderFailedCount: StateFlow<Int> =
+        _myFavoritesReorderFailedCount.asStateFlow()
+
+    /**
      * DROID-4397: persist a new order of personal favorites after the user
      * drags-to-reorder rows in the My Favorites section. [orderedTargetIds] is
      * the full ordered list of favorited object IDs (not the widget IDs).
-     * The underlying subscription will emit the new order shortly after the
-     * RPC completes; the UI reconciles on its own.
+     * On success, the underlying subscription will emit the new order and the
+     * UI reconciles on its own. On failure, [myFavoritesReorderFailedCount]
+     * increments so the UI reverts its optimistic local state.
      */
     fun onMyFavoritesReordered(orderedTargetIds: List<Id>) {
         if (orderedTargetIds.isEmpty()) return
@@ -1769,7 +1800,10 @@ class HomeScreenViewModel(
                 )
             ).fold(
                 onSuccess = { Timber.d("Reordered my favorites: $orderedTargetIds") },
-                onFailure = { Timber.e(it, "Error reordering my favorites") }
+                onFailure = { e ->
+                    Timber.e(e, "Error reordering my favorites")
+                    _myFavoritesReorderFailedCount.update { it + 1 }
+                }
             )
         }
     }

@@ -72,6 +72,8 @@ fun WidgetsScreen(
     val unreadWidget = viewModel.unreadView.collectAsState().value
     val personalFavoritesWidget = viewModel.personalFavoritesView.collectAsState().value
     val canToggleChannelPin = viewModel.canToggleChannelPin.collectAsState().value
+    val favoriteTargets = viewModel.favoriteTargets.collectAsState().value
+    val myFavoritesReorderFailedSignal = viewModel.myFavoritesReorderFailedCount.collectAsState().value
     val chatWidget = viewModel.chatView.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
     val recentlyEditedWidget = viewModel.recentlyEditedView.collectAsState().value
@@ -360,6 +362,7 @@ fun WidgetsScreen(
                                 isOtherSectionDragging = isDraggingTypes.value,
                                 hideCounters = hideCountersInOtherSections,
                                 canToggleChannelPin = canToggleChannelPin,
+                                favoriteTargets = favoriteTargets,
                                 onExpand = viewModel::onExpand,
                                 onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
                                     viewModel.onDropDownMenuAction(widget, action)
@@ -506,7 +509,8 @@ fun WidgetsScreen(
                                             )
                                         },
                                         onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
-                                        onReordered = viewModel::onMyFavoritesReordered
+                                        onReordered = viewModel::onMyFavoritesReordered,
+                                        reorderFailedSignal = myFavoritesReorderFailedSignal
                                     )
                                 }
                             }

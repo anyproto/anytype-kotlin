@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
@@ -272,6 +273,33 @@ fun WidgetLongClickMenu(
     }
 }
 
+/**
+ * DROID-4397: emit a Favorite or Unfavorite menu item for [widget] iff its
+ * source is a concrete real-object link (not a bundled view). Bundled widget
+ * sources (`favorite`, `recent`, `bin`, `allObjects`, `chat`, `personalFavorites`)
+ * aren't individual objects and have no meaningful favorite toggle.
+ */
+private fun MutableList<WidgetMenuItem>.addFavoriteToggleIfObjectBacked(
+    widget: WidgetView,
+    favoriteTargets: Set<Id>
+) {
+    val source: Widget.Source? = when (widget) {
+        is WidgetView.Link -> widget.source
+        is WidgetView.Tree -> widget.source
+        is WidgetView.SetOfObjects -> widget.source
+        is WidgetView.ListOfObjects -> widget.source
+        is WidgetView.Gallery -> widget.source
+        is WidgetView.ChatList -> widget.source
+        else -> null
+    }
+    if (source == null || source is Widget.Source.Bundled || source is Widget.Source.Other) return
+    if (source.id in favoriteTargets) {
+        add(WidgetMenuItem.UnfavoriteObject(widget.id))
+    } else {
+        add(WidgetMenuItem.FavoriteObject(widget.id))
+    }
+}
+
 private fun WidgetView.canChangeWidgetType(): Boolean {
     return when (this) {
         is WidgetView.ChatList -> {
@@ -310,9 +338,16 @@ private fun WidgetView.canChangeWidgetType(): Boolean {
  *  widgets in the PINNED section (since RemoveWidget = "Unpin from channel",
  *  which is Owner/Admin only per spec). Defaults to true so legacy call sites
  *  keep existing behavior.
+ * @param favoriteTargets DROID-4397: set of object IDs currently in the user's
+ *  personal favorites. If the widget's source is a concrete object (non-bundled)
+ *  whose ID is in the set, the Unfavorite item is emitted; otherwise Favorite.
+ *  Bundled widgets (Favorites, Recent, Bin, All Objects, etc.) don't have a
+ *  real object and get no favorite/unfavorite item. Defaults to [emptySet] so
+ *  legacy call sites keep existing behavior (no favorite toggle).
  */
 fun WidgetView.getWidgetMenuItems(
-    canToggleChannelPin: Boolean = true
+    canToggleChannelPin: Boolean = true,
+    favoriteTargets: Set<Id> = emptySet()
 ): List<WidgetMenuItem> {
     val menuItems = when (sectionType) {
         SectionType.UNREAD -> {
@@ -321,6 +356,11 @@ fun WidgetView.getWidgetMenuItems(
         }
         SectionType.PINNED -> {
             buildList {
+                // DROID-4397: favorite/unfavorite the underlying object,
+                // available to all roles, for any pinned widget whose source
+                // is a concrete real object. Pin is implicit (widget already
+                // exists in the shared pinned doc).
+                addFavoriteToggleIfObjectBacked(this@getWidgetMenuItems, favoriteTargets)
                 when (this@getWidgetMenuItems) {
                     is WidgetView.AllContent -> {
                         if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
@@ -351,14 +391,6 @@ fun WidgetView.getWidgetMenuItems(
                         if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.Link -> {
-                        // DROID-4397: favorite/unfavorite the underlying object,
-                        // available to all roles. Pin is implicit (widget already
-                        // exists in the shared pinned doc).
-                        if (isFavorited) {
-                            add(WidgetMenuItem.UnfavoriteObject(id))
-                        } else {
-                            add(WidgetMenuItem.FavoriteObject(id))
-                        }
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }

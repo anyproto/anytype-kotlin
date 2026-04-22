@@ -76,13 +76,7 @@ sealed class WidgetView {
         override val sectionType: SectionType? = null,
         val counter: ChatCounter? = null,
         val notificationState: NotificationState? = null,
-        val isMutedAndHidden: Boolean = false,
-        /**
-         * DROID-4397: true iff the underlying source object is in the current
-         * user's personal favorites for the active space. Drives the Favorite
-         * ↔ Unfavorite widget long-press menu toggle.
-         */
-        val isFavorited: Boolean = false
+        val isMutedAndHidden: Boolean = false
     ) : WidgetView(), Draggable {
         override val canCreateObjectOfType: Boolean
             get() = source.canCreateObjectOfType()

@@ -51,6 +51,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.favorites.AddPersonalFavorite
 import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.favorites.RemovePersonalFavorite
+import com.anytypeio.anytype.domain.favorites.ReorderPersonalFavorites
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -183,6 +184,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var removePersonalFavorite: RemovePersonalFavorite
+
+    @Mock
+    lateinit var reorderPersonalFavorites: ReorderPersonalFavorites
 
     @Mock
     lateinit var openObject: OpenObject
@@ -3186,6 +3190,7 @@ class HomeScreenViewModelTest {
         observePersonalFavoriteTargets = observePersonalFavoriteTargets,
         addPersonalFavorite = addPersonalFavorite,
         removePersonalFavorite = removePersonalFavorite,
+        reorderPersonalFavorites = reorderPersonalFavorites,
         createWidget = createWidget,
         deleteWidget = deleteWidget,
         updateWidget = updateWidget,

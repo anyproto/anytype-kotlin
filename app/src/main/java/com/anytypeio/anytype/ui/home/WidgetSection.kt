@@ -6,6 +6,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -14,11 +15,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -709,7 +714,14 @@ fun UnreadChatListWidget(
 }
 
 /**
- * Displays the My Favorites widget content — Unread-style compact rows.
+ * Displays the My Favorites widget content — Unread-style compact rows with
+ * long-press-to-drag reordering (DROID-4397).
+ *
+ * Each row wraps the standard compact icon+name layout in a
+ * [sh.calvin.reorderable.ReorderableColumn] row. [onReordered] fires on drag
+ * settle with the full ordered list of object IDs to persist — the caller
+ * should forward this to [com.anytypeio.anytype.presentation.home.HomeScreenViewModel.onMyFavoritesReordered].
+ *
  * Renders nothing when [item] has no elements; WidgetsScreen already gates on
  * emptiness, but double-check here too for flicker safety.
  */
@@ -718,8 +730,21 @@ fun MyFavoritesWidget(
     item: WidgetView.SetOfObjects,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    onReordered: (orderedObjectIds: List<Id>) -> Unit
 ) {
+    if (item.elements.isEmpty()) return
+    val view = LocalView.current
+
+    // Local mutable copy so drag visuals happen immediately; the list is
+    // re-synced whenever the upstream [item.elements] changes (recomposition
+    // on new subscription value).
+    val currentElements = remember(item.elements) {
+        mutableStateListOf<WidgetView.SetOfObjects.Element>().apply {
+            addAll(item.elements)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -730,15 +755,99 @@ fun MyFavoritesWidget(
             )
             .clip(RoundedCornerShape(24.dp))
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            if (item.elements.isNotEmpty()) {
-                CompactListWidgetList(
-                    mode = mode,
-                    elements = item.elements,
-                    onWidgetElementClicked = onWidgetObjectClicked,
-                    onObjectCheckboxClicked = onObjectCheckboxClicked
+        sh.calvin.reorderable.ReorderableColumn(
+            modifier = Modifier.fillMaxWidth(),
+            list = currentElements,
+            onSettle = { fromIndex, toIndex ->
+                if (fromIndex == toIndex) return@ReorderableColumn
+                val moved = currentElements.removeAt(fromIndex)
+                currentElements.add(toIndex, moved)
+                onReordered(currentElements.map { it.obj.id })
+            },
+            onMove = {
+                androidx.core.view.ViewCompat.performHapticFeedback(
+                    view,
+                    androidx.core.view.HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
                 )
             }
+        ) { index, element, _ ->
+            MyFavoriteRow(
+                element = element,
+                mode = mode,
+                view = view,
+                onClick = { onWidgetObjectClicked(element.obj) },
+                onCheckboxClicked = { isChecked ->
+                    onObjectCheckboxClicked(element.obj.id, isChecked)
+                },
+                showDivider = index < currentElements.lastIndex
+            )
+        }
+    }
+}
+
+@Composable
+private fun sh.calvin.reorderable.ReorderableScope.MyFavoriteRow(
+    element: WidgetView.SetOfObjects.Element,
+    mode: InteractionMode,
+    view: android.view.View,
+    onClick: () -> Unit,
+    onCheckboxClicked: (Boolean) -> Unit,
+    showDivider: Boolean
+) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .longPressDraggableHandle(
+                    onDragStarted = {
+                        androidx.core.view.ViewCompat.performHapticFeedback(
+                            view,
+                            androidx.core.view.HapticFeedbackConstantsCompat.GESTURE_START
+                        )
+                    },
+                    onDragStopped = {
+                        androidx.core.view.ViewCompat.performHapticFeedback(
+                            view,
+                            androidx.core.view.HapticFeedbackConstantsCompat.GESTURE_END
+                        )
+                    }
+                )
+                .then(
+                    if (mode !is InteractionMode.Edit)
+                        Modifier.noRippleClickable(onClick = onClick)
+                    else Modifier
+                )
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon(
+                iconSize = 18.dp,
+                icon = element.objectIcon,
+                modifier = Modifier.padding(end = 12.dp),
+                onTaskIconClicked = onCheckboxClicked,
+                iconWithoutBackgroundMaxSize = 200.dp
+            )
+            val name = when (val n = element.name) {
+                is WidgetView.Name.Default -> n.prettyPrintName
+                is WidgetView.Name.Bundled -> ""
+                WidgetView.Name.Empty -> ""
+            }
+            Text(
+                text = name,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium,
+                color = colorResource(id = R.color.text_primary),
+                modifier = Modifier.weight(1f)
+            )
+        }
+        if (showDivider) {
+            Divider(
+                thickness = 0.5.dp,
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = colorResource(id = R.color.widget_divider)
+            )
         }
     }
 }

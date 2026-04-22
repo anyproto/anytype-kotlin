@@ -70,6 +70,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.favorites.AddPersonalFavorite
 import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.favorites.RemovePersonalFavorite
+import com.anytypeio.anytype.domain.favorites.ReorderPersonalFavorites
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -235,6 +236,7 @@ class HomeScreenViewModel(
     private val observePersonalFavoriteTargets: ObservePersonalFavoriteTargets,
     private val addPersonalFavorite: AddPersonalFavorite,
     private val removePersonalFavorite: RemovePersonalFavorite,
+    private val reorderPersonalFavorites: ReorderPersonalFavorites,
     private val widgetSessionStateHolder: WidgetSessionStateHolder,
     private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
     private val urlBuilder: UrlBuilder,
@@ -1732,6 +1734,28 @@ class HomeScreenViewModel(
             is DropDownMenuAction.UnfavoriteObject -> {
                 proceedWithWidgetFavoriteToggle(action.widgetId, isFavorite = false)
             }
+        }
+    }
+
+    /**
+     * DROID-4397: persist a new order of personal favorites after the user
+     * drags-to-reorder rows in the My Favorites section. [orderedTargetIds] is
+     * the full ordered list of favorited object IDs (not the widget IDs).
+     * The underlying subscription will emit the new order shortly after the
+     * RPC completes; the UI reconciles on its own.
+     */
+    fun onMyFavoritesReordered(orderedTargetIds: List<Id>) {
+        if (orderedTargetIds.isEmpty()) return
+        viewModelScope.launch {
+            reorderPersonalFavorites.async(
+                ReorderPersonalFavorites.Params(
+                    space = vmParams.spaceId,
+                    order = orderedTargetIds
+                )
+            ).fold(
+                onSuccess = { Timber.d("Reordered my favorites: $orderedTargetIds") },
+                onFailure = { Timber.e(it, "Error reordering my favorites") }
+            )
         }
     }
 
@@ -4128,6 +4152,7 @@ class HomeScreenViewModel(
         private val observePersonalFavoriteTargets: ObservePersonalFavoriteTargets,
         private val addPersonalFavorite: AddPersonalFavorite,
         private val removePersonalFavorite: RemovePersonalFavorite,
+        private val reorderPersonalFavorites: ReorderPersonalFavorites,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val widgetSessionStateHolder: WidgetSessionStateHolder,
         private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
@@ -4201,6 +4226,7 @@ class HomeScreenViewModel(
             observePersonalFavoriteTargets = observePersonalFavoriteTargets,
             addPersonalFavorite = addPersonalFavorite,
             removePersonalFavorite = removePersonalFavorite,
+            reorderPersonalFavorites = reorderPersonalFavorites,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             widgetSessionStateHolder = widgetSessionStateHolder,
             widgetActiveViewStateHolder = widgetActiveViewStateHolder,

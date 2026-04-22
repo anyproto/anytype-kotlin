@@ -503,7 +503,8 @@ fun WidgetsScreen(
                                                 personalFavoritesWidgetView.id, obj
                                             )
                                         },
-                                        onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked
+                                        onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
+                                        onReordered = viewModel::onMyFavoritesReordered
                                     )
                                 }
                             }

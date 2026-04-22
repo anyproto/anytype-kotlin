@@ -67,6 +67,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -229,6 +230,7 @@ class HomeScreenViewModel(
     private val widgetEventDispatcher: Dispatcher<WidgetDispatchEvent>,
     private val objectPayloadDispatcher: Dispatcher<Payload>,
     private val interceptEvents: InterceptEvents,
+    private val observePersonalFavoriteTargets: ObservePersonalFavoriteTargets,
     private val widgetSessionStateHolder: WidgetSessionStateHolder,
     private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
     private val urlBuilder: UrlBuilder,
@@ -3922,8 +3924,7 @@ class HomeScreenViewModel(
             dateProvider = dateProvider,
             stringResourceProvider = stringResourceProvider,
             dispatchers = appCoroutineDispatchers,
-            openObject = openObject,
-            interceptEvents = interceptEvents,
+            observePersonalFavoriteTargets = observePersonalFavoriteTargets,
             observeCurrentWidgetView = ::observeCurrentWidgetView,
             isWidgetCollapsed = ::isWidgetCollapsed
         )
@@ -4084,6 +4085,7 @@ class HomeScreenViewModel(
         private val widgetEventDispatcher: Dispatcher<WidgetDispatchEvent>,
         private val objectPayloadDispatcher: Dispatcher<Payload>,
         private val interceptEvents: InterceptEvents,
+        private val observePersonalFavoriteTargets: ObservePersonalFavoriteTargets,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val widgetSessionStateHolder: WidgetSessionStateHolder,
         private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
@@ -4154,6 +4156,7 @@ class HomeScreenViewModel(
             widgetEventDispatcher = widgetEventDispatcher,
             objectPayloadDispatcher = objectPayloadDispatcher,
             interceptEvents = interceptEvents,
+            observePersonalFavoriteTargets = observePersonalFavoriteTargets,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             widgetSessionStateHolder = widgetSessionStateHolder,
             widgetActiveViewStateHolder = widgetActiveViewStateHolder,

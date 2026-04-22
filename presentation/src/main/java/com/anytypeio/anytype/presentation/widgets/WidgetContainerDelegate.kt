@@ -10,13 +10,12 @@ import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionMana
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.GetObject
-import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -76,8 +75,7 @@ class WidgetContainerDelegateImpl(
     private val dateProvider: DateProvider,
     private val stringResourceProvider: StringResourceProvider,
     private val dispatchers: AppCoroutineDispatchers,
-    private val openObject: OpenObject,
-    private val interceptEvents: InterceptEvents,
+    private val observePersonalFavoriteTargets: ObservePersonalFavoriteTargets,
     private val observeCurrentWidgetView: (Id) -> Flow<ViewId?>,
     private val isWidgetCollapsed: (Widget, Set<Id>, Set<String>) -> Boolean
 ) : WidgetContainerDelegate {
@@ -105,8 +103,7 @@ class WidgetContainerDelegateImpl(
         return PersonalFavoritesWidgetContainer(
             space = spaceId,
             widget = widget,
-            openObject = openObject,
-            interceptEvents = interceptEvents,
+            observePersonalFavoriteTargets = observePersonalFavoriteTargets,
             storage = storelessSubscriptionContainer,
             urlBuilder = urlBuilder,
             fieldParser = fieldParser,

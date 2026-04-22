@@ -48,6 +48,7 @@ import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -171,6 +172,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var interceptEvents: InterceptEvents
+
+    @Mock
+    lateinit var observePersonalFavoriteTargets: ObservePersonalFavoriteTargets
 
     @Mock
     lateinit var openObject: OpenObject
@@ -3171,6 +3175,7 @@ class HomeScreenViewModelTest {
     private fun buildViewModel() = HomeScreenViewModel(
         vmParams = HomeScreenVmParams(spaceId = spaceId),
         interceptEvents = interceptEvents,
+        observePersonalFavoriteTargets = observePersonalFavoriteTargets,
         createWidget = createWidget,
         deleteWidget = deleteWidget,
         updateWidget = updateWidget,

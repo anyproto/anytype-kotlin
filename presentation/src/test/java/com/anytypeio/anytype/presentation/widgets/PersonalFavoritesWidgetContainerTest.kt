@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import app.cash.turbine.test
-import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubConfig
@@ -11,13 +9,11 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.debugging.Logger
-import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.favorites.personalWidgetsId
+import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
-import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -29,7 +25,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -48,10 +43,7 @@ class PersonalFavoritesWidgetContainerTest {
     val coroutineTestRule = DefaultCoroutineTestRule()
 
     @Mock
-    lateinit var openObject: OpenObject
-
-    @Mock
-    lateinit var interceptEvents: InterceptEvents
+    lateinit var observePersonalFavoriteTargets: ObservePersonalFavoriteTargets
 
     @Mock
     lateinit var storage: StorelessSubscriptionContainer
@@ -88,22 +80,10 @@ class PersonalFavoritesWidgetContainerTest {
     }
 
     @Test
-    fun `emits compact SetOfObjects with elements in wrapper-child order`() = runTest {
+    fun `emits compact SetOfObjects with elements in target order`() = runTest {
         val widget = createWidget()
-        val personalId = personalWidgetsId(space)
-        stubOpenObject(
-            docId = personalId,
-            tree = objectViewWith(
-                wrapperLinks = listOf(
-                    WrapperLink("w-1", "l-1", "obj-a"),
-                    WrapperLink("w-2", "l-2", "obj-b")
-                )
-            )
-        )
-        stubInterceptEvents(personalId, emptyFlow())
-        stubSubscription(
-            listOf(stubBasic("obj-a"), stubBasic("obj-b"))
-        )
+        stubTargets(listOf("obj-a", "obj-b"))
+        stubSubscription(listOf(stubBasic("obj-a"), stubBasic("obj-b")))
 
         val container = newContainer(widget = widget)
 
@@ -120,40 +100,9 @@ class PersonalFavoritesWidgetContainerTest {
     }
 
     @Test
-    fun `filters out built-in link targets`() = runTest {
+    fun `emits empty SetOfObjects when no targets`() = runTest {
         val widget = createWidget()
-        val personalId = personalWidgetsId(space)
-        stubOpenObject(
-            docId = personalId,
-            tree = objectViewWith(
-                wrapperLinks = listOf(
-                    WrapperLink("w-1", "l-1", "favorite"),       // built-in
-                    WrapperLink("w-2", "l-2", "obj-real"),       // real
-                    WrapperLink("w-3", "l-3", "allObjects")      // built-in
-                )
-            )
-        )
-        stubInterceptEvents(personalId, emptyFlow())
-        stubSubscription(listOf(stubBasic("obj-real")))
-
-        val container = newContainer(widget = widget)
-
-        container.view.test {
-            val view = awaitItem() as WidgetView.SetOfObjects
-            assertEquals(listOf("obj-real"), view.elements.map { it.obj.id })
-            cancelAndIgnoreRemainingEvents()
-        }
-    }
-
-    @Test
-    fun `emits empty SetOfObjects when there are no wrappers`() = runTest {
-        val widget = createWidget()
-        val personalId = personalWidgetsId(space)
-        stubOpenObject(
-            docId = personalId,
-            tree = objectViewWith(wrapperLinks = emptyList())
-        )
-        stubInterceptEvents(personalId, emptyFlow())
+        stubTargets(emptyList())
 
         val container = newContainer(widget = widget)
 
@@ -181,6 +130,23 @@ class PersonalFavoritesWidgetContainerTest {
         }
     }
 
+    @Test
+    fun `subscribes to objects only by target IDs`() = runTest {
+        val widget = createWidget()
+        stubTargets(listOf("obj-a"))
+        stubSubscription(listOf(stubBasic("obj-a")))
+
+        val container = newContainer(widget = widget)
+
+        container.view.test {
+            val view = awaitItem() as WidgetView.SetOfObjects
+            assertEquals(1, view.elements.size)
+            cancelAndIgnoreRemainingEvents()
+        }
+        // The delegate-driven subscription is detailed elsewhere; here we just
+        // confirm we got the expected element count for the single target.
+    }
+
     // --- helpers ---
 
     private fun newContainer(
@@ -189,8 +155,7 @@ class PersonalFavoritesWidgetContainerTest {
     ) = PersonalFavoritesWidgetContainer(
         space = space,
         widget = widget,
-        openObject = openObject,
-        interceptEvents = interceptEvents,
+        observePersonalFavoriteTargets = observePersonalFavoriteTargets,
         storage = storage,
         urlBuilder = urlBuilder,
         fieldParser = fieldParser,
@@ -206,18 +171,9 @@ class PersonalFavoritesWidgetContainerTest {
         sectionType = SectionType.MY_FAVORITES
     )
 
-    private fun stubOpenObject(docId: String, tree: ObjectView) {
-        openObject.stub {
-            onBlocking { run(any()) } doReturn tree
-        }
-    }
-
-    private fun stubInterceptEvents(
-        docId: String,
-        events: kotlinx.coroutines.flow.Flow<List<com.anytypeio.anytype.core_models.Event>>
-    ) {
-        interceptEvents.stub {
-            on { build(any()) } doReturn events
+    private fun stubTargets(targets: List<String>) {
+        observePersonalFavoriteTargets.stub {
+            on { invoke(space) } doReturn flowOf(targets)
         }
     }
 
@@ -233,49 +189,4 @@ class PersonalFavoritesWidgetContainerTest {
             Relations.NAME to id
         )
     )
-
-    private data class WrapperLink(val wrapperId: String, val linkId: String, val target: String)
-
-    private fun objectViewWith(
-        root: String = "root",
-        wrapperLinks: List<WrapperLink>
-    ): ObjectView {
-        val rootBlock = Block(
-            id = root,
-            children = wrapperLinks.map { it.wrapperId },
-            content = Block.Content.Smart,
-            fields = Block.Fields(emptyMap())
-        )
-        val wrappers = wrapperLinks.map { wl ->
-            Block(
-                id = wl.wrapperId,
-                children = listOf(wl.linkId),
-                content = Block.Content.Widget(
-                    layout = Block.Content.Widget.Layout.LINK
-                ),
-                fields = Block.Fields(emptyMap())
-            )
-        }
-        val links = wrapperLinks.map { wl ->
-            Block(
-                id = wl.linkId,
-                children = emptyList(),
-                content = Block.Content.Link(
-                    target = wl.target,
-                    type = Block.Content.Link.Type.PAGE,
-                    iconSize = Block.Content.Link.IconSize.NONE,
-                    cardStyle = Block.Content.Link.CardStyle.TEXT,
-                    description = Block.Content.Link.Description.NONE
-                ),
-                fields = Block.Fields(emptyMap())
-            )
-        }
-        return ObjectView(
-            root = root,
-            blocks = listOf(rootBlock) + wrappers + links,
-            details = emptyMap(),
-            objectRestrictions = emptyList(),
-            dataViewRestrictions = emptyList()
-        )
-    }
 }

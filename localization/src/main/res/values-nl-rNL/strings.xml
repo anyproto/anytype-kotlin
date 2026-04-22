@@ -867,12 +867,17 @@
     <string name="create_space_space_name">Naam ruimte</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Create Home</string>
-    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
     <string name="homepage_picker_chat">Chat</string>
     <string name="homepage_picker_page">Pagina</string>
     <string name="homepage_picker_collection">Verzameling</string>
-    <string name="homepage_picker_empty">Leeg</string>
-    <string name="homepage_picker_later">Later</string>
+    <string name="homepage_picker_continue">Volgende</string>
+    <string name="homepage_picker_not_now">Niet nu</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Home</string>
+    <string name="space_home_no_home_title">No home</string>
+    <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
+    <string name="widget_menu_change_home">Change Home</string>
     <string name="invite_members_widget_title">Invite Members</string>
     <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
     <string name="generic_error">Er is iets misgegaan. Probeer het alsjeblieft opnieuw.</string>
@@ -1086,7 +1091,7 @@
     <string name="onboarding_void_title">Dit is jouw ruimte</string>
     <string name="onboarding_void_description">Het is een versleutelde locatie voor alles wat je aanmaakt. Alles wordt opgeslagen op jouw apparaat en opgeslagen op het gedistribueerde netwerk.</string>
     <string name="onboarding_this_is_your_key_title">Dit is je herstelsleutel</string>
-    <string name="onboarding_key_description">Het vervangt login en wachtwoord. Houd het veilig - alleen jij bent verantwoordelijk voor jouw gegevens. Je kunt deze sleutel later vinden in de app instellingen.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Toon mijn herstelsleutel</string>
     <string name="onboarding_tap_to_reveal">Onthul en kopieer</string>
     <string name="onboarding_key_skip">Overslaan</string>
@@ -1107,7 +1112,7 @@
     <string name="onboarding_recovery_phrase_description">Jouw sleutel wordt vertegenwoordigd door een herstelzin — 12 willekeurige woorden die jouw kluis genereren op dit apparaat.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Degene die de sleutel heeft, heeft toegang</string>
     <string name="onboarding_recovery_phrase_description_2">Iedereen die deze woorden kent, kan jouw kluis binnen gaan. Op dit moment ben jij de enige ter wereld die ze kent.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Alleen jij bent er verantwoordelijk voor</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
     <string name="onboarding_recovery_phrase_description_3">Alle rekenkracht op aarde is niet genoeg om in te breken. Als je jouw sleutel verliest, kan deze niet worden hersteld. Sla het ergens veilig op — in een wachtwoordbeheerder of opgeschreven op papier.</string>
     <string name="onboarding_recovery_phrase_description_4">Alle computercapaciteit op aarde is niet genoeg om in te breken. Als je het verliest, kan het niet worden hersteld. Bewaar het dus op een veilige plek!</string>
     <string name="onboarding_how_to_save_my_phrase">Hoe bewaar ik mijn herstelsleutel?</string>

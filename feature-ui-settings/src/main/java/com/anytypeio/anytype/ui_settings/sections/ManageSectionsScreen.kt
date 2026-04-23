@@ -258,6 +258,7 @@ private fun ReorderableScope.DraggableSectionListItem(
 private fun getSectionTitle(type: WidgetSectionType): String {
     return when (type) {
         WidgetSectionType.UNREAD -> stringResource(LocalizationR.string.section_unread)
+        WidgetSectionType.MY_FAVORITES -> stringResource(LocalizationR.string.section_my_favorites)
         WidgetSectionType.PINNED -> stringResource(LocalizationR.string.section_pinned)
         WidgetSectionType.OBJECTS -> stringResource(LocalizationR.string.section_objects)
         WidgetSectionType.RECENTLY_EDITED -> stringResource(LocalizationR.string.section_recently_edited)

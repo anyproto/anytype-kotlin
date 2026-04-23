@@ -14,7 +14,19 @@ interface ObjectMenuOptionsProvider {
         val hasDescriptionShow: Boolean,
         val hasObjectLayoutConflict: Boolean,
         val hasTemplateNamePrefill: Boolean = false,
-        val isTemplateNamePrefillEnabled: Boolean = false
+        val isTemplateNamePrefillEnabled: Boolean = false,
+        /**
+         * DROID-4397: whether the object is in the current user's personal favorites
+         * for the active space. Drives the Favorite ↔ Unfavorite menu item toggle.
+         */
+        val isFavorited: Boolean = false,
+        /**
+         * DROID-4397: whether the current user has Owner/Admin role in the space.
+         * Pin/Unpin menu items are hidden entirely when false. The *which* of
+         * Pin vs Unpin is decided by the existing `pinnedWidgetBlockId` state
+         * in `ObjectMenuViewModelBase` — we don't duplicate it here.
+         */
+        val canToggleChannelPin: Boolean = false
     ) {
         companion object {
             val ALL = Options(

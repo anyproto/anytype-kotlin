@@ -44,6 +44,18 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_unfavorite)
                     tvActionTitle.setText(R.string.unfavorite)
                 }
+                ObjectAction.ADD_TO_MY_FAVORITES -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_add_to_favorites)
+                    tvActionTitle.setText(R.string.favourite)
+                }
+                ObjectAction.REMOVE_FROM_MY_FAVORITES -> {
+                    // TODO(DROID-4397): Spec calls for a filled-star icon. The existing
+                    // `ic_object_action_unfavorite` is a strikethrough star. Keep the
+                    // visual deviation for initial rollout and revisit once design
+                    // approves the final icon.
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_unfavorite)
+                    tvActionTitle.setText(R.string.unfavorite)
+                }
                 ObjectAction.DUPLICATE -> {
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_duplicate)
                     tvActionTitle.setText(R.string.object_action_duplicate)

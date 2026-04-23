@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.favorites.PersonalFavoritesRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.media.UploadFile
@@ -314,6 +315,7 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun dispatcherWidgets(): Dispatcher<WidgetDispatchEvent>
     fun dispatcherPayload(): Dispatcher<Payload>
     fun blockRepo(): BlockRepository
+    fun personalFavoritesRepo(): PersonalFavoritesRepository
     fun authRepo(): AuthRepository
     fun userRepo(): UserSettingsRepository
     fun config(): ConfigStorage

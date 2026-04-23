@@ -16,7 +16,14 @@ class ObjectMenuOptionsProviderImplTest {
     private val objectId: String = "objectId"
     private val details = MutableStateFlow<ObjectViewDetails>(ObjectViewDetails.EMPTY)
     private val hasObjectLayoutConflict = MutableStateFlow(false)
-    private val provider = ObjectMenuOptionsProviderImpl(details, hasObjectLayoutConflict)
+    private val personalFavoriteTargets = MutableStateFlow<Set<String>>(emptySet())
+    private val canToggleChannelPin = MutableStateFlow(false)
+    private val provider = ObjectMenuOptionsProviderImpl(
+        objectViewDetailsFlow = details,
+        hasObjectLayoutConflict = hasObjectLayoutConflict,
+        personalFavoriteTargets = personalFavoriteTargets,
+        canToggleChannelPin = canToggleChannelPin
+    )
 
     @Test
     fun `when layout note - options are layout, relations, history`() {
@@ -160,6 +167,62 @@ class ObjectMenuOptionsProviderImplTest {
             )
         )
     }
+
+    @Test
+    fun `isFavorited is true when object id is in personal favorites`() = runTest {
+        details.value = basicDetails()
+        personalFavoriteTargets.value = setOf(objectId)
+
+        provider.provide(objectId, isLocked = false, isReadOnly = false).test {
+            val options = awaitItem()
+            assertEquals(true, options.isFavorited)
+            assertEquals(false, options.canToggleChannelPin)
+        }
+    }
+
+    @Test
+    fun `isFavorited is false when object id is absent from personal favorites`() = runTest {
+        details.value = basicDetails()
+        personalFavoriteTargets.value = setOf("someOtherId")
+
+        provider.provide(objectId, isLocked = false, isReadOnly = false).test {
+            assertEquals(false, awaitItem().isFavorited)
+        }
+    }
+
+    @Test
+    fun `canToggleChannelPin reflects user role flag`() = runTest {
+        details.value = basicDetails()
+        canToggleChannelPin.value = true
+
+        provider.provide(objectId, isLocked = false, isReadOnly = false).test {
+            assertEquals(true, awaitItem().canToggleChannelPin)
+        }
+    }
+
+    @Test
+    fun `new flags default to false when no flows are wired`() = runTest {
+        val plainProvider = ObjectMenuOptionsProviderImpl(
+            objectViewDetailsFlow = details,
+            hasObjectLayoutConflict = hasObjectLayoutConflict
+        )
+        details.value = basicDetails()
+
+        plainProvider.provide(objectId, isLocked = false, isReadOnly = false).test {
+            val options = awaitItem()
+            assertEquals(false, options.isFavorited)
+            assertEquals(false, options.canToggleChannelPin)
+        }
+    }
+
+    private fun basicDetails() = ObjectViewDetails(
+        mapOf(
+            objectId to mapOf(
+                Relations.ID to objectId,
+                Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+            )
+        )
+    )
 
     private fun assertOptions(
         expected: ObjectMenuOptionsProvider.Options,

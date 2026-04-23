@@ -227,11 +227,13 @@ class BlockDataRepository(
     override suspend fun createBookmarkObject(
         space: Id,
         url: Url,
-        details: Struct
+        details: Struct,
+        createdInContext: Id?
     ): Id = remote.createBookmarkObject(
         space = space,
         url = url,
-        details = details
+        details = details,
+        createdInContext = createdInContext
     )
 
     override suspend fun fetchBookmarkObject(ctx: Id, url: Url) = remote.fetchBookmarkObject(
@@ -930,6 +932,14 @@ class BlockDataRepository(
 
     override suspend fun nodeUsage(): NodeUsageInfo {
         return remote.nodeUsage()
+    }
+
+    override suspend fun fileSetAutoDownload(enabled: Boolean, wifiOnly: Boolean) {
+        remote.fileSetAutoDownload(enabled, wifiOnly)
+    }
+
+    override suspend fun fileAutoDownloadSetLimit(sizeLimitMebibytes: Long) {
+        remote.fileAutoDownloadSetLimit(sizeLimitMebibytes)
     }
 
     override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {

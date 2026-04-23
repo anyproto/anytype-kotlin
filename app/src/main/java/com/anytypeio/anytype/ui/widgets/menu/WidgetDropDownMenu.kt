@@ -28,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
@@ -44,6 +45,10 @@ sealed class WidgetMenuItem {
     data class CreateObjectOfType(val widgetId: WidgetId) : WidgetMenuItem()
     data object ChangeWidgetType : WidgetMenuItem()
     data object RemoveWidget : WidgetMenuItem()
+    /** DROID-4397: add the widget's source object to personal favorites. */
+    data class FavoriteObject(val widgetId: WidgetId) : WidgetMenuItem()
+    /** DROID-4397: remove the widget's source object from personal favorites. */
+    data class UnfavoriteObject(val widgetId: WidgetId) : WidgetMenuItem()
 }
 
 @Composable
@@ -185,8 +190,113 @@ fun WidgetLongClickMenu(
                         }
                     )
                 }
+                is WidgetMenuItem.FavoriteObject -> {
+                    DropdownMenuItem(
+                        onClick = {
+                            onDropDownMenuAction(DropDownMenuAction.FavoriteObject(menuItem.widgetId)).also {
+                                isCardMenuExpanded.value = false
+                            }
+                        },
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.text_primary),
+                                    text = stringResource(R.string.favourite)
+                                )
+                                Image(
+                                    painter = painterResource(
+                                        id = R.drawable.ic_object_action_add_to_favorites
+                                    ),
+                                    contentDescription = "Favorite icon",
+                                    modifier = Modifier.size(24.dp),
+                                    colorFilter = ColorFilter.tint(
+                                        colorResource(id = R.color.text_primary)
+                                    )
+                                )
+                            }
+                        }
+                    )
+                    if (index < menuItems.lastIndex) {
+                        Divider(
+                            thickness = 0.5.dp,
+                            color = colorResource(id = R.color.shape_primary)
+                        )
+                    }
+                }
+                is WidgetMenuItem.UnfavoriteObject -> {
+                    DropdownMenuItem(
+                        onClick = {
+                            onDropDownMenuAction(DropDownMenuAction.UnfavoriteObject(menuItem.widgetId)).also {
+                                isCardMenuExpanded.value = false
+                            }
+                        },
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.text_primary),
+                                    text = stringResource(R.string.unfavorite)
+                                )
+                                // TODO(DROID-4397): Spec calls for a filled-star icon.
+                                // Reusing the strikethrough-unfavorite asset for now.
+                                Image(
+                                    painter = painterResource(
+                                        id = R.drawable.ic_object_action_unfavorite
+                                    ),
+                                    contentDescription = "Unfavorite icon",
+                                    modifier = Modifier.size(24.dp),
+                                    colorFilter = ColorFilter.tint(
+                                        colorResource(id = R.color.text_primary)
+                                    )
+                                )
+                            }
+                        }
+                    )
+                    if (index < menuItems.lastIndex) {
+                        Divider(
+                            thickness = 0.5.dp,
+                            color = colorResource(id = R.color.shape_primary)
+                        )
+                    }
+                }
             }
         }
+    }
+}
+
+/**
+ * DROID-4397: emit a Favorite or Unfavorite menu item for [widget] iff its
+ * source is a concrete real-object link (not a bundled view). Bundled widget
+ * sources (`favorite`, `recent`, `bin`, `allObjects`, `chat`, `personalFavorites`)
+ * aren't individual objects and have no meaningful favorite toggle.
+ */
+private fun MutableList<WidgetMenuItem>.addFavoriteToggleIfObjectBacked(
+    widget: WidgetView,
+    favoriteTargets: Set<Id>
+) {
+    val source: Widget.Source? = when (widget) {
+        is WidgetView.Link -> widget.source
+        is WidgetView.Tree -> widget.source
+        is WidgetView.SetOfObjects -> widget.source
+        is WidgetView.ListOfObjects -> widget.source
+        is WidgetView.Gallery -> widget.source
+        is WidgetView.ChatList -> widget.source
+        else -> null
+    }
+    if (source == null || source is Widget.Source.Bundled || source is Widget.Source.Other) return
+    if (source.id in favoriteTargets) {
+        add(WidgetMenuItem.UnfavoriteObject(widget.id))
+    } else {
+        add(WidgetMenuItem.FavoriteObject(widget.id))
     }
 }
 
@@ -223,8 +333,22 @@ private fun WidgetView.canChangeWidgetType(): Boolean {
 /**
  * Determines which menu items should be shown for this widget.
  * Returns a list of menu items, or an empty list if no menu should be displayed.
+ *
+ * @param canToggleChannelPin DROID-4397: when false, hides [RemoveWidget] for
+ *  widgets in the PINNED section (since RemoveWidget = "Unpin from channel",
+ *  which is Owner/Admin only per spec). Defaults to true so legacy call sites
+ *  keep existing behavior.
+ * @param favoriteTargets DROID-4397: set of object IDs currently in the user's
+ *  personal favorites. If the widget's source is a concrete object (non-bundled)
+ *  whose ID is in the set, the Unfavorite item is emitted; otherwise Favorite.
+ *  Bundled widgets (Favorites, Recent, Bin, All Objects, etc.) don't have a
+ *  real object and get no favorite/unfavorite item. Defaults to [emptySet] so
+ *  legacy call sites keep existing behavior (no favorite toggle).
  */
-fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
+fun WidgetView.getWidgetMenuItems(
+    canToggleChannelPin: Boolean = true,
+    favoriteTargets: Set<Id> = emptySet()
+): List<WidgetMenuItem> {
     val menuItems = when (sectionType) {
         SectionType.UNREAD -> {
             // Unread section widgets have no menu
@@ -232,15 +356,20 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
         }
         SectionType.PINNED -> {
             buildList {
+                // DROID-4397: favorite/unfavorite the underlying object,
+                // available to all roles, for any pinned widget whose source
+                // is a concrete real object. Pin is implicit (widget already
+                // exists in the shared pinned doc).
+                addFavoriteToggleIfObjectBacked(this@getWidgetMenuItems, favoriteTargets)
                 when (this@getWidgetMenuItems) {
                     is WidgetView.AllContent -> {
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.Bin -> {
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.ChatList -> {
                         if (canCreateObjectOfType) {
@@ -249,7 +378,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     WidgetView.EmptyState -> {}
                     is WidgetView.Gallery -> {
@@ -259,13 +388,13 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.Link -> {
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.ListOfObjects -> {
                         if (canCreateObjectOfType) {
@@ -274,7 +403,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.SetOfObjects -> {
                         if (canCreateObjectOfType) {
@@ -283,7 +412,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.SpaceChat -> {}
                     is WidgetView.UnreadChatList -> {
@@ -296,7 +425,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        add(WidgetMenuItem.RemoveWidget)
+                        if (canToggleChannelPin) add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.ObjectTypesGroup -> {
                         // Object types group has no menu - interactions are per-row
@@ -304,11 +433,11 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                     is WidgetView.RecentlyEdited -> {
                         // Recently edited has no menu
                     }
-                    is WidgetView.CreateHome -> {
-                        // No menu for temporary widgets
-                    }
                     is WidgetView.InviteMembers -> {
                         // No menu for temporary widgets
+                    }
+                    is WidgetView.Home -> {
+                        // Home widget uses its own menu composable (HomeWidgetMenu).
                     }
                 }
             }
@@ -323,6 +452,10 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
         }
         SectionType.RECENTLY_EDITED -> {
             // Recently edited widgets menu behavior - TODO: Define menu items
+            emptyList<WidgetMenuItem>()
+        }
+        SectionType.MY_FAVORITES -> {
+            // Personal Favorites widgets have no menu - favorites are managed via the star toggle
             emptyList<WidgetMenuItem>()
         }
         null -> {

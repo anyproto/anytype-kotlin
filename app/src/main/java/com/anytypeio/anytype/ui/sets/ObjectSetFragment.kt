@@ -34,6 +34,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
 import androidx.core.view.children
+import androidx.core.view.isVisible
 import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
@@ -70,7 +71,6 @@ import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
-import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.TypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ObjectSetTitle
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerEditWidget
@@ -100,11 +100,15 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
+import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
+import com.anytypeio.anytype.feature_create_object.ui.CreateObjectSheetHost
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType.Relation.SetQuery
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
@@ -121,6 +125,7 @@ import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
+import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.CollectionAddObjectTypeFragment
@@ -143,6 +148,7 @@ import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_T
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_KEY
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import javax.inject.Inject
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
@@ -154,6 +160,17 @@ open class ObjectSetFragment :
     OnDataViewSelectSourceAction,
     ObjectTypeSelectionListener,
     CollectionObjectTypeSelectionListener {
+
+    private lateinit var createObjectFactory: CreateObjectViewModelFactory
+
+    private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
+    private fun createObjectComponentKey(): String = "object-set-create-object:$ctx"
+
+    // Owned outside the ComposeView's setContent so the first tap isn't lost
+    // while composition is still pending.
+    private val createObjectSheetVisible = androidx.compose.runtime.mutableStateOf(false)
+    private var isSheetHostInstalled = false
 
     // Controls
 
@@ -173,22 +190,22 @@ open class ObjectSetFragment :
         get() = binding.objectHeader.root
 
     private val topBackButton: View
-        get() = binding.topToolbar.root.findViewById(R.id.topBackButton)
+        get() = binding.topToolbar.back
 
     private val topToolbar: ViewGroup
-        get() = binding.topToolbar.root
+        get() = binding.topToolbar
 
     private val topToolbarTitle: TextView
-        get() = binding.topToolbar.root.findViewById(R.id.tvTopToolbarTitle)
+        get() = binding.topToolbar.title
 
     private val topToolbarThreeDotsButton: ViewGroup
-        get() = binding.topToolbar.root.findViewById(R.id.threeDotsButton)
+        get() = binding.topToolbar.menu as ViewGroup
 
     private val topToolbarStatusContainer: View
-        get() = binding.topToolbar.root.findViewById(R.id.statusBadge)
+        get() = binding.topToolbar.status
 
     private val topToolbarThreeDotsIcon: ImageView
-        get() = binding.topToolbar.root.findViewById(R.id.ivThreeDots)
+        get() = binding.topToolbar.menu.findViewById(R.id.ivThreeDots)
 
     private val addNewButton: TextView
         get() = binding.dataViewHeader.addNewButton
@@ -200,7 +217,7 @@ open class ObjectSetFragment :
         get() = binding.dataViewHeader.customizeViewButton
 
     private val menuButton: FrameLayout
-        get() = binding.topToolbar.root.findViewById(R.id.threeDotsButton)
+        get() = binding.topToolbar.menu as FrameLayout
 
     private val featuredRelations: FeaturedRelationGroupWidget
         get() = binding.objectHeader.root.findViewById(R.id.featuredRelationsWidget)
@@ -273,8 +290,12 @@ open class ObjectSetFragment :
         setupWindowInsetAnimation()
 
         setupGridAdapters()
+
+        // DROID-4318: Bottom buttons stay fixed across scrolling. Visibility
+        // is driven by view-state and discussionButtonState, not by scroll.
+        binding.fabCreate.isVisible = true
+
         title.clearFocus()
-        topToolbarTitle.alpha = 0f
         binding.root.setTransitionListener(transitionListener)
 
         addNewButton.setOnClickListener { vm.proceedWithDataViewObjectCreate() }
@@ -298,6 +319,9 @@ open class ObjectSetFragment :
                 }
             }
             subscribe(topBackButton.clicks().throttleFirst()) { vm.onBackButtonClicked() }
+            binding.topToolbar.container.setOnClickListener {
+                WidgetOverlayFragment.show(parentFragmentManager, space)
+            }
             subscribe(menuButton.clicks().throttleFirst()) { vm.onMenuClicked() }
             subscribe(customizeViewButton.clicks().throttleFirst()) { vm.onViewerCustomizeButtonClicked() }
             subscribe(viewerTitle.clicks().throttleFirst()) { vm.onExpandViewerMenuClicked() }
@@ -325,34 +349,21 @@ open class ObjectSetFragment :
 
             subscribe(binding.bottomPanel.root.touches()) { swipeDetector.onTouchEvent(it) }
 
-            subscribe(
-                binding.bottomToolbar.shareClicks().throttleFirst()
-            ) { vm.onShareButtonClicked() }
+            // DROID-4318: Two-button bottom layout — Discussion (left) +
+            // Create (right) — mirrors the editor. Buttons stay fixed at
+            // all times; visibility comes from VM state, not scroll.
+            subscribe(binding.fabCreate.clicks().throttleFirst()) {
+                showCreateObjectSheet()
+            }
 
-            subscribe(
-                binding.bottomToolbar.searchClicks().throttleFirst()
-            ) { vm.onSearchButtonClicked() }
+            subscribe(binding.discussionButton.clicks().throttleFirst()) {
+                vm.onDiscussionButtonClicked()
+            }
 
-            subscribe(
-                binding.bottomToolbar.homeClicks().throttleFirst()
-            ) { vm.onHomeButtonClicked() }
-
-            subscribe(
-                binding.bottomToolbar.chatClicks().throttleFirst()
-            ) { vm.onHomeButtonClicked() }
-
-            subscribe(
-                binding.bottomToolbar.addDocClicks().throttleFirst()
-            ) { vm.onAddNewDocumentClicked() }
-
-            binding
-                .bottomToolbar
-                .binding
-                .btnAddDoc
-                .longClicks(withHaptic = true)
-                .onEach {
-                    val dialog = ObjectTypeSelectionFragment.new(space = space)
-                    dialog.show(childFragmentManager, "set-create-object-of-type-dialog")
+            vm.discussionButtonState
+                .onEach { state ->
+                    binding.discussionButton.isVisible =
+                        state !is ObjectSetViewModel.DiscussionButtonState.Hidden
                 }
                 .launchIn(lifecycleScope)
         }
@@ -509,9 +520,10 @@ open class ObjectSetFragment :
     }
 
     private fun setupWindowInsetAnimation() {
-        binding.bottomToolbarBox.syncTranslationWithImeVisibility(
-            dispatchMode = DISPATCH_MODE_STOP
-        )
+        // DROID-4318: `bottomToolbarBox` removed in favour of the two
+        // floating action buttons. The object-set screen has no inline IME
+        // text input near the FABs, so we don't sync their translation to
+        // the keyboard — they're allowed to be covered if an IME appears.
         title.syncFocusWithImeVisibility()
         binding.viewerEditWidget.syncTranslationWithImeVisibility(
             dispatchMode = DISPATCH_MODE_STOP
@@ -591,7 +603,7 @@ open class ObjectSetFragment :
     }
 
     private fun setStatus(status: SpaceSyncAndP2PStatusState?) {
-        binding.topToolbar.root.findViewById<StatusBadgeWidget>(R.id.statusBadge).bind(status)
+        binding.topToolbar.status.bind(status)
         topToolbarStatusContainer.setOnClickListener {
             vm.onSyncStatusBadgeClicked()
         }
@@ -955,7 +967,15 @@ open class ObjectSetFragment :
                 title.setText(header.title.text)
             }
         }
-        binding.topToolbar.root.findViewById<TextView>(R.id.tvTopToolbarTitle).text = header.title.text
+        binding.topToolbar.title.text =
+            header.title.text.ifBlank { getString(R.string.untitled) }
+
+        // Mirror the body header icon into the top-bar pill so the user has a
+        // persistent, visually anchored tap target for the widget overlay.
+        // The resolved icon already includes the object-type fallback when no
+        // custom emoji/image is set, so it can always be displayed.
+        binding.topToolbar.icon.setIcon(header.title.icon)
+        binding.topToolbar.icon.visible()
 
         binding.objectHeader.root.findViewById<ViewGroup>(R.id.docEmojiIconContainer).apply {
             if (header.title.emoji != null) visible() else gone()
@@ -1113,7 +1133,7 @@ open class ObjectSetFragment :
     }
 
     private fun onCoverRemoved() {
-        topToolbarThreeDotsButton.background = null
+        topToolbarThreeDotsButton.setBackgroundResource(R.drawable.bg_nav_circular_button)
         topToolbarThreeDotsIcon.imageTintList = null
         topToolbarStatusContainer.background = null
     }
@@ -1416,7 +1436,6 @@ open class ObjectSetFragment :
         override fun onTransitionCompleted(motionLayout: MotionLayout?, id: Int) {
             if (id == R.id.start) {
                 title.pauseTextWatchers { title.enableEditMode() }
-                topToolbarTitle.animate().alpha(0f).setDuration(DEFAULT_ANIM_DURATION).start()
                 topToolbarThreeDotsButton.apply {
                     if (background != null) {
                         background?.alpha = DRAWABLE_ALPHA_FULL
@@ -1433,8 +1452,7 @@ open class ObjectSetFragment :
             }
             if (id == R.id.end) {
                 title.pauseTextWatchers { title.enableReadMode() }
-                topToolbarTitle.animate().alpha(1f).setDuration(DEFAULT_ANIM_DURATION).start()
-                binding.topToolbar.root.findViewById<ImageView>(R.id.ivThreeDots).apply {
+                topToolbarThreeDotsIcon.apply {
                     imageTintList = null
                 }
                 topToolbarThreeDotsButton.apply {
@@ -1452,11 +1470,21 @@ open class ObjectSetFragment :
 
         title.addTextChangedListener(titleTextWatcher)
 
-        vm.navPanelState.onEach {
-            if (hasBinding) {
-                binding.bottomToolbar.setState(it)
-            }
-        }.launchIn(lifecycleScope)
+        // fabCreate stays visible. NavPanelState only mirrors the enabled
+        // flag here (read-only contexts grey the button out).
+        vm.navPanelState
+            .distinctUntilChanged()
+            .onEach { state ->
+                if (hasBinding) {
+                    // Mirror NavPanelState.Default.isCreateEnabled into
+                    // fabCreate so disabled contexts (read-only, etc.) still
+                    // grey the button out.
+                    val isCreateEnabled =
+                        (state as? NavPanelState.Default)?.isCreateEnabled == true
+                    binding.fabCreate.isEnabled = isCreateEnabled
+                    binding.fabCreate.alpha = if (isCreateEnabled) 1f else 0.5f
+                }
+            }.launchIn(lifecycleScope)
 
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header) { header ->
@@ -1513,6 +1541,7 @@ open class ObjectSetFragment :
 
     override fun onDestroyView() {
         viewerGridAdapter.clear()
+        isSheetHostInstalled = false
         super.onDestroyView()
     }
 
@@ -1640,6 +1669,30 @@ open class ObjectSetFragment :
         }
     }
 
+    private fun installCreateObjectSheetHost() {
+        if (isSheetHostInstalled) return
+        val composeView = binding.createObjectSheetHost
+        composeView.setViewCompositionStrategy(
+            androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+        )
+        composeView.setContent {
+            CreateObjectSheetHost(
+                vm = createObjectVm,
+                visible = createObjectSheetVisible.value,
+                onDismiss = { createObjectSheetVisible.value = false },
+                onCreateObjectOfType = { objType ->
+                    vm.onAddNewDocumentClicked(objType = objType)
+                }
+            )
+        }
+        isSheetHostInstalled = true
+    }
+
+    private fun showCreateObjectSheet() {
+        installCreateObjectSheetHost()
+        createObjectSheetVisible.value = true
+    }
+
     override fun injectDependencies() {
         componentManager().objectSetComponent
             .get(
@@ -1650,10 +1703,20 @@ open class ObjectSetFragment :
                 )
             )
             .inject(this)
+        val createObjectVmParams = NewCreateObjectViewModel.VmParams(
+            spaceId = SpaceId(space),
+            showAttachObject = false,
+            showMediaSection = true
+        )
+        createObjectFactory = componentManager()
+            .createObjectFeatureComponent
+            .get(key = createObjectComponentKey(), param = createObjectVmParams)
+            .viewModelFactory()
     }
 
     override fun releaseDependencies() {
         componentManager().objectSetComponent.release(ctx)
+        componentManager().createObjectFeatureComponent.release(createObjectComponentKey())
     }
 
     private fun showObjectHeaderContextMenu(

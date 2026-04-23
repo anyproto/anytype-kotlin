@@ -231,6 +231,16 @@ interface MiddlewareService {
     fun fileDrop(request: Rpc.File.Drop.Request): Rpc.File.Drop.Response
 
     @Throws(Exception::class)
+    fun fileSetAutoDownload(
+        request: Rpc.File.SetAutoDownload.Request
+    ): Rpc.File.SetAutoDownload.Response
+
+    @Throws(Exception::class)
+    fun fileAutoDownloadSetLimit(
+        request: Rpc.File.AutoDownloadSetLimit.Request
+    ): Rpc.File.AutoDownloadSetLimit.Response
+
+    @Throws(Exception::class)
     fun processCancel(request: Rpc.Process.Cancel.Request): Rpc.Process.Cancel.Response
 
     //endregion

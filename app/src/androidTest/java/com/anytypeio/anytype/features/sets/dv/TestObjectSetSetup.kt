@@ -356,7 +356,8 @@ abstract class TestObjectSetSetup {
             emojiProvider = mock(),
             emojiSuggester = mock(),
             stringResourceProvider = stringResourceProvider,
-            getDefaultObjectType = getDefaultObjectType
+            getDefaultObjectType = getDefaultObjectType,
+            addDiscussion = mock()
         )
 
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())

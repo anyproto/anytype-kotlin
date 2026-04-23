@@ -121,6 +121,10 @@ sealed class UiSpaceSettingsItem {
     data class DefaultObjectType(val id: Id?, val name: String, val icon: ObjectIcon) : UiSpaceSettingsItem() {
         override val key = "default-object-type"
     }
+    data class SpaceHome(val name: String, val icon: ObjectIcon, val isNoHome: Boolean) :
+        UiSpaceSettingsItem() {
+        override val key = "space-home"
+    }
     data class Wallpapers(val wallpaper: WallpaperResult, val spaceIconView: SpaceIconView) : UiSpaceSettingsItem() {
         override val key = "wallpapers"
     }

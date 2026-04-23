@@ -252,6 +252,19 @@ class CreateSpaceViewModel(
         spaceManager.set(space = spaceId).fold(
             onSuccess = { _ ->
                 saveCurrentSpace.async(params = SaveCurrentSpace.Params(SpaceId(spaceId)))
+                // DROID-4469: this flow serves PERSONAL and GROUP channels only. 1-on-1
+                // channels are created through a separate path and must never reach the
+                // homepage picker. Log if that assumption is ever violated.
+                if (vmParams.channelType !in setOf(
+                        ChannelCreationType.PERSONAL,
+                        ChannelCreationType.GROUP
+                    )
+                ) {
+                    Timber.w(
+                        "DROID-4469 invariant broken: homepage picker requested for channelType=%s",
+                        vmParams.channelType
+                    )
+                }
                 commands.emit(
                     Command.SwitchSpaceWithHomepagePicker(
                         space = Space(spaceId)

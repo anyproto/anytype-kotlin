@@ -607,6 +607,10 @@ class ObjectTypeViewModel(
                 }
             }
 
+            TypeEvent.OnTopBarTitleClick -> {
+                // Handled by the hosting screen (opens the widgets overlay).
+            }
+
             is TypeEvent.OnTemplateMenuClick -> proceedWithTemplateMenuClick(event)
 
             TypeEvent.OnTemplatesModalListDismiss -> {

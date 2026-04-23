@@ -12,6 +12,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.core_utils.ext.typeOf
@@ -208,13 +210,18 @@ fun title(
     ctx: Id,
     coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
-    details: ObjectViewDetails
+    details: ObjectViewDetails,
+    objType: ObjectWrapper.Type? = null
 ): BlockView.Title.Basic {
     val wrapper = details.getObject(ctx)
     val coverContainer = BasicObjectCoverWrapper(wrapper).getCover(
         urlBuilder = urlBuilder,
         coverImageHashProvider = coverImageHashProvider
     )
+    val resolvedIcon = wrapper?.objectIcon(
+        builder = urlBuilder,
+        objType = objType
+    ) ?: ObjectIcon.None
     return BlockView.Title.Basic(
         id = title.id,
         text = wrapper?.name.orEmpty(),
@@ -222,7 +229,8 @@ fun title(
         image = wrapper?.iconImage?.takeIf { it.isNotBlank() }?.let { urlBuilder.medium(it) },
         coverImage = coverContainer.coverImage,
         coverColor = coverContainer.coverColor,
-        coverGradient = coverContainer.coverGradient
+        coverGradient = coverContainer.coverGradient,
+        icon = resolvedIcon
     )
 }
 

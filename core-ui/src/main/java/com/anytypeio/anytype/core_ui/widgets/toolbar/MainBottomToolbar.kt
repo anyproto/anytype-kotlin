@@ -31,11 +31,6 @@ class MainBottomToolbar @JvmOverloads constructor(
     fun addDocClicks() = binding.btnAddDoc.clicks()
     fun shareClicks() = binding.btnShare.clicks()
     fun homeClicks() = binding.btnHome.clicks()
-    // Retained for callers in EditorFragment / ObjectSetFragment. The underlying
-    // button is no longer made visible by `setState` (chat-style spaces are gone),
-    // so this click source is inert in practice — removing the callers is a
-    // separate cleanup outside this refactor's scope.
-    fun chatClicks() = binding.btnChat.clicks()
 
     fun setState(state: NavPanelState) {
         updateCreate(state)

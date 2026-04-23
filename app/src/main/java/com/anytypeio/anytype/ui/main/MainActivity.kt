@@ -181,6 +181,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 findViewById<android.view.View>(android.R.id.content)
                                     ?.showSnackbar(command.msg, Snackbar.LENGTH_LONG)
                             }
+                            is Command.SnackbarWithOk -> {
+                                findViewById<android.view.View>(android.R.id.content)
+                                    ?.showSnackbar(
+                                        msg = command.msg,
+                                        length = Snackbar.LENGTH_LONG,
+                                        actionMessage = getString(R.string.button_okay),
+                                        action = { _ -> }
+                                    )
+                            }
                             is Command.Notifications -> {
                                 NotificationsFragment().show(supportFragmentManager, null)
                             }
@@ -207,13 +216,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 runCatching {
                                     val controller = findNavController(R.id.fragment)
                                     controller.popBackStack(R.id.vaultScreen, false)
-                                    controller.navigate(
-                                        R.id.actionOpenSpaceFromVault,
-                                        WidgetsScreenFragment.args(
-                                            space = command.space,
-                                            deeplink = null
+                                    if (!command.openTargetDirectly) {
+                                        controller.navigate(
+                                            R.id.actionOpenSpaceFromVault,
+                                            WidgetsScreenFragment.args(
+                                                space = command.space,
+                                                deeplink = null
+                                            )
                                         )
-                                    )
+                                    }
                                     controller.navigate(
                                         R.id.chatScreen,
                                         ChatFragment.args(
@@ -234,13 +245,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         runCatching {
                                             val controller = findNavController(R.id.fragment)
                                             controller.popBackStack(R.id.vaultScreen, false)
-                                            controller.navigate(
-                                                R.id.actionOpenSpaceFromVault,
-                                                WidgetsScreenFragment.args(
-                                                    space = command.space,
-                                                    deeplink = null
+                                            if (!command.openTargetDirectly) {
+                                                controller.navigate(
+                                                    R.id.actionOpenSpaceFromVault,
+                                                    WidgetsScreenFragment.args(
+                                                        space = command.space,
+                                                        deeplink = null
+                                                    )
                                                 )
-                                            )
+                                            }
                                             proceedWithOpenObjectNavigation(command.navigation)
                                         }.onFailure {
                                             Timber.e(it, "Error while switching space when handling deep link to object")
@@ -343,15 +356,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 runCatching {
                                     val controller = findNavController(R.id.fragment)
                                     controller.popBackStack(R.id.vaultScreen, false)
-                                    
-                                    // Navigate to space home
-                                    controller.navigate(
-                                        R.id.actionOpenSpaceFromVault,
-                                        WidgetsScreenFragment.args(
-                                            space = command.space,
-                                            deeplink = null
+
+                                    if (!command.openTargetDirectly) {
+                                        controller.navigate(
+                                            R.id.actionOpenSpaceFromVault,
+                                            WidgetsScreenFragment.args(
+                                                space = command.space,
+                                                deeplink = null
+                                            )
                                         )
-                                    )
+                                    }
                                     // Then navigate to the object based on its layout
                                     proceedWithOpenObjectNavigation(command.navigation)
                                 }.onFailure {
@@ -786,6 +800,31 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     )
                 }.onFailure {
                     Timber.e(it, "Error while navigation")
+                }
+            }
+
+            is NotificationCommand.GoToObject -> {
+                runCatching {
+                    findNavController(R.id.fragment).popBackStack(R.id.vaultScreen, false)
+                    proceedWithOpenObjectNavigation(command.navigation)
+                }.onFailure {
+                    Timber.e(it, "Error while navigation to notification object")
+                }
+            }
+
+            is NotificationCommand.GoToChat -> {
+                runCatching {
+                    val controller = findNavController(R.id.fragment)
+                    controller.popBackStack(R.id.vaultScreen, false)
+                    controller.navigate(
+                        R.id.actionOpenChatFromVault,
+                        ChatFragment.args(
+                            space = command.space.id,
+                            ctx = command.chat
+                        )
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation to notification chat")
                 }
             }
         }

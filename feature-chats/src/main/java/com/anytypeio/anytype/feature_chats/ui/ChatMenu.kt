@@ -36,9 +36,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
+import com.anytypeio.anytype.core_models.multiplayer.SpaceType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.domain.notifications.SpaceNotificationMenuShape
+import com.anytypeio.anytype.domain.notifications.notificationMenuShape
 import com.anytypeio.anytype.feature_chats.R
 
 enum class NotificationSetting {
@@ -173,7 +176,7 @@ fun BoxScope.ChatMenu(
                 DropdownMenuItem(
                     content = {
                         NotificationOptionItem(
-                            text = stringResource(R.string.chat_notifications_receive_all),
+                            text = stringResource(R.string.notification_option_enable),
                             isSelected = currentNotificationSetting == NotificationSetting.ALL
                         )
                     },
@@ -197,7 +200,7 @@ fun BoxScope.ChatMenu(
                 DropdownMenuItem(
                     content = {
                         NotificationOptionItem(
-                            text = stringResource(R.string.chat_notifications_mute_all),
+                            text = stringResource(R.string.notification_option_mute_and_hide),
                             isSelected = currentNotificationSetting == NotificationSetting.MUTE
                         )
                     },
@@ -279,6 +282,7 @@ fun BoxScope.SpaceChatMenu(
     modifier: Modifier = Modifier,
     expanded: Boolean,
     currentNotificationSetting: NotificationSetting,
+    spaceType: SpaceType? = null,
     showInviteMembers: Boolean = false,
     showCopyLink: Boolean = false,
     onDismissRequest: () -> Unit,
@@ -357,39 +361,28 @@ fun BoxScope.SpaceChatMenu(
 
             // Notification sub-items
             if (notificationsExpanded) {
+                val shape = spaceType.notificationMenuShape()
+                val isMuted = when (shape) {
+                    SpaceNotificationMenuShape.ChannelToggle -> currentNotificationSetting == NotificationSetting.MENTIONS
+                    else -> currentNotificationSetting == NotificationSetting.MUTE
+                }
+                val next = when {
+                    isMuted -> NotificationSetting.ALL
+                    shape == SpaceNotificationMenuShape.ChannelToggle -> NotificationSetting.MENTIONS
+                    else -> NotificationSetting.MUTE
+                }
                 DropdownMenuItem(
                     content = {
                         NotificationOptionItem(
-                            text = stringResource(R.string.chat_notifications_receive_all),
-                            isSelected = currentNotificationSetting == NotificationSetting.ALL
+                            text = stringResource(
+                                if (isMuted) com.anytypeio.anytype.localization.R.string.multiplayer_unmute
+                                else com.anytypeio.anytype.localization.R.string.multiplayer_mute
+                            ),
+                            isSelected = false
                         )
                     },
                     onClick = {
-                        onNotificationSettingChanged(NotificationSetting.ALL)
-                    }
-                )
-
-                DropdownMenuItem(
-                    content = {
-                        NotificationOptionItem(
-                            text = stringResource(R.string.notifications_mentions),
-                            isSelected = currentNotificationSetting == NotificationSetting.MENTIONS
-                        )
-                    },
-                    onClick = {
-                        onNotificationSettingChanged(NotificationSetting.MENTIONS)
-                    }
-                )
-
-                DropdownMenuItem(
-                    content = {
-                        NotificationOptionItem(
-                            text = stringResource(R.string.chat_notifications_mute_all),
-                            isSelected = currentNotificationSetting == NotificationSetting.MUTE
-                        )
-                    },
-                    onClick = {
-                        onNotificationSettingChanged(NotificationSetting.MUTE)
+                        onNotificationSettingChanged(next)
                     }
                 )
             }

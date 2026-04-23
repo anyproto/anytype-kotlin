@@ -113,12 +113,12 @@ fun ImageGallery(
             )
         }
 
-        // Archived banner (top-center)
+        // Archived banner (top-center, below top bar)
         if (isCurrentImageArchived) {
             val fullText = stringResource(R.string.media_object_in_bin)
             val restoreText = "Restore it?"
             val startIndex = fullText.indexOf(restoreText)
-            
+
             val annotatedText = buildAnnotatedString {
                 if (startIndex >= 0) {
                     // Add text before "Restore it?"
@@ -135,12 +135,12 @@ fun ImageGallery(
                     append(fullText)
                 }
             }
-            
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
-                    .padding(top = 16.dp)
+                    .padding(top = 56.dp)
                     .background(
                         color = colorResource(R.color.home_screen_toolbar_button),
                         shape = RoundedCornerShape(8.dp)
@@ -171,7 +171,7 @@ fun ImageGallery(
                 Box(
                     modifier = Modifier
                         .systemBarsPadding()
-                        .padding(top = if (isCurrentImageArchived) 48.dp else 48.dp)
+                        .padding(top = if (isCurrentImageArchived) 96.dp else 56.dp)
                         .background(
                             color = colorResource(R.color.home_screen_toolbar_button),
                             shape = RoundedCornerShape(12.dp)
@@ -187,17 +187,16 @@ fun ImageGallery(
             }
         }
 
-        // Toolbar
+        // Top bar
         AnimatedVisibility(
             visible = chromeVisible,
             enter = fadeIn(),
             exit  = fadeOut(),
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 24.dp)
+                .align(Alignment.TopCenter)
+                .systemBarsPadding()
         ) {
-            MediaActionToolbar(
-                modifier = Modifier.padding(bottom = 32.dp),
+            MediaTopBar(
                 isArchived = isCurrentImageArchived,
                 onBackClick = onBackClick,
                 onDownloadClick = {
@@ -205,9 +204,6 @@ fun ImageGallery(
                 },
                 onDeleteClick = {
                     onDeleteClick(images[pagerState.settledPage].obj)
-                },
-                onOpenClick = {
-                    onOpenClick(images[pagerState.settledPage].obj)
                 }
             )
         }
@@ -307,20 +303,44 @@ fun AudioPlayerBox(
     name: String,
     url: String,
     isArchived: Boolean = false,
+    onBackClick: () -> Unit = {},
+    onDownloadClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
     onRestoreClick: () -> Unit = {}
 ) {
+    var chromeVisible by remember { mutableStateOf(true) }
+
     Box(modifier = Modifier.fillMaxSize()) {
         AudioPlayer(
             url = url,
-            name = name
+            name = name,
+            onControlsVisibilityChanged = { chromeVisible = it }
         )
-        
-        // Archived banner (top-center)
+
+        // Top bar
+        AnimatedVisibility(
+            visible = chromeVisible,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .systemBarsPadding()
+        ) {
+            MediaTopBar(
+                title = name,
+                isArchived = isArchived,
+                onBackClick = onBackClick,
+                onDownloadClick = onDownloadClick,
+                onDeleteClick = onDeleteClick
+            )
+        }
+
+        // Archived banner (top-center, below top bar)
         if (isArchived) {
             val fullText = stringResource(R.string.media_object_in_bin)
             val restoreText = "Restore it?"
             val startIndex = fullText.indexOf(restoreText)
-            
+
             val annotatedText = buildAnnotatedString {
                 if (startIndex >= 0) {
                     append(fullText.substring(0, startIndex))
@@ -334,12 +354,12 @@ fun AudioPlayerBox(
                     append(fullText)
                 }
             }
-            
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
-                    .padding(top = 16.dp)
+                    .padding(top = 56.dp)
                     .background(
                         color = colorResource(R.color.home_screen_toolbar_button),
                         shape = RoundedCornerShape(8.dp)
@@ -361,19 +381,42 @@ fun AudioPlayerBox(
 fun VideoPlayerBox(
     url: String,
     isArchived: Boolean = false,
+    onBackClick: () -> Unit = {},
+    onDownloadClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {},
     onRestoreClick: () -> Unit = {}
 ) {
+    var chromeVisible by remember { mutableStateOf(true) }
+
     Box(modifier = Modifier.fillMaxSize()) {
         VideoPlayer(
-            url = url
+            url = url,
+            onControlsVisibilityChanged = { chromeVisible = it }
         )
-        
-        // Archived banner (top-center)
+
+        // Top bar
+        AnimatedVisibility(
+            visible = chromeVisible,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .systemBarsPadding()
+        ) {
+            MediaTopBar(
+                isArchived = isArchived,
+                onBackClick = onBackClick,
+                onDownloadClick = onDownloadClick,
+                onDeleteClick = onDeleteClick
+            )
+        }
+
+        // Archived banner (top-center, below top bar)
         if (isArchived) {
             val fullText = stringResource(R.string.media_object_in_bin)
             val restoreText = "Restore it?"
             val startIndex = fullText.indexOf(restoreText)
-            
+
             val annotatedText = buildAnnotatedString {
                 if (startIndex >= 0) {
                     append(fullText.substring(0, startIndex))
@@ -387,12 +430,12 @@ fun VideoPlayerBox(
                     append(fullText)
                 }
             }
-            
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
-                    .padding(top = 16.dp)
+                    .padding(top = 56.dp)
                     .background(
                         color = colorResource(R.color.home_screen_toolbar_button),
                         shape = RoundedCornerShape(8.dp)
@@ -411,7 +454,10 @@ fun VideoPlayerBox(
 }
 
 @Composable
-private fun VideoPlayer(url: String) {
+private fun VideoPlayer(
+    url: String,
+    onControlsVisibilityChanged: (Boolean) -> Unit = {}
+) {
     val videoViewRef = remember { mutableStateOf<VideoView?>(null) }
     var isPlaying by remember { mutableStateOf(false) }
     var isBuffering by remember { mutableStateOf(true) }
@@ -419,6 +465,10 @@ private fun VideoPlayer(url: String) {
     var currentPosition by remember { mutableStateOf(0) }
     var userSeeking by remember { mutableStateOf(false) }
     var showControls by remember { mutableStateOf(true) }
+
+    LaunchedEffect(showControls) {
+        onControlsVisibilityChanged(showControls)
+    }
 
     // Poll playback progress
     LaunchedEffect(isPlaying, userSeeking) {
@@ -621,7 +671,8 @@ private fun VideoPlayer(url: String) {
 @Composable
 private fun AudioPlayer(
     url: String,
-    name: String
+    name: String,
+    onControlsVisibilityChanged: (Boolean) -> Unit = {}
 ) {
     val videoViewRef = remember { mutableStateOf<VideoView?>(null) }
     var isPlaying by remember { mutableStateOf(false) }
@@ -630,6 +681,18 @@ private fun AudioPlayer(
     var currentPosition by remember { mutableStateOf(0) }
     var userSeeking by remember { mutableStateOf(false) }
     var showControls by remember { mutableStateOf(true) }
+
+    LaunchedEffect(showControls) {
+        onControlsVisibilityChanged(showControls)
+    }
+
+    // Auto-hide controls after delay (but not while user is seeking)
+    LaunchedEffect(showControls, isPlaying, userSeeking) {
+        if (showControls && isPlaying && !userSeeking) {
+            delay(DELAY_BEFORE_HIDING_CONTROLS)
+            if (!userSeeking) showControls = false
+        }
+    }
 
     // Poll playback progress
     LaunchedEffect(isPlaying, userSeeking) {
@@ -701,7 +764,7 @@ private fun AudioPlayer(
 
         // Overlay controls with fade-in/out
         AnimatedVisibility(
-            visible = true,
+            visible = showControls,
             enter = fadeIn(),
             exit = fadeOut()
         ) {

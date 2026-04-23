@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -161,4 +162,5 @@ interface AllContentDependencies : ComponentDependencies {
     fun searchObjects(): SearchObjects
     fun fieldsProvider(): FieldParser
     fun spaceViews(): SpaceViewSubscriptionContainer
+    fun provideSpaceSyncAndP2PStatusProvider(): SpaceSyncAndP2PStatusProvider
 }

@@ -48,6 +48,10 @@ import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.favorites.AddPersonalFavorite
+import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
+import com.anytypeio.anytype.domain.favorites.RemovePersonalFavorite
+import com.anytypeio.anytype.domain.favorites.ReorderPersonalFavorites
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -90,6 +94,8 @@ import com.anytypeio.anytype.domain.widgets.UpdateObjectTypesOrderIds
 import com.anytypeio.anytype.domain.widgets.ObserveWidgetSections
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
+import com.anytypeio.anytype.domain.device.FileSharer
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.core_models.WidgetSections
@@ -169,6 +175,18 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var interceptEvents: InterceptEvents
+
+    @Mock
+    lateinit var observePersonalFavoriteTargets: ObservePersonalFavoriteTargets
+
+    @Mock
+    lateinit var addPersonalFavorite: AddPersonalFavorite
+
+    @Mock
+    lateinit var removePersonalFavorite: RemovePersonalFavorite
+
+    @Mock
+    lateinit var reorderPersonalFavorites: ReorderPersonalFavorites
 
     @Mock
     lateinit var openObject: OpenObject
@@ -3009,6 +3027,12 @@ class HomeScreenViewModelTest {
     @Mock
     private lateinit var setHomepage: SetHomepage
 
+    @Mock
+    private lateinit var uploadFile: UploadFile
+
+    @Mock
+    private lateinit var fileSharer: FileSharer
+
     //region Recently Edited Section Tests
 
     @Test
@@ -3163,6 +3187,10 @@ class HomeScreenViewModelTest {
     private fun buildViewModel() = HomeScreenViewModel(
         vmParams = HomeScreenVmParams(spaceId = spaceId),
         interceptEvents = interceptEvents,
+        observePersonalFavoriteTargets = observePersonalFavoriteTargets,
+        addPersonalFavorite = addPersonalFavorite,
+        removePersonalFavorite = removePersonalFavorite,
+        reorderPersonalFavorites = reorderPersonalFavorites,
         createWidget = createWidget,
         deleteWidget = deleteWidget,
         updateWidget = updateWidget,
@@ -3224,7 +3252,9 @@ class HomeScreenViewModelTest {
         stringResourceProvider = stringResourceProvider,
         updateObjectTypesOrderIds = updateObjectTypesOrderIds,
         setSpaceNotificationMode = setSpaceNotificationMode,
-        setHomepage = setHomepage
+        setHomepage = setHomepage,
+        uploadFile = uploadFile,
+        fileSharer = fileSharer
     )
 
     companion object {

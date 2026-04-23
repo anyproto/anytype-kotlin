@@ -35,14 +35,17 @@ class LinkWidgetContainer(
                     val state = preview?.state
 
                     // Calculate notification state for background color
-                    val notificationState = spaceViews
+                    val chatSpaceView = spaceViews
                         .firstOrNull { it.targetSpaceId == space.id }
-                        ?.let { spaceView ->
-                            NotificationStateCalculator.calculateChatNotificationState(
-                                chatSpace = spaceView,
-                                chatId = source.obj.id
-                            )
-                        }
+                    val notificationState = chatSpaceView?.let { spaceView ->
+                        NotificationStateCalculator.calculateChatNotificationState(
+                            chatSpace = spaceView,
+                            chatId = source.obj.id
+                        )
+                    }
+                    val isMutedAndHidden = chatSpaceView?.let {
+                        NotificationStateCalculator.isMutedAndHidden(it, source.obj.id)
+                    } ?: false
 
                     WidgetView.Link(
                         id = widget.id,
@@ -56,7 +59,8 @@ class LinkWidgetContainer(
                                 unreadMessageCount = state.unreadMessages?.counter ?: 0
                             )
                         } else null,
-                        notificationState = notificationState
+                        notificationState = notificationState,
+                        isMutedAndHidden = isMutedAndHidden
                     )
                 }
         } else {

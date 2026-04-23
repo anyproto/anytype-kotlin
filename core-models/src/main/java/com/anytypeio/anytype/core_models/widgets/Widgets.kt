@@ -7,6 +7,7 @@ object BundledWidgetSourceIds {
     const val BIN = "bin"
     const val ALL_OBJECTS = "allObjects"
     const val CHAT = "chat"
+    const val PERSONAL_FAVORITES = "personalFavorites"
 
-    val ids = listOf(FAVORITE, RECENT, RECENT_LOCAL, BIN, ALL_OBJECTS, CHAT)
+    val ids = listOf(FAVORITE, RECENT, RECENT_LOCAL, BIN, ALL_OBJECTS, CHAT, PERSONAL_FAVORITES)
 }

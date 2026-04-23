@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionMana
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
@@ -74,6 +75,7 @@ class WidgetContainerDelegateImpl(
     private val dateProvider: DateProvider,
     private val stringResourceProvider: StringResourceProvider,
     private val dispatchers: AppCoroutineDispatchers,
+    private val observePersonalFavoriteTargets: ObservePersonalFavoriteTargets,
     private val observeCurrentWidgetView: (Id) -> Flow<ViewId?>,
     private val isWidgetCollapsed: (Widget, Set<Id>, Set<String>) -> Boolean
 ) : WidgetContainerDelegate {
@@ -93,7 +95,21 @@ class WidgetContainerDelegateImpl(
             is Widget.AllObjects -> createAllObjectsContainer(widget)
             is Widget.Bin -> createBinContainer(widget)
             is Widget.ObjectTypesGroup -> createObjectTypesGroupContainer(widget, currentlyDisplayedViews)
+            is Widget.PersonalFavorites -> createPersonalFavoritesContainer(widget)
         }
+    }
+
+    private fun createPersonalFavoritesContainer(widget: Widget.PersonalFavorites): WidgetContainer {
+        return PersonalFavoritesWidgetContainer(
+            space = spaceId,
+            widget = widget,
+            observePersonalFavoriteTargets = observePersonalFavoriteTargets,
+            storage = storelessSubscriptionContainer,
+            urlBuilder = urlBuilder,
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes,
+            isSessionActiveFlow = isSessionActive
+        )
     }
 
     private fun createChatContainer(widget: Widget.Chat): WidgetContainer {

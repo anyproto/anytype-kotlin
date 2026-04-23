@@ -77,7 +77,7 @@
     <string name="remove_image">Remove image</string>
     <string name="delete_space">Delete space</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
-    <string name="in_order_to_save">In order to save space on your local device, you can offload all your files to our encrypted backup node. The files will be loaded back when you open them.</string>
+    <string name="in_order_to_save">Free up space by offloading files to encrypted backup. They’ll load when you open them.</string>
     <string name="manage_files">Manage files</string>
     <string name="local_storage">Local storage</string>
     <string name="offload_files">Offload files</string>
@@ -94,6 +94,7 @@
     <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="manage_sections_title">Manage sections</string>
     <string name="section_unread">Unread</string>
+    <string name="section_my_favorites">My Favorites</string>
     <string name="section_pinned">Pinned</string>
     <string name="section_objects">Objects</string>
     <string name="section_recently_edited">Recently edited</string>
@@ -964,13 +965,18 @@
     <string name="create_space_space_name">Space name</string>
 
     <!-- Homepage Picker -->
-    <string name="homepage_picker_title">Create Home</string>
-    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_title">Add a Channel Home?</string>
+    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
     <string name="homepage_picker_chat">Chat</string>
     <string name="homepage_picker_page">Page</string>
     <string name="homepage_picker_collection">Collection</string>
-    <string name="homepage_picker_empty">Empty</string>
-    <string name="homepage_picker_later">Later</string>
+    <string name="homepage_picker_continue">Continue</string>
+    <string name="homepage_picker_not_now">Not now</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Home</string>
+    <string name="space_home_no_home_title">No home</string>
+    <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
+    <string name="widget_menu_change_home">Change Home</string>
     <string name="invite_members_widget_title">Invite Members</string>
     <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
 
@@ -1211,7 +1217,7 @@
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">This is your Key</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you responsible for your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Show my Key</string>
     <string name="onboarding_tap_to_reveal">Reveal and Copy</string>
     <string name="onboarding_key_skip">Skip</string>
@@ -1233,7 +1239,7 @@
     <string name="onboarding_recovery_phrase_description">Your key is represented by a recovery phrase — 12 random words that generate your vault on this device.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Whoever has the key, has access</string>
     <string name="onboarding_recovery_phrase_description_2">Anyone who knows these words can access your vault. Right now, you are the only person in the world who knows them.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Only you responsible for it</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
     <string name="onboarding_recovery_phrase_description_3">All computational resources on Earth are not enough to break in. If you lose your key, it cannot be recovered. Store it somewhere safe — in a password manager or written down on paper.</string>
 
     <string name="onboarding_recovery_phrase_description_4">All computational resources on Earth are not enough to break in. If you lose it, it cannot be recovered. So, store it somewhere safe!</string>
@@ -2067,6 +2073,10 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Upload</string>
     <string name="chat_attach">Attach</string>
+    <string name="upload_success_snackbar_image">New image added</string>
+    <string name="upload_success_snackbar_video">New video added</string>
+    <string name="upload_success_snackbar_file">New file added</string>
+    <string name="upload_success_snackbar_mixed">New files added</string>
     <string name="chats_reply">Reply</string>
     <string name="chats_add_reaction">Add Reaction</string>
 
@@ -2330,6 +2340,9 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_all_short">All</string>
     <string name="notifications_mentions_short">Mentions</string>
     <string name="notifications_disable_short">Disable</string>
+    <string name="notification_option_enable">Enable</string>
+    <string name="notification_option_mute_and_hide">Mute and hide</string>
+    <string name="notification_option_disabled">Disabled</string>
 
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
@@ -2397,6 +2410,8 @@ Please provide specific details of your needs here.</string>
     </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="private_channel">Direct channel</string>
+    <string name="space_header_private_channel">Private channel</string>
+    <string name="space_header_group_channel">Group channel</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
 
     <string name="publish_to_web">Publish to Web</string>
@@ -2415,6 +2430,7 @@ Please provide specific details of your needs here.</string>
 
     <string name="widgets_section_pinned">Pinned</string>
     <string name="widgets_section_unread">Unread</string>
+    <string name="widgets_section_my_favorites">My Favorites</string>
     <string name="widgets_section_object_types">Objects</string>
     <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">New</string>
@@ -2511,5 +2527,19 @@ Please provide specific details of your needs here.</string>
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
     <string name="chats_search_close_content_description">Close search</string>
+
+    <!-- DROID-4358 Offline Downloads settings -->
+    <string name="offline_downloads_section_title">Offline access</string>
+    <string name="offline_downloads_title">Offline Downloads</string>
+    <string name="offline_downloads_subtitle">Auto sync files up to a selected size</string>
+    <string name="offline_downloads_use_cellular">Use Cellular Data</string>
+    <string name="offline_downloads_value_off">Off</string>
+    <string name="offline_downloads_value_20mb">20 MB</string>
+    <string name="offline_downloads_value_100mb">100 MB</string>
+    <string name="offline_downloads_value_250mb">250 MB</string>
+    <string name="offline_downloads_value_1gb">1 GB</string>
+    <string name="offline_downloads_value_unlimited">Unlimited</string>
+    <string name="device_storage_used">Device storage used</string>
+
 
 </resources>

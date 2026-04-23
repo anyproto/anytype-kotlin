@@ -11,10 +11,12 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.misc.navigation
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -33,6 +35,7 @@ import com.anytypeio.anytype.feature_allcontent.models.UiContentState
 import com.anytypeio.anytype.feature_allcontent.models.UiItemsState
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiSnackbarState
+import com.anytypeio.anytype.feature_allcontent.models.UiSyncStatusBadgeState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.feature_allcontent.models.createSubscriptionParams
@@ -59,6 +62,9 @@ import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
+import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
+import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
+import com.anytypeio.anytype.presentation.sync.updateStatus
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -107,7 +113,8 @@ class AllContentViewModel(
     private val removeObjectsFromWorkspace: RemoveObjectsFromWorkspace,
     private val userPermissionProvider: UserPermissionProvider,
     private val fieldParser: FieldParser,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val searchResultIds = MutableStateFlow<List<Id>>(emptyList())
@@ -119,6 +126,10 @@ class AllContentViewModel(
     val uiContentState = MutableStateFlow<UiContentState>(UiContentState.Idle())
     val uiBottomMenu = MutableStateFlow<AllContentBottomMenu>(AllContentBottomMenu())
     val uiSnackbarState = MutableStateFlow<UiSnackbarState>(UiSnackbarState.Hidden)
+    val uiSyncStatusBadgeState =
+        MutableStateFlow<UiSyncStatusBadgeState>(UiSyncStatusBadgeState.Hidden)
+    val uiSyncStatusWidgetState =
+        MutableStateFlow<SyncStatusWidgetState>(SyncStatusWidgetState.Hidden)
 
     val commands = MutableSharedFlow<Command>()
 
@@ -159,6 +170,20 @@ class AllContentViewModel(
         setupSearchStateFlow()
         setupMenuFlow()
         proceedWithObservingPermissions()
+        proceedWithObservingSyncStatus()
+    }
+
+    private fun proceedWithObservingSyncStatus() {
+        viewModelScope.launch {
+            spaceSyncAndP2PStatusProvider
+                .observe()
+                .catch { Timber.e(it, "Error while observing sync status") }
+                .collect { syncAndP2pState ->
+                    uiSyncStatusBadgeState.value = UiSyncStatusBadgeState.Visible(syncAndP2pState)
+                    uiSyncStatusWidgetState.value =
+                        uiSyncStatusWidgetState.value.updateStatus(syncAndP2pState)
+                }
+        }
     }
 
     private fun proceedWithObservingPermissions() {
@@ -727,6 +752,22 @@ class AllContentViewModel(
         }
     }
 
+    fun onTopBarTitleClicked() {
+        Timber.d("onTopBarTitleClicked")
+        viewModelScope.launch {
+            commands.emit(Command.OpenWidgets)
+        }
+    }
+
+    fun onSyncStatusBadgeClicked(status: SpaceSyncAndP2PStatusState) {
+        Timber.d("onSyncStatusBadgeClicked: $status")
+        uiSyncStatusWidgetState.value = status.toSyncStatusWidgetState()
+    }
+
+    fun onSyncStatusDismiss() {
+        uiSyncStatusWidgetState.value = SyncStatusWidgetState.Hidden
+    }
+
     fun onCreateObjectOfTypeClicked(objType: ObjectWrapper.Type) {
         proceedWithCreateDoc(objType)
     }
@@ -902,6 +943,7 @@ class AllContentViewModel(
         data object OpenGlobalSearch : Command()
         data object ExitToSpaceHome : Command()
         data object Back : Command()
+        data object OpenWidgets : Command()
     }
 
     companion object {

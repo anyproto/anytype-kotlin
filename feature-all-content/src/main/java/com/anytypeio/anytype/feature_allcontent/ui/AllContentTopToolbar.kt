@@ -2,9 +2,12 @@ package com.anytypeio.anytype.feature_allcontent.ui
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -15,6 +18,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,21 +30,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.DVSortType
+import com.anytypeio.anytype.core_models.multiplayer.P2PStatusUpdate
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncError
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncNetwork
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.extensions.bouncingClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
-import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.syncstatus.StatusBadge
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
 import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
+import com.anytypeio.anytype.feature_allcontent.models.UiSyncStatusBadgeState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
@@ -51,24 +63,36 @@ import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 @Composable
 fun AllContentTopBarContainer(
     titleState: UiTitleState,
+    uiSyncStatusBadgeState: UiSyncStatusBadgeState,
     uiMenuState: UiMenuState,
+    onBackClick: () -> Unit,
+    onTitleClick: () -> Unit,
+    onSyncStatusClick: (SpaceSyncAndP2PStatusState) -> Unit,
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (ObjectsListSort) -> Unit,
     onBinClick: () -> Unit,
-    onBackClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp)
+            .height(44.dp)
     ) {
+        // Back pill — circular button at start.
         Box(
             modifier = Modifier
-                .width(56.dp)
-                .fillMaxHeight()
-                .noRippleThrottledClickable {
-                    onBackClick()
-                },
+                .align(Alignment.CenterStart)
+                .padding(start = 16.dp)
+                .size(44.dp)
+                .shadow(
+                    elevation = 20.dp,
+                    shape = CircleShape,
+                    clip = false
+                )
+                .background(
+                    color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.navigation_panel),
+                    shape = CircleShape
+                )
+                .noRippleThrottledClickable { onBackClick() },
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -78,20 +102,78 @@ fun AllContentTopBarContainer(
             )
         }
 
-        AllContentTitle(
+        // Center title pill — tapping opens the widgets overlay.
+        Row(
             modifier = Modifier
-                .wrapContentSize()
-                .align(Alignment.Center),
-            state = titleState
-        )
+                .align(Alignment.Center)
+                .fillMaxWidth()
+                .padding(start = 64.dp, end = 120.dp)
+                .fillMaxHeight()
+                .shadow(
+                    elevation = 20.dp,
+                    shape = RoundedCornerShape(22.dp),
+                    clip = false
+                )
+                .background(
+                    color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.navigation_panel),
+                    shape = RoundedCornerShape(22.dp)
+                )
+                .noRippleThrottledClickable { onTitleClick() }
+                .padding(horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = when (titleState) {
+                    UiTitleState.AllContent -> stringResource(id = R.string.all_content_title_all_content)
+                    UiTitleState.OnlyUnlinked -> stringResource(id = R.string.all_content_title_only_unlinked)
+                },
+                style = PreviewTitle2Regular,
+                color = colorResource(id = R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
 
-        AllContentMenuButton(
-            modifier = Modifier.align(Alignment.CenterEnd),
-            onModeClick = onModeClick,
-            onSortClick = onSortClick,
-            onBinClick = onBinClick,
-            uiMenuState = uiMenuState,
-        )
+        // Trailing — optional sync badge pill + menu pill.
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .padding(end = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            if (uiSyncStatusBadgeState is UiSyncStatusBadgeState.Visible) {
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .shadow(
+                            elevation = 20.dp,
+                            shape = CircleShape,
+                            clip = false
+                        )
+                        .background(
+                            color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.navigation_panel),
+                            shape = CircleShape
+                        )
+                        .noRippleThrottledClickable {
+                            onSyncStatusClick(uiSyncStatusBadgeState.status)
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    StatusBadge(
+                        status = uiSyncStatusBadgeState.status,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
+            AllContentMenuButton(
+                uiMenuState = uiMenuState,
+                onModeClick = onModeClick,
+                onSortClick = onSortClick,
+                onBinClick = onBinClick
+            )
+        }
     }
 }
 
@@ -99,7 +181,19 @@ fun AllContentTopBarContainer(
 @Composable
 private fun AllContentTopBarContainerPreview() {
     AllContentTopBarContainer(
-        titleState = UiTitleState.OnlyUnlinked,
+        titleState = UiTitleState.AllContent,
+        uiSyncStatusBadgeState = UiSyncStatusBadgeState.Visible(
+            status = SpaceSyncAndP2PStatusState.Success(
+                spaceSyncUpdate = SpaceSyncUpdate.Update(
+                    id = "1",
+                    status = SpaceSyncStatus.SYNCING,
+                    network = SpaceSyncNetwork.ANYTYPE,
+                    error = SpaceSyncError.NULL,
+                    syncingObjectsCounter = 2
+                ),
+                p2PStatusUpdate = P2PStatusUpdate.Initial
+            )
+        ),
         uiMenuState = UiMenuState.Visible(
             mode = listOf(
                 AllContentMenuMode.AllContent(isSelected = true),
@@ -126,45 +220,35 @@ private fun AllContentTopBarContainerPreview() {
                 ),
             )
         ),
+        onBackClick = {},
+        onTitleClick = {},
+        onSyncStatusClick = {},
         onModeClick = {},
         onSortClick = {},
-        onBinClick = {},
-        onBackClick = {}
+        onBinClick = {}
     )
 }
-//endregion
 
-//region AllContentTitle
+@DefaultPreviews
 @Composable
-fun AllContentTitle(modifier: Modifier, state: UiTitleState) {
-    when (state) {
-        UiTitleState.AllContent -> {
-            Text(
-                modifier = modifier
-                    .wrapContentSize(),
-                text = stringResource(id = R.string.all_content_title_all_content),
-                style = Title1,
-                color = colorResource(id = R.color.text_primary)
-            )
-        }
-
-        UiTitleState.OnlyUnlinked -> {
-            Text(
-                modifier = modifier
-                    .wrapContentSize(),
-                text = stringResource(id = R.string.all_content_title_only_unlinked),
-                style = Title1,
-                color = colorResource(id = R.color.text_primary)
-            )
-        }
-    }
+private fun AllContentTopBarContainerHiddenSyncPreview() {
+    AllContentTopBarContainer(
+        titleState = UiTitleState.OnlyUnlinked,
+        uiSyncStatusBadgeState = UiSyncStatusBadgeState.Hidden,
+        uiMenuState = UiMenuState.Hidden,
+        onBackClick = {},
+        onTitleClick = {},
+        onSyncStatusClick = {},
+        onModeClick = {},
+        onSortClick = {},
+        onBinClick = {}
+    )
 }
 //endregion
 
 //region AllContentMenuButton
 @Composable
 fun AllContentMenuButton(
-    modifier: Modifier,
     uiMenuState: UiMenuState,
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (ObjectsListSort) -> Unit,
@@ -173,34 +257,46 @@ fun AllContentMenuButton(
 
     var isMenuExpanded by remember { mutableStateOf(false) }
 
-    Image(
-        modifier = modifier
-            .padding(end = 12.dp)
-            .size(32.dp)
-            .bouncingClickable { isMenuExpanded = true },
-        painter = painterResource(id = R.drawable.ic_space_list_dots),
-        contentDescription = "Menu icon",
-        contentScale = ContentScale.Inside
-    )
-    if (uiMenuState is UiMenuState.Visible) {
-        DropdownMenu(
-            modifier = Modifier.width(252.dp),
-            expanded = isMenuExpanded,
-            onDismissRequest = { isMenuExpanded = false },
-            shape = RoundedCornerShape(size = 16.dp),
-            containerColor = colorResource(id = R.color.background_primary),
-            shadowElevation = 5.dp,
-            border = BorderStroke(
-                width = 0.5.dp,
-                color = colorResource(id = R.color.background_secondary)
+    Box(
+        modifier = Modifier
+            .size(44.dp)
+            .shadow(
+                elevation = 20.dp,
+                shape = CircleShape,
+                clip = false
             )
-        ) {
-            AllContentMenu(
-                uiMenuState = uiMenuState,
-                onModeClick = onModeClick,
-                onSortClick = onSortClick,
-                onBinClick = onBinClick
+            .background(
+                color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.navigation_panel),
+                shape = CircleShape
             )
+            .noRippleThrottledClickable { isMenuExpanded = true },
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            modifier = Modifier.size(24.dp),
+            painter = painterResource(id = R.drawable.ic_space_list_dots),
+            contentDescription = stringResource(id = R.string.more)
+        )
+        if (uiMenuState is UiMenuState.Visible) {
+            DropdownMenu(
+                modifier = Modifier.width(252.dp),
+                expanded = isMenuExpanded,
+                onDismissRequest = { isMenuExpanded = false },
+                shape = RoundedCornerShape(size = 16.dp),
+                containerColor = colorResource(id = R.color.background_primary),
+                shadowElevation = 5.dp,
+                border = BorderStroke(
+                    width = 0.5.dp,
+                    color = colorResource(id = R.color.background_secondary)
+                )
+            ) {
+                AllContentMenu(
+                    uiMenuState = uiMenuState,
+                    onModeClick = onModeClick,
+                    onSortClick = onSortClick,
+                    onBinClick = onBinClick
+                )
+            }
         }
     }
 }

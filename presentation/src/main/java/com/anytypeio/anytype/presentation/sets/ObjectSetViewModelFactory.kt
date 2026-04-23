@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
+import com.anytypeio.anytype.domain.discussions.AddDiscussion
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
@@ -95,7 +96,8 @@ class ObjectSetViewModelFactory(
     private val emojiProvider: EmojiProvider,
     private val emojiSuggester: EmojiSuggester,
     private val stringResourceProvider: StringResourceProvider,
-    private val getDefaultObjectType: GetDefaultObjectType
+    private val getDefaultObjectType: GetDefaultObjectType,
+    private val addDiscussion: AddDiscussion
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -146,7 +148,8 @@ class ObjectSetViewModelFactory(
             emojiSuggester = emojiSuggester,
             createBlock = createBlock,
             stringResourceProvider = stringResourceProvider,
-            getDefaultObjectType = getDefaultObjectType
+            getDefaultObjectType = getDefaultObjectType,
+            addDiscussion = addDiscussion
         ) as T
     }
 }

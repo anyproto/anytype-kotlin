@@ -335,4 +335,110 @@ class NotificationStateCalculatorTest {
         assertEquals("Force list should take priority over space default", NotificationState.ALL, result)
     }
 
+    // --- isMutedAndHidden ---
+
+    @Test
+    fun `isMutedAndHidden returns true when chat in force-mute list in data space`() {
+        `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.DATA)
+        `when`(mockSpaceView.spacePushNotificationForceAllIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationForceMuteIds).thenReturn(listOf("chat-1"))
+        `when`(mockSpaceView.spacePushNotificationForceMentionIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.ALL)
+
+        val result = NotificationStateCalculator.isMutedAndHidden(mockSpaceView, "chat-1")
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `isMutedAndHidden returns true when space default is DISABLE and chat in no force list`() {
+        `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.DATA)
+        `when`(mockSpaceView.spacePushNotificationForceAllIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationForceMuteIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationForceMentionIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.DISABLE)
+
+        val result = NotificationStateCalculator.isMutedAndHidden(mockSpaceView, "chat-1")
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `isMutedAndHidden returns false when chat is in force-all list overriding DISABLE default`() {
+        `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.DATA)
+        `when`(mockSpaceView.spacePushNotificationForceAllIds).thenReturn(listOf("chat-1"))
+        `when`(mockSpaceView.spacePushNotificationForceMuteIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationForceMentionIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.DISABLE)
+
+        val result = NotificationStateCalculator.isMutedAndHidden(mockSpaceView, "chat-1")
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `isMutedAndHidden returns false when chat is in force-mentions list`() {
+        `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.DATA)
+        `when`(mockSpaceView.spacePushNotificationForceAllIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationForceMuteIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationForceMentionIds).thenReturn(listOf("chat-1"))
+        `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.DISABLE)
+
+        val result = NotificationStateCalculator.isMutedAndHidden(mockSpaceView, "chat-1")
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `isMutedAndHidden returns false for ALL state regardless of space type`() {
+        `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.DATA)
+        `when`(mockSpaceView.spacePushNotificationForceAllIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationForceMuteIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationForceMentionIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.ALL)
+
+        val result = NotificationStateCalculator.isMutedAndHidden(mockSpaceView, "chat-1")
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `isMutedAndHidden returns false for MENTIONS state`() {
+        `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.DATA)
+        `when`(mockSpaceView.spacePushNotificationForceAllIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationForceMuteIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationForceMentionIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.MENTIONS)
+
+        val result = NotificationStateCalculator.isMutedAndHidden(mockSpaceView, "chat-1")
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `isMutedAndHidden returns false when space is one-to-one DM even if state is DISABLE`() {
+        `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.ONE_TO_ONE)
+        `when`(mockSpaceView.spacePushNotificationForceAllIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationForceMuteIds).thenReturn(listOf("chat-1"))
+        `when`(mockSpaceView.spacePushNotificationForceMentionIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.DISABLE)
+
+        val result = NotificationStateCalculator.isMutedAndHidden(mockSpaceView, "chat-1")
+
+        assertFalse(result)
+    }
+
+    @Test
+    fun `isMutedAndHidden returns false when space is chat channel even if state is DISABLE`() {
+        `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.CHAT)
+        `when`(mockSpaceView.spacePushNotificationForceAllIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationForceMuteIds).thenReturn(listOf("chat-1"))
+        `when`(mockSpaceView.spacePushNotificationForceMentionIds).thenReturn(emptyList())
+        `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.DISABLE)
+
+        val result = NotificationStateCalculator.isMutedAndHidden(mockSpaceView, "chat-1")
+
+        assertFalse(result)
+    }
+
 } 

@@ -1,14 +1,19 @@
 package com.anytypeio.anytype.feature_allcontent.ui
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -40,12 +45,22 @@ fun AllContentItemMenu(
                 onOpenAsObject(item)
             },
             text = {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    style = BodyRegular,
-                    color = colorResource(id = R.color.text_primary),
-                    text = stringResource(R.string.all_content_item_menu_open)
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary),
+                        text = stringResource(R.string.all_content_item_menu_open)
+                    )
+                    Image(
+                        painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_dropdown_menu_open_in_full),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         )
     }

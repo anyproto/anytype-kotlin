@@ -91,7 +91,12 @@ interface BlockRemote {
     suspend fun uploadBlock(command: Command.UploadBlock): Payload
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
     suspend fun createAndFetchBookmarkBlock(command: Command.CreateBookmark): Payload
-    suspend fun createBookmarkObject(space: Id, url: Url, details: Struct): Id
+    suspend fun createBookmarkObject(
+        space: Id,
+        url: Url,
+        details: Struct,
+        createdInContext: Id? = null
+    ): Id
     suspend fun fetchBookmarkObject(ctx: Id, url: Url)
     suspend fun undo(command: Command.Undo): Payload
     suspend fun importGetStartedUseCase(space: Id) : Command.ImportUseCase.Result
@@ -403,6 +408,8 @@ interface BlockRemote {
     suspend fun removeObjectFromCollection(command : Command.RemoveObjectFromCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
     suspend fun nodeUsage(): NodeUsageInfo
+    suspend fun fileSetAutoDownload(enabled: Boolean, wifiOnly: Boolean)
+    suspend fun fileAutoDownloadSetLimit(sizeLimitMebibytes: Long)
     suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload
 
     suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload

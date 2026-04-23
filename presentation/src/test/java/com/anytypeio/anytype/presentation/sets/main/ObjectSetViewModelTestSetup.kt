@@ -39,6 +39,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
+import com.anytypeio.anytype.domain.discussions.AddDiscussion
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
@@ -198,6 +199,9 @@ open class ObjectSetViewModelTestSetup {
 
     @Mock
     lateinit var templatesContainer: ObjectTypeTemplatesContainer
+
+    @Mock
+    lateinit var addDiscussion: AddDiscussion
 
     @Mock
     lateinit var viewerDelegate: ViewerDelegate
@@ -367,7 +371,8 @@ open class ObjectSetViewModelTestSetup {
             emojiSuggester = emojiSuggester,
             createBlock = createBlock,
             stringResourceProvider = stringResourceProvider,
-            getDefaultObjectType = getDefaultObjectType
+            getDefaultObjectType = getDefaultObjectType,
+            addDiscussion = addDiscussion
         )
     }
 

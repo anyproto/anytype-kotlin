@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -12,6 +14,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.anytypeio.anytype.core_models.FileDownloadLimit
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -19,10 +22,12 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel
+import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel.Command
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel.Event
 import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
 import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
 import com.anytypeio.anytype.ui_settings.fstorage.LocalStorageScreen
+import com.anytypeio.anytype.ui_settings.fstorage.OfflineDownloadsSelectorSheet
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 
@@ -32,6 +37,11 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
     lateinit var factory: FilesStorageViewModel.Factory
 
     private val vm by viewModels<FilesStorageViewModel> { factory }
+
+    // Compose-observable state for the selector sheet visibility.
+    // Set by processCommands when the ViewModel emits ShowOfflineDownloadsSelector;
+    // cleared by the sheet itself on dismiss.
+    private val selectorCurrent = mutableStateOf<FileDownloadLimit?>(null)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,11 +55,30 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
+                    val downloadLimit by vm.downloadLimit.collectAsStateWithLifecycle()
+                    val useCellular by vm.useCellular.collectAsStateWithLifecycle()
+
                     LocalStorageScreen(
                         data = vm.state.collectAsStateWithLifecycle().value,
+                        downloadLimit = downloadLimit,
+                        useCellular = useCellular,
                         onOffloadFilesClicked = { throttle { vm.event(Event.OnOffloadFilesClicked) } },
-                        onDeleteAccountClicked = { proceedWithAccountDeletion() }
+                        onDeleteAccountClicked = { proceedWithAccountDeletion() },
+                        onOfflineDownloadsClicked = {
+                            throttle { vm.event(Event.OnOfflineDownloadsClicked) }
+                        },
+                        onUseCellularToggled = { checked ->
+                            vm.onUseCellularToggled(checked)
+                        }
                     )
+
+                    selectorCurrent.value?.let { current ->
+                        OfflineDownloadsSelectorSheet(
+                            current = current,
+                            onValueSelected = { vm.onOfflineDownloadsValueSelected(it) },
+                            onDismiss = { selectorCurrent.value = null }
+                        )
+                    }
                 }
             }
         }
@@ -83,6 +112,9 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
     private fun processCommands(command: FilesStorageViewModel.Command) {
         when (command) {
             FilesStorageViewModel.Command.OpenOffloadFilesScreen -> showClearCacheDialog()
+            is Command.ShowOfflineDownloadsSelector -> {
+                selectorCurrent.value = command.current
+            }
         }
     }
 

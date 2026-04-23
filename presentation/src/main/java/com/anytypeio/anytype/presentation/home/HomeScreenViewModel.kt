@@ -9,6 +9,8 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.domain.device.FileSharer
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
@@ -41,7 +43,9 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.core_models.ui.spaceIcon
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.ext.replace
@@ -63,7 +67,12 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.favorites.AddPersonalFavorite
+import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
+import com.anytypeio.anytype.domain.favorites.RemovePersonalFavorite
+import com.anytypeio.anytype.domain.favorites.ReorderPersonalFavorites
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -85,6 +94,7 @@ import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.getByIdOrKey
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -94,6 +104,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
+import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
 import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -130,6 +141,7 @@ import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.objects.isTemplateObject
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
 import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObjectData
@@ -162,6 +174,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetUiParams
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.presentation.widgets.buildWidgetName
 import com.anytypeio.anytype.presentation.widgets.buildWidgetSections
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
@@ -171,10 +184,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -216,6 +234,10 @@ class HomeScreenViewModel(
     private val widgetEventDispatcher: Dispatcher<WidgetDispatchEvent>,
     private val objectPayloadDispatcher: Dispatcher<Payload>,
     private val interceptEvents: InterceptEvents,
+    private val observePersonalFavoriteTargets: ObservePersonalFavoriteTargets,
+    private val addPersonalFavorite: AddPersonalFavorite,
+    private val removePersonalFavorite: RemovePersonalFavorite,
+    private val reorderPersonalFavorites: ReorderPersonalFavorites,
     private val widgetSessionStateHolder: WidgetSessionStateHolder,
     private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
     private val urlBuilder: UrlBuilder,
@@ -267,7 +289,9 @@ class HomeScreenViewModel(
     private val stringResourceProvider : StringResourceProvider,
     private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds,
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
-    private val setHomepage: SetHomepage
+    private val setHomepage: SetHomepage,
+    private val uploadFile: UploadFile,
+    private val fileSharer: FileSharer
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -284,8 +308,30 @@ class HomeScreenViewModel(
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
 
     val showHomepagePicker = MutableStateFlow(vmParams.showHomepagePicker)
-    val showCreateHomeWidget = MutableStateFlow(false)
     val showInviteMembersWidget = MutableStateFlow(false)
+
+    private val spaceHomePickerDelegate: SpaceHomePickerDelegate = SpaceHomePickerDelegate(
+        space = vmParams.spaceId,
+        setHomepage = setHomepage,
+        searchObjects = searchObjects,
+        fieldParser = fieldParser,
+        storeOfObjectTypes = storeOfObjectTypes,
+        urlBuilder = urlBuilder,
+        isOneToOneSpaceProvider = {
+            (_spaceViewState.value as? SpaceViewState.Success)?.isOneToOneSpace == true
+        }
+    )
+    val spaceHomePickerState: StateFlow<SpaceHomePickerState> = spaceHomePickerDelegate.state
+
+    private val _createObjectSheetVisible = MutableStateFlow(false)
+    val createObjectSheetVisible: StateFlow<Boolean> = _createObjectSheetVisible.asStateFlow()
+
+    private val _uploadSnackbar = MutableSharedFlow<UploadSuccessSnackbar>(
+        replay = 0,
+        extraBufferCapacity = 1,
+        onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+    )
+    val uploadSnackbar: SharedFlow<UploadSuccessSnackbar> = _uploadSnackbar.asSharedFlow()
 
     private val isEmptyingBinInProgress = MutableStateFlow(false)
 
@@ -305,6 +351,7 @@ class HomeScreenViewModel(
     private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val unreadWidget = MutableStateFlow<Widget.UnreadChatList?>(null)
+    private val personalFavoritesWidget = MutableStateFlow<Widget.PersonalFavorites?>(null)
     private val recentlyEditedWidget = MutableStateFlow<Widget.RecentlyEdited?>(null)
     private val chatWidget = MutableStateFlow<Widget.Chat?>(null)
     private val binWidget = MutableStateFlow<Widget.Bin?>(null)
@@ -313,6 +360,7 @@ class HomeScreenViewModel(
     private val pinnedContainers = MutableStateFlow<Containers>(null)
     private val typeContainers = MutableStateFlow<Containers>(null)
     private val unreadContainer = MutableStateFlow<WidgetContainer?>(null)
+    private val personalFavoritesContainer = MutableStateFlow<WidgetContainer?>(null)
 
     // Drag-and-drop state tracking for type widgets
     private var pendingTypeWidgetOrder: List<Id>? = null
@@ -409,6 +457,59 @@ class HomeScreenViewModel(
             initialValue = null
         )
 
+    // Exposed flow for personal favorites widget
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val personalFavoritesView: StateFlow<WidgetView?> = personalFavoritesContainer
+        .flatMapLatest { container ->
+            container?.view ?: flowOf(null)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
+    /**
+     * DROID-4397: true iff the current user has Owner or Editor (Admin)
+     * permissions in the active space. Drives whether PIN/UNPIN
+     * (Pin-to-channel / Unpin-from-channel) actions are shown in widget
+     * menus. Reactive — role downgrades live-remove the actions.
+     */
+    val canToggleChannelPin: StateFlow<Boolean> =
+        userPermissionProvider.observe(vmParams.spaceId)
+            .map { it?.isOwnerOrEditor() == true }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Eagerly,
+                initialValue = false
+            )
+
+    /**
+     * DROID-4397: set of object IDs currently in the user's personal favorites
+     * for the active space. Exposed at the VM level so the widget-menu UI can
+     * decide Favorite ↔ Unfavorite for any pinned widget that has a concrete
+     * `source.id` (Link, Tree, Set, List, Gallery, ChatList, …). The underlying
+     * subscription is the same one that feeds the My Favorites section, so
+     * state is consistent across surfaces.
+     */
+    val favoriteTargets: StateFlow<Set<Id>> =
+        observePersonalFavoriteTargets(vmParams.spaceId)
+            .map { it.toSet() }
+            .catch { e ->
+                // DROID-4397: OpenObject on the personal-widgets virtual doc
+                // can fail on first load (middleware not ready, network blip,
+                // etc.). Degrade to empty rather than terminating the flow —
+                // PersonalFavoritesWidgetContainer does the same with its
+                // own .catch on a parallel observation.
+                Timber.e(e, "Failed to observe personal favorite targets; emitting empty")
+                emit(emptySet())
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Eagerly,
+                initialValue = emptySet()
+            )
+
     // Exposed flow for bin widget
     @OptIn(ExperimentalCoroutinesApi::class)
     val binView: StateFlow<WidgetView?> = binWidget
@@ -458,6 +559,56 @@ class HomeScreenViewModel(
             started = SharingStarted.Eagerly,
             initialValue = null
         )
+
+    // Cached homepage object for tap-to-open navigation
+    private val homepageObject = MutableStateFlow<ObjectWrapper.Basic?>(null)
+
+    // Home widget: shown when the space homepage is an explicit object (Chat / Page / Collection).
+    // Hidden when homepage is "widgets" (or any special sentinel) or unset.
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val homeWidgetView: StateFlow<WidgetView.Home?> = spaceViewSubscriptionContainer
+        .observe(vmParams.spaceId)
+        .map { it.homepage }
+        .distinctUntilChanged()
+        .flatMapLatest { homepage ->
+            if (!SpaceHomepageResolver.isExplicitObjectHomepage(homepage)) {
+                homepageObject.value = null
+                flowOf(null)
+            } else {
+                storelessSubscriptionContainer
+                    .subscribe(
+                        StoreSearchByIdsParams(
+                            space = vmParams.spaceId,
+                            subscription = HOME_WIDGET_SUBSCRIPTION,
+                            keys = ObjectSearchConstants.defaultKeys,
+                            targets = listOf(homepage!!)
+                        )
+                    )
+                    .map { results ->
+                        val obj = results.firstOrNull { it.notDeletedNorArchived }
+                        homepageObject.value = obj
+                        obj?.toHomeWidgetView()
+                    }
+                    .catch { e ->
+                        Timber.e(e, "Failed to observe homepage object")
+                        emit(null)
+                    }
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
+    private suspend fun ObjectWrapper.Basic.toHomeWidgetView(): WidgetView.Home {
+        val objType = storeOfObjectTypes.getTypeOfObject(this)
+        return WidgetView.Home(
+            objectId = id,
+            name = buildWidgetName(obj = this, fieldParser = fieldParser),
+            icon = objectIcon(builder = urlBuilder, objType = objType)
+        )
+    }
 
     // Exposed flow for collapsed sections
     val collapsedSections: StateFlow<Set<Id>> = observeCollapsedSectionIds()
@@ -652,13 +803,27 @@ class HomeScreenViewModel(
                     } else {
                         name
                     }
+                    val otherMember = if (
+                        spaceView.isOneToOneSpace
+                        && members is ActiveSpaceMemberSubscriptionContainer.Store.Data
+                    ) {
+                        members.members.find { it.identity == spaceView.oneToOneIdentity }
+                    } else {
+                        null
+                    }
                     _spaceViewState.value = SpaceViewState.Success(
                         spaceName = spaceName,
                         spaceIcon = spaceIcon,
                         membersCount = spaceMemberCount,
                         spaceChatId = spaceView.getSingleValue<String>(Relations.CHAT_ID),
                         isOneToOneSpace = spaceView.isOneToOneSpace,
-                        spaceAccessType = spaceView.spaceAccessType ?: SpaceAccessType.PRIVATE
+                        canChangeHome = HomepageManagementRule.canManageHomepage(
+                            isOneToOneSpace = spaceView.isOneToOneSpace,
+                            permission = permissions
+                        ),
+                        spaceAccessType = spaceView.spaceAccessType ?: SpaceAccessType.PRIVATE,
+                        memberGlobalName = otherMember?.globalName,
+                        memberIdentity = otherMember?.identity
                     )
                 }
         }
@@ -727,6 +892,7 @@ class HomeScreenViewModel(
         buildPinnedContainerPipeline()
         buildTypeContainerPipeline()
         buildUnreadContainerPipeline()
+        buildPersonalFavoritesContainerPipeline()
     }
 
     private fun buildPinnedContainerPipeline() {
@@ -775,6 +941,22 @@ class HomeScreenViewModel(
                 .collect { container ->
                     Timber.d("Emitting unread container: ${container != null}")
                     unreadContainer.value = container
+                }
+        }
+    }
+
+    private fun buildPersonalFavoritesContainerPipeline() {
+        viewModelScope.launch {
+            personalFavoritesWidget
+                .map { widget ->
+                    if (widget != null) {
+                        widgetContainerDelegate.createContainer(widget, emptyList())
+                    } else {
+                        null
+                    }
+                }
+                .collect { container ->
+                    personalFavoritesContainer.value = container
                 }
         }
     }
@@ -940,6 +1122,7 @@ class HomeScreenViewModel(
 
                     chatWidget.value = sections.chatWidget
                     unreadWidget.value = sections.unreadWidget
+                    personalFavoritesWidget.value = sections.personalFavoritesWidget
                     recentlyEditedWidget.value = sections.recentlyEditedWidget
                     binWidget.value = sections.binWidget
                 } else {
@@ -954,6 +1137,7 @@ class HomeScreenViewModel(
 
                     chatWidget.value = null
                     unreadWidget.value = null
+                    personalFavoritesWidget.value = null
                     recentlyEditedWidget.value = null
                     binWidget.value = null
                 }
@@ -1461,6 +1645,10 @@ class HomeScreenViewModel(
                     }
                 }
             }
+            is Widget.Source.Bundled.PersonalFavorites -> {
+                // Personal favorites section header is not clickable; no-op.
+                Timber.d("Skipping click on personal favorites widget source")
+            }
             Widget.Source.Other -> {
                 Timber.w("Skipping click on 'other' widget source")
             }
@@ -1582,6 +1770,83 @@ class HomeScreenViewModel(
                     return
                 }
                 onCreateWidgetElementClicked(widgetView)
+            }
+            DropDownMenuAction.ChangeHome -> {
+                onHomeWidgetChangeHomeClicked()
+            }
+            is DropDownMenuAction.FavoriteObject -> {
+                proceedWithWidgetFavoriteToggle(action.widgetId, isFavorite = true)
+            }
+            is DropDownMenuAction.UnfavoriteObject -> {
+                proceedWithWidgetFavoriteToggle(action.widgetId, isFavorite = false)
+            }
+        }
+    }
+
+    /**
+     * DROID-4397: monotonically increments whenever [onMyFavoritesReordered]
+     * returns a failure. The UI observes this counter and uses it as a remember
+     * key so the optimistic local row order is re-seeded from the authoritative
+     * [personalFavoritesView] snapshot. Without this signal, a failed RPC would
+     * leave the UI showing the client-side order indefinitely (the subscription
+     * never emits a new list because the backend didn't change).
+     */
+    private val _myFavoritesReorderFailedCount = MutableStateFlow(0)
+    val myFavoritesReorderFailedCount: StateFlow<Int> =
+        _myFavoritesReorderFailedCount.asStateFlow()
+
+    /**
+     * DROID-4397: persist a new order of personal favorites after the user
+     * drags-to-reorder rows in the My Favorites section. [orderedTargetIds] is
+     * the full ordered list of favorited object IDs (not the widget IDs).
+     * On success, the underlying subscription will emit the new order and the
+     * UI reconciles on its own. On failure, [myFavoritesReorderFailedCount]
+     * increments so the UI reverts its optimistic local state.
+     */
+    fun onMyFavoritesReordered(orderedTargetIds: List<Id>) {
+        if (orderedTargetIds.isEmpty()) return
+        viewModelScope.launch {
+            reorderPersonalFavorites.async(
+                ReorderPersonalFavorites.Params(
+                    space = vmParams.spaceId,
+                    order = orderedTargetIds
+                )
+            ).fold(
+                onSuccess = { Timber.d("Reordered my favorites: $orderedTargetIds") },
+                onFailure = { e ->
+                    Timber.e(e, "Error reordering my favorites")
+                    _myFavoritesReorderFailedCount.update { it + 1 }
+                }
+            )
+        }
+    }
+
+    /**
+     * DROID-4397: add or remove the source object of a widget to/from the
+     * current user's personal favorites. Invoked from the widget long-press menu.
+     */
+    private fun proceedWithWidgetFavoriteToggle(widgetId: Id, isFavorite: Boolean) {
+        val targetWidget = currentWidgets.orEmpty().find { it.id == widgetId }
+        val targetObjectId = targetWidget?.source?.id
+        if (targetObjectId.isNullOrEmpty()) {
+            Timber.w("Widget $widgetId has no source object id; skipping favorite toggle")
+            return
+        }
+        viewModelScope.launch {
+            if (isFavorite) {
+                addPersonalFavorite.async(
+                    AddPersonalFavorite.Params(space = vmParams.spaceId, target = targetObjectId)
+                ).fold(
+                    onSuccess = { Timber.d("Favorited $targetObjectId via widget menu") },
+                    onFailure = { Timber.e(it, "Error favoriting $targetObjectId via widget menu") }
+                )
+            } else {
+                removePersonalFavorite.async(
+                    RemovePersonalFavorite.Params(space = vmParams.spaceId, target = targetObjectId)
+                ).fold(
+                    onSuccess = { Timber.d("Unfavorited $targetObjectId via widget menu") },
+                    onFailure = { Timber.e(it, "Error unfavoriting $targetObjectId via widget menu") }
+                )
             }
         }
     }
@@ -1745,6 +2010,7 @@ class HomeScreenViewModel(
         is Widget.Bin -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
         is Widget.ObjectTypesGroup -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
         is Widget.RecentlyEdited -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
+        is Widget.PersonalFavorites -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 
     // TODO move to a separate reducer inject into this VM's constructor
@@ -2042,12 +2308,102 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onCreateNewObjectLongClicked() {
+    fun onCreateObjectMenuClicked() {
+        if (vmParams.spaceId.id.isNotEmpty()) {
+            _createObjectSheetVisible.value = true
+        }
+    }
+
+    /**
+     * Upload one or more local URIs as standalone file/image/video objects
+     * in the current space. Triggered from the create-object popup's media
+     * rows (Photos / Camera / Files). Uploads run in [viewModelScope] — if
+     * the user leaves the screen before completion, they are cancelled.
+     * Background uploads are out of scope for this iteration.
+     */
+    fun onUploadFilesToSpace(targets: List<UploadToSpaceTarget>) {
+        if (vmParams.spaceId.id.isEmpty() || targets.isEmpty()) return
+        _createObjectSheetVisible.value = false
         viewModelScope.launch {
-            val space = vmParams.spaceId.id
-            if (space.isNotEmpty()) {
-                commands.emit(Command.OpenObjectCreateDialog(SpaceId(space)))
+            val successes = mutableListOf<Block.Content.File.Type>()
+            targets.forEach { target ->
+                val path = runCatching { fileSharer.getPath(target.uri) }
+                    .getOrNull()
+                    ?.takeIf { it.isNotEmpty() }
+                if (path == null) {
+                    Timber.w("Upload: could not resolve path for ${target.uri}")
+                    target.sourceFilePath?.let { src ->
+                        runCatching { java.io.File(src).delete() }
+                    }
+                    return@forEach
+                }
+                uploadFile.async(
+                    UploadFile.Params(
+                        space = vmParams.spaceId,
+                        path = path,
+                        type = target.type,
+                        createdInContext = null
+                    )
+                ).fold(
+                    onSuccess = {
+                        Timber.d("Upload success id=${it.id}")
+                        successes += target.type
+                    },
+                    onFailure = { e -> Timber.e(e, "Upload failed for $path") }
+                )
+                runCatching { java.io.File(path).delete() }
+                target.sourceFilePath?.let { src ->
+                    runCatching { java.io.File(src).delete() }
+                }
             }
+            if (successes.isNotEmpty()) {
+                _uploadSnackbar.emit(successes.toSnackbarVariant())
+            }
+        }
+    }
+
+    data class UploadToSpaceTarget(
+        val uri: String,
+        val type: Block.Content.File.Type,
+        /**
+         * Optional local file path that should be deleted after upload
+         * completes (success or failure). Used by the camera capture path
+         * to clean up the FileProvider-backed temp file in the app cache.
+         * Regular gallery/SAF URIs don't need this.
+         */
+        val sourceFilePath: String? = null
+    )
+
+    private fun List<Block.Content.File.Type>.toSnackbarVariant(): UploadSuccessSnackbar {
+        val distinct = distinct()
+        if (distinct.size > 1) return UploadSuccessSnackbar.Mixed
+        return when (distinct.single()) {
+            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image
+            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video
+            else -> UploadSuccessSnackbar.File
+        }
+    }
+
+    fun hideCreateObjectSheet() {
+        _createObjectSheetVisible.value = false
+    }
+
+    /**
+     * Resolves an object type by unique key (emitted from the create-object
+     * bottom sheet) and delegates to [onCreateNewObjectClicked], which already
+     * handles chat-derived types, template-backed creation, analytics, and
+     * navigation.
+     */
+    fun onCreateNewObjectOfTypeKey(typeKey: TypeKey) {
+        viewModelScope.launch {
+            val objType = storeOfObjectTypes.getByKey(typeKey.key)
+            _createObjectSheetVisible.value = false
+            if (objType == null) {
+                Timber.w("Create-object: type key ${typeKey.key} not found in store")
+                sendToast("Object type not available yet, please try again")
+                return@launch
+            }
+            onCreateNewObjectClicked(objType = objType)
         }
     }
 
@@ -2381,7 +2737,10 @@ class HomeScreenViewModel(
             Timber.d("Unsubscribing from widgets: $widgetSubscriptions")
             kotlin.runCatching {
                 storelessSubscriptionContainer.unsubscribe(
-                    subscriptions = widgetSubscriptions + listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION)
+                    subscriptions = widgetSubscriptions + listOf(
+                        HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
+                        HOME_WIDGET_SUBSCRIPTION
+                    )
                 )
             }.onFailure { Timber.w(it, "Error unsubscribing profile object") }
 
@@ -2983,7 +3342,8 @@ class HomeScreenViewModel(
             template = defaultTemplate,
             type = defaultObjectTypeUniqueKey,
             filters = viewer.filters,
-            prefilled = prefilled
+            prefilled = prefilled,
+            createdInContext = collection
         )
 
         val space = vmParams.spaceId.id
@@ -3399,6 +3759,11 @@ class HomeScreenViewModel(
                 // Being in expandedIds means user explicitly collapsed it
                 expandedIds.contains(widget.id)
             }
+            SectionType.MY_FAVORITES -> {
+                // Personal Favorites widgets are expanded by default
+                // Being in expandedIds means user explicitly collapsed it
+                expandedIds.contains(widget.id)
+            }
             SectionType.TYPES -> {
                 // Object Types widgets are collapsed by default
                 // Being in expandedIds means user explicitly expanded it
@@ -3650,6 +4015,9 @@ class HomeScreenViewModel(
             val spaceChatId: Id? = null,
             val spaceAccessType: SpaceAccessType,
             val isOneToOneSpace: Boolean,
+            val canChangeHome: Boolean = false,
+            val memberGlobalName: String? = null,
+            val memberIdentity: String? = null,
         ) : SpaceViewState() {
             val canCreateAdditionalChats: Boolean
                 get() = !isOneToOneSpace
@@ -3683,6 +4051,7 @@ class HomeScreenViewModel(
             dateProvider = dateProvider,
             stringResourceProvider = stringResourceProvider,
             dispatchers = appCoroutineDispatchers,
+            observePersonalFavoriteTargets = observePersonalFavoriteTargets,
             observeCurrentWidgetView = ::observeCurrentWidgetView,
             isWidgetCollapsed = ::isWidgetCollapsed
         )
@@ -3692,29 +4061,30 @@ class HomeScreenViewModel(
 
     private fun proceedWithHomepageObservation() {
         viewModelScope.launch {
-            spaceViewSubscriptionContainer
-                .observe(vmParams.spaceId)
-                .collect { spaceView ->
+            combine(
+                spaceViewSubscriptionContainer.observe(vmParams.spaceId),
+                userPermissions
+            ) { spaceView, permission -> spaceView to permission }
+                .collect { (spaceView, permission) ->
+                    // DROID-4463: only the space owner may configure the homepage in
+                    // regular channels; 1-on-1 channels always open on Chat and have
+                    // no homepage-change UI (DROID-4469).
+                    val canManage = HomepageManagementRule.canManageHomepage(
+                        isOneToOneSpace = spaceView.isOneToOneSpace,
+                        permission = permission
+                    )
+                    if (!canManage) {
+                        showHomepagePicker.value = false
+                        return@collect
+                    }
                     val homepage = spaceView.homepage
                     if (!homepage.isNullOrEmpty()) {
-                        // Homepage is set. Reset createHomeDismissed so the widget can reappear
-                        // if homepage is later cleared (e.g., homepage object deleted by user,
-                        // middleware resets homepage to empty).
-                        userSettingsRepository.setCreateHomeDismissed(vmParams.spaceId, false)
                         showHomepagePicker.value = false
-                        showCreateHomeWidget.value = false
                     } else {
                         val pickerDismissed = userSettingsRepository
                             .getHomepagePickerDismissed(vmParams.spaceId)
                         if (!pickerDismissed) {
                             showHomepagePicker.value = true
-                        } else {
-                            val createHomeDismissed = userSettingsRepository
-                                .observeCreateHomeDismissed(vmParams.spaceId)
-                                .first()
-                            if (!createHomeDismissed) {
-                                showCreateHomeWidget.value = true
-                            }
                         }
                     }
                 }
@@ -3749,13 +4119,6 @@ class HomeScreenViewModel(
             userSettingsRepository.setHomepagePickerDismissed(vmParams.spaceId, true)
             val spaceId = vmParams.spaceId.id
             when (type) {
-                HomepageType.EMPTY -> {
-                    setHomepage.async(
-                        SetHomepage.Params(spaceId = spaceId, homepage = HOMEPAGE_WIDGETS_VALUE)
-                    ).onFailure {
-                        Timber.e(it, "Failed to set homepage to widgets")
-                    }
-                }
                 HomepageType.CHAT -> {
                     createAndSetHomepage(
                         typeKey = ObjectTypeUniqueKeys.CHAT_DERIVED,
@@ -3800,20 +4163,39 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             showHomepagePicker.value = false
             userSettingsRepository.setHomepagePickerDismissed(vmParams.spaceId, true)
-            // Widget will appear on next visit via proceedWithHomepageObservation
+            setHomepage.async(
+                SetHomepage.Params(
+                    spaceId = vmParams.spaceId.id,
+                    homepage = ResolveSpaceHomepage.HOMEPAGE_WIDGETS_VALUE
+                )
+            ).onFailure {
+                Timber.e(it, "Failed to set homepage to widgets on picker dismissal")
+            }
         }
     }
 
-    fun onCreateHomeWidgetClicked() {
-        showHomepagePicker.value = true
+    fun onHomeWidgetClicked() {
+        val obj = homepageObject.value ?: return
+        proceedWithNavigation(obj.navigation())
     }
 
-    fun onCreateHomeWidgetDismissed() {
-        viewModelScope.launch {
-            showCreateHomeWidget.value = false
-            userSettingsRepository.setCreateHomeDismissed(vmParams.spaceId, true)
-        }
+    fun onHomeWidgetChangeHomeClicked() {
+        spaceHomePickerDelegate.show(
+            scope = viewModelScope,
+            currentHomepageObjectId = homepageObject.value?.id
+        )
     }
+
+    fun onSpaceHomePickerDismissed() = spaceHomePickerDelegate.dismiss()
+
+    fun onSpaceHomePickerQueryChanged(query: String) =
+        spaceHomePickerDelegate.onQueryChanged(viewModelScope, query)
+
+    fun onSpaceHomePickerObjectSelected(objectId: Id) =
+        spaceHomePickerDelegate.onObjectSelected(viewModelScope, objectId)
+
+    fun onSpaceHomePickerNoHomeSelected() =
+        spaceHomePickerDelegate.onNoHomeSelected(viewModelScope)
 
     fun onInviteMembersWidgetClicked() {
         viewModelScope.launch {
@@ -3843,6 +4225,10 @@ class HomeScreenViewModel(
         private val widgetEventDispatcher: Dispatcher<WidgetDispatchEvent>,
         private val objectPayloadDispatcher: Dispatcher<Payload>,
         private val interceptEvents: InterceptEvents,
+        private val observePersonalFavoriteTargets: ObservePersonalFavoriteTargets,
+        private val addPersonalFavorite: AddPersonalFavorite,
+        private val removePersonalFavorite: RemovePersonalFavorite,
+        private val reorderPersonalFavorites: ReorderPersonalFavorites,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val widgetSessionStateHolder: WidgetSessionStateHolder,
         private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
@@ -3895,7 +4281,9 @@ class HomeScreenViewModel(
         private val stringResourceProvider : StringResourceProvider,
         private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds,
         private val setSpaceNotificationMode: SetSpaceNotificationMode,
-        private val setHomepage: SetHomepage
+        private val setHomepage: SetHomepage,
+        private val uploadFile: UploadFile,
+        private val fileSharer: FileSharer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -3911,6 +4299,10 @@ class HomeScreenViewModel(
             widgetEventDispatcher = widgetEventDispatcher,
             objectPayloadDispatcher = objectPayloadDispatcher,
             interceptEvents = interceptEvents,
+            observePersonalFavoriteTargets = observePersonalFavoriteTargets,
+            addPersonalFavorite = addPersonalFavorite,
+            removePersonalFavorite = removePersonalFavorite,
+            reorderPersonalFavorites = reorderPersonalFavorites,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             widgetSessionStateHolder = widgetSessionStateHolder,
             widgetActiveViewStateHolder = widgetActiveViewStateHolder,
@@ -3962,13 +4354,15 @@ class HomeScreenViewModel(
             stringResourceProvider = stringResourceProvider,
             updateObjectTypesOrderIds = updateObjectTypesOrderIds,
             setSpaceNotificationMode = setSpaceNotificationMode,
-            setHomepage = setHomepage
+            setHomepage = setHomepage,
+            uploadFile = uploadFile,
+            fileSharer = fileSharer
         ) as T
     }
 
     companion object {
         const val HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION = "subscription.home-screen.profile-object"
-        const val HOMEPAGE_WIDGETS_VALUE = "widgets"
+        const val HOME_WIDGET_SUBSCRIPTION = "subscription.home-screen.home-widget"
 
         // Duration in milliseconds to lock type widget event processing after a drag operation
         // This prevents incoming middleware events from overwriting optimistic UI updates
@@ -4022,8 +4416,6 @@ sealed class Command {
     ) : Command()
 
     data class OpenSpaceSettings(val spaceId: SpaceId) : Command()
-
-    data class OpenObjectCreateDialog(val space: SpaceId) : Command()
 
     data class OpenGlobalSearchScreen(val space: Id) : Command()
 

@@ -111,12 +111,37 @@ sealed class VaultCommand {
 }
 
 sealed class VaultNavigation {
-    data class OpenChat(val ctx: Id, val space: Id) : VaultNavigation()
-    data class OpenObject(val ctx: Id, val space: Id) : VaultNavigation()
-    data class OpenSet(val ctx: Id, val space: Id, val view: Id?) : VaultNavigation()
-    data class OpenDateObject(val ctx: Id, val space: Id) : VaultNavigation()
-    data class OpenParticipant(val ctx: Id, val space: Id) : VaultNavigation()
-    data class OpenType(val target: Id, val space: Id) : VaultNavigation()
+    data class OpenChat(
+        val ctx: Id,
+        val space: Id,
+        val openTargetDirectly: Boolean = false
+    ) : VaultNavigation()
+    data class OpenObject(
+        val ctx: Id,
+        val space: Id,
+        val openTargetDirectly: Boolean = false
+    ) : VaultNavigation()
+    data class OpenSet(
+        val ctx: Id,
+        val space: Id,
+        val view: Id?,
+        val openTargetDirectly: Boolean = false
+    ) : VaultNavigation()
+    data class OpenDateObject(
+        val ctx: Id,
+        val space: Id,
+        val openTargetDirectly: Boolean = false
+    ) : VaultNavigation()
+    data class OpenParticipant(
+        val ctx: Id,
+        val space: Id,
+        val openTargetDirectly: Boolean = false
+    ) : VaultNavigation()
+    data class OpenType(
+        val target: Id,
+        val space: Id,
+        val openTargetDirectly: Boolean = false
+    ) : VaultNavigation()
     data class OpenUrl(val url: String) : VaultNavigation()
     data class ShowError(val message: String) : VaultNavigation()
 }

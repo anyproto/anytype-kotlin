@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.data.auth.repo
 
 import com.anytypeio.anytype.core_models.Account
+import com.anytypeio.anytype.core_models.FileDownloadLimit
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.WidgetSections
@@ -197,6 +198,26 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         return cache.observeCompactModeEnabled()
     }
 
+    override suspend fun getFileDownloadLimit(): FileDownloadLimit {
+        return cache.getFileDownloadLimit()
+    }
+
+    override suspend fun setFileDownloadLimit(limit: FileDownloadLimit) {
+        cache.setFileDownloadLimit(limit)
+    }
+
+    override fun observeFileDownloadLimit(): Flow<FileDownloadLimit> {
+        return cache.observeFileDownloadLimit()
+    }
+
+    override suspend fun getUseCellularForDownloads(): Boolean {
+        return cache.getUseCellularForDownloads()
+    }
+
+    override suspend fun setUseCellularForDownloads(enabled: Boolean) {
+        cache.setUseCellularForDownloads(enabled)
+    }
+
     override suspend fun getInstalledAtDate(account: Account): Long? {
         return cache.getInstalledAtDate(account)
     }
@@ -239,14 +260,6 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
 
     override suspend fun getHomepagePickerDismissed(space: SpaceId): Boolean {
         return cache.getHomepagePickerDismissed(space)
-    }
-
-    override suspend fun setCreateHomeDismissed(space: SpaceId, dismissed: Boolean) {
-        cache.setCreateHomeDismissed(space, dismissed)
-    }
-
-    override fun observeCreateHomeDismissed(space: SpaceId): Flow<Boolean> {
-        return cache.observeCreateHomeDismissed(space)
     }
 
     override suspend fun setInviteMembersDismissed(space: SpaceId, dismissed: Boolean) {

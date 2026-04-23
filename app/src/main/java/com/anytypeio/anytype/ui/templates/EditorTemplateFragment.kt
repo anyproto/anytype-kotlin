@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -64,7 +65,11 @@ class EditorTemplateFragment : EditorFragment() {
         super.render(state)
         when (fragmentType) {
             TYPE_TEMPLATE_SELECT, TYPE_TEMPLATE_MULTIPLE -> {
-                binding.bottomToolbar.hide()
+                // DROID-4318: bottom nav toolbar replaced with FABs in
+                // EditorFragment — hide both inside template flows.
+                // Use instant visibility toggles, not FAB.hide(), to avoid
+                // the ~200ms scale+fade animation and touch-through window.
+                binding.fabCreate.isVisible = false
                 if (state.navigationToolbar.isVisible) {
                     binding.btnSelectTemplate.visible()
                 } else {
@@ -72,7 +77,7 @@ class EditorTemplateFragment : EditorFragment() {
                 }
             }
             TYPE_TEMPLATE_EDIT -> {
-                binding.bottomToolbar.hide()
+                binding.fabCreate.isVisible = false
                 binding.btnSelectTemplate.gone()
             }
         }
@@ -90,10 +95,6 @@ class EditorTemplateFragment : EditorFragment() {
             } else {
                 binding.topToolbar.hide()
             }
-            topToolbar.apply {
-                container.alpha = 1f
-            }
-            recycler.removeOnScrollListener(titleVisibilityDetector)
             topToolbar.title.updateLayoutParams<LinearLayout.LayoutParams> {
                 width = LinearLayout.LayoutParams.WRAP_CONTENT
                 height = LinearLayout.LayoutParams.MATCH_PARENT

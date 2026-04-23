@@ -786,6 +786,18 @@ class DateObjectViewModel(
                 uiSyncStatusWidgetState.value =
                     event.status.toSyncStatusWidgetState()
             }
+
+            DateEvent.TopToolbar.OnBackClick -> {
+                viewModelScope.launch {
+                    effects.emit(DateObjectCommand.Back)
+                }
+            }
+
+            DateEvent.TopToolbar.OnTitleClick -> {
+                viewModelScope.launch {
+                    effects.emit(DateObjectCommand.OpenWidgets)
+                }
+            }
         }
     }
 
@@ -894,13 +906,8 @@ class DateObjectViewModel(
     private fun onNavigationWidgetEvent(event: DateEvent.NavigationWidget) {
         when (event) {
             DateEvent.NavigationWidget.OnAddDocClick -> {
-                proceedWithCreateDoc()
-            }
-
-            DateEvent.NavigationWidget.OnAddDocLongClick -> {
-                viewModelScope.launch {
-                    effects.emit(DateObjectCommand.TypeSelectionScreen)
-                }
+                // Intercepted by DateObjectFragment to open the shared
+                // CreateObjectPopup; VM no longer handles the click directly.
             }
 
             DateEvent.NavigationWidget.OnBackClick -> {

@@ -15,7 +15,6 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -32,12 +31,10 @@ import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
-import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import javax.inject.Inject
 import timber.log.Timber
 
-class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
+class CollectionFragment : BaseComposeFragment() {
 
     @Inject
     lateinit var factory: CollectionViewModel.Factory
@@ -66,16 +63,7 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 DefaultTheme {
-                    CollectionScreen(
-                        vm = vm,
-                        onCreateObjectLongClicked = {
-                            val dialog = ObjectTypeSelectionFragment.new(space = space)
-                            dialog.show(childFragmentManager, "fullscreen-widget-create-object-type-dialog")
-                        },
-                        onSearchClicked = {
-                            vm.onSearchClicked(space)
-                        }
-                    )
+                    CollectionScreen(vm = vm)
                 }
             }
         }
@@ -202,10 +190,6 @@ class CollectionFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
             target = target,
             space = space
         )
-    }
-
-    override fun onSelectObjectType(objType: ObjectWrapper.Type) {
-        vm.onAddClicked(objType = objType)
     }
 
     override fun onStop() {

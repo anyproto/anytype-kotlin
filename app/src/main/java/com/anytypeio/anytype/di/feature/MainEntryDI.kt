@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.platform.InitialParamsProvider
+import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.domain.vault.SetSpacesIntroductionShown
@@ -102,6 +103,7 @@ object MainEntryModule {
         chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer,
         participantSubscriptionContainer: ParticipantSubscriptionContainer,
         userSettingsRepository: UserSettingsRepository,
+        resolveSpaceHomepage: ResolveSpaceHomepage,
         debugRunProfiler: DebugRunProfiler
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
@@ -133,6 +135,7 @@ object MainEntryModule {
         chatsDetailsSubscriptionContainer = chatsDetailsSubscriptionContainer,
         participantSubscriptionContainer = participantSubscriptionContainer,
         userSettingsRepository = userSettingsRepository,
+        resolveSpaceHomepage = resolveSpaceHomepage,
         debugRunProfiler = debugRunProfiler
     )
 

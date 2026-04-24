@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -19,6 +21,7 @@ fun HomeScreenToolbar(
     modifier: Modifier = Modifier,
     onBackButtonClicked: () -> Unit,
     onSpaceSettingsClicked: () -> Unit,
+    buttonSize: Dp = dimensionResource(com.anytypeio.anytype.core_ui.R.dimen.nav_fab_button_size),
 ) {
     Row(
         modifier = modifier
@@ -30,12 +33,14 @@ fun HomeScreenToolbar(
         CircularFabButton(
             iconRes = R.drawable.ic_default_top_back,
             onClick = onBackButtonClicked,
-            contentDescription = stringResource(R.string.content_desc_back_button)
+            contentDescription = stringResource(R.string.content_desc_back_button),
+            size = buttonSize
         )
         CircularFabButton(
             iconRes = R.drawable.ic_space_list_dots,
             onClick = onSpaceSettingsClicked,
-            contentDescription = stringResource(R.string.space_settings)
+            contentDescription = stringResource(R.string.space_settings),
+            size = buttonSize
         )
     }
 }

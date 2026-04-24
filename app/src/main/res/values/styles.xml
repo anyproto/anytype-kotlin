@@ -40,6 +40,8 @@
         <item name="bottomSheetStyle">@style/WidgetOverlayBottomSheetStyle</item>
         <item name="android:windowIsFloating">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
     <style name="WidgetOverlayBottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">

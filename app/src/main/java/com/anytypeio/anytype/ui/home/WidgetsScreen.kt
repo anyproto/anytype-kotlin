@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.BuildConfig
@@ -58,7 +59,8 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun WidgetsScreen(
-    viewModel: HomeScreenViewModel
+    viewModel: HomeScreenViewModel,
+    fabSize: Dp = dimensionResource(com.anytypeio.anytype.core_ui.R.dimen.nav_fab_button_size),
 ) {
 
     val view = LocalView.current
@@ -565,6 +567,7 @@ fun WidgetsScreen(
                     bottom = dimensionResource(R.dimen.nav_fab_margin),
                 )
             ,
+            size = fabSize,
             onClick = viewModel::onSearchIconClicked,
         )
 
@@ -585,6 +588,7 @@ fun WidgetsScreen(
                         end = dimensionResource(R.dimen.nav_fab_margin),
                         bottom = dimensionResource(R.dimen.nav_fab_margin),
                     ),
+                size = fabSize,
                 onClick = viewModel::onCreateObjectMenuClicked,
             )
         }

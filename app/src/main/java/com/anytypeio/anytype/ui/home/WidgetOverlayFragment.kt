@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.core.view.WindowCompat
@@ -76,6 +77,8 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
+
+private const val WIDGET_OVERLAY_FAB_SCALE = 0.85f
 
 class WidgetOverlayFragment : BottomSheetDialogFragment() {
 
@@ -356,6 +359,9 @@ private fun WidgetOverlayContent(
     val wallpaper by wallpaperState.collectAsStateWithLifecycle()
     val spaceBackground = wallpaper.toSpaceBackground()
     val wallpaperAlpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA / 255f
+    val scaledFabSize = dimensionResource(
+        com.anytypeio.anytype.core_ui.R.dimen.nav_fab_button_size
+    ) * WIDGET_OVERLAY_FAB_SCALE
 
     Box(
         modifier = Modifier
@@ -365,7 +371,7 @@ private fun WidgetOverlayContent(
             modifier = Modifier
                 .fillMaxSize()
                 .statusBarsPadding()
-                .padding(top = 24.dp, bottom = 16.dp)
+                .padding(top = 8.dp, bottom = 16.dp)
                 .padding(horizontal = 8.dp)
                 .clip(RoundedCornerShape(20.dp))
                 .background(colorResource(R.color.background_primary))
@@ -384,7 +390,8 @@ private fun WidgetOverlayContent(
                 .nestedScroll(rememberNestedScrollInteropConnection())
         ) {
             WidgetsScreen(
-                viewModel = vm
+                viewModel = vm,
+                fabSize = scaledFabSize,
             )
         }
         HomeScreenToolbar(
@@ -392,9 +399,11 @@ private fun WidgetOverlayContent(
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
                 .statusBarsPadding()
-                .padding(top = 24.dp),
+                .padding(top = 12.dp)
+                .padding(horizontal = 8.dp),
             onBackButtonClicked = onBackClicked,
             onSpaceSettingsClicked = onSpaceSettingsClicked,
+            buttonSize = scaledFabSize,
         )
 
         val createObjectSheetVisible by vm.createObjectSheetVisible.collectAsStateWithLifecycle()

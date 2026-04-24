@@ -392,6 +392,8 @@ private fun WidgetOverlayContent(
             WidgetsScreen(
                 viewModel = vm,
                 fabSize = scaledFabSize,
+                topContentPadding = 52.dp,
+                bottomContentPadding = 16.dp,
             )
         }
         HomeScreenToolbar(

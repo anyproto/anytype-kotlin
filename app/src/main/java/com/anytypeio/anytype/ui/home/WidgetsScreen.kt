@@ -61,6 +61,12 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun WidgetsScreen(
     viewModel: HomeScreenViewModel,
     fabSize: Dp = dimensionResource(com.anytypeio.anytype.core_ui.R.dimen.nav_fab_button_size),
+    topContentPadding: Dp =
+        WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
+            dimensionResource(R.dimen.nav_top_toolbar_height) +
+            8.dp,
+    bottomContentPadding: Dp =
+        WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 16.dp,
 ) {
 
     val view = LocalView.current
@@ -236,15 +242,6 @@ fun WidgetsScreen(
             }
         }
     }
-
-    // Top inset: status bar + toolbar + 8dp breathing room so the
-    // first widget sits just below the overlaid HomeScreenToolbar.
-    val topContentPadding =
-        WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
-            dimensionResource(R.dimen.nav_top_toolbar_height) +
-            8.dp
-    val bottomContentPadding =
-        WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 16.dp
 
     Box(
         modifier = Modifier

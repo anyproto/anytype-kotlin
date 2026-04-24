@@ -3061,7 +3061,8 @@ class Middleware @Inject constructor(
         logResponseIfDebug(response, time)
         return Command.ChatCommand.GetMessages.Response(
             messages = response.messages.map { it.core() },
-            state = response.chatState?.core()
+            state = response.chatState?.core(),
+            messageCount = response.messageCount
         )
     }
 

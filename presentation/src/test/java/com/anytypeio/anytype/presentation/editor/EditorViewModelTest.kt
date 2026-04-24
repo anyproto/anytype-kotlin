@@ -3745,7 +3745,8 @@ open class EditorViewModelTest {
             dateProvider = dateProvider,
             spaceViews = spacedViews,
             urlHelper = mock(),
-            addDiscussion = mock()
+            addDiscussion = mock(),
+            getChatMessages = mock()
         )
     }
 

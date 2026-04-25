@@ -1815,7 +1815,8 @@ class HomeScreenViewModel(
                 onSuccess = { payloads ->
                     payloads.forEach { payloadDelegator.dispatch(it) }
                 },
-                onFailure = {
+                onFailure = { e ->
+                    Timber.e(e, "Error reordering my favorites")
                     _myFavoritesReorderFailedCount.update { it + 1 }
                 }
             )
@@ -1836,14 +1837,14 @@ class HomeScreenViewModel(
                     AddPersonalFavorite.Params(space = vmParams.spaceId, target = targetObjectId)
                 ).fold(
                     onSuccess = { payload -> payloadDelegator.dispatch(payload) },
-                    onFailure = {}
+                    onFailure = { Timber.e(it, "Error favoriting via widget menu") }
                 )
             } else {
                 removePersonalFavorite.async(
                     RemovePersonalFavorite.Params(space = vmParams.spaceId, target = targetObjectId)
                 ).fold(
                     onSuccess = { payload -> payload?.let { payloadDelegator.dispatch(it) } },
-                    onFailure = {}
+                    onFailure = { Timber.e(it, "Error unfavoriting via widget menu") }
                 )
             }
         }

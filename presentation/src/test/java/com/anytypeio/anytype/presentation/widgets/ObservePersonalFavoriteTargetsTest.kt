@@ -187,6 +187,12 @@ class ObservePersonalFavoriteTargetsTest {
     /**
      * In-memory PayloadDelegator backed by a SharedFlow. Mirrors the real
      * DefaultPayloadDelegator's filtering by `payload.context`.
+     *
+     * Note: production [PayloadDelegator.Default] uses `extraBufferCapacity = 0`,
+     * so dispatch() suspends until every subscriber consumes the item. Here we
+     * give it a small buffer so tests can dispatch from the same coroutine that
+     * collects without deadlocking on runCurrent. Production timing differs
+     * (subscriber is already attached via viewModelScope before dispatch fires).
      */
     private class FakePayloadDelegator : PayloadDelegator {
         private val shared = MutableSharedFlow<Payload>(replay = 0, extraBufferCapacity = 8)

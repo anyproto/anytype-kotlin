@@ -12,12 +12,12 @@ import com.anytypeio.anytype.domain.favorites.PersonalFavoritesRepository
 import com.anytypeio.anytype.domain.favorites.personalWidgetsId
 
 class PersonalFavoritesDataRepository(
-    private val blocks: BlockRepository
+    private val blockRepo: BlockRepository
 ) : PersonalFavoritesRepository {
 
     override suspend fun add(space: SpaceId, target: Id): Payload {
         val ctx = personalWidgetsId(space)
-        return blocks.createWidget(
+        return blockRepo.createWidget(
             ctx = ctx,
             source = target,
             layout = Block.Content.Widget.Layout.LINK,
@@ -37,7 +37,7 @@ class PersonalFavoritesDataRepository(
 
     override suspend fun remove(space: SpaceId, target: Id): Payload? {
         val ctx = personalWidgetsId(space)
-        val view = blocks.openObject(ctx, space)
+        val view = blockRepo.openObject(ctx, space)
         // Per anytype-heart GO-6962 (PR #3092), ListDelete on the personal-widgets
         // doc expects the INNER LINK block IDs — NOT the wrapper. The middleware
         // unlink handler internally cascades to remove both the link and its
@@ -46,13 +46,13 @@ class PersonalFavoritesDataRepository(
         // targetObjectIdByLinkFor(widgetBlockId:)) actually the link block ID.
         val linkIds = view.innerLinkIdsTargeting(target)
         if (linkIds.isEmpty()) return null
-        return blocks.unlink(Command.Unlink(context = ctx, targets = linkIds))
+        return blockRepo.unlink(Command.Unlink(context = ctx, targets = linkIds))
     }
 
     override suspend fun reorder(space: SpaceId, orderedTargets: List<Id>): List<Payload> {
         if (orderedTargets.size < 2) return emptyList()
         val ctx = personalWidgetsId(space)
-        val view = blocks.openObject(ctx, space)
+        val view = blockRepo.openObject(ctx, space)
         val wrappers = orderedTargets.mapNotNull { view.wrapperIdTargeting(it) }
         if (wrappers.size < 2) return emptyList()
         // Anchor each subsequent wrapper to Position.BOTTOM of the previous one.
@@ -62,7 +62,7 @@ class PersonalFavoritesDataRepository(
         // Position.INNER targeting root — used previously here — is ambiguous and
         // does not express a relative position, which produced unpredictable order.
         return wrappers.zipWithNext().map { (prev, curr) ->
-            blocks.move(
+            blockRepo.move(
                 Command.Move(
                     ctx = ctx,
                     targetContextId = ctx,

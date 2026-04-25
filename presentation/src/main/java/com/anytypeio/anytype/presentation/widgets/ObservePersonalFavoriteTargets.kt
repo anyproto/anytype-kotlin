@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import timber.log.Timber
 
@@ -76,8 +75,6 @@ class ObservePersonalFavoriteTargets @Inject constructor(
         )
     }
 }
-
-private fun List<Id>.shortIds(): List<String> = take(5).map { it.takeLast(6) }
 
 /**
  * Reduces block-tree events relevant to personal-favorites rendering into an

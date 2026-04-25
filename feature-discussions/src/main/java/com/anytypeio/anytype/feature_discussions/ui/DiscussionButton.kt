@@ -23,7 +23,6 @@ import com.anytypeio.anytype.core_ui.R
 
 @Composable
 fun DiscussionButton(
-    hasComments: Boolean,
     commentCount: Int,
     onClick: () -> Unit
 ) {
@@ -44,7 +43,7 @@ fun DiscussionButton(
             contentDescription = "Discussion",
             tint = colorResource(id = R.color.glyph_active)
         )
-        if (hasComments && commentCount > 0) {
+        if (commentCount > 0) {
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
@@ -69,7 +68,6 @@ fun DiscussionButton(
 @Composable
 private fun DiscussionButtonEmptyPreview() {
     DiscussionButton(
-        hasComments = false,
         commentCount = 0,
         onClick = {}
     )
@@ -79,7 +77,6 @@ private fun DiscussionButtonEmptyPreview() {
 @Composable
 private fun DiscussionButtonWithCommentsPreview() {
     DiscussionButton(
-        hasComments = true,
         commentCount = 5,
         onClick = {}
     )

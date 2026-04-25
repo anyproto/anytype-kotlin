@@ -848,6 +848,8 @@ class EditorViewModel(
                         getChatMessages.async(
                             com.anytypeio.anytype.core_models.Command.ChatCommand.GetMessages(
                                 chat = existingDiscussionId,
+                                // Only messageCount is needed; limit=0 is not supported by MW,
+                                // so fetch the minimum (1 message) and discard the payload.
                                 limit = 1
                             )
                         ).fold(

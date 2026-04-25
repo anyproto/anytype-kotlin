@@ -673,14 +673,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 when (val s = state) {
                     is EditorViewModel.DiscussionButtonState.Comments -> {
                         DiscussionButton(
-                            hasComments = s.count > 0,
                             commentCount = s.count,
                             onClick = { vm.onDiscussionButtonClicked() }
                         )
                     }
                     is EditorViewModel.DiscussionButtonState.Empty -> {
                         DiscussionButton(
-                            hasComments = false,
                             commentCount = 0,
                             onClick = { vm.onDiscussionButtonClicked() }
                         )

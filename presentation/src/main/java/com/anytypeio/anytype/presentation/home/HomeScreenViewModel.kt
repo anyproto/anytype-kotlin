@@ -1814,13 +1814,8 @@ class HomeScreenViewModel(
             ).fold(
                 onSuccess = { payloads ->
                     payloads.forEach { payloadDelegator.dispatch(it) }
-                    Timber.d(
-                        "DROID-4397-FAV [vm] reordered my favorites — " +
-                                "dispatched ${payloads.size} payloads, order=$orderedTargetIds"
-                    )
                 },
-                onFailure = { e ->
-                    Timber.e(e, "DROID-4397-FAV [vm] reorder FAILURE")
+                onFailure = {
                     _myFavoritesReorderFailedCount.update { it + 1 }
                 }
             )
@@ -1834,64 +1829,21 @@ class HomeScreenViewModel(
     private fun proceedWithWidgetFavoriteToggle(widgetId: Id, isFavorite: Boolean) {
         val targetWidget = currentWidgets.orEmpty().find { it.id == widgetId }
         val targetObjectId = targetWidget?.source?.id
-        Timber.d(
-            "DROID-4397-FAV [vm] toggle lookup: found=${targetWidget != null}, " +
-                    "sourceClass=${targetWidget?.source?.let { it::class.simpleName }}, " +
-                    "targetObjectId=$targetObjectId, " +
-                    "currentWidgetsSize=${currentWidgets.orEmpty().size}"
-        )
-        if (targetObjectId.isNullOrEmpty()) {
-            Timber.w(
-                "DROID-4397-FAV [vm] toggle EARLY-RETURN: widget $widgetId " +
-                        "has no source object id; skipping favorite toggle"
-            )
-            return
-        }
+        if (targetObjectId.isNullOrEmpty()) return
         viewModelScope.launch {
             if (isFavorite) {
-                Timber.d("DROID-4397-FAV [vm] toggle ADD start: target=$targetObjectId")
                 addPersonalFavorite.async(
                     AddPersonalFavorite.Params(space = vmParams.spaceId, target = targetObjectId)
                 ).fold(
-                    onSuccess = { payload ->
-                        payloadDelegator.dispatch(payload)
-                        Timber.d(
-                            "DROID-4397-FAV [vm] toggle ADD dispatched: " +
-                                    "target=$targetObjectId, events=${payload.events.size}"
-                        )
-                    },
-                    onFailure = {
-                        Timber.e(
-                            it,
-                            "DROID-4397-FAV [vm] toggle ADD FAILURE: target=$targetObjectId"
-                        )
-                    }
+                    onSuccess = { payload -> payloadDelegator.dispatch(payload) },
+                    onFailure = {}
                 )
             } else {
-                Timber.d("DROID-4397-FAV [vm] toggle REMOVE start: target=$targetObjectId")
                 removePersonalFavorite.async(
                     RemovePersonalFavorite.Params(space = vmParams.spaceId, target = targetObjectId)
                 ).fold(
-                    onSuccess = { payload ->
-                        if (payload != null) {
-                            payloadDelegator.dispatch(payload)
-                            Timber.d(
-                                "DROID-4397-FAV [vm] toggle REMOVE dispatched: " +
-                                        "target=$targetObjectId, events=${payload.events.size}"
-                            )
-                        } else {
-                            Timber.w(
-                                "DROID-4397-FAV [vm] toggle REMOVE no-op (repo returned null): " +
-                                        "target=$targetObjectId not present in personal-widgets snapshot"
-                            )
-                        }
-                    },
-                    onFailure = {
-                        Timber.e(
-                            it,
-                            "DROID-4397-FAV [vm] toggle REMOVE FAILURE: target=$targetObjectId"
-                        )
-                    }
+                    onSuccess = { payload -> payload?.let { payloadDelegator.dispatch(it) } },
+                    onFailure = {}
                 )
             }
         }

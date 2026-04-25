@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.scan
-import timber.log.Timber
 
 /**
  * Observes the user's personal-favorite object IDs in [SpaceId].
@@ -56,7 +55,6 @@ class ObservePersonalFavoriteTargets @Inject constructor(
 
     private fun personalWidgetsTree(space: SpaceId): Flow<ObjectView> = flow {
         val docId = personalWidgetsId(space)
-        Timber.d("DROID-4397-FAV [observer] OpenObject START for docId=$docId, space=${space.id}")
         val initial = openObject.async(
             OpenObject.Params(
                 obj = docId,

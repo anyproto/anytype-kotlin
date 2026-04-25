@@ -80,6 +80,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.clipboard.Paste.Companion.DEFAULT_RANGE
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.chats.GetChatMessages
 import com.anytypeio.anytype.domain.discussions.AddDiscussion
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.error.Error
@@ -366,7 +367,8 @@ class EditorViewModel(
     private val dateProvider: DateProvider,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val urlHelper: UrlHelper,
-    private val addDiscussion: AddDiscussion
+    private val addDiscussion: AddDiscussion,
+    private val getChatMessages: GetChatMessages
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -840,6 +842,29 @@ class EditorViewModel(
                     )
                 } else {
                     DiscussionButtonState.Empty
+                }
+                if (existingDiscussionId != null) {
+                    viewModelScope.launch {
+                        getChatMessages.async(
+                            com.anytypeio.anytype.core_models.Command.ChatCommand.GetMessages(
+                                chat = existingDiscussionId,
+                                // Only messageCount is needed; limit=0 is not supported by MW,
+                                // so fetch the minimum (1 message) and discard the payload.
+                                limit = 1
+                            )
+                        ).fold(
+                            onSuccess = { response ->
+                                _discussionButtonState.value =
+                                    DiscussionButtonState.Comments(
+                                        discussionId = existingDiscussionId,
+                                        count = response.messageCount
+                                    )
+                            },
+                            onFailure = {
+                                Timber.e(it, "Failed to fetch discussion message count")
+                            }
+                        )
+                    }
                 }
                 footers.value = getFooterState(root, currentObj)
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()

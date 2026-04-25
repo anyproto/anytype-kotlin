@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
@@ -128,6 +129,7 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentEditorBinding
+import com.anytypeio.anytype.feature_discussions.ui.DiscussionButton
 import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
 import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
 import com.anytypeio.anytype.feature_create_object.ui.CreateObjectSheetHost
@@ -454,7 +456,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             if (dy > 4) {
                 binding.fabCreate.hide()
-                binding.discussionButton.hide()
+                binding.discussionButton.isVisible = false
             } else if (dy < -4) {
                 val navToolbarVisible =
                     vm.controlPanelViewState.value?.navigationToolbar?.isVisible == true
@@ -463,7 +465,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 if (vm.discussionButtonState.value !is
                     EditorViewModel.DiscussionButtonState.Hidden
                 ) {
-                    binding.discussionButton.show()
+                    binding.discussionButton.isVisible = true
                 }
             }
         }
@@ -664,10 +666,27 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             WidgetOverlayFragment.show(parentFragmentManager, space)
         }
 
-        binding.discussionButton
-            .clicks()
-            .onEach { vm.onDiscussionButtonClicked() }
-            .launchIn(lifecycleScope)
+        binding.discussionButton.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val state by vm.discussionButtonState.collectAsStateWithLifecycle()
+                when (val s = state) {
+                    is EditorViewModel.DiscussionButtonState.Comments -> {
+                        DiscussionButton(
+                            commentCount = s.count,
+                            onClick = { vm.onDiscussionButtonClicked() }
+                        )
+                    }
+                    is EditorViewModel.DiscussionButtonState.Empty -> {
+                        DiscussionButton(
+                            commentCount = 0,
+                            onClick = { vm.onDiscussionButtonClicked() }
+                        )
+                    }
+                    is EditorViewModel.DiscussionButtonState.Hidden -> { /* nothing */ }
+                }
+            }
+        }
 
         vm.discussionButtonState
             .onEach { state ->

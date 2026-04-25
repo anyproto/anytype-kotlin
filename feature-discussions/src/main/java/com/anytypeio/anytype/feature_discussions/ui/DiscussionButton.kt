@@ -44,9 +44,9 @@ fun DiscussionButton(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_chat_type_24),
+                painter = painterResource(id = R.drawable.ic_chat_outline_24),
                 contentDescription = "Discussion",
-                tint = colorResource(id = R.color.glyph_active)
+                tint = colorResource(id = R.color.control_primary)
             )
             if (hasUnreadMessages) {
                 Box(

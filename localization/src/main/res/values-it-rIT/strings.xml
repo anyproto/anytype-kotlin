@@ -2143,8 +2143,6 @@ Please provide specific details of your needs here.</string>
     <string name="select_space">Select Channel</string>
     <string name="add_a_comment">Aggiungi un commento...</string>
     <string name="send">Invia</string>
-    <string name="chat_notifications_receive_all">Ricevi tutto</string>
-    <string name="chat_notifications_mute_all">Silenzia tutti</string>
     <string name="chat_specific_notifications">Notifiche specifiche della chat</string>
     <string name="notify_me_about">Avvisami su</string>
     <string name="error_while_downloading_object">Errore durante il download dell\'oggetto: %1$s</string>

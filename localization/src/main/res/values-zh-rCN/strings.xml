@@ -2122,8 +2122,6 @@
     <string name="select_space">选择频道</string>
     <string name="add_a_comment">添加评论...</string>
     <string name="send">发送</string>
-    <string name="chat_notifications_receive_all">接收全部</string>
-    <string name="chat_notifications_mute_all">全部静音</string>
     <string name="chat_specific_notifications">特定聊天通知</string>
     <string name="notify_me_about">通知范围</string>
     <string name="error_while_downloading_object">下载对象时出错：%1$s</string>

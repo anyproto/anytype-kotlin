@@ -2142,8 +2142,6 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="select_space">Kanal Seç</string>
     <string name="add_a_comment">Yorum ekle...</string>
     <string name="send">Gönder</string>
-    <string name="chat_notifications_receive_all">Tümünü al</string>
-    <string name="chat_notifications_mute_all">Tümünü sustur</string>
     <string name="chat_specific_notifications">Sohbete özel bildirimler</string>
     <string name="notify_me_about">Beni bilgilendir</string>
     <string name="error_while_downloading_object">Nesne indirilirken hata oluştu: %1$s</string>

@@ -1,25 +1,35 @@
-package com.anytypeio.anytype.domain.favorites
+package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.favorites.personalWidgetsId
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 
@@ -32,14 +42,17 @@ class ObservePersonalFavoriteTargetsTest {
     @Mock
     lateinit var interceptEvents: InterceptEvents
 
+    private lateinit var payloadDelegator: FakePayloadDelegator
     private lateinit var observe: ObservePersonalFavoriteTargets
 
     private val space = SpaceId("space-1.context")
+    private val docId = personalWidgetsId(space)
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        observe = ObservePersonalFavoriteTargets(openObject, interceptEvents)
+        payloadDelegator = FakePayloadDelegator()
+        observe = ObservePersonalFavoriteTargets(openObject, interceptEvents, payloadDelegator)
     }
 
     @Test
@@ -95,11 +108,60 @@ class ObservePersonalFavoriteTargetsTest {
      * propagates the exception rather than silently emitting, so callers get
      * a clear signal to fall back.
      */
+    /**
+     * DROID-4397: locally-initiated mutations on the personal-widgets doc come
+     * back as events embedded in the RPC response — middleware does NOT also
+     * push them on the global event stream. The observer merges PayloadDelegator
+     * events with InterceptEvents so VMs can dispatch the response Payload and
+     * have the same reducer pipeline pick it up.
+     */
+    @Test
+    fun `merges PayloadDelegator events into the reducer`() = runTest {
+        stubOpen(
+            objectViewWith(
+                wrapperLinks = listOf(
+                    WrapperLink("w-1", "l-1", "obj-a"),
+                    WrapperLink("w-2", "l-2", "obj-b")
+                )
+            )
+        )
+        stubEvents(emptyFlow())
+
+        val emissions = mutableListOf<List<Id>>()
+        val job = launch {
+            observe(space).collect { emissions += it }
+        }
+        // Let the initial OpenObject emit before dispatching.
+        runCurrent()
+
+        // Simulate the VM dispatching the Payload returned by Rpc.Block.ListDelete:
+        // remove "obj-a" by deleting its wrapper and updating root's children.
+        payloadDelegator.dispatch(
+            Payload(
+                context = docId,
+                events = listOf(
+                    Event.Command.DeleteBlock(context = docId, targets = listOf("w-1", "l-1")),
+                    Event.Command.UpdateStructure(
+                        context = docId,
+                        id = "root",
+                        children = listOf("w-2")
+                    )
+                )
+            )
+        )
+        runCurrent()
+        job.cancel()
+
+        // Observer must have re-emitted with obj-a removed by the local payload.
+        assertEquals(listOf("obj-a", "obj-b"), emissions.first())
+        assertEquals(listOf("obj-b"), emissions.last())
+    }
+
     @Test
     fun `propagates openObject failure so callers can catch`() = runTest {
         val boom = RuntimeException("middleware not ready")
         openObject.stub {
-            onBlocking { run(any()) } doAnswer { throw boom }
+            onBlocking { async(any()) } doReturn Resultat.failure(boom)
         }
         stubEvents(emptyFlow())
 
@@ -112,7 +174,7 @@ class ObservePersonalFavoriteTargetsTest {
 
     private suspend fun stubOpen(tree: ObjectView) {
         openObject.stub {
-            onBlocking { run(any()) } doReturn tree
+            onBlocking { async(any()) } doReturn Resultat.success(tree)
         }
     }
 
@@ -120,6 +182,24 @@ class ObservePersonalFavoriteTargetsTest {
         interceptEvents.stub {
             on { build(any()) } doReturn events
         }
+    }
+
+    /**
+     * In-memory PayloadDelegator backed by a SharedFlow. Mirrors the real
+     * DefaultPayloadDelegator's filtering by `payload.context`.
+     *
+     * Note: production [PayloadDelegator.Default] uses `extraBufferCapacity = 0`,
+     * so dispatch() suspends until every subscriber consumes the item. Here we
+     * give it a small buffer so tests can dispatch from the same coroutine that
+     * collects without deadlocking on runCurrent. Production timing differs
+     * (subscriber is already attached via viewModelScope before dispatch fires).
+     */
+    private class FakePayloadDelegator : PayloadDelegator {
+        private val shared = MutableSharedFlow<Payload>(replay = 0, extraBufferCapacity = 8)
+        override suspend fun dispatch(payload: Payload) {
+            shared.emit(payload)
+        }
+        override fun intercept(ctx: Id): Flow<Payload> = shared.filter { it.context == ctx }
     }
 
     private data class WrapperLink(val wrapperId: String, val linkId: String, val target: String)

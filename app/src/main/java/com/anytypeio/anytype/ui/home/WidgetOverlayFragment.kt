@@ -2,7 +2,7 @@ package com.anytypeio.anytype.ui.home
 
 import android.Manifest
 import android.app.Dialog
-import android.net.Uri
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +14,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,15 +26,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.fragment.compose.content
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -59,7 +68,6 @@ import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.main.MainViewModel
-import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -69,6 +77,8 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
+
+private const val WIDGET_OVERLAY_FAB_SCALE = 0.85f
 
 class WidgetOverlayFragment : BottomSheetDialogFragment() {
 
@@ -120,21 +130,17 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = ComposeView(requireContext()).apply {
-        setContent {
-            MaterialTheme {
-                WidgetOverlayContent(
-                    vm = vm,
-                    createObjectVm = createObjectVm,
-                    wallpaperState = mainVm.wallpaperState,
-                    onBackClicked = { dismiss() },
-                    onSpaceSettingsClicked = {
-                        vm.onSpaceSettingsClicked(space = SpaceId(space))
-                    },
-                    onCreateObjectAction = { action -> handleCreateObjectAction(action) }
-                )
-            }
-        }
+    ) = content {
+        WidgetOverlayContent(
+            vm = vm,
+            createObjectVm = createObjectVm,
+            wallpaperState = mainVm.wallpaperState,
+            onBackClicked = { dismiss() },
+            onSpaceSettingsClicked = {
+                vm.onSpaceSettingsClicked(space = SpaceId(space))
+            },
+            onCreateObjectAction = { action -> handleCreateObjectAction(action) }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -353,35 +359,53 @@ private fun WidgetOverlayContent(
     val wallpaper by wallpaperState.collectAsStateWithLifecycle()
     val spaceBackground = wallpaper.toSpaceBackground()
     val wallpaperAlpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA / 255f
+    val scaledFabSize = dimensionResource(
+        com.anytypeio.anytype.core_ui.R.dimen.nav_fab_button_size
+    ) * WIDGET_OVERLAY_FAB_SCALE
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(R.color.background_primary))
-            .then(
-                when (spaceBackground) {
-                    is SpaceBackground.SolidColor -> Modifier.background(
-                        color = spaceBackground.color.copy(alpha = wallpaperAlpha)
-                    )
-                    is SpaceBackground.Gradient -> Modifier.background(
-                        brush = spaceBackground.brush,
-                        alpha = wallpaperAlpha
-                    )
-                    SpaceBackground.None -> Modifier
-                }
-            )
-            .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
-        WidgetsScreen(
-            viewModel = vm
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .padding(top = 8.dp, bottom = 16.dp)
+                .padding(horizontal = 8.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .background(colorResource(R.color.background_primary))
+                .then(
+                    when (spaceBackground) {
+                        is SpaceBackground.SolidColor -> Modifier.background(
+                            color = spaceBackground.color.copy(alpha = wallpaperAlpha)
+                        )
+                        is SpaceBackground.Gradient -> Modifier.background(
+                            brush = spaceBackground.brush,
+                            alpha = wallpaperAlpha
+                        )
+                        SpaceBackground.None -> Modifier
+                    }
+                )
+                .nestedScroll(rememberNestedScrollInteropConnection())
+        ) {
+            WidgetsScreen(
+                viewModel = vm,
+                fabSize = scaledFabSize,
+                topContentPadding = 52.dp,
+                bottomContentPadding = 16.dp,
+            )
+        }
         HomeScreenToolbar(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
-                .statusBarsPadding(),
+                .statusBarsPadding()
+                .padding(top = 12.dp)
+                .padding(horizontal = 8.dp),
             onBackButtonClicked = onBackClicked,
             onSpaceSettingsClicked = onSpaceSettingsClicked,
+            buttonSize = scaledFabSize,
         )
 
         val createObjectSheetVisible by vm.createObjectSheetVisible.collectAsStateWithLifecycle()

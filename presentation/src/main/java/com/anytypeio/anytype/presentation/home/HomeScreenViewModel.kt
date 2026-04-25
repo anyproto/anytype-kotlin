@@ -68,7 +68,7 @@ import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.favorites.AddPersonalFavorite
-import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
+import com.anytypeio.anytype.presentation.widgets.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.favorites.RemovePersonalFavorite
 import com.anytypeio.anytype.domain.favorites.ReorderPersonalFavorites
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
@@ -1812,7 +1812,9 @@ class HomeScreenViewModel(
                     order = orderedTargetIds
                 )
             ).fold(
-                onSuccess = { Timber.d("Reordered my favorites: $orderedTargetIds") },
+                onSuccess = { payloads ->
+                    payloads.forEach { payloadDelegator.dispatch(it) }
+                },
                 onFailure = { e ->
                     Timber.e(e, "Error reordering my favorites")
                     _myFavoritesReorderFailedCount.update { it + 1 }
@@ -1828,24 +1830,27 @@ class HomeScreenViewModel(
     private fun proceedWithWidgetFavoriteToggle(widgetId: Id, isFavorite: Boolean) {
         val targetWidget = currentWidgets.orEmpty().find { it.id == widgetId }
         val targetObjectId = targetWidget?.source?.id
-        if (targetObjectId.isNullOrEmpty()) {
-            Timber.w("Widget $widgetId has no source object id; skipping favorite toggle")
-            return
-        }
+        if (targetObjectId.isNullOrEmpty()) return
         viewModelScope.launch {
             if (isFavorite) {
                 addPersonalFavorite.async(
                     AddPersonalFavorite.Params(space = vmParams.spaceId, target = targetObjectId)
                 ).fold(
-                    onSuccess = { Timber.d("Favorited $targetObjectId via widget menu") },
-                    onFailure = { Timber.e(it, "Error favoriting $targetObjectId via widget menu") }
+                    onSuccess = { payload -> payloadDelegator.dispatch(payload) },
+                    onFailure = {
+                        Timber.e(it, "Error favoriting via widget menu")
+                        sendToast("Something went wrong. Please, try again later.")
+                    }
                 )
             } else {
                 removePersonalFavorite.async(
                     RemovePersonalFavorite.Params(space = vmParams.spaceId, target = targetObjectId)
                 ).fold(
-                    onSuccess = { Timber.d("Unfavorited $targetObjectId via widget menu") },
-                    onFailure = { Timber.e(it, "Error unfavoriting $targetObjectId via widget menu") }
+                    onSuccess = { payload -> payload?.let { payloadDelegator.dispatch(it) } },
+                    onFailure = {
+                        Timber.e(it, "Error unfavoriting via widget menu")
+                        sendToast("Something went wrong. Please, try again later.")
+                    }
                 )
             }
         }

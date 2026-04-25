@@ -68,7 +68,7 @@ import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.favorites.AddPersonalFavorite
-import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
+import com.anytypeio.anytype.presentation.widgets.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.favorites.RemovePersonalFavorite
 import com.anytypeio.anytype.domain.favorites.ReorderPersonalFavorites
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
@@ -1812,9 +1812,15 @@ class HomeScreenViewModel(
                     order = orderedTargetIds
                 )
             ).fold(
-                onSuccess = { Timber.d("Reordered my favorites: $orderedTargetIds") },
+                onSuccess = { payloads ->
+                    payloads.forEach { payloadDelegator.dispatch(it) }
+                    Timber.d(
+                        "DROID-4397-FAV [vm] reordered my favorites — " +
+                                "dispatched ${payloads.size} payloads, order=$orderedTargetIds"
+                    )
+                },
                 onFailure = { e ->
-                    Timber.e(e, "Error reordering my favorites")
+                    Timber.e(e, "DROID-4397-FAV [vm] reorder FAILURE")
                     _myFavoritesReorderFailedCount.update { it + 1 }
                 }
             )
@@ -1828,24 +1834,64 @@ class HomeScreenViewModel(
     private fun proceedWithWidgetFavoriteToggle(widgetId: Id, isFavorite: Boolean) {
         val targetWidget = currentWidgets.orEmpty().find { it.id == widgetId }
         val targetObjectId = targetWidget?.source?.id
+        Timber.d(
+            "DROID-4397-FAV [vm] toggle lookup: found=${targetWidget != null}, " +
+                    "sourceClass=${targetWidget?.source?.let { it::class.simpleName }}, " +
+                    "targetObjectId=$targetObjectId, " +
+                    "currentWidgetsSize=${currentWidgets.orEmpty().size}"
+        )
         if (targetObjectId.isNullOrEmpty()) {
-            Timber.w("Widget $widgetId has no source object id; skipping favorite toggle")
+            Timber.w(
+                "DROID-4397-FAV [vm] toggle EARLY-RETURN: widget $widgetId " +
+                        "has no source object id; skipping favorite toggle"
+            )
             return
         }
         viewModelScope.launch {
             if (isFavorite) {
+                Timber.d("DROID-4397-FAV [vm] toggle ADD start: target=$targetObjectId")
                 addPersonalFavorite.async(
                     AddPersonalFavorite.Params(space = vmParams.spaceId, target = targetObjectId)
                 ).fold(
-                    onSuccess = { Timber.d("Favorited $targetObjectId via widget menu") },
-                    onFailure = { Timber.e(it, "Error favoriting $targetObjectId via widget menu") }
+                    onSuccess = { payload ->
+                        payloadDelegator.dispatch(payload)
+                        Timber.d(
+                            "DROID-4397-FAV [vm] toggle ADD dispatched: " +
+                                    "target=$targetObjectId, events=${payload.events.size}"
+                        )
+                    },
+                    onFailure = {
+                        Timber.e(
+                            it,
+                            "DROID-4397-FAV [vm] toggle ADD FAILURE: target=$targetObjectId"
+                        )
+                    }
                 )
             } else {
+                Timber.d("DROID-4397-FAV [vm] toggle REMOVE start: target=$targetObjectId")
                 removePersonalFavorite.async(
                     RemovePersonalFavorite.Params(space = vmParams.spaceId, target = targetObjectId)
                 ).fold(
-                    onSuccess = { Timber.d("Unfavorited $targetObjectId via widget menu") },
-                    onFailure = { Timber.e(it, "Error unfavoriting $targetObjectId via widget menu") }
+                    onSuccess = { payload ->
+                        if (payload != null) {
+                            payloadDelegator.dispatch(payload)
+                            Timber.d(
+                                "DROID-4397-FAV [vm] toggle REMOVE dispatched: " +
+                                        "target=$targetObjectId, events=${payload.events.size}"
+                            )
+                        } else {
+                            Timber.w(
+                                "DROID-4397-FAV [vm] toggle REMOVE no-op (repo returned null): " +
+                                        "target=$targetObjectId not present in personal-widgets snapshot"
+                            )
+                        }
+                    },
+                    onFailure = {
+                        Timber.e(
+                            it,
+                            "DROID-4397-FAV [vm] toggle REMOVE FAILURE: target=$targetObjectId"
+                        )
+                    }
                 )
             }
         }

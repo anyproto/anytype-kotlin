@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.favorites.personalWidgetsId
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -29,7 +30,6 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 
@@ -161,7 +161,7 @@ class ObservePersonalFavoriteTargetsTest {
     fun `propagates openObject failure so callers can catch`() = runTest {
         val boom = RuntimeException("middleware not ready")
         openObject.stub {
-            onBlocking { run(any()) } doAnswer { throw boom }
+            onBlocking { async(any()) } doReturn Resultat.failure(boom)
         }
         stubEvents(emptyFlow())
 
@@ -174,7 +174,7 @@ class ObservePersonalFavoriteTargetsTest {
 
     private suspend fun stubOpen(tree: ObjectView) {
         openObject.stub {
-            onBlocking { run(any()) } doReturn tree
+            onBlocking { async(any()) } doReturn Resultat.success(tree)
         }
     }
 

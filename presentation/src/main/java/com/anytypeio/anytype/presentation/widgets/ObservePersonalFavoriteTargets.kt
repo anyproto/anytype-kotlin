@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
+import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.favorites.personalWidgetsId
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -53,44 +54,22 @@ class ObservePersonalFavoriteTargets @Inject constructor(
     operator fun invoke(space: SpaceId): Flow<List<Id>> = personalWidgetsTree(space)
         .map { tree -> tree.orderedRealTargets() }
         .distinctUntilChanged()
-        .onEach { targets ->
-            Timber.d(
-                "DROID-4397-FAV [observer] emit targets: size=${targets.size}, " +
-                        "ids=${targets.shortIds()}"
-            )
-        }
 
     private fun personalWidgetsTree(space: SpaceId): Flow<ObjectView> = flow {
         val docId = personalWidgetsId(space)
         Timber.d("DROID-4397-FAV [observer] OpenObject START for docId=$docId, space=${space.id}")
-        val initial = openObject.run(
+        val initial = openObject.async(
             OpenObject.Params(
                 obj = docId,
                 spaceId = space,
                 saveAsLastOpened = false
             )
-        )
-        Timber.d(
-            "DROID-4397-FAV [observer] OpenObject DONE for docId=$docId — " +
-                    "root=${initial.root}, blocks=${initial.blocks.size}"
-        )
+        ).getOrThrow()
         val mwEvents: Flow<List<Event>> = interceptEvents
             .build(InterceptEvents.Params(context = docId))
-            .onEach { events ->
-                Timber.d(
-                    "DROID-4397-FAV [observer] mwEvents from docId=$docId: " +
-                            "count=${events.size}, types=${events.map { it::class.simpleName }}"
-                )
-            }
         val localEvents: Flow<List<Event>> = payloadDelegator
             .intercept(docId)
             .map { it.events }
-            .onEach { events ->
-                Timber.d(
-                    "DROID-4397-FAV [observer] localEvents from docId=$docId: " +
-                            "count=${events.size}, types=${events.map { it::class.simpleName }}"
-                )
-            }
         emitAll(
             merge(mwEvents, localEvents)
                 .scan(initial) { state, events -> reduce(state, events) }

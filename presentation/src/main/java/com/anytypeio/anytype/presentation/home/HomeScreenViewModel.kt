@@ -1837,14 +1837,20 @@ class HomeScreenViewModel(
                     AddPersonalFavorite.Params(space = vmParams.spaceId, target = targetObjectId)
                 ).fold(
                     onSuccess = { payload -> payloadDelegator.dispatch(payload) },
-                    onFailure = { Timber.e(it, "Error favoriting via widget menu") }
+                    onFailure = {
+                        Timber.e(it, "Error favoriting via widget menu")
+                        sendToast("Something went wrong. Please, try again later.")
+                    }
                 )
             } else {
                 removePersonalFavorite.async(
                     RemovePersonalFavorite.Params(space = vmParams.spaceId, target = targetObjectId)
                 ).fold(
                     onSuccess = { payload -> payload?.let { payloadDelegator.dispatch(it) } },
-                    onFailure = { Timber.e(it, "Error unfavoriting via widget menu") }
+                    onFailure = {
+                        Timber.e(it, "Error unfavoriting via widget menu")
+                        sendToast("Something went wrong. Please, try again later.")
+                    }
                 )
             }
         }

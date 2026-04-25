@@ -2127,8 +2127,6 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="select_space">Pilih Saluran</string>
     <string name="add_a_comment">Tambahkan komentar …</string>
     <string name="send">Kirim</string>
-    <string name="chat_notifications_receive_all">Terima semua</string>
-    <string name="chat_notifications_mute_all">Senyapkan semua</string>
     <string name="chat_specific_notifications">Pemberitahuan spesifik obrolan</string>
     <string name="notify_me_about">Beri notifikasi tentang</string>
     <string name="error_while_downloading_object">Galat saat mengunduh objek: %1$s</string>

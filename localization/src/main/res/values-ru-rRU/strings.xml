@@ -2172,8 +2172,6 @@
     <string name="select_space">Выбрать канал</string>
     <string name="add_a_comment">Добавить комментарий...</string>
     <string name="send">Отправить</string>
-    <string name="chat_notifications_receive_all">Получить все</string>
-    <string name="chat_notifications_mute_all">Заглушить всех</string>
     <string name="chat_specific_notifications">Уведомления для чата</string>
     <string name="notify_me_about">Уведомить меня о</string>
     <string name="error_while_downloading_object">Ошибка при загрузке объекта: %1$s</string>

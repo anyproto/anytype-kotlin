@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.domain.favorites
+package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
@@ -6,33 +6,47 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
+import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.favorites.personalWidgetsId
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.scan
 
 /**
  * Observes the user's personal-favorite object IDs in [SpaceId].
  *
  * Opens the per-user, per-space virtual widgets doc
- * (`_personalWidgets_<encodedSpaceId>` — see [personalWidgetsId]) via
- * [OpenObject] for the initial [ObjectView], then scans block events from
- * [InterceptEvents] on the same context to keep the tree up to date. Emits the
- * ordered list of link-target object IDs under root, filtering out built-in
- * targets such as `favorite`, `recent`, `allObjects`, etc.
+ * (`_personalWidgets_<encodedSpaceId>` — see
+ * [com.anytypeio.anytype.domain.favorites.personalWidgetsId]) via [OpenObject]
+ * for the initial [ObjectView], then folds two event streams into the tree:
+ *  - [InterceptEvents] on the same context — receives free-standing events
+ *    middleware pushes via the global event stream (e.g. desktop or another
+ *    device mutates the personal-widgets doc);
+ *  - [PayloadDelegator.intercept] on the same context — receives events from
+ *    locally-initiated mutations (createWidget / unlink / move) that the
+ *    middleware embeds in the RPC response and does NOT also broadcast on the
+ *    push stream. Without this merge, locally-initiated changes never reach
+ *    this reducer until the next OpenObject.
  *
- * Shared between [com.anytypeio.anytype.presentation.widgets.PersonalFavoritesWidgetContainer]
- * (which renders the "My Favorites" section rows) and the object-menu
- * options provider (which decides whether to show Favorite vs Unfavorite).
+ * Lives in the presentation module so it can consume the
+ * presentation-layer [PayloadDelegator] without violating module boundaries.
+ *
+ * Shared between [PersonalFavoritesWidgetContainer] (which renders the
+ * "My Favorites" section rows) and the object-menu options provider (which
+ * decides whether to show Favorite vs Unfavorite).
  */
 class ObservePersonalFavoriteTargets @Inject constructor(
     private val openObject: OpenObject,
-    private val interceptEvents: InterceptEvents
+    private val interceptEvents: InterceptEvents,
+    private val payloadDelegator: PayloadDelegator
 ) {
 
     operator fun invoke(space: SpaceId): Flow<List<Id>> = personalWidgetsTree(space)
@@ -41,16 +55,20 @@ class ObservePersonalFavoriteTargets @Inject constructor(
 
     private fun personalWidgetsTree(space: SpaceId): Flow<ObjectView> = flow {
         val docId = personalWidgetsId(space)
-        val initial = openObject.run(
+        val initial = openObject.async(
             OpenObject.Params(
                 obj = docId,
                 spaceId = space,
                 saveAsLastOpened = false
             )
-        )
+        ).getOrThrow()
+        val mwEvents: Flow<List<Event>> = interceptEvents
+            .build(InterceptEvents.Params(context = docId))
+        val localEvents: Flow<List<Event>> = payloadDelegator
+            .intercept(docId)
+            .map { it.events }
         emitAll(
-            interceptEvents
-                .build(InterceptEvents.Params(context = docId))
+            merge(mwEvents, localEvents)
                 .scan(initial) { state, events -> reduce(state, events) }
         )
     }

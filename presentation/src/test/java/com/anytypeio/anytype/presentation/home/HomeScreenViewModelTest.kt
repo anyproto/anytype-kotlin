@@ -49,7 +49,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.favorites.AddPersonalFavorite
-import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
+import com.anytypeio.anytype.presentation.widgets.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.favorites.RemovePersonalFavorite
 import com.anytypeio.anytype.domain.favorites.ReorderPersonalFavorites
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType

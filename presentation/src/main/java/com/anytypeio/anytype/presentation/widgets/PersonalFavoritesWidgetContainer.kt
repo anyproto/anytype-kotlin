@@ -7,7 +7,6 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.objectIcon
-import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes

@@ -675,7 +675,11 @@ class DefaultBlockViewRendererTest {
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
-                image = UrlBuilderImpl(gateway).medium(imageName)
+                image = UrlBuilderImpl(gateway).medium(imageName),
+                icon = ObjectIcon.Profile.Image(
+                    hash = UrlBuilderImpl(gateway).thumbnail(imageName),
+                    name = name
+                )
             ),
             BlockView.Text.Paragraph(
                 isFocused = true,
@@ -770,7 +774,8 @@ class DefaultBlockViewRendererTest {
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
-                image = UrlBuilderImpl(gateway).medium(imageName)
+                image = UrlBuilderImpl(gateway).medium(imageName),
+                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             BlockView.Text.Paragraph(
                 isFocused = true,

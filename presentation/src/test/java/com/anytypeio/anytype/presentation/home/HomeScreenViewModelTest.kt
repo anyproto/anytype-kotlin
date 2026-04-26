@@ -3069,12 +3069,8 @@ class HomeScreenViewModelTest {
         advanceUntilIdle()
 
         // Verify setCollapsedSectionIds was called with SECTION_RECENTLY_EDITED added
-        verifyBlocking(userSettingsRepository, times(1)) {
-            setCollapsedSectionIds(
-                space = eq(spaceId),
-                sectionIds = eq(listOf(SECTION_RECENTLY_EDITED))
-            )
-        }
+        val saved = userSettingsRepository.firstSetCollapsedSectionIdsCall()
+        assertEquals(listOf(SECTION_RECENTLY_EDITED), saved)
     }
 
     @Test
@@ -3111,12 +3107,8 @@ class HomeScreenViewModelTest {
         advanceUntilIdle()
 
         // Verify setCollapsedSectionIds was called with SECTION_RECENTLY_EDITED removed
-        verifyBlocking(userSettingsRepository, times(1)) {
-            setCollapsedSectionIds(
-                space = eq(spaceId),
-                sectionIds = eq(emptyList())
-            )
-        }
+        val saved = userSettingsRepository.firstSetCollapsedSectionIdsCall()
+        assertEquals(emptyList(), saved)
     }
 
     @Test
@@ -3168,9 +3160,15 @@ class HomeScreenViewModelTest {
 
     private fun stubUserSettingsRepoForSectionTests(initialCollapsedSections: List<Id>) {
         userSettingsRepository.stub {
-            onBlocking { getCollapsedSectionIds(any()) } doReturn flowOf(initialCollapsedSections)
-            onBlocking { setCollapsedSectionIds(any(), any()) } doReturn Unit
-            onBlocking { getExpandedWidgetIds(any()) } doReturn flowOf(emptyList())
+            on { getCollapsedSectionIds(spaceId) } doReturn flowOf(initialCollapsedSections)
+            on { getExpandedWidgetIds(spaceId) } doReturn flowOf(emptyList())
+            on { observeInviteMembersDismissed(spaceId) } doReturn flowOf(false)
+        }
+        spaceViewSubscriptionContainer.stub {
+            on { observe(spaceId) } doReturn emptyFlow()
+        }
+        activeSpaceMemberSubscriptionContainer.stub {
+            on { observe(spaceId) } doReturn emptyFlow()
         }
     }
 
@@ -3256,6 +3254,16 @@ class HomeScreenViewModelTest {
         uploadFile = uploadFile,
         fileSharer = fileSharer
     )
+
+    // Captures the first sectionIds argument passed to setCollapsedSectionIds.
+    // Mockito's argumentCaptor and matchers don't work with value class params (SpaceId),
+    // so we read invocations directly to avoid the unbox-impl NPE.
+    @Suppress("UNCHECKED_CAST")
+    private fun UserSettingsRepository.firstSetCollapsedSectionIdsCall(): List<Id> {
+        val invocations = org.mockito.Mockito.mockingDetails(this).invocations
+        val call = invocations.first { it.method.name.startsWith("setCollapsedSectionIds") }
+        return call.arguments[1] as List<Id>
+    }
 
     companion object {
         val WIDGET_OBJECT_ID: Id = "Widget-object-${MockDataFactory.randomUuid()}"

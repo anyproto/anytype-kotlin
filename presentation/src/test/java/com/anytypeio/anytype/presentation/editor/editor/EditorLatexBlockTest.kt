@@ -15,6 +15,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 class EditorLatexBlockTest : EditorPresentationTestSetup() {
 
@@ -92,7 +93,8 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
                             id = title.id,
                             isFocused = false,
                             text = title.content<TXT>().text,
-                            mode = BlockView.Mode.EDIT
+                            mode = BlockView.Mode.EDIT,
+                            icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                         ),
                         BlockView.Latex(
                             id = latex.id,
@@ -151,7 +153,8 @@ class EditorLatexBlockTest : EditorPresentationTestSetup() {
                             id = title.id,
                             isFocused = false,
                             text = title.content<TXT>().text,
-                            mode = BlockView.Mode.EDIT
+                            mode = BlockView.Mode.EDIT,
+                            icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                         ),
                         BlockView.Text.Paragraph(
                             id = p.id,

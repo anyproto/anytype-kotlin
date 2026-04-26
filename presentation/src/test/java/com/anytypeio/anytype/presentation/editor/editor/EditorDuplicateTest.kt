@@ -22,6 +22,7 @@ import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 class EditorDuplicateTest : EditorPresentationTestSetup() {
 
@@ -178,7 +179,8 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
                     BlockView.Title.Basic(
                         id = title.id,
                         text = title.content<Block.Content.Text>().text,
-                        mode = BlockView.Mode.READ
+                        mode = BlockView.Mode.READ,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                     ),
                     BlockView.Text.Paragraph(
                         id = a.id,
@@ -231,7 +233,8 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
                     BlockView.Title.Basic(
                         id = title.id,
                         text = title.content<Block.Content.Text>().text,
-                        mode = BlockView.Mode.READ
+                        mode = BlockView.Mode.READ,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                     ),
                     BlockView.Text.Paragraph(
                         id = a.id,
@@ -326,7 +329,8 @@ class EditorDuplicateTest : EditorPresentationTestSetup() {
                     BlockView.Title.Basic(
                         id = title.id,
                         text = title.content<Block.Content.Text>().text,
-                        mode = BlockView.Mode.READ
+                        mode = BlockView.Mode.READ,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                     ),
                     BlockView.Text.Paragraph(
                         id = a.id,

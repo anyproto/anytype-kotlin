@@ -33,6 +33,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoMoreInteractions
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 class EditorTitleTest : EditorPresentationTestSetup() {
 
@@ -334,7 +335,8 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
                     isFocused = false,
-                    emoji = null
+                    emoji = null,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Bulleted(
                     id = block.id,
@@ -360,7 +362,8 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
                     isFocused = false,
-                    emoji = emoji
+                    emoji = emoji,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Bulleted(
                     id = block.id,
@@ -461,7 +464,8 @@ class EditorTitleTest : EditorPresentationTestSetup() {
                     id = title.id,
                     text = newText,
                     isFocused = false,
-                    emoji = emoji
+                    emoji = emoji,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Bulleted(
                     id = block.id,

@@ -7544,7 +7544,29 @@ message Rpc {
 
         message RunProfiler {
             message Request {
+                // 0 = save heap snapshot only; >0 = run full profiler (CPU, heap, trace, goroutines) for this many seconds
                 int32 durationInSeconds = 1;
+                Reason reason = 2;
+                // Optional free-form description to attach to the profile
+                string reasonDesc = 3;
+
+                enum Reason {
+                    UNKNOWN = 0;
+                    // Triggered explicitly by the user
+                    USER_REQUEST = 1;
+                    // iOS: DISPATCH_MEMORYPRESSURE_WARN
+                    // Android: onTrimMemory(RUNNING_LOW)
+                    MEMORY_PRESSURE_WARN = 2;
+                    // iOS: DISPATCH_MEMORYPRESSURE_CRITICAL / applicationDidReceiveMemoryWarning
+                    // Android: onTrimMemory(RUNNING_CRITICAL)
+                    MEMORY_PRESSURE_CRITICAL = 3;
+                    // iOS: ProcessInfo.thermalState == .serious
+                    // Android: THERMAL_STATUS_SEVERE
+                    THERMAL_SERIOUS = 4;
+                    // iOS: ProcessInfo.thermalState == .critical
+                    // Android: THERMAL_STATUS_CRITICAL or higher
+                    THERMAL_CRITICAL = 5;
+                }
             }
 
             message Response {
@@ -7585,14 +7607,21 @@ message Rpc {
             }
         }
 
-        message ExportLog {
+        message ExportReport {
             message Request {
                 string dir = 1; // empty means using OS-provided temp dir
+                // When false (default) the report includes only the 2 newest log files
+                // (active + most recent rotated). When true, all logs are included.
+                bool full = 2;
             }
 
             message Response {
                 Error error = 1;
                 string path = 2;
+                // JSON summary with profile counts by reason and log count
+                string summary = 3;
+                // Unix timestamp (seconds) of the newest source file in this report. Pass to DebugCleanupReport after the report is successfully uploaded to the reporter server.
+                int64 lastModifiedTs = 4;
 
                 message Error {
                     Code code = 1;
@@ -7603,6 +7632,28 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         NO_FOLDER = 3;
+                    }
+                }
+            }
+        }
+
+        message CleanupReport {
+            message Request {
+                // Unix timestamp (seconds); files with lastModified < ts will be removed
+                int64 ts = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
                     }
                 }
             }

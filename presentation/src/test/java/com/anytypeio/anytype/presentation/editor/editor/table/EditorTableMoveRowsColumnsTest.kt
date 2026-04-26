@@ -43,6 +43,7 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
 
@@ -367,6 +368,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     id = title.id,
                     text = title.content<TXT>().text,
                     mode = BlockView.Mode.READ,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Table(
                     id = tableId,
@@ -670,6 +672,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     id = title.id,
                     text = title.content<TXT>().text,
                     mode = BlockView.Mode.READ,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Table(
                     id = tableId,
@@ -972,6 +975,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     id = title.id,
                     text = title.content<TXT>().text,
                     mode = BlockView.Mode.READ,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Table(
                     id = tableId,
@@ -1267,6 +1271,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     id = title.id,
                     text = title.content<TXT>().text,
                     mode = BlockView.Mode.READ,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Table(
                     id = tableId,
@@ -1677,6 +1682,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     id = title.id,
                     text = title.content<TXT>().text,
                     mode = BlockView.Mode.READ,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Table(
                     id = tableId,
@@ -1936,6 +1942,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     id = title.id,
                     text = title.content<TXT>().text,
                     mode = BlockView.Mode.READ,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Table(
                     id = tableId,
@@ -2187,6 +2194,7 @@ class EditorTableMoveRowsColumnsTest : EditorPresentationTestSetup() {
                     id = title.id,
                     text = title.content<TXT>().text,
                     mode = BlockView.Mode.READ,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Table(
                     id = tableId,

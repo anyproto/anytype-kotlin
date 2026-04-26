@@ -522,7 +522,8 @@ open class EditorTestSetup {
             dateProvider = dateProvider,
             spaceViews = spacedViews,
             urlHelper = urlHelper,
-            addDiscussion = mock()
+            addDiscussion = mock(),
+            getChatMessages = mock()
         )
     }
 

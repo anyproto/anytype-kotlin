@@ -3259,7 +3259,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun debugExportLogs(dir: String): String {
-        val request = Rpc.Debug.ExportLog.Request(dir = dir)
+        val request = Rpc.Debug.ExportReport.Request(dir = dir)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.debugExportLogs(request) }
         logResponseIfDebug(response, time)

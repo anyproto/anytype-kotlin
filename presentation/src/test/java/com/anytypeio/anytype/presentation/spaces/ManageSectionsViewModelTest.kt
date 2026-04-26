@@ -22,11 +22,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
-import org.mockito.kotlin.argumentCaptor
+import org.mockito.Mockito
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
-import org.mockito.kotlin.verify
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ManageSectionsViewModelTest {
@@ -55,7 +53,7 @@ class ManageSectionsViewModelTest {
             on { observe() } doReturn flowOf(testConfig)
         }
         userSettingsRepository.stub {
-            on { observeWidgetSections(any()) } doReturn flowOf(widgetSections)
+            on { observeWidgetSections(testSpaceId) } doReturn flowOf(widgetSections)
         }
     }
 
@@ -139,8 +137,9 @@ class ManageSectionsViewModelTest {
                 WidgetSectionConfig(id = WidgetSectionType.BIN, isVisible = true, order = 0),
                 WidgetSectionConfig(id = WidgetSectionType.PINNED, isVisible = true, order = 1),
                 WidgetSectionConfig(id = WidgetSectionType.UNREAD, isVisible = true, order = 2),
-                WidgetSectionConfig(id = WidgetSectionType.OBJECTS, isVisible = true, order = 3),
-                WidgetSectionConfig(id = WidgetSectionType.RECENTLY_EDITED, isVisible = true, order = 4)
+                WidgetSectionConfig(id = WidgetSectionType.MY_FAVORITES, isVisible = true, order = 3),
+                WidgetSectionConfig(id = WidgetSectionType.OBJECTS, isVisible = true, order = 4),
+                WidgetSectionConfig(id = WidgetSectionType.RECENTLY_EDITED, isVisible = true, order = 5)
             )
         )
         stubDefaults(widgetSections = customSections)
@@ -221,10 +220,7 @@ class ManageSectionsViewModelTest {
         vm.onSectionsReordered(reversed)
         advanceUntilIdle()
 
-        val captor = argumentCaptor<WidgetSections>()
-        verify(userSettingsRepository).setWidgetSections(any(), captor.capture())
-
-        val saved = captor.firstValue
+        val saved = userSettingsRepository.firstSetWidgetSectionsCall()
         // Verify the saved order matches the reversed order
         assertEquals(WidgetSectionType.BIN, saved.sections[0].id)
         assertEquals(0, saved.sections[0].order)
@@ -312,10 +308,8 @@ class ManageSectionsViewModelTest {
         vm.onSectionVisibilityChanged(WidgetSectionType.BIN, false)
         advanceUntilIdle()
 
-        val captor = argumentCaptor<WidgetSections>()
-        verify(userSettingsRepository).setWidgetSections(any(), captor.capture())
-
-        val binConfig = captor.firstValue.sections.find { it.id == WidgetSectionType.BIN }!!
+        val saved = userSettingsRepository.firstSetWidgetSectionsCall()
+        val binConfig = saved.sections.find { it.id == WidgetSectionType.BIN }!!
         assertFalse(binConfig.isVisible)
     }
 
@@ -337,5 +331,14 @@ class ManageSectionsViewModelTest {
         others.forEach { section ->
             assertTrue(section.isVisible, "${section.type} should remain visible")
         }
+    }
+
+    // Captures the first WidgetSections argument passed to setWidgetSections.
+    // Mockito's argumentCaptor returns null for value class params (SpaceId),
+    // so we read invocations directly to avoid the unbox-impl NPE.
+    private fun UserSettingsRepository.firstSetWidgetSectionsCall(): WidgetSections {
+        val invocations = Mockito.mockingDetails(this).invocations
+        val call = invocations.first { it.method.name.startsWith("setWidgetSections") }
+        return call.arguments[1] as WidgetSections
     }
 }

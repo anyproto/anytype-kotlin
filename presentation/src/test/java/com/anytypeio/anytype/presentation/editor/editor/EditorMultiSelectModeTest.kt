@@ -43,6 +43,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
@@ -193,7 +194,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             id = ttl.id,
             isFocused = false,
             text = ttl.content<TXT>().text,
-            mode = BlockView.Mode.READ
+            mode = BlockView.Mode.READ,
+            icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
         )
 
         val parentView = BlockView.Text.Paragraph(
@@ -446,7 +448,8 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
             id = title.id,
             isFocused = false,
             text = title.content<TXT>().text,
-            mode = BlockView.Mode.READ
+            mode = BlockView.Mode.READ,
+            icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
         )
 
         val parentView = BlockView.Text.Paragraph(
@@ -767,6 +770,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         id = title.id,
                         text = title.content<TXT>().text,
                         mode = BlockView.Mode.EDIT,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                     ),
                     BlockView.Text.Paragraph(
                         id = a.id,
@@ -940,6 +944,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
                         id = title.id,
                         text = title.content<TXT>().text,
                         mode = BlockView.Mode.READ,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                     ),
                     BlockView.Text.Paragraph(
                         id = a.id,

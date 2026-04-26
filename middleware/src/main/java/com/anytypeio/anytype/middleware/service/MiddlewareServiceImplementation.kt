@@ -2781,13 +2781,13 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun debugExportLogs(request: Rpc.Debug.ExportLog.Request): Rpc.Debug.ExportLog.Response {
-        val encoded = Service.debugExportLog(
-            Rpc.Debug.ExportLog.Request.ADAPTER.encode(request)
+    override fun debugExportLogs(request: Rpc.Debug.ExportReport.Request): Rpc.Debug.ExportReport.Response {
+        val encoded = Service.debugExportReport(
+            Rpc.Debug.ExportReport.Request.ADAPTER.encode(request)
         )
-        val response = Rpc.Debug.ExportLog.Response.ADAPTER.decode(encoded)
+        val response = Rpc.Debug.ExportReport.Response.ADAPTER.decode(encoded)
         val error = response.error
-        if (error != null && error.code != Rpc.Debug.ExportLog.Response.Error.Code.NULL) {
+        if (error != null && error.code != Rpc.Debug.ExportReport.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

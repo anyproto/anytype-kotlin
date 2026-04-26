@@ -16,6 +16,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 class EditorGranularChangeTest : EditorPresentationTestSetup() {
 
@@ -108,7 +109,8 @@ class EditorGranularChangeTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Checkbox(
                     id = checkbox.id,
@@ -129,7 +131,8 @@ class EditorGranularChangeTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Checkbox(
                     id = checkbox.id,

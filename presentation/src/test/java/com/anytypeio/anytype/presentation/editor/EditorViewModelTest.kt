@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.ParsedProperties
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -564,7 +565,8 @@ open class EditorViewModelTest {
                 BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
-                    text = title.content<TXT>().text
+                    text = title.content<TXT>().text,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = paragraph.id,
@@ -1000,7 +1002,8 @@ open class EditorViewModelTest {
                 BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
-                    text = title.content<TXT>().text
+                    text = title.content<TXT>().text,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     isFocused = true,
@@ -1042,7 +1045,8 @@ open class EditorViewModelTest {
                 BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
-                    text = title.content<TXT>().text
+                    text = title.content<TXT>().text,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     isFocused = true,
@@ -1143,7 +1147,8 @@ open class EditorViewModelTest {
                 BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
-                    text = title.content<TXT>().text
+                    text = title.content<TXT>().text,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     isFocused = true,
@@ -1192,7 +1197,8 @@ open class EditorViewModelTest {
                 BlockView.Title.Basic(
                     isFocused = false,
                     id = title.id,
-                    text = title.content<TXT>().text
+                    text = title.content<TXT>().text,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     isFocused = true,
@@ -2971,7 +2977,8 @@ open class EditorViewModelTest {
         val titleView = BlockView.Title.Basic(
             id = title.id,
             text = title.content<TXT>().text,
-            isFocused = false
+            isFocused = false,
+            icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
         )
 
         val initial = listOf(
@@ -3224,6 +3231,7 @@ open class EditorViewModelTest {
             BlockView.Title.Basic(
                 id = title.id,
                 text = title.content<TXT>().text,
+                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                 mode = BlockView.Mode.EDIT
             ),
             BlockView.Error.Picture(
@@ -3292,6 +3300,7 @@ open class EditorViewModelTest {
             BlockView.Title.Basic(
                 id = title.id,
                 text = title.content<TXT>().text,
+                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                 mode = BlockView.Mode.EDIT
             ),
             BlockView.Error.Video(
@@ -3361,6 +3370,7 @@ open class EditorViewModelTest {
             BlockView.Title.Basic(
                 id = title.id,
                 text = title.content<TXT>().text,
+                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT,
                 mode = BlockView.Mode.EDIT
             ),
             BlockView.Error.File(
@@ -3983,7 +3993,8 @@ open class EditorViewModelTest {
         val titleView = BlockView.Title.Basic(
             id = title.id,
             text = title.content<TXT>().text,
-            isFocused = false
+            isFocused = false,
+            icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
         )
 
         val initial = listOf(

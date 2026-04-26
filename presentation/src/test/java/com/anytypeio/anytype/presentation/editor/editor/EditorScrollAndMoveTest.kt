@@ -28,6 +28,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 
 class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
@@ -284,6 +285,7 @@ class EditorScrollAndMoveTest : EditorPresentationTestSetup() {
                     BlockView.Title.Basic(
                         id = title.id,
                         text = title.content<Block.Content.Text>().text,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                     ),
                     BlockView.Text.Paragraph(
                         id = a.id,

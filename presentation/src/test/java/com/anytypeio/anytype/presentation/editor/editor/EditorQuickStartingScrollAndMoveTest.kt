@@ -18,6 +18,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
 
@@ -140,6 +141,7 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
                     id = title.id,
                     text = title.content<TXT>().text,
                     mode = BlockView.Mode.READ,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Numbered(
                     id = a.id,
@@ -248,6 +250,7 @@ class EditorQuickStartingScrollAndMoveTest : EditorPresentationTestSetup() {
                         id = title.id,
                         text = title.content<TXT>().text,
                         mode = BlockView.Mode.EDIT,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                     ),
                     BlockView.Text.Numbered(
                         id = a.id,

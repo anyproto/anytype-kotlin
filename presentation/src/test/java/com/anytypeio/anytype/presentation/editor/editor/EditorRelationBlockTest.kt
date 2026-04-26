@@ -23,6 +23,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 class EditorRelationBlockTest : EditorPresentationTestSetup() {
 
@@ -117,7 +118,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                     id = title.id,
                     isFocused = false,
                     text = title.content<TXT>().text,
-                    mode = BlockView.Mode.EDIT
+                    mode = BlockView.Mode.EDIT,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = a.id,
@@ -227,7 +229,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                         id = title.id,
                         isFocused = false,
                         text = title.content<Block.Content.Text>().text,
-                        emoji = null
+                        emoji = null,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                     ),
                     BlockView.Text.Numbered(
                         isFocused = false,
@@ -349,7 +352,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
-                emoji = null
+                emoji = null,
+                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             BlockView.Text.Numbered(
                 isFocused = false,
@@ -435,7 +439,8 @@ class EditorRelationBlockTest : EditorPresentationTestSetup() {
                     id = title.id,
                     isFocused = false,
                     text = title.content<Block.Content.Text>().text,
-                    emoji = null
+                    emoji = null,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Numbered(
                     isFocused = false,

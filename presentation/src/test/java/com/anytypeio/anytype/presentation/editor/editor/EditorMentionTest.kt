@@ -45,6 +45,7 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 class EditorMentionTest : EditorPresentationTestSetup() {
 
@@ -225,7 +226,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             id = title.id,
                             isFocused = false,
                             text = title.content<TXT>().text,
-                            mode = BlockView.Mode.EDIT
+                            mode = BlockView.Mode.EDIT,
+                            icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                         ),
                         BlockView.Text.Paragraph(
                             id = a.id,
@@ -383,7 +385,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             id = title.id,
                             isFocused = false,
                             text = title.content<TXT>().text,
-                            mode = BlockView.Mode.EDIT
+                            mode = BlockView.Mode.EDIT,
+                            icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                         ),
                         BlockView.Text.Paragraph(
                             id = a.id,
@@ -532,7 +535,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             id = title.id,
                             isFocused = false,
                             text = title.content<TXT>().text,
-                            mode = BlockView.Mode.EDIT
+                            mode = BlockView.Mode.EDIT,
+                            icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                         ),
                         BlockView.Text.Paragraph(
                             id = a.id,
@@ -902,7 +906,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                     id = title.id,
                     isFocused = false,
                     text = title.content<TXT>().text,
-                    mode = BlockView.Mode.EDIT
+                    mode = BlockView.Mode.EDIT,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = a.id,
@@ -1064,7 +1069,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                     id = title.id,
                     isFocused = false,
                     text = title.content<TXT>().text,
-                    mode = BlockView.Mode.EDIT
+                    mode = BlockView.Mode.EDIT,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = a.id,
@@ -1201,7 +1207,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                             id = title.id,
                             isFocused = false,
                             text = title.content<TXT>().text,
-                            mode = BlockView.Mode.EDIT
+                            mode = BlockView.Mode.EDIT,
+                            icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                         ),
                         BlockView.Text.Paragraph(
                             id = a.id,
@@ -1353,7 +1360,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                     id = title.id,
                     isFocused = false,
                     text = title.content<TXT>().text,
-                    mode = BlockView.Mode.EDIT
+                    mode = BlockView.Mode.EDIT,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = a.id,
@@ -1514,7 +1522,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                     id = title.id,
                     isFocused = false,
                     text = title.content<TXT>().text,
-                    mode = BlockView.Mode.EDIT
+                    mode = BlockView.Mode.EDIT,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = a.id,

@@ -324,7 +324,7 @@ class SplashViewModelTest {
             spaceLocalStatus = SpaceStatus.OK,
             spaceAccountStatus = SpaceStatus.OK,
             chatId = chatId,
-            spaceUxType = SpaceUxType.CHAT
+            spaceUxType = SpaceUxType.ONE_TO_ONE
         )
 
         stubCheckAuthStatus(response)

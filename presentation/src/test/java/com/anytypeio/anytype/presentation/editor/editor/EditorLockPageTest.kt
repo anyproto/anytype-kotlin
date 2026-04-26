@@ -104,7 +104,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.Title.Basic(
                 id = title.id,
                 text = title.content<TXT>().text,
-                mode = BlockView.Mode.EDIT
+                mode = BlockView.Mode.EDIT,
+                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             BlockView.Text.Bulleted(
                 id = child.id,
@@ -171,7 +172,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.Title.Basic(
                 id = title.id,
                 text = title.content<TXT>().text,
-                mode = BlockView.Mode.EDIT
+                mode = BlockView.Mode.EDIT,
+                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             BlockView.Text.Bulleted(
                 id = child.id,
@@ -238,7 +240,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.Title.Basic(
                 id = title.id,
                 text = title.content<TXT>().text,
-                mode = BlockView.Mode.READ
+                mode = BlockView.Mode.READ,
+                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             BlockView.Text.Bulleted(
                 id = child.id,
@@ -312,7 +315,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.Title.Basic(
                 id = title.id,
                 text = title.content<TXT>().text,
-                mode = BlockView.Mode.READ
+                mode = BlockView.Mode.READ,
+                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             BlockView.LinkToObject.Default.Text(
                 id = link.id,
@@ -427,7 +431,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.Title.Basic(
                 id = title.id,
                 text = title.content<TXT>().text,
-                mode = BlockView.Mode.READ
+                mode = BlockView.Mode.READ,
+                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             BlockView.Text.Paragraph(
                 id = paragraph.id,
@@ -544,7 +549,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.Title.Basic(
                 id = title.id,
                 text = title.content<TXT>().text,
-                mode = BlockView.Mode.READ
+                mode = BlockView.Mode.READ,
+                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             BlockView.Media.Bookmark(
                 id = bookmark.id,
@@ -657,7 +663,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.Title.Basic(
                 id = title.id,
                 text = title.content<TXT>().text,
-                mode = BlockView.Mode.READ
+                mode = BlockView.Mode.READ,
+                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             BlockView.Media.File(
                 id = fileBlockId,
@@ -762,7 +769,8 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.Title.Basic(
                 id = title.id,
                 text = title.content<TXT>().text,
-                mode = BlockView.Mode.READ
+                mode = BlockView.Mode.READ,
+                icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             ),
             BlockView.Media.Picture(
                 id = picture.id,

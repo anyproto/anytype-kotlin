@@ -77,7 +77,8 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = block.id,
@@ -144,7 +145,8 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = block.id,
@@ -215,7 +217,8 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = block.id,
@@ -348,7 +351,8 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = block.id,
@@ -402,7 +406,8 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = block.id,
@@ -490,7 +495,8 @@ class DataViewBlockTargetObjectSetTest : EditorPresentationTestSetup() {
                     BlockView.Title.Basic(
                         id = title.id,
                         text = title.content<Block.Content.Text>().text,
-                        isFocused = false
+                        isFocused = false,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                     ),
                     BlockView.Text.Paragraph(
                         id = block.id,

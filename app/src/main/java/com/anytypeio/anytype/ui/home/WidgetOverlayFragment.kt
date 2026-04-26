@@ -243,14 +243,22 @@ class WidgetOverlayFragment : BottomSheetDialogFragment(),
                                 }
                             }
                             is Command.CreateSourceForNewWidget -> {
-                                WidgetSourceTypeFragment.new(
-                                    space = command.space.id,
-                                    widgetId = command.widgets
-                                ).show(childFragmentManager, null)
+                                runCatching {
+                                    WidgetSourceTypeFragment.new(
+                                        space = command.space.id,
+                                        widgetId = command.widgets
+                                    ).show(childFragmentManager, null)
+                                }.onFailure {
+                                    Timber.e(it, "Error showing WidgetSourceTypeFragment from overlay")
+                                }
                             }
                             is Command.CreateChatObject -> {
-                                CreateChatObjectFragment.new(space = command.space.id)
-                                    .show(childFragmentManager, "create-chat-object-dialog")
+                                runCatching {
+                                    CreateChatObjectFragment.new(space = command.space.id)
+                                        .show(childFragmentManager, "create-chat-object-dialog")
+                                }.onFailure {
+                                    Timber.e(it, "Error showing CreateChatObjectFragment from overlay")
+                                }
                             }
                             else -> {
                                 Timber.d("WidgetOverlay vm command (ignored): $command")
@@ -408,6 +416,9 @@ class WidgetOverlayFragment : BottomSheetDialogFragment(),
 
     override fun onChatObjectCreated(objectId: Id) {
         Timber.d("Chat object created from widget overlay: $objectId")
+        // Match the proceed(Navigation) contract: dismiss the sheet first so it
+        // does not remain on the back stack beneath the newly-opened chat.
+        dismiss()
         runCatching {
             navigation().openChat(
                 target = objectId,

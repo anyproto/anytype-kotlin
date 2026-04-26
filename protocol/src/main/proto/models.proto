@@ -1698,6 +1698,8 @@ message ChatMessage {
             MessageBlockText text = 1;
             MessageBlockLink link = 2;
             MessageBlockEmbed embed = 3;
+            MessageBlockEditorQuote editorQuote = 4;
+            MessageBlockMessageQuote messageQuote = 5;
         }
     }
 
@@ -1724,6 +1726,17 @@ message ChatMessage {
     message MessageBlockEmbed {
         string text = 1;
         Block.Content.Latex.Processor processor = 2;
+    }
+
+    message MessageBlockEditorQuote {
+        string blockId = 1;           // id of the quoted block in the source object
+        MessageBlockText content = 2; // quoted block content (text, style, marks, ...)
+    }
+
+    message MessageBlockMessageQuote {
+        string messageId = 1;         // id of the quoted chat message
+        string participantId = 2;     // id of the participant who authored the quoted message
+        MessageBlockText content = 3; // quoted message content (text, style, marks, ...)
     }
 }
 

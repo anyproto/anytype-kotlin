@@ -49,6 +49,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.ui.WallpaperResult
@@ -69,7 +71,13 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.objects.creation.WidgetSourceTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
+import com.anytypeio.anytype.ui.widgets.CreateChatObjectFragment
+import com.anytypeio.anytype.ui.widgets.CreateChatObjectListener
+import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
+import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -80,7 +88,9 @@ import timber.log.Timber
 
 private const val WIDGET_OVERLAY_FAB_SCALE = 0.85f
 
-class WidgetOverlayFragment : BottomSheetDialogFragment() {
+class WidgetOverlayFragment : BottomSheetDialogFragment(),
+    WidgetSourceTypeListener,
+    CreateChatObjectListener {
 
     @Inject
     lateinit var factory: HomeScreenViewModel.Factory
@@ -149,9 +159,13 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     vm.commands.collect { command ->
-                        // Most HomeScreenViewModel commands are widget-host flows
-                        // owned by WidgetsScreenFragment. The overlay handles the
-                        // two that originate from its own bottom buttons.
+                        // The overlay hosts the full WidgetsScreen, so it must
+                        // forward widget-edit commands to nav-graph dialog
+                        // destinations / child-fragment dialogs the same way
+                        // WidgetsScreenFragment does. Other commands
+                        // (Deeplink.*, OpenVault, HandleChatSpaceBackNavigation,
+                        // etc.) are not reachable from this surface and stay
+                        // intentionally unhandled.
                         when (command) {
                             is Command.OpenGlobalSearchScreen -> {
                                 runCatching {
@@ -162,6 +176,89 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
                                     Timber.e(it, "Error opening global search from overlay")
                                 }
                                 dismissAfterGesture()
+                            }
+                            is Command.ChangeWidgetType -> {
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.selectWidgetTypeScreen,
+                                        SelectWidgetTypeFragment.args(
+                                            ctx = command.ctx,
+                                            widget = command.widget,
+                                            source = command.source,
+                                            type = command.type,
+                                            layout = command.layout,
+                                            isInEditMode = command.isInEditMode
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error navigating to SelectWidgetType from overlay")
+                                }
+                            }
+                            is Command.ChangeWidgetSource -> {
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.selectWidgetSourceScreen,
+                                        SelectWidgetSourceFragment.args(
+                                            ctx = command.ctx,
+                                            widget = command.widget,
+                                            source = command.source,
+                                            type = command.type,
+                                            isInEditMode = command.isInEditMode,
+                                            spaceId = command.space
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error navigating to ChangeWidgetSource from overlay")
+                                }
+                            }
+                            is Command.SelectWidgetSource -> {
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.selectWidgetSourceScreen,
+                                        SelectWidgetSourceFragment.args(
+                                            ctx = command.ctx,
+                                            target = command.target,
+                                            isInEditMode = command.isInEditMode,
+                                            spaceId = command.space
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error navigating to SelectWidgetSource from overlay")
+                                }
+                            }
+                            is Command.SelectWidgetType -> {
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.selectWidgetTypeScreen,
+                                        SelectWidgetTypeFragment.args(
+                                            ctx = command.ctx,
+                                            source = command.source,
+                                            layout = command.layout,
+                                            target = command.target,
+                                            isInEditMode = command.isInEditMode
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error navigating to SelectWidgetType (new) from overlay")
+                                }
+                            }
+                            is Command.CreateSourceForNewWidget -> {
+                                runCatching {
+                                    WidgetSourceTypeFragment.new(
+                                        space = command.space.id,
+                                        widgetId = command.widgets
+                                    ).show(childFragmentManager, null)
+                                }.onFailure {
+                                    Timber.e(it, "Error showing WidgetSourceTypeFragment from overlay")
+                                }
+                            }
+                            is Command.CreateChatObject -> {
+                                runCatching {
+                                    CreateChatObjectFragment.new(space = command.space.id)
+                                        .show(childFragmentManager, "create-chat-object-dialog")
+                                }.onFailure {
+                                    Timber.e(it, "Error showing CreateChatObjectFragment from overlay")
+                                }
                             }
                             else -> {
                                 Timber.d("WidgetOverlay vm command (ignored): $command")
@@ -311,6 +408,24 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
         componentManager().createObjectFeatureComponent.release(createObjectComponentKey())
         componentManager().widgetOverlayComponent.release()
         super.onDestroy()
+    }
+
+    override fun onSetNewWidgetSource(objType: ObjectWrapper.Type, widgetId: Id) {
+        vm.onNewWidgetSourceTypeSelected(type = objType, widgets = widgetId)
+    }
+
+    override fun onChatObjectCreated(objectId: Id) {
+        Timber.d("Chat object created from widget overlay: $objectId")
+        // Match the proceed(Navigation) contract: dismiss the sheet first so it
+        // does not remain on the back stack beneath the newly-opened chat.
+        dismiss()
+        runCatching {
+            navigation().openChat(
+                target = objectId,
+                space = space,
+                popUpToVault = false
+            )
+        }.onFailure { Timber.e(it, "Error opening chat from overlay after object creation") }
     }
 
     private fun handleCreateObjectAction(action: CreateObjectAction) {

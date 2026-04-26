@@ -173,6 +173,10 @@ class VaultViewModel(
     private val _selectedMemberIds = MutableStateFlow<List<Id>>(emptyList())
     private val _membershipFeatures = MutableStateFlow(MembershipFeatures())
 
+    // Tracks whether the current group-creation flow went through the SelectMembers
+    // step, so we know to reopen it when the user presses back on CreateSpace.
+    private var didShowSelectMembersForGroupCreation = false
+
     private val previewFlow: StateFlow<ChatPreviewContainer.PreviewState> =
         chatPreviewContainer.observePreviewsWithAttachments()
             .filterIsInstance<ChatPreviewContainer.PreviewState.Ready>() // wait until ready
@@ -860,8 +864,10 @@ class VaultViewModel(
                     )
                     _selectMembersSearchQuery.value = ""
                     _selectedMemberIds.value = emptyList()
+                    didShowSelectMembersForGroupCreation = true
                     showSelectMembersSheet.value = true
                 } else {
+                    didShowSelectMembersForGroupCreation = false
                     commands.emit(
                         VaultCommand.CreateNewSpace(
                             channelType = ChannelCreationType.GROUP
@@ -924,6 +930,13 @@ class VaultViewModel(
         showSelectMembersSheet.value = false
         _selectMembersSearchQuery.value = ""
         _selectedMemberIds.value = emptyList()
+        didShowSelectMembersForGroupCreation = false
+    }
+
+    fun onCreateSpaceBackPressed() {
+        if (didShowSelectMembersForGroupCreation) {
+            showSelectMembersSheet.value = true
+        }
     }
 
     fun onSharedSpaceLimitUpgradeClicked() {

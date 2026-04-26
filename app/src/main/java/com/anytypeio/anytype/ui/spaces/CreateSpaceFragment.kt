@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.spaces
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.ext.FragmentResultContract
 import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -69,6 +71,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                 )
             },
             onBackClicked = {
+                notifyBackToSelectMembersIfNeeded()
                 findNavController().popBackStack()
             },
             onSpaceIconUploadClicked = {
@@ -132,6 +135,20 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
         (dialog as? BottomSheetDialog)?.findViewById<FrameLayout>(
             com.google.android.material.R.id.design_bottom_sheet
         )?.setBackgroundColor(requireContext().color(android.R.color.transparent))
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+        notifyBackToSelectMembersIfNeeded()
+        super.onCancel(dialog)
+    }
+
+    private fun notifyBackToSelectMembersIfNeeded() {
+        if (channelType == ChannelCreationType.GROUP) {
+            parentFragmentManager.setFragmentResult(
+                FragmentResultContract.CREATE_SPACE_BACK_TO_SELECT_MEMBERS_KEY,
+                Bundle.EMPTY
+            )
+        }
     }
 
     override fun injectDependencies() {

@@ -82,7 +82,8 @@ class ObjectTypesGroupWidgetContainer(
         val systemLayoutsForSpace = SupportedLayouts.getSystemLayouts(isOneToOneSpace)
         val excludedLayouts = systemLayoutsForSpace + SupportedLayouts.dateLayouts + listOf(
             ObjectType.Layout.OBJECT_TYPE,
-            ObjectType.Layout.PARTICIPANT
+            ObjectType.Layout.PARTICIPANT,
+            ObjectType.Layout.DISCUSSION
         )
 
         // Filter out invalid types and types without objects

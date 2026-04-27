@@ -77,6 +77,7 @@
     <string name="space_settings_error_icon">Alan simgesi değiştirilemedi. Lütfen tekrar deneyin.</string>
     <string name="manage_sections_title">Bölümleri yönet</string>
     <string name="section_unread">Okunmamış</string>
+    <string name="section_my_favorites">Favorilerim</string>
     <string name="section_pinned">Sabitlendi</string>
     <string name="section_objects">Nesneler</string>
     <string name="section_recently_edited">Yakın zamanda düzenlenen</string>
@@ -867,12 +868,17 @@
     <string name="create_space_space_name">Alan ismi</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Ana Sayfa Oluştur</string>
-    <string name="homepage_picker_description">Sen ve kanal üyelerinin kanalı açtıklarında görecekleri içeriği seç. Bunu istediğin zaman ayarlardan değiştirebilirsin.</string>
+    <string name="homepage_picker_description">Üyeler gezinme menüsünü kullanmak yerine doğrudan buraya yönlendirilecek.</string>
     <string name="homepage_picker_chat">Sohbet</string>
     <string name="homepage_picker_page">Sayfa</string>
     <string name="homepage_picker_collection">Koleksiyon</string>
-    <string name="homepage_picker_empty">Boş</string>
-    <string name="homepage_picker_later">Daha sonra</string>
+    <string name="homepage_picker_continue">Devam et</string>
+    <string name="homepage_picker_not_now">Şimdi değil</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Ana sayfa</string>
+    <string name="space_home_no_home_title">Ana sayfa yok</string>
+    <string name="space_home_no_home_subtitle">Giriş yapıldığında gezinme menüsü açılır</string>
+    <string name="widget_menu_change_home">Ana Sayfayı Değiştir</string>
     <string name="invite_members_widget_title">Üyeleri Davet Et</string>
     <string name="invite_members_widget_description">İşbirliğine başlamak için insanları bu kanala davet et.</string>
     <string name="generic_error">Bir şeyler yanlış gitti. Lütfen tekrar deneyin.</string>
@@ -1086,7 +1092,7 @@
     <string name="onboarding_void_title">Bu senin boşluğun</string>
     <string name="onboarding_void_description">Oluşturduğunuz her şey için şifrelenmiş bir konumdur. Her şey cihazınızda saklanır ve dağıtılmış ağda yedeklenir.</string>
     <string name="onboarding_this_is_your_key_title">Bu senin anahtarın</string>
-    <string name="onboarding_key_description">Kullanıcı adı ve şifrenin yerini alır. Güvenli bir yerde sakla. Verilerinden yalnızca sen sorumlusun. Bu Anahtarı daha sonra uygulama ayarlarında bulabilirsin.</string>
+    <string name="onboarding_key_description">Kullanıcı adı ve şifrenin yerini alır. Güvenli bir yerde sakla — verilerinden yalnızca sen sorumlusun. Bu Anahtarı daha sonra uygulama ayarlarında bulabilirsin.</string>
     <string name="onboarding_show_my_key">Anahtarımı Göster</string>
     <string name="onboarding_tap_to_reveal">Göster ve Kopyala</string>
     <string name="onboarding_key_skip">Atla</string>
@@ -1107,7 +1113,7 @@
     <string name="onboarding_recovery_phrase_description">Anahtarınız, bu cihazda kasayı oluşturan 12 rastgele kelimeden oluşan bir kurtarma cümlesi ile temsil edilir.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Anahtara kim sahip olursa erişim hakkı elde eder</string>
     <string name="onboarding_recovery_phrase_description_2">Bu kelimelere sahip olan herkes kasana erişebilir. Şu anda bunları bilen tek kişi sensin.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Bundan sadece siz sorumlusunuz</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Bunun sorumluluğu tamamen sana aittir</string>
     <string name="onboarding_recovery_phrase_description_3">Dünyadaki tüm hesaplama kaynakları bile bu anahtarı kırmaya yetmez. Anahtarını kaybedersen verilerine erişemezsin. Anahtarını güvenli bir yerde sakla. Bir şifre yöneticisinde veya kağıda yazarak saklayabilirsin.</string>
     <string name="onboarding_recovery_phrase_description_4">Dünya üzerindeki tüm hesaplama kaynakları içeri girmek için yeterli değildir. Kaybederseniz, kurtarılamaz. Bu yüzden güvenli bir yerde saklayın!</string>
     <string name="onboarding_how_to_save_my_phrase">Anahtarımı nasıl kaydedebilirim?</string>
@@ -1785,6 +1791,10 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat_attachment_media">Ortam yükle</string>
     <string name="chat_attachment_upload">Yükle</string>
     <string name="chat_attach">Ekle</string>
+    <string name="upload_success_snackbar_image">Yeni resim eklendi</string>
+    <string name="upload_success_snackbar_video">Yeni video eklendi</string>
+    <string name="upload_success_snackbar_file">Yeni dosya eklendi</string>
+    <string name="upload_success_snackbar_mixed">Yeni dosyalar eklendi</string>
     <string name="chats_reply">Yanıtla</string>
     <string name="chats_add_reaction">Tepki Ekle</string>
     <string name="chat_send_message_rate_limit_title">Durun! Turbo yazım algılandı!</string>
@@ -2023,6 +2033,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notifications_all_short">Hepsi</string>
     <string name="notifications_mentions_short">Bahsetmeler</string>
     <string name="notifications_disable_short">Devre dışı bırak</string>
+    <string name="notification_option_enable">Etkinleştir</string>
+    <string name="notification_option_mute_and_hide">Sessize al ve gizle</string>
+    <string name="notification_option_disabled">Devre dışı</string>
     <string name="space_notify_unmute">Sesi aç</string>
     <string name="space_notify_mute">Sessize al</string>
     <string name="vault_pinned_limit_message">%1$d sabitlenmiş alan mevcut sınırınızdır. Yeni bir favori eklemek için birini sabitlemekten kaldırın.</string>
@@ -2100,6 +2113,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="web_publishing_copy_web_link">Web Bağlantısını Kopyala</string>
     <string name="widgets_section_pinned">Sabitlendi</string>
     <string name="widgets_section_unread">Okunmamış</string>
+    <string name="widgets_section_my_favorites">Favorilerim</string>
     <string name="widgets_section_object_types">Nesneler</string>
     <string name="widgets_section_recently_edited">Yakın Zamanda Düzenlenen</string>
     <string name="widgets_menu_new_object_type">Yeni</string>

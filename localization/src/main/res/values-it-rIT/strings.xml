@@ -77,6 +77,7 @@
     <string name="space_settings_error_icon">Impossibile aggiornare l\'icona dello spazio. Riprova.</string>
     <string name="manage_sections_title">Gestisci le sezioni</string>
     <string name="section_unread">Non letto</string>
+    <string name="section_my_favorites">My Favorites</string>
     <string name="section_pinned">Fissato</string>
     <string name="section_objects">Oggetti</string>
     <string name="section_recently_edited">Modificati di recente</string>
@@ -867,12 +868,17 @@
     <string name="create_space_space_name">Nome dello Spazio</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Create Home</string>
-    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
     <string name="homepage_picker_chat">Chat</string>
     <string name="homepage_picker_page">Pagina</string>
     <string name="homepage_picker_collection">Collezione</string>
-    <string name="homepage_picker_empty">Vuoto</string>
-    <string name="homepage_picker_later">Dopo</string>
+    <string name="homepage_picker_continue">Continua</string>
+    <string name="homepage_picker_not_now">Non ora</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Home</string>
+    <string name="space_home_no_home_title">No home</string>
+    <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
+    <string name="widget_menu_change_home">Change Home</string>
     <string name="invite_members_widget_title">Invita Membri</string>
     <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
@@ -1086,7 +1092,7 @@
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Questa è la tua Chiave</string>
-    <string name="onboarding_key_description">Sostituisce login e password. Conservala con cura: solo tu sei responsabile dei tuoi dati. Puoi trovare questa chiave in seguito nelle impostazioni dell\'app.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Mostra la mia Chiave</string>
     <string name="onboarding_tap_to_reveal">Mostra e copia</string>
     <string name="onboarding_key_skip">Salta</string>
@@ -1107,7 +1113,7 @@
     <string name="onboarding_recovery_phrase_description">La tua chiave è rappresentata da una frase di recupero — 12 parole casuali che generano la tua cassaforte su questo dispositivo.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Chi ha la chiave, ha accesso</string>
     <string name="onboarding_recovery_phrase_description_2">Chiunque conosca queste parole può accedere al tuo archivio. Al momento, sei l\'unica persona al mondo a conoscerle.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Solo tu ne sei responsabile</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
     <string name="onboarding_recovery_phrase_description_3">Tutte le risorse computazionali sulla Terra non sono sufficienti per romperla. Se perdi la tua chiave, non potrà essere recuperata. Conservala in un luogo sicuro, in un gestore di password o scritta su carta.</string>
     <string name="onboarding_recovery_phrase_description_4">Tutte le risorse di calcolo presenti sulla Terra non sono sufficienti per irrompere. Se la perdi, non può essere recuperata. Quindi, conservala in un posto sicuro!</string>
     <string name="onboarding_how_to_save_my_phrase">Come salvare la mia Chiave?</string>
@@ -1786,6 +1792,10 @@ Please provide specific details of your needs here.</string>
     <string name="chat_attachment_media">Carica i media</string>
     <string name="chat_attachment_upload">Carica</string>
     <string name="chat_attach">Allega</string>
+    <string name="upload_success_snackbar_image">New image added</string>
+    <string name="upload_success_snackbar_video">New video added</string>
+    <string name="upload_success_snackbar_file">New file added</string>
+    <string name="upload_success_snackbar_mixed">New files added</string>
     <string name="chats_reply">Rispondi</string>
     <string name="chats_add_reaction">Aggiungi una Reazione</string>
     <string name="chat_send_message_rate_limit_title">Aspettate! Rilevata digitazione turbo!</string>
@@ -2024,6 +2034,9 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_all_short">Tutto</string>
     <string name="notifications_mentions_short">Menzioni</string>
     <string name="notifications_disable_short">Disattiva</string>
+    <string name="notification_option_enable">Abilita</string>
+    <string name="notification_option_mute_and_hide">Mute and hide</string>
+    <string name="notification_option_disabled">Disattivato</string>
     <string name="space_notify_unmute">Riattiva</string>
     <string name="space_notify_mute">Silenzia</string>
     <string name="vault_pinned_limit_message">%1$d gli spazi fissati sono il tuo limite attuale. Rimuovi uno per aggiungere un nuovo preferito.</string>
@@ -2101,6 +2114,7 @@ Please provide specific details of your needs here.</string>
     <string name="web_publishing_copy_web_link">Copia Collegamento Web</string>
     <string name="widgets_section_pinned">Fissato</string>
     <string name="widgets_section_unread">Non letto</string>
+    <string name="widgets_section_my_favorites">My Favorites</string>
     <string name="widgets_section_object_types">Oggetti</string>
     <string name="widgets_section_recently_edited">Modificato di recente</string>
     <string name="widgets_menu_new_object_type">Nuovo</string>

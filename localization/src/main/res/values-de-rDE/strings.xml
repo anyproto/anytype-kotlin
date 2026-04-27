@@ -77,6 +77,7 @@
     <string name="space_settings_error_icon">Fehler beim Aktualisieren des Space-Symbols. Bitte erneut versuchen.</string>
     <string name="manage_sections_title">Bereiche verwalten</string>
     <string name="section_unread">Ungelesen</string>
+    <string name="section_my_favorites">My Favorites</string>
     <string name="section_pinned">Angeheftet</string>
     <string name="section_objects">Objekte</string>
     <string name="section_recently_edited">Zuletzt bearbeitet</string>
@@ -867,12 +868,17 @@
     <string name="create_space_space_name">Space-Name</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Create Home</string>
-    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
     <string name="homepage_picker_chat">Chat</string>
     <string name="homepage_picker_page">Seite</string>
     <string name="homepage_picker_collection">Sammlung</string>
-    <string name="homepage_picker_empty">Leer</string>
-    <string name="homepage_picker_later">Später</string>
+    <string name="homepage_picker_continue">Fortfahren</string>
+    <string name="homepage_picker_not_now">Nicht jetzt</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Startseite</string>
+    <string name="space_home_no_home_title">No home</string>
+    <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
+    <string name="widget_menu_change_home">Change Home</string>
     <string name="invite_members_widget_title">Invite Members</string>
     <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
     <string name="generic_error">Etwas ist schiefgelaufen. Bitte versuche es erneut.</string>
@@ -1086,7 +1092,7 @@
     <string name="onboarding_void_title">Das ist dein Void</string>
     <string name="onboarding_void_description">Es ist ein verschlüsselter Ort für alles, was du erstellst. Alles wird auf deinem Gerät gespeichert und im dezentralen Netzwerk gesichert.</string>
     <string name="onboarding_this_is_your_key_title">Dies ist dein Schlüssel</string>
-    <string name="onboarding_key_description">Er ersetzt Benutzerabfrage und Passwort. Bewahre ihn sicher auf — nur du bist für deine Daten verantwortlich. Du findest diesen Schlüssel später in den App-Einstellungen.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Meinen Schlüssel anzeigen</string>
     <string name="onboarding_tap_to_reveal">Enthüllen und kopieren</string>
     <string name="onboarding_key_skip">Überspringen</string>
@@ -1107,7 +1113,7 @@
     <string name="onboarding_recovery_phrase_description">Dein Schlüssel wird durch eine Wiederherstellungsphrase dargestellt — 12 zufällige Wörter, die deinen Tresor auf diesem Gerät generieren.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Wer den Schlüssel hat, hat Zugang</string>
     <string name="onboarding_recovery_phrase_description_2">Jeder, der diese Wörter kennt, kann auf deinen Tresor zugreifen. Im Moment bist du die einzige Person auf der Welt, die sie kennt.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Nur du bist dafür verantwortlich</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
     <string name="onboarding_recovery_phrase_description_3">Alle Computerressourcen der Welt reichen nicht aus, um ihn zu knacken. Wenn du deinen Schlüssel verlierst, kann er nicht wiederhergestellt werden. Bewahre ihn an einem sicheren Ort auf — in einem Passwort-Manager oder schriftlich auf Papier.</string>
     <string name="onboarding_recovery_phrase_description_4">Alle Rechenressourcen der Welt reichen nicht aus, um ihn zu knacken. Wenn du ihn verlierst, kann er nicht wiederhergestellt werden. Bewahre ihn also an einem sicheren Ort auf!</string>
     <string name="onboarding_how_to_save_my_phrase">Wie speicher ich meinen Schlüssel?</string>
@@ -1785,6 +1791,10 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chat_attachment_media">Medien hochladen</string>
     <string name="chat_attachment_upload">Hochladen</string>
     <string name="chat_attach">Anhängen</string>
+    <string name="upload_success_snackbar_image">New image added</string>
+    <string name="upload_success_snackbar_video">New video added</string>
+    <string name="upload_success_snackbar_file">New file added</string>
+    <string name="upload_success_snackbar_mixed">New files added</string>
     <string name="chats_reply">Antworten</string>
     <string name="chats_add_reaction">Reaktion hinzufügen</string>
     <string name="chat_send_message_rate_limit_title">Moment mal! Turbotippen erkannt!</string>
@@ -2023,6 +2033,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_all_short">Alle</string>
     <string name="notifications_mentions_short">Erwähnungen</string>
     <string name="notifications_disable_short">Deaktivieren</string>
+    <string name="notification_option_enable">Aktivieren</string>
+    <string name="notification_option_mute_and_hide">Mute and hide</string>
+    <string name="notification_option_disabled">Deaktiviert</string>
     <string name="space_notify_unmute">Stummschaltung aufheben</string>
     <string name="space_notify_mute">Stummschalten</string>
     <string name="vault_pinned_limit_message">%1$d angepinnte Spaces sind dein aktuelles Limit. Entferne einen, um einen neuen Favoriten hinzuzufügen.</string>
@@ -2100,6 +2113,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="web_publishing_copy_web_link">Weblink kopieren</string>
     <string name="widgets_section_pinned">Angeheftet</string>
     <string name="widgets_section_unread">Ungelesen</string>
+    <string name="widgets_section_my_favorites">My Favorites</string>
     <string name="widgets_section_object_types">Objekte</string>
     <string name="widgets_section_recently_edited">Zuletzt bearbeitet</string>
     <string name="widgets_menu_new_object_type">Neu</string>

@@ -77,6 +77,7 @@
     <string name="space_settings_error_icon">No se ha podido actualizar el icono del espacio. Inténtalo de nuevo.</string>
     <string name="manage_sections_title">Gestionar secciones</string>
     <string name="section_unread">No leído</string>
+    <string name="section_my_favorites">Mis favoritos</string>
     <string name="section_pinned">Anclado</string>
     <string name="section_objects">Objetos</string>
     <string name="section_recently_edited">Editado recientemente</string>
@@ -867,12 +868,17 @@
     <string name="create_space_space_name">Nombre del espacio</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Crear Inicio</string>
-    <string name="homepage_picker_description">Elige lo que veréis tú y otros miembros del canal al abrirlo. Puedes cambiarlo en los ajustes en cualquier momento.</string>
+    <string name="homepage_picker_description">Los miembros llegarán directamente aquí en lugar de explorar la navegación.</string>
     <string name="homepage_picker_chat">Chat</string>
     <string name="homepage_picker_page">Página</string>
     <string name="homepage_picker_collection">Colección</string>
-    <string name="homepage_picker_empty">Vacío</string>
-    <string name="homepage_picker_later">Más tarde</string>
+    <string name="homepage_picker_continue">Continuar</string>
+    <string name="homepage_picker_not_now">Ahora no</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Inicio</string>
+    <string name="space_home_no_home_title">Sin Inicio </string>
+    <string name="space_home_no_home_subtitle">Al entrar, se abre la navegación </string>
+    <string name="widget_menu_change_home">Cambiar Inicio</string>
     <string name="invite_members_widget_title">Invitar a otras personas</string>
     <string name="invite_members_widget_description">Invita a otras personas a este canal para empezar a colaborar. </string>
     <string name="generic_error">Algo ha salido mal. Inténtalo de nuevo.</string>
@@ -1785,6 +1791,10 @@ En concreto,
     <string name="chat_attachment_media">Subir medios</string>
     <string name="chat_attachment_upload">Cargar</string>
     <string name="chat_attach">Adjuntar</string>
+    <string name="upload_success_snackbar_image">Imagen nueva añadida</string>
+    <string name="upload_success_snackbar_video">Vídeo nuevo añadido</string>
+    <string name="upload_success_snackbar_file">Archivo nuevo añadido</string>
+    <string name="upload_success_snackbar_mixed">Archivos nuevos añadidos</string>
     <string name="chats_reply">Responder</string>
     <string name="chats_add_reaction">Añadir reacción</string>
     <string name="chat_send_message_rate_limit_title">¡Calma! ¡Estás escribiendo muy deprisa!</string>
@@ -2023,6 +2033,9 @@ En concreto,
     <string name="notifications_all_short">Todo</string>
     <string name="notifications_mentions_short">Menciones</string>
     <string name="notifications_disable_short">Desactivar</string>
+    <string name="notification_option_enable">Habilitar</string>
+    <string name="notification_option_mute_and_hide">Silenciar y ocultar</string>
+    <string name="notification_option_disabled">Deshabilitado</string>
     <string name="space_notify_unmute">No silenciar</string>
     <string name="space_notify_mute">Silenciar</string>
     <string name="vault_pinned_limit_message">Tu límite actual es de %1$d espacios anclados. Desancla alguno si quieres añadir otro nuevo.</string>
@@ -2081,8 +2094,8 @@ En concreto,
     <string name="share_space_error_make_private_failed">No se ha podido hacer privado el espacio. Inténtalo de nuevo más tarde.</string>
     <string name="private_local_yours_forever">cifrado, local, tuyo para siempre</string>
     <string name="private_channel">Canal directo</string>
-    <string name="space_header_private_channel">Private channel</string>
-    <string name="space_header_group_channel">Group channel</string>
+    <string name="space_header_private_channel">Canal privado</string>
+    <string name="space_header_group_channel">Canal de grupo</string>
     <string name="wallpaper_item_space_icon_color">Color por defecto</string>
     <string name="publish_to_web">Publicar en la web</string>
     <string name="preferences">Preferencias</string>
@@ -2099,6 +2112,7 @@ En concreto,
     <string name="web_publishing_copy_web_link">Copiar enlace web</string>
     <string name="widgets_section_pinned">Anclado</string>
     <string name="widgets_section_unread">No leído</string>
+    <string name="widgets_section_my_favorites">Mis favoritos</string>
     <string name="widgets_section_object_types">Objetos</string>
     <string name="widgets_section_recently_edited">Editado recientemente</string>
     <string name="widgets_menu_new_object_type">Nuevo</string>

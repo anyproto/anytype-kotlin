@@ -16,6 +16,7 @@
             android:layout_height="4dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
             android:background="@drawable/dragger" />
 
         <androidx.core.widget.NestedScrollView
@@ -220,6 +221,10 @@
                 android:layout_gravity="center_vertical" />
 
         </FrameLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="48dp" />
 
         <View
             android:id="@+id/anchor"

@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
@@ -24,7 +23,7 @@ import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentPageIconPickerBinding
 import com.anytypeio.anytype.device.launchMediaPicker
 import com.anytypeio.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerAdapter
@@ -36,7 +35,7 @@ import com.anytypeio.anytype.presentation.picker.IconPickerViewModel.ViewState
 import timber.log.Timber
 
 abstract class IconPickerFragmentBase<T> :
-    BaseBottomSheetTextInputFragment<FragmentPageIconPickerBinding>() {
+    BaseBottomSheetFragment<FragmentPageIconPickerBinding>() {
 
     protected val context: Id
         get() = arg(ARG_CONTEXT_ID_KEY)
@@ -74,8 +73,6 @@ abstract class IconPickerFragmentBase<T> :
             onPermissionSuccess = { _, _ -> openGallery() }
         )
     }
-
-    override val textInput: EditText get() = binding.filterInputField
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

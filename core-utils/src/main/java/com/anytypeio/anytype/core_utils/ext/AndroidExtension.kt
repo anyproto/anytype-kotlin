@@ -492,6 +492,15 @@ fun BottomSheetDialogFragment.fixBottomSheetNavigationBarGap(
     applyTopSystemBarInset: Boolean = true,
     onNavigationBarsInsetsChanged: (Insets) -> Unit = {}
 ) {
+    if (!applyTopSystemBarInset) {
+        // The default bottomSheetStyle sets paddingTopSystemWindowInsets=true, so
+        // BottomSheetBehavior installs a listener on design_bottom_sheet that pads the
+        // sheet by the status bar inset whenever it covers the status bar. Replace that
+        // listener with a pass-through so no top padding is applied above sheet content.
+        dialog?.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)?.let { sheet ->
+            ViewCompat.setOnApplyWindowInsetsListener(sheet) { _, insets -> insets }
+        }
+    }
     dialog?.findViewById<View>(com.google.android.material.R.id.container)?.let { container ->
         ViewCompat.setOnApplyWindowInsetsListener(container) { v, insets ->
             val navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())

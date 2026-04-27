@@ -488,15 +488,20 @@ fun BaseBottomSheetComposeFragment.setupBottomSheetBehavior(paddingTop: Int) {
  * for the navigation bar on the container, creating a visible gap below the sheet.
  * This removes that bottom padding so the sheet background extends to the screen edge.
  */
-fun BottomSheetDialogFragment.fixBottomSheetNavigationBarGap() {
+fun BottomSheetDialogFragment.fixBottomSheetNavigationBarGap(
+    applyTopSystemBarInset: Boolean = true,
+    onNavigationBarsInsetsChanged: (Insets) -> Unit = {}
+) {
     dialog?.findViewById<View>(com.google.android.material.R.id.container)?.let { container ->
         ViewCompat.setOnApplyWindowInsetsListener(container) { v, insets ->
+            val navigationBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+            onNavigationBarsInsetsChanged(navigationBars)
             WindowInsetsCompat.Builder(insets)
                 .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.NONE)
                 .build()
         }
+        ViewCompat.requestApplyInsets(container)
     }
 }
 

@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.LinearLayout
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
+import androidx.core.view.updateLayoutParams
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
@@ -16,6 +18,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.fixBottomSheetNavigationBarGap
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -96,6 +99,19 @@ abstract class IconPickerFragmentBase<T> :
         }
         skipCollapsed()
         expand()
+        setupBottomToolbarInsets()
+    }
+
+    private fun setupBottomToolbarInsets() {
+        val bottomToolbar = binding.bottomToolbar
+        val initialBottomMargin = (bottomToolbar.layoutParams as LinearLayout.LayoutParams)
+            .bottomMargin
+
+        fixBottomSheetNavigationBarGap(applyTopSystemBarInset = false) { navigationBars ->
+            bottomToolbar.updateLayoutParams<LinearLayout.LayoutParams> {
+                bottomMargin = initialBottomMargin + navigationBars.bottom
+            }
+        }
     }
 
     private fun setupRecycler() {
@@ -210,4 +226,3 @@ abstract class IconPickerFragmentBase<T> :
         private const val SELECT_IMAGE_CODE = 1
     }
 }
-

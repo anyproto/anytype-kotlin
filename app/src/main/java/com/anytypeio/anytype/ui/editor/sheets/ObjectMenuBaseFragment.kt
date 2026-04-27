@@ -98,6 +98,9 @@ abstract class ObjectMenuBaseFragment :
                 )
             }
         }
+
+        skipCollapsed()
+        expand()
     }
 
     override fun onStart() {

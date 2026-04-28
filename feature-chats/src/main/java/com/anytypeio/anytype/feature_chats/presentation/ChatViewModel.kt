@@ -296,7 +296,8 @@ class ChatViewModel @Inject constructor(
                         }
                         is HeaderView.ChatObject -> {
                             header.value = currentHeader.copy(
-                                canEdit = permission?.isOwnerOrEditor() == true
+                                canEdit = permission?.isOwnerOrEditor() == true,
+                                canPin = permission?.isOwner() == true
                             )
                         }
                         else -> {}
@@ -319,6 +320,7 @@ class ChatViewModel @Inject constructor(
                 val isMuted = notificationSetting == NotificationSetting.MUTE
                     || notificationSetting == NotificationSetting.MENTIONS
                 val canEdit = currentPermission.value?.isOwnerOrEditor() == true
+                val canPin = currentPermission.value?.isOwner() == true
 
                 // 1-1 space
                 if (spaceView.isOneToOneSpace) {
@@ -346,7 +348,8 @@ class ChatViewModel @Inject constructor(
                         isMuted = isMuted,
                         notificationSetting = notificationSetting,
                         isPinned = isPinned,
-                        canEdit = canEdit
+                        canEdit = canEdit,
+                        canPin = canPin
                     )
                 }
                 // Note: if wrapper is null for chat object, header remains Init until wrapper is available
@@ -2706,7 +2709,8 @@ class ChatViewModel @Inject constructor(
             val showAddMembers: Boolean = false,
             val notificationSetting: NotificationSetting = NotificationSetting.ALL,
             val isPinned: Boolean = false,
-            val canEdit: Boolean = true
+            val canEdit: Boolean = true,
+            val canPin: Boolean = false
         ) : HeaderView()
     }
 

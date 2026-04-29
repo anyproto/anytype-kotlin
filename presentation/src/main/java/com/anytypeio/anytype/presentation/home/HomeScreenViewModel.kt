@@ -187,6 +187,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
+import com.anytypeio.anytype.presentation.notifications.toSnackbarVariant
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -2504,7 +2505,12 @@ class HomeScreenViewModel(
                 }
             }
             if (successes.isNotEmpty()) {
-                _uploadSnackbar.emit(successes.toSnackbarVariant(space = vmParams.spaceId.id))
+                _uploadSnackbar.emit(
+                    successes.toSnackbarVariant(
+                        space = vmParams.spaceId.id,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
+                )
             }
         }
     }
@@ -2520,26 +2526,6 @@ class HomeScreenViewModel(
          */
         val sourceFilePath: String? = null
     )
-
-    private suspend fun List<Block.Content.File.Type>.toSnackbarVariant(space: Id): UploadSuccessSnackbar {
-        val distinct = distinct()
-        if (distinct.size > 1) return UploadSuccessSnackbar.Mixed
-        val fileType = distinct.single()
-        val key = when (fileType) {
-            Block.Content.File.Type.IMAGE -> ObjectTypeUniqueKeys.IMAGE
-            Block.Content.File.Type.VIDEO -> ObjectTypeUniqueKeys.VIDEO
-            else -> ObjectTypeUniqueKeys.FILE
-        }
-        val type = storeOfObjectTypes.getByKey(key) ?: return UploadSuccessSnackbar.Mixed
-        val pluralName = type.pluralName?.takeIf { it.isNotBlank() }
-            ?: type.name?.takeIf { it.isNotBlank() }
-            ?: return UploadSuccessSnackbar.Mixed
-        return when (fileType) {
-            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image(type.id, space, pluralName)
-            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video(type.id, space, pluralName)
-            else -> UploadSuccessSnackbar.File(type.id, space, pluralName)
-        }
-    }
 
     fun hideCreateObjectSheet() {
         _createObjectSheetVisible.value = false

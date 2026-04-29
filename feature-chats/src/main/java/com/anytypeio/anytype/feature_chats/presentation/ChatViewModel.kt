@@ -86,6 +86,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
+import com.anytypeio.anytype.presentation.notifications.toSnackbarVariant
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
@@ -1079,7 +1080,12 @@ class ChatViewModel @Inject constructor(
                 }
             }
             if (uploadSuccesses.isNotEmpty()) {
-                _uploadSnackbar.emit(uploadSuccesses.toSnackbarVariant(space = vmParams.space.id))
+                _uploadSnackbar.emit(
+                    uploadSuccesses.toSnackbarVariant(
+                        space = vmParams.space.id,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
+                )
             }
             when (val mode = chatBoxMode.value) {
                 is ChatBoxMode.Default -> {
@@ -2592,26 +2598,6 @@ class ChatViewModel @Inject constructor(
         val isVideo: Boolean = false,
         val capturedByCamera: Boolean = false
     )
-
-    private suspend fun List<Block.Content.File.Type>.toSnackbarVariant(space: Id): UploadSuccessSnackbar {
-        val distinct = distinct()
-        if (distinct.size > 1) return UploadSuccessSnackbar.Mixed
-        val fileType = distinct.single()
-        val key = when (fileType) {
-            Block.Content.File.Type.IMAGE -> ObjectTypeUniqueKeys.IMAGE
-            Block.Content.File.Type.VIDEO -> ObjectTypeUniqueKeys.VIDEO
-            else -> ObjectTypeUniqueKeys.FILE
-        }
-        val type = storeOfObjectTypes.getByKey(key) ?: return UploadSuccessSnackbar.Mixed
-        val pluralName = type.pluralName?.takeIf { it.isNotBlank() }
-            ?: type.name?.takeIf { it.isNotBlank() }
-            ?: return UploadSuccessSnackbar.Mixed
-        return when (fileType) {
-            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image(type.id, space, pluralName)
-            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video(type.id, space, pluralName)
-            else -> UploadSuccessSnackbar.File(type.id, space, pluralName)
-        }
-    }
 
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()

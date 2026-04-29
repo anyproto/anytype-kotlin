@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
+import com.anytypeio.anytype.presentation.notifications.toSnackbarVariant
 import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -259,28 +260,13 @@ class NewCreateObjectViewModel @Inject constructor(
                 }
             }
             if (successes.isNotEmpty()) {
-                _uploadSnackbar.emit(successes.toSnackbarVariant(space = vmParams.spaceId.id))
+                _uploadSnackbar.emit(
+                    successes.toSnackbarVariant(
+                        space = vmParams.spaceId.id,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
+                )
             }
-        }
-    }
-
-    private suspend fun List<Block.Content.File.Type>.toSnackbarVariant(space: Id): UploadSuccessSnackbar {
-        val distinct = distinct()
-        if (distinct.size > 1) return UploadSuccessSnackbar.Mixed
-        val fileType = distinct.single()
-        val key = when (fileType) {
-            Block.Content.File.Type.IMAGE -> ObjectTypeIds.IMAGE
-            Block.Content.File.Type.VIDEO -> ObjectTypeIds.VIDEO
-            else -> ObjectTypeIds.FILE
-        }
-        val type = storeOfObjectTypes.getByKey(key) ?: return UploadSuccessSnackbar.Mixed
-        val pluralName = type.pluralName?.takeIf { it.isNotBlank() }
-            ?: type.name?.takeIf { it.isNotBlank() }
-            ?: return UploadSuccessSnackbar.Mixed
-        return when (fileType) {
-            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image(type.id, space, pluralName)
-            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video(type.id, space, pluralName)
-            else -> UploadSuccessSnackbar.File(type.id, space, pluralName)
         }
     }
 

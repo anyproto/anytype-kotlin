@@ -2102,7 +2102,7 @@
     <string name="widgets_section_pinned">ピン留め</string>
     <string name="widgets_section_unread">未読</string>
     <string name="widgets_section_my_favorites">My Favorites</string>
-    <string name="widgets_section_object_types">オブジェクト</string>
+    <string name="widgets_section_object_types">タイプ</string>
     <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">新規</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>

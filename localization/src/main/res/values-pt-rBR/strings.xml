@@ -2111,7 +2111,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="widgets_section_pinned">Fixado</string>
     <string name="widgets_section_unread">Não lido</string>
     <string name="widgets_section_my_favorites">My Favorites</string>
-    <string name="widgets_section_object_types">Objetos</string>
+    <string name="widgets_section_object_types">Tipos</string>
     <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">Novo</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>

@@ -2095,7 +2095,7 @@
     <string name="widgets_section_pinned">置顶</string>
     <string name="widgets_section_unread">未读</string>
     <string name="widgets_section_my_favorites">My Favorites</string>
-    <string name="widgets_section_object_types">对象</string>
+    <string name="widgets_section_object_types">类型</string>
     <string name="widgets_section_recently_edited">最近编辑</string>
     <string name="widgets_menu_new_object_type">新建</string>
     <string name="widgets_menu_delete_object_type">删除对象类型</string>

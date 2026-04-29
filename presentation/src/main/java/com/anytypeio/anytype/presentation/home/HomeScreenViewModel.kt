@@ -1980,7 +1980,12 @@ class HomeScreenViewModel(
                             payloadDelegator.dispatch(payload)
                         },
                         onFailure = {
+                            // The user invoked "New object" from My Favorites
+                            // expecting the object to land in that list; if the
+                            // favorite step fails, surface it instead of
+                            // silently swallowing the mismatch.
                             Timber.e(it, "Error favoriting new object from My Favorites menu")
+                            sendToast("Object created, but adding to Favorites failed. Please, try again later.")
                         }
                     )
                     proceedWithOpeningObject(created.obj)

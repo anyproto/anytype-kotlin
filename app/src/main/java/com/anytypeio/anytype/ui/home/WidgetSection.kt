@@ -904,7 +904,11 @@ private fun sh.calvin.reorderable.ReorderableScope.MyFavoriteRow(
             val name = when (val n = element.name) {
                 is WidgetView.Name.Default ->
                     n.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) }
-                is WidgetView.Name.Bundled -> stringResource(id = R.string.untitled)
+                // Name.Bundled carries a Widget.Source.Bundled label and is
+                // unreachable for favorites items (which are user objects);
+                // preserve the empty-string fallback to avoid mislabeling
+                // bundled sources as "Untitled" if it ever does emit here.
+                is WidgetView.Name.Bundled -> ""
                 WidgetView.Name.Empty -> stringResource(id = R.string.untitled)
             }
             Text(

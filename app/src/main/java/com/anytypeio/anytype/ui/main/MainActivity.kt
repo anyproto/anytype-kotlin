@@ -190,6 +190,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         action = { _ -> }
                                     )
                             }
+                            is Command.SnackbarWithOpenType -> {
+                                findViewById<android.view.View>(android.R.id.content)
+                                    ?.showSnackbar(
+                                        msg = command.msg,
+                                        length = Snackbar.LENGTH_LONG,
+                                        actionMessage = command.actionLabel,
+                                        action = { _ ->
+                                            navigator.openObjectType(
+                                                objectId = command.typeId,
+                                                space = command.space
+                                            )
+                                        }
+                                    )
+                            }
                             is Command.Notifications -> {
                                 NotificationsFragment().show(supportFragmentManager, null)
                             }

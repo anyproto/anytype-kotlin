@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -258,18 +259,28 @@ class NewCreateObjectViewModel @Inject constructor(
                 }
             }
             if (successes.isNotEmpty()) {
-                _uploadSnackbar.emit(successes.toSnackbarVariant())
+                _uploadSnackbar.emit(successes.toSnackbarVariant(space = vmParams.spaceId.id))
             }
         }
     }
 
-    private fun List<Block.Content.File.Type>.toSnackbarVariant(): UploadSuccessSnackbar {
+    private suspend fun List<Block.Content.File.Type>.toSnackbarVariant(space: Id): UploadSuccessSnackbar {
         val distinct = distinct()
         if (distinct.size > 1) return UploadSuccessSnackbar.Mixed
-        return when (distinct.single()) {
-            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image
-            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video
-            else -> UploadSuccessSnackbar.File
+        val fileType = distinct.single()
+        val key = when (fileType) {
+            Block.Content.File.Type.IMAGE -> ObjectTypeIds.IMAGE
+            Block.Content.File.Type.VIDEO -> ObjectTypeIds.VIDEO
+            else -> ObjectTypeIds.FILE
+        }
+        val type = storeOfObjectTypes.getByKey(key) ?: return UploadSuccessSnackbar.Mixed
+        val pluralName = type.pluralName?.takeIf { it.isNotBlank() }
+            ?: type.name?.takeIf { it.isNotBlank() }
+            ?: return UploadSuccessSnackbar.Mixed
+        return when (fileType) {
+            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image(type.id, space, pluralName)
+            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video(type.id, space, pluralName)
+            else -> UploadSuccessSnackbar.File(type.id, space, pluralName)
         }
     }
 

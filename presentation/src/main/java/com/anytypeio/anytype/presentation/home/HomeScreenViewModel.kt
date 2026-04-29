@@ -2363,7 +2363,7 @@ class HomeScreenViewModel(
                 }
             }
             if (successes.isNotEmpty()) {
-                _uploadSnackbar.emit(successes.toSnackbarVariant())
+                _uploadSnackbar.emit(successes.toSnackbarVariant(space = vmParams.spaceId.id))
             }
         }
     }
@@ -2380,13 +2380,23 @@ class HomeScreenViewModel(
         val sourceFilePath: String? = null
     )
 
-    private fun List<Block.Content.File.Type>.toSnackbarVariant(): UploadSuccessSnackbar {
+    private suspend fun List<Block.Content.File.Type>.toSnackbarVariant(space: Id): UploadSuccessSnackbar {
         val distinct = distinct()
         if (distinct.size > 1) return UploadSuccessSnackbar.Mixed
-        return when (distinct.single()) {
-            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image
-            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video
-            else -> UploadSuccessSnackbar.File
+        val fileType = distinct.single()
+        val key = when (fileType) {
+            Block.Content.File.Type.IMAGE -> ObjectTypeUniqueKeys.IMAGE
+            Block.Content.File.Type.VIDEO -> ObjectTypeUniqueKeys.VIDEO
+            else -> ObjectTypeUniqueKeys.FILE
+        }
+        val type = storeOfObjectTypes.getByKey(key) ?: return UploadSuccessSnackbar.Mixed
+        val pluralName = type.pluralName?.takeIf { it.isNotBlank() }
+            ?: type.name?.takeIf { it.isNotBlank() }
+            ?: return UploadSuccessSnackbar.Mixed
+        return when (fileType) {
+            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image(type.id, space, pluralName)
+            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video(type.id, space, pluralName)
+            else -> UploadSuccessSnackbar.File(type.id, space, pluralName)
         }
     }
 

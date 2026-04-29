@@ -274,7 +274,13 @@ class WidgetOverlayFragment : BottomSheetDialogFragment(),
                 launch { vm.toasts.collect { toast(it) } }
                 launch {
                     vm.uploadSnackbar.collect { variant ->
-                        mainVm.showSnackbarWithOk(uploadSnackbarMessage(variant))
+                        // The bottom sheet's dialog window is layered above
+                        // the activity, so the app-level Snackbar (rendered
+                        // on activity's android.R.id.content) is hidden
+                        // behind it. Dismiss first so the Snackbar is
+                        // visible on the underlying screen.
+                        dismissAllowingStateLoss()
+                        routeUploadSnackbar(mainVm, variant)
                     }
                 }
             }

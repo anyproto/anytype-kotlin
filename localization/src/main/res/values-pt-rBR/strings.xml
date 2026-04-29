@@ -1792,6 +1792,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="upload_success_snackbar_video">New video added</string>
     <string name="upload_success_snackbar_file">New file added</string>
     <string name="upload_success_snackbar_mixed">New files added</string>
+    <string name="upload_success_snackbar_action_open">Open %1$s</string>
     <string name="chats_reply">Responder</string>
     <string name="chats_add_reaction">Adicionar reação</string>
     <string name="chat_send_message_rate_limit_title">Aguente aí! Digitação rápida detectada!</string>

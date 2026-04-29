@@ -161,6 +161,7 @@ import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_MY_FAVORITES
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_RECENTLY_EDITED
@@ -3694,6 +3695,21 @@ class HomeScreenViewModel(
                 currentCollapsedSections.minus(SECTION_RECENTLY_EDITED)
             } else {
                 currentCollapsedSections.plus(SECTION_RECENTLY_EDITED)
+            }
+
+            userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
+        }
+    }
+
+    fun onSectionMyFavoritesClicked() {
+        viewModelScope.launch {
+            val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+            val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_MY_FAVORITES)
+
+            val newCollapsedSections = if (isCurrentlyCollapsed) {
+                currentCollapsedSections.minus(SECTION_MY_FAVORITES)
+            } else {
+                currentCollapsedSections.plus(SECTION_MY_FAVORITES)
             }
 
             userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())

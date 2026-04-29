@@ -1796,6 +1796,7 @@ Please provide specific details of your needs here.</string>
     <string name="upload_success_snackbar_video">New video added</string>
     <string name="upload_success_snackbar_file">New file added</string>
     <string name="upload_success_snackbar_mixed">New files added</string>
+    <string name="upload_success_snackbar_action_open">Open %1$s</string>
     <string name="chats_reply">Rispondi</string>
     <string name="chats_add_reaction">Aggiungi una Reazione</string>
     <string name="chat_send_message_rate_limit_title">Aspettate! Rilevata digitazione turbo!</string>

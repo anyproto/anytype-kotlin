@@ -1792,6 +1792,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="upload_success_snackbar_video">New video added</string>
     <string name="upload_success_snackbar_file">New file added</string>
     <string name="upload_success_snackbar_mixed">New files added</string>
+    <string name="upload_success_snackbar_action_open">Open %1$s</string>
     <string name="chats_reply">Répondre</string>
     <string name="chats_add_reaction">Ajouter une Réaction</string>
     <string name="chat_send_message_rate_limit_title">Attendez ! Frappe turbo détectée !</string>

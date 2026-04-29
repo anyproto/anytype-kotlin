@@ -1795,7 +1795,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="upload_success_snackbar_video">Yeni video eklendi</string>
     <string name="upload_success_snackbar_file">Yeni dosya eklendi</string>
     <string name="upload_success_snackbar_mixed">Yeni dosyalar eklendi</string>
-    <string name="upload_success_snackbar_action_open">Open %1$s</string>
+    <string name="upload_success_snackbar_action_open">%1$s aç</string>
     <string name="chats_reply">Yanıtla</string>
     <string name="chats_add_reaction">Tepki Ekle</string>
     <string name="chat_send_message_rate_limit_title">Durun! Turbo yazım algılandı!</string>

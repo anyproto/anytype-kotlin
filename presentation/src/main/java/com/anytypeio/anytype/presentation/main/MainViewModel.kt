@@ -994,6 +994,26 @@ class MainViewModel(
         viewModelScope.launch { commands.emit(Command.SnackbarWithOk(msg)) }
     }
 
+    /**
+     * Emit an app-level success Snackbar with an [actionLabel] (e.g.
+     * "Open Images") that navigates to the resolved object type page
+     * ([typeId] in [space]). Used by the upload-success flow so users
+     * can jump straight to the type that collects their freshly-uploaded
+     * files.
+     */
+    fun showSnackbarWithOpenType(msg: String, typeId: Id, space: Id, actionLabel: String) {
+        viewModelScope.launch {
+            commands.emit(
+                Command.SnackbarWithOpenType(
+                    msg = msg,
+                    typeId = typeId,
+                    space = space,
+                    actionLabel = actionLabel
+                )
+            )
+        }
+    }
+
     override fun onCleared() {
         // TODO: DROID-3763 - Disabled to test if appShutdown causes FD crashes on restore
         // The async fire-and-forget pattern may leave middleware in inconsistent state
@@ -1018,6 +1038,12 @@ class MainViewModel(
         data class Error(val msg: String) : Command()
         data class Snackbar(val msg: String) : Command()
         data class SnackbarWithOk(val msg: String) : Command()
+        data class SnackbarWithOpenType(
+            val msg: String,
+            val typeId: Id,
+            val space: Id,
+            val actionLabel: String
+        ) : Command()
 
         data object Notifications : Command()
         data object RequestNotificationPermission : Command()

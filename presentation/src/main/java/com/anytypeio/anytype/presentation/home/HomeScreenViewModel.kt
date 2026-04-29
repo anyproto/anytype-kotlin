@@ -187,6 +187,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
+import com.anytypeio.anytype.presentation.notifications.toSnackbarVariant
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -2504,7 +2505,12 @@ class HomeScreenViewModel(
                 }
             }
             if (successes.isNotEmpty()) {
-                _uploadSnackbar.emit(successes.toSnackbarVariant())
+                _uploadSnackbar.emit(
+                    successes.toSnackbarVariant(
+                        space = vmParams.spaceId.id,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
+                )
             }
         }
     }
@@ -2520,16 +2526,6 @@ class HomeScreenViewModel(
          */
         val sourceFilePath: String? = null
     )
-
-    private fun List<Block.Content.File.Type>.toSnackbarVariant(): UploadSuccessSnackbar {
-        val distinct = distinct()
-        if (distinct.size > 1) return UploadSuccessSnackbar.Mixed
-        return when (distinct.single()) {
-            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image
-            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video
-            else -> UploadSuccessSnackbar.File
-        }
-    }
 
     fun hideCreateObjectSheet() {
         _createObjectSheetVisible.value = false

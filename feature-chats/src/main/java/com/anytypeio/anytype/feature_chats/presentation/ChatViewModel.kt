@@ -86,6 +86,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
+import com.anytypeio.anytype.presentation.notifications.toSnackbarVariant
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
@@ -1079,7 +1080,12 @@ class ChatViewModel @Inject constructor(
                 }
             }
             if (uploadSuccesses.isNotEmpty()) {
-                _uploadSnackbar.emit(uploadSuccesses.toSnackbarVariant())
+                _uploadSnackbar.emit(
+                    uploadSuccesses.toSnackbarVariant(
+                        space = vmParams.space.id,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
+                )
             }
             when (val mode = chatBoxMode.value) {
                 is ChatBoxMode.Default -> {
@@ -2592,16 +2598,6 @@ class ChatViewModel @Inject constructor(
         val isVideo: Boolean = false,
         val capturedByCamera: Boolean = false
     )
-
-    private fun List<Block.Content.File.Type>.toSnackbarVariant(): UploadSuccessSnackbar {
-        val distinct = distinct()
-        if (distinct.size > 1) return UploadSuccessSnackbar.Mixed
-        return when (distinct.single()) {
-            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image
-            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video
-            else -> UploadSuccessSnackbar.File
-        }
-    }
 
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()

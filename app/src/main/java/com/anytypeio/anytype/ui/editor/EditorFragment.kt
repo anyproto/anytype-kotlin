@@ -47,6 +47,7 @@ import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STO
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -166,7 +167,9 @@ import com.anytypeio.anytype.ui.editor.modals.SetBlockTextValueFragment
 import com.anytypeio.anytype.ui.editor.modals.TextBlockIconPickerFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
+import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
+import com.anytypeio.anytype.ui.home.routeUploadSnackbar
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectOrWebPagesFragment
 import com.anytypeio.anytype.ui.linking.OnLinkToAction
@@ -219,6 +222,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     private lateinit var createObjectFactory: CreateObjectViewModelFactory
 
     private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
+    private val mainVm: MainViewModel by activityViewModels()
 
     private fun createObjectComponentKey(): String = "editor-create-object:$ctx"
 
@@ -789,6 +794,17 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         lifecycleScope.launch {
             binding.searchToolbar.events().collect { vm.onSearchToolbarEvent(it) }
+        }
+
+        // The editor's own inline-block upload path (PickerDelegate /
+        // vm.onProceedWithFilePath()) already inserts the file as a block
+        // in the document, so it intentionally does not surface this
+        // snackbar. Only the standalone-upload flow from the Create-Object
+        // popup's media row goes through createObjectVm.uploadSnackbar.
+        lifecycleScope.launch {
+            createObjectVm.uploadSnackbar.collect { variant ->
+                routeUploadSnackbar(mainVm, variant)
+            }
         }
 
         binding.objectNotExist.root.findViewById<TextView>(R.id.btnToDashboard).clicks()

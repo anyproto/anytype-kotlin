@@ -2077,6 +2077,7 @@ Please provide specific details of your needs here.</string>
     <string name="upload_success_snackbar_video">New video added</string>
     <string name="upload_success_snackbar_file">New file added</string>
     <string name="upload_success_snackbar_mixed">New files added</string>
+    <string name="upload_success_snackbar_action_open">Open %1$s</string>
     <string name="chats_reply">Reply</string>
     <string name="chats_add_reaction">Add Reaction</string>
 

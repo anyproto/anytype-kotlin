@@ -1783,6 +1783,7 @@
     <string name="upload_success_snackbar_video">New video added</string>
     <string name="upload_success_snackbar_file">New file added</string>
     <string name="upload_success_snackbar_mixed">New files added</string>
+    <string name="upload_success_snackbar_action_open">Open %1$s</string>
     <string name="chats_reply">返信</string>
     <string name="chats_add_reaction">リアクションを追加</string>
     <string name="chat_send_message_rate_limit_title">お待ちください！ 異常なタイピングが検出されました！</string>

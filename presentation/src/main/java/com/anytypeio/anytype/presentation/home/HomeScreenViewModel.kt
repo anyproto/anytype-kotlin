@@ -161,6 +161,7 @@ import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_MY_FAVORITES
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_RECENTLY_EDITED
@@ -3700,6 +3701,21 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onSectionMyFavoritesClicked() {
+        viewModelScope.launch {
+            val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+            val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_MY_FAVORITES)
+
+            val newCollapsedSections = if (isCurrentlyCollapsed) {
+                currentCollapsedSections.minus(SECTION_MY_FAVORITES)
+            } else {
+                currentCollapsedSections.plus(SECTION_MY_FAVORITES)
+            }
+
+            userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
+        }
+    }
+
     /**
      * Determines if a widget should be collapsed due to its section being collapsed
      */
@@ -3709,6 +3725,7 @@ class HomeScreenViewModel(
             widget.sectionType == SectionType.UNREAD -> collapsedSections.contains(Widget.Source.SECTION_UNREAD)
             widget.sectionType == SectionType.TYPES -> collapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
             widget.sectionType == SectionType.RECENTLY_EDITED -> collapsedSections.contains(Widget.Source.SECTION_RECENTLY_EDITED)
+            widget.sectionType == SectionType.MY_FAVORITES -> collapsedSections.contains(Widget.Source.SECTION_MY_FAVORITES)
             else -> false
         }
     }

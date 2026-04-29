@@ -342,7 +342,6 @@ private fun SpaceListItemMenu(
         },
         offset = DpOffset(x = 0.dp, y = 6.dp),
         containerColor = colorResource(R.color.background_secondary),
-        shape = RoundedCornerShape(38.dp),
         tonalElevation = 8.dp,
     ) {
         actions.forEachIndexed { idx, action ->

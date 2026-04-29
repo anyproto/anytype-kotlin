@@ -2101,7 +2101,7 @@ Please provide specific details of your needs here.</string>
     <string name="widgets_section_pinned">已釘選</string>
     <string name="widgets_section_unread">Unread</string>
     <string name="widgets_section_my_favorites">My Favorites</string>
-    <string name="widgets_section_object_types">物件</string>
+    <string name="widgets_section_object_types">類型</string>
     <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">新增</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>

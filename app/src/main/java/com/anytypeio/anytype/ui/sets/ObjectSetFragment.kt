@@ -38,6 +38,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -125,7 +126,9 @@ import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
+import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
+import com.anytypeio.anytype.ui.home.routeUploadSnackbar
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.CollectionAddObjectTypeFragment
@@ -164,6 +167,8 @@ open class ObjectSetFragment :
     private lateinit var createObjectFactory: CreateObjectViewModelFactory
 
     private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
+    private val mainVm: MainViewModel by activityViewModels()
 
     private fun createObjectComponentKey(): String = "object-set-create-object:$ctx"
 
@@ -1529,6 +1534,10 @@ open class ObjectSetFragment :
         jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
 
         jobs += lifecycleScope.subscribe(vm.spaceSyncStatus) { setStatus(it) }
+
+        jobs += lifecycleScope.subscribe(createObjectVm.uploadSnackbar) { variant ->
+            routeUploadSnackbar(mainVm, variant)
+        }
 
         vm.onStart(view = view)
     }

@@ -2114,7 +2114,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="widgets_section_pinned">Sabitlendi</string>
     <string name="widgets_section_unread">Okunmamış</string>
     <string name="widgets_section_my_favorites">Favorilerim</string>
-    <string name="widgets_section_object_types">Nesneler</string>
+    <string name="widgets_section_object_types">Türler</string>
     <string name="widgets_section_recently_edited">Yakın Zamanda Düzenlenen</string>
     <string name="widgets_menu_new_object_type">Yeni</string>
     <string name="widgets_menu_delete_object_type">Nesne Türünü Sil</string>

@@ -496,7 +496,7 @@ class HomeScreenViewModel(
      */
     val canCreateInSpace: StateFlow<Boolean> =
         userPermissionProvider.observe(vmParams.spaceId)
-            .map { it == SpaceMemberPermissions.OWNER || it == SpaceMemberPermissions.WRITER }
+            .map { it?.isOwnerOrEditor() == true }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.Eagerly,

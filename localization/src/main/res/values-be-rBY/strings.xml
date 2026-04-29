@@ -2140,7 +2140,7 @@
     <string name="widgets_section_pinned">Замацавана</string>
     <string name="widgets_section_unread">Unread</string>
     <string name="widgets_section_my_favorites">My Favorites</string>
-    <string name="widgets_section_object_types">Аб\'екты</string>
+    <string name="widgets_section_object_types">Тыпы</string>
     <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">Новы</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>

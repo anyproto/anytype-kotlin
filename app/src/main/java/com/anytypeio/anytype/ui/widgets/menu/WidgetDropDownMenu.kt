@@ -49,6 +49,12 @@ sealed class WidgetMenuItem {
     data class FavoriteObject(val widgetId: WidgetId) : WidgetMenuItem()
     /** DROID-4397: remove the widget's source object from personal favorites. */
     data class UnfavoriteObject(val widgetId: WidgetId) : WidgetMenuItem()
+    /** DROID-4488: remove a specific object from My Favorites (per-row, not per-widget). */
+    data class UnfavoriteFavoritesItem(val objectId: Id) : WidgetMenuItem()
+    /** DROID-4488: create a new object of the user's default type and add it to My Favorites. */
+    data object CreateNewFavoriteObject : WidgetMenuItem()
+    /** DROID-4488: archive a specific favorite object (Owner/Editor only). */
+    data class MoveFavoriteItemToBin(val objectId: Id) : WidgetMenuItem()
 }
 
 @Composable
@@ -210,7 +216,7 @@ fun WidgetLongClickMenu(
                                 )
                                 Image(
                                     painter = painterResource(
-                                        id = R.drawable.ic_object_action_add_to_favorites
+                                        id = R.drawable.ic_favorite_24
                                     ),
                                     contentDescription = "Favorite icon",
                                     modifier = Modifier.size(24.dp),
@@ -250,7 +256,7 @@ fun WidgetLongClickMenu(
                                 // Reusing the strikethrough-unfavorite asset for now.
                                 Image(
                                     painter = painterResource(
-                                        id = R.drawable.ic_object_action_unfavorite
+                                        id = R.drawable.ic_unfavorite_24
                                     ),
                                     contentDescription = "Unfavorite icon",
                                     modifier = Modifier.size(24.dp),
@@ -268,9 +274,146 @@ fun WidgetLongClickMenu(
                         )
                     }
                 }
+                is WidgetMenuItem.CreateNewFavoriteObject -> {
+                    DropdownMenuItem(
+                        onClick = {
+                            onDropDownMenuAction(DropDownMenuAction.CreateNewFavoriteObject).also {
+                                isCardMenuExpanded.value = false
+                            }
+                        },
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.text_primary),
+                                    text = stringResource(R.string.widgets_menu_new_object_type)
+                                )
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_create_obj_32),
+                                    contentDescription = "New object icon",
+                                    modifier = Modifier.size(24.dp),
+                                    colorFilter = ColorFilter.tint(
+                                        colorResource(id = R.color.text_primary)
+                                    )
+                                )
+                            }
+                        }
+                    )
+                    if (index < menuItems.lastIndex) {
+                        Divider(
+                            thickness = 8.dp,
+                            color = colorResource(id = R.color.shape_primary)
+                        )
+                    }
+                }
+                is WidgetMenuItem.UnfavoriteFavoritesItem -> {
+                    DropdownMenuItem(
+                        onClick = {
+                            onDropDownMenuAction(
+                                DropDownMenuAction.UnfavoriteFavoritesItem(menuItem.objectId)
+                            ).also {
+                                isCardMenuExpanded.value = false
+                            }
+                        },
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.text_primary),
+                                    text = stringResource(R.string.unfavorite)
+                                )
+                                // TODO(DROID-4397): Spec calls for a filled-star icon.
+                                // Reusing the strikethrough-unfavorite asset for now.
+                                Image(
+                                    painter = painterResource(
+                                        id = R.drawable.ic_unfavorite_24
+                                    ),
+                                    contentDescription = "Unfavorite icon",
+                                    modifier = Modifier.size(24.dp),
+                                    colorFilter = ColorFilter.tint(
+                                        colorResource(id = R.color.text_primary)
+                                    )
+                                )
+                            }
+                        }
+                    )
+                    if (index < menuItems.lastIndex) {
+                        Divider(
+                            thickness = 0.5.dp,
+                            color = colorResource(id = R.color.shape_primary)
+                        )
+                    }
+                }
+                is WidgetMenuItem.MoveFavoriteItemToBin -> {
+                    DropdownMenuItem(
+                        onClick = {
+                            onDropDownMenuAction(
+                                DropDownMenuAction.MoveFavoriteItemToBin(menuItem.objectId)
+                            ).also {
+                                isCardMenuExpanded.value = false
+                            }
+                        },
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.palette_system_red),
+                                    text = stringResource(R.string.move_to_bin)
+                                )
+                                Image(
+                                    painter = painterResource(
+                                        id = R.drawable.ic_dropdown_menu_delete
+                                    ),
+                                    contentDescription = "Move to Bin icon",
+                                    modifier = Modifier.size(24.dp),
+                                    colorFilter = ColorFilter.tint(
+                                        colorResource(id = R.color.palette_system_red)
+                                    )
+                                )
+                            }
+                        }
+                    )
+                    if (index < menuItems.lastIndex) {
+                        Divider(
+                            thickness = 0.5.dp,
+                            color = colorResource(id = R.color.shape_primary)
+                        )
+                    }
+                }
             }
         }
     }
+}
+
+/**
+ * DROID-4488: builds the menu shown for a single row in the My Favorites widget.
+ * Acts on the row's underlying object (not on a widget), so it does not go
+ * through [getWidgetMenuItems] (which is widget-scoped).
+ *
+ * @param objectId target object for the Unfavorite / Move to Bin actions.
+ * @param canCreate true iff the current user has Owner/Editor permissions —
+ *  gates the "New object" and "Move to Bin" items, which mutate space content.
+ *  Unfavorite is always shown because personal favorites are user-scoped (DROID-4397).
+ */
+fun buildMyFavoriteRowMenuItems(
+    objectId: Id,
+    canCreate: Boolean
+): List<WidgetMenuItem> = buildList {
+    if (canCreate) add(WidgetMenuItem.CreateNewFavoriteObject)
+    add(WidgetMenuItem.UnfavoriteFavoritesItem(objectId))
+    if (canCreate) add(WidgetMenuItem.MoveFavoriteItemToBin(objectId))
 }
 
 /**

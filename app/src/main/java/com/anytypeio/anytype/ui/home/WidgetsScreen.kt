@@ -80,6 +80,7 @@ fun WidgetsScreen(
     val unreadWidget = viewModel.unreadView.collectAsState().value
     val personalFavoritesWidget = viewModel.personalFavoritesView.collectAsState().value
     val canToggleChannelPin = viewModel.canToggleChannelPin.collectAsState().value
+    val canCreateInSpace = viewModel.canCreateInSpace.collectAsState().value
     val favoriteTargets = viewModel.favoriteTargets.collectAsState().value
     val myFavoritesReorderFailedSignal = viewModel.myFavoritesReorderFailedCount.collectAsState().value
     val chatWidget = viewModel.chatView.collectAsState().value
@@ -540,7 +541,9 @@ fun WidgetsScreen(
                                             },
                                             onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
                                             onReordered = viewModel::onMyFavoritesReordered,
-                                            reorderFailedSignal = myFavoritesReorderFailedSignal
+                                            reorderFailedSignal = myFavoritesReorderFailedSignal,
+                                            canCreate = canCreateInSpace,
+                                            onItemMenuAction = viewModel::onMyFavoritesItemMenuAction
                                         )
                                     }
                                 }

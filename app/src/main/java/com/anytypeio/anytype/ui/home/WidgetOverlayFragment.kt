@@ -280,7 +280,7 @@ class WidgetOverlayFragment : BottomSheetDialogFragment(),
                         // behind it. Dismiss first so the Snackbar is
                         // visible on the underlying screen.
                         dismissAllowingStateLoss()
-                        routeUploadSnackbar(mainVm, variant)
+                        if (isAdded) routeUploadSnackbar(mainVm, variant)
                     }
                 }
             }

@@ -1943,9 +1943,15 @@ class HomeScreenViewModel(
     private fun proceedWithCreatingNewFavoriteObject() {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            val defaultType = getDefaultObjectType.async(vmParams.spaceId).getOrNull()
-            val typeKey = defaultType?.type ?: TypeKey(ObjectTypeIds.PAGE)
-            val templateId = defaultType?.defaultTemplate
+            val typeKey = getDefaultObjectType.async(vmParams.spaceId)
+                .getOrNull()
+                ?.type
+                ?: TypeKey(ObjectTypeIds.PAGE)
+            // Look up the actual type object so we can use its configured
+            // defaultTemplateId — GetDefaultObjectType.Response.defaultTemplate
+            // can lag behind type-level changes; the store is authoritative.
+            val typeObject = storeOfObjectTypes.getByKey(typeKey.key)
+            val templateId = typeObject?.defaultTemplateId?.takeIf { it.isNotEmpty() }
 
             createObject.async(
                 CreateObject.Param(
@@ -1961,7 +1967,7 @@ class HomeScreenViewModel(
                         route = EventsDictionary.Routes.navigation,
                         startTime = startTime,
                         view = EventsDictionary.View.viewHome,
-                        objType = storeOfObjectTypes.getByKey(typeKey.key),
+                        objType = typeObject,
                         spaceParams = spaceParams
                     )
                     addPersonalFavorite.async(

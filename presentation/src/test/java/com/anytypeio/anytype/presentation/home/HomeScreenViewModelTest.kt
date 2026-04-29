@@ -72,6 +72,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
@@ -187,6 +188,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var reorderPersonalFavorites: ReorderPersonalFavorites
+
+    @Mock
+    lateinit var setObjectListIsArchived: SetObjectListIsArchived
 
     @Mock
     lateinit var openObject: OpenObject
@@ -3189,6 +3193,7 @@ class HomeScreenViewModelTest {
         addPersonalFavorite = addPersonalFavorite,
         removePersonalFavorite = removePersonalFavorite,
         reorderPersonalFavorites = reorderPersonalFavorites,
+        setObjectListIsArchived = setObjectListIsArchived,
         createWidget = createWidget,
         deleteWidget = deleteWidget,
         updateWidget = updateWidget,

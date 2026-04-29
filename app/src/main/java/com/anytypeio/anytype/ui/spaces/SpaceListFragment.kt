@@ -48,26 +48,21 @@ class SpaceListFragment : BaseBottomSheetComposeFragment() {
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            MaterialTheme(
-                typography = typography,
-                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp))
-            ) {
-                SpaceListScreen(
-                    state = vm.state.collectAsStateWithLifecycle().value,
-                    onDeleteSpaceClicked = vm::onDeleteSpaceClicked,
-                    onLeaveSpaceClicked = vm::onLeaveSpaceClicked,
-                    onCancelJoinRequestClicked = vm::onCancelJoinSpaceClicked,
-                    onCreateSpaceClicked = {
-                        runCatching {
-                            findNavController().navigate(
-                                R.id.actionCreateSpaceFromVault
-                            )
-                        }.onFailure {
-                            Timber.e(it, "Error while opening create-space screen from vault")
-                        }
+            SpaceListScreen(
+                state = vm.state.collectAsStateWithLifecycle().value,
+                onDeleteSpaceClicked = vm::onDeleteSpaceClicked,
+                onLeaveSpaceClicked = vm::onLeaveSpaceClicked,
+                onCancelJoinRequestClicked = vm::onCancelJoinSpaceClicked,
+                onCreateSpaceClicked = {
+                    runCatching {
+                        findNavController().navigate(
+                            R.id.actionCreateSpaceFromVault
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error while opening create-space screen from vault")
                     }
-                )
-            }
+                }
+            )
 
             val bottomSheetState = rememberModalBottomSheetState()
             val scope = rememberCoroutineScope()

@@ -8624,6 +8624,8 @@ message Rpc {
                 repeated string productIds = 1;
 
                 bool isYearly = 2;
+
+                bool isLifetime = 3;
             }
 
             message Response {

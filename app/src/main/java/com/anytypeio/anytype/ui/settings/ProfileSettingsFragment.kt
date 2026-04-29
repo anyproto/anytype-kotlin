@@ -147,6 +147,7 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             }
                         },
                         isDebugEnabled = vm.isDebugEnabled.collectAsStateWithLifecycle().value,
+                        showExperimentalFeatures = vm.showExperimentalFeatures,
                         onMiscSectionClicked = vm::onMiscSectionClicked,
                         notificationsDisabled = notificationsDisabled,
                         onOpenNotificationSettings = { showNotificationSettingsModal = true },

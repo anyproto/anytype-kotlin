@@ -71,6 +71,8 @@ class ProfileSettingsViewModel(
 
     val isDebugEnabled = MutableStateFlow(false)
 
+    val showExperimentalFeatures: Boolean = BuildConfig.DEBUG
+
     val profileQrCodeState = MutableStateFlow<UiProfileQrCodeState>(UiProfileQrCodeState.Hidden)
 
     val notificationsDisabled: StateFlow<Boolean> =

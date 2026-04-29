@@ -55,7 +55,7 @@ class DefaultUserSettingsCache(
 ) : UserSettingsCache {
 
     private val _compactModeFlow = MutableStateFlow(
-        prefs.getBoolean(COMPACT_MODE_ENABLED_KEY, false)
+        prefs.getBoolean(COMPACT_MODE_ENABLED_KEY, true)
     )
 
     private val _fileDownloadLimitFlow = MutableStateFlow(
@@ -768,7 +768,7 @@ class DefaultUserSettingsCache(
     }
 
     override suspend fun getCompactModeEnabled(): Boolean {
-        return prefs.getBoolean(COMPACT_MODE_ENABLED_KEY, false)
+        return prefs.getBoolean(COMPACT_MODE_ENABLED_KEY, true)
     }
 
     override suspend fun setCompactModeEnabled(enabled: Boolean) {

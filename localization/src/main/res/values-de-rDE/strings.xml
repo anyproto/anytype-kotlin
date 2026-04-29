@@ -2114,7 +2114,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="widgets_section_pinned">Angeheftet</string>
     <string name="widgets_section_unread">Ungelesen</string>
     <string name="widgets_section_my_favorites">My Favorites</string>
-    <string name="widgets_section_object_types">Objekte</string>
+    <string name="widgets_section_object_types">Typen</string>
     <string name="widgets_section_recently_edited">Zuletzt bearbeitet</string>
     <string name="widgets_menu_new_object_type">Neu</string>
     <string name="widgets_menu_delete_object_type">Objekttyp löschen</string>

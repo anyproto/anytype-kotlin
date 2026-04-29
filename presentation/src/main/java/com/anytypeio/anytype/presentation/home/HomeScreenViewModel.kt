@@ -3725,6 +3725,7 @@ class HomeScreenViewModel(
             widget.sectionType == SectionType.UNREAD -> collapsedSections.contains(Widget.Source.SECTION_UNREAD)
             widget.sectionType == SectionType.TYPES -> collapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
             widget.sectionType == SectionType.RECENTLY_EDITED -> collapsedSections.contains(Widget.Source.SECTION_RECENTLY_EDITED)
+            widget.sectionType == SectionType.MY_FAVORITES -> collapsedSections.contains(Widget.Source.SECTION_MY_FAVORITES)
             else -> false
         }
     }

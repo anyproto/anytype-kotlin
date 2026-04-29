@@ -14,7 +14,7 @@ class ExperimentalFeaturesViewModel(
     private val userSettingsRepository: UserSettingsRepository
 ) : ViewModel() {
 
-    private val _isCompactModeEnabled = MutableStateFlow(false)
+    private val _isCompactModeEnabled = MutableStateFlow(true)
     val isCompactModeEnabled: StateFlow<Boolean> = _isCompactModeEnabled.asStateFlow()
 
     init {

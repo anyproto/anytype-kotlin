@@ -89,6 +89,7 @@ fun ProfileSettingsScreen(
     onLogoutClicked: () -> Unit,
     isLogoutInProgress: Boolean,
     isDebugEnabled: Boolean,
+    showExperimentalFeatures: Boolean,
     onNameChange: (String) -> Unit,
     onProfileIconClick: () -> Unit,
     account: AccountProfile,
@@ -245,15 +246,17 @@ fun ProfileSettingsScreen(
                     onClick = onDebugClicked
                 )
             }
-            item {
-                Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
-            }
-            item {
-                Option(
-                    image = R.drawable.ic_settings_debug,
-                    text = stringResource(R.string.experimental_features),
-                    onClick = onExperimentalFeaturesClicked
-                )
+            if (showExperimentalFeatures) {
+                item {
+                    Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+                }
+                item {
+                    Option(
+                        image = R.drawable.ic_settings_debug,
+                        text = stringResource(R.string.experimental_features),
+                        onClick = onExperimentalFeaturesClicked
+                    )
+                }
             }
         }
         item {
@@ -716,6 +719,7 @@ private fun ProfileSettingPreview() {
         onDebugClicked = {},
         onExperimentalFeaturesClicked = {},
         isDebugEnabled = true,
+        showExperimentalFeatures = true,
         notificationsDisabled = true,
         onOpenNotificationSettings = {},
         onMySitesClicked = {},
@@ -792,6 +796,7 @@ private fun ProfileSettingLongGlobalNamePreview() {
         onDebugClicked = {},
         onExperimentalFeaturesClicked = {},
         isDebugEnabled = false,
+        showExperimentalFeatures = false,
         notificationsDisabled = false,
         onOpenNotificationSettings = {},
         onMySitesClicked = {},

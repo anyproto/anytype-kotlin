@@ -1795,7 +1795,7 @@ En concreto,
     <string name="upload_success_snackbar_video">Vídeo nuevo añadido</string>
     <string name="upload_success_snackbar_file">Archivo nuevo añadido</string>
     <string name="upload_success_snackbar_mixed">Archivos nuevos añadidos</string>
-    <string name="upload_success_snackbar_action_open">Open %1$s</string>
+    <string name="upload_success_snackbar_action_open">Abrir %1$s</string>
     <string name="chats_reply">Responder</string>
     <string name="chats_add_reaction">Añadir reacción</string>
     <string name="chat_send_message_rate_limit_title">¡Calma! ¡Estás escribiendo muy deprisa!</string>

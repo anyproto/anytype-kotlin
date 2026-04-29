@@ -4,6 +4,8 @@ import android.view.View
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,10 +21,14 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +42,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.gestures.LongPressWithSlopDetector
 import com.anytypeio.anytype.core_ui.gestures.ReorderableItemModifier
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.views.UXBody
@@ -48,6 +55,8 @@ import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.compositeKey
+import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
+import com.anytypeio.anytype.ui.widgets.menu.buildMyFavoriteRowMenuItems
 import com.anytypeio.anytype.ui.widgets.menu.getWidgetMenuItems
 import com.anytypeio.anytype.ui.widgets.types.AllContentWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
@@ -729,6 +738,7 @@ fun UnreadChatListWidget(
  * Renders nothing when [item] has no elements; WidgetsScreen already gates on
  * emptiness, but double-check here too for flicker safety.
  */
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MyFavoritesWidget(
     item: WidgetView.SetOfObjects,
@@ -744,7 +754,17 @@ fun MyFavoritesWidget(
      * causes [item.elements] itself to change (new subscription emission),
      * so no signal is needed for the success path.
      */
-    reorderFailedSignal: Int = 0
+    reorderFailedSignal: Int = 0,
+    /**
+     * DROID-4488: gates the "New object" entry in the per-row long-press
+     * menu (Owner/Editor only). Unfavorite is always shown.
+     */
+    canCreate: Boolean = false,
+    /**
+     * DROID-4488: handler for the per-row long-press menu actions. Receives
+     * the row's object id plus the chosen [DropDownMenuAction].
+     */
+    onItemMenuAction: (objectId: Id, DropDownMenuAction) -> Unit = { _, _ -> }
 ) {
     if (item.elements.isEmpty()) return
     val view = LocalView.current
@@ -792,12 +812,15 @@ fun MyFavoritesWidget(
                 onCheckboxClicked = { isChecked ->
                     onObjectCheckboxClicked(element.obj.id, isChecked)
                 },
-                showDivider = index < currentElements.lastIndex
+                showDivider = index < currentElements.lastIndex,
+                canCreate = canCreate,
+                onItemMenuAction = onItemMenuAction
             )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun sh.calvin.reorderable.ReorderableScope.MyFavoriteRow(
     element: WidgetView.SetOfObjects.Element,
@@ -805,14 +828,47 @@ private fun sh.calvin.reorderable.ReorderableScope.MyFavoriteRow(
     view: android.view.View,
     onClick: () -> Unit,
     onCheckboxClicked: (Boolean) -> Unit,
-    showDivider: Boolean
+    showDivider: Boolean,
+    canCreate: Boolean,
+    onItemMenuAction: (objectId: Id, DropDownMenuAction) -> Unit
 ) {
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp)
-                .longPressDraggableHandle(
+    val haptic = LocalHapticFeedback.current
+    val touchSlop = LocalViewConfiguration.current.touchSlop
+    val isMenuExpanded = remember { mutableStateOf(false) }
+    var longPressConsumed by remember { mutableStateOf(false) }
+
+    val menuItems = remember(element.obj.id, canCreate) {
+        buildMyFavoriteRowMenuItems(
+            objectId = element.obj.id,
+            canCreate = canCreate
+        )
+    }
+
+    // DROID-4488: chain `clickable` BEFORE `draggableHandle` to match the
+    // exact gesture-modifier order used by every other widget card via
+    // ReorderableItemModifier. Reverse order silently breaks both gestures.
+    val interactionModifier = if (mode is InteractionMode.Edit) {
+        Modifier
+    } else {
+        Modifier
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) {
+                if (longPressConsumed) {
+                    longPressConsumed = false
+                } else {
+                    onClick()
+                }
+            }
+            .draggableHandle(
+                dragGestureDetector = LongPressWithSlopDetector(
+                    touchSlop = touchSlop,
+                    onMenuTrigger = {
+                        longPressConsumed = true
+                        isMenuExpanded.value = true
+                    },
+                    haptic = haptic,
                     onDragStarted = {
                         androidx.core.view.ViewCompat.performHapticFeedback(
                             view,
@@ -826,11 +882,15 @@ private fun sh.calvin.reorderable.ReorderableScope.MyFavoriteRow(
                         )
                     }
                 )
-                .then(
-                    if (mode !is InteractionMode.Edit)
-                        Modifier.noRippleClickable(onClick = onClick)
-                    else Modifier
-                )
+            )
+    }
+
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(40.dp)
+                .then(interactionModifier)
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -842,9 +902,10 @@ private fun sh.calvin.reorderable.ReorderableScope.MyFavoriteRow(
                 iconWithoutBackgroundMaxSize = 200.dp
             )
             val name = when (val n = element.name) {
-                is WidgetView.Name.Default -> n.prettyPrintName
-                is WidgetView.Name.Bundled -> ""
-                WidgetView.Name.Empty -> ""
+                is WidgetView.Name.Default ->
+                    n.prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) }
+                is WidgetView.Name.Bundled -> stringResource(id = R.string.untitled)
+                WidgetView.Name.Empty -> stringResource(id = R.string.untitled)
             }
             Text(
                 text = name,
@@ -862,6 +923,13 @@ private fun sh.calvin.reorderable.ReorderableScope.MyFavoriteRow(
                 color = colorResource(id = R.color.widget_divider)
             )
         }
+        WidgetLongClickMenu(
+            menuItems = menuItems,
+            isCardMenuExpanded = isMenuExpanded,
+            onDropDownMenuAction = { action ->
+                onItemMenuAction(element.obj.id, action)
+            }
+        )
     }
 }
 

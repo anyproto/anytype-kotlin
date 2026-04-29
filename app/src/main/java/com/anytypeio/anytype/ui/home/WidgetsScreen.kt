@@ -158,23 +158,29 @@ fun WidgetsScreen(
     val personalFavoritesWidgetView = personalFavoritesWidget as? WidgetView.SetOfObjects
     val isMyFavoritesSectionCollapsed = collapsedSections.contains(SECTION_MY_FAVORITES)
 
+    // Track previous collapse state for my favorites section
     val wasMyFavoritesCollapsed = remember { mutableStateOf(isMyFavoritesSectionCollapsed) }
     val hadMyFavoritesItems = remember { mutableStateOf(personalFavoritesWidgetView?.elements?.isNotEmpty() == true) }
 
+    // When section becomes expanded, keep the flag true to prevent flicker
     if (!isMyFavoritesSectionCollapsed && wasMyFavoritesCollapsed.value) {
         hadMyFavoritesItems.value = true
     }
 
+    // Update previous state
     wasMyFavoritesCollapsed.value = isMyFavoritesSectionCollapsed
 
+    // Set flag when items are present
     if (personalFavoritesWidgetView?.elements?.isNotEmpty() == true) {
         hadMyFavoritesItems.value = true
     }
 
+    // Reset flag when section is collapsed and has no items
     if (isMyFavoritesSectionCollapsed && personalFavoritesWidgetView?.elements?.isEmpty() == true) {
         hadMyFavoritesItems.value = false
     }
 
+    // Show header if: has items OR is collapsed OR was previously shown
     val shouldShowPersonalFavoritesSection = personalFavoritesWidgetView != null &&
         (personalFavoritesWidgetView.elements.isNotEmpty() || isMyFavoritesSectionCollapsed || hadMyFavoritesItems.value)
 

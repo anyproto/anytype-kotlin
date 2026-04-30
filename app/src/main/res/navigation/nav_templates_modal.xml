@@ -70,4 +70,11 @@
         android:id="@+id/versionHistoryScreen"
         android:name="com.anytypeio.anytype.ui.history.VersionHistoryFragment"
         android:label="Object-Version_history-Screen"/>
+
+    <dialog
+        android:id="@+id/objectValueScreen"
+        android:name="com.anytypeio.anytype.ui.relations.value.ObjectValueFragment"
+        android:label="Relation-Object-Value-Screen" />
+
+    <include app:graph="@navigation/nav_relations" />
 </navigation>

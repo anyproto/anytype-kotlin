@@ -1407,7 +1407,10 @@ open class ObjectSetFragment :
                         ObjectType.Layout.IMAGE -> MediaActivity.TYPE_IMAGE
                         ObjectType.Layout.VIDEO -> MediaActivity.TYPE_VIDEO
                         ObjectType.Layout.AUDIO -> MediaActivity.TYPE_AUDIO
-                        else -> return@runCatching
+                        else -> {
+                            Timber.w("PlayMedia dispatched with unsupported layout: ${command.layout}")
+                            return@runCatching
+                        }
                     }
                     MediaActivity.start(
                         context = requireContext(),

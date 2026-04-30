@@ -1469,18 +1469,25 @@ class ObjectSetViewModel(
             val layout = obj.layout
             val name = fieldParser.getObjectName(obj)
             when (layout) {
+                ObjectType.Layout.IMAGE -> dispatch(
+                    ObjectSetCommand.PlayMedia(
+                        targetObjectId = targetId,
+                        name = name,
+                        layout = ObjectType.Layout.IMAGE
+                    )
+                )
                 ObjectType.Layout.VIDEO -> dispatch(
                     ObjectSetCommand.PlayMedia(
                         targetObjectId = targetId,
                         name = name,
-                        isVideo = true
+                        layout = ObjectType.Layout.VIDEO
                     )
                 )
                 ObjectType.Layout.AUDIO -> dispatch(
                     ObjectSetCommand.PlayMedia(
                         targetObjectId = targetId,
                         name = name,
-                        isVideo = false
+                        layout = ObjectType.Layout.AUDIO
                     )
                 )
                 else -> {
@@ -2241,12 +2248,22 @@ class ObjectSetViewModel(
             val layout = obj.layout
             val name = fieldParser.getObjectName(obj)
             when (layout) {
+                ObjectType.Layout.IMAGE -> {
+                    dispatch(
+                        ObjectSetCommand.PlayMedia(
+                            targetObjectId = obj.id,
+                            name = name,
+                            layout = ObjectType.Layout.IMAGE
+                        )
+                    )
+                    return
+                }
                 ObjectType.Layout.VIDEO -> {
                     dispatch(
                         ObjectSetCommand.PlayMedia(
                             targetObjectId = obj.id,
                             name = name,
-                            isVideo = true
+                            layout = ObjectType.Layout.VIDEO
                         )
                     )
                     return
@@ -2256,7 +2273,7 @@ class ObjectSetViewModel(
                         ObjectSetCommand.PlayMedia(
                             targetObjectId = obj.id,
                             name = name,
-                            isVideo = false
+                            layout = ObjectType.Layout.AUDIO
                         )
                     )
                     return

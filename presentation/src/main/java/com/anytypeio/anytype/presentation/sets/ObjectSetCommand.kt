@@ -130,7 +130,7 @@ sealed class ObjectSetCommand {
     data class PlayMedia(
         val targetObjectId: Id,
         val name: String,
-        val isVideo: Boolean
+        val layout: ObjectType.Layout
     ) : ObjectSetCommand()
 
     data class CopyLinkToClipboard(val link: String) : ObjectSetCommand()

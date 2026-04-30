@@ -13,6 +13,7 @@ licensee {
     // Allow common open source licenses
     allow("Apache-2.0")
     allow("MIT")
+    allow("BSD-3-Clause")
 
     // Google/Android SDK Terms
     allowUrl("https://developer.android.com/studio/terms.html") {
@@ -40,6 +41,9 @@ licensee {
     }
     allowDependency("com.github.komputing", "KBase58", "0.4") {
         because("KBase58 is MIT-licensed (verified in repository)")
+    }
+    allowDependency("com.github.chrisbanes", "PhotoView", "2.3.0") {
+        because("PhotoView is Apache-2.0 licensed (verified in repository); JitPack metadata may be missing")
     }
 
     // Internal Anytype middleware library

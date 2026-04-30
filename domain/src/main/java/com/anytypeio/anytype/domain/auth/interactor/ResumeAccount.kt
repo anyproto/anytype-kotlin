@@ -13,6 +13,16 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
 /**
+ * Thrown by [ResumeAccount] when the stored mnemonic is missing on resume.
+ *
+ * Expected on legitimate states — e.g. the user logged out (or their account was
+ * deleted) and the OS killed the process before the activity could navigate to
+ * splash, leaving us to attempt resume against a wiped wallet on the next launch.
+ * Callers should treat it as "not signed in" rather than as a bug to log.
+ */
+class MnemonicEmptyException : IllegalStateException("Mnemonic is empty")
+
+/**
  * Blocking use-case for resuming account session when application is killed by OS.
  */
 class ResumeAccount @Inject constructor(
@@ -30,7 +40,7 @@ class ResumeAccount @Inject constructor(
     private suspend fun proceedWithResuming() = safe {
         repository.setInitialParams(initialParamsProvider.toCommand())
         val mnemonic = repository.getMnemonic()
-        if (mnemonic.isNullOrBlank()) throw IllegalStateException("Mnemonic is empty")
+        if (mnemonic.isNullOrBlank()) throw MnemonicEmptyException()
         repository.recoverWallet(
             path = pathProvider.providePath(),
             mnemonic = mnemonic

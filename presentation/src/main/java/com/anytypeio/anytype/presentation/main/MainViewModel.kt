@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.AppShutdown
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
+import com.anytypeio.anytype.domain.auth.interactor.MnemonicEmptyException
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
@@ -357,16 +358,34 @@ class MainViewModel(
                     when (error) {
                         is NeedToUpdateApplicationException -> {
                             commands.emit(Command.Error(SplashViewModel.ERROR_NEED_UPDATE))
+                            Timber.e(error, "Error while launching account after activity recreation")
+                        }
+
+                        is MnemonicEmptyException -> {
+                            // Process restored without a wallet (post-logout, deletion, or
+                            // transient prefs read failure). Logout is destructive, so ask
+                            // the user before wiping local state.
+                            Timber.w("onRestore: mnemonic empty, asking user to confirm logout")
+                            commands.emit(Command.ConfirmResumeAccountLogout)
                         }
 
                         else -> {
                             commands.emit(Command.Error(SplashViewModel.ERROR_MESSAGE))
+                            Timber.e(error, "Error while launching account after activity recreation")
                         }
                     }
-                    Timber.e(error, "Error while launching account after activity recreation")
                 }
             )
         }
+    }
+
+    /**
+     * Invoked from [com.anytypeio.anytype.ui.main.MainActivity] when the user
+     * confirms logout in the dialog raised by [Command.ConfirmResumeAccountLogout].
+     * Reuses the post-deletion logout flow: same Logout params, same nav target.
+     */
+    fun onResumeAccountLogoutConfirmed() {
+        proceedWithLogoutDueToAccountDeletion()
     }
 
     fun onIntentCreateObject(type: Id) {
@@ -1034,6 +1053,7 @@ class MainViewModel(
     sealed class Command {
         data class ShowDeletedAccountScreen(val deadline: Long) : Command()
         data object LogoutDueToAccountDeletion : Command()
+        data object ConfirmResumeAccountLogout : Command()
         class OpenCreateNewType(val type: Id) : Command()
         data class Error(val msg: String) : Command()
         data class Snackbar(val msg: String) : Command()

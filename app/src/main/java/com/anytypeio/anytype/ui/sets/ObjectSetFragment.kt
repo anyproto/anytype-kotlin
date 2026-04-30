@@ -615,6 +615,11 @@ open class ObjectSetFragment :
     }
 
     private fun setupDataViewViewState(state: DataViewViewState) {
+        @Suppress("SENSELESS_COMPARISON")
+        if (state == null) {
+            Timber.w("ObjectSetFragment: vm.currentViewer emitted null")
+            return
+        }
         when (state) {
             is DataViewViewState.Collection.NoView -> {
                 topToolbarThreeDotsButton.visible()
@@ -1144,6 +1149,11 @@ open class ObjectSetFragment :
     }
 
     private fun observeCommands(command: ObjectSetCommand) {
+        @Suppress("SENSELESS_COMPARISON")
+        if (command == null) {
+            Timber.w("ObjectSetFragment: vm.commands emitted null")
+            return
+        }
         when (command) {
             is ObjectSetCommand.Modal.Menu -> {
                 findNavController().safeNavigate(
@@ -1493,6 +1503,11 @@ open class ObjectSetFragment :
 
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header) { header ->
+            @Suppress("SENSELESS_COMPARISON")
+            if (header == null) {
+                Timber.w("ObjectSetFragment: vm.header emitted null")
+                return@subscribe
+            }
             when(header) {
                 is SetOrCollectionHeaderState.Default -> {
                     bindHeader(header)

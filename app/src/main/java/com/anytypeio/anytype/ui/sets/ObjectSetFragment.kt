@@ -1403,15 +1403,21 @@ open class ObjectSetFragment :
             }
             is ObjectSetCommand.PlayMedia -> {
                 runCatching {
+                    val mediaType = when (command.layout) {
+                        ObjectType.Layout.IMAGE -> MediaActivity.TYPE_IMAGE
+                        ObjectType.Layout.VIDEO -> MediaActivity.TYPE_VIDEO
+                        ObjectType.Layout.AUDIO -> MediaActivity.TYPE_AUDIO
+                        else -> return@runCatching
+                    }
                     MediaActivity.start(
                         context = requireContext(),
-                        mediaType = if (command.isVideo) MediaActivity.TYPE_VIDEO else MediaActivity.TYPE_AUDIO,
+                        mediaType = mediaType,
                         obj = command.targetObjectId,
                         name = command.name,
                         space = space
                     )
                 }.onFailure {
-                    Timber.e(it, "Error while launching media player")
+                    Timber.e(it, "Error while launching media viewer")
                 }
             }
             is ObjectSetCommand.CopyLinkToClipboard -> {

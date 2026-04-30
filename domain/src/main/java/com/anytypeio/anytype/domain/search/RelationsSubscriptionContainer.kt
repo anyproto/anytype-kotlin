@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -45,11 +46,19 @@ class RelationsSubscriptionContainer(
                 collection = null
             )
             store.clear()
-            store.merge(
-                relations = initial.results.map { ObjectWrapper.Relation(it.map) }
-            )
+            val (valid, invalid) = initial.results
+                .map { ObjectWrapper.Relation(it.map) }
+                .partition { it.isValid }
+            if (invalid.isNotEmpty()) {
+                logger.logWarning(
+                    "RelationsSubscriptionContainer: skipping ${invalid.size} invalid " +
+                        "relations (missing relationKey/id): " +
+                        invalid.map { it.map[Relations.ID] }
+                )
+            }
+            store.merge(relations = valid)
             val sub = Index(
-                objects = initial.results.map { it.id },
+                objects = valid.map { it.id },
                 dependencies = initial.dependencies.map { it.id }
             )
 

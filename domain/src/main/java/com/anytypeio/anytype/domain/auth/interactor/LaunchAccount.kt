@@ -45,8 +45,10 @@ class LaunchAccount @Inject constructor(
             repository.updateAccount(setup.account)
             configStorage.set(config = setup.config, accountId = currentAccountId)
             val lastSessionSpace = settings.getCurrentSpace()
-            if (lastSessionSpace != null) {
-                spaceManager.set(lastSessionSpace.id)
+            val targetSpace = lastSessionSpace?.id ?: setup.config.space
+            val result = spaceManager.set(targetSpace)
+            if (result.isFailure && targetSpace != setup.config.space) {
+                spaceManager.set(setup.config.space)
             }
             awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
             setup.config.analytics to setup.config.network

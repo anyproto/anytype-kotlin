@@ -80,6 +80,7 @@ fun WidgetsScreen(
     val unreadWidget = viewModel.unreadView.collectAsState().value
     val personalFavoritesWidget = viewModel.personalFavoritesView.collectAsState().value
     val canToggleChannelPin = viewModel.canToggleChannelPin.collectAsState().value
+    val canCreateInSpace = viewModel.canCreateInSpace.collectAsState().value
     val favoriteTargets = viewModel.favoriteTargets.collectAsState().value
     val myFavoritesReorderFailedSignal = viewModel.myFavoritesReorderFailedCount.collectAsState().value
     val chatWidget = viewModel.chatView.collectAsState().value
@@ -151,12 +152,38 @@ fun WidgetsScreen(
     val shouldShowUnreadSection = unreadWidgetView != null &&
         (unreadWidgetView.elements.isNotEmpty() || isUnreadSectionCollapsed || hadUnreadItems.value)
 
-    // My Favorites section visibility: purely data-driven — shown iff the
-    // user has at least one personal favorite in this space. No user-toggle
-    // collapse (see SectionSettings.isUserConfigurable).
+    // My Favorites section visibility: data-driven — shown iff the user has
+    // at least one personal favorite in this space. The section can also be
+    // collapsed by tapping its header (DROID-4487); when collapsed, the
+    // header stays so the user can re-expand.
     val personalFavoritesWidgetView = personalFavoritesWidget as? WidgetView.SetOfObjects
-    val shouldShowPersonalFavoritesSection =
-        personalFavoritesWidgetView != null && personalFavoritesWidgetView.elements.isNotEmpty()
+    val isMyFavoritesSectionCollapsed = collapsedSections.contains(SECTION_MY_FAVORITES)
+
+    // Track previous collapse state for my favorites section
+    val wasMyFavoritesCollapsed = remember { mutableStateOf(isMyFavoritesSectionCollapsed) }
+    val hadMyFavoritesItems = remember { mutableStateOf(personalFavoritesWidgetView?.elements?.isNotEmpty() == true) }
+
+    // When section becomes expanded, keep the flag true to prevent flicker
+    if (!isMyFavoritesSectionCollapsed && wasMyFavoritesCollapsed.value) {
+        hadMyFavoritesItems.value = true
+    }
+
+    // Update previous state
+    wasMyFavoritesCollapsed.value = isMyFavoritesSectionCollapsed
+
+    // Set flag when items are present
+    if (personalFavoritesWidgetView?.elements?.isNotEmpty() == true) {
+        hadMyFavoritesItems.value = true
+    }
+
+    // Reset flag when section is collapsed and has no items
+    if (isMyFavoritesSectionCollapsed && personalFavoritesWidgetView?.elements?.isEmpty() == true) {
+        hadMyFavoritesItems.value = false
+    }
+
+    // Show header if: has items OR is collapsed OR was previously shown
+    val shouldShowPersonalFavoritesSection = personalFavoritesWidgetView != null &&
+        (personalFavoritesWidgetView.elements.isNotEmpty() || isMyFavoritesSectionCollapsed || hadMyFavoritesItems.value)
 
     // Recently Edited section visibility logic
     val recentlyEditedView = recentlyEditedWidget as? WidgetView.RecentlyEdited
@@ -493,28 +520,32 @@ fun WidgetsScreen(
                                     key = SECTION_MY_FAVORITES,
                                 ) {
                                     MyFavoritesSectionHeader(
-                                        onSectionClicked = {} // Not user-collapsible per spec
+                                        onSectionClicked = viewModel::onSectionMyFavoritesClicked
                                     )
                                 }
                             }
-                            item(key = "my_favorites_widget_content") {
-                                ReorderableItem(
-                                    enabled = false,
-                                    state = reorderableState,
-                                    key = "my_favorites_widget_content",
-                                ) {
-                                    MyFavoritesWidget(
-                                        item = personalFavoritesWidgetView,
-                                        mode = mode,
-                                        onWidgetObjectClicked = { obj ->
-                                            viewModel.onWidgetElementClicked(
-                                                personalFavoritesWidgetView.id, obj
-                                            )
-                                        },
-                                        onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
-                                        onReordered = viewModel::onMyFavoritesReordered,
-                                        reorderFailedSignal = myFavoritesReorderFailedSignal
-                                    )
+                            if (!isMyFavoritesSectionCollapsed) {
+                                item(key = "my_favorites_widget_content") {
+                                    ReorderableItem(
+                                        enabled = false,
+                                        state = reorderableState,
+                                        key = "my_favorites_widget_content",
+                                    ) {
+                                        MyFavoritesWidget(
+                                            item = personalFavoritesWidgetView,
+                                            mode = mode,
+                                            onWidgetObjectClicked = { obj ->
+                                                viewModel.onWidgetElementClicked(
+                                                    personalFavoritesWidgetView.id, obj
+                                                )
+                                            },
+                                            onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
+                                            onReordered = viewModel::onMyFavoritesReordered,
+                                            reorderFailedSignal = myFavoritesReorderFailedSignal,
+                                            canCreate = canCreateInSpace,
+                                            onItemMenuAction = viewModel::onMyFavoritesItemMenuAction
+                                        )
+                                    }
                                 }
                             }
                         }

@@ -77,7 +77,6 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatSearchState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.presentation.main.MainViewModel
-import com.anytypeio.anytype.ui.home.uploadSnackbarMessage
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.ANYTYPE_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.FILE_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.MAILTO_PREFIX
@@ -482,11 +481,11 @@ class ChatFragment : Fragment() {
                 }
             }
 
-            LaunchedEffect(Unit) {
-                vm.uploadSnackbar.collect { variant ->
-                    mainVm.showSnackbarWithOk(uploadSnackbarMessage(variant))
-                }
-            }
+            // Upload-success snackbar is intentionally muted on the chat
+            // screen: the uploaded file already appears inline as a chat
+            // message, so the "Open <type>" navigation is redundant here.
+            // ChatViewModel still emits on `uploadSnackbar`; we just don't
+            // surface it from this Fragment.
 
             LaunchedEffect(Unit) {
                 vm.commands.collect { command ->

@@ -70,7 +70,15 @@ interface SpaceManager {
                         info[space] = config
                         currentSpace.value = space
                     },
-                    onFailure = logger::logException
+                    onFailure = { error ->
+                        if (error.isSpaceNotReady()) {
+                            logger.logWarning(
+                                "SPACE MANAGER: space is not ready: $space, reason: ${error.message}"
+                            )
+                        } else {
+                            logger.logException(error, "SPACE MANAGER: failed to open space: $space")
+                        }
+                    }
                 )
             }
         }
@@ -127,6 +135,11 @@ interface SpaceManager {
 
         companion object {
             const val NO_SPACE = ""
+            private const val SPACE_NOT_READY_ERROR = "space is not ready"
+
+            private fun Throwable.isSpaceNotReady(): Boolean {
+                return message?.contains(SPACE_NOT_READY_ERROR, ignoreCase = true) == true
+            }
         }
     }
 

@@ -165,7 +165,10 @@ class NotificationBuilderImpl(
                 else -> null
             }
         }.onFailure { error ->
-            Timber.e(error, "Failed to load image from Coil cache: $url")
+            // Cache-miss / 404 / animated-decoder failures here are expected when the
+            // middleware doesn't have the image yet. Caller falls back to a default
+            // notification icon, so this isn't a bug — keep it out of Crashlytics.
+            Timber.w(error, "Failed to load image from Coil cache: $url")
         }.getOrNull()
     }
 

@@ -365,7 +365,7 @@ class WidgetsScreenFragment : Fragment(),
                 launch { vm.toasts.collect { toast(it) } }
                 launch {
                     vm.uploadSnackbar.collect { variant ->
-                        mainVm.showSnackbarWithOk(uploadSnackbarMessage(variant))
+                        routeUploadSnackbar(mainVm, variant)
                     }
                 }
             }
@@ -834,8 +834,35 @@ private const val HOME_UPLOAD_TEMP_FOLDER = "home_upload_temp_folder"
  */
 internal fun Fragment.uploadSnackbarMessage(variant: UploadSuccessSnackbar): String =
     when (variant) {
-        UploadSuccessSnackbar.Image -> getString(R.string.upload_success_snackbar_image)
-        UploadSuccessSnackbar.Video -> getString(R.string.upload_success_snackbar_video)
-        UploadSuccessSnackbar.File -> getString(R.string.upload_success_snackbar_file)
+        is UploadSuccessSnackbar.Image -> getString(R.string.upload_success_snackbar_image)
+        is UploadSuccessSnackbar.Video -> getString(R.string.upload_success_snackbar_video)
+        is UploadSuccessSnackbar.File -> getString(R.string.upload_success_snackbar_file)
         UploadSuccessSnackbar.Mixed -> getString(R.string.upload_success_snackbar_mixed)
     }
+
+/**
+ * Route an [UploadSuccessSnackbar] to [MainViewModel] so the app-level
+ * Snackbar is rendered. Typed variants get an "Open" action that jumps to
+ * the corresponding bundled type page; [UploadSuccessSnackbar.Mixed]
+ * falls back to a plain OK snackbar.
+ */
+internal fun Fragment.routeUploadSnackbar(
+    mainVm: MainViewModel,
+    variant: UploadSuccessSnackbar
+) {
+    val msg = uploadSnackbarMessage(variant)
+    when (variant) {
+        UploadSuccessSnackbar.Mixed ->
+            mainVm.showSnackbarWithOk(msg)
+        is UploadSuccessSnackbar.Typed ->
+            mainVm.showSnackbarWithOpenType(
+                msg = msg,
+                typeId = variant.typeId,
+                space = variant.space,
+                actionLabel = getString(
+                    R.string.upload_success_snackbar_action_open,
+                    variant.pluralName
+                )
+            )
+    }
+}

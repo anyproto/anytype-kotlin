@@ -1037,7 +1037,6 @@ class VaultViewModel(
     }
 
     fun onQrScannerError() {
-        Timber.e("QR scanner error")
         vaultErrors.value = VaultErrors.QrScannerError
     }
 

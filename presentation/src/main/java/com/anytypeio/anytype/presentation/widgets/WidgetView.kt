@@ -415,4 +415,10 @@ sealed class DropDownMenuAction {
     data class FavoriteObject(val widgetId: WidgetId) : DropDownMenuAction()
     /** DROID-4397: remove the widget's source object from the user's personal favorites. */
     data class UnfavoriteObject(val widgetId: WidgetId) : DropDownMenuAction()
+    /** DROID-4488: remove a specific object from My Favorites via the row's long-press menu. */
+    data class UnfavoriteFavoritesItem(val objectId: Id) : DropDownMenuAction()
+    /** DROID-4488: create a new object of the user's default type, add it to My Favorites, then open it. */
+    data object CreateNewFavoriteObject : DropDownMenuAction()
+    /** DROID-4488: archive (move to bin) a specific object from My Favorites. Owner/Editor only. */
+    data class MoveFavoriteItemToBin(val objectId: Id) : DropDownMenuAction()
 }

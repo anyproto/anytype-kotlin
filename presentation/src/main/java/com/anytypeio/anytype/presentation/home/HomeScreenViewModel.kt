@@ -91,6 +91,7 @@ import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.getByIdOrKey
@@ -161,6 +162,7 @@ import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_MY_FAVORITES
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_RECENTLY_EDITED
@@ -185,6 +187,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
+import com.anytypeio.anytype.presentation.notifications.toSnackbarVariant
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -238,6 +241,7 @@ class HomeScreenViewModel(
     private val addPersonalFavorite: AddPersonalFavorite,
     private val removePersonalFavorite: RemovePersonalFavorite,
     private val reorderPersonalFavorites: ReorderPersonalFavorites,
+    private val setObjectListIsArchived: SetObjectListIsArchived,
     private val widgetSessionStateHolder: WidgetSessionStateHolder,
     private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
     private val urlBuilder: UrlBuilder,
@@ -476,6 +480,22 @@ class HomeScreenViewModel(
      * menus. Reactive — role downgrades live-remove the actions.
      */
     val canToggleChannelPin: StateFlow<Boolean> =
+        userPermissionProvider.observe(vmParams.spaceId)
+            .map { it?.isOwnerOrEditor() == true }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Eagerly,
+                initialValue = false
+            )
+
+    /**
+     * DROID-4488: true iff the current user can create new objects in the
+     * active space (Owner or Editor). Gates the "New object" entry in the
+     * My Favorites row long-press menu. Kept separate from
+     * [canToggleChannelPin] for semantic clarity even though the predicate
+     * currently coincides — they answer different questions and may diverge.
+     */
+    val canCreateInSpace: StateFlow<Boolean> =
         userPermissionProvider.observe(vmParams.spaceId)
             .map { it?.isOwnerOrEditor() == true }
             .stateIn(
@@ -1780,6 +1800,10 @@ class HomeScreenViewModel(
             is DropDownMenuAction.UnfavoriteObject -> {
                 proceedWithWidgetFavoriteToggle(action.widgetId, isFavorite = false)
             }
+            // DROID-4488: per-row actions are routed via onMyFavoritesItemMenuAction.
+            is DropDownMenuAction.UnfavoriteFavoritesItem,
+            is DropDownMenuAction.MoveFavoriteItemToBin,
+            DropDownMenuAction.CreateNewFavoriteObject -> Unit
         }
     }
 
@@ -1853,6 +1877,125 @@ class HomeScreenViewModel(
                     }
                 )
             }
+        }
+    }
+
+    /**
+     * DROID-4488: dispatcher for the per-row menu in the My Favorites widget.
+     * The row's menu acts on a specific object (not a widget), so the entry
+     * point is separate from the widget-scoped [onDropDownMenuAction].
+     */
+    fun onMyFavoritesItemMenuAction(objectId: Id, action: DropDownMenuAction) {
+        when (action) {
+            is DropDownMenuAction.UnfavoriteFavoritesItem -> {
+                viewModelScope.launch {
+                    removePersonalFavorite.async(
+                        RemovePersonalFavorite.Params(
+                            space = vmParams.spaceId,
+                            target = objectId
+                        )
+                    ).fold(
+                        onSuccess = { payload ->
+                            payload?.let { payloadDelegator.dispatch(it) }
+                        },
+                        onFailure = {
+                            Timber.e(it, "Error unfavoriting from My Favorites menu")
+                            sendToast("Something went wrong. Please, try again later.")
+                        }
+                    )
+                }
+            }
+            is DropDownMenuAction.CreateNewFavoriteObject -> {
+                proceedWithCreatingNewFavoriteObject()
+            }
+            is DropDownMenuAction.MoveFavoriteItemToBin -> {
+                viewModelScope.launch {
+                    setObjectListIsArchived.async(
+                        SetObjectListIsArchived.Params(
+                            targets = listOf(objectId),
+                            isArchived = true
+                        )
+                    ).fold(
+                        onSuccess = {
+                            Timber.d("Moved object $objectId to bin from My Favorites menu")
+                        },
+                        onFailure = {
+                            Timber.e(it, "Error moving object to bin from My Favorites menu")
+                            sendToast("Something went wrong. Please, try again later.")
+                        }
+                    )
+                }
+            }
+            else -> Unit
+        }
+    }
+
+    /**
+     * DROID-4488: create an object of the user's default type, add it to
+     * personal favorites, then open it. Triggered from the My Favorites
+     * row long-press menu's "New object" entry.
+     *
+     * Resolves the space's configured default object type via
+     * [getDefaultObjectType] so the created object inherits the user's
+     * preferred type AND its default template (templates/configurations
+     * already exist on the type — we should not bypass them with a
+     * type-picker prefill flag).
+     */
+    private fun proceedWithCreatingNewFavoriteObject() {
+        val startTime = System.currentTimeMillis()
+        viewModelScope.launch {
+            val typeKey = getDefaultObjectType.async(vmParams.spaceId)
+                .getOrNull()
+                ?.type
+                ?: TypeKey(ObjectTypeIds.PAGE)
+            // Look up the actual type object so we can use its configured
+            // defaultTemplateId — GetDefaultObjectType.Response.defaultTemplate
+            // can lag behind type-level changes; the store is authoritative.
+            val typeObject = storeOfObjectTypes.getByKey(typeKey.key)
+            val templateId = typeObject?.defaultTemplateId?.takeIf { it.isNotEmpty() }
+
+            createObject.async(
+                CreateObject.Param(
+                    space = vmParams.spaceId,
+                    type = typeKey,
+                    template = templateId
+                )
+            ).fold(
+                onSuccess = { created ->
+                    val spaceParams = provideParams(vmParams.spaceId.id)
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        route = EventsDictionary.Routes.navigation,
+                        startTime = startTime,
+                        view = EventsDictionary.View.viewHome,
+                        objType = typeObject,
+                        spaceParams = spaceParams
+                    )
+                    addPersonalFavorite.async(
+                        AddPersonalFavorite.Params(
+                            space = vmParams.spaceId,
+                            target = created.objectId
+                        )
+                    ).fold(
+                        onSuccess = { payload ->
+                            payloadDelegator.dispatch(payload)
+                        },
+                        onFailure = {
+                            // The user invoked "New object" from My Favorites
+                            // expecting the object to land in that list; if the
+                            // favorite step fails, surface it instead of
+                            // silently swallowing the mismatch.
+                            Timber.e(it, "Error favoriting new object from My Favorites menu")
+                            sendToast("Object created, but adding to Favorites failed. Please, try again later.")
+                        }
+                    )
+                    proceedWithOpeningObject(created.obj)
+                },
+                onFailure = {
+                    Timber.e(it, "Error creating object from My Favorites menu")
+                    sendToast("Error while creating object. Please, try again later")
+                }
+            )
         }
     }
 
@@ -2362,7 +2505,12 @@ class HomeScreenViewModel(
                 }
             }
             if (successes.isNotEmpty()) {
-                _uploadSnackbar.emit(successes.toSnackbarVariant())
+                _uploadSnackbar.emit(
+                    successes.toSnackbarVariant(
+                        space = vmParams.spaceId.id,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
+                )
             }
         }
     }
@@ -2378,16 +2526,6 @@ class HomeScreenViewModel(
          */
         val sourceFilePath: String? = null
     )
-
-    private fun List<Block.Content.File.Type>.toSnackbarVariant(): UploadSuccessSnackbar {
-        val distinct = distinct()
-        if (distinct.size > 1) return UploadSuccessSnackbar.Mixed
-        return when (distinct.single()) {
-            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image
-            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video
-            else -> UploadSuccessSnackbar.File
-        }
-    }
 
     fun hideCreateObjectSheet() {
         _createObjectSheetVisible.value = false
@@ -3700,6 +3838,21 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onSectionMyFavoritesClicked() {
+        viewModelScope.launch {
+            val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+            val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_MY_FAVORITES)
+
+            val newCollapsedSections = if (isCurrentlyCollapsed) {
+                currentCollapsedSections.minus(SECTION_MY_FAVORITES)
+            } else {
+                currentCollapsedSections.plus(SECTION_MY_FAVORITES)
+            }
+
+            userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
+        }
+    }
+
     /**
      * Determines if a widget should be collapsed due to its section being collapsed
      */
@@ -3709,6 +3862,7 @@ class HomeScreenViewModel(
             widget.sectionType == SectionType.UNREAD -> collapsedSections.contains(Widget.Source.SECTION_UNREAD)
             widget.sectionType == SectionType.TYPES -> collapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
             widget.sectionType == SectionType.RECENTLY_EDITED -> collapsedSections.contains(Widget.Source.SECTION_RECENTLY_EDITED)
+            widget.sectionType == SectionType.MY_FAVORITES -> collapsedSections.contains(Widget.Source.SECTION_MY_FAVORITES)
             else -> false
         }
     }
@@ -4234,6 +4388,7 @@ class HomeScreenViewModel(
         private val addPersonalFavorite: AddPersonalFavorite,
         private val removePersonalFavorite: RemovePersonalFavorite,
         private val reorderPersonalFavorites: ReorderPersonalFavorites,
+        private val setObjectListIsArchived: SetObjectListIsArchived,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val widgetSessionStateHolder: WidgetSessionStateHolder,
         private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
@@ -4308,6 +4463,7 @@ class HomeScreenViewModel(
             addPersonalFavorite = addPersonalFavorite,
             removePersonalFavorite = removePersonalFavorite,
             reorderPersonalFavorites = reorderPersonalFavorites,
+            setObjectListIsArchived = setObjectListIsArchived,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             widgetSessionStateHolder = widgetSessionStateHolder,
             widgetActiveViewStateHolder = widgetActiveViewStateHolder,

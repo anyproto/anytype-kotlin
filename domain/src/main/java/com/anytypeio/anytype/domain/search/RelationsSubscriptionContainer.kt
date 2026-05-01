@@ -52,8 +52,7 @@ class RelationsSubscriptionContainer(
             if (invalid.isNotEmpty()) {
                 logger.logWarning(
                     "RelationsSubscriptionContainer: skipping ${invalid.size} invalid " +
-                        "relations (missing relationKey/id): " +
-                        invalid.map { it.map[Relations.ID] }
+                        "relations (missing relationKey/id)"
                 )
             }
             store.merge(relations = valid)

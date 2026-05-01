@@ -864,7 +864,7 @@
     <string name="personal">Standard</string>
     <string name="create_space">Space erstellen</string>
     <string name="create_chat">Chat erstellen</string>
-    <string name="create_channel">New Channel</string>
+    <string name="create_channel">Neuer Kanal</string>
     <string name="create_space_change_icon">Symbol ändern</string>
     <string name="create_space_chat_name">Chatname</string>
     <string name="create_space_space_name">Space-Name</string>
@@ -881,8 +881,8 @@
     <string name="space_home_no_home_title">No home</string>
     <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
     <string name="widget_menu_change_home">Change Home</string>
-    <string name="invite_members_widget_title">Invite Members</string>
-    <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
+    <string name="invite_members_widget_title">Mitglieder einladen</string>
+    <string name="invite_members_widget_description">Lade Leute in diesen Kanal ein, um mit der Zusammenarbeit zu beginnen.</string>
     <string name="generic_error">Etwas ist schiefgelaufen. Bitte versuche es erneut.</string>
     <string name="type">Typ</string>
     <string name="format">Format</string>
@@ -1094,7 +1094,7 @@
     <string name="onboarding_void_title">Das ist dein Void</string>
     <string name="onboarding_void_description">Es ist ein verschlüsselter Ort für alles, was du erstellst. Alles wird auf deinem Gerät gespeichert und im dezentralen Netzwerk gesichert.</string>
     <string name="onboarding_this_is_your_key_title">Dies ist dein Schlüssel</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">Er ersetzt Benutzerabfrage und Passwort. Bewahre ihn sicher auf — nur du bist für deine Daten verantwortlich. Du findest diesen Schlüssel später in den App-Einstellungen.</string>
     <string name="onboarding_show_my_key">Meinen Schlüssel anzeigen</string>
     <string name="onboarding_tap_to_reveal">Enthüllen und kopieren</string>
     <string name="onboarding_key_skip">Überspringen</string>
@@ -1115,7 +1115,7 @@
     <string name="onboarding_recovery_phrase_description">Dein Schlüssel wird durch eine Wiederherstellungsphrase dargestellt — 12 zufällige Wörter, die deinen Tresor auf diesem Gerät generieren.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Wer den Schlüssel hat, hat Zugang</string>
     <string name="onboarding_recovery_phrase_description_2">Jeder, der diese Wörter kennt, kann auf deinen Tresor zugreifen. Im Moment bist du die einzige Person auf der Welt, die sie kennt.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Nur du bist dafür verantwortlich</string>
     <string name="onboarding_recovery_phrase_description_3">Alle Computerressourcen der Welt reichen nicht aus, um ihn zu knacken. Wenn du deinen Schlüssel verlierst, kann er nicht wiederhergestellt werden. Bewahre ihn an einem sicheren Ort auf — in einem Passwort-Manager oder schriftlich auf Papier.</string>
     <string name="onboarding_recovery_phrase_description_4">Alle Rechenressourcen der Welt reichen nicht aus, um ihn zu knacken. Wenn du ihn verlierst, kann er nicht wiederhergestellt werden. Bewahre ihn also an einem sicheren Ort auf!</string>
     <string name="onboarding_how_to_save_my_phrase">Wie speicher ich meinen Schlüssel?</string>
@@ -1186,10 +1186,10 @@
     <string name="sharing_snackbar_image_linked">Image linked to \'%1$s\' in \'%2$s\'</string>
     <string name="sharing_snackbar_images_linked">Images linked to \'%1$s\' in \'%2$s\'</string>
     <string name="sharing_snackbar_video_linked">Video linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_audio_linked">Audio linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_audio_linked">Audio verlinkt mit \'%1$s\' in \'%2$s\'</string>
     <string name="sharing_snackbar_pdf_linked">PDF linked to \'%1$s\' in \'%2$s\'</string>
     <string name="sharing_snackbar_file_linked">File linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_files_linked">Files linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_files_linked">Verlinkte Dateien mit \'%1$s\' in \'%2$s\'</string>
     <string name="sharing_snackbar_text_linked">Text linked to \'%1$s\' in \'%2$s\'</string>
     <string name="sharing_snackbar_link_linked">Link linked to \'%1$s\' in \'%2$s\'</string>
     <string name="sharing_snackbar_content_linked">Content linked to \'%1$s\' in \'%2$s\'</string>
@@ -1659,7 +1659,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="error_login_select_vault_error">Fehler beim Auswählen des Tresors.</string>
     <string name="error_login_account_deleted_error">Dieses Konto wurde gelöscht. Versuche es mit einem anderen Konto oder erstelle ein neues.</string>
     <string name="error_login_account_need_update_error">Konto kann nicht abgerufen werden. Bitte aktualisiere Anytype auf die neueste Version.</string>
-    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
+    <string name="error_wallet_setup">Wallet konnte nicht eingerichtet werden. Bitte überprüfen Sie Ihren Gerätespeicher und versuchen Sie es erneut.</string>
     <string name="error_network_error">Netzwerkfehler aufgetreten. Bitte überprüfe deine Internetverbindung und versuche es erneut.</string>
     <string name="error_offline_device">Dein Gerät scheint offline zu sein. Bitte verbinde dich mit dem Internet und versuche es erneut.</string>
     <string name="global_search_related_to">"Zugehörig zu: "</string>
@@ -1765,9 +1765,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="main_navigation_content_desc_search_button">Schaltfläche zum Suchen von Objekten</string>
     <string name="main_navigation_content_desc_create_button">Schaltfläche zum Erstellen eines Objekts</string>
     <string name="chat">Chat</string>
-    <string name="discussion_comments">comments</string>
-    <string name="discussion_no_comments">No comments yet</string>
-    <string name="discussion_leave_comment">Leave a comment…</string>
+    <string name="discussion_comments">Kommentare</string>
+    <string name="discussion_no_comments">Bisher keine Kommentare</string>
+    <string name="discussion_leave_comment">Kommentar hinzufügen…</string>
     <string name="copy">Kopieren</string>
     <string name="copy_text">Text kopieren</string>
     <string name="copy_plain_text">Klartext kopieren</string>
@@ -1777,7 +1777,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chat_empty_state_title">Noch keine Nachrichten</string>
     <string name="chat_empty_state_subtitle">Lade Leute ein und beginne die Konversation!</string>
     <string name="chat_empty_state_feature_yours_forever">Für immer deins</string>
-    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_offline">Nachrichten, Dokumente &amp; Dateien offline verfügbar</string>
     <string name="chat_empty_state_feature_encrypted">Vollständig privat und verschlüsselt</string>
     <string name="chat_empty_state_add_members_button">Mitglieder hinzufügen</string>
     <string name="chat_empty_state_show_qr_button">QR-Code anzeigen</string>
@@ -1793,11 +1793,11 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chat_attachment_media">Medien hochladen</string>
     <string name="chat_attachment_upload">Hochladen</string>
     <string name="chat_attach">Anhängen</string>
-    <string name="upload_success_snackbar_image">New image added</string>
-    <string name="upload_success_snackbar_video">New video added</string>
-    <string name="upload_success_snackbar_file">New file added</string>
-    <string name="upload_success_snackbar_mixed">New files added</string>
-    <string name="upload_success_snackbar_action_open">Open %1$s</string>
+    <string name="upload_success_snackbar_image">Neues Bild hinzugefügt</string>
+    <string name="upload_success_snackbar_video">Neues Video hinzugefügt</string>
+    <string name="upload_success_snackbar_file">Neue Datei hinzugefügt</string>
+    <string name="upload_success_snackbar_mixed">Neue Dateien hinzugefügt</string>
+    <string name="upload_success_snackbar_action_open">Öffne %1$s</string>
     <string name="chats_reply">Antworten</string>
     <string name="chats_add_reaction">Reaktion hinzufügen</string>
     <string name="chat_send_message_rate_limit_title">Moment mal! Turbotippen erkannt!</string>
@@ -1812,7 +1812,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_templates_menu_duplicate">Duplizieren</string>
     <string name="object_type_templates_menu_delete">Löschen</string>
     <string name="object_type_fields_section_header">Überschrift</string>
-    <string name="object_type_fields_section_fields_menu">Properties panel</string>
+    <string name="object_type_fields_section_fields_menu">Eigenschaften-Panel</string>
     <string name="object_type_fields_section_hidden">Ausgeblendet</string>
     <string name="object_type_fields_section_file">Datei</string>
     <string name="object_type_fields_section_local_fields">In Objekten gefunden </string>
@@ -1922,7 +1922,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_icon_title">Bild bearbeiten</string>
     <string name="space_settings_save_button">Speichern</string>
     <string name="space_settings_join_space_by_qr_title">Beitreten</string>
-    <string name="profile_qr_code_title">Connect with me</string>
+    <string name="profile_qr_code_title">Mit mir verbinden</string>
     <string name="profile_qr_code_title_with_name">Mit %1$s verbinden</string>
     <string name="profile_qr_code_button">Mein QR-Code</string>
     <string name="profile_qr_share_button">Teilen</string>
@@ -1954,7 +1954,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="migration_screen_read_more">Weiterlesen</string>
     <string name="migration_screen_what_to_expect">Was dich erwartet</string>
     <string name="migration_screen_your_data_remains_safe">Deine Daten bleiben sicher</string>
-    <string name="migration_screen_your_data_description">During this update, your data remains fully secure. The update is performed directly on your device, and your synced data remains unaffected. We’ll just copy it to a new format, and a local backup will be created on your device, containing all your data in the previous format.</string>
+    <string name="migration_screen_your_data_description">Während dieser Aktualisierung bleiben Ihre Daten vollkommen sicher. Die Aktualisierung wird direkt auf Ihrem Gerät durchgeführt und Ihre synchronisierten Daten bleiben davon unberührt. Wir kopieren es einfach in ein neues Format, und ein lokales Backup wird auf Ihrem Gerät erstellt, das alle Ihre Daten im vorherigen Format enthält.</string>
     <string name="migration_screen_your_data_description_2">The reason we’re retaining this backup is to debug and assist you, in case of unforeseen.</string>
     <string name="migration_screen_what_to_expect_description">You\'ll see a loading screen during the update. Once finished, you can continue using the app normally.</string>
     <string name="object_type_icon_change_title">Symbol ändern</string>

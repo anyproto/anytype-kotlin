@@ -436,18 +436,25 @@ class GlobalSearchViewModel @Inject constructor(
         viewModelScope.launch {
             val layout = item.layout
             when (layout) {
+                ObjectType.Layout.IMAGE -> commands.emit(
+                    SearchCommand.PlayMedia(
+                        targetObjectId = item.id,
+                        name = item.title,
+                        layout = ObjectType.Layout.IMAGE
+                    )
+                )
                 ObjectType.Layout.VIDEO -> commands.emit(
                     SearchCommand.PlayMedia(
                         targetObjectId = item.id,
                         name = item.title,
-                        isVideo = true
+                        layout = ObjectType.Layout.VIDEO
                     )
                 )
                 ObjectType.Layout.AUDIO -> commands.emit(
                     SearchCommand.PlayMedia(
                         targetObjectId = item.id,
                         name = item.title,
-                        isVideo = false
+                        layout = ObjectType.Layout.AUDIO
                     )
                 )
                 else -> {
@@ -702,7 +709,7 @@ class GlobalSearchViewModel @Inject constructor(
         data class PlayMedia(
             val targetObjectId: Id,
             val name: String,
-            val isVideo: Boolean
+            val layout: ObjectType.Layout
         ) : SearchCommand()
         data class CopyLinkToClipboard(val link: String) : SearchCommand()
     }

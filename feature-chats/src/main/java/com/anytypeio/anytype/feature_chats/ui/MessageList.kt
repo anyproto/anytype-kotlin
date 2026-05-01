@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -71,6 +72,7 @@ fun Messages(
         modifier = modifier,
         reverseLayout = true,
         state = scrollState,
+        contentPadding = PaddingValues(top = 90.dp),
     ) {
         itemsIndexed(
             messages,

@@ -301,7 +301,7 @@ class Navigator : AppNavigation {
 
     override fun openAllContent(space: Id) {
         navController?.navigate(
-            resId = R.id.action_open_all_content,
+            resId = R.id.allContentScreen,
             args = AllContentFragment.args(space)
         )
     }

@@ -27,6 +27,8 @@
     <string name="data">Data</string>
     <string name="mode">Mode</string>
     <string name="log_out">Log out</string>
+    <string name="resume_account_failed_title">Couldn\'t restore session</string>
+    <string name="resume_account_failed_message">Your session can\'t be resumed. Logging out will clear local app state; you\'ll need your recovery phrase to sign back in. Do you want to log out?</string>
     <string name="pin_code">Pin code</string>
     <string name="access">Access</string>
     <string name="wallpaper">Wallpaper</string>

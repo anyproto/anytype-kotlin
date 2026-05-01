@@ -92,8 +92,14 @@ class ObjectTypeSelectionFragment : SelectObjectTypeBaseFragment() {
     }
 
     companion object {
-        fun new(space: Id) = ObjectTypeSelectionFragment().apply {
-            arguments = bundleOf(SPACE_ID_KEY to space)
+        fun new(
+            space: Id,
+            clipboardToolbarEnabled: Boolean = true
+        ) = ObjectTypeSelectionFragment().apply {
+            arguments = bundleOf(
+                SPACE_ID_KEY to space,
+                CLIPBOARD_TOOLBAR_ENABLED_ARG_KEY to clipboardToolbarEnabled
+            )
         }
     }
 }
@@ -108,6 +114,9 @@ abstract class SelectObjectTypeBaseFragment : BaseBottomSheetComposeFragment() {
 
     private val excludedTypeKeys get() = argOrNull<List<Key>>(EXCLUDED_TYPE_KEYS_ARG_KEY)
 
+    private val isClipboardToolbarEnabled
+        get() = argOrNull<Boolean>(CLIPBOARD_TOOLBAR_ENABLED_ARG_KEY) ?: true
+
     private val space get() = arg<Id>(SPACE_ID_KEY)
 
     private val vm by viewModels<SelectObjectTypeViewModel> { factory }
@@ -120,6 +129,7 @@ abstract class SelectObjectTypeBaseFragment : BaseBottomSheetComposeFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = ComposeView(requireContext()).apply {
+        val clipboardToolbarEnabled = isClipboardToolbarEnabled
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             MaterialTheme(
@@ -174,27 +184,29 @@ abstract class SelectObjectTypeBaseFragment : BaseBottomSheetComposeFragment() {
                     },
                     title = resolveScreenTitle()
                 )
-                when(vm.clipboardToolbarViewState.collectAsStateWithLifecycle().value) {
-                    is ClipboardToolbarViewState.CreateBookmark -> {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            ClipboardBottomToolbar(
-                                type = CLIPBOARD_TYPE_BOOKMARK,
-                                modifier = Modifier.align(Alignment.BottomCenter),
-                                onToolbarClicked = vm::onClipboardToolbarClicked
-                            )
+                if (clipboardToolbarEnabled) {
+                    when (vm.clipboardToolbarViewState.collectAsStateWithLifecycle().value) {
+                        is ClipboardToolbarViewState.CreateBookmark -> {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                ClipboardBottomToolbar(
+                                    type = CLIPBOARD_TYPE_BOOKMARK,
+                                    modifier = Modifier.align(Alignment.BottomCenter),
+                                    onToolbarClicked = vm::onClipboardToolbarClicked
+                                )
+                            }
                         }
-                    }
-                    is ClipboardToolbarViewState.CreateObject -> {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            ClipboardBottomToolbar(
-                                type = CLIPBOARD_TYPE_OBJECT,
-                                modifier = Modifier.align(Alignment.BottomCenter),
-                                onToolbarClicked = vm::onClipboardToolbarClicked
-                            )
+                        is ClipboardToolbarViewState.CreateObject -> {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                ClipboardBottomToolbar(
+                                    type = CLIPBOARD_TYPE_OBJECT,
+                                    modifier = Modifier.align(Alignment.BottomCenter),
+                                    onToolbarClicked = vm::onClipboardToolbarClicked
+                                )
+                            }
                         }
-                    }
-                    ClipboardToolbarViewState.Hidden -> {
-                        // Draw nothing.
+                        ClipboardToolbarViewState.Hidden -> {
+                            // Draw nothing.
+                        }
                     }
                 }
             }
@@ -208,22 +220,10 @@ abstract class SelectObjectTypeBaseFragment : BaseBottomSheetComposeFragment() {
                     toast(toast)
                 }
             }
-            LaunchedEffect(Unit) {
-                vm.navigation.collect { nav ->
-                    when(nav) {
-                        is OpenObjectNavigation.OpenEditor -> {
-                            dismiss()
-                            findNavController().navigate(
-                                R.id.objectNavigation,
-                                EditorFragment.args(
-                                    ctx = nav.target,
-                                    space = nav.space
-                                )
-                            )
-                        }
-                        else -> {
-                            // Do nothing.
-                        }
+            if (clipboardToolbarEnabled) {
+                LaunchedEffect(Unit) {
+                    vm.navigation.collect { nav ->
+                        proceedWithNavigation(nav)
                     }
                 }
             }
@@ -232,24 +232,48 @@ abstract class SelectObjectTypeBaseFragment : BaseBottomSheetComposeFragment() {
 
     override fun onResume() {
         super.onResume()
-        runCatching {
-            with(clipboard()) {
-                val clip = primaryClip
-                if (hasPrimaryClip() && clip != null) {
-                    if (clip.itemCount == 1) {
-                        val item =clip.getItemAt(0)
-                        val text = item.text.toString()
-                        if (URLUtil.isValidUrl(text))
-                            vm.onClipboardUrlTypeDetected(text)
-                        else
-                            vm.onClipboardTextTypeDetected(text)
+        if (isClipboardToolbarEnabled) {
+            runCatching {
+                with(clipboard()) {
+                    val clip = primaryClip
+                    if (hasPrimaryClip() && clip != null) {
+                        if (clip.itemCount == 1) {
+                            val item = clip.getItemAt(0)
+                            val text = item.text.toString()
+                            if (URLUtil.isValidUrl(text))
+                                vm.onClipboardUrlTypeDetected(text)
+                            else
+                                vm.onClipboardTextTypeDetected(text)
+                        }
                     }
                 }
+            }.onFailure {
+                Timber.e(it, "Error while processing clipboard")
             }
-        }.onFailure {
-            Timber.e(it, "Error while processing clipboard")
         }
         vm.onResume()
+    }
+
+    private fun proceedWithNavigation(nav: OpenObjectNavigation) {
+        when (nav) {
+            is OpenObjectNavigation.OpenEditor -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.objectNavigation,
+                        EditorFragment.args(
+                            ctx = nav.target,
+                            space = nav.space
+                        )
+                    )
+                    dismiss()
+                }.onFailure {
+                    Timber.e(it, "Error while opening object from type selector")
+                }
+            }
+            else -> {
+                // Do nothing.
+            }
+        }
     }
 
     private fun proceedWithCommand(command: Command) {
@@ -282,6 +306,8 @@ abstract class SelectObjectTypeBaseFragment : BaseBottomSheetComposeFragment() {
     companion object {
         const val SPACE_ID_KEY = "arg.select-object-type.space-id"
         const val EXCLUDED_TYPE_KEYS_ARG_KEY = "arg.select-object-type.excluded-type-keys"
+        const val CLIPBOARD_TOOLBAR_ENABLED_ARG_KEY =
+            "arg.select-object-type.clipboard-toolbar-enabled"
         private const val DROP_DOWN_MENU_ACTION_DELAY = 100L
     }
 }

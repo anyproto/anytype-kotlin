@@ -508,6 +508,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         with(lifecycleScope) {
             jobs += subscribe(vm.toasts) { toast(it) }
             jobs += subscribe(vm.snacks) { snack ->
+                @Suppress("SENSELESS_COMPARISON")
+                if (snack == null) {
+                    Timber.w("EditorFragment: vm.snacks emitted null")
+                    return@subscribe
+                }
                 when (snack) {
                     is Snack.UndoRedo -> {
                         Snackbar.make(requireView(), snack.message, Snackbar.LENGTH_SHORT).apply {
@@ -517,6 +522,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             }
             jobs += subscribe(vm.footers) { footer ->
+                @Suppress("SENSELESS_COMPARISON")
+                if (footer == null) {
+                    Timber.w("EditorFragment: vm.footers emitted null")
+                    return@subscribe
+                }
                 when (footer) {
                     EditorFooter.None -> {
                         if (binding.recycler.containsItemDecoration(noteHeaderDecorator)) {
@@ -531,9 +541,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             }
             jobs += subscribe(vm.copyFileStatus) { command ->
+                @Suppress("SENSELESS_COMPARISON")
+                if (command == null) {
+                    Timber.w("EditorFragment: vm.copyFileStatus emitted null")
+                    return@subscribe
+                }
                 pickerDelegate.onCopyFileCommand(command)
             }
             jobs += subscribe(vm.selectTemplateViewState) { state ->
+                @Suppress("SENSELESS_COMPARISON")
+                if (state == null) {
+                    Timber.w("EditorFragment: vm.selectTemplateViewState emitted null")
+                    return@subscribe
+                }
                 when (state) {
                     is SelectTemplateViewState.Active -> {
                         binding.topToolbar.showTemplates()

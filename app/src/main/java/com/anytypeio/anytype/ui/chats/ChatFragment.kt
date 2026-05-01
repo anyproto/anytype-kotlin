@@ -31,6 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -165,35 +166,12 @@ class ChatFragment : Fragment() {
             Scaffold(
                 modifier = Modifier.fillMaxSize(),
                 containerColor = Color.Transparent,
-                contentWindowInsets = WindowInsets(0.dp),
-                topBar = {
-                    ChatTopToolbar(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .statusBarsPadding(),
-                        header = vm.header.collectAsStateWithLifecycle().value,
-                        onBackButtonClicked = {
-                            vm.onBackButtonPressed(isExitingVault = popUpToVault)
-                        },
-                        onTitleClick = {
-                            WidgetOverlayFragment.show(parentFragmentManager, space)
-                        },
-                        onSpaceIconClicked = vm::onSpaceIconClicked,
-                        onInviteMembersClicked = vm::onInviteMembersClicked,
-                        onEditInfo = vm::onEditInfo,
-                        onPin = vm::onPinChatAsWidget,
-                        onCopyLink = vm::onCopyChatLink,
-                        onMoveToBin = vm::onMoveToBin,
-                        onNotificationSettingChanged = vm::onNotificationSettingChanged,
-                        onSearchClick = vm::onSearchTriggered,
-                        onSpaceSettingsClicked = vm::onOpenSpaceSettings
-                    )
-                }
+                contentWindowInsets = WindowInsets(0.dp)
             ) { paddingValues ->
                 ChatScreenWrapper(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues)
+                        .padding(bottom = paddingValues.calculateBottomPadding())
                         .navigationBarsPadding(),
                     vm = vm,
                     onAttachObjectClicked = { showGlobalSearchBottomSheet = true },
@@ -271,6 +249,31 @@ class ChatFragment : Fragment() {
                     resolveMemberAvatar = vm::resolveMemberAvatar
                 )
             }
+
+            // Floating top toolbar overlay — pills float above the messages so
+            // the message list can scroll behind them.
+            ChatTopToolbar(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .statusBarsPadding(),
+                header = vm.header.collectAsStateWithLifecycle().value,
+                onBackButtonClicked = {
+                    vm.onBackButtonPressed(isExitingVault = popUpToVault)
+                },
+                onTitleClick = {
+                    WidgetOverlayFragment.show(parentFragmentManager, space)
+                },
+                onSpaceIconClicked = vm::onSpaceIconClicked,
+                onInviteMembersClicked = vm::onInviteMembersClicked,
+                onEditInfo = vm::onEditInfo,
+                onPin = vm::onPinChatAsWidget,
+                onCopyLink = vm::onCopyChatLink,
+                onMoveToBin = vm::onMoveToBin,
+                onNotificationSettingChanged = vm::onNotificationSettingChanged,
+                onSearchClick = vm::onSearchTriggered,
+                onSpaceSettingsClicked = vm::onOpenSpaceSettings
+            )
             } // close Box
 
             if (showNotificationPermissionDialog) {

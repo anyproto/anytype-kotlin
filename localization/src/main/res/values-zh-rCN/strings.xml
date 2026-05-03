@@ -876,9 +876,9 @@
     <string name="homepage_picker_not_now">暂不</string>
     <!-- Space Settings / Home -->
     <string name="space_home_row_title">主页</string>
-    <string name="space_home_no_home_title">No home</string>
+    <string name="space_home_no_home_title">无主页</string>
     <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
-    <string name="widget_menu_change_home">Change Home</string>
+    <string name="widget_menu_change_home">更改主页</string>
     <string name="invite_members_widget_title">邀请成员</string>
     <string name="invite_members_widget_description">邀请成员加入此频道，开始协作。</string>
     <string name="generic_error">出错了，请再试一次。</string>
@@ -2079,8 +2079,8 @@
     <string name="share_space_error_make_private_failed">        无法将空间设为私有。请稍后重试。    </string>
     <string name="private_local_yours_forever">加密 · 本地 · 永久归你</string>
     <string name="private_channel">私聊频道</string>
-    <string name="space_header_private_channel">Private channel</string>
-    <string name="space_header_group_channel">Group channel</string>
+    <string name="space_header_private_channel">私人频道</string>
+    <string name="space_header_group_channel">群组频道</string>
     <string name="wallpaper_item_space_icon_color">默认颜色</string>
     <string name="publish_to_web">发布至网络</string>
     <string name="preferences">首选项</string>
@@ -2191,5 +2191,5 @@
     <string name="offline_downloads_value_250mb">250 MB</string>
     <string name="offline_downloads_value_1gb">1 GB</string>
     <string name="offline_downloads_value_unlimited">无限的</string>
-    <string name="device_storage_used">Device storage used</string>
+    <string name="device_storage_used">设备存储用量</string>
 </resources>

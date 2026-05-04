@@ -24,8 +24,8 @@
     <string name="data">Datos</string>
     <string name="mode">Modo</string>
     <string name="log_out">Cerrar sesión</string>
-    <string name="resume_account_failed_title">Couldn\'t restore session</string>
-    <string name="resume_account_failed_message">Your session can\'t be resumed. Logging out will clear local app state; you\'ll need your recovery phrase to sign back in. Do you want to log out?</string>
+    <string name="resume_account_failed_title">No se ha restaurado la sesión</string>
+    <string name="resume_account_failed_message">No ha sido posible reanudar tu sesión. Si cierras la sesión ahora, se borrará el estado de la aplicación en este dispositivo y necesitarás tu frase de recuperación para volver a entrar. ¿Quieres cerrar la sesión? </string>
     <string name="pin_code">Código PIN</string>
     <string name="access">Acceso</string>
     <string name="wallpaper">Fondo de pantalla</string>

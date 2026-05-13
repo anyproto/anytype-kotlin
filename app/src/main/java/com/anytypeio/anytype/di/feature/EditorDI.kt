@@ -46,6 +46,7 @@ import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.chats.GetChatMessages
 import com.anytypeio.anytype.domain.discussions.AddDiscussion
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.download.Downloader
@@ -293,7 +294,8 @@ object EditorSessionModule {
         dateProvider: DateProvider,
         spaceViews: SpaceViewSubscriptionContainer,
         urlHelper: UrlHelper,
-        addDiscussion: AddDiscussion
+        addDiscussion: AddDiscussion,
+        getChatMessages: GetChatMessages
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -344,7 +346,8 @@ object EditorSessionModule {
         dateProvider = dateProvider,
         spaceViews = spaceViews,
         urlHelper = urlHelper,
-        addDiscussion = addDiscussion
+        addDiscussion = addDiscussion,
+        getChatMessages = getChatMessages
     )
 
     @JvmStatic

@@ -107,7 +107,10 @@ class CreateObjectWidgetConfigActivity : AppCompatActivity(), ObjectTypeSelectio
     }
 
     private fun showTypeSelectionDialog(spaceId: String) {
-        val dialog = ObjectTypeSelectionFragment.new(space = spaceId)
+        val dialog = ObjectTypeSelectionFragment.new(
+            space = spaceId,
+            clipboardToolbarEnabled = false
+        )
         dialog.show(supportFragmentManager, "object-type-selection")
     }
 

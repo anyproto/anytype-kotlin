@@ -2142,8 +2142,6 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="select_space">Kanal auswählen</string>
     <string name="add_a_comment">Kommentar hinzufügen...</string>
     <string name="send">Senden</string>
-    <string name="chat_notifications_receive_all">Alle empfangen</string>
-    <string name="chat_notifications_mute_all">Alle stummschalten</string>
     <string name="chat_specific_notifications">Chat-spezifische Benachrichtigungen</string>
     <string name="notify_me_about">Benachrichtigen über</string>
     <string name="error_while_downloading_object">Fehler beim Herunterladen des Objekts: %1$s</string>

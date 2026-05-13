@@ -42,6 +42,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
 
@@ -159,7 +160,8 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                     BlockView.Title.Basic(
                         id = title.id,
                         isFocused = false,
-                        text = title.content<Block.Content.Text>().text
+                        text = title.content<Block.Content.Text>().text,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                     ),
                     BlockView.Text.Paragraph(
                         id = parent.id,
@@ -283,7 +285,8 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                     BlockView.Title.Basic(
                         id = title.id,
                         isFocused = false,
-                        text = title.content<Block.Content.Text>().text
+                        text = title.content<Block.Content.Text>().text,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                     ),
                     BlockView.Text.Paragraph(
                         id = parent.id,
@@ -422,7 +425,8 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                     BlockView.Title.Basic(
                         id = title.id,
                         isFocused = false,
-                        text = title.content<Block.Content.Text>().text
+                        text = title.content<Block.Content.Text>().text,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                     ),
                     BlockView.Text.Paragraph(
                         id = parent.id,
@@ -532,7 +536,8 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                     BlockView.Title.Basic(
                         id = title.id,
                         isFocused = false,
-                        text = title.content<Block.Content.Text>().text
+                        text = title.content<Block.Content.Text>().text,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                     ),
                     BlockView.Text.Paragraph(
                         id = paragraph.id,
@@ -639,7 +644,8 @@ class EditorBackspaceDeleteTest : EditorPresentationTestSetup() {
                     BlockView.Title.Basic(
                         id = title.id,
                         isFocused = false,
-                        text = title.content<Block.Content.Text>().text
+                        text = title.content<Block.Content.Text>().text,
+                        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                     ),
                     BlockView.Text.Paragraph(
                         id = paragraph.id,

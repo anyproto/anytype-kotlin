@@ -9,7 +9,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.debugging.Logger
-import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
+import com.anytypeio.anytype.presentation.widgets.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider

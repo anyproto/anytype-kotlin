@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -30,12 +31,13 @@ fun CircularFabButton(
     contentDescription: String,
     modifier: Modifier = Modifier,
     isEnabled: Boolean = true,
+    size: Dp = dimensionResource(R.dimen.nav_fab_button_size),
     onClick: () -> Unit,
     onLongClick: (() -> Unit)? = null,
 ) {
     Box(
         modifier = modifier
-            .size(dimensionResource(R.dimen.nav_fab_button_size))
+            .size(size)
             .shadow(
                 elevation = 20.dp,
                 shape = CircleShape,

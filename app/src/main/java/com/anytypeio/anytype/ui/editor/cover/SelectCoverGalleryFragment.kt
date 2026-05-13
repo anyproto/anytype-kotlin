@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.core.os.bundleOf
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -23,6 +25,7 @@ import com.anytypeio.anytype.core_utils.ext.GetImageContract
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.fixBottomSheetNavigationBarGap
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -85,6 +88,8 @@ abstract class SelectCoverGalleryFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        setupBottomToolbarInsets()
 
         binding.btnRemove.clicks()
             .onEach { vm.onRemoveCover(ctx) }
@@ -149,6 +154,18 @@ abstract class SelectCoverGalleryFragment :
         }
 
         skipCollapsed()
+    }
+
+    private fun setupBottomToolbarInsets() {
+        val bottomToolbar = binding.bottomToolbar
+        val initialBottomMargin = (bottomToolbar.layoutParams as LinearLayout.LayoutParams)
+            .bottomMargin
+
+        fixBottomSheetNavigationBarGap { navigationBars ->
+            bottomToolbar.updateLayoutParams<LinearLayout.LayoutParams> {
+                bottomMargin = initialBottomMargin + navigationBars.bottom
+            }
+        }
     }
 
     override fun onStart() {

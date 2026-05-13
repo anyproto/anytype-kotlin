@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.ext.FragmentResultContract
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.feature_vault.presentation.VaultCommand
 import com.anytypeio.anytype.feature_vault.presentation.VaultErrors
@@ -201,6 +202,16 @@ class VaultFragment : BaseComposeFragment() {
         }
         LaunchedEffect(Unit) {
             vm.navigations.collect { command -> proceed(command) }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        parentFragmentManager.setFragmentResultListener(
+            FragmentResultContract.CREATE_SPACE_BACK_TO_SELECT_MEMBERS_KEY,
+            viewLifecycleOwner
+        ) { _, _ ->
+            vm.onCreateSpaceBackPressed()
         }
     }
 

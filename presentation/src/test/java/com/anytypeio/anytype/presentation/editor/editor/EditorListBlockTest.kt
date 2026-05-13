@@ -23,6 +23,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 class EditorListBlockTest : EditorPresentationTestSetup() {
 
@@ -393,7 +394,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<TXT>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Checkbox(
                     id = child,
@@ -439,7 +441,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<TXT>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = child,
@@ -522,7 +525,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<TXT>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Bulleted(
                     id = child,
@@ -567,7 +571,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<TXT>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = child,
@@ -670,7 +675,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Toggle(
                     id = child,
@@ -716,7 +722,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = child,
@@ -799,7 +806,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Numbered(
                     id = child,
@@ -845,7 +853,8 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
                 BlockView.Title.Basic(
                     id = title.id,
                     text = title.content<Block.Content.Text>().text,
-                    isFocused = false
+                    isFocused = false,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = child,

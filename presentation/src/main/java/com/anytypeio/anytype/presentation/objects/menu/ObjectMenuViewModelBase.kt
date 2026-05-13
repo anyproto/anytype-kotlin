@@ -237,7 +237,8 @@ abstract class ObjectMenuViewModelBase(
             addPersonalFavorite.async(
                 AddPersonalFavorite.Params(space = space, target = ctx)
             ).fold(
-                onSuccess = {
+                onSuccess = { payload ->
+                    payloadDelegator.dispatch(payload)
                     _toasts.emit(ADD_TO_MY_FAVORITES_SUCCESS_MSG).also {
                         isDismissed.value = true
                     }
@@ -257,7 +258,9 @@ abstract class ObjectMenuViewModelBase(
             removePersonalFavorite.async(
                 RemovePersonalFavorite.Params(space = space, target = ctx)
             ).fold(
-                onSuccess = {
+                onSuccess = { payload ->
+                    if (payload != null) payloadDelegator.dispatch(payload)
+                    Timber.d("Removed from my favorites (payload=${payload != null})")
                     _toasts.emit(REMOVE_FROM_MY_FAVORITES_SUCCESS_MSG).also {
                         isDismissed.value = true
                     }
@@ -322,6 +325,7 @@ abstract class ObjectMenuViewModelBase(
                     space = space
                 )
             }
+
             ObjectType.Layout.COLLECTION -> {
                 proceedWithAddObjectToCollection(
                     ctx = ctx,
@@ -332,7 +336,10 @@ abstract class ObjectMenuViewModelBase(
                     fromName = fromName
                 )
             }
-            else -> { Timber.e("onBackLinkOrAddToObjectAction, layout:$backLinkLayout is not supported") }
+
+            else -> {
+                Timber.e("onBackLinkOrAddToObjectAction, layout:$backLinkLayout is not supported")
+            }
         }
     }
 
@@ -495,7 +502,7 @@ abstract class ObjectMenuViewModelBase(
             val config = spaceManager.getConfig()
             if (config != null && obj.isValid) {
 
-                var target: Id?  = null
+                var target: Id? = null
 
                 showObject.async(
                     GetObject.Params(
@@ -516,9 +523,11 @@ abstract class ObjectMenuViewModelBase(
                         obj.layout.isDataView() -> {
                             WidgetLayout.VIEW
                         }
+
                         obj.layout == ObjectType.Layout.PARTICIPANT -> {
                             WidgetLayout.LINK
                         }
+
                         else -> {
                             WidgetLayout.TREE
                         }
@@ -670,7 +679,7 @@ abstract class ObjectMenuViewModelBase(
         data object OpenObjectRelations : Command()
         data object OpenSetRelations : Command()
         data object OpenLinkToChooser : Command()
-        data class ShareDeeplinkToObject(val link: String): Command()
+        data class ShareDeeplinkToObject(val link: String) : Command()
         data class ShareDebugTree(val uri: Uri) : Command()
         data class ShareDebugGoroutines(val path: String) : Command()
         data class OpenHistoryScreen(val objectId: Id, val spaceId: Id) : Command()
@@ -683,6 +692,7 @@ abstract class ObjectMenuViewModelBase(
             val icon: ObjectIcon,
             val isCollection: Boolean = false
         ) : Command()
+
         data class OpenTemplate(
             val templateId: Id,
             val space: Id,

@@ -86,6 +86,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
+import com.anytypeio.anytype.presentation.notifications.toSnackbarVariant
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
@@ -296,7 +297,8 @@ class ChatViewModel @Inject constructor(
                         }
                         is HeaderView.ChatObject -> {
                             header.value = currentHeader.copy(
-                                canEdit = permission?.isOwnerOrEditor() == true
+                                canEdit = permission?.isOwnerOrEditor() == true,
+                                canPin = permission?.isOwner() == true
                             )
                         }
                         else -> {}
@@ -319,6 +321,7 @@ class ChatViewModel @Inject constructor(
                 val isMuted = notificationSetting == NotificationSetting.MUTE
                     || notificationSetting == NotificationSetting.MENTIONS
                 val canEdit = currentPermission.value?.isOwnerOrEditor() == true
+                val canPin = currentPermission.value?.isOwner() == true
 
                 // 1-1 space
                 if (spaceView.isOneToOneSpace) {
@@ -346,7 +349,8 @@ class ChatViewModel @Inject constructor(
                         isMuted = isMuted,
                         notificationSetting = notificationSetting,
                         isPinned = isPinned,
-                        canEdit = canEdit
+                        canEdit = canEdit,
+                        canPin = canPin
                     )
                 }
                 // Note: if wrapper is null for chat object, header remains Init until wrapper is available
@@ -1076,7 +1080,12 @@ class ChatViewModel @Inject constructor(
                 }
             }
             if (uploadSuccesses.isNotEmpty()) {
-                _uploadSnackbar.emit(uploadSuccesses.toSnackbarVariant())
+                _uploadSnackbar.emit(
+                    uploadSuccesses.toSnackbarVariant(
+                        space = vmParams.space.id,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
+                )
             }
             when (val mode = chatBoxMode.value) {
                 is ChatBoxMode.Default -> {
@@ -2590,16 +2599,6 @@ class ChatViewModel @Inject constructor(
         val capturedByCamera: Boolean = false
     )
 
-    private fun List<Block.Content.File.Type>.toSnackbarVariant(): UploadSuccessSnackbar {
-        val distinct = distinct()
-        if (distinct.size > 1) return UploadSuccessSnackbar.Mixed
-        return when (distinct.single()) {
-            Block.Content.File.Type.IMAGE -> UploadSuccessSnackbar.Image
-            Block.Content.File.Type.VIDEO -> UploadSuccessSnackbar.Video
-            else -> UploadSuccessSnackbar.File
-        }
-    }
-
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()
         data object OpenWidgets : ViewModelCommand()
@@ -2706,7 +2705,8 @@ class ChatViewModel @Inject constructor(
             val showAddMembers: Boolean = false,
             val notificationSetting: NotificationSetting = NotificationSetting.ALL,
             val isPinned: Boolean = false,
-            val canEdit: Boolean = true
+            val canEdit: Boolean = true,
+            val canPin: Boolean = false
         ) : HeaderView()
     }
 

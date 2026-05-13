@@ -52,6 +52,9 @@ class ObjectWrapperExtensionsKtTest {
     fun before() {
         MockitoAnnotations.openMocks(this)
         fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
+        storeOfObjectTypes.stub {
+            onBlocking { getAll() } doReturn emptyList()
+        }
     }
 
     @Test

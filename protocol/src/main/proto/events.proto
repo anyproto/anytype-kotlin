@@ -128,6 +128,7 @@ message Event {
       Chat.UpdateReactionReadStatus chatUpdateReactionReadStatus = 141;
       Object.AutoArchive objectAutoArchive = 142;
       Object.AutoRestore objectAutoRestore = 143;
+      Debug.ProfileCreated debugProfileCreated = 145;
       Chat.UpdateMessageCount chatUpdateMessageCount =
           144; // received whenever the total number of non-deleted messages in
                // the chat changes
@@ -1091,6 +1092,38 @@ message Event {
       string rootCollectionID = 1;
       int64 objectsCount = 2;
       model.Import.Type importType = 3;
+    }
+  }
+
+  message Debug {
+    // ProfileCreated is emitted whenever the middleware writes a snapshot
+    // archive on its own (e.g. the memory-growth detector), so clients can
+    // surface it or queue the archive for upload without polling the
+    // profiles directory. Archives produced as a result of a client RPC
+    // (DebugRunProfiler) are NOT re-announced via this event — the RPC
+    // response already carries the path.
+    message ProfileCreated {
+      // reason is a short, stable, UPPER_SNAKE_CASE label describing why the
+      // middleware produced this report. It is NOT the DebugRunProfiler
+      // Reason enum — values come from the internal call sites:
+      //   - "MEMORY_GROWTH"  : the desktop memory-growth detector tripped
+      //   - "LONG_RPC"       : an RPC exceeded the long-execution threshold
+      //   - "DB_CORRUPTION"  : an anystore/spacestore database failed to open
+      // More reasons may be added over time; clients should forward unknown
+      // values to Sentry as-is.
+      string reason = 1;
+      // jsonInfo is JSON-encoded context produced by the middleware (reason-
+      // specific keys like "sysMemory", "method", "durationMs", "db", "code").
+      // Clients forward it verbatim to Sentry as the event context.
+      string jsonInfo = 2;
+      // path is the absolute path to the snapshot archive on disk; empty
+      // when the reason is event-only (e.g. DB_CORRUPTION) and no artifact
+      // was produced.
+      string path = 3;
+      // full is true when the archive carries a timed CPU profile + trace
+      // in addition to heap and goroutines. False for fast snapshots and
+      // for event-only reports.
+      bool full = 4;
     }
   }
 }

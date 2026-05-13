@@ -2170,8 +2170,6 @@
     <string name="select_space">Select Channel</string>
     <string name="add_a_comment">Add a comment...</string>
     <string name="send">Send</string>
-    <string name="chat_notifications_receive_all">Receive all</string>
-    <string name="chat_notifications_mute_all">Mute all</string>
     <string name="chat_specific_notifications">Chat specific notifications</string>
     <string name="notify_me_about">Notify me about</string>
     <string name="error_while_downloading_object">Error while downloading object: %1$s</string>

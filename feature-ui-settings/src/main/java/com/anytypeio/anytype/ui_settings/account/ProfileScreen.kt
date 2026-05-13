@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -89,6 +91,7 @@ fun ProfileSettingsScreen(
     onLogoutClicked: () -> Unit,
     isLogoutInProgress: Boolean,
     isDebugEnabled: Boolean,
+    showExperimentalFeatures: Boolean,
     onNameChange: (String) -> Unit,
     onProfileIconClick: () -> Unit,
     account: AccountProfile,
@@ -112,7 +115,8 @@ fun ProfileSettingsScreen(
     LazyColumn(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
-            .fillMaxSize(),
+            .fillMaxSize()
+            .statusBarsPadding(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         item {
@@ -245,15 +249,17 @@ fun ProfileSettingsScreen(
                     onClick = onDebugClicked
                 )
             }
-            item {
-                Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
-            }
-            item {
-                Option(
-                    image = R.drawable.ic_settings_debug,
-                    text = stringResource(R.string.experimental_features),
-                    onClick = onExperimentalFeaturesClicked
-                )
+            if (showExperimentalFeatures) {
+                item {
+                    Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
+                }
+                item {
+                    Option(
+                        image = R.drawable.ic_settings_debug,
+                        text = stringResource(R.string.experimental_features),
+                        onClick = onExperimentalFeaturesClicked
+                    )
+                }
             }
         }
         item {
@@ -716,6 +722,7 @@ private fun ProfileSettingPreview() {
         onDebugClicked = {},
         onExperimentalFeaturesClicked = {},
         isDebugEnabled = true,
+        showExperimentalFeatures = true,
         notificationsDisabled = true,
         onOpenNotificationSettings = {},
         onMySitesClicked = {},
@@ -792,6 +799,7 @@ private fun ProfileSettingLongGlobalNamePreview() {
         onDebugClicked = {},
         onExperimentalFeaturesClicked = {},
         isDebugEnabled = false,
+        showExperimentalFeatures = false,
         notificationsDisabled = false,
         onOpenNotificationSettings = {},
         onMySitesClicked = {},

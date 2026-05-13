@@ -2,7 +2,7 @@ package com.anytypeio.anytype.ui.home
 
 import android.Manifest
 import android.app.Dialog
-import android.net.Uri
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +14,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,15 +26,22 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.fragment.compose.content
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
@@ -40,6 +49,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.ui.WallpaperResult
@@ -59,9 +70,14 @@ import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.main.MainViewModel
-import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.objects.creation.WidgetSourceTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
+import com.anytypeio.anytype.ui.widgets.CreateChatObjectFragment
+import com.anytypeio.anytype.ui.widgets.CreateChatObjectListener
+import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
+import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -70,7 +86,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class WidgetOverlayFragment : BottomSheetDialogFragment() {
+private const val WIDGET_OVERLAY_FAB_SCALE = 0.85f
+
+class WidgetOverlayFragment : BottomSheetDialogFragment(),
+    WidgetSourceTypeListener,
+    CreateChatObjectListener {
 
     @Inject
     lateinit var factory: HomeScreenViewModel.Factory
@@ -120,21 +140,17 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = ComposeView(requireContext()).apply {
-        setContent {
-            MaterialTheme {
-                WidgetOverlayContent(
-                    vm = vm,
-                    createObjectVm = createObjectVm,
-                    wallpaperState = mainVm.wallpaperState,
-                    onBackClicked = { dismiss() },
-                    onSpaceSettingsClicked = {
-                        vm.onSpaceSettingsClicked(space = SpaceId(space))
-                    },
-                    onCreateObjectAction = { action -> handleCreateObjectAction(action) }
-                )
-            }
-        }
+    ) = content {
+        WidgetOverlayContent(
+            vm = vm,
+            createObjectVm = createObjectVm,
+            wallpaperState = mainVm.wallpaperState,
+            onBackClicked = { dismiss() },
+            onSpaceSettingsClicked = {
+                vm.onSpaceSettingsClicked(space = SpaceId(space))
+            },
+            onCreateObjectAction = { action -> handleCreateObjectAction(action) }
+        )
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -143,9 +159,13 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
                     vm.commands.collect { command ->
-                        // Most HomeScreenViewModel commands are widget-host flows
-                        // owned by WidgetsScreenFragment. The overlay handles the
-                        // two that originate from its own bottom buttons.
+                        // The overlay hosts the full WidgetsScreen, so it must
+                        // forward widget-edit commands to nav-graph dialog
+                        // destinations / child-fragment dialogs the same way
+                        // WidgetsScreenFragment does. Other commands
+                        // (Deeplink.*, OpenVault, HandleChatSpaceBackNavigation,
+                        // etc.) are not reachable from this surface and stay
+                        // intentionally unhandled.
                         when (command) {
                             is Command.OpenGlobalSearchScreen -> {
                                 runCatching {
@@ -156,6 +176,89 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
                                     Timber.e(it, "Error opening global search from overlay")
                                 }
                                 dismissAfterGesture()
+                            }
+                            is Command.ChangeWidgetType -> {
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.selectWidgetTypeScreen,
+                                        SelectWidgetTypeFragment.args(
+                                            ctx = command.ctx,
+                                            widget = command.widget,
+                                            source = command.source,
+                                            type = command.type,
+                                            layout = command.layout,
+                                            isInEditMode = command.isInEditMode
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error navigating to SelectWidgetType from overlay")
+                                }
+                            }
+                            is Command.ChangeWidgetSource -> {
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.selectWidgetSourceScreen,
+                                        SelectWidgetSourceFragment.args(
+                                            ctx = command.ctx,
+                                            widget = command.widget,
+                                            source = command.source,
+                                            type = command.type,
+                                            isInEditMode = command.isInEditMode,
+                                            spaceId = command.space
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error navigating to ChangeWidgetSource from overlay")
+                                }
+                            }
+                            is Command.SelectWidgetSource -> {
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.selectWidgetSourceScreen,
+                                        SelectWidgetSourceFragment.args(
+                                            ctx = command.ctx,
+                                            target = command.target,
+                                            isInEditMode = command.isInEditMode,
+                                            spaceId = command.space
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error navigating to SelectWidgetSource from overlay")
+                                }
+                            }
+                            is Command.SelectWidgetType -> {
+                                runCatching {
+                                    findNavController().navigate(
+                                        R.id.selectWidgetTypeScreen,
+                                        SelectWidgetTypeFragment.args(
+                                            ctx = command.ctx,
+                                            source = command.source,
+                                            layout = command.layout,
+                                            target = command.target,
+                                            isInEditMode = command.isInEditMode
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error navigating to SelectWidgetType (new) from overlay")
+                                }
+                            }
+                            is Command.CreateSourceForNewWidget -> {
+                                runCatching {
+                                    WidgetSourceTypeFragment.new(
+                                        space = command.space.id,
+                                        widgetId = command.widgets
+                                    ).show(childFragmentManager, null)
+                                }.onFailure {
+                                    Timber.e(it, "Error showing WidgetSourceTypeFragment from overlay")
+                                }
+                            }
+                            is Command.CreateChatObject -> {
+                                runCatching {
+                                    CreateChatObjectFragment.new(space = command.space.id)
+                                        .show(childFragmentManager, "create-chat-object-dialog")
+                                }.onFailure {
+                                    Timber.e(it, "Error showing CreateChatObjectFragment from overlay")
+                                }
                             }
                             else -> {
                                 Timber.d("WidgetOverlay vm command (ignored): $command")
@@ -171,7 +274,13 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
                 launch { vm.toasts.collect { toast(it) } }
                 launch {
                     vm.uploadSnackbar.collect { variant ->
-                        mainVm.showSnackbarWithOk(uploadSnackbarMessage(variant))
+                        // The bottom sheet's dialog window is layered above
+                        // the activity, so the app-level Snackbar (rendered
+                        // on activity's android.R.id.content) is hidden
+                        // behind it. Dismiss first so the Snackbar is
+                        // visible on the underlying screen.
+                        dismissAllowingStateLoss()
+                        if (isAdded) routeUploadSnackbar(mainVm, variant)
                     }
                 }
             }
@@ -307,6 +416,24 @@ class WidgetOverlayFragment : BottomSheetDialogFragment() {
         super.onDestroy()
     }
 
+    override fun onSetNewWidgetSource(objType: ObjectWrapper.Type, widgetId: Id) {
+        vm.onNewWidgetSourceTypeSelected(type = objType, widgets = widgetId)
+    }
+
+    override fun onChatObjectCreated(objectId: Id) {
+        Timber.d("Chat object created from widget overlay: $objectId")
+        // Match the proceed(Navigation) contract: dismiss the sheet first so it
+        // does not remain on the back stack beneath the newly-opened chat.
+        dismiss()
+        runCatching {
+            navigation().openChat(
+                target = objectId,
+                space = space,
+                popUpToVault = false
+            )
+        }.onFailure { Timber.e(it, "Error opening chat from overlay after object creation") }
+    }
+
     private fun handleCreateObjectAction(action: CreateObjectAction) {
         when (action) {
             is CreateObjectAction.CreateObjectOfType -> {
@@ -353,35 +480,53 @@ private fun WidgetOverlayContent(
     val wallpaper by wallpaperState.collectAsStateWithLifecycle()
     val spaceBackground = wallpaper.toSpaceBackground()
     val wallpaperAlpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA / 255f
+    val scaledFabSize = dimensionResource(
+        com.anytypeio.anytype.core_ui.R.dimen.nav_fab_button_size
+    ) * WIDGET_OVERLAY_FAB_SCALE
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(R.color.background_primary))
-            .then(
-                when (spaceBackground) {
-                    is SpaceBackground.SolidColor -> Modifier.background(
-                        color = spaceBackground.color.copy(alpha = wallpaperAlpha)
-                    )
-                    is SpaceBackground.Gradient -> Modifier.background(
-                        brush = spaceBackground.brush,
-                        alpha = wallpaperAlpha
-                    )
-                    SpaceBackground.None -> Modifier
-                }
-            )
-            .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
-        WidgetsScreen(
-            viewModel = vm
-        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .padding(top = 8.dp, bottom = 16.dp)
+                .padding(horizontal = 8.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .background(colorResource(R.color.background_primary))
+                .then(
+                    when (spaceBackground) {
+                        is SpaceBackground.SolidColor -> Modifier.background(
+                            color = spaceBackground.color.copy(alpha = wallpaperAlpha)
+                        )
+                        is SpaceBackground.Gradient -> Modifier.background(
+                            brush = spaceBackground.brush,
+                            alpha = wallpaperAlpha
+                        )
+                        SpaceBackground.None -> Modifier
+                    }
+                )
+                .nestedScroll(rememberNestedScrollInteropConnection())
+        ) {
+            WidgetsScreen(
+                viewModel = vm,
+                fabSize = scaledFabSize,
+                topContentPadding = 52.dp,
+                bottomContentPadding = 16.dp,
+            )
+        }
         HomeScreenToolbar(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .fillMaxWidth()
-                .statusBarsPadding(),
+                .statusBarsPadding()
+                .padding(top = 12.dp)
+                .padding(horizontal = 8.dp),
             onBackButtonClicked = onBackClicked,
             onSpaceSettingsClicked = onSpaceSettingsClicked,
+            buttonSize = scaledFabSize,
         )
 
         val createObjectSheetVisible by vm.createObjectSheetVisible.collectAsStateWithLifecycle()

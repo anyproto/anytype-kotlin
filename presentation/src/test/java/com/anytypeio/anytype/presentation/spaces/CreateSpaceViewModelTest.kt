@@ -35,6 +35,7 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
@@ -313,6 +314,150 @@ class CreateSpaceViewModelTest {
 
     // endregion
 
+    // region Group Channel - Writer/Reader Split (DROID-4481)
+
+    @Test
+    fun `writers limit 2 with 3 selected - reserves owner seat - 1 writer + 2 readers`() = runTest {
+        // Given — tier writersLimit=2 means owner + 1 addable writer.
+        val members = listOf("identity-1", "identity-2", "identity-3")
+        val vmParams = givenGroupParams(members = members, writersLimit = 2)
+        stubCreateSpaceSuccess()
+        stubMakeShareableSuccess()
+        stubGenerateInviteLinkSuccess()
+        stubAddMembersSuccess()
+        stubSpaceManagerSet()
+        stubSaveCurrentSpace()
+        stubShareableLimitNotReached()
+
+        val vm = buildViewModel(vmParams)
+        advanceUntilIdle()
+
+        // When
+        vm.onCreateSpace("Group Channel")
+        advanceUntilIdle()
+
+        // Then — first call: 1 writer, second call: 2 readers
+        val captor = argumentCaptor<AddSpaceMembers.Params>()
+        verify(addSpaceMembers, org.mockito.kotlin.times(2)).async(captor.capture())
+        val writerCall = captor.allValues[0]
+        val readerCall = captor.allValues[1]
+        assertEquals(SpaceMemberPermissions.WRITER, writerCall.permissions)
+        assertEquals(listOf("identity-1"), writerCall.identities)
+        assertEquals(SpaceMemberPermissions.READER, readerCall.permissions)
+        assertEquals(listOf("identity-2", "identity-3"), readerCall.identities)
+    }
+
+    @Test
+    fun `writers limit 1 with 3 selected - no writer slots - all 3 readers`() = runTest {
+        // Given — tier writersLimit=1 means owner is the only writer; no addable writer slots.
+        val members = listOf("identity-1", "identity-2", "identity-3")
+        val vmParams = givenGroupParams(members = members, writersLimit = 1)
+        stubCreateSpaceSuccess()
+        stubMakeShareableSuccess()
+        stubGenerateInviteLinkSuccess()
+        stubAddMembersSuccess()
+        stubSpaceManagerSet()
+        stubSaveCurrentSpace()
+        stubShareableLimitNotReached()
+
+        val vm = buildViewModel(vmParams)
+        advanceUntilIdle()
+
+        // When
+        vm.onCreateSpace("Group Channel")
+        advanceUntilIdle()
+
+        // Then — single call with all members as readers
+        val captor = argumentCaptor<AddSpaceMembers.Params>()
+        verify(addSpaceMembers, org.mockito.kotlin.times(1)).async(captor.capture())
+        val readerCall = captor.firstValue
+        assertEquals(SpaceMemberPermissions.READER, readerCall.permissions)
+        assertEquals(members, readerCall.identities)
+    }
+
+    @Test
+    fun `writers limit 0 with 3 selected - no tier limit - all 3 writers`() = runTest {
+        // Given — writersLimit=0 means "no tier limit"; preserve existing unlimited semantics.
+        val members = listOf("identity-1", "identity-2", "identity-3")
+        val vmParams = givenGroupParams(members = members, writersLimit = 0)
+        stubCreateSpaceSuccess()
+        stubMakeShareableSuccess()
+        stubGenerateInviteLinkSuccess()
+        stubAddMembersSuccess()
+        stubSpaceManagerSet()
+        stubSaveCurrentSpace()
+        stubShareableLimitNotReached()
+
+        val vm = buildViewModel(vmParams)
+        advanceUntilIdle()
+
+        // When
+        vm.onCreateSpace("Group Channel")
+        advanceUntilIdle()
+
+        // Then — single call with all members as writers
+        val captor = argumentCaptor<AddSpaceMembers.Params>()
+        verify(addSpaceMembers, org.mockito.kotlin.times(1)).async(captor.capture())
+        val writerCall = captor.firstValue
+        assertEquals(SpaceMemberPermissions.WRITER, writerCall.permissions)
+        assertEquals(members, writerCall.identities)
+    }
+
+    @Test
+    fun `writers limit 5 with 2 selected - all under cap - both writers no readers`() = runTest {
+        // Given — tier allows 4 addable writers (5 - 1 owner); 2 selected fit entirely as writers.
+        val members = listOf("identity-1", "identity-2")
+        val vmParams = givenGroupParams(members = members, writersLimit = 5)
+        stubCreateSpaceSuccess()
+        stubMakeShareableSuccess()
+        stubGenerateInviteLinkSuccess()
+        stubAddMembersSuccess()
+        stubSpaceManagerSet()
+        stubSaveCurrentSpace()
+        stubShareableLimitNotReached()
+
+        val vm = buildViewModel(vmParams)
+        advanceUntilIdle()
+
+        // When
+        vm.onCreateSpace("Group Channel")
+        advanceUntilIdle()
+
+        // Then — single call: both writers, no reader call
+        val captor = argumentCaptor<AddSpaceMembers.Params>()
+        verify(addSpaceMembers, org.mockito.kotlin.times(1)).async(captor.capture())
+        val writerCall = captor.firstValue
+        assertEquals(SpaceMemberPermissions.WRITER, writerCall.permissions)
+        assertEquals(members, writerCall.identities)
+    }
+
+    @Test
+    fun `group creation with empty selection - no addSpaceMembers calls`() = runTest {
+        // Given
+        val vmParams = givenGroupParams(members = emptyList(), writersLimit = 3)
+        stubCreateSpaceSuccess()
+        stubMakeShareableSuccess()
+        stubGenerateInviteLinkSuccess()
+        stubAddMembersSuccess()
+        stubSpaceManagerSet()
+        stubSaveCurrentSpace()
+        stubShareableLimitNotReached()
+
+        val vm = buildViewModel(vmParams)
+        advanceUntilIdle()
+
+        // When
+        vm.onCreateSpace("Group Channel")
+        advanceUntilIdle()
+
+        // Then — finishes without adding members
+        verify(addSpaceMembers, never()).async(any())
+        verify(spaceManager).set(any(), any())
+        assertNull(vm.createSpaceError.value)
+    }
+
+    // endregion
+
     // region Helpers
 
     private fun givenPersonalParams(
@@ -323,10 +468,12 @@ class CreateSpaceViewModelTest {
     )
 
     private fun givenGroupParams(
-        members: List<String> = emptyList()
+        members: List<String> = emptyList(),
+        writersLimit: Int = 0
     ) = CreateSpaceViewModel.VmParams(
         channelType = ChannelCreationType.GROUP,
-        selectedMemberIdentities = members
+        selectedMemberIdentities = members,
+        writersLimit = writersLimit
     )
 
     private fun stubSpaceViews() {

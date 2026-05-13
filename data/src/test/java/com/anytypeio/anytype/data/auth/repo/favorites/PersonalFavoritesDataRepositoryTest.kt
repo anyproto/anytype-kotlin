@@ -2,19 +2,24 @@ package com.anytypeio.anytype.data.auth.repo.favorites
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectView
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.favorites.personalWidgetsId
-import kotlinx.coroutines.test.runTest
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertSame
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
 import org.mockito.kotlin.never
 import org.mockito.kotlin.times
@@ -38,20 +43,28 @@ class PersonalFavoritesDataRepositoryTest {
     }
 
     @Test
-    fun `add creates a Link widget at INNER_FIRST in the personal-widgets doc`() = runTest {
-        repo.add(space, target = "obj-1")
+    fun `add creates a Link widget at INNER_FIRST and returns the response Payload`() = runTest {
+        val expected = payload("e-add")
+        given(
+            blocks.createWidget(
+                ctx = eq(ctx),
+                source = eq("obj-1"),
+                layout = eq(Block.Content.Widget.Layout.LINK),
+                target = eq(null),
+                position = eq(Position.INNER_FIRST)
+            )
+        ).willReturn(expected)
 
-        verify(blocks).createWidget(
-            ctx = ctx,
-            source = "obj-1",
-            layout = Block.Content.Widget.Layout.LINK,
-            target = null,
-            position = Position.INNER_FIRST
-        )
+        val actual = repo.add(space, target = "obj-1")
+
+        // The Payload returned by the underlying createWidget RPC must be passed
+        // through verbatim — VMs dispatch it through PayloadDelegator so the
+        // personal-widgets observer sees the same events MW would have pushed.
+        assertSame(expected, actual)
     }
 
     @Test
-    fun `remove unlinks every inner link whose target matches`() = runTest {
+    fun `remove unlinks every inner link whose target matches and returns Payload`() = runTest {
         given(blocks.openObject(ctx, space)).willReturn(
             objectViewWith(
                 wrapperLinks = listOf(
@@ -61,18 +74,26 @@ class PersonalFavoritesDataRepositoryTest {
                 )
             )
         )
+        val expected = payload("e-remove")
+        given(blocks.unlink(any())).willReturn(expected)
 
-        repo.remove(space, target = "obj-1")
+        val actual = repo.remove(space, target = "obj-1")
 
         val captor = argumentCaptor<Command.Unlink>()
         verify(blocks).unlink(captor.capture())
         val captured = captor.firstValue
         assertEquals(ctx, captured.context)
+        // Per anytype-heart GO-6962: ListDelete on the personal-widgets doc takes
+        // the INNER LINK block IDs, and the middleware cascades the wrapper
+        // deletion internally. Passing wrapper IDs is not the documented contract.
         assertEquals(listOf("l-1", "l-3"), captured.targets)
+        // The returned Payload is what the VM dispatches into PayloadDelegator —
+        // dropping it here is exactly the bug the v2 fix addresses.
+        assertSame(expected, actual)
     }
 
     @Test
-    fun `remove is a no-op when target is not present`() = runTest {
+    fun `remove returns null and skips RPC when target is not present`() = runTest {
         given(blocks.openObject(ctx, space)).willReturn(
             objectViewWith(
                 wrapperLinks = listOf(
@@ -81,20 +102,32 @@ class PersonalFavoritesDataRepositoryTest {
             )
         )
 
-        repo.remove(space, target = "missing")
+        val actual = repo.remove(space, target = "missing")
 
         verify(blocks).openObject(ctx, space)
         verify(blocks, never()).unlink(any())
+        // Null distinguishes "no MW mutation happened" from "mutation succeeded";
+        // the VM uses this to skip dispatching a meaningless Payload.
+        assertNull(actual)
     }
 
     @Test
-    fun `reorder is a no-op when list is empty`() = runTest {
-        repo.reorder(space, orderedTargets = emptyList())
+    fun `reorder is a no-op and returns empty list when input is empty`() = runTest {
+        val actual = repo.reorder(space, orderedTargets = emptyList())
         verifyNoInteractions(blocks)
+        assertEquals(emptyList(), actual)
     }
 
     @Test
-    fun `reorder moves each wrapper to end of root in order`() = runTest {
+    fun `reorder is a no-op and returns empty list when input has a single item`() = runTest {
+        val actual = repo.reorder(space, orderedTargets = listOf("obj-a"))
+        // Nothing to move relative to — no RPC should fire.
+        verifyNoInteractions(blocks)
+        assertEquals(emptyList(), actual)
+    }
+
+    @Test
+    fun `reorder anchors each wrapper BOTTOM of previous and returns Payload list`() = runTest {
         given(blocks.openObject(ctx, space)).willReturn(
             objectViewWith(
                 root = "root-1",
@@ -105,19 +138,27 @@ class PersonalFavoritesDataRepositoryTest {
                 )
             )
         )
+        val p1 = payload("e-move-1")
+        val p2 = payload("e-move-2")
+        given(blocks.move(any())).willReturn(p1, p2)
 
-        repo.reorder(space, orderedTargets = listOf("obj-c", "obj-a"))
+        val actual = repo.reorder(space, orderedTargets = listOf("obj-c", "obj-a", "obj-b"))
 
         val captor = argumentCaptor<Command.Move>()
         verify(blocks, times(2)).move(captor.capture())
         val calls = captor.allValues
-        assertEquals(listOf("w-c"), calls[0].blockIds)
-        assertEquals("root-1", calls[0].targetId)
-        assertEquals(Position.INNER, calls[0].position)
+        // First: move w-a to BOTTOM of w-c → children become [..., w-c, w-a, ...]
+        assertEquals(listOf("w-a"), calls[0].blockIds)
+        assertEquals("w-c", calls[0].targetId)
+        assertEquals(Position.BOTTOM, calls[0].position)
         assertEquals(ctx, calls[0].ctx)
         assertEquals(ctx, calls[0].targetContextId)
-        assertEquals(listOf("w-a"), calls[1].blockIds)
-        assertEquals("root-1", calls[1].targetId)
+        // Second: move w-b to BOTTOM of w-a → children become [..., w-c, w-a, w-b]
+        assertEquals(listOf("w-b"), calls[1].blockIds)
+        assertEquals("w-a", calls[1].targetId)
+        assertEquals(Position.BOTTOM, calls[1].position)
+        // One Payload per move RPC, in dispatch order.
+        assertEquals(listOf(p1, p2), actual)
     }
 
     @Test
@@ -126,21 +167,34 @@ class PersonalFavoritesDataRepositoryTest {
             objectViewWith(
                 root = "root-1",
                 wrapperLinks = listOf(
-                    WrapperLink(wrapperId = "w-a", linkId = "l-a", target = "obj-a")
+                    WrapperLink(wrapperId = "w-a", linkId = "l-a", target = "obj-a"),
+                    WrapperLink(wrapperId = "w-b", linkId = "l-b", target = "obj-b")
                 )
             )
         )
+        val p1 = payload("e-move-1")
+        given(blocks.move(any())).willReturn(p1)
 
-        repo.reorder(space, orderedTargets = listOf("missing", "obj-a"))
+        val actual = repo.reorder(space, orderedTargets = listOf("missing", "obj-b", "obj-a"))
 
         val captor = argumentCaptor<Command.Move>()
+        // "missing" is filtered out → wrappers list = [w-b, w-a] → one move RPC.
         verify(blocks, times(1)).move(captor.capture())
         assertEquals(listOf("w-a"), captor.firstValue.blockIds)
+        assertEquals("w-b", captor.firstValue.targetId)
+        assertEquals(Position.BOTTOM, captor.firstValue.position)
+        assertEquals(listOf(p1), actual)
     }
 
     // --- helpers ---
 
     private data class WrapperLink(val wrapperId: String, val linkId: String, val target: String)
+
+    private fun payload(marker: String): Payload =
+        Payload(
+            context = ctx,
+            events = listOf(Event.Command.DeleteBlock(context = ctx, targets = listOf(marker)))
+        )
 
     private fun objectViewWith(
         root: String = "root",

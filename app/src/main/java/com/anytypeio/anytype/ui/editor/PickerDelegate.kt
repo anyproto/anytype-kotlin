@@ -144,6 +144,11 @@ interface PickerDelegate : PickiTCallbacks {
 
         override fun onCopyFileCommand(command: CopyFileStatus) {
 
+            @Suppress("SENSELESS_COMPARISON")
+            if (command == null) {
+                Timber.w("PickerDelegate: onCopyFileCommand received null")
+                return
+            }
             when (command) {
                 is CopyFileStatus.Error -> {
                     snackbar?.dismiss()

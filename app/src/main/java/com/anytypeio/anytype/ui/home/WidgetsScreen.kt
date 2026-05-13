@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.BuildConfig
@@ -58,7 +59,14 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun WidgetsScreen(
-    viewModel: HomeScreenViewModel
+    viewModel: HomeScreenViewModel,
+    fabSize: Dp = dimensionResource(com.anytypeio.anytype.core_ui.R.dimen.nav_fab_button_size),
+    topContentPadding: Dp =
+        WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
+            dimensionResource(R.dimen.nav_top_toolbar_height) +
+            8.dp,
+    bottomContentPadding: Dp =
+        WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 16.dp,
 ) {
 
     val view = LocalView.current
@@ -72,6 +80,7 @@ fun WidgetsScreen(
     val unreadWidget = viewModel.unreadView.collectAsState().value
     val personalFavoritesWidget = viewModel.personalFavoritesView.collectAsState().value
     val canToggleChannelPin = viewModel.canToggleChannelPin.collectAsState().value
+    val canCreateInSpace = viewModel.canCreateInSpace.collectAsState().value
     val favoriteTargets = viewModel.favoriteTargets.collectAsState().value
     val myFavoritesReorderFailedSignal = viewModel.myFavoritesReorderFailedCount.collectAsState().value
     val chatWidget = viewModel.chatView.collectAsState().value
@@ -143,12 +152,38 @@ fun WidgetsScreen(
     val shouldShowUnreadSection = unreadWidgetView != null &&
         (unreadWidgetView.elements.isNotEmpty() || isUnreadSectionCollapsed || hadUnreadItems.value)
 
-    // My Favorites section visibility: purely data-driven — shown iff the
-    // user has at least one personal favorite in this space. No user-toggle
-    // collapse (see SectionSettings.isUserConfigurable).
+    // My Favorites section visibility: data-driven — shown iff the user has
+    // at least one personal favorite in this space. The section can also be
+    // collapsed by tapping its header (DROID-4487); when collapsed, the
+    // header stays so the user can re-expand.
     val personalFavoritesWidgetView = personalFavoritesWidget as? WidgetView.SetOfObjects
-    val shouldShowPersonalFavoritesSection =
-        personalFavoritesWidgetView != null && personalFavoritesWidgetView.elements.isNotEmpty()
+    val isMyFavoritesSectionCollapsed = collapsedSections.contains(SECTION_MY_FAVORITES)
+
+    // Track previous collapse state for my favorites section
+    val wasMyFavoritesCollapsed = remember { mutableStateOf(isMyFavoritesSectionCollapsed) }
+    val hadMyFavoritesItems = remember { mutableStateOf(personalFavoritesWidgetView?.elements?.isNotEmpty() == true) }
+
+    // When section becomes expanded, keep the flag true to prevent flicker
+    if (!isMyFavoritesSectionCollapsed && wasMyFavoritesCollapsed.value) {
+        hadMyFavoritesItems.value = true
+    }
+
+    // Update previous state
+    wasMyFavoritesCollapsed.value = isMyFavoritesSectionCollapsed
+
+    // Set flag when items are present
+    if (personalFavoritesWidgetView?.elements?.isNotEmpty() == true) {
+        hadMyFavoritesItems.value = true
+    }
+
+    // Reset flag when section is collapsed and has no items
+    if (isMyFavoritesSectionCollapsed && personalFavoritesWidgetView?.elements?.isEmpty() == true) {
+        hadMyFavoritesItems.value = false
+    }
+
+    // Show header if: has items OR is collapsed OR was previously shown
+    val shouldShowPersonalFavoritesSection = personalFavoritesWidgetView != null &&
+        (personalFavoritesWidgetView.elements.isNotEmpty() || isMyFavoritesSectionCollapsed || hadMyFavoritesItems.value)
 
     // Recently Edited section visibility logic
     val recentlyEditedView = recentlyEditedWidget as? WidgetView.RecentlyEdited
@@ -234,15 +269,6 @@ fun WidgetsScreen(
             }
         }
     }
-
-    // Top inset: status bar + toolbar + 8dp breathing room so the
-    // first widget sits just below the overlaid HomeScreenToolbar.
-    val topContentPadding =
-        WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
-            dimensionResource(R.dimen.nav_top_toolbar_height) +
-            8.dp
-    val bottomContentPadding =
-        WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding() + 16.dp
 
     Box(
         modifier = Modifier
@@ -494,28 +520,32 @@ fun WidgetsScreen(
                                     key = SECTION_MY_FAVORITES,
                                 ) {
                                     MyFavoritesSectionHeader(
-                                        onSectionClicked = {} // Not user-collapsible per spec
+                                        onSectionClicked = viewModel::onSectionMyFavoritesClicked
                                     )
                                 }
                             }
-                            item(key = "my_favorites_widget_content") {
-                                ReorderableItem(
-                                    enabled = false,
-                                    state = reorderableState,
-                                    key = "my_favorites_widget_content",
-                                ) {
-                                    MyFavoritesWidget(
-                                        item = personalFavoritesWidgetView,
-                                        mode = mode,
-                                        onWidgetObjectClicked = { obj ->
-                                            viewModel.onWidgetElementClicked(
-                                                personalFavoritesWidgetView.id, obj
-                                            )
-                                        },
-                                        onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
-                                        onReordered = viewModel::onMyFavoritesReordered,
-                                        reorderFailedSignal = myFavoritesReorderFailedSignal
-                                    )
+                            if (!isMyFavoritesSectionCollapsed) {
+                                item(key = "my_favorites_widget_content") {
+                                    ReorderableItem(
+                                        enabled = false,
+                                        state = reorderableState,
+                                        key = "my_favorites_widget_content",
+                                    ) {
+                                        MyFavoritesWidget(
+                                            item = personalFavoritesWidgetView,
+                                            mode = mode,
+                                            onWidgetObjectClicked = { obj ->
+                                                viewModel.onWidgetElementClicked(
+                                                    personalFavoritesWidgetView.id, obj
+                                                )
+                                            },
+                                            onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
+                                            onReordered = viewModel::onMyFavoritesReordered,
+                                            reorderFailedSignal = myFavoritesReorderFailedSignal,
+                                            canCreate = canCreateInSpace,
+                                            onItemMenuAction = viewModel::onMyFavoritesItemMenuAction
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -565,6 +595,7 @@ fun WidgetsScreen(
                     bottom = dimensionResource(R.dimen.nav_fab_margin),
                 )
             ,
+            size = fabSize,
             onClick = viewModel::onSearchIconClicked,
         )
 
@@ -585,6 +616,7 @@ fun WidgetsScreen(
                         end = dimensionResource(R.dimen.nav_fab_margin),
                         bottom = dimensionResource(R.dimen.nav_fab_margin),
                     ),
+                size = fabSize,
                 onClick = viewModel::onCreateObjectMenuClicked,
             )
         }

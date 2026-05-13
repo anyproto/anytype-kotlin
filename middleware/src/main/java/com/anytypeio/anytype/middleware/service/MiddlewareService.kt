@@ -494,7 +494,7 @@ interface MiddlewareService {
     fun debugStats(request: Rpc.Debug.Stat.Request): Rpc.Debug.Stat.Response
 
     @Throws(Exception::class)
-    fun debugExportLogs(request: Rpc.Debug.ExportLog.Request): Rpc.Debug.ExportLog.Response
+    fun debugExportLogs(request: Rpc.Debug.ExportReport.Request): Rpc.Debug.ExportReport.Response
 
     @Throws(Exception::class)
     fun debugRunProfiler(request: Rpc.Debug.RunProfiler.Request): Rpc.Debug.RunProfiler.Response

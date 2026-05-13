@@ -55,6 +55,7 @@ fun BoxScope.ChatMenu(
     currentNotificationSetting: NotificationSetting,
     isPinned: Boolean = false,
     canEdit: Boolean = true,
+    canPin: Boolean = false,
     onDismissRequest: () -> Unit,
     onPropertiesClick: () -> Unit,
     onEditInfoClick: () -> Unit,
@@ -124,9 +125,13 @@ fun BoxScope.ChatMenu(
                     },
                     onClick = { onEditInfoClick() }
                 )
-                Divider(paddingStart = 0.dp, paddingEnd = 0.dp, height = 8.dp)
+                if (canPin) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp, height = 8.dp)
+                }
+            }
 
-                // Pin/Unpin - only show if user can edit
+            // Pin/Unpin - only show for Owner (and Admin, when that role exists)
+            if (canPin) {
                 DropdownMenuItem(
                     content = {
                         ChatMenuItemContent(
@@ -139,6 +144,9 @@ fun BoxScope.ChatMenu(
                     },
                     onClick = { onPinClick() }
                 )
+            }
+
+            if (canEdit || canPin) {
                 Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
             }
 
@@ -445,6 +453,7 @@ fun ChatMenuPreview() {
             currentNotificationSetting = NotificationSetting.ALL,
             isPinned = false,
             canEdit = true,
+            canPin = true,
             onDismissRequest = {},
             onPropertiesClick = {},
             onEditInfoClick = {},

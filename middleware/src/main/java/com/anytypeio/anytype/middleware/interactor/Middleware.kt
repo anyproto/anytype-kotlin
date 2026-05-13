@@ -3061,7 +3061,8 @@ class Middleware @Inject constructor(
         logResponseIfDebug(response, time)
         return Command.ChatCommand.GetMessages.Response(
             messages = response.messages.map { it.core() },
-            state = response.chatState?.core()
+            state = response.chatState?.core(),
+            messageCount = response.messageCount
         )
     }
 
@@ -3258,7 +3259,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun debugExportLogs(dir: String): String {
-        val request = Rpc.Debug.ExportLog.Request(dir = dir)
+        val request = Rpc.Debug.ExportReport.Request(dir = dir)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.debugExportLogs(request) }
         logResponseIfDebug(response, time)

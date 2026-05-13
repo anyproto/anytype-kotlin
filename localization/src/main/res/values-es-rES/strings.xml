@@ -2141,8 +2141,6 @@ En concreto,
     <string name="select_space">Seleccionar canal</string>
     <string name="add_a_comment">Añade un comentario…</string>
     <string name="send">Enviar</string>
-    <string name="chat_notifications_receive_all">Recibir todas</string>
-    <string name="chat_notifications_mute_all">Silenciar todas</string>
     <string name="chat_specific_notifications">Notificaciones del chat</string>
     <string name="notify_me_about">Notifícame sobre</string>
     <string name="error_while_downloading_object">Error al descargar el objeto %1$s</string>

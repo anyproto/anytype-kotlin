@@ -11,13 +11,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -65,6 +66,7 @@ fun SpaceListScreen(
 ) {
     Column(
         modifier = Modifier
+            .statusBarsPadding()
             .fillMaxSize()
             .nestedScroll(rememberNestedScrollInteropConnection())
     ) {
@@ -338,7 +340,9 @@ private fun SpaceListItemMenu(
         onDismissRequest = {
             isCardMenuExpanded.value = false
         },
-        offset = DpOffset(x = 0.dp, y = 6.dp)
+        offset = DpOffset(x = 0.dp, y = 6.dp),
+        containerColor = colorResource(R.color.background_secondary),
+        tonalElevation = 8.dp,
     ) {
         actions.forEachIndexed { idx, action ->
             when (action) {
@@ -348,14 +352,15 @@ private fun SpaceListItemMenu(
                             onCancelJoinRequestClicked().also {
                                 isCardMenuExpanded.value = false
                             }
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.multiplayer_cancel_join_request),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.palette_system_red)
+                            )
                         }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.multiplayer_cancel_join_request),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.palette_system_red)
-                        )
-                    }
+                    )
                 }
 
                 SpaceListItemView.Action.DeleteSpace -> {
@@ -364,14 +369,15 @@ private fun SpaceListItemMenu(
                             onDeleteSpaceClicked().also {
                                 isCardMenuExpanded.value = false
                             }
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.delete_space),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.palette_system_red)
+                            )
                         }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.delete_space),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.palette_system_red)
-                        )
-                    }
+                    )
                 }
 
                 SpaceListItemView.Action.LeaveSpace -> {
@@ -380,14 +386,15 @@ private fun SpaceListItemMenu(
                             onLeaveSpaceClicked().also {
                                 isCardMenuExpanded.value = false
                             }
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.multiplayer_leave_space),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.palette_system_red)
+                            )
                         }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.multiplayer_leave_space),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.palette_system_red)
-                        )
-                    }
+                    )
                 }
             }
         }

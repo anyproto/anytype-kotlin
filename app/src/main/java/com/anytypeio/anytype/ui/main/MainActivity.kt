@@ -9,6 +9,7 @@ import android.os.Bundle
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -165,6 +166,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             is Command.LogoutDueToAccountDeletion -> {
                                 navigator.logout()
                             }
+                            is Command.ConfirmResumeAccountLogout -> {
+                                AlertDialog.Builder(this@MainActivity)
+                                    .setTitle(R.string.resume_account_failed_title)
+                                    .setMessage(R.string.resume_account_failed_message)
+                                    .setPositiveButton(R.string.log_out) { _, _ ->
+                                        vm.onResumeAccountLogoutConfirmed()
+                                    }
+                                    .setNegativeButton(R.string.cancel, null)
+                                    .show()
+                            }
                             is Command.OpenCreateNewType -> {
                                 findNavController(R.id.fragment)
                                     .navigate(
@@ -188,6 +199,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         length = Snackbar.LENGTH_LONG,
                                         actionMessage = getString(R.string.button_okay),
                                         action = { _ -> }
+                                    )
+                            }
+                            is Command.SnackbarWithOpenType -> {
+                                findViewById<android.view.View>(android.R.id.content)
+                                    ?.showSnackbar(
+                                        msg = command.msg,
+                                        length = Snackbar.LENGTH_LONG,
+                                        actionMessage = command.actionLabel,
+                                        action = { _ ->
+                                            navigator.openObjectType(
+                                                objectId = command.typeId,
+                                                space = command.space
+                                            )
+                                        }
                                     )
                             }
                             is Command.Notifications -> {

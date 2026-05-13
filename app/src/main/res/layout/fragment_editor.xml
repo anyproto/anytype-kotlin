@@ -368,25 +368,14 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <androidx.compose.ui.platform.ComposeView
         android:id="@+id/discussionButton"
-        android:layout_width="@dimen/nav_fab_button_size"
-        android:layout_height="@dimen/nav_fab_button_size"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|start"
         android:layout_marginStart="@dimen/nav_fab_margin"
         android:layout_marginBottom="@dimen/nav_fab_margin"
-        android:contentDescription="@string/main_navigation_content_desc_chat_button"
-        android:src="@drawable/ic_chat_type_24"
         android:visibility="invisible"
-        app:backgroundTint="@color/navigation_panel"
-        app:elevation="20dp"
-        app:fabCustomSize="@dimen/nav_fab_button_size"
-        app:hoveredFocusedTranslationZ="4dp"
-        app:maxImageSize="32dp"
-        app:pressedTranslationZ="4dp"
-        app:rippleColor="@android:color/transparent"
-        app:tint="@color/control_primary"
-        tools:targetApi="28"
         tools:visibility="visible" />
 
     <androidx.compose.ui.platform.ComposeView

@@ -551,7 +551,8 @@ open class EditorPresentationTestSetup {
             dateProvider = dateProvider,
             spaceViews = spacedViews,
             urlHelper = mock(),
-            addDiscussion = mock()
+            addDiscussion = mock(),
+            getChatMessages = mock()
         )
     }
 

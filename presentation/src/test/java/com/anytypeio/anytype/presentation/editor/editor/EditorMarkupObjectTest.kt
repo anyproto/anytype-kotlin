@@ -23,6 +23,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 class EditorMarkupObjectTest : EditorPresentationTestSetup() {
 
@@ -111,7 +112,8 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                             id = title.id,
                             isFocused = false,
                             text = title.content<TXT>().text,
-                            mode = BlockView.Mode.EDIT
+                            mode = BlockView.Mode.EDIT,
+                            icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                         ),
                         BlockView.Text.Paragraph(
                             id = block.id,
@@ -252,7 +254,8 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                     id = title.id,
                     isFocused = false,
                     text = title.content<TXT>().text,
-                    mode = BlockView.Mode.EDIT
+                    mode = BlockView.Mode.EDIT,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = block.id,
@@ -425,7 +428,8 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                     id = title.id,
                     isFocused = false,
                     text = title.content<TXT>().text,
-                    mode = BlockView.Mode.EDIT
+                    mode = BlockView.Mode.EDIT,
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.Text.Paragraph(
                     id = block.id,

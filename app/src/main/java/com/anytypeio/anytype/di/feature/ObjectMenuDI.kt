@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.favorites.AddPersonalFavorite
-import com.anytypeio.anytype.domain.favorites.ObservePersonalFavoriteTargets
+import com.anytypeio.anytype.presentation.widgets.ObservePersonalFavoriteTargets
 import com.anytypeio.anytype.domain.favorites.RemovePersonalFavorite
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.core_models.UrlBuilder

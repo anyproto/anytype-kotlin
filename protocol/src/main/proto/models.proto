@@ -1492,10 +1492,11 @@ message MembershipV2 {
     }
 
     enum Period {
-        Unlimited = 0;
+        Unlimited = 0 [deprecated = true];
         Monthly = 1;
         Yearly = 2;
         ThreeYears = 3;
+        Lifetime = 4;
     }
 
     message Invoice {
@@ -1546,6 +1547,7 @@ message MembershipV2 {
         string offer = 11;
 
         Features features = 12;
+        repeated Amount pricesLifetime = 13;
     }
 
     message PurchaseInfo {
@@ -1573,11 +1575,15 @@ message MembershipV2 {
 
     message CartProduct {
         Product product = 1;    
-        // otherwise - monthly
+        // otherwise - monthly or isLifetime
         bool isYearly = 2;
         // set to true if you want to remove this item from the customer
         // it's like setting -1 to some product
         bool remove = 3;
+        // if true - then this is lifetime product (no matter what isYearly above is)
+        // unfortunately we do not use Period here to keep compatibility with old versions 
+        // that still use isYearly! 
+        bool isLifetime = 4;
     }
 
     message Cart {
@@ -1591,6 +1597,13 @@ message MembershipV2 {
         // the next invoice amount will also be generated
         Amount totalNextInvoice = 3;
         uint64 nextInvoiceDate = 4;
+        repeated string appliedPromocodes = 5;
+    }
+
+    message CryptoCheckout {
+        string invoiceURL = 1;
+        Amount total = 2;
+        bool isCanCancel = 3;
     }
 
     message Data {
@@ -1598,6 +1611,7 @@ message MembershipV2 {
         Invoice nextInvoice = 2;
         string teamOwnerID = 3;
         PaymentProvider paymentProvider = 4;
+        repeated string appliedPromocodes = 5;
     }
 }
 
@@ -1684,6 +1698,8 @@ message ChatMessage {
             MessageBlockText text = 1;
             MessageBlockLink link = 2;
             MessageBlockEmbed embed = 3;
+            MessageBlockEditorQuote editorQuote = 4;
+            MessageBlockMessageQuote messageQuote = 5;
         }
     }
 
@@ -1710,6 +1726,17 @@ message ChatMessage {
     message MessageBlockEmbed {
         string text = 1;
         Block.Content.Latex.Processor processor = 2;
+    }
+
+    message MessageBlockEditorQuote {
+        string blockId = 1;           // id of the quoted block in the source object
+        MessageBlockText content = 2; // quoted block content (text, style, marks, ...)
+    }
+
+    message MessageBlockMessageQuote {
+        string messageId = 1;         // id of the quoted chat message
+        string participantId = 2;     // id of the participant who authored the quoted message
+        MessageBlockText content = 3; // quoted message content (text, style, marks, ...)
     }
 }
 

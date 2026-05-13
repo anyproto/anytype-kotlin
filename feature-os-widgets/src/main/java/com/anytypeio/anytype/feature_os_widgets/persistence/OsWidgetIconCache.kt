@@ -61,7 +61,10 @@ class OsWidgetIconCache(private val context: Context) {
                 }
             }
         } catch (e: Exception) {
-            Timber.tag(TAG).e(e, "Failed to cache icon for space $spaceId from $url")
+            // Expected when the middleware doesn't yet host the image (404 / FileNotFound),
+            // when the network is briefly unavailable, etc. The caller falls back to a
+            // placeholder, so this is not a bug — keep it out of Crashlytics.
+            Timber.tag(TAG).w(e, "Failed to cache icon for space $spaceId from $url")
             null
         }
     }
@@ -116,7 +119,9 @@ class OsWidgetIconCache(private val context: Context) {
                 }
             }
         } catch (e: Exception) {
-            Timber.tag(TAG).e(e, "Failed to cache shortcut icon for widget $widgetId")
+            // Same rationale as cacheIcon above: caller has a placeholder fallback,
+            // so failed fetches are not Crashlytics-worthy.
+            Timber.tag(TAG).w(e, "Failed to cache shortcut icon for widget $widgetId")
             null
         }
     }

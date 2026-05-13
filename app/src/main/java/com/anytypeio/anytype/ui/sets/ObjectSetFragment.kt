@@ -38,6 +38,7 @@ import androidx.core.view.isVisible
 import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -125,7 +126,9 @@ import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
+import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
+import com.anytypeio.anytype.ui.home.routeUploadSnackbar
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.CollectionAddObjectTypeFragment
@@ -164,6 +167,8 @@ open class ObjectSetFragment :
     private lateinit var createObjectFactory: CreateObjectViewModelFactory
 
     private val createObjectVm by viewModels<NewCreateObjectViewModel> { createObjectFactory }
+
+    private val mainVm: MainViewModel by activityViewModels()
 
     private fun createObjectComponentKey(): String = "object-set-create-object:$ctx"
 
@@ -610,6 +615,11 @@ open class ObjectSetFragment :
     }
 
     private fun setupDataViewViewState(state: DataViewViewState) {
+        @Suppress("SENSELESS_COMPARISON")
+        if (state == null) {
+            Timber.w("ObjectSetFragment: vm.currentViewer emitted null")
+            return
+        }
         when (state) {
             is DataViewViewState.Collection.NoView -> {
                 topToolbarThreeDotsButton.visible()
@@ -1139,6 +1149,11 @@ open class ObjectSetFragment :
     }
 
     private fun observeCommands(command: ObjectSetCommand) {
+        @Suppress("SENSELESS_COMPARISON")
+        if (command == null) {
+            Timber.w("ObjectSetFragment: vm.commands emitted null")
+            return
+        }
         when (command) {
             is ObjectSetCommand.Modal.Menu -> {
                 findNavController().safeNavigate(
@@ -1398,15 +1413,24 @@ open class ObjectSetFragment :
             }
             is ObjectSetCommand.PlayMedia -> {
                 runCatching {
+                    val mediaType = when (command.layout) {
+                        ObjectType.Layout.IMAGE -> MediaActivity.TYPE_IMAGE
+                        ObjectType.Layout.VIDEO -> MediaActivity.TYPE_VIDEO
+                        ObjectType.Layout.AUDIO -> MediaActivity.TYPE_AUDIO
+                        else -> {
+                            Timber.w("PlayMedia dispatched with unsupported layout: ${command.layout}")
+                            return@runCatching
+                        }
+                    }
                     MediaActivity.start(
                         context = requireContext(),
-                        mediaType = if (command.isVideo) MediaActivity.TYPE_VIDEO else MediaActivity.TYPE_AUDIO,
+                        mediaType = mediaType,
                         obj = command.targetObjectId,
                         name = command.name,
                         space = space
                     )
                 }.onFailure {
-                    Timber.e(it, "Error while launching media player")
+                    Timber.e(it, "Error while launching media viewer")
                 }
             }
             is ObjectSetCommand.CopyLinkToClipboard -> {
@@ -1488,6 +1512,11 @@ open class ObjectSetFragment :
 
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header) { header ->
+            @Suppress("SENSELESS_COMPARISON")
+            if (header == null) {
+                Timber.w("ObjectSetFragment: vm.header emitted null")
+                return@subscribe
+            }
             when(header) {
                 is SetOrCollectionHeaderState.Default -> {
                     bindHeader(header)
@@ -1529,6 +1558,10 @@ open class ObjectSetFragment :
         jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
 
         jobs += lifecycleScope.subscribe(vm.spaceSyncStatus) { setStatus(it) }
+
+        jobs += lifecycleScope.subscribe(createObjectVm.uploadSnackbar) { variant ->
+            routeUploadSnackbar(mainVm, variant)
+        }
 
         vm.onStart(view = view)
     }

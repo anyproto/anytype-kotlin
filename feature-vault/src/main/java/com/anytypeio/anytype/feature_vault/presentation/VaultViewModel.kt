@@ -173,6 +173,10 @@ class VaultViewModel(
     private val _selectedMemberIds = MutableStateFlow<List<Id>>(emptyList())
     private val _membershipFeatures = MutableStateFlow(MembershipFeatures())
 
+    // Tracks whether the current group-creation flow went through the SelectMembers
+    // step, so we know to reopen it when the user presses back on CreateSpace.
+    private var didShowSelectMembersForGroupCreation = false
+
     private val previewFlow: StateFlow<ChatPreviewContainer.PreviewState> =
         chatPreviewContainer.observePreviewsWithAttachments()
             .filterIsInstance<ChatPreviewContainer.PreviewState.Ready>() // wait until ready
@@ -257,7 +261,7 @@ class VaultViewModel(
             }
         val subtitle = buildMembersSubtitle(
             selectedCount = selectedIds.size,
-            writersLimit = features.spaceWriters,
+            availableWriterSlots = (features.spaceWriters - 1).coerceAtLeast(0),
             readersLimit = features.spaceReaders
         )
         SelectMembersUiState.Content(
@@ -860,8 +864,10 @@ class VaultViewModel(
                     )
                     _selectMembersSearchQuery.value = ""
                     _selectedMemberIds.value = emptyList()
+                    didShowSelectMembersForGroupCreation = true
                     showSelectMembersSheet.value = true
                 } else {
+                    didShowSelectMembersForGroupCreation = false
                     commands.emit(
                         VaultCommand.CreateNewSpace(
                             channelType = ChannelCreationType.GROUP
@@ -888,7 +894,10 @@ class VaultViewModel(
                 current - identity
             } else {
                 val features = _membershipFeatures.value
-                val limit = features.spaceWriters + features.spaceReaders
+                // Reserve the owner's writer seat: only (spaceWriters - 1) writer slots
+                // are addable from the client. spaceWriters == 0 means "no tier limit".
+                val availableWriterSlots = (features.spaceWriters - 1).coerceAtLeast(0)
+                val limit = availableWriterSlots + features.spaceReaders
                 if (limit > 0 && current.size >= limit) {
                     current
                 } else {
@@ -921,6 +930,13 @@ class VaultViewModel(
         showSelectMembersSheet.value = false
         _selectMembersSearchQuery.value = ""
         _selectedMemberIds.value = emptyList()
+        didShowSelectMembersForGroupCreation = false
+    }
+
+    fun onCreateSpaceBackPressed() {
+        if (didShowSelectMembersForGroupCreation) {
+            showSelectMembersSheet.value = true
+        }
     }
 
     fun onSharedSpaceLimitUpgradeClicked() {
@@ -949,13 +965,13 @@ class VaultViewModel(
 
     private fun buildMembersSubtitle(
         selectedCount: Int,
-        writersLimit: Int,
+        availableWriterSlots: Int,
         readersLimit: Int
     ): String {
-        if (writersLimit == 0 && readersLimit == 0) return ""
-        val editors = minOf(selectedCount, writersLimit)
-        val viewers = maxOf(selectedCount - writersLimit, 0)
-        return stringResourceProvider.getChannelMembersSubtitle(editors, writersLimit, viewers, readersLimit)
+        if (availableWriterSlots == 0 && readersLimit == 0) return ""
+        val editors = minOf(selectedCount, availableWriterSlots)
+        val viewers = maxOf(selectedCount - availableWriterSlots, 0)
+        return stringResourceProvider.getChannelMembersSubtitle(editors, availableWriterSlots, viewers, readersLimit)
     }
 
     private suspend fun getSharedSpaceLimitInfo(): Pair<Int, Int> {
@@ -1021,7 +1037,6 @@ class VaultViewModel(
     }
 
     fun onQrScannerError() {
-        Timber.e("QR scanner error")
         vaultErrors.value = VaultErrors.QrScannerError
     }
 

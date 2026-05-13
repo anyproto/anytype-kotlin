@@ -389,9 +389,12 @@ class CreateSpaceViewModel(
         val identities = vmParams.selectedMemberIdentities
         if (identities.isNotEmpty()) {
             val writersLimit = vmParams.writersLimit
-            // Split identities: first N as writers, rest as readers
-            val writers = if (writersLimit > 0) identities.take(writersLimit) else identities
-            val readers = if (writersLimit > 0) identities.drop(writersLimit) else emptyList()
+            // Reserve owner's writer seat: of the tier's writersLimit, the owner already
+            // occupies one. Only (writersLimit - 1) slots remain for client-added members.
+            // writersLimit == 0 means "no tier limit" → all selections become writers.
+            val availableWriterSlots = (writersLimit - 1).coerceAtLeast(0)
+            val writers = if (writersLimit > 0) identities.take(availableWriterSlots) else identities
+            val readers = if (writersLimit > 0) identities.drop(availableWriterSlots) else emptyList()
 
             if (writers.isNotEmpty()) {
                 addSpaceMembers.async(

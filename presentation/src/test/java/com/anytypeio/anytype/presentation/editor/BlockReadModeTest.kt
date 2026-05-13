@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.editor.editor.BlockDimensions
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
@@ -127,13 +128,15 @@ class BlockReadModeTest : EditorViewModelTest() {
         text = title.content<TXT>().text,
         isFocused = false,
         mode = BlockView.Mode.EDIT,
+        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
     )
 
     private val titleReadModeView = BlockView.Title.Basic(
         id = title.id,
         text = title.content<TXT>().text,
         isFocused = false,
-        mode = BlockView.Mode.READ
+        mode = BlockView.Mode.READ,
+        icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
     )
 
     private val flow: Flow<List<Event.Command>> = flow {

@@ -240,7 +240,7 @@ object DataModule {
     @Singleton
     fun providePersonalFavoritesRepository(
         blocks: BlockRepository
-    ): PersonalFavoritesRepository = PersonalFavoritesDataRepository(blocks = blocks)
+    ): PersonalFavoritesRepository = PersonalFavoritesDataRepository(blockRepo = blocks)
 
     @JvmStatic
     @Provides

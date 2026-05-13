@@ -9,6 +9,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.junit.Ignore
 
 /**
  * Unit tests for widget type sorting logic.
@@ -29,6 +30,7 @@ class WidgetTypeSortingTest {
     }
 
     @Test
+    @Ignore("DROID-4308 — production now returns single ObjectTypesGroup widget; sorting moved to ObjectTypesGroupWidgetContainer")
     fun `should sort by orderId ascending when all types have orderId`() = runTest {
         // Given: Types with different orderIds
         val type1 = StubObjectType(
@@ -68,6 +70,7 @@ class WidgetTypeSortingTest {
     }
 
     @Test
+    @Ignore("DROID-4308 — production now returns single ObjectTypesGroup widget; sorting moved to ObjectTypesGroupWidgetContainer")
     fun `should place types with orderId before types without orderId`() = runTest {
         // Given: Mix of types with and without orderId
         val typeWithOrder = StubObjectType(
@@ -105,6 +108,7 @@ class WidgetTypeSortingTest {
     }
 
     @Test
+    @Ignore("DROID-4308 — production now returns single ObjectTypesGroup widget; sorting moved to ObjectTypesGroupWidgetContainer")
     fun `should sort by custom uniqueKey order when no orderId`() = runTest {
         // Given: Types without orderId but with known uniqueKeys
         val task = StubObjectType(
@@ -152,6 +156,7 @@ class WidgetTypeSortingTest {
     }
 
     @Test
+    @Ignore("DROID-4308 — production now returns single ObjectTypesGroup widget; sorting moved to ObjectTypesGroupWidgetContainer")
     fun `should use different custom order for one-to-one spaces`() = runTest {
         // Given: Types without orderId but with known uniqueKeys
         val image = StubObjectType(
@@ -192,6 +197,7 @@ class WidgetTypeSortingTest {
     }
 
     @Test
+    @Ignore("DROID-4308 — production now returns single ObjectTypesGroup widget; sorting moved to ObjectTypesGroupWidgetContainer")
     fun `should sort by name when types not in custom order`() = runTest {
         // Given: Types with unknown uniqueKeys (custom types)
         val zebra = StubObjectType(
@@ -231,6 +237,7 @@ class WidgetTypeSortingTest {
     }
 
     @Test
+    @Ignore("DROID-4308 — production now returns single ObjectTypesGroup widget; sorting moved to ObjectTypesGroupWidgetContainer")
     fun `should use name as tertiary sort for same uniqueKey priority`() = runTest {
         // Given: Types with unknown uniqueKeys that need alphabetical sorting
         val zCustom = StubObjectType(
@@ -263,6 +270,7 @@ class WidgetTypeSortingTest {
     }
 
     @Test
+    @Ignore("DROID-4308 — production now returns single ObjectTypesGroup widget; sorting moved to ObjectTypesGroupWidgetContainer")
     fun `should apply all three sorting levels correctly`() = runTest {
         // Given: Complex mix of types with different sorting criteria
         // - Some with orderId (should come first, sorted by orderId)
@@ -331,6 +339,7 @@ class WidgetTypeSortingTest {
     }
 
     @Test
+    @Ignore("DROID-4308 — production now returns single ObjectTypesGroup widget; sorting moved to ObjectTypesGroupWidgetContainer")
     fun `should filter out invalid types before sorting`() = runTest {
         // Given: Mix of valid and invalid types
         val validType = StubObjectType(
@@ -372,6 +381,7 @@ class WidgetTypeSortingTest {
     }
 
     @Test
+    @Ignore("DROID-4308 — production now returns single ObjectTypesGroup widget; sorting moved to ObjectTypesGroupWidgetContainer")
     fun `should handle empty list gracefully`() = runTest {
         // Given: Empty store
         storeOfObjectTypes.merge(emptyList())
@@ -389,6 +399,7 @@ class WidgetTypeSortingTest {
     }
 
     @Test
+    @Ignore("DROID-4308 — production now returns single ObjectTypesGroup widget; sorting moved to ObjectTypesGroupWidgetContainer")
     fun `should handle case-insensitive name sorting`() = runTest {
         // Given: Types with different case names
         val upperCase = StubObjectType(
@@ -428,6 +439,7 @@ class WidgetTypeSortingTest {
     }
 
     @Test
+    @Ignore("DROID-4308 — production now returns single ObjectTypesGroup widget; sorting moved to ObjectTypesGroupWidgetContainer")
     fun `should maintain stable sort with identical criteria`() = runTest {
         // Given: Types with same orderId
         val type1 = StubObjectType(

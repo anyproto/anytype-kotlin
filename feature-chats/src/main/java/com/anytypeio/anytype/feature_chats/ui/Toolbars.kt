@@ -50,7 +50,7 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 
 
-private val ChatToolbarHeight = 44.dp
+internal val ChatToolbarHeight = 44.dp
 private val ChatToolbarPillSize = 44.dp
 private val ChatToolbarHorizontalPadding = 16.dp
 private val ChatToolbarPillGap = 4.dp
@@ -222,6 +222,7 @@ fun ChatTopToolbar(
                     currentNotificationSetting = header.notificationSetting,
                     isPinned = header.isPinned,
                     canEdit = header.canEdit,
+                    canPin = header.canPin,
                     onDismissRequest = {
                         showDropdownMenu = false
                     },

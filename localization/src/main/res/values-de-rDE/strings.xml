@@ -79,7 +79,7 @@
     <string name="space_settings_error_icon">Fehler beim Aktualisieren des Space-Symbols. Bitte erneut versuchen.</string>
     <string name="manage_sections_title">Bereiche verwalten</string>
     <string name="section_unread">Ungelesen</string>
-    <string name="section_my_favorites">My Favorites</string>
+    <string name="section_my_favorites">Meine Favoriten</string>
     <string name="section_pinned">Angeheftet</string>
     <string name="section_objects">Objekte</string>
     <string name="section_recently_edited">Zuletzt bearbeitet</string>
@@ -2037,7 +2037,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_mentions_short">Erwähnungen</string>
     <string name="notifications_disable_short">Deaktivieren</string>
     <string name="notification_option_enable">Aktivieren</string>
-    <string name="notification_option_mute_and_hide">Mute and hide</string>
+    <string name="notification_option_mute_and_hide">Stummschalten und ausblenden</string>
     <string name="notification_option_disabled">Deaktiviert</string>
     <string name="space_notify_unmute">Stummschaltung aufheben</string>
     <string name="space_notify_mute">Stummschalten</string>
@@ -2116,7 +2116,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="web_publishing_copy_web_link">Weblink kopieren</string>
     <string name="widgets_section_pinned">Angeheftet</string>
     <string name="widgets_section_unread">Ungelesen</string>
-    <string name="widgets_section_my_favorites">My Favorites</string>
+    <string name="widgets_section_my_favorites">Meine Favoriten</string>
     <string name="widgets_section_object_types">Typen</string>
     <string name="widgets_section_recently_edited">Zuletzt bearbeitet</string>
     <string name="widgets_menu_new_object_type">Neu</string>
@@ -2181,7 +2181,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="clear_selection">Auswahl aufheben</string>
     <string name="save">Speichern</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
-    <string name="loading_channels">Loading channels</string>
+    <string name="loading_channels">Kanäle werden geladen</string>
     <!-- OS Widgets -->
     <string name="os_widget_spaces_title">Spaces</string>
     <string name="os_widget_spaces_description">Quick access to your pinned spaces</string>
@@ -2196,8 +2196,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="os_widget_open_app_to_see_spaces">Your pinned spaces will appear here</string>
     <string name="os_widget_no_items">No items</string>
     <string name="no_spaces_available">No spaces available</string>
-    <string name="select_view">Select view</string>
-    <string name="os_widget_data_view_title">Data View</string>
+    <string name="select_view">Ansicht auswählen</string>
+    <string name="os_widget_data_view_title">Datenansicht</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
     <string name="chats_search_close_content_description">Suche schließen</string>
     <!-- DROID-4358 Offline Downloads settings -->

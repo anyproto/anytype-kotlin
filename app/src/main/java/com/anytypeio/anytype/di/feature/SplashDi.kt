@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
@@ -78,7 +79,8 @@ object SplashModule {
         spaceManager: SpaceManager,
         initialParamsProvider: InitialParamsProvider,
         userSettings: UserSettingsRepository,
-        awaitAccountStartManager: AwaitAccountStartManager
+        awaitAccountStartManager: AwaitAccountStartManager,
+        preferredSpaceIdHolder: PreferredSpaceIdHolder
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
@@ -86,7 +88,8 @@ object SplashModule {
         spaceManager = spaceManager,
         initialParamsProvider = initialParamsProvider,
         settings = userSettings,
-        awaitAccountStartManager = awaitAccountStartManager
+        awaitAccountStartManager = awaitAccountStartManager,
+        preferredSpaceIdHolder = preferredSpaceIdHolder
     )
 
     @JvmStatic

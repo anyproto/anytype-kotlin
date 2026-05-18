@@ -51,6 +51,11 @@ interface MiddlewareService {
     fun accountSelect(request: Rpc.Account.Select.Request): Rpc.Account.Select.Response
 
     @Throws(Exception::class)
+    fun accountPreloadRemainingSpaces(
+        request: Rpc.Account.PreloadRemainingSpaces.Request
+    ): Rpc.Account.PreloadRemainingSpaces.Response
+
+    @Throws(Exception::class)
     fun accountStop(request: Rpc.Account.Stop.Request): Rpc.Account.Stop.Response
 
     @Throws(Exception::class)

@@ -137,6 +137,16 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun accountPreloadRemainingSpaces() {
+        val request = Rpc.Account.PreloadRemainingSpaces.Request()
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue {
+            service.accountPreloadRemainingSpaces(request)
+        }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
     fun accountDelete(): AccountStatus {
         val request = Rpc.Account.Delete.Request()
         logRequestIfDebug(request)

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.TechSpaceProvider
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
 import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import dagger.Module
 import dagger.Provides
@@ -74,6 +75,11 @@ object ConfigModule {
     @Provides
     @Singleton
     fun awaitAccountStartedManager(): AwaitAccountStartManager = AwaitAccountStartManager.Default
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun preferredSpaceIdHolder(): PreferredSpaceIdHolder = PreferredSpaceIdHolder.Default
 
     const val DEFAULT_APP_COROUTINE_SCOPE = "Default application coroutine scope"
 }

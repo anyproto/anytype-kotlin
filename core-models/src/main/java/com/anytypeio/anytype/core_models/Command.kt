@@ -25,7 +25,8 @@ sealed class Command {
         val path: String,
         val networkMode: NetworkMode = NetworkMode.DEFAULT,
         val networkConfigFilePath: String? = null,
-        val preferYamuxTransport: Boolean? = null
+        val preferYamuxTransport: Boolean? = null,
+        val preferredSpaceId: String? = null
     ) : Command()
 
     data class SetInitialParams(

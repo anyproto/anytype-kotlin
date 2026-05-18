@@ -18,6 +18,8 @@ import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugRunProfiler
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
+import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
+import com.anytypeio.anytype.domain.launch.RemainingSpacesPreloader
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
@@ -66,7 +68,9 @@ class MainViewModelFactory @Inject constructor(
     private val participantSubscriptionContainer: ParticipantSubscriptionContainer,
     private val userSettingsRepository: UserSettingsRepository,
     private val resolveSpaceHomepage: ResolveSpaceHomepage,
-    private val debugRunProfiler: DebugRunProfiler
+    private val debugRunProfiler: DebugRunProfiler,
+    private val preferredSpaceIdHolder: PreferredSpaceIdHolder,
+    private val remainingSpacesPreloader: RemainingSpacesPreloader
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -102,6 +106,8 @@ class MainViewModelFactory @Inject constructor(
         participantSubscriptionContainer = participantSubscriptionContainer,
         userSettingsRepository = userSettingsRepository,
         resolveSpaceHomepage = resolveSpaceHomepage,
-        debugRunProfiler = debugRunProfiler
+        debugRunProfiler = debugRunProfiler,
+        preferredSpaceIdHolder = preferredSpaceIdHolder,
+        remainingSpacesPreloader = remainingSpacesPreloader
     ) as T
 }

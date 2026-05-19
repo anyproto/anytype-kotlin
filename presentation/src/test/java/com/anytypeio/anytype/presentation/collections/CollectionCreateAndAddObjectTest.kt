@@ -87,6 +87,7 @@ class CollectionCreateAndAddObjectTest : ObjectSetViewModelTestSetup() {
             objectToCollection = objectToCollection,
             setQueryToObjectSet = setQueryToObjectSet,
             storeOfObjectTypes = storeOfObjectTypes,
+            storeOfRelationOptions = storeOfRelationOptions,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
             duplicateObjects = duplicateObjects,

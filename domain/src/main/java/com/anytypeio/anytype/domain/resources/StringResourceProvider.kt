@@ -8,6 +8,7 @@ interface StringResourceProvider {
     fun getRelativeDateName(relativeDate: RelativeDate): String
     fun getDeletedObjectTitle(): String
     fun getUntitledObjectTitle(): String
+    fun getKanbanUngroupedColumnName(relationName: String): String
     fun getSetOfObjectsTitle(): String
     fun getPropertiesFormatPrettyString(format: RelationFormat): String
     fun getDefaultSpaceName(): String

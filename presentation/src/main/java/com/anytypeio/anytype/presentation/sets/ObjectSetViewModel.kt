@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -61,6 +62,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelationOptions
 import com.anytypeio.anytype.domain.discussions.AddDiscussion
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
@@ -196,6 +198,7 @@ class ObjectSetViewModel(
     private val removeObjectFromCollection: RemoveObjectFromCollection,
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val storeOfRelationOptions: StoreOfRelationOptions,
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val setObjectListIsArchived: SetObjectListIsArchived,
@@ -922,9 +925,13 @@ class ObjectSetViewModel(
                     objects = dataViewState.objects,
                     dataViewRelations = relations,
                     store = objectStore,
+                    objectOrders = objectState.dataViewContent.objectOrders.filter { o -> o.view == viewer.id },
+                    groupOrders = objectState.dataViewContent.groupOrders.filter { it.viewId == viewer.id },
                     storeOfRelations = storeOfRelations,
                     fieldParser = fieldParser,
-                    storeOfObjectTypes = storeOfObjectTypes
+                    storeOfObjectTypes = storeOfObjectTypes,
+                    storeOfRelationOptions = storeOfRelationOptions,
+                    stringResourceProvider = stringResourceProvider
                 )
 
                 when {
@@ -998,9 +1005,13 @@ class ObjectSetViewModel(
                     objects = dataViewState.objects,
                     dataViewRelations = relations,
                     store = objectStore,
+                    objectOrders = objectState.dataViewContent.objectOrders.filter { o -> o.view == viewer.id },
+                    groupOrders = objectState.dataViewContent.groupOrders.filter { it.viewId == viewer.id },
                     storeOfRelations = storeOfRelations,
                     fieldParser = fieldParser,
-                    storeOfObjectTypes = storeOfObjectTypes
+                    storeOfObjectTypes = storeOfObjectTypes,
+                    storeOfRelationOptions = storeOfRelationOptions,
+                    stringResourceProvider = stringResourceProvider
                 )
 
                 when {
@@ -1040,6 +1051,8 @@ class ObjectSetViewModel(
     ): Viewer? {
         return dvViewer?.let {
             val objectOrderIds = objectState.getObjectOrderIds(dvViewer.id)
+            val objectOrders = objectState.dataViewContent.objectOrders.filter { o -> o.view == dvViewer.id }
+            val groupOrders = objectState.dataViewContent.groupOrders.filter { it.viewId == dvViewer.id }
             it.render(
                 coverImageHashProvider = coverImageHashProvider,
                 builder = urlBuilder,
@@ -1047,9 +1060,13 @@ class ObjectSetViewModel(
                 dataViewRelations = relations,
                 store = objectStore,
                 objectOrderIds = objectOrderIds,
+                objectOrders = objectOrders,
+                groupOrders = groupOrders,
                 storeOfRelations = storeOfRelations,
                 fieldParser = fieldParser,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                storeOfRelationOptions = storeOfRelationOptions,
+                stringResourceProvider = stringResourceProvider
             )
         }
     }
@@ -1259,6 +1276,35 @@ class ObjectSetViewModel(
                     )
                 }
             }
+        }
+    }
+
+    /**
+     * Tap on a Status/Tag chip rendered inside a Kanban card. Opens the same edit modal
+     * used by Grid view's cell tap so the user can change the value (and the card moves
+     * to the matching column on the next subscription tick).
+     */
+    fun onKanbanCardRelationClicked(target: Id, relationKey: Key) {
+        if (relationKey == Relations.NAME) return
+        viewModelScope.launch {
+            val relation = storeOfRelations.getByKey(relationKey)
+            if (relation == null) {
+                toast("Could not found this relation. Please, try again later.")
+                Timber.e("onKanbanCardRelationClicked, Relation [$relationKey] is empty")
+                return@launch
+            }
+            if (relation.format != Relation.Format.STATUS && relation.format != Relation.Format.TAG) {
+                Timber.d("onKanbanCardRelationClicked: only STATUS/TAG are interactive on Kanban cards (format=${relation.format})")
+                return@launch
+            }
+            dispatch(
+                ObjectSetCommand.Modal.EditTagOrStatusCell(
+                    ctx = vmParams.ctx,
+                    target = target,
+                    relationKey = relationKey,
+                    space = vmParams.space.id
+                )
+            )
         }
     }
 

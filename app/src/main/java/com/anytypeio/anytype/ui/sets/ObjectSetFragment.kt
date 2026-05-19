@@ -177,6 +177,13 @@ open class ObjectSetFragment :
     private val createObjectSheetVisible = androidx.compose.runtime.mutableStateOf(false)
     private var isSheetHostInstalled = false
 
+    // Drives the Kanban ComposeView. setContent runs once per view lifecycle; each
+    // viewer emission updates the state, letting Compose recompose efficiently
+    // instead of disposing and rebuilding the whole tree.
+    private val kanbanViewerState =
+        androidx.compose.runtime.mutableStateOf<Viewer.KanbanView?>(null)
+    private var isKanbanContentInstalled = false
+
     // Controls
 
     private val title: TextInputWidget
@@ -871,6 +878,7 @@ open class ObjectSetFragment :
                     galleryView.gone()
                     listView.gone()
                     listView.setViews(emptyList())
+                    kanbanView.gone()
                 }
                 viewerGridHeaderAdapter.submitList(viewer.columns)
                 viewerGridAdapter.submitList(viewer.rows)
@@ -883,11 +891,41 @@ open class ObjectSetFragment :
                     unsupportedViewError.text = null
                     listView.gone()
                     listView.setViews(emptyList())
+                    kanbanView.gone()
                     galleryView.visible()
                     galleryView.setViews(
                         views = viewer.items,
                         largeCards = viewer.largeCards
                     )
+                }
+            }
+            is Viewer.KanbanView -> {
+                viewerGridHeaderAdapter.submitList(emptyList())
+                viewerGridAdapter.submitList(emptyList())
+                with(binding) {
+                    unsupportedViewError.gone()
+                    unsupportedViewError.text = null
+                    galleryView.gone()
+                    galleryView.clear()
+                    listView.gone()
+                    listView.setViews(emptyList())
+                    kanbanView.visible()
+                    kanbanViewerState.value = viewer
+                    if (!isKanbanContentInstalled) {
+                        isKanbanContentInstalled = true
+                        kanbanView.setViewCompositionStrategy(
+                            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+                        )
+                        kanbanView.setContent {
+                            kanbanViewerState.value?.let { current ->
+                                KanbanBoard(
+                                    viewer = current,
+                                    onCardClicked = vm::onObjectHeaderClicked,
+                                    onRelationClicked = vm::onKanbanCardRelationClicked
+                                )
+                            }
+                        }
+                    }
                 }
             }
             is Viewer.ListView -> {
@@ -898,6 +936,7 @@ open class ObjectSetFragment :
                     unsupportedViewError.text = null
                     galleryView.gone()
                     galleryView.clear()
+                    kanbanView.gone()
                     listView.visible()
                     listView.setViews(viewer.items)
                 }
@@ -910,15 +949,16 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.gone()
                     listView.setViews(emptyList())
+                    kanbanView.gone()
                     when(viewer.type) {
+                        Viewer.Unsupported.TYPE_KANBAN -> {
+                            unsupportedViewError.setText(R.string.error_kanban_view_not_supported)
+                        }
                         Viewer.Unsupported.TYPE_GRAPH -> {
                             unsupportedViewError.setText(R.string.error_graph_view_not_supported)
                         }
                         Viewer.Unsupported.TYPE_CALENDAR -> {
                             unsupportedViewError.setText(R.string.error_calendar_view_not_supported)
-                        }
-                        Viewer.Unsupported.TYPE_KANBAN -> {
-                            unsupportedViewError.setText(R.string.error_kanban_view_not_supported)
                         }
                         else -> {
                             unsupportedViewError.setText(R.string.error_generic_view_not_supported)
@@ -935,6 +975,7 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.gone()
                     listView.setViews(emptyList())
+                    kanbanView.gone()
                     unsupportedViewError.gone()
                     unsupportedViewError.text = null
                 }
@@ -962,7 +1003,7 @@ open class ObjectSetFragment :
                 binding.listView.smoothScrollToFirst(viewer.items) { it.objectId == objectId }
             }
 
-            else -> { /* no scroll for unsupported views */
+            else -> { /* no scroll for unsupported or kanban views */
             }
         }
     }
@@ -1575,6 +1616,8 @@ open class ObjectSetFragment :
     override fun onDestroyView() {
         viewerGridAdapter.clear()
         isSheetHostInstalled = false
+        isKanbanContentInstalled = false
+        kanbanViewerState.value = null
         super.onDestroyView()
     }
 

@@ -49,6 +49,7 @@ import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelationOptions
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.page.CloseObject
@@ -239,6 +240,7 @@ object ObjectSetModule {
         removeObjectFromCollection: RemoveObjectFromCollection,
         convertObjectToCollection: ConvertObjectToCollection,
         storeOfObjectTypes: StoreOfObjectTypes,
+        storeOfRelationOptions: StoreOfRelationOptions,
         getObjectTypes: GetObjectTypes,
         duplicateObjects: DuplicateObjects,
         templatesContainer: ObjectTypeTemplatesContainer,
@@ -288,6 +290,7 @@ object ObjectSetModule {
         addObjectToCollection = addObjectToCollection,
         objectToCollection = convertObjectToCollection,
         storeOfObjectTypes = storeOfObjectTypes,
+        storeOfRelationOptions = storeOfRelationOptions,
         duplicateObjects = duplicateObjects,
         templatesContainer = templatesContainer,
         setObjectListIsArchived = setObjectListIsArchived,

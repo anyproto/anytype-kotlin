@@ -8,7 +8,9 @@ import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.GroupOrder
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
@@ -20,8 +22,10 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelationOptions
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.getObject
@@ -38,6 +42,7 @@ import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.toObjects
 import com.anytypeio.anytype.presentation.sets.buildGalleryViews
+import com.anytypeio.anytype.presentation.sets.buildKanbanView
 import com.anytypeio.anytype.presentation.sets.buildListViews
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
@@ -72,9 +77,13 @@ suspend fun DVViewer.render(
     dataViewRelations: List<ObjectWrapper.Relation>,
     store: ObjectStore,
     objectOrderIds: List<Id> = emptyList(),
+    objectOrders: List<ObjectOrder> = emptyList(),
+    groupOrders: List<GroupOrder> = emptyList(),
     storeOfRelations: StoreOfRelations,
     fieldParser: FieldParser,
-    storeOfObjectTypes: StoreOfObjectTypes
+    storeOfObjectTypes: StoreOfObjectTypes,
+    storeOfRelationOptions: StoreOfRelationOptions,
+    stringResourceProvider: StringResourceProvider
 ): Viewer {
     return when (type) {
         DVViewerType.GRID -> {
@@ -128,6 +137,53 @@ suspend fun DVViewer.render(
             )
         }
 
+        DVViewerType.BOARD -> {
+            if (useFallbackView) {
+                buildGridView(
+                    dataViewRelations = dataViewRelations,
+                    objects = objects,
+                    builder = builder,
+                    store = store,
+                    objectOrderIds = objectOrderIds,
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
+                )
+            } else {
+                val groupKey = groupRelationKey
+                val groupRelation = groupKey?.let { storeOfRelations.getByKey(it) }
+                val isSupportedGroup = groupRelation != null &&
+                    (groupRelation.format == Relation.Format.STATUS || groupRelation.format == Relation.Format.TAG)
+                if (!isSupportedGroup) {
+                    Viewer.Unsupported(
+                        id = id,
+                        title = name,
+                        type = Viewer.Unsupported.TYPE_KANBAN
+                    )
+                } else {
+                    val viewGroups = groupOrders.firstOrNull { it.viewId == id }
+                        ?.viewGroups
+                        .orEmpty()
+                    buildKanbanView(
+                        objectIds = objects,
+                        dataViewRelations = dataViewRelations,
+                        objectOrders = objectOrders,
+                        objectOrderIds = objectOrderIds,
+                        groupRelation = groupRelation!!,
+                        store = store,
+                        storeOfRelationOptions = storeOfRelationOptions,
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        fieldParser = fieldParser,
+                        urlBuilder = builder,
+                        ungroupedColumnName = stringResourceProvider.getKanbanUngroupedColumnName(
+                            groupRelation.name.orEmpty()
+                        ),
+                        untitledPlaceholder = stringResourceProvider.getUntitledObjectTitle(),
+                        viewGroups = viewGroups
+                    )
+                }
+            }
+        }
+
         else -> {
             if (useFallbackView) {
                 buildGridView(
@@ -144,18 +200,10 @@ suspend fun DVViewer.render(
                     id = id,
                     title = name,
                     type = when (type) {
-                        DVViewerType.BOARD -> Viewer.Unsupported.TYPE_KANBAN
-                        DVViewerType.CALENDAR -> {
-                            Viewer.Unsupported.TYPE_CALENDAR
-                        }
-                        DVViewerType.GRAPH -> {
-                            Viewer.Unsupported.TYPE_GRAPH
-                        }
-                        else -> {
-                            Viewer.Unsupported.TYPE_UNKNOWN
-                        }
+                        DVViewerType.CALENDAR -> Viewer.Unsupported.TYPE_CALENDAR
+                        DVViewerType.GRAPH -> Viewer.Unsupported.TYPE_GRAPH
+                        else -> Viewer.Unsupported.TYPE_UNKNOWN
                     }
-
                 )
             }
         }

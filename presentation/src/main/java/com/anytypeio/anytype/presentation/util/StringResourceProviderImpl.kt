@@ -33,6 +33,10 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
         return context.getString(R.string.untitled)
     }
 
+    override fun getKanbanUngroupedColumnName(relationName: String): String {
+        return context.getString(LocalizationR.string.kanban_ungrouped_column, relationName)
+    }
+
     override fun getSetOfObjectsTitle(): String {
         return context.getString(R.string.object_set_of_title)
     }

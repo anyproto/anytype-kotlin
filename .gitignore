@@ -48,3 +48,9 @@ tasks/
 .cursor/
 .taskmaster/
 /docs/plans/
+
+# bmad
+_bmad
+.agents
+.claude
+_bmad-output

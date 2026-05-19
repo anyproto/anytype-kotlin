@@ -97,6 +97,28 @@ sealed class Viewer {
         }
     }
 
+    data class KanbanView(
+        override val id: String,
+        override val title: String,
+        val groupRelationKey: String,
+        val columns: List<Column>
+    ) : Viewer() {
+        data class Column(
+            val groupId: String,
+            val name: String,
+            val color: String?,
+            val cards: List<Card>
+        )
+        data class Card(
+            val objectId: Id,
+            val name: String,
+            val icon: ObjectIcon,
+            val relations: List<DefaultObjectRelationValueView>,
+            val hideIcon: Boolean,
+            val hideName: Boolean
+        )
+    }
+
     data class ListView(
         override val id: String,
         override val title: String,

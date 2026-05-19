@@ -185,6 +185,8 @@ open class ObjectSetViewModelTestSetup {
 
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
+    lateinit var storeOfRelationOptions: com.anytypeio.anytype.domain.objects.StoreOfRelationOptions
+
     @Mock
     lateinit var getObjectTypes: GetObjectTypes
 
@@ -302,6 +304,7 @@ open class ObjectSetViewModelTestSetup {
         )
         dataViewSubscription = DefaultDataViewSubscription(dataViewSubscriptionContainer)
         storeOfObjectTypes = DefaultStoreOfObjectTypes()
+        storeOfRelationOptions = com.anytypeio.anytype.domain.objects.DefaultStoreOfRelationOptions()
         stubLocalProvider()
         fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
         stubGetDefaultPageType()
@@ -348,6 +351,7 @@ open class ObjectSetViewModelTestSetup {
             objectToCollection = objectToCollection,
             setQueryToObjectSet = setQueryToObjectSet,
             storeOfObjectTypes = storeOfObjectTypes,
+            storeOfRelationOptions = storeOfRelationOptions,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
             duplicateObjects = duplicateObjects,

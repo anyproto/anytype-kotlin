@@ -34,7 +34,9 @@ import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.NotificationStatus
+import com.anytypeio.anytype.core_models.GroupOrder
 import com.anytypeio.anytype.core_models.ObjectOrder
+import com.anytypeio.anytype.core_models.ViewGroup
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -448,7 +450,8 @@ fun MBlock.toCoreModelsDataView(): Block.Content.DataView {
         relationLinks = content.relationLinks.map { it.toCoreModels() },
         targetObjectId = content.TargetObjectId,
         isCollection = content.isCollection,
-        objectOrders = content.objectOrders.map { it.toCoreModelsObjectOrder() }
+        objectOrders = content.objectOrders.map { it.toCoreModelsObjectOrder() },
+        groupOrders = content.groupOrders.map { it.toCoreModelsGroupOrder() }
     )
 }
 
@@ -457,6 +460,24 @@ fun MDVObjectOrder.toCoreModelsObjectOrder(): ObjectOrder {
         view = viewId,
         group = groupId,
         ids = objectIds
+    )
+}
+
+fun MDVGroupOrder.toCoreModelsGroupOrder(): GroupOrder {
+    return GroupOrder(
+        viewId = viewId,
+        viewGroups = viewGroups.map { it.toCoreModelsViewGroup() }
+    )
+}
+
+fun MDVViewGroup.toCoreModelsViewGroup(): ViewGroup {
+    // Middleware represents the "No value" (ungrouped) group with the literal string "empty".
+    // Normalise it to an empty string so callers can use KANBAN_UNGROUPED_COLUMN_ID = "".
+    return ViewGroup(
+        groupId = if (groupId == "empty") "" else groupId,
+        index = index,
+        hidden = hidden,
+        backgroundColor = backgroundColor
     )
 }
 
@@ -600,7 +621,9 @@ fun MDVView.toCoreModels(): DVViewer = DVViewer(
     coverFit = coverFit,
     coverRelationKey = coverRelationKey.ifEmpty { null },
     defaultTemplate = defaultTemplateId.ifEmpty { null },
-    defaultObjectType = defaultObjectTypeId.ifEmpty { null }
+    defaultObjectType = defaultObjectTypeId.ifEmpty { null },
+    groupRelationKey = groupRelationKey.ifEmpty { null },
+    groupBackgroundColors = groupBackgroundColors,
 )
 
 fun MDVRelation.toCoreModels(): DVViewerRelation = DVViewerRelation(

@@ -71,6 +71,8 @@ typealias MDVSortUpdate = anytype.Event.Block.Dataview.ViewUpdate.Sort
 typealias MDVRelationUpdate = anytype.Event.Block.Dataview.ViewUpdate.Relation
 typealias MDVViewFields = anytype.Event.Block.Dataview.ViewUpdate.Fields
 typealias MDVObjectOrder = anytype.model.Block.Content.Dataview.ObjectOrder
+typealias MDVGroupOrder = anytype.model.Block.Content.Dataview.GroupOrder
+typealias MDVViewGroup = anytype.model.Block.Content.Dataview.ViewGroup
 
 typealias MObjectType = anytype.model.ObjectType
 typealias MSmartBlockType = anytype.model.SmartBlockType

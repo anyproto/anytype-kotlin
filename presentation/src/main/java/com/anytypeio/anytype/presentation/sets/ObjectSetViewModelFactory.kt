@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelationOptions
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -80,6 +81,7 @@ class ObjectSetViewModelFactory(
     private val objectToCollection: ConvertObjectToCollection,
     private val removeObjectFromCollection: RemoveObjectFromCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val storeOfRelationOptions: StoreOfRelationOptions,
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val setObjectListIsArchived: SetObjectListIsArchived,
@@ -130,6 +132,7 @@ class ObjectSetViewModelFactory(
             addObjectToCollection = addObjectToCollection,
             objectToCollection = objectToCollection,
             storeOfObjectTypes = storeOfObjectTypes,
+            storeOfRelationOptions = storeOfRelationOptions,
             duplicateObjects = duplicateObjects,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,

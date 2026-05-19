@@ -50,7 +50,7 @@ import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
-import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_TYPE_UNSUPPORTED
+import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_TYPES_UNSUPPORTED
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import timber.log.Timber
@@ -337,6 +337,7 @@ fun Viewer.isEmpty(): Boolean =
     when (this) {
         is Viewer.GalleryView -> this.items.isEmpty()
         is Viewer.GridView -> this.rows.isEmpty()
+        is Viewer.KanbanView -> this.columns.all { it.cards.isEmpty() }
         is Viewer.ListView -> this.items.isEmpty()
         is Viewer.Unsupported -> false
     }
@@ -429,7 +430,7 @@ private suspend fun mapViewers(
             id = viewer.id,
             name = viewer.name,
             type = viewer.type,
-            isUnsupported = viewer.type == VIEW_TYPE_UNSUPPORTED,
+            isUnsupported = viewer.type in VIEW_TYPES_UNSUPPORTED,
             isActive = viewer.isActiveViewer(index, session),
             defaultObjectType = defaultObjectType.invoke(viewer),
             relations = viewer.viewerRelations.toView(storeOfRelations) { it.key },

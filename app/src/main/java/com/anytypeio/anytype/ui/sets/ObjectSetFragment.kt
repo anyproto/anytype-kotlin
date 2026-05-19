@@ -184,6 +184,10 @@ open class ObjectSetFragment :
         androidx.compose.runtime.mutableStateOf<Viewer.KanbanView?>(null)
     private var isKanbanContentInstalled = false
 
+    private val calendarViewerState =
+        androidx.compose.runtime.mutableStateOf<Viewer.CalendarView?>(null)
+    private var isCalendarContentInstalled = false
+
     // Controls
 
     private val title: TextInputWidget
@@ -879,6 +883,7 @@ open class ObjectSetFragment :
                     listView.gone()
                     listView.setViews(emptyList())
                     kanbanView.gone()
+                    calendarView.gone()
                 }
                 viewerGridHeaderAdapter.submitList(viewer.columns)
                 viewerGridAdapter.submitList(viewer.rows)
@@ -892,6 +897,7 @@ open class ObjectSetFragment :
                     listView.gone()
                     listView.setViews(emptyList())
                     kanbanView.gone()
+                    calendarView.gone()
                     galleryView.visible()
                     galleryView.setViews(
                         views = viewer.items,
@@ -909,6 +915,7 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.gone()
                     listView.setViews(emptyList())
+                    calendarView.gone()
                     kanbanView.visible()
                     kanbanViewerState.value = viewer
                     if (!isKanbanContentInstalled) {
@@ -928,6 +935,35 @@ open class ObjectSetFragment :
                     }
                 }
             }
+            is Viewer.CalendarView -> {
+                viewerGridHeaderAdapter.submitList(emptyList())
+                viewerGridAdapter.submitList(emptyList())
+                with(binding) {
+                    unsupportedViewError.gone()
+                    unsupportedViewError.text = null
+                    galleryView.gone()
+                    galleryView.clear()
+                    listView.gone()
+                    listView.setViews(emptyList())
+                    kanbanView.gone()
+                    calendarView.visible()
+                    calendarViewerState.value = viewer
+                    if (!isCalendarContentInstalled) {
+                        isCalendarContentInstalled = true
+                        calendarView.setViewCompositionStrategy(
+                            ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+                        )
+                        calendarView.setContent {
+                            calendarViewerState.value?.let { current ->
+                                CalendarBoard(
+                                    viewer = current,
+                                    onEntryClicked = vm::onObjectHeaderClicked
+                                )
+                            }
+                        }
+                    }
+                }
+            }
             is Viewer.ListView -> {
                 viewerGridHeaderAdapter.submitList(emptyList())
                 viewerGridAdapter.submitList(emptyList())
@@ -937,6 +973,7 @@ open class ObjectSetFragment :
                     galleryView.gone()
                     galleryView.clear()
                     kanbanView.gone()
+                    calendarView.gone()
                     listView.visible()
                     listView.setViews(viewer.items)
                 }
@@ -950,6 +987,7 @@ open class ObjectSetFragment :
                     listView.gone()
                     listView.setViews(emptyList())
                     kanbanView.gone()
+                    calendarView.gone()
                     when(viewer.type) {
                         Viewer.Unsupported.TYPE_KANBAN -> {
                             unsupportedViewError.setText(R.string.error_kanban_view_not_supported)
@@ -976,6 +1014,7 @@ open class ObjectSetFragment :
                     listView.gone()
                     listView.setViews(emptyList())
                     kanbanView.gone()
+                    calendarView.gone()
                     unsupportedViewError.gone()
                     unsupportedViewError.text = null
                 }
@@ -1618,6 +1657,8 @@ open class ObjectSetFragment :
         isSheetHostInstalled = false
         isKanbanContentInstalled = false
         kanbanViewerState.value = null
+        isCalendarContentInstalled = false
+        calendarViewerState.value = null
         super.onDestroyView()
     }
 

@@ -624,6 +624,7 @@ fun MDVView.toCoreModels(): DVViewer = DVViewer(
     defaultObjectType = defaultObjectTypeId.ifEmpty { null },
     groupRelationKey = groupRelationKey.ifEmpty { null },
     groupBackgroundColors = groupBackgroundColors,
+    endRelationKey = endRelationKey.ifEmpty { null },
 )
 
 fun MDVRelation.toCoreModels(): DVViewerRelation = DVViewerRelation(

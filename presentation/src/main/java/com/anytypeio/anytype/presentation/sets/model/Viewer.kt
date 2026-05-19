@@ -119,6 +119,22 @@ sealed class Viewer {
         )
     }
 
+    data class CalendarView(
+        override val id: String,
+        override val title: String,
+        val dateRelationKey: String,
+        val entries: List<Entry>
+    ) : Viewer() {
+        data class Entry(
+            val objectId: Id,
+            val name: String,
+            val icon: ObjectIcon,
+            val dateInSeconds: Long,
+            val hideIcon: Boolean,
+            val hideName: Boolean
+        )
+    }
+
     data class ListView(
         override val id: String,
         override val title: String,

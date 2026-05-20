@@ -339,6 +339,7 @@ fun Viewer.isEmpty(): Boolean =
         is Viewer.GridView -> this.rows.isEmpty()
         is Viewer.KanbanView -> this.columns.all { it.cards.isEmpty() }
         is Viewer.ListView -> this.items.isEmpty()
+        is Viewer.CalendarView -> false
         is Viewer.Unsupported -> false
     }
 

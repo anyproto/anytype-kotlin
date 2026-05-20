@@ -41,6 +41,7 @@ import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.toObjects
+import com.anytypeio.anytype.presentation.sets.buildCalendarView
 import com.anytypeio.anytype.presentation.sets.buildGalleryViews
 import com.anytypeio.anytype.presentation.sets.buildKanbanView
 import com.anytypeio.anytype.presentation.sets.buildListViews
@@ -184,6 +185,43 @@ suspend fun DVViewer.render(
             }
         }
 
+        DVViewerType.CALENDAR -> {
+            if (useFallbackView) {
+                buildGridView(
+                    dataViewRelations = dataViewRelations,
+                    objects = objects,
+                    builder = builder,
+                    store = store,
+                    objectOrderIds = objectOrderIds,
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes
+                )
+            } else {
+                val dateKey = groupRelationKey
+                val dateRelation = dateKey?.let { storeOfRelations.getByKey(it) }
+                val isSupportedDateRelation = dateRelation != null &&
+                    dateRelation.format == Relation.Format.DATE
+                if (!isSupportedDateRelation) {
+                    Viewer.Unsupported(
+                        id = id,
+                        title = name,
+                        type = Viewer.Unsupported.TYPE_CALENDAR
+                    )
+                } else {
+                    buildCalendarView(
+                        objectIds = objects,
+                        objectOrderIds = objectOrderIds,
+                        dateRelation = dateRelation,
+                        store = store,
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        fieldParser = fieldParser,
+                        urlBuilder = builder,
+                        untitledPlaceholder = stringResourceProvider.getUntitledObjectTitle()
+                    )
+                }
+            }
+        }
+
         else -> {
             if (useFallbackView) {
                 buildGridView(
@@ -200,7 +238,6 @@ suspend fun DVViewer.render(
                     id = id,
                     title = name,
                     type = when (type) {
-                        DVViewerType.CALENDAR -> Viewer.Unsupported.TYPE_CALENDAR
                         DVViewerType.GRAPH -> Viewer.Unsupported.TYPE_GRAPH
                         else -> Viewer.Unsupported.TYPE_UNKNOWN
                     }

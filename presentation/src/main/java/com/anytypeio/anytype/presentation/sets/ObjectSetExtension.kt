@@ -175,15 +175,25 @@ private fun transformFilterWithFormat(filter: DVFilter, format: RelationFormat?)
  * at any depth also receive the correct format. This is critical for DATE and OBJECT filters
  * inside filter groups — without the correct format, downstream checks like
  * `isSupportedForSubscription` may incorrectly discard valid filters.
+ *
+ * Filters whose relation key cannot be resolved in [storeOfRelations] are silently dropped.
+ * Such filters arise when a relation is deleted on one device but the viewer filter list has
+ * not yet synced the removal. Sending them to the middleware causes `can't get relation`
+ * errors and unpredictable query results, so it is safer to omit them entirely.
  */
 suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOfRelations): List<DVFilter> {
-    return map { filter ->
+    return mapNotNull { filter ->
         if (filter.isAdvanced()) {
             val updatedNested = filter.nestedFilters.updateFormatForSubscription(storeOfRelations)
             filter.copy(nestedFilters = updatedNested)
         } else {
             val relation = storeOfRelations.getByKey(filter.relation)
-            transformFilterWithFormat(filter, relation?.format)
+            if (relation == null) {
+                Timber.w("updateFormatForSubscription: dropping filter for unknown relation ${filter.relation}")
+                null
+            } else {
+                transformFilterWithFormat(filter, relation.format)
+            }
         }
     }
 }

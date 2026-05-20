@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.anytypeio.anytype.core_utils.ext.setupSettingsBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.ExperimentalFeaturesViewModel
@@ -29,6 +30,11 @@ class ExperimentalFeaturesFragment : BaseBottomSheetComposeFragment() {
             isCompactModeEnabled = vm.isCompactModeEnabled.collectAsStateWithLifecycle().value,
             onCompactModeToggled = vm::onCompactModeToggled
         )
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupSettingsBottomSheetBehavior()
     }
 
     override fun injectDependencies() {

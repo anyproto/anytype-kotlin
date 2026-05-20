@@ -25,7 +25,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.views.BaseTwoButtonsDarkThemeAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
-import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
+import com.anytypeio.anytype.core_utils.ext.setupSettingsBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.intents.SystemAction
@@ -188,7 +188,7 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         vm.showTierOnStart(tierId = argTierId)
-        setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
+        setupSettingsBottomSheetBehavior()
         subscribe(vm.navigation) { command ->
             Timber.d("MembershipFragment command: $command")
             when (command) {

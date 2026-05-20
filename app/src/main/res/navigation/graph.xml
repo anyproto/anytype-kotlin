@@ -730,7 +730,7 @@
         android:name="com.anytypeio.anytype.ui.primitives.SpaceTypesFragment"
         android:label="SpaceMembersScreen" />
 
-    <fragment
+    <dialog
         android:id="@+id/mySitesScreen"
         android:name="com.anytypeio.anytype.ui.publishtoweb.MySitesFragment"
         android:label="MySitesScreen"/>

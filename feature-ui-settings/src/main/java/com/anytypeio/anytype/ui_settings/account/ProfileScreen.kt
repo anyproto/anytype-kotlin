@@ -130,13 +130,6 @@ fun ProfileSettingsScreen(
             )
         }
         item {
-            Spacer(
-                modifier = Modifier
-                    .height(10.dp)
-                    .padding(top = 4.dp)
-            )
-        }
-        item {
             Divider()
         }
         item {

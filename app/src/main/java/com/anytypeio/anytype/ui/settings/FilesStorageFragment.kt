@@ -16,7 +16,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.anytypeio.anytype.core_models.FileDownloadLimit
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
-import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
+import com.anytypeio.anytype.core_utils.ext.setupSettingsBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
@@ -86,7 +86,7 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupBottomSheetBehavior(PADDING_TOP)
+        setupSettingsBottomSheetBehavior()
         collectCommands()
     }
 
@@ -149,5 +149,3 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
         private const val ARG_STORAGE_TYPE = "arg.storage.type.is-remote"
     }
 }
-
-private const val PADDING_TOP = 54

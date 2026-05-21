@@ -889,6 +889,7 @@ class HomeScreenViewModel(
                     userPermissions.value = permission
                     when (permission) {
                         SpaceMemberPermissions.WRITER,
+                        SpaceMemberPermissions.ADMIN,
                         SpaceMemberPermissions.OWNER -> {
                             if (mode.value == InteractionMode.ReadOnly) {
                                 mode.value = InteractionMode.Default

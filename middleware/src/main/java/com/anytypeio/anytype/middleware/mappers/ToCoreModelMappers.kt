@@ -990,6 +990,7 @@ fun MParticipantPermission.toCore(): SpaceMemberPermissions {
         ParticipantPermissions.Writer -> SpaceMemberPermissions.WRITER
         ParticipantPermissions.Owner -> SpaceMemberPermissions.OWNER
         ParticipantPermissions.NoPermissions -> SpaceMemberPermissions.NO_PERMISSIONS
+        ParticipantPermissions.Admin -> SpaceMemberPermissions.ADMIN
     }
 }
 

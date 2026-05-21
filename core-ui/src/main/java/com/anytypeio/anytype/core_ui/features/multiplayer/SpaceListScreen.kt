@@ -233,7 +233,8 @@ fun SpaceListCardItem(
             text = when(permissions) {
                 SpaceMemberPermissions.OWNER -> stringResource(id = R.string.multiplayer_owner)
                 SpaceMemberPermissions.READER -> stringResource(id = R.string.multiplayer_can_view)
-                SpaceMemberPermissions.WRITER -> stringResource(id = R.string.multiplayer_can_edit)
+                SpaceMemberPermissions.WRITER,
+                SpaceMemberPermissions.ADMIN -> stringResource(id = R.string.multiplayer_can_edit)
                 SpaceMemberPermissions.NO_PERMISSIONS -> EMPTY_STRING_VALUE
             },
             style = Relations2,

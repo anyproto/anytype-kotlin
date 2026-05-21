@@ -72,7 +72,10 @@ fun MySitesScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = colorResource(R.color.background_primary))
+            .background(
+                color = colorResource(R.color.background_primary),
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            )
             .statusBarsPadding()
     ) {
         Dragger(

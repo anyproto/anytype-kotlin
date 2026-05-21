@@ -484,30 +484,6 @@ fun BaseBottomSheetComposeFragment.setupBottomSheetBehavior(paddingTop: Int) {
 }
 
 /**
- * Shared top inset (in **dp**) for full-screen Account-Settings bottom sheets
- * (Membership, Local Storage, Experimental Features, My Sites, …). Picked so the
- * sheet sits clear of the status bar / camera cutout on every supported device.
- */
-const val SETTINGS_SHEET_PADDING_TOP_DP = 40
-
-/**
- * Anchors a full-screen settings bottom sheet at [paddingTopDp] **dp** from the top
- * of the screen. Use this for Account-Settings sheets so they share a consistent
- * height across the app and across screen densities.
- *
- * Why this overload exists: [BottomSheetBehavior.setExpandedOffset] is `@Px`, so
- * calling [setupBottomSheetBehavior] with a raw `Int` is density-dependent — e.g.
- * `28` resolves to ~9.3 dp on a 3x device and the sheet ends up overlapping the
- * status bar / camera cutout. This helper converts dp → px at runtime via the
- * existing [Int.px] extension so the design spec stays correct on every device.
- */
-fun BaseBottomSheetComposeFragment.setupSettingsBottomSheetBehavior(
-    paddingTopDp: Int = SETTINGS_SHEET_PADDING_TOP_DP
-) {
-    setupBottomSheetBehavior(paddingTopDp.px)
-}
-
-/**
  * Material BottomSheetDialog enables edge-to-edge, which adds bottom padding
  * for the navigation bar on the container, creating a visible gap below the sheet.
  * This removes that bottom padding so the sheet background extends to the screen edge.

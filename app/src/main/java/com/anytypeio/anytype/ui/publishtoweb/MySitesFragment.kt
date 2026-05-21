@@ -17,7 +17,6 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
-import com.anytypeio.anytype.core_utils.ext.setupSettingsBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -97,7 +96,8 @@ class MySitesFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupSettingsBottomSheetBehavior()
+        skipCollapsed()
+        expand()
     }
 
     private fun navigateToHomeOrChatThen(

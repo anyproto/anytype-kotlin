@@ -25,7 +25,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.views.BaseTwoButtonsDarkThemeAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
-import com.anytypeio.anytype.core_utils.ext.setupSettingsBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.intents.SystemAction
@@ -147,8 +146,6 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
 
     @Composable
     private fun InitMainScreen() {
-        skipCollapsed()
-        expand()
         MainMembershipScreen(
             state = vm.viewState.collectAsStateWithLifecycle().value,
             tierClicked = vm::onTierClicked,
@@ -187,8 +184,9 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        skipCollapsed()
+        expand()
         vm.showTierOnStart(tierId = argTierId)
-        setupSettingsBottomSheetBehavior()
         subscribe(vm.navigation) { command ->
             Timber.d("MembershipFragment command: $command")
             when (command) {

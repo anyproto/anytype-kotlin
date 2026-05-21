@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.domain.launch
 
+import java.util.concurrent.atomic.AtomicReference
+
 /**
  * Holds the space id the user is cold-starting into (deeplink / chat push),
  * so [com.anytypeio.anytype.domain.auth.interactor.LaunchAccount] can pass it
@@ -18,21 +20,16 @@ interface PreferredSpaceIdHolder {
     fun clear()
 
     object Default : PreferredSpaceIdHolder {
-        @Volatile
-        private var spaceId: String? = null
+        private val ref = AtomicReference<String?>(null)
 
         override fun set(spaceId: String) {
-            this.spaceId = spaceId
+            ref.set(spaceId)
         }
 
-        override fun consume(): String? {
-            val current = spaceId
-            spaceId = null
-            return current
-        }
+        override fun consume(): String? = ref.getAndSet(null)
 
         override fun clear() {
-            spaceId = null
+            ref.set(null)
         }
     }
 }

@@ -1064,7 +1064,8 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
             // Status text shows permission level for active participants
             val statusText = when (permissions) {
                 SpaceMemberPermissions.READER -> stringResourceProvider.getMultiplayerViewer()
-                SpaceMemberPermissions.WRITER -> stringResourceProvider.getMultiplayerEditor()
+                SpaceMemberPermissions.WRITER,
+                SpaceMemberPermissions.ADMIN -> stringResourceProvider.getMultiplayerEditor()
                 SpaceMemberPermissions.OWNER -> stringResourceProvider.getMultiplayerOwner()
                 SpaceMemberPermissions.NO_PERMISSIONS -> stringResourceProvider.getMultiplayerNoPermissions()
                 null -> null

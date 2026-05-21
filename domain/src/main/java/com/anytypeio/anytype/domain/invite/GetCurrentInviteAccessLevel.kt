@@ -77,7 +77,9 @@ class GetCurrentInviteAccessLevel @Inject constructor(
             InviteType.WITHOUT_APPROVE -> {
                 // WITHOUT_APPROVE type - check permissions to determine editor vs viewer
                 when (spaceInviteLink.permissions) {
-                    SpaceMemberPermissions.OWNER, SpaceMemberPermissions.WRITER -> SpaceInviteLinkAccessLevel.EditorAccess(
+                    SpaceMemberPermissions.OWNER,
+                    SpaceMemberPermissions.WRITER,
+                    SpaceMemberPermissions.ADMIN -> SpaceInviteLinkAccessLevel.EditorAccess(
                         spaceInviteLink.scheme
                     )
 

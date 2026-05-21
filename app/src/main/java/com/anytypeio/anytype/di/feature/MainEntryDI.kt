@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
+import com.anytypeio.anytype.domain.launch.RemainingSpacesPreloader
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
@@ -198,14 +199,16 @@ object MainEntryModule {
         user: UserSettingsRepository,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
-        awaitAccountStartManager: AwaitAccountStartManager
+        awaitAccountStartManager: AwaitAccountStartManager,
+        remainingSpacesPreloader: RemainingSpacesPreloader
     ): Logout = Logout(
         repo = repo,
         user = user,
         config = provider,
         dispatchers = dispatchers,
         spaceManager = spaceManager,
-        awaitAccountStartManager = awaitAccountStartManager
+        awaitAccountStartManager = awaitAccountStartManager,
+        remainingSpacesPreloader = remainingSpacesPreloader
     )
 
     @JvmStatic

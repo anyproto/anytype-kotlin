@@ -29,6 +29,14 @@ class RemainingSpacesPreloader @Inject constructor(
         }
     }
 
+    /**
+     * Resets the once-per-process guard so a subsequent cold start within the
+     * same process (e.g. logout then login) preloads remaining spaces again.
+     */
+    fun reset() {
+        triggered.set(false)
+    }
+
     companion object {
         const val DEFAULT_DELAY_MILLIS = 2_000L
     }

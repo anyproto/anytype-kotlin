@@ -473,7 +473,12 @@ class MainViewModel(
     }
 
     fun handleNewDeepLink(deeplink: DeepLinkResolver.Action) {
-        deeplink.preferredSpaceId()?.let { preferredSpaceIdHolder.set(it) }
+        // Only relevant for cold start: LaunchAccount consumes the holder once at
+        // account start. On warm starts the account has already started, so setting
+        // it here would leave a stale value for a future (in-process) LaunchAccount.
+        if (!awaitAccountStartManager.hasStarted()) {
+            deeplink.preferredSpaceId()?.let { preferredSpaceIdHolder.set(it) }
+        }
         deepLinkJobs.cancel()
         viewModelScope.launch {
             checkAuthorizationStatus.async(Unit).fold(

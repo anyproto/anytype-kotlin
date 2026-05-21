@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.launch.RemainingSpacesPreloader
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
@@ -18,6 +19,7 @@ class Logout @Inject constructor(
     private val user: UserSettingsRepository,
     private val spaceManager: SpaceManager,
     private val awaitAccountStartManager: AwaitAccountStartManager,
+    private val remainingSpacesPreloader: RemainingSpacesPreloader,
     dispatchers: AppCoroutineDispatchers,
 ) : Interactor<Logout.Params>(context = dispatchers.io) {
 
@@ -26,6 +28,7 @@ class Logout @Inject constructor(
         user.clear()
         config.clear()
         spaceManager.clear()
+        remainingSpacesPreloader.reset()
         awaitAccountStartManager.setState(AwaitAccountStartManager.State.Stopped)
     }
 

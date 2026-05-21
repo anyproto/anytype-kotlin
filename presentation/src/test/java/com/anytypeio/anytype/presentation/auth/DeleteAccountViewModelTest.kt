@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.DateHelper
 import com.anytypeio.anytype.domain.account.RestoreAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
+import com.anytypeio.anytype.domain.launch.RemainingSpacesPreloader
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -23,6 +24,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
@@ -87,7 +89,8 @@ class DeleteAccountViewModelTest {
             dispatchers = testDispatchers,
             user = userSettingsRepository,
             spaceManager = spaceManager,
-            awaitAccountStartManager = awaitAccountStartManager
+            awaitAccountStartManager = awaitAccountStartManager,
+            remainingSpacesPreloader = mock()
         )
         vm = DeletedAccountViewModel(
             restoreAccount = restoreAccount,

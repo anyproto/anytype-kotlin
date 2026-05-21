@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.launch.RemainingSpacesPreloader
 import com.anytypeio.anytype.domain.debugging.DebugSpace
 import com.anytypeio.anytype.domain.icon.RemoveObjectIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
@@ -113,14 +114,16 @@ object ProfileModule {
         user: UserSettingsRepository,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
-        awaitAccountStartManager: AwaitAccountStartManager
+        awaitAccountStartManager: AwaitAccountStartManager,
+        remainingSpacesPreloader: RemainingSpacesPreloader
     ): Logout = Logout(
         repo = repo,
         config = provider,
         user = user,
         dispatchers = dispatchers,
         spaceManager = spaceManager,
-        awaitAccountStartManager = awaitAccountStartManager
+        awaitAccountStartManager = awaitAccountStartManager,
+        remainingSpacesPreloader = remainingSpacesPreloader
     )
 
     @JvmStatic

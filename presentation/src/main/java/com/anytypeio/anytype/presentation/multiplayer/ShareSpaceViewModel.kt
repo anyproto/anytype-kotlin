@@ -1089,9 +1089,12 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
                     add(
                         ContextAction(
                             title = stringResourceProvider.getMultiplayerEditor(),
-                            isSelected = permissions == SpaceMemberPermissions.WRITER,
+                            isSelected = permissions == SpaceMemberPermissions.WRITER ||
+                                    permissions == SpaceMemberPermissions.ADMIN,
                             isDestructive = false,
-                            isEnabled = canChangeReaderToWriter || permissions == SpaceMemberPermissions.WRITER,
+                            isEnabled = canChangeReaderToWriter ||
+                                    permissions == SpaceMemberPermissions.WRITER ||
+                                    permissions == SpaceMemberPermissions.ADMIN,
                             actionType = ActionType.CAN_EDIT
                         )
                     )

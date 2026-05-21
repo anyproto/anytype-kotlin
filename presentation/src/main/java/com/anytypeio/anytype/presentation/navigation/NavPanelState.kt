@@ -51,6 +51,7 @@ sealed class NavPanelState {
         ): NavPanelState {
             val createEnabled = when (permission) {
                 SpaceMemberPermissions.WRITER,
+                SpaceMemberPermissions.ADMIN,
                 SpaceMemberPermissions.OWNER -> true
                 else -> false
             }
@@ -62,6 +63,7 @@ sealed class NavPanelState {
                         isActive = spaceAccess != SpaceAccessType.DEFAULT
                     )
                 SpaceMemberPermissions.WRITER,
+                SpaceMemberPermissions.ADMIN,
                 SpaceMemberPermissions.READER,
                 SpaceMemberPermissions.NO_PERMISSIONS ->
                     defaultLeft(

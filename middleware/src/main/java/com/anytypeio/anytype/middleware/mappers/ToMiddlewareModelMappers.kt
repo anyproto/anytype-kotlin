@@ -563,6 +563,7 @@ fun SpaceMemberPermissions.toMw() : MParticipantPermission = when(this) {
     SpaceMemberPermissions.WRITER -> MParticipantPermission.Writer
     SpaceMemberPermissions.OWNER -> MParticipantPermission.Owner
     SpaceMemberPermissions.NO_PERMISSIONS -> MParticipantPermission.NoPermissions
+    SpaceMemberPermissions.ADMIN -> MParticipantPermission.Admin
 }
 
 fun NameServiceNameType.toMw(): MNameServiceNameType = when (this) {

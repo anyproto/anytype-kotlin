@@ -167,7 +167,8 @@ fun OptionMembership(
                 }
             }
 
-            else -> {
+            Status.STATUS_PENDING,
+            Status.STATUS_PENDING_FINALIZATION -> {
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
@@ -181,6 +182,9 @@ fun OptionMembership(
                     )
                 }
             }
+
+            Status.STATUS_UNKNOWN,
+            null -> Unit
         }
         Row(
             verticalAlignment = Alignment.CenterVertically,

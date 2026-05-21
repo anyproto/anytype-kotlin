@@ -21,6 +21,7 @@ import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
 import com.anytypeio.anytype.presentation.notifications.toSnackbarVariant
 import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -128,8 +129,13 @@ class NewCreateObjectViewModel @Inject constructor(
                     }
                     Timber.d("Loaded ${types.size} object types with custom sort order")
                 }
+            } catch (e: CancellationException) {
+                // Normal coroutine cancellation (screen closed, retry()) — not an
+                // error. Re-throw so it is not logged/reported to Sentry and does
+                // not corrupt state.error.
+                throw e
             } catch (e: Exception) {
-                Timber.e(e, "Failed to load object types")
+                Timber.w(e, "Failed to load object types")
                 _state.update {
                     it.copy(
                         isLoading = false,

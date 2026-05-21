@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- System (home-screen) widgets are disabled until the feature is production-ready.
+         Re-enable by removing android:enabled="false" from the receivers and configure activities. -->
+
     <application>
         <receiver
             android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsSpacesWidgetReceiver"
+            android:enabled="false"
             android:exported="true"
             android:label="@string/os_widget_spaces_title">
             <intent-filter>
@@ -16,6 +20,7 @@
 
         <receiver
             android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsCreateObjectWidgetReceiver"
+            android:enabled="false"
             android:exported="true"
             android:label="@string/os_widget_create_object_title">
             <intent-filter>
@@ -28,6 +33,7 @@
 
         <activity
             android:name="com.anytypeio.anytype.ui.oswidgets.CreateObjectWidgetConfigActivity"
+            android:enabled="false"
             android:exported="true"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -37,6 +43,7 @@
 
         <receiver
             android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsSpaceShortcutWidgetReceiver"
+            android:enabled="false"
             android:exported="true"
             android:label="@string/os_widget_space_shortcut_title">
             <intent-filter>
@@ -49,6 +56,7 @@
 
         <activity
             android:name="com.anytypeio.anytype.ui.oswidgets.SpaceShortcutWidgetConfigActivity"
+            android:enabled="false"
             android:exported="true"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -58,6 +66,7 @@
 
         <receiver
             android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsObjectShortcutWidgetReceiver"
+            android:enabled="false"
             android:exported="true"
             android:label="@string/os_widget_object_shortcut_title">
             <intent-filter>
@@ -70,6 +79,7 @@
 
         <activity
             android:name="com.anytypeio.anytype.ui.oswidgets.ObjectShortcutWidgetConfigActivity"
+            android:enabled="false"
             android:exported="true"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -79,6 +89,7 @@
 
         <receiver
             android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsDataViewWidgetReceiver"
+            android:enabled="false"
             android:exported="true"
             android:label="@string/os_widget_data_view_title">
             <intent-filter>
@@ -91,6 +102,7 @@
 
         <activity
             android:name="com.anytypeio.anytype.ui.oswidgets.DataViewWidgetConfigActivity"
+            android:enabled="false"
             android:exported="true"
             android:theme="@style/AppTheme">
             <intent-filter>

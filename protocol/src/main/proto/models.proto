@@ -1069,6 +1069,7 @@ enum ParticipantPermissions {
     Writer = 1;
     Owner = 2;
     NoPermissions = 3;
+    Admin = 4;
 }
 
 enum InviteType {

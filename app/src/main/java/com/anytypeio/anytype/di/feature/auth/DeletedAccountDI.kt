@@ -106,4 +106,5 @@ interface DeletedAccountDependencies : ComponentDependencies {
     fun awaitAccountStartManager(): AwaitAccountStartManager
     fun userPermissionProvider(): UserPermissionProvider
     fun globalSubscriptionManager(): GlobalSubscriptionManager
+    fun remainingSpacesPreloader(): RemainingSpacesPreloader
 }

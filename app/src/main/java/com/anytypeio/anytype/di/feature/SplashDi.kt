@@ -234,4 +234,5 @@ interface SplashDependencies : ComponentDependencies {
     fun eventProxy(): EventProxy
     fun deepLinkResolver(): DeepLinkResolver
     fun pendingIntentStore(): PendingIntentStore
+    fun preferredSpaceIdHolder(): PreferredSpaceIdHolder
 }

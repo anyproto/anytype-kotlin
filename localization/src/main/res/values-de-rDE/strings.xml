@@ -15,7 +15,7 @@
     <string name="debug_sync_report">Debug Sync Bericht</string>
     <string name="debug">Debug</string>
     <string name="experimental_features">Experimentelle Funktionen</string>
-    <string name="experimental_features_compact_vault">Compact vault mode</string>
+    <string name="experimental_features_compact_vault">Kompakter Tresormodus</string>
     <string name="experimental_features_compact_vault_description">Versteckt Nachrichtenvorschau für gelesene Kanäle im Tresor</string>
     <string name="account">Tresor</string>
     <string name="reset_account">Tresor zurücksetzen</string>
@@ -1183,8 +1183,8 @@
     <string name="sharing_snackbar_link_added">Link zu \'%1$s\' hinzugefügt</string>
     <string name="sharing_snackbar_content_added">Inhalt zu \'%1$s\' hinzugefügt</string>
     <!-- Snackbar messages for content linked to an object in a space -->
-    <string name="sharing_snackbar_image_linked">Image linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_images_linked">Images linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_image_linked">Bild verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
+    <string name="sharing_snackbar_images_linked">Bilder verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
     <string name="sharing_snackbar_video_linked">Video verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
     <string name="sharing_snackbar_audio_linked">Audio verlinkt mit \'%1$s\' in \'%2$s\'</string>
     <string name="sharing_snackbar_pdf_linked">PDF verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>

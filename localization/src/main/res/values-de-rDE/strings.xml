@@ -359,7 +359,7 @@
     <string name="dv_filter_checkbox_checked">Ausgewählt</string>
     <string name="dv_filter_checkbox_not_checked">Nicht ausgewählt</string>
     <string name="advanced_filter_title">Erweiterter Filter</string>
-    <string name="advanced_filter_description">Editing is available on Desktop</string>
+    <string name="advanced_filter_description">Bearbeitung ist auf dem Desktop verfügbar</string>
     <string name="paste_or_type_a_url">URL einfügen oder eingeben</string>
     <string name="callout">Textbox</string>
     <string name="highlight">Hervorhebung</string>

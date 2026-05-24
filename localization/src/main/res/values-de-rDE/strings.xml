@@ -1185,14 +1185,14 @@
     <!-- Snackbar messages for content linked to an object in a space -->
     <string name="sharing_snackbar_image_linked">Image linked to \'%1$s\' in \'%2$s\'</string>
     <string name="sharing_snackbar_images_linked">Images linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_video_linked">Video linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_video_linked">Video verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
     <string name="sharing_snackbar_audio_linked">Audio verlinkt mit \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_pdf_linked">PDF linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_file_linked">File linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_pdf_linked">PDF verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
+    <string name="sharing_snackbar_file_linked">Datei verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
     <string name="sharing_snackbar_files_linked">Verlinkte Dateien mit \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_text_linked">Text linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_link_linked">Link linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_content_linked">Content linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_text_linked">Text verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
+    <string name="sharing_snackbar_link_linked">Link verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
+    <string name="sharing_snackbar_content_linked">Inhalt verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
     <!--endregion-->
     <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Keine</string>
@@ -1300,7 +1300,7 @@
     <string name="multiplayer_viewer_access_desc">Personen mit Link können den Chat ansehen und lesen</string>
     <string name="multiplayer_request_access">Zugriff anfragen</string>
     <string name="multiplayer_request_access_desc">Eigentümer muss jede Beitrittsanfrage genehmigen</string>
-    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
+    <string name="channel_members_subtitle">%1$d/%2$d Editoren, %3$d/%4$d Betrachter</string>
     <string name="multiplayer_qr_code">QR-Code</string>
     <string name="multiplayer_mute">Stummschalten</string>
     <string name="multiplayer_unmute">Stummschaltung aufheben</string>
@@ -2194,7 +2194,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="os_widget_not_configured">Zum Bearbeiten tippen</string>
     <string name="os_widget_tap_to_create">Zum Erstellen tippen</string>
     <string name="os_widget_open_app_to_see_spaces">Your pinned spaces will appear here</string>
-    <string name="os_widget_no_items">No items</string>
+    <string name="os_widget_no_items">Keine Elemente</string>
     <string name="no_spaces_available">No spaces available</string>
     <string name="select_view">Ansicht auswählen</string>
     <string name="os_widget_data_view_title">Datenansicht</string>

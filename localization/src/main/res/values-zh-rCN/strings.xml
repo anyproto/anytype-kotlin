@@ -24,8 +24,8 @@
     <string name="data">数据</string>
     <string name="mode">模式</string>
     <string name="log_out">退出登录</string>
-    <string name="resume_account_failed_title">Couldn\'t restore session</string>
-    <string name="resume_account_failed_message">Your session can\'t be resumed. Logging out will clear local app state; you\'ll need your recovery phrase to sign back in. Do you want to log out?</string>
+    <string name="resume_account_failed_title">无法恢复会话</string>
+    <string name="resume_account_failed_message">您的会话无法恢复。注销将清除本地应用状态；您需要使用恢复短语才能重新登录。是否要注销？</string>
     <string name="pin_code">PIN 码</string>
     <string name="access">访问</string>
     <string name="wallpaper">壁纸</string>
@@ -62,7 +62,7 @@
     <string name="remove_image">移除图像</string>
     <string name="delete_space">删除空间</string>
     <string name="you_can_store">您可以在我们的节点上免费加密备份存储多达 %1$s 的文件。如果达到限制，文件将仅存储在本地。</string>
-    <string name="in_order_to_save">Free up space by offloading files to encrypted backup. They’ll load when you open them.</string>
+    <string name="in_order_to_save">通过将文件卸载到加密备份来释放空间。打开文件时它们会重新加载。</string>
     <string name="manage_files">管理文件</string>
     <string name="local_storage">本地存储</string>
     <string name="offload_files">卸载文件</string>
@@ -868,7 +868,7 @@
     <string name="create_space_space_name">空间名称</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">创建主页</string>
-    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
+    <string name="homepage_picker_description">成员将直接进入此页面，而非浏览导航。</string>
     <string name="homepage_picker_chat">聊天</string>
     <string name="homepage_picker_page">页面</string>
     <string name="homepage_picker_collection">合集</string>
@@ -1092,7 +1092,7 @@
     <string name="onboarding_void_title">这是您的 Void</string>
     <string name="onboarding_void_description">这是您创建的所有内容的加密位置。所有内容都存储在您的设备上，并备份到分布式网络。</string>
     <string name="onboarding_this_is_your_key_title">这是您的密钥</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">它替代了登录名和密码。请妥善保管——只有您对自己的数据负责。您可以在应用设置中找到此密钥。</string>
     <string name="onboarding_show_my_key">显示我的密钥</string>
     <string name="onboarding_tap_to_reveal">显示并复制密钥</string>
     <string name="onboarding_key_skip">跳过</string>
@@ -1113,7 +1113,7 @@
     <string name="onboarding_recovery_phrase_description">您的密钥由一个恢复短语表示——这是12个随机单词，用于在此设备上生成您的保险库。</string>
     <string name="onboarding_recovery_phrase_description_2_title">谁拥有密钥，谁就拥有访问权</string>
     <string name="onboarding_recovery_phrase_description_2">任何知道这些单词的人都可以访问您的保险库。目前，您是世上唯一知道它们的人。</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
+    <string name="onboarding_recovery_phrase_description_3_title">只有您对它负责</string>
     <string name="onboarding_recovery_phrase_description_3">地球上所有的计算资源都不足以破解它。如果您丢失了密钥，它将无法恢复。请将其存储在安全的地方——例如密码管理器或写在纸上。</string>
     <string name="onboarding_recovery_phrase_description_4">地球上所有的计算机都无法获取。如果你失去了它，它就无法恢复。所以，把它存放在安全的地方！</string>
     <string name="onboarding_how_to_save_my_phrase">怎么储存我的密钥？</string>
@@ -1776,11 +1776,11 @@
     <string name="chat_attachment_media">上传媒体文件</string>
     <string name="chat_attachment_upload">上传</string>
     <string name="chat_attach">附加</string>
-    <string name="upload_success_snackbar_image">New image added</string>
-    <string name="upload_success_snackbar_video">New video added</string>
-    <string name="upload_success_snackbar_file">New file added</string>
-    <string name="upload_success_snackbar_mixed">New files added</string>
-    <string name="upload_success_snackbar_action_open">Open %1$s</string>
+    <string name="upload_success_snackbar_image">已添加新图片</string>
+    <string name="upload_success_snackbar_video">已添加新视频</string>
+    <string name="upload_success_snackbar_file">已添加新文件</string>
+    <string name="upload_success_snackbar_mixed">已添加新文件</string>
+    <string name="upload_success_snackbar_action_open">打开 %1$s</string>
     <string name="chats_reply">回复</string>
     <string name="chats_add_reaction">添加回应</string>
     <string name="chat_send_message_rate_limit_title">等等！输入得太快了！</string>

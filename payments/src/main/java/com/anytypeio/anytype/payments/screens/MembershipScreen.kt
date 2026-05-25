@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
@@ -73,8 +74,8 @@ fun MainMembershipScreen(
     Box(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
-            .fillMaxWidth()
-            .wrapContentHeight()
+            .fillMaxSize()
+            .statusBarsPadding()
             .background(
                 color = colorResource(id = R.color.background_primary),
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
@@ -106,7 +107,6 @@ private fun MainContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 20.dp)
             .verticalScroll(rememberScrollState())
     ) {
         if (state is MembershipMainState.Default) {

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
@@ -71,24 +72,20 @@ fun MySitesScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = colorResource(R.color.background_primary))
-            .systemBarsPadding()
+            .background(
+                color = colorResource(R.color.background_primary),
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            )
+            .statusBarsPadding()
     ) {
-        Box(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Header(
-                text = stringResource(R.string.my_sites)
-            )
-            Image(
-                painter = painterResource(R.drawable.ic_default_top_back),
-                contentDescription = null,
-                modifier = Modifier
-                    .noRippleClickable { onBackClicked() }
-                    .align(Alignment.CenterStart)
-                    .padding(start = 16.dp)
-            )
-        }
+        Dragger(
+            modifier = Modifier
+                .padding(vertical = 6.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+        Header(
+            text = stringResource(R.string.my_sites)
+        )
         if (viewState is MySitesViewState.Loading) {
             Box(
                 modifier = Modifier

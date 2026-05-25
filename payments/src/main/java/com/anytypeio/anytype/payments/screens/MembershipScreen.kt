@@ -107,7 +107,6 @@ private fun MainContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            //.padding(bottom = 20.dp)
             .verticalScroll(rememberScrollState())
     ) {
         if (state is MembershipMainState.Default) {

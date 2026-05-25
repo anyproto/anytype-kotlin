@@ -1064,7 +1064,8 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
             // Status text shows permission level for active participants
             val statusText = when (permissions) {
                 SpaceMemberPermissions.READER -> stringResourceProvider.getMultiplayerViewer()
-                SpaceMemberPermissions.WRITER -> stringResourceProvider.getMultiplayerEditor()
+                SpaceMemberPermissions.WRITER,
+                SpaceMemberPermissions.ADMIN -> stringResourceProvider.getMultiplayerEditor()
                 SpaceMemberPermissions.OWNER -> stringResourceProvider.getMultiplayerOwner()
                 SpaceMemberPermissions.NO_PERMISSIONS -> stringResourceProvider.getMultiplayerNoPermissions()
                 null -> null
@@ -1088,9 +1089,12 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
                     add(
                         ContextAction(
                             title = stringResourceProvider.getMultiplayerEditor(),
-                            isSelected = permissions == SpaceMemberPermissions.WRITER,
+                            isSelected = permissions == SpaceMemberPermissions.WRITER ||
+                                    permissions == SpaceMemberPermissions.ADMIN,
                             isDestructive = false,
-                            isEnabled = canChangeReaderToWriter || permissions == SpaceMemberPermissions.WRITER,
+                            isEnabled = canChangeReaderToWriter ||
+                                    permissions == SpaceMemberPermissions.WRITER ||
+                                    permissions == SpaceMemberPermissions.ADMIN,
                             actionType = ActionType.CAN_EDIT
                         )
                     )

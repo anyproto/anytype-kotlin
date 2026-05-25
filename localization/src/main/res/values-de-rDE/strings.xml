@@ -2021,7 +2021,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="spaces_introduction_page3_description">Ideen teilen, Dokumente ablegen, gemeinsam bearbeiten — alles läuft in Echtzeit ab.</string>
     <string name="spaces_introduction_page4_title">Alles an seinem richtigen Platz</string>
     <string name="spaces_introduction_page4_description">Deine Seiten, Listen und Dateien — strukturiert, übersichtlich und immer griffbereit.</string>
-    <string name="spaces_introduction_try_it">Let\'s try it</string>
+    <string name="spaces_introduction_try_it">Probiere es aus</string>
     <string name="vault_empty_state_text">Es gibt noch keine Spaces</string>
     <string name="vault_empty_search_state_text">Keine Übereinstimmungen gefunden</string>
     <string name="chat_new_messages_section_text">Neue Nachrichten</string>
@@ -2186,7 +2186,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="os_widget_spaces_title">Spaces</string>
     <string name="os_widget_spaces_description">Quick access to your pinned spaces</string>
     <string name="os_widget_create_object_title">Neues Objekt</string>
-    <string name="os_widget_create_object_description">Create object of chosen type</string>
+    <string name="os_widget_create_object_description">Objekt des ausgewählten Typs erstellen</string>
     <string name="os_widget_space_shortcut_title">Space Shortcut</string>
     <string name="os_widget_space_shortcut_description">Open a space directly</string>
     <string name="os_widget_object_shortcut_title">Object Shortcut</string>
@@ -2211,5 +2211,5 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="offline_downloads_value_250mb">250 MB</string>
     <string name="offline_downloads_value_1gb">1 GB</string>
     <string name="offline_downloads_value_unlimited">Unbegrenzt</string>
-    <string name="device_storage_used">Device storage used</string>
+    <string name="device_storage_used">Belegter Gerätespeicher</string>
 </resources>

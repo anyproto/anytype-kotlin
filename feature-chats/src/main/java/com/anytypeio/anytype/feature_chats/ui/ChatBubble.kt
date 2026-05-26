@@ -90,6 +90,7 @@ fun Bubble(
     timestamp: Long,
     attachments: List<ChatView.Message.Attachment> = emptyList(),
     isUserAuthor: Boolean = false,
+    canDelete: Boolean = false,
     shouldHideUsername: Boolean = false,
     isEdited: Boolean = false,
     isSynced: Boolean = true,
@@ -547,7 +548,7 @@ fun Bubble(
                             }
                         )
                     }
-                    if (isUserAuthor) {
+                    if (canDelete) {
                         DropdownMenuItem(
                             text = {
                                 Text(

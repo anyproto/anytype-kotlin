@@ -4,7 +4,9 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -146,6 +148,63 @@ fun ButtonOnboardingSecondaryLarge(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun ButtonOnboardingWarningLarge(
+    text: String = "",
+    modifierBox: Modifier = Modifier,
+    size: ButtonSize = ButtonSize.Large,
+    onClick: () -> Unit = {},
+    enabled: Boolean = true,
+    loading: Boolean = false,
+    loadingItemsCount: Int = 3
+) {
+    val loadingAlpha by animateFloatAsState(targetValue = if (loading) 1f else 0f)
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed = interactionSource.collectIsPressedAsState()
+    val backgroundColor =
+        if (isPressed.value) colorResource(id = R.color.palette_light_red)
+        else colorResource(id = R.color.palette_very_light_red)
+
+    CompositionLocalProvider(LocalRippleConfiguration provides null) {
+        Box(modifier = modifierBox, contentAlignment = Alignment.Center) {
+            Button(
+                onClick = { if (!loading) onClick() },
+                interactionSource = interactionSource,
+                enabled = enabled,
+                shape = RoundedCornerShape(100.dp),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = backgroundColor,
+                    contentColor = colorResource(id = R.color.palette_system_red),
+                    disabledBackgroundColor = colorResource(id = R.color.palette_very_light_red),
+                    disabledContentColor = colorResource(id = R.color.palette_light_red)
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp
+                ),
+                contentPadding = PaddingValues(0.dp, 14.dp, 0.dp, 14.dp)
+            ) {
+                Text(
+                    text = if (loading) "" else text,
+                    modifier = Modifier,
+                    style = ButtonMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
+            DotsLoadingIndicator(
+                animating = loading,
+                modifier = Modifier.graphicsLayer { alpha = loadingAlpha },
+                animationSpecs = FadeAnimationSpecs(itemCount = loadingItemsCount),
+                color = colorResource(id = R.color.palette_system_red),
+                size = size
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun ButtonOnboardingLinkLarge(
     text: String = "",
     modifierBox: Modifier = Modifier,
@@ -199,12 +258,30 @@ fun ButtonOnboardingLinkLarge(
 @DefaultPreviews
 @Composable
 fun PreviewButton() {
-    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         ButtonOnboardingPrimaryLarge(
             text = "Primary",
             size = ButtonSize.Small,
             modifierBox = Modifier,
             loading = true
         )
+        Spacer(modifier = Modifier.defaultMinSize(minHeight = 8.dp))
+        ButtonOnboardingWarningLarge(
+            text = "Warning",
+            size = ButtonSize.Small,
+            modifierBox = Modifier,
+            loading = true
+        )
+        Spacer(modifier = Modifier.defaultMinSize(minHeight = 8.dp))
+        ButtonOnboardingSecondaryLarge(
+            text = "Secondary",
+            size = ButtonSize.Small,
+            modifierBox = Modifier,
+            loading = true
+        )
+        Spacer(modifier = Modifier.defaultMinSize(minHeight = 8.dp))
     }
 }

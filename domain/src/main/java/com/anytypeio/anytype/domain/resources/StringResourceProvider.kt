@@ -21,6 +21,7 @@ interface StringResourceProvider {
     fun getMultiplayerViewer(): String
     fun getMultiplayerEditor(): String
     fun getMultiplayerOwner(): String
+    fun getMultiplayerAdmin(): String
     fun getMultiplayerNoPermissions(): String
     fun getMultiplayerApproveRequest(): String
     fun getMultiplayerPending(): String

@@ -106,6 +106,10 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
         return context.getString(LocalizationR.string.multiplayer_owner)
     }
 
+    override fun getMultiplayerAdmin(): String {
+        return context.getString(LocalizationR.string.multiplayer_admin)
+    }
+
     override fun getMultiplayerNoPermissions(): String {
         return context.getString(LocalizationR.string.multiplayer_no_permissions)
     }

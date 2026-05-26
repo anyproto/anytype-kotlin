@@ -138,6 +138,7 @@ fun Messages(
                         timestamp = msg.timestamp,
                         attachments = msg.attachments,
                         isUserAuthor = msg.isUserAuthor,
+                        canDelete = msg.canDelete,
                         shouldHideUsername = msg.shouldHideUsername || isOneToOneSpace,
                         isMaxReactionCountReached = msg.isMaxReactionCountReached,
                         isEdited = msg.isEdited,

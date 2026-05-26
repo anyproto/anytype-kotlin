@@ -1365,7 +1365,7 @@
     <string name="multiplayer_remove_member_warning_text">%1$s se eliminará del espacio.</string>
     <string name="multiplayer_remove_member_title">¿Quieres eliminar este miembro del canal?</string>
     <string name="multiplayer_remove_member_description">Perderá el acceso al canal inmediatamente. Según la configuración de tu invitación, es posible que vuelva a unirse o a solicitar la admisión.</string>
-    <string name="multiplayer_remove_member_button">Remove Member</string>
+    <string name="multiplayer_remove_member_button">Eliminar miembro</string>
     <string name="multiplayer_request_sent_toast">Solicitud enviada</string>
     <string name="multiplayer_space_stop_sharing">Dejar de compartir</string>
     <string name="multiplayer_space_stop_sharing_space">Dejar de compartir el espacio</string>

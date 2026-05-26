@@ -1351,7 +1351,6 @@ class SpaceSettingsViewModel(
         data object ShowLeaveSpaceWarning : Command()
         data object ShowShareLimitReachedError : Command()
         data object NavigateToMembership : Command()
-        data object NavigateToMembershipUpdate : Command()
         data object OpenWallpaperPicker : Command()
         data object ManageRemoteStorage : Command()
         data class OpenPropertiesScreen(val spaceId: SpaceId) : Command()

@@ -1467,8 +1467,6 @@
     <string name="payments_member_link">Ver niveles de suscripción</string>
     <string name="payments_privacy_link">Política de privacidad</string>
     <string name="payments_terms_link">Términos y condiciones</string>
-    <string name="payments_let_us_link_start">¿Quieres usar Anytype con fines profesionales, educativos, etc.?</string>
-    <string name="payments_let_us_link_end">Cuéntanoslo aquí.</string>
     <string name="payments_current_label">Actual</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Elige un nombre único</string>
@@ -1548,14 +1546,6 @@
 
         Un saludo,       \n
     </string>
-    <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Ampliar %1$s</string>
-    <string name="payments_email_body">¡Hola, equipo de Anytype! Me gustaría ampliar mi suscripción actual de la siguiente forma (elige una opción):\n
-- Más almacenamiento remoto.\n
-- Más editores de espacios.\n
-- Más espacios compartidos.\n
-En concreto,
-(Escribe aquí tus necesidades específicas).</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Hay algún problema con la entrada, inténtalo de nuevo.</string>
     <string name="membership_name_cache_error">Hay un error en nuestro lado, inténtalo de nuevo más tarde.</string>
@@ -1624,9 +1614,6 @@ En concreto,
     <string name="multiplayer_space_join_request_new_member_error">Error de solicitud de miembro</string>
     <string name="multiplayer_space_join_request_current_user_error">Error de estado de usuario actual</string>
     <string name="multiplayer_space_join_request_membership_status_error">Error de estado de suscripción actual</string>
-    <string name="membership_upgrade_title">Ampliación de la suscripción</string>
-    <string name="membership_upgrade_description">Habla con nosotros si quieres aumentar el almacenamiento, los editores de tus espacios o los espacios compartidos. El equipo de Anytype te ofrecerá detalles y condiciones adaptados a tus necesidades.</string>
-    <string name="membership_upgrade_button">Hablar con el equipo de Anytype</string>
     <string name="membership_space_settings_share_limit">Has alcanzado el límite de %1$d espacios compartidos.</string>
     <string name="membership_space_settings_share_limit_2">Mejora tu suscripción o elimina alguno.</string>
     <plurals name="period_years">

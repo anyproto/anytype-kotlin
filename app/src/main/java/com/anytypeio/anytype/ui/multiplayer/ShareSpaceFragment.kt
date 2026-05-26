@@ -241,13 +241,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     Timber.e(it, "Error while navigation: $command")
                 }
             }
-            is Command.ShowMembershipUpgradeScreen -> {
-                runCatching {
-                    findNavController().navigate(R.id.membershipUpdateScreen)
-                }.onFailure {
-                    Timber.e(it, "Error while navigation: $command")
-                }
-            }
             is Command.ShowMultiplayerError -> {
                 when(command.error) {
                     is MultiplayerError.Generic.LimitReached -> {

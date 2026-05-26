@@ -107,6 +107,8 @@ class ShareSpaceViewModel(
 
     // Pending "Make admin?" confirmation for a member (null = hidden)
     val makeAdminConfirmation = MutableStateFlow<SpaceMemberView?>(null)
+    // True while the promote-to-admin request is in flight (keeps the sheet open + shows loading)
+    val makeAdminLoading = MutableStateFlow(false)
     val spaceLimitsState = MutableStateFlow<SpaceLimitsState>(SpaceLimitsState.Init)
     val isLoadingInProgress = MutableStateFlow(false)
     val shareSpaceErrors = MutableStateFlow<ShareSpaceErrors>(ShareSpaceErrors.Hidden)
@@ -440,15 +442,44 @@ class ShareSpaceViewModel(
 
     fun onMakeAdminDismissed() {
         makeAdminConfirmation.value = null
+        makeAdminLoading.value = false
     }
 
     fun onMakeAdminAccepted(view: SpaceMemberView) {
-        makeAdminConfirmation.value = null
-        changeParticipantPermissions(
-            spaceMemberView = view,
-            targetPermission = SpaceMemberPermissions.ADMIN,
-            analyticsType = "Admin"
-        )
+        if (!view.canReadEnabled) {
+            viewModelScope.launch { commands.emit(Command.ToastPermission) }
+            return
+        }
+        if (view.obj.permissions == SpaceMemberPermissions.ADMIN) {
+            makeAdminConfirmation.value = null
+            return
+        }
+        viewModelScope.launch {
+            // Keep the confirmation sheet open with a loading indicator until the
+            // request completes; this call can take a moment.
+            makeAdminLoading.value = true
+            changeSpaceMemberPermissions.async(
+                ChangeSpaceMemberPermissions.Params(
+                    space = vmParams.space,
+                    identity = view.obj.identity,
+                    permission = SpaceMemberPermissions.ADMIN
+                )
+            ).fold(
+                onFailure = { e ->
+                    Timber.e(e, "Error while promoting member to admin")
+                    makeAdminLoading.value = false
+                    proceedWithMultiplayerError(e)
+                },
+                onSuccess = {
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.changeSpaceMemberPermissions,
+                        props = Props(mapOf(EventsPropertiesKey.type to "Admin"))
+                    )
+                    makeAdminLoading.value = false
+                    makeAdminConfirmation.value = null
+                }
+            )
+        }
     }
 
     fun onRemoveMemberClicked(

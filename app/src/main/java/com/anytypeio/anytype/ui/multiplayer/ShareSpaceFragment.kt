@@ -65,6 +65,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     inviteLinkAccessLoading = vm.inviteLinkAccessLoading.collectAsStateWithLifecycle().value,
                     confirmationDialogLevel = vm.inviteLinkConfirmationDialog.collectAsStateWithLifecycle().value,
                     makeAdminConfirmation = vm.makeAdminConfirmation.collectAsStateWithLifecycle().value,
+                    makeAdminLoading = vm.makeAdminLoading.collectAsStateWithLifecycle().value,
                     onMakeAdminConfirmed = vm::onMakeAdminAccepted,
                     onMakeAdminCancelled = vm::onMakeAdminDismissed,
                     onInviteLinkAccessLevelSelected = vm::onInviteLinkAccessLevelSelected,

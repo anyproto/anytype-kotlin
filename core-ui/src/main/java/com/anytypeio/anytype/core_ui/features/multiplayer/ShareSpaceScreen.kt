@@ -109,6 +109,7 @@ fun ShareSpaceScreen(
     inviteLinkAccessLoading: Boolean,
     confirmationDialogLevel: SpaceInviteLinkAccessLevel?,
     makeAdminConfirmation: SpaceMemberView?,
+    makeAdminLoading: Boolean,
     onMakeAdminConfirmed: (SpaceMemberView) -> Unit,
     onMakeAdminCancelled: () -> Unit,
     onContextActionClicked: (SpaceMemberView, SpaceMemberView.ActionType) -> Unit,
@@ -320,6 +321,7 @@ fun ShareSpaceScreen(
         // Confirmation dialog for promoting a member to Admin
         if (makeAdminConfirmation != null) {
             MakeAdminConfirmationSheet(
+                isLoading = makeAdminLoading,
                 onConfirmed = { onMakeAdminConfirmed(makeAdminConfirmation) },
                 onCancelled = onMakeAdminCancelled,
                 onDismissRequest = onMakeAdminCancelled
@@ -331,6 +333,7 @@ fun ShareSpaceScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MakeAdminConfirmationSheet(
+    isLoading: Boolean,
     onConfirmed: () -> Unit,
     onCancelled: () -> Unit,
     onDismissRequest: () -> Unit
@@ -348,6 +351,7 @@ private fun MakeAdminConfirmationSheet(
             actionText = stringResource(id = R.string.multiplayer_make_admin_button),
             cancelText = stringResource(id = R.string.cancel),
             isActionDestructive = true,
+            isActionLoading = isLoading,
             onActionClicked = onConfirmed,
             onCancelClicked = onCancelled
         )
@@ -1208,6 +1212,7 @@ fun ShareSpaceScreenPreview1() {
         inviteLinkAccessLoading = false,
         confirmationDialogLevel = null,
         makeAdminConfirmation = null,
+        makeAdminLoading = false,
         onMakeAdminConfirmed = {},
         onMakeAdminCancelled = {},
         onInviteLinkAccessLevelSelected = {},

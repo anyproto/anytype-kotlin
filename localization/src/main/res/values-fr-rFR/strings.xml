@@ -1347,6 +1347,10 @@
     <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">Afficher la demande</string>
     <string name="multiplayer_owner">Propriétaire</string>
+    <string name="multiplayer_admin">Admin</string>
+    <string name="multiplayer_make_admin_title">Make the member an admin?</string>
+    <string name="multiplayer_make_admin_description">Admins can delete messages, remove members, and permanently delete objects from Bin.</string>
+    <string name="multiplayer_make_admin_button">Make Admin</string>
     <string name="multiplayer_no_permissions">Aucune permission</string>
     <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">Peut modifier</string>
@@ -1359,6 +1363,9 @@
     <string name="multiplayer_space_join_request_header">%1$s a demandé à rejoindre l\'espace %2$s</string>
     <string name="multiplayer_remove_member">Supprimer un membre</string>
     <string name="multiplayer_remove_member_warning_text">%1$s sera retiré de l\'espace</string>
+    <string name="multiplayer_remove_member_title">Remove the member from this channel?</string>
+    <string name="multiplayer_remove_member_description">%@ will be removed from the space.</string>
+    <string name="multiplayer_remove_member_button">Remove Member</string>
     <string name="multiplayer_request_sent_toast">Demande envoyée</string>
     <string name="multiplayer_space_stop_sharing">Arrêter le partage</string>
     <string name="multiplayer_space_stop_sharing_space">Arrêter le partage de l\'espace</string>
@@ -1475,8 +1482,6 @@
     <string name="payments_member_link">Détails des niveaux d\'abonnement</string>
     <string name="payments_privacy_link">Politique de confidentialité</string>
     <string name="payments_terms_link">Termes et conditions</string>
-    <string name="payments_let_us_link_start">Vous souhaitez utiliser Anytype pour les affaires, l\'éducation, etc.?</string>
-    <string name="payments_let_us_link_end">S\'il vous plaît, faites-le nous savoir.</string>
     <string name="payments_current_label">Actuel</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Choisissez votre nom unique</string>
@@ -1556,11 +1561,6 @@
 
         Cordialement,       \n
     </string>
-    <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Mettre à niveau %1$s</string>
-    <string name="payments_email_body">Bonjour à l’équipe d’Anytype ! Je voudrais étendre mon abonnement actuel pour disposer de (choisissez une option) :\n- plus de stockage distant\n- plus d’éditeurs d’espaces\n- plus d’espaces partagés
-Plus précisément,
-Merci de décrire ici vos besoins spécifiques.</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Quelque chose ne va pas avec l\'entrée, réessayez</string>
     <string name="membership_name_cache_error">Erreur de notre côté, réessayez plus tard</string>
@@ -1629,9 +1629,6 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="multiplayer_space_join_request_new_member_error">Erreur de la requête de membre</string>
     <string name="multiplayer_space_join_request_current_user_error">Erreur de statut de l\'utilisateur actuel</string>
     <string name="multiplayer_space_join_request_membership_status_error">Erreur de statut d\'affiliation actuelle</string>
-    <string name="membership_upgrade_title">Mise à niveau de l\'abonnement</string>
-    <string name="membership_upgrade_description">Contactez-nous pour obtenir du stockage supplémentaire, plus de rédacteurs, ou davantage d\'espaces partagés. L\'équipe d\'Anytype vous fournira l\'offre adaptée à vos besoins.</string>
-    <string name="membership_upgrade_button">Contacter l\'équipe d\'Anytype</string>
     <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
     <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">

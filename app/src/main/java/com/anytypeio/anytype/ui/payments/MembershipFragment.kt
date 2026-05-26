@@ -214,17 +214,6 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
                 }
 
                 MembershipNavigation.Main -> {}
-                is MembershipNavigation.OpenEmail -> {
-                    val mail = resources.getString(R.string.payments_email_to)
-                    val subject =
-                        resources.getString(R.string.payments_email_subject, command.accountId)
-                    val body = resources.getString(R.string.payments_email_body)
-                    val mailBody = mail +
-                            "?subject=$subject" +
-                            "&body=$body"
-                    proceedWithAction(SystemAction.MailTo(mailBody))
-                }
-
                 is MembershipNavigation.OpenErrorEmail -> {
                     val deviceModel = android.os.Build.MODEL
                     val osVersion = android.os.Build.VERSION.RELEASE

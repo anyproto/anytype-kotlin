@@ -1461,8 +1461,6 @@
     <string name="payments_member_link">メンバーシッププランの詳細</string>
     <string name="payments_privacy_link">プライバシーポリシー</string>
     <string name="payments_terms_link">利用規約</string>
-    <string name="payments_let_us_link_start">Anytypeを仕事や学習などでご利用されますか？</string>
-    <string name="payments_let_us_link_end">こちらからお問い合わせください。</string>
     <string name="payments_current_label">現在</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">自分だけの名前を決めましょう</string>
@@ -1542,15 +1540,6 @@
 
         よろしくお願いいたします。\n
     </string>
-    <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject"> %1$sへのアップグレード</string>
-    <string name="payments_email_body">Anytypeチーム担当者の方へ\n現在利用しておりますAnytypeのメンバーシップについて、変更したくご連絡いたしました。\n（下記のオプションの中から必要なものをお選びいただき、詳細をご記入ください）\n
-\n
-・リモートストレージの追加\n
-・スペース編集者の追加\n
-・共有スペース数の追加\n
-\n
-具体的にご希望の内容がございましたら、こちらにご記載ください。</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">入力中に問題が発生しました。もう一度お試しください</string>
     <string name="membership_name_cache_error">エラーが発生しました。しばらくしてからもう一度お試しください。</string>
@@ -1619,9 +1608,6 @@
     <string name="multiplayer_space_join_request_new_member_error">リクエストメンバーエラー</string>
     <string name="multiplayer_space_join_request_current_user_error">現在のユーザーステータスエラー</string>
     <string name="multiplayer_space_join_request_membership_status_error">現在のメンバーシップステータスエラー</string>
-    <string name="membership_upgrade_title">メンバーシップをアップグレード</string>
-    <string name="membership_upgrade_description">ストレージ容量の追加、スペースエディターに関するご質問、または共有スペースの増設については、お気軽にお問い合わせください。Anytypeがお客様のニーズに合わせた詳細と条件をご案内いたします。</string>
-    <string name="membership_upgrade_button">Anytypeへのお問い合わせ</string>
     <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
     <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">

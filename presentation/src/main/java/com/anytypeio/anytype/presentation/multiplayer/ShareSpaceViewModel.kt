@@ -20,7 +20,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.UrlBuilder
-import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeNumberOfSpaceMembers
 import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
@@ -565,14 +564,8 @@ class ShareSpaceViewModel(
 
     fun onIncentiveClicked() {
         Timber.d("onIncentiveClicked")
-        val activeTier = (_activeTier.value as? ActiveTierState.Success) ?: return
-        val isPossibleToUpgrade = activeTier.tierId.isPossibleToUpgradeNumberOfSpaceMembers()
         viewModelScope.launch {
-            if (isPossibleToUpgrade) {
-                commands.emit(Command.ShowMembershipScreen)
-            } else {
-                commands.emit(Command.ShowMembershipUpgradeScreen)
-            }
+            commands.emit(Command.ShowMembershipScreen)
         }
     }
 
@@ -1045,7 +1038,6 @@ class ShareSpaceViewModel(
         data object ToastPermission : Command()
         data object Dismiss : Command()
         data object ShowMembershipScreen : Command()
-        data object ShowMembershipUpgradeScreen : Command()
         data class OpenParticipantObject(val objectId: Id, val space: SpaceId) : Command()
         data object ShowManageSpacesScreen : Command()
     }

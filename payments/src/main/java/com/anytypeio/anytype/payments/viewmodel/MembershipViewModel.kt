@@ -242,7 +242,6 @@ class MembershipViewModel(
                 sendAnalyticsClickEvent(EventsDictionary.MembershipTierButton.INFO)
                 proceedWithNavigation(MembershipNavigation.OpenUrl(action.url))
             }
-            TierAction.OpenEmail -> proceedWithSupportEmail()
             is TierAction.SubmitClicked -> {
                 sendAnalyticsClickEvent(EventsDictionary.MembershipTierButton.SUBMIT)
                 proceedWithSettingEmail(
@@ -271,13 +270,6 @@ class MembershipViewModel(
                 sendAnalyticsClickEvent(EventsDictionary.MembershipTierButton.CONTACT_US)
                 proceedWithSupportErrorEmail(action.error)
             }
-        }
-    }
-
-    private fun proceedWithSupportEmail() {
-        viewModelScope.launch {
-            val anyId = getAccount.async(Unit).getOrNull()
-            proceedWithNavigation(MembershipNavigation.OpenEmail(anyId?.id))
         }
     }
 

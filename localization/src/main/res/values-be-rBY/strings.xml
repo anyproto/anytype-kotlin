@@ -1479,8 +1479,6 @@
     <string name="payments_member_link">Дэталі аб узроўнях членства</string>
     <string name="payments_privacy_link">Палітыка прыватнасці</string>
     <string name="payments_terms_link">Тэрміны і ўмовы</string>
-    <string name="payments_let_us_link_start">Ці хочаце вы выкарыстоўваць Anytype для бізнесу, адукацыі і г.д.?</string>
-    <string name="payments_let_us_link_end">Калі ласка, паведаміце нам тут.</string>
     <string name="payments_current_label">Бягучы</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Выберыце сваё ўнікальнае імя</string>
@@ -1560,14 +1558,6 @@
 
         З найлепшымі пажаданнямі, \n
     </string>
-    <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Абнавіць %1$s</string>
-    <string name="payments_email_body">Добры дзень, каманда Anytype! Я хацеў бы пашырыць маё бягучае членства на дадатковыя опцыі (калі ласка, абярыце опцыю):\n
-- Дадатковае выдаленае сховішча\n
-- Больш рэдактараў прасторы\n
-- Дадатковыя агульныя прасторы\n
-Канкрэтна,
-Калі ласка, укажыце тут канкрэтныя дэталі вашых патрэбаў.</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Нешта не так з уводам, паўтарыце спробу</string>
     <string name="membership_name_cache_error">Памылка з нашага боку, паспрабуйце пазней</string>
@@ -1636,9 +1626,6 @@
     <string name="multiplayer_space_join_request_new_member_error">Памылка запыту ўдзельніка</string>
     <string name="multiplayer_space_join_request_current_user_error">Памылка бягучага стану карыстальніка</string>
     <string name="multiplayer_space_join_request_membership_status_error">Памылка бягучага стану членства</string>
-    <string name="membership_upgrade_title">Павышэнне членства</string>
-    <string name="membership_upgrade_description">Звяртайцеся да нас за дадатковымі месцамі для захоўвання, рэдактарамі прасторы ці дадатковымі месцамі для агульнага выкарыстання. Каманда Anytype прадаставіць дэталі і ўмовы ў адпаведнасці з вашымі патрэбамі.</string>
-    <string name="membership_upgrade_button">Звяжыцеся з камандай Anytype</string>
     <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
     <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">

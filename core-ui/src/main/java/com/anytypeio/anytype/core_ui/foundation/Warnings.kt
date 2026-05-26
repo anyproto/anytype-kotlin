@@ -177,7 +177,8 @@ fun TwoVerticalButtonsAlert(
     isActionDestructive: Boolean,
     onActionClicked: () -> Unit,
     onCancelClicked: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isActionLoading: Boolean = false
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Spacer(modifier = Modifier.height(24.dp))
@@ -192,16 +193,18 @@ fun TwoVerticalButtonsAlert(
                 text = actionText,
                 onClick = onActionClicked,
                 size = ButtonSize.Large,
+                loading = isActionLoading,
                 modifierBox = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             )
         } else {
-            ButtonPrimary(
+            ButtonPrimaryLoading(
                 text = actionText,
                 onClick = onActionClicked,
                 size = ButtonSize.Large,
-                modifier = Modifier
+                loading = isActionLoading,
+                modifierBox = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             )
@@ -211,6 +214,7 @@ fun TwoVerticalButtonsAlert(
             text = cancelText,
             onClick = onCancelClicked,
             size = ButtonSize.Large,
+            enabled = !isActionLoading,
             modifierBox = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)

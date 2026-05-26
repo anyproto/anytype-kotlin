@@ -513,6 +513,7 @@ class ShareSpaceViewModel(
                             e,
                             "Error while removing space member (identity: $identity, space: ${vmParams.space})"
                         )
+                        commands.emit(Command.DismissRemoveMemberWarning)
                         when (e) {
                             is java.net.SocketTimeoutException,
                             is java.net.UnknownHostException,
@@ -526,10 +527,12 @@ class ShareSpaceViewModel(
                     onSuccess = {
                         Timber.d("Successfully removed space member (identity: $identity, space: ${vmParams.space})")
                         analytics.sendEvent(eventName = removeSpaceMember)
+                        commands.emit(Command.DismissRemoveMemberWarning)
                     }
                 )
             } catch (e: Exception) {
                 Timber.e(e, "Unexpected error while removing space member")
+                commands.emit(Command.DismissRemoveMemberWarning)
                 sendToast("An unexpected error occurred. Please try again.")
             }
         }
@@ -1037,6 +1040,7 @@ class ShareSpaceViewModel(
         data class ShareInviteLink(val link: String) : Command()
         data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
         data class ShowRemoveMemberWarning(val identity: Id, val name: String) : Command()
+        data object DismissRemoveMemberWarning : Command()
         data class ShowMultiplayerError(val error: MultiplayerError.Generic) : Command()
         data object ShowHowToShareSpace : Command()
         data object ToastPermission : Command()

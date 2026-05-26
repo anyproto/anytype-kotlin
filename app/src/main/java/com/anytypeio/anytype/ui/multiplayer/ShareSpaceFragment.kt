@@ -42,6 +42,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<ShareSpaceViewModel> { factory }
 
+    private var removeMemberWarning: RemoveMemberWarning? = null
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -213,14 +215,17 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                 runCatching {
                     val dialog = RemoveMemberWarning.new(name = command.name)
                     dialog.onAccepted = {
-                        vm.onRemoveMemberAccepted(command.identity).also {
-                            dialog.dismiss()
-                        }
+                        vm.onRemoveMemberAccepted(command.identity)
                     }
+                    removeMemberWarning = dialog
                     dialog.show(childFragmentManager, null)
                 }.onFailure {
                     Timber.e(it, "Error while showing remove member warning")
                 }
+            }
+            is Command.DismissRemoveMemberWarning -> {
+                removeMemberWarning?.dismiss()
+                removeMemberWarning = null
             }
             is Command.Dismiss -> {
                 dismiss()

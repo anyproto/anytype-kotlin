@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -95,6 +96,17 @@ object ParticipantModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): SearchOneToOneChatByIdentity = SearchOneToOneChatByIdentity(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideRemoveSpaceMembers(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): RemoveSpaceMembers = RemoveSpaceMembers(
         repo = repo,
         dispatchers = dispatchers
     )

@@ -446,10 +446,9 @@ class ShareSpaceViewModel(
     }
 
     fun onMakeAdminAccepted(view: SpaceMemberView) {
-        if (!view.canReadEnabled) {
-            viewModelScope.launch { commands.emit(Command.ToastPermission) }
-            return
-        }
+        // No space-limit guard here: the "Admin" role option is already gated by
+        // canChangeReaderToWriter in the member dropdown (see getParticipantInfo),
+        // so the confirmation only opens when promotion is allowed.
         if (view.obj.permissions == SpaceMemberPermissions.ADMIN) {
             makeAdminConfirmation.value = null
             return

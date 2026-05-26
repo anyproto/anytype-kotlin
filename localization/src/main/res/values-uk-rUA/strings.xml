@@ -1355,6 +1355,10 @@
     <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">View request</string>
     <string name="multiplayer_owner">Owner</string>
+    <string name="multiplayer_admin">Admin</string>
+    <string name="multiplayer_make_admin_title">Make the member an admin?</string>
+    <string name="multiplayer_make_admin_description">Admins can delete messages, remove members, and permanently delete objects from Bin.</string>
+    <string name="multiplayer_make_admin_button">Make Admin</string>
     <string name="multiplayer_no_permissions">No permissions</string>
     <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">Can edit</string>
@@ -1367,6 +1371,9 @@
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_remove_member_warning_text">%1$s will be removed from space</string>
+    <string name="multiplayer_remove_member_title">Remove the member from this channel?</string>
+    <string name="multiplayer_remove_member_description">%@ will be removed from the space.</string>
+    <string name="multiplayer_remove_member_button">Remove Member</string>
     <string name="multiplayer_request_sent_toast">Request sent</string>
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
     <string name="multiplayer_space_stop_sharing_space">Stop sharing the space</string>
@@ -1487,8 +1494,6 @@
     <string name="payments_member_link">Membership levels details</string>
     <string name="payments_privacy_link">Privacy policy</string>
     <string name="payments_terms_link">Terms and conditions</string>
-    <string name="payments_let_us_link_start">Would you like to use Anytype for business, education, etc.?</string>
-    <string name="payments_let_us_link_end">Please let us know here.</string>
     <string name="payments_current_label">Current</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Pick your unique name</string>
@@ -1568,14 +1573,6 @@
 
         Best regards,       \n
     </string>
-    <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Upgrade %1$s</string>
-    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
-- Extra remote storage\n
-- More space editors\n
-- Additional shared spaces\n
-Specifically,
-Please provide specific details of your needs here.</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Щось пішло не так, спробуйте ще раз</string>
     <string name="membership_name_cache_error">Помилка на нашому боці, спробуйте ще раз пізніше</string>
@@ -1644,9 +1641,6 @@ Please provide specific details of your needs here.</string>
     <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
     <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
     <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
-    <string name="membership_upgrade_title">Membership upgrade</string>
-    <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
-    <string name="membership_upgrade_button">Contact Anytype Team</string>
     <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
     <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">

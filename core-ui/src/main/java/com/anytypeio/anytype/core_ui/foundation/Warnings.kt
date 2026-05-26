@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,8 +23,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingSecondaryLarge
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingWarningLarge
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
@@ -155,6 +159,63 @@ fun GenericAlert(
         if (addBottomSpacer) {
             Spacer(modifier = Modifier.height(16.dp))
         }
+    }
+}
+
+/**
+ * Bottom-sheet alert content with a 56dp icon, title, description and two
+ * vertically stacked buttons (primary action on top, cancel below).
+ * Used for the role/removal confirmations introduced in DROID-4250.
+ */
+@Composable
+fun TwoVerticalButtonsAlert(
+    icon: Int,
+    title: String,
+    description: String,
+    actionText: String,
+    cancelText: String,
+    isActionDestructive: Boolean,
+    onActionClicked: () -> Unit,
+    onCancelClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Spacer(modifier = Modifier.height(24.dp))
+        AlertIcon(icon)
+        Spacer(modifier = Modifier.height(16.dp))
+        AlertTitle(title)
+        Spacer(modifier = Modifier.height(8.dp))
+        AlertDescription(description)
+        Spacer(modifier = Modifier.height(19.dp))
+        if (isActionDestructive) {
+            ButtonOnboardingWarningLarge(
+                text = actionText,
+                onClick = onActionClicked,
+                size = ButtonSize.Large,
+                modifierBox = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+        } else {
+            ButtonPrimary(
+                text = actionText,
+                onClick = onActionClicked,
+                size = ButtonSize.Large,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        ButtonOnboardingSecondaryLarge(
+            text = cancelText,
+            onClick = onCancelClicked,
+            size = ButtonSize.Large,
+            modifierBox = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -426,6 +487,25 @@ fun PromptPreview() {
         onPrimaryButtonClicked = {},
         onSecondaryButtonClicked = {}
     )
+}
+
+@DefaultPreviews
+@Composable
+fun TwoVerticalButtonsPreview() {
+    Box(
+        modifier = Modifier.wrapContentSize()
+    ) {
+        TwoVerticalButtonsAlert(
+            icon = R.drawable.ic_popup_alert_56,
+            title = "Get notified",
+            description = "Please enable notifications to stay informed about any requests to join or leave spaces.",
+            actionText = "Make Admin",
+            cancelText = "Cancel",
+            isActionDestructive = true,
+            onActionClicked = {},
+            onCancelClicked = {}
+        )
+    }
 }
 
 sealed class AlertConfig {

@@ -1355,6 +1355,10 @@
     <string name="multiplayer_approve_request">Установить доступ</string>
     <string name="multiplayer_view_request">Посмотреть запрос</string>
     <string name="multiplayer_owner">Владелец</string>
+    <string name="multiplayer_admin">Admin</string>
+    <string name="multiplayer_make_admin_title">Make the member an admin?</string>
+    <string name="multiplayer_make_admin_description">Admins can delete messages, remove members, and permanently delete objects from Bin.</string>
+    <string name="multiplayer_make_admin_button">Make Admin</string>
     <string name="multiplayer_no_permissions">Разрешения не требуются</string>
     <string name="multiplayer_pending">Ожидание</string>
     <string name="multiplayer_can_edit">Can edit</string>
@@ -1367,6 +1371,9 @@
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_remove_member_warning_text">%1$s будет удален из пространства</string>
+    <string name="multiplayer_remove_member_title">Remove the member from this channel?</string>
+    <string name="multiplayer_remove_member_description">%@ будет удален из пространства.</string>
+    <string name="multiplayer_remove_member_button">Remove Member</string>
     <string name="multiplayer_request_sent_toast">Запрос отправлен</string>
     <string name="multiplayer_space_stop_sharing">Закрыть доступ</string>
     <string name="multiplayer_space_stop_sharing_space">Прекратить совместное использование пространства</string>
@@ -1487,8 +1494,6 @@
     <string name="payments_member_link">Детали уровней членства </string>
     <string name="payments_privacy_link">Политика конфиденциальности</string>
     <string name="payments_terms_link">Условия и положения</string>
-    <string name="payments_let_us_link_start">Вы хотели бы использовать Anytype для бизнеса, образования и т.д.?</string>
-    <string name="payments_let_us_link_end">Пожалуйста, дайте нам знать об этом здесь.</string>
     <string name="payments_current_label">Текущий</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Выберите ваше уникальное имя</string>
@@ -1568,17 +1573,6 @@
 
         Best regards,       \n
     </string>
-    <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Обновить %1$s</string>
-    <string name="payments_email_body">Здравствуйте, команда Anytype!
-
-Я хотел(а) бы продлить свое текущее членство, выбрав одно из следующих:
-- Дополнительное удаленное хранилище
-- Больше редакторов пространств
-- Дополнительные общие пространства
-
-Конкретно,
-Пожалуйста, укажите подробности ваших потребностей здесь.</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Что-то не так с полем ввода, попробуйте еще раз</string>
     <string name="membership_name_cache_error">Ошибка на нашей стороне, попробуйте позже</string>
@@ -1647,9 +1641,6 @@
     <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
     <string name="multiplayer_space_join_request_current_user_error">Ошибка статуса текущего пользователя</string>
     <string name="multiplayer_space_join_request_membership_status_error">Ошибка текущего статуса членства</string>
-    <string name="membership_upgrade_title">Улучшение членства</string>
-    <string name="membership_upgrade_description">Обращайтесь к нам за дополнительным объемом памяти хранилища, редакторами пространства или общими пространствами. Команда Anytype предоставит детали и условия в соответствии с вашими потребностями.</string>
-    <string name="membership_upgrade_button">Связаться с командой Anytype</string>
     <string name="membership_space_settings_share_limit">Вы достигли лимита общих пространств %1$d</string>
     <string name="membership_space_settings_share_limit_2">Улучшите для более или удалите пробелы.</string>
     <plurals name="period_years">

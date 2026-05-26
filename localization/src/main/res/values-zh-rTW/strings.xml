@@ -1343,6 +1343,10 @@
     <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">查看請求</string>
     <string name="multiplayer_owner">擁有者</string>
+    <string name="multiplayer_admin">Admin</string>
+    <string name="multiplayer_make_admin_title">Make the member an admin?</string>
+    <string name="multiplayer_make_admin_description">Admins can delete messages, remove members, and permanently delete objects from Bin.</string>
+    <string name="multiplayer_make_admin_button">Make Admin</string>
     <string name="multiplayer_no_permissions">No permissions</string>
     <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">可編輯</string>
@@ -1355,6 +1359,9 @@
     <string name="multiplayer_space_join_request_header">%1$s 請求加入 %2$s 空間</string>
     <string name="multiplayer_remove_member">移除成員</string>
     <string name="multiplayer_remove_member_warning_text">%1$s 將從空間中移除</string>
+    <string name="multiplayer_remove_member_title">Remove the member from this channel?</string>
+    <string name="multiplayer_remove_member_description">%@ will be removed from the space.</string>
+    <string name="multiplayer_remove_member_button">Remove Member</string>
     <string name="multiplayer_request_sent_toast">已送出請求</string>
     <string name="multiplayer_space_stop_sharing">停止共享</string>
     <string name="multiplayer_space_stop_sharing_space">停止共享此空間</string>
@@ -1469,8 +1476,6 @@
     <string name="payments_member_link">會員方案詳情</string>
     <string name="payments_privacy_link">隱私政策</string>
     <string name="payments_terms_link">條款和細則</string>
-    <string name="payments_let_us_link_start">您想將 Anytype 用於商業、教育或其他用途嗎？</string>
-    <string name="payments_let_us_link_end">請在這裡告訴我們。</string>
     <string name="payments_current_label">當前</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">取一個獨特的名字</string>
@@ -1550,14 +1555,6 @@
 
         Best regards,       \n
     </string>
-    <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">升級 %1$s</string>
-    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
-- Extra remote storage\n
-- More space editors\n
-- Additional shared spaces\n
-Specifically,
-Please provide specific details of your needs here.</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">輸入錯誤，請再試一次。</string>
     <string name="membership_name_cache_error">我們這邊出錯了，請稍後再試。</string>
@@ -1626,9 +1623,6 @@ Please provide specific details of your needs here.</string>
     <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
     <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
     <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
-    <string name="membership_upgrade_title">會員升級</string>
-    <string name="membership_upgrade_description">如需更多額外的儲存容量、更多空間編輯者或更多共享空間，請與我們聯絡。 Anytype 團隊將根據您的需求和條件為您量身定製。</string>
-    <string name="membership_upgrade_button">聯絡 Anytype 團隊</string>
     <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
     <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">

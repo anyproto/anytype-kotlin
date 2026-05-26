@@ -1347,6 +1347,10 @@
     <string name="multiplayer_approve_request">Stel toegang in</string>
     <string name="multiplayer_view_request">Bekijk verzoek</string>
     <string name="multiplayer_owner">Eigenaar</string>
+    <string name="multiplayer_admin">Admin</string>
+    <string name="multiplayer_make_admin_title">Make the member an admin?</string>
+    <string name="multiplayer_make_admin_description">Admins can delete messages, remove members, and permanently delete objects from Bin.</string>
+    <string name="multiplayer_make_admin_button">Make Admin</string>
     <string name="multiplayer_no_permissions">Geen machtigingen</string>
     <string name="multiplayer_pending">In behandeling</string>
     <string name="multiplayer_can_edit">Kan bewerken</string>
@@ -1359,6 +1363,9 @@
     <string name="multiplayer_space_join_request_header">%1$s heeft verzocht om deel te nemen aan de ruimte %2$s</string>
     <string name="multiplayer_remove_member">Verwijder lid</string>
     <string name="multiplayer_remove_member_warning_text">%1$s wordt uit de ruimte verwijderd</string>
+    <string name="multiplayer_remove_member_title">Remove the member from this channel?</string>
+    <string name="multiplayer_remove_member_description">%@ will be removed from the space.</string>
+    <string name="multiplayer_remove_member_button">Remove Member</string>
     <string name="multiplayer_request_sent_toast">Verzoek verzonden</string>
     <string name="multiplayer_space_stop_sharing">Delen stoppen</string>
     <string name="multiplayer_space_stop_sharing_space">Stop met delen van de ruimte</string>
@@ -1475,8 +1482,6 @@
     <string name="payments_member_link">Details van lidmaatschapsniveaus</string>
     <string name="payments_privacy_link">Privacybeleid</string>
     <string name="payments_terms_link">Algemene voorwaarden</string>
-    <string name="payments_let_us_link_start">Wil je Anytype gebruiken voor zakelijk, onderwijs, etc.?</string>
-    <string name="payments_let_us_link_end">Laat het ons hier weten.</string>
     <string name="payments_current_label">Huidige</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Kies jouw unieke naam</string>
@@ -1556,14 +1561,6 @@
 
         Met vriendelijke groet,       \n
     </string>
-    <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Upgrade %1$s</string>
-    <string name="payments_email_body">Halllo Anytype team! Ik zou graag mijn huidige lidmaatschap willen uitbreiden voor meer (kies alsjeblieft een optie):\n
-- Extra opslag\n
-- Meer ruimte bewerkers\n
-- Aanvullende gedeelde ruimtes\n
-Specifiek,
-Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Er ging iets mis met invoeren, probeer het opnieuw</string>
     <string name="membership_name_cache_error">Fout aan onze kant, probeer het later opnieuw</string>
@@ -1632,9 +1629,6 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="multiplayer_space_join_request_new_member_error">Fout met lidmaatschapsverzoek</string>
     <string name="multiplayer_space_join_request_current_user_error">Fout bij huidige gebruikersstatus</string>
     <string name="multiplayer_space_join_request_membership_status_error">Fout bij huidige lidmaatschapsstatus</string>
-    <string name="membership_upgrade_title">Lidmaatschap upgrade</string>
-    <string name="membership_upgrade_description">Neem contact met ons op voor extra opslag, ruimtebewerkers of meer gedeelde ruimtes. Het Anytype-team zal details en voorwaarden bieden die zijn afgestemd op jouw behoeften.</string>
-    <string name="membership_upgrade_button">Contacteer Anytype team</string>
     <string name="membership_space_settings_share_limit">Je hebt de limiet bereikt van %1$d gedeelde ruimten</string>
     <string name="membership_space_settings_share_limit_2">Upgrade voor meer of verwijder ruimten.</string>
     <plurals name="period_years">

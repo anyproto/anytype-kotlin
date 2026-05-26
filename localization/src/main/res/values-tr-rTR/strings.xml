@@ -1365,7 +1365,7 @@
     <string name="multiplayer_remove_member_warning_text">%1$s alandan kaldırılacak</string>
     <string name="multiplayer_remove_member_title">Üye bu kanaldan çıkarılsın mı?</string>
     <string name="multiplayer_remove_member_description">%@ alandan kaldırılacak</string>
-    <string name="multiplayer_remove_member_button">Remove Member</string>
+    <string name="multiplayer_remove_member_button">Üyeyi Kaldır</string>
     <string name="multiplayer_request_sent_toast">İstek gönderildi</string>
     <string name="multiplayer_space_stop_sharing">Paylaşımı durdur</string>
     <string name="multiplayer_space_stop_sharing_space">Alan paylaşımını durdur</string>

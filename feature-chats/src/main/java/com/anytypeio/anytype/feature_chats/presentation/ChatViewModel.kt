@@ -440,8 +440,11 @@ class ChatViewModel @Inject constructor(
             chatContainer.watchWhileTrackingAttachments(chat = chat).distinctUntilChanged(),
             chatContainer.subscribeToAttachments(vmParams.ctx, vmParams.space)
                 .distinctUntilChanged(),
-            chatContainer.fetchReplies(chat = chat).distinctUntilChanged()
-        ) { result, dependencies, replies ->
+            chatContainer.fetchReplies(chat = chat).distinctUntilChanged(),
+            currentPermission
+        ) { result, dependencies, replies, permission ->
+            // Owners and Admins may moderate (delete any message); see DROID-4250.
+            val canModerateMessages = permission?.isOwnerOrAdmin() == true
             Timber.d("DROID-2966 Chat counter state from container: ${result.state}, unread section: ${result.initialUnreadSectionMessageId}")
             Timber.d("DROID-2966 Intent from container: ${result.intent}")
             Timber.d("DROID-2966 Message results size from container: ${result.messages.size}")
@@ -543,6 +546,7 @@ class ChatViewModel @Inject constructor(
                         author = member?.name.orEmpty(),
                         creator = member?.id,
                         isUserAuthor = msg.creator == account,
+                        canDelete = msg.creator == account || canModerateMessages,
                         shouldHideUsername = shouldHideUsername,
                         isEdited = msg.modifiedAt > msg.createdAt,
                         isSynced = msg.synced,

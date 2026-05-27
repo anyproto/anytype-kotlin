@@ -301,8 +301,8 @@ open class ObjectSetFragment :
 
         setupGridAdapters()
 
-        // DROID-4318: Bottom buttons stay fixed across scrolling. Visibility
-        // is driven by view-state and discussionButtonState, not by scroll.
+        // DROID-4318: Bottom buttons (Search + Create) stay fixed across
+        // scrolling. Visibility is driven by view-state, not by scroll.
         binding.fabCreate.isVisible = true
 
         title.clearFocus()
@@ -359,10 +359,10 @@ open class ObjectSetFragment :
 
             subscribe(binding.bottomPanel.root.touches()) { swipeDetector.onTouchEvent(it) }
 
-            // DROID-4508: Three Compose bottom-bar buttons — Search (left) ·
-            // Discussion (center) · Create (right) — mirror the editor's look
-            // (CircularFabButton, background_primary, subtle shadow, no border).
-            // Buttons stay fixed; visibility comes from VM state, not scroll.
+            // DROID-4508: Two Compose bottom-bar buttons — Search (left) +
+            // Create (right) — mirror the editor's look (CircularFabButton,
+            // background_primary, subtle shadow, no border). Buttons stay
+            // fixed; visibility comes from VM state, not scroll.
             binding.fabSearchOnPage.apply {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 setContent {
@@ -375,25 +375,6 @@ open class ObjectSetFragment :
                             showBorder = false,
                             iconSize = 32.dp,
                             onClick = { vm.onSearchButtonClicked() }
-                        )
-                    }
-                }
-            }
-
-            binding.discussionButton.apply {
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                setContent {
-                    Box(modifier = Modifier.padding(8.dp)) {
-                        CircularFabButton(
-                            iconRes = R.drawable.ic_chat_type_24,
-                            contentDescription = stringResource(
-                                id = R.string.main_navigation_content_desc_chat_button
-                            ),
-                            backgroundColor = colorResource(id = R.color.background_primary),
-                            elevation = 6.dp,
-                            showBorder = false,
-                            iconSize = 32.dp,
-                            onClick = { vm.onDiscussionButtonClicked() }
                         )
                     }
                 }
@@ -425,13 +406,6 @@ open class ObjectSetFragment :
             }
 
             binding.fabSearchOnPage.isVisible = true
-
-            vm.discussionButtonState
-                .onEach { state ->
-                    binding.discussionButton.isVisible =
-                        state !is ObjectSetViewModel.DiscussionButtonState.Hidden
-                }
-                .launchIn(lifecycleScope)
         }
 
         with(binding.paginatorToolbar) {

@@ -113,15 +113,6 @@
             motion:layout_constraintStart_toStartOf="parent"
             motion:visibilityMode="ignore" />
         <Constraint
-            android:id="@+id/discussionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            motion:layout_constraintBottom_toBottomOf="parent"
-            motion:layout_constraintEnd_toEndOf="parent"
-            motion:layout_constraintStart_toStartOf="parent"
-            motion:visibilityMode="ignore" />
-        <Constraint
             android:id="@+id/fabCreate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -242,15 +233,6 @@
             android:layout_marginStart="8dp"
             android:layout_marginBottom="8dp"
             motion:layout_constraintBottom_toBottomOf="parent"
-            motion:layout_constraintStart_toStartOf="parent"
-            motion:visibilityMode="ignore" />
-        <Constraint
-            android:id="@+id/discussionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            motion:layout_constraintBottom_toBottomOf="parent"
-            motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             motion:visibilityMode="ignore" />
         <Constraint

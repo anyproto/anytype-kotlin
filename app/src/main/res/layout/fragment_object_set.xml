@@ -138,10 +138,10 @@
         app:layout_constraintTop_toBottomOf="@+id/dataViewHeader"
         tools:visibility="visible" />
 
-    <!-- DROID-4508: Three Compose bottom-bar buttons mirroring the editor —
-         Search (left) · Discussion (center) · Create (right). The same circular
-         look (CircularFabButton, background_primary, subtle shadow, no border)
-         is applied in ObjectSetFragment. Constraints are duplicated in
+    <!-- DROID-4508: Two Compose bottom-bar buttons mirroring the editor —
+         Search (left) + Create (right). The same circular look
+         (CircularFabButton, background_primary, subtle shadow, no border) is
+         applied in ObjectSetFragment. Constraints are duplicated in
          fragment_object_set_scene.xml for both motion states. -->
     <androidx.compose.ui.platform.ComposeView
         android:id="@+id/fabSearchOnPage"
@@ -151,17 +151,6 @@
         android:layout_marginBottom="8dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:visibility="visible" />
-
-    <androidx.compose.ui.platform.ComposeView
-        android:id="@+id/discussionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:visibility="visible" />
 

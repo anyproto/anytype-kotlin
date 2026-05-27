@@ -20,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +39,11 @@ fun DiscussionButton(
     Row(
         modifier = Modifier
             .defaultMinSize(minWidth = 72.dp, minHeight = 48.dp)
+            .shadow(
+                elevation = 6.dp,
+                shape = RoundedCornerShape(296.dp),
+                clip = false
+            )
             .clip(CircleShape)
             .background(
                 color = colorResource(id = R.color.background_primary),

@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -34,23 +35,33 @@ fun CircularFabButton(
     size: Dp = dimensionResource(R.dimen.nav_fab_button_size),
     onClick: () -> Unit,
     onLongClick: (() -> Unit)? = null,
+    backgroundColor: Color = colorResource(id = R.color.navigation_panel),
+    elevation: Dp = 20.dp,
+    showBorder: Boolean = true,
+    iconSize: Dp? = null,
 ) {
     Box(
         modifier = modifier
             .size(size)
             .shadow(
-                elevation = 20.dp,
+                elevation = elevation,
                 shape = CircleShape,
                 clip = false
             )
             .background(
-                color = colorResource(id = R.color.navigation_panel),
+                color = backgroundColor,
                 shape = CircleShape
             )
-            .border(
-                width = 1.dp,
-                color = colorResource(id = R.color.shape_transparent_primary),
-                shape = CircleShape
+            .then(
+                if (showBorder) {
+                    Modifier.border(
+                        width = 1.dp,
+                        color = colorResource(id = R.color.shape_transparent_primary),
+                        shape = CircleShape
+                    )
+                } else {
+                    Modifier
+                }
             )
             .alpha(if (isEnabled) 1f else 0.5f)
             .then(
@@ -61,12 +72,16 @@ fun CircularFabButton(
                         onClick = onClick,
                     )
                 } else {
-                    Modifier.noRippleClickable(onClick = onClick)
+                    Modifier.noRippleClickable(
+                        enabled = isEnabled,
+                        onClick = onClick
+                    )
                 }
             ),
         contentAlignment = Alignment.Center
     ) {
         Image(
+            modifier = if (iconSize != null) Modifier.size(iconSize) else Modifier,
             painter = painterResource(id = iconRes),
             contentDescription = contentDescription
         )

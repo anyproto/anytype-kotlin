@@ -7,10 +7,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 
 @Composable
 fun DiscussionButton(
@@ -34,15 +37,18 @@ fun DiscussionButton(
 ) {
     Row(
         modifier = Modifier
-            .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
+            .defaultMinSize(minWidth = 72.dp, minHeight = 48.dp)
             .clip(CircleShape)
-            .background(colorResource(id = R.color.navigation_panel))
+            .background(
+                color = colorResource(id = R.color.background_primary),
+                shape = RoundedCornerShape(296.dp)
+            )
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
                 onClick = onClick
             )
-            .padding(horizontal = 14.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Box(
@@ -59,26 +65,33 @@ fun DiscussionButton(
                 Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .size(6.dp)
+                        .offset(x = -2.5.dp, y = (0.5).dp)
+                        .size(9.dp)
                         .clip(CircleShape)
-                        .background(colorResource(id = R.color.palette_system_blue))
-                )
+                        .background(colorResource(id = R.color.text_label_inversion)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(CircleShape)
+                            .background(colorResource(id = R.color.color_accent))
+                    )
+                }
             }
         }
-        if (commentCount > 0) {
-            Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = commentCount.toString(),
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium,
-                color = colorResource(id = R.color.text_primary),
-                letterSpacing = (-0.24).sp
-            )
-        }
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            text = commentCount.toString(),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Medium,
+            color = colorResource(id = R.color.text_primary),
+            letterSpacing = (-0.24).sp
+        )
     }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFEEEEEE)
+@DefaultPreviews
 @Composable
 private fun DiscussionButtonEmptyPreview() {
     DiscussionButton(
@@ -87,21 +100,25 @@ private fun DiscussionButtonEmptyPreview() {
     )
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFEEEEEE)
+@DefaultPreviews
 @Composable
 private fun DiscussionButtonWithCommentsPreview() {
-    DiscussionButton(
-        commentCount = 5,
-        onClick = {}
-    )
+    Box(modifier = Modifier.padding(16.dp)) {
+        DiscussionButton(
+            commentCount = 5,
+            onClick = {}
+        )
+    }
 }
 
-@Preview(showBackground = true, backgroundColor = 0xFFEEEEEE)
+@DefaultPreviews
 @Composable
 private fun DiscussionButtonWithUnreadPreview() {
-    DiscussionButton(
-        commentCount = 3,
-        hasUnreadMessages = true,
-        onClick = {}
-    )
+    Box(modifier = Modifier.padding(16.dp)) {
+        DiscussionButton(
+            commentCount = 3,
+            hasUnreadMessages = true,
+            onClick = {}
+        )
+    }
 }

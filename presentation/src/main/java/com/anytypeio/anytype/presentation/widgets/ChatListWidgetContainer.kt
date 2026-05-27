@@ -475,7 +475,7 @@ class ChatListWidgetContainer(
                             objType = storeOfObjectTypes.getTypeOfObject(obj)
                         ),
                         name = WidgetView.Name.Default(
-                            prettyPrintName = fieldParser.getObjectPluralName(obj, false)
+                            prettyPrintName = fieldParser.getObjectNameOrPluralsForTypes(obj, false)
                         )
                     )
                 },

@@ -20,14 +20,18 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -71,6 +75,7 @@ import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
+import com.anytypeio.anytype.core_ui.widgets.CircularFabButton
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.TypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ObjectSetTitle
@@ -296,8 +301,8 @@ open class ObjectSetFragment :
 
         setupGridAdapters()
 
-        // DROID-4318: Bottom buttons stay fixed across scrolling. Visibility
-        // is driven by view-state and discussionButtonState, not by scroll.
+        // DROID-4318: Bottom buttons (Search + Create) stay fixed across
+        // scrolling. Visibility is driven by view-state, not by scroll.
         binding.fabCreate.isVisible = true
 
         title.clearFocus()
@@ -354,23 +359,53 @@ open class ObjectSetFragment :
 
             subscribe(binding.bottomPanel.root.touches()) { swipeDetector.onTouchEvent(it) }
 
-            // DROID-4318: Two-button bottom layout — Discussion (left) +
-            // Create (right) — mirrors the editor. Buttons stay fixed at
-            // all times; visibility comes from VM state, not scroll.
-            subscribe(binding.fabCreate.clicks().throttleFirst()) {
-                showCreateObjectSheet()
-            }
-
-            subscribe(binding.discussionButton.clicks().throttleFirst()) {
-                vm.onDiscussionButtonClicked()
-            }
-
-            vm.discussionButtonState
-                .onEach { state ->
-                    binding.discussionButton.isVisible =
-                        state !is ObjectSetViewModel.DiscussionButtonState.Hidden
+            // DROID-4508: Two Compose bottom-bar buttons — Search (left) +
+            // Create (right) — mirror the editor's look (CircularFabButton,
+            // background_primary, subtle shadow, no border). Buttons stay
+            // fixed; visibility comes from VM state, not scroll.
+            binding.fabSearchOnPage.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    Box(modifier = Modifier.padding(8.dp)) {
+                        CircularFabButton(
+                            iconRes = R.drawable.ic_doc_search,
+                            contentDescription = stringResource(id = R.string.content_desc_search_button),
+                            backgroundColor = colorResource(id = R.color.background_primary),
+                            elevation = 6.dp,
+                            showBorder = false,
+                            iconSize = 32.dp,
+                            onClick = { vm.onSearchButtonClicked() }
+                        )
+                    }
                 }
-                .launchIn(lifecycleScope)
+            }
+
+            binding.fabCreate.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    val navState by vm.navPanelState.collectAsStateWithLifecycle(
+                        initialValue = NavPanelState.Init
+                    )
+                    val isCreateEnabled =
+                        (navState as? NavPanelState.Default)?.isCreateEnabled == true
+                    Box(modifier = Modifier.padding(8.dp)) {
+                        CircularFabButton(
+                            iconRes = R.drawable.ic_create_obj_32,
+                            contentDescription = stringResource(
+                                id = R.string.main_navigation_content_desc_create_button
+                            ),
+                            backgroundColor = colorResource(id = R.color.background_primary),
+                            elevation = 6.dp,
+                            showBorder = false,
+                            iconSize = 32.dp,
+                            isEnabled = isCreateEnabled,
+                            onClick = { showCreateObjectSheet() }
+                        )
+                    }
+                }
+            }
+
+            binding.fabSearchOnPage.isVisible = true
         }
 
         with(binding.paginatorToolbar) {
@@ -1494,21 +1529,9 @@ open class ObjectSetFragment :
 
         title.addTextChangedListener(titleTextWatcher)
 
-        // fabCreate stays visible. NavPanelState only mirrors the enabled
-        // flag here (read-only contexts grey the button out).
-        vm.navPanelState
-            .distinctUntilChanged()
-            .onEach { state ->
-                if (hasBinding) {
-                    // Mirror NavPanelState.Default.isCreateEnabled into
-                    // fabCreate so disabled contexts (read-only, etc.) still
-                    // grey the button out.
-                    val isCreateEnabled =
-                        (state as? NavPanelState.Default)?.isCreateEnabled == true
-                    binding.fabCreate.isEnabled = isCreateEnabled
-                    binding.fabCreate.alpha = if (isCreateEnabled) 1f else 0.5f
-                }
-            }.launchIn(lifecycleScope)
+        // fabCreate stays visible. NavPanelState.isCreateEnabled is consumed
+        // directly inside the fabCreate ComposeView (see onViewCreated) to gate
+        // its click and dim it in read-only contexts.
 
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header) { header ->

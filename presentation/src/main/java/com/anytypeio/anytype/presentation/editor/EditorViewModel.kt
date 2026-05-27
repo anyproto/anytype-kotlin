@@ -2352,6 +2352,11 @@ class EditorViewModel(
         viewModelScope.launch { controlPanelInteractor.onEvent(ControlPanelMachine.Event.SearchToolbar.OnEnterSearchMode) }
     }
 
+    fun onGlobalSearchClicked() {
+        Timber.d("onGlobalSearchClicked, ")
+        navigate(EventWrapper(AppNavigation.Command.OpenGlobalSearch(space = vmParams.space.id)))
+    }
+
     fun onSetTextBlockValue() {
         viewModelScope.launch { refresh() }
     }

@@ -461,12 +461,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             if (dy > 4) {
                 binding.fabCreate.hide()
+                binding.fabSearchOnPage.hide()
                 binding.discussionButton.isVisible = false
             } else if (dy < -4) {
                 val navToolbarVisible =
                     vm.controlPanelViewState.value?.navigationToolbar?.isVisible == true
                 if (!navToolbarVisible) return
                 binding.fabCreate.show()
+                binding.fabSearchOnPage.show()
                 if (vm.discussionButtonState.value !is
                     EditorViewModel.DiscussionButtonState.Hidden
                 ) {
@@ -671,6 +673,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         binding.fabCreate
             .clicks()
             .onEach { showCreateObjectSheet() }
+            .launchIn(lifecycleScope)
+
+        binding.fabSearchOnPage
+            .clicks()
+            .throttleFirst()
+            .onEach { vm.onGlobalSearchClicked() }
             .launchIn(lifecycleScope)
 
         binding.recycler.addOnScrollListener(fabScrollListener)
@@ -1676,10 +1684,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             // FAB. The scroll-aware listener still uses show()/hide() —
             // that's the canonical Material FAB use case.
             binding.fabCreate.isVisible = true
+            binding.fabSearchOnPage.isVisible = true
             binding.discussionButton.isVisible =
                 vm.discussionButtonState.value !is EditorViewModel.DiscussionButtonState.Hidden
         } else {
             binding.fabCreate.isVisible = false
+            binding.fabSearchOnPage.isVisible = false
             binding.discussionButton.isVisible = false
         }
 

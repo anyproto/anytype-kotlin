@@ -42,6 +42,11 @@ fun CircularFabButton(
 ) {
     Box(
         modifier = modifier
+            // Dim the whole button (shadow included) when disabled. Applying
+            // alpha first means the shadow fades with the background instead of
+            // staying at full opacity and leaving a visible shadow ring around
+            // a faint circle.
+            .alpha(if (isEnabled) 1f else 0.5f)
             .size(size)
             .shadow(
                 elevation = elevation,
@@ -63,7 +68,6 @@ fun CircularFabButton(
                     Modifier
                 }
             )
-            .alpha(if (isEnabled) 1f else 0.5f)
             .then(
                 if (onLongClick != null) {
                     Modifier.noRippleCombinedClickable(

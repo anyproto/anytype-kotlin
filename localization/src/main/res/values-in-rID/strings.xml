@@ -1361,7 +1361,7 @@
     <string name="multiplayer_remove_member_warning_text">%1$s akan dihapus dari ruang</string>
     <string name="multiplayer_remove_member_title">Hapus anggota ini dari kanal?</string>
     <string name="multiplayer_remove_member_description">%@ akan dihapus dari ruang.</string>
-    <string name="multiplayer_remove_member_button">Remove Member</string>
+    <string name="multiplayer_remove_member_button">Hapus Anggota</string>
     <string name="multiplayer_request_sent_toast">Permintaan terkirim</string>
     <string name="multiplayer_space_stop_sharing">Berhenti berbagi</string>
     <string name="multiplayer_space_stop_sharing_space">Berhenti membagikan ruang</string>

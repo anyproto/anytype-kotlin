@@ -44,6 +44,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
+import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.feature_chats.R
@@ -157,7 +158,7 @@ fun ChatTopToolbar(
                 is ChatViewModel.HeaderView.Default -> {
                     SpaceIconView(
                         modifier = Modifier,
-                        mainSize = 24.dp,
+                        mainSize = 32.dp,
                         icon = header.icon,
                         onSpaceIconClick = { onTitleClick() }
                     )
@@ -170,7 +171,7 @@ fun ChatTopToolbar(
                 color = colorResource(R.color.text_primary),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = PreviewTitle2Regular,
+                style = Title2,
                 modifier = Modifier.weight(1f, fill = false)
             )
             if (isMuted) {

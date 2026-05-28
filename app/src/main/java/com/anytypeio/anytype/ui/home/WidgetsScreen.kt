@@ -22,6 +22,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -595,7 +596,11 @@ fun WidgetsScreen(
                     bottom = dimensionResource(R.dimen.nav_fab_margin),
                 )
             ,
+            elevation = 3.dp,
+            showBorder = false,
             size = fabSize,
+            iconSize = 24.dp,
+            backgroundColor = colorResource(id = R.color.background_primary),
             onClick = viewModel::onSearchIconClicked,
         )
 
@@ -616,7 +621,11 @@ fun WidgetsScreen(
                         end = dimensionResource(R.dimen.nav_fab_margin),
                         bottom = dimensionResource(R.dimen.nav_fab_margin),
                     ),
+                elevation = 3.dp,
+                showBorder = false,
                 size = fabSize,
+                iconSize = 24.dp,
+                backgroundColor = colorResource(id = R.color.background_primary),
                 onClick = viewModel::onCreateObjectMenuClicked,
             )
         }

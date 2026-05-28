@@ -370,7 +370,7 @@ open class ObjectSetFragment :
                         CircularFabButton(
                             iconRes = R.drawable.ic_doc_search,
                             contentDescription = stringResource(id = R.string.content_desc_search_button),
-                            backgroundColor = colorResource(id = R.color.background_primary),
+                            backgroundColor = colorResource(id = R.color.background_secondary),
                             elevation = 6.dp,
                             showBorder = false,
                             iconSize = 32.dp,
@@ -394,7 +394,7 @@ open class ObjectSetFragment :
                             contentDescription = stringResource(
                                 id = R.string.main_navigation_content_desc_create_button
                             ),
-                            backgroundColor = colorResource(id = R.color.background_primary),
+                            backgroundColor = colorResource(id = R.color.background_secondary),
                             elevation = 6.dp,
                             showBorder = false,
                             iconSize = 32.dp,

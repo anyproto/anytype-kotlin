@@ -175,6 +175,7 @@ fun DateMainScreen(
                             end = dimensionResource(id = com.anytypeio.anytype.core_ui.R.dimen.nav_fab_margin),
                             bottom = dimensionResource(id = com.anytypeio.anytype.core_ui.R.dimen.nav_fab_margin)
                         ),
+                    backgroundColor = colorResource(id = R.color.background_secondary),
                     iconRes = R.drawable.ic_create_obj_32,
                     contentDescription = stringResource(id = R.string.create),
                     onClick = { onDateEvent(DateEvent.NavigationWidget.OnAddDocClick) }

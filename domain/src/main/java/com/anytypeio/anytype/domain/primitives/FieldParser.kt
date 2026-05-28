@@ -40,7 +40,6 @@ interface FieldParser {
     fun getObjectName(objectWrapper: ObjectWrapper.Basic, useUntitled: Boolean = true): String
     fun getObjectName(objectWrapper: ObjectWrapper.Type): String
     fun getObjectPluralName(objectWrapper: ObjectWrapper.Type): String
-    fun getObjectPluralName(objectWrapper: ObjectWrapper.Basic, useUntitled: Boolean = true): String
     fun getObjectNameOrPluralsForTypes(
         objectWrapper: ObjectWrapper.Basic,
         useUntitled: Boolean = true
@@ -196,15 +195,6 @@ class FieldParserImpl @Inject constructor(
         val name = objectWrapper.pluralName?.takeIf { it.isNotEmpty() } ?: objectWrapper.name
         return if (name.isNullOrBlank()) {
             stringResourceProvider.getUntitledObjectTitle()
-        } else {
-            name
-        }
-    }
-
-    override fun getObjectPluralName(objectWrapper: ObjectWrapper.Basic, useUntitled: Boolean): String {
-        val name = objectWrapper.pluralName?.takeIf { it.isNotEmpty() } ?: getObjectName(objectWrapper, useUntitled)
-        return if (name.isEmpty()) {
-            if (useUntitled) stringResourceProvider.getUntitledObjectTitle() else ""
         } else {
             name
         }

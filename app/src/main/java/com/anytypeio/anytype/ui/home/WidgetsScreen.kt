@@ -596,7 +596,7 @@ fun WidgetsScreen(
                     bottom = dimensionResource(R.dimen.nav_fab_margin),
                 )
             ,
-            elevation = 3.dp,
+            elevation = 2.dp,
             showBorder = false,
             size = fabSize,
             iconSize = 24.dp,
@@ -621,7 +621,7 @@ fun WidgetsScreen(
                         end = dimensionResource(R.dimen.nav_fab_margin),
                         bottom = dimensionResource(R.dimen.nav_fab_margin),
                     ),
-                elevation = 3.dp,
+                elevation = 2.dp,
                 showBorder = false,
                 size = fabSize,
                 iconSize = 24.dp,

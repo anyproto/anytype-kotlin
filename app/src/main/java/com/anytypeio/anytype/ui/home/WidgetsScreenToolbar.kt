@@ -37,7 +37,7 @@ fun HomeScreenToolbar(
             contentDescription = stringResource(R.string.content_desc_back_button),
             size = buttonSize,
             showBorder = false,
-            elevation = 3.dp,
+            elevation = 2.dp,
             iconSize = 24.dp,
             backgroundColor = colorResource(id = R.color.background_primary),
         )
@@ -47,7 +47,7 @@ fun HomeScreenToolbar(
             contentDescription = stringResource(R.string.space_settings),
             size = buttonSize,
             showBorder = false,
-            elevation = 3.dp,
+            elevation = 2.dp,
             iconSize = 24.dp,
             backgroundColor = colorResource(id = R.color.background_primary),
         )

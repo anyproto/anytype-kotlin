@@ -676,7 +676,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         // DROID-4318 / DROID-4508: Editor bottom navigation is three Compose
         // buttons (fabSearchOnPage / discussionButton / fabCreate) sharing the
-        // same circular look — background_primary, subtle shadow, no border —
+        // same circular look — background_secondary, subtle shadow, no border —
         // so they hide/show and render identically. Share / home / chat entry
         // points moved to the home overlay (Task 4) — no editor wiring.
         binding.fabSearchOnPage.apply {
@@ -686,10 +686,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     CircularFabButton(
                         iconRes = R.drawable.ic_doc_search,
                         contentDescription = stringResource(id = R.string.content_desc_search_button),
-                        backgroundColor = colorResource(id = R.color.background_primary),
-                        elevation = 6.dp,
+                        backgroundColor = colorResource(id = R.color.background_secondary),
+                        elevation = 2.dp,
                         showBorder = false,
-                        iconSize = 32.dp,
+                        iconSize = 24.dp,
                         onClick = { vm.onGlobalSearchClicked() }
                     )
                 }
@@ -710,10 +710,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         contentDescription = stringResource(
                             id = R.string.main_navigation_content_desc_create_button
                         ),
-                        backgroundColor = colorResource(id = R.color.background_primary),
-                        elevation = 6.dp,
+                        backgroundColor = colorResource(id = R.color.background_secondary),
+                        elevation = 2.dp,
                         showBorder = false,
-                        iconSize = 32.dp,
+                        iconSize = 24.dp,
                         isEnabled = isCreateEnabled,
                         onClick = { showCreateObjectSheet() }
                     )

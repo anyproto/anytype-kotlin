@@ -361,7 +361,7 @@ open class ObjectSetFragment :
 
             // DROID-4508: Two Compose bottom-bar buttons — Search (left) +
             // Create (right) — mirror the editor's look (CircularFabButton,
-            // background_primary, subtle shadow, no border). Buttons stay
+            // background_secondary, subtle shadow, no border). Buttons stay
             // fixed; visibility comes from VM state, not scroll.
             binding.fabSearchOnPage.apply {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -370,10 +370,10 @@ open class ObjectSetFragment :
                         CircularFabButton(
                             iconRes = R.drawable.ic_doc_search,
                             contentDescription = stringResource(id = R.string.content_desc_search_button),
-                            backgroundColor = colorResource(id = R.color.background_primary),
-                            elevation = 6.dp,
+                            backgroundColor = colorResource(id = R.color.background_secondary),
+                            elevation = 2.dp,
                             showBorder = false,
-                            iconSize = 32.dp,
+                            iconSize = 24.dp,
                             onClick = { vm.onSearchButtonClicked() }
                         )
                     }
@@ -394,10 +394,10 @@ open class ObjectSetFragment :
                             contentDescription = stringResource(
                                 id = R.string.main_navigation_content_desc_create_button
                             ),
-                            backgroundColor = colorResource(id = R.color.background_primary),
-                            elevation = 6.dp,
+                            backgroundColor = colorResource(id = R.color.background_secondary),
+                            elevation = 2.dp,
                             showBorder = false,
-                            iconSize = 32.dp,
+                            iconSize = 24.dp,
                             isEnabled = isCreateEnabled,
                             onClick = { showCreateObjectSheet() }
                         )

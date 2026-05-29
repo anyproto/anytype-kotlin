@@ -361,7 +361,7 @@ open class ObjectSetFragment :
 
             // DROID-4508: Two Compose bottom-bar buttons — Search (left) +
             // Create (right) — mirror the editor's look (CircularFabButton,
-            // background_primary, subtle shadow, no border). Buttons stay
+            // background_secondary, subtle shadow, no border). Buttons stay
             // fixed; visibility comes from VM state, not scroll.
             binding.fabSearchOnPage.apply {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)

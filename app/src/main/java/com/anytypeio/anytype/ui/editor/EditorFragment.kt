@@ -676,7 +676,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         // DROID-4318 / DROID-4508: Editor bottom navigation is three Compose
         // buttons (fabSearchOnPage / discussionButton / fabCreate) sharing the
-        // same circular look — background_primary, subtle shadow, no border —
+        // same circular look — background_secondary, subtle shadow, no border —
         // so they hide/show and render identically. Share / home / chat entry
         // points moved to the home overlay (Task 4) — no editor wiring.
         binding.fabSearchOnPage.apply {

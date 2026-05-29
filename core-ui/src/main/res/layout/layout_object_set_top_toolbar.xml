@@ -14,9 +14,7 @@
         android:layout_height="@dimen/nav_circular_button_size"
         android:layout_marginStart="16dp"
         android:background="@drawable/bg_nav_circular_button"
-        android:elevation="4dp"
-        android:outlineAmbientShadowColor="@color/nav_chip_shadow"
-        android:outlineSpotShadowColor="@color/nav_chip_shadow"
+        android:elevation="2dp"
         tools:targetApi="28">
 
         <ImageView
@@ -35,7 +33,8 @@
         android:layout_gravity="center_vertical|end"
         android:scaleType="center"
         android:background="@drawable/bg_nav_circular_button"
-        android:layout_marginEnd="68dp"
+        android:elevation="2dp"
+        android:layout_marginEnd="64dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -47,13 +46,11 @@
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_marginStart="68dp"
-        android:layout_marginEnd="120dp"
+        android:layout_marginEnd="116dp"
         android:background="@drawable/bg_nav_pill_container"
         android:clickable="true"
         android:focusable="true"
-        android:elevation="4dp"
-        android:outlineAmbientShadowColor="@color/nav_chip_shadow"
-        android:outlineSpotShadowColor="@color/nav_chip_shadow"
+        android:elevation="2dp"
         tools:targetApi="28">
 
         <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
@@ -86,11 +83,9 @@
         android:layout_width="@dimen/nav_circular_button_size"
         android:layout_height="@dimen/nav_circular_button_size"
         android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="16dp"
+        android:layout_marginEnd="12dp"
         android:background="@drawable/bg_nav_circular_button"
-        android:elevation="4dp"
-        android:outlineAmbientShadowColor="@color/nav_chip_shadow"
-        android:outlineSpotShadowColor="@color/nav_chip_shadow"
+        android:elevation="2dp"
         tools:targetApi="28">
 
         <ImageView

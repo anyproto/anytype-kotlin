@@ -40,7 +40,7 @@ fun DiscussionButton(
         modifier = Modifier
             .defaultMinSize(minWidth = 72.dp, minHeight = 48.dp)
             .shadow(
-                elevation = 6.dp,
+                elevation = 2.dp,
                 shape = RoundedCornerShape(296.dp),
                 clip = false
             )

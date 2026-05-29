@@ -373,7 +373,7 @@ open class ObjectSetFragment :
                             backgroundColor = colorResource(id = R.color.background_secondary),
                             elevation = 2.dp,
                             showBorder = false,
-                            iconSize = 32.dp,
+                            iconSize = 24.dp,
                             onClick = { vm.onSearchButtonClicked() }
                         )
                     }
@@ -397,7 +397,7 @@ open class ObjectSetFragment :
                             backgroundColor = colorResource(id = R.color.background_secondary),
                             elevation = 2.dp,
                             showBorder = false,
-                            iconSize = 32.dp,
+                            iconSize = 24.dp,
                             isEnabled = isCreateEnabled,
                             onClick = { showCreateObjectSheet() }
                         )

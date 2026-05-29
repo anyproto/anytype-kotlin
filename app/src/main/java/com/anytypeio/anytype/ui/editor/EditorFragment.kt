@@ -687,9 +687,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         iconRes = R.drawable.ic_doc_search,
                         contentDescription = stringResource(id = R.string.content_desc_search_button),
                         backgroundColor = colorResource(id = R.color.background_secondary),
-                        elevation = 6.dp,
+                        elevation = 2.dp,
                         showBorder = false,
-                        iconSize = 32.dp,
+                        iconSize = 24.dp,
                         onClick = { vm.onGlobalSearchClicked() }
                     )
                 }
@@ -711,9 +711,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             id = R.string.main_navigation_content_desc_create_button
                         ),
                         backgroundColor = colorResource(id = R.color.background_secondary),
-                        elevation = 6.dp,
+                        elevation = 2.dp,
                         showBorder = false,
-                        iconSize = 32.dp,
+                        iconSize = 24.dp,
                         isEnabled = isCreateEnabled,
                         onClick = { showCreateObjectSheet() }
                     )

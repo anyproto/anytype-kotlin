@@ -600,7 +600,7 @@ fun WidgetsScreen(
             showBorder = false,
             size = fabSize,
             iconSize = 24.dp,
-            backgroundColor = colorResource(id = R.color.background_primary),
+            backgroundColor = colorResource(id = R.color.background_secondary),
             onClick = viewModel::onSearchIconClicked,
         )
 
@@ -625,7 +625,7 @@ fun WidgetsScreen(
                 showBorder = false,
                 size = fabSize,
                 iconSize = 24.dp,
-                backgroundColor = colorResource(id = R.color.background_primary),
+                backgroundColor = colorResource(id = R.color.background_secondary),
                 onClick = viewModel::onCreateObjectMenuClicked,
             )
         }

@@ -39,7 +39,7 @@ fun HomeScreenToolbar(
             showBorder = false,
             elevation = 2.dp,
             iconSize = 24.dp,
-            backgroundColor = colorResource(id = R.color.background_primary),
+            backgroundColor = colorResource(id = R.color.background_secondary),
         )
         CircularFabButton(
             iconRes = R.drawable.ic_space_list_dots,
@@ -49,7 +49,7 @@ fun HomeScreenToolbar(
             showBorder = false,
             elevation = 2.dp,
             iconSize = 24.dp,
-            backgroundColor = colorResource(id = R.color.background_primary),
+            backgroundColor = colorResource(id = R.color.background_secondary),
         )
     }
 }

@@ -2285,11 +2285,15 @@ message Rpc {
                 repeated string objectTypeFilter = 6; // DEPRECATED, GO-1926
                 // needed keys in details for return, when empty - will return all
                 repeated string keys = 7;
+                // when true, response.total is filled with the count of all objects matching the filters, ignoring limit/offset
+                bool needTotal = 9;
             }
 
             message Response {
                 Error error = 1;
                 repeated google.protobuf.Struct records = 2;
+                // total number of objects matching the filters, ignoring limit/offset; filled only when request.needTotal is true
+                int64 total = 3;
                 message Error {
                     Code code = 1;
                     string description = 2;

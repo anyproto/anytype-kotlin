@@ -218,12 +218,12 @@ class Code(
             post {
                 if (!hasFocus()) {
                     if (requestFocus()) {
-                        context.imm().showSoftInput(this, InputMethodManager.SHOW_FORCED)
+                        context.imm().showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
                     } else {
                         Timber.d("Couldn't gain focus")
                     }
                 } else {
-                    Timber.d("Already had focus")
+                    context.imm().showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
                 }
             }
         }

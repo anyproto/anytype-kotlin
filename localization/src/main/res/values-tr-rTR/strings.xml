@@ -2159,7 +2159,7 @@
     <string name="toast_moved_to_bin">Nesne çöp kutusuna taşındı.</string>
     <string name="media_object_in_bin">Bu nesne çöp kutusunda. Geri yüklemek ister misin?</string>
     <string name="toast_restored">Nesne geri yüklendi.</string>
-    <string name="participant_btn_connect">Bağlan</string>
+    <string name="participant_btn_connect">Bağlantı kur</string>
     <!-- Sharing Extension Redesign -->
     <string name="sharing_select_destination">Hedef seçin</string>
     <string name="sharing_send_to_chat">Sohbete gönder</string>

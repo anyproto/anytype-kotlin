@@ -48,6 +48,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
@@ -939,17 +940,32 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         sideEffectHandler()
 
-        BottomSheetBehavior.from(binding.styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.styleToolbarColors).state =
-            BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.blockActionToolbar).state =
-            BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.undoRedoToolbar).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.styleToolbarBackground).state =
-            BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.simpleTableWidget).state =
-            BottomSheetBehavior.STATE_HIDDEN
+        // These editor toolbars are wrap_content MaterialCardView bottom sheets.
+        // BottomSheetBehavior's STATE_HIDDEN translation does not fully clear
+        // them, so a thin rounded top edge keeps peeking at the bottom of the
+        // screen. They start invisible (see layout) and a single state callback
+        // toggles draw-visibility: a sheet is drawn only while it is not hidden,
+        // so a hidden sheet can never peek regardless of its resting offset.
+        listOf(
+            binding.styleToolbarMain,
+            binding.styleToolbarOther,
+            binding.styleToolbarColors,
+            binding.blockActionToolbar,
+            binding.undoRedoToolbar,
+            binding.styleToolbarBackground,
+            binding.simpleTableWidget
+        ).forEach { sheet ->
+            BottomSheetBehavior.from(sheet).apply {
+                state = BottomSheetBehavior.STATE_HIDDEN
+                addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        bottomSheet.isInvisible = newState == BottomSheetBehavior.STATE_HIDDEN
+                    }
+
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+                })
+            }
+        }
 
     }
 

@@ -24,7 +24,7 @@
     <string name="data">Data</string>
     <string name="mode">Mode</string>
     <string name="log_out">Keluar log</string>
-    <string name="resume_account_failed_title">Couldn\'t restore session</string>
+    <string name="resume_account_failed_title">Tidak bisa mengembalikan sesi</string>
     <string name="resume_account_failed_message">Your session can\'t be resumed. Logging out will clear local app state; you\'ll need your recovery phrase to sign back in. Do you want to log out?</string>
     <string name="pin_code">Kode PIN</string>
     <string name="access">Akses</string>
@@ -79,12 +79,12 @@
     <string name="space_settings_error_icon">Gagal memperbarui ikon ruang. Silakan coba lagi.</string>
     <string name="manage_sections_title">Manage sections</string>
     <string name="section_unread">Belum dibaca</string>
-    <string name="section_my_favorites">My Favorites</string>
+    <string name="section_my_favorites">Favoritku</string>
     <string name="section_pinned">Tersemat</string>
     <string name="section_objects">Objek</string>
     <string name="section_recently_edited">Baru disunting</string>
     <string name="section_bin">Bak Sampah</string>
-    <string name="error_loading_sections">Error loading sections</string>
+    <string name="error_loading_sections">Galat memuat bagian</string>
     <string name="data_management">Manajemen data</string>
     <string name="deleted_account_danger_zone_msg">Begitu kamu meminta brankasmu dihapus, kamu punya waktu 30 hari untuk membatalkan permintaan ini. Setelah 30 hari, data brankas terenkripsimu akan dihapus secara permanen dari simpul cadangan, dan kamu tidak akan bisa masuk ke Anytype di perangkat baru.</string>
     <string name="danger_zone">Hapus akun (Hati-hati!)</string>
@@ -2096,7 +2096,7 @@
     <string name="web_publishing_copy_web_link">Salin Tautan Web</string>
     <string name="widgets_section_pinned">Tersemat</string>
     <string name="widgets_section_unread">Belum dibaca</string>
-    <string name="widgets_section_my_favorites">My Favorites</string>
+    <string name="widgets_section_my_favorites">Favoritku</string>
     <string name="widgets_section_object_types">Tipe</string>
     <string name="widgets_section_recently_edited">Baru Disunting</string>
     <string name="widgets_menu_new_object_type">Baru</string>

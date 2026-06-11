@@ -17,8 +17,7 @@ sealed class MembershipMainState {
         val tiers: List<Tier>,
         val membershipLevelDetails: String,
         val privacyPolicy: String,
-        val termsOfService: String,
-        val contactEmail: String
+        val termsOfService: String
     ) : MembershipMainState()
 
     data class ErrorState(val message: String) : MembershipMainState()
@@ -47,7 +46,6 @@ sealed class TierAction {
     data object SubmitClicked : TierAction()
     data class ManagePayment(val tierId: TierId) : TierAction()
     data class OpenUrl(val url: String?) : TierAction()
-    data object OpenEmail : TierAction()
     data object OnResendCodeClicked : TierAction()
     data class OnVerifyCodeClicked(val code: String) : TierAction()
     data object ChangeEmail : TierAction()
@@ -79,6 +77,5 @@ sealed class MembershipNavigation(val route: String) {
     data object Welcome : MembershipNavigation("welcome")
     data object Dismiss : MembershipNavigation("")
     data class OpenUrl(val url: String?) : MembershipNavigation("")
-    data class OpenEmail(val accountId: String?) : MembershipNavigation("")
     data class OpenErrorEmail(val error: String, val accountId: String?) : MembershipNavigation("")
 }

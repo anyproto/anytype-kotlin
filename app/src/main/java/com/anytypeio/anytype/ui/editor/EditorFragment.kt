@@ -26,6 +26,7 @@ import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
@@ -36,6 +37,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -45,6 +48,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.activityViewModels
@@ -95,6 +99,7 @@ import com.anytypeio.anytype.core_ui.tools.NoteHeaderItemDecorator
 import com.anytypeio.anytype.core_ui.tools.OutsideClickDetector
 import com.anytypeio.anytype.core_ui.tools.SlashWidgetFooterItemDecorator
 import com.anytypeio.anytype.core_ui.tools.StyleToolbarItemDecorator
+import com.anytypeio.anytype.core_ui.widgets.CircularFabButton
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
@@ -453,20 +458,26 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
      * on the old bottom toolbar, so this manual listener is the
      * replacement.
      *
+     * Uses instant isVisible toggles (not FAB show()/hide()) so all three
+     * bottom-bar buttons — Search/Create FABs and the Compose Discussion
+     * button — hide/show identically with no scale+fade mismatch.
+     *
      * Guarded by navigationToolbar.isVisible so an upward scroll during
      * multi-select / markup / other modes (where render() has set the FABs
-     * invisible) does not reveal them via show().
+     * invisible) does not reveal them.
      */
     private val fabScrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             if (dy > 4) {
-                binding.fabCreate.hide()
+                binding.fabCreate.isVisible = false
+                binding.fabSearchOnPage.isVisible = false
                 binding.discussionButton.isVisible = false
             } else if (dy < -4) {
                 val navToolbarVisible =
                     vm.controlPanelViewState.value?.navigationToolbar?.isVisible == true
                 if (!navToolbarVisible) return
-                binding.fabCreate.show()
+                binding.fabCreate.isVisible = true
+                binding.fabSearchOnPage.isVisible = true
                 if (vm.discussionButtonState.value !is
                     EditorViewModel.DiscussionButtonState.Hidden
                 ) {
@@ -664,14 +675,52 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .launchIn(lifecycleScope)
 
 
-        // DROID-4318: Editor bottom navigation replaced with two scroll-aware
-        // floating action buttons (fabCreate / discussionButton). Share / home
-        // / chat entry points moved to the home overlay (Task 4) — no editor
-        // wiring.
-        binding.fabCreate
-            .clicks()
-            .onEach { showCreateObjectSheet() }
-            .launchIn(lifecycleScope)
+        // DROID-4318 / DROID-4508: Editor bottom navigation is three Compose
+        // buttons (fabSearchOnPage / discussionButton / fabCreate) sharing the
+        // same circular look — background_secondary, subtle shadow, no border —
+        // so they hide/show and render identically. Share / home / chat entry
+        // points moved to the home overlay (Task 4) — no editor wiring.
+        binding.fabSearchOnPage.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                Box(modifier = Modifier.padding(8.dp)) {
+                    CircularFabButton(
+                        iconRes = R.drawable.ic_doc_search,
+                        contentDescription = stringResource(id = R.string.content_desc_search_button),
+                        backgroundColor = colorResource(id = R.color.background_secondary),
+                        elevation = 2.dp,
+                        showBorder = false,
+                        iconSize = 24.dp,
+                        onClick = { vm.onGlobalSearchClicked() }
+                    )
+                }
+            }
+        }
+
+        binding.fabCreate.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val navState by vm.navPanelState.collectAsStateWithLifecycle(
+                    initialValue = NavPanelState.Init
+                )
+                val isCreateEnabled =
+                    (navState as? NavPanelState.Default)?.isCreateEnabled == true
+                Box(modifier = Modifier.padding(8.dp)) {
+                    CircularFabButton(
+                        iconRes = R.drawable.ic_create_obj_32,
+                        contentDescription = stringResource(
+                            id = R.string.main_navigation_content_desc_create_button
+                        ),
+                        backgroundColor = colorResource(id = R.color.background_secondary),
+                        elevation = 2.dp,
+                        showBorder = false,
+                        iconSize = 24.dp,
+                        isEnabled = isCreateEnabled,
+                        onClick = { showCreateObjectSheet() }
+                    )
+                }
+            }
+        }
 
         binding.recycler.addOnScrollListener(fabScrollListener)
 
@@ -695,20 +744,22 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val state by vm.discussionButtonState.collectAsStateWithLifecycle()
-                when (val s = state) {
-                    is EditorViewModel.DiscussionButtonState.Comments -> {
-                        DiscussionButton(
-                            commentCount = s.count,
-                            onClick = { vm.onDiscussionButtonClicked() }
-                        )
+                Box(modifier = Modifier.padding(8.dp)) {
+                    when (val s = state) {
+                        is EditorViewModel.DiscussionButtonState.Comments -> {
+                            DiscussionButton(
+                                commentCount = s.count,
+                                onClick = { vm.onDiscussionButtonClicked() }
+                            )
+                        }
+                        is EditorViewModel.DiscussionButtonState.Empty -> {
+                            DiscussionButton(
+                                commentCount = 0,
+                                onClick = { vm.onDiscussionButtonClicked() }
+                            )
+                        }
+                        is EditorViewModel.DiscussionButtonState.Hidden -> { /* nothing */ }
                     }
-                    is EditorViewModel.DiscussionButtonState.Empty -> {
-                        DiscussionButton(
-                            commentCount = 0,
-                            onClick = { vm.onDiscussionButtonClicked() }
-                        )
-                    }
-                    is EditorViewModel.DiscussionButtonState.Hidden -> { /* nothing */ }
                 }
             }
         }
@@ -889,17 +940,32 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         sideEffectHandler()
 
-        BottomSheetBehavior.from(binding.styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.styleToolbarColors).state =
-            BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.blockActionToolbar).state =
-            BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.undoRedoToolbar).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.styleToolbarBackground).state =
-            BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.simpleTableWidget).state =
-            BottomSheetBehavior.STATE_HIDDEN
+        // These editor toolbars are wrap_content MaterialCardView bottom sheets.
+        // BottomSheetBehavior's STATE_HIDDEN translation does not fully clear
+        // them, so a thin rounded top edge keeps peeking at the bottom of the
+        // screen. They start invisible (see layout) and a single state callback
+        // toggles draw-visibility: a sheet is drawn only while it is not hidden,
+        // so a hidden sheet can never peek regardless of its resting offset.
+        listOf(
+            binding.styleToolbarMain,
+            binding.styleToolbarOther,
+            binding.styleToolbarColors,
+            binding.blockActionToolbar,
+            binding.undoRedoToolbar,
+            binding.styleToolbarBackground,
+            binding.simpleTableWidget
+        ).forEach { sheet ->
+            BottomSheetBehavior.from(sheet).apply {
+                state = BottomSheetBehavior.STATE_HIDDEN
+                addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                    override fun onStateChanged(bottomSheet: View, newState: Int) {
+                        bottomSheet.isInvisible = newState == BottomSheetBehavior.STATE_HIDDEN
+                    }
+
+                    override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+                })
+            }
+        }
 
     }
 
@@ -999,19 +1065,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             // TODO
         }.launchIn(lifecycleScope)
 
-        vm.navPanelState.onEach { state ->
-            if (hasBinding) {
-                // Mirror NavPanelState.Default.isCreateEnabled into the new
-                // fabCreate so disabled states (e.g. inside locked / template
-                // contexts) still apply. Visibility is driven by the
-                // navigationToolbar control-panel flag in render() and by
-                // the scroll listener.
-                val isCreateEnabled =
-                    (state as? NavPanelState.Default)?.isCreateEnabled == true
-                binding.fabCreate.isEnabled = isCreateEnabled
-                binding.fabCreate.alpha = if (isCreateEnabled) 1f else 0.5f
-            }
-        }.launchIn(lifecycleScope)
+        // NavPanelState.Default.isCreateEnabled is consumed directly inside the
+        // fabCreate ComposeView (see setupViews) to gate its click + dim it when
+        // disabled. Visibility is driven by the navigationToolbar control-panel
+        // flag in render() and by the scroll listener.
 
         with(lifecycleScope) {
             launch {
@@ -1673,13 +1730,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             // DROID-4318: use instant visibility toggles instead of
             // FloatingActionButton.show()/hide(), which animate scale+fade
             // over ~200ms and leave a touch-through window on the hiding
-            // FAB. The scroll-aware listener still uses show()/hide() —
-            // that's the canonical Material FAB use case.
+            // FAB. The scroll-aware listener also uses instant isVisible
+            // toggles so all three bottom-bar buttons (Search/Create FABs
+            // and the Compose Discussion button) hide/show identically.
             binding.fabCreate.isVisible = true
+            binding.fabSearchOnPage.isVisible = true
             binding.discussionButton.isVisible =
                 vm.discussionButtonState.value !is EditorViewModel.DiscussionButtonState.Hidden
         } else {
             binding.fabCreate.isVisible = false
+            binding.fabSearchOnPage.isVisible = false
             binding.discussionButton.isVisible = false
         }
 

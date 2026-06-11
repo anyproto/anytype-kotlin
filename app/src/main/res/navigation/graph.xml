@@ -407,10 +407,6 @@
         android:name="com.anytypeio.anytype.ui.payments.MembershipFragment" />
 
     <dialog
-        android:id="@+id/membershipUpdateScreen"
-        android:name="com.anytypeio.anytype.ui.payments.MembershipUpgradeFragment" />
-
-    <dialog
         android:id="@+id/galleryInstallationScreen"
         android:name="com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment" />
 
@@ -730,7 +726,7 @@
         android:name="com.anytypeio.anytype.ui.primitives.SpaceTypesFragment"
         android:label="SpaceMembersScreen" />
 
-    <fragment
+    <dialog
         android:id="@+id/mySitesScreen"
         android:name="com.anytypeio.anytype.ui.publishtoweb.MySitesFragment"
         android:label="MySitesScreen"/>

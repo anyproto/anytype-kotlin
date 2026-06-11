@@ -14,7 +14,6 @@ object MembershipConstants {
     const val MEMBERSHIP_LEVEL_DETAILS = "https://anytype.io/pricing"
     const val PRIVACY_POLICY = "https://anytype.io/app_privacy"
     const val TERMS_OF_SERVICE = "https://anytype.io/terms_of_use"
-    const val MEMBERSHIP_CONTACT_EMAIL = "membership-upgrade@anytype.io"
 
     val ACTIVE_TIERS_WITH_BANNERS = listOf(NONE_ID, OLD_EXPLORER_ID, STARTER_ID, PIONEER_ID)
 

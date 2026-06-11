@@ -42,6 +42,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<ShareSpaceViewModel> { factory }
 
+    private var removeMemberWarning: RemoveMemberWarning? = null
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,6 +66,10 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     inviteLinkAccessLevel = vm.inviteLinkAccessLevel.collectAsStateWithLifecycle().value,
                     inviteLinkAccessLoading = vm.inviteLinkAccessLoading.collectAsStateWithLifecycle().value,
                     confirmationDialogLevel = vm.inviteLinkConfirmationDialog.collectAsStateWithLifecycle().value,
+                    makeAdminConfirmation = vm.makeAdminConfirmation.collectAsStateWithLifecycle().value,
+                    makeAdminLoading = vm.makeAdminLoading.collectAsStateWithLifecycle().value,
+                    onMakeAdminConfirmed = vm::onMakeAdminAccepted,
+                    onMakeAdminCancelled = vm::onMakeAdminDismissed,
                     onInviteLinkAccessLevelSelected = vm::onInviteLinkAccessLevelSelected,
                     onInviteLinkAccessChangeConfirmed = vm::onInviteLinkAccessChangeConfirmed,
                     onInviteLinkAccessChangeCancel = vm::onInviteLinkAccessChangeCancel,
@@ -209,14 +215,17 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                 runCatching {
                     val dialog = RemoveMemberWarning.new(name = command.name)
                     dialog.onAccepted = {
-                        vm.onRemoveMemberAccepted(command.identity).also {
-                            dialog.dismiss()
-                        }
+                        vm.onRemoveMemberAccepted(command.identity)
                     }
+                    removeMemberWarning = dialog
                     dialog.show(childFragmentManager, null)
                 }.onFailure {
                     Timber.e(it, "Error while showing remove member warning")
                 }
+            }
+            is Command.DismissRemoveMemberWarning -> {
+                removeMemberWarning?.dismiss()
+                removeMemberWarning = null
             }
             is Command.Dismiss -> {
                 dismiss()
@@ -228,13 +237,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
             is Command.ShowMembershipScreen -> {
                 runCatching {
                     findNavController().navigate(R.id.paymentsScreen)
-                }.onFailure {
-                    Timber.e(it, "Error while navigation: $command")
-                }
-            }
-            is Command.ShowMembershipUpgradeScreen -> {
-                runCatching {
-                    findNavController().navigate(R.id.membershipUpdateScreen)
                 }.onFailure {
                     Timber.e(it, "Error while navigation: $command")
                 }

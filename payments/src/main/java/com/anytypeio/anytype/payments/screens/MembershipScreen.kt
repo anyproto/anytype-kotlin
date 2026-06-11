@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyRow
@@ -73,8 +74,8 @@ fun MainMembershipScreen(
     Box(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
-            .fillMaxWidth()
-            .wrapContentHeight()
+            .fillMaxSize()
+            .statusBarsPadding()
             .background(
                 color = colorResource(id = R.color.background_primary),
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
@@ -106,7 +107,6 @@ private fun MainContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 20.dp)
             .verticalScroll(rememberScrollState())
     ) {
         if (state is MembershipMainState.Default) {
@@ -134,7 +134,6 @@ private fun MainContent(
                 tierAction(TierAction.OpenUrl(state.termsOfService))
             })
             Spacer(modifier = Modifier.height(32.dp))
-            BottomText(tierAction = tierAction)
         }
         if (state is MembershipMainState.ErrorState) {
             Title()
@@ -296,38 +295,6 @@ fun LinkButton(text: String, action: () -> Unit) {
             contentDescription = "web link icon"
         )
     }
-}
-
-@Composable
-fun BottomText(
-    tierAction: (TierAction) -> Unit
-) {
-    val start = stringResource(id = R.string.payments_let_us_link_start)
-    val end = stringResource(id = R.string.payments_let_us_link_end)
-    val buildString = buildAnnotatedString {
-        append(start)
-        append(" ")
-        append(end)
-        pushStringAnnotation(
-            tag = "link", annotation = "www.anytype.io"
-        )
-        addStyle(
-            style = SpanStyle(textDecoration = TextDecoration.Underline),
-            start = start.length + 1,
-            end = start.length + 1 + end.length
-        )
-        pop()
-    }
-    Text(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-            .wrapContentHeight()
-            .noRippleThrottledClickable { tierAction(TierAction.OpenEmail) },
-        text = buildString,
-        style = Caption1Regular,
-        color = colorResource(id = R.color.text_primary)
-    )
 }
 
 val headerTextStyle = TextStyle(

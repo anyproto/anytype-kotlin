@@ -65,12 +65,12 @@ fun TopToolbar(
                 .padding(start = 16.dp)
                 .size(44.dp)
                 .shadow(
-                    elevation = 20.dp,
+                    elevation = 2.dp,
                     shape = CircleShape,
                     clip = false
                 )
                 .background(
-                    color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.navigation_panel),
+                    color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.background_secondary),
                     shape = CircleShape
                 )
                 .noRippleThrottledClickable {
@@ -92,15 +92,15 @@ fun TopToolbar(
             modifier = Modifier
                 .align(Alignment.Center)
                 .fillMaxWidth()
-                .padding(start = 64.dp, end = 120.dp)
+                .padding(start = 68.dp, end = 116.dp)
                 .fillMaxHeight()
                 .shadow(
-                    elevation = 20.dp,
+                    elevation = 2.dp,
                     shape = RoundedCornerShape(22.dp),
                     clip = false
                 )
                 .background(
-                    color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.navigation_panel),
+                    color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.background_secondary),
                     shape = RoundedCornerShape(22.dp)
                 )
                 .noRippleThrottledClickable {
@@ -132,19 +132,19 @@ fun TopToolbar(
                 .align(Alignment.CenterEnd)
                 .padding(end = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             if (uiSyncStatusBadgeState is UiSyncStatusBadgeState.Visible) {
                 Box(
                     modifier = Modifier
                         .size(44.dp)
                         .shadow(
-                            elevation = 20.dp,
+                            elevation = 2.dp,
                             shape = CircleShape,
                             clip = false
                         )
                         .background(
-                            color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.navigation_panel),
+                            color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.background_secondary),
                             shape = CircleShape
                         )
                         .noRippleThrottledClickable {
@@ -166,12 +166,12 @@ fun TopToolbar(
                 modifier = Modifier
                     .size(44.dp)
                     .shadow(
-                        elevation = 20.dp,
+                        elevation = 2.dp,
                         shape = CircleShape,
                         clip = false
                     )
                     .background(
-                        color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.navigation_panel),
+                        color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.background_secondary),
                         shape = CircleShape
                     )
                     .noRippleThrottledClickable {

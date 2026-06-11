@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.core.view.updateLayoutParams
 import androidx.core.widget.doAfterTextChanged
@@ -94,9 +93,8 @@ abstract class IconPickerFragmentBase<T> :
                 )
             }
         }
-        skipCollapsed()
-        expand()
         setupBottomToolbarInsets()
+        skipCollapsed()
     }
 
     private fun setupBottomToolbarInsets() {
@@ -104,7 +102,7 @@ abstract class IconPickerFragmentBase<T> :
         val initialBottomMargin = (bottomToolbar.layoutParams as LinearLayout.LayoutParams)
             .bottomMargin
 
-        fixBottomSheetNavigationBarGap(applyTopSystemBarInset = false) { navigationBars ->
+        fixBottomSheetNavigationBarGap { navigationBars ->
             bottomToolbar.updateLayoutParams<LinearLayout.LayoutParams> {
                 bottomMargin = initialBottomMargin + navigationBars.bottom
             }
@@ -134,6 +132,7 @@ abstract class IconPickerFragmentBase<T> :
             jobs += subscribe(vm.state()) { render(it) }
         }
         super.onStart()
+        expand()
     }
 
     private fun render(state: ViewState) {

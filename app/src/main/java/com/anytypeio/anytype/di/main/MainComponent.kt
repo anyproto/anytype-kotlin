@@ -36,7 +36,6 @@ import com.anytypeio.anytype.di.feature.chats.SelectChatReactionDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.membership.MembershipComponentDependencies
-import com.anytypeio.anytype.di.feature.membership.MembershipUpdateComponentDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.RequestJoinSpaceDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.ShareSpaceDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.SpaceJoinRequestDependencies
@@ -137,7 +136,6 @@ interface MainComponent :
     GalleryInstallationComponentDependencies,
     NotificationDependencies,
     GlobalSearchDependencies,
-    MembershipUpdateComponentDependencies,
     VaultComponentDependencies,
     AllContentDependencies,
     ChatComponentDependencies,
@@ -344,11 +342,6 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(GlobalSearchDependencies::class)
     abstract fun provideGlobalSearchDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
-    @ComponentDependenciesKey(MembershipUpdateComponentDependencies::class)
-    abstract fun provideMembershipUpdateComponentDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

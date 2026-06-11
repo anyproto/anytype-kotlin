@@ -20,7 +20,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.UrlBuilder
-import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeNumberOfSpaceMembers
 import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
@@ -103,6 +102,12 @@ class ShareSpaceViewModel(
     val members = MutableStateFlow<List<SpaceMemberView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
+    val currentUserPermissions = MutableStateFlow<SpaceMemberPermissions?>(null)
+
+    // Pending "Make admin?" confirmation for a member (null = hidden)
+    val makeAdminConfirmation = MutableStateFlow<SpaceMemberView?>(null)
+    // True while the promote-to-admin request is in flight (keeps the sheet open + shows loading)
+    val makeAdminLoading = MutableStateFlow(false)
     val spaceLimitsState = MutableStateFlow<SpaceLimitsState>(SpaceLimitsState.Init)
     val isLoadingInProgress = MutableStateFlow(false)
     val shareSpaceErrors = MutableStateFlow<ShareSpaceErrors>(ShareSpaceErrors.Hidden)
@@ -176,6 +181,7 @@ class ShareSpaceViewModel(
             permissions
                 .observe(space = vmParams.space)
                 .collect { permission ->
+                    currentUserPermissions.value = permission
                     isCurrentUserOwner.value = permission == OWNER
                     if (permission == OWNER) {
                         analytics.sendEvent(eventName = screenSettingsSpaceShare)
@@ -225,11 +231,12 @@ class ShareSpaceViewModel(
                 spaceLimits,
                 spaceViewFlow,
                 container.subscribe(spaceMembersSearchParams),
-                isCurrentUserOwner,
+                currentUserPermissions,
                 _activeTier.filterIsInstance<ActiveTierState.Success>()
-            ) { (sharedSpacesCount, sharedSpacesLimit), spaceView, membersResponse, isCurrentUserOwner, activeTier ->
+            ) { (sharedSpacesCount, sharedSpacesLimit), spaceView, membersResponse, currentUserPermissions, activeTier ->
                 CombineResult(
-                    isCurrentUserOwner = isCurrentUserOwner,
+                    isCurrentUserOwner = currentUserPermissions == OWNER,
+                    currentUserPermissions = currentUserPermissions,
                     spaceView = spaceView,
                     tierId = activeTier.tierId,
                     spaceMembers = membersResponse.toSpaceMembers(),
@@ -255,6 +262,7 @@ class ShareSpaceViewModel(
                     spaceView = spaceView,
                     urlBuilder = urlBuilder,
                     isCurrentUserOwner = result.isCurrentUserOwner,
+                    currentUserPermissions = result.currentUserPermissions,
                     account = account,
                     stringResourceProvider = stringResourceProvider
                 ).sortedByDescending { it.isUser }
@@ -421,6 +429,57 @@ class ShareSpaceViewModel(
         )
     }
 
+    /**
+     * Owner tapped "Admin" in the member role selector. Promoting to Admin requires
+     * explicit confirmation; if the member is already an Admin this is a no-op.
+     */
+    fun onMakeAdminClicked(view: SpaceMemberView) {
+        Timber.d("onMakeAdminClicked, view: [$view]")
+        if (view.obj.permissions == SpaceMemberPermissions.ADMIN) return
+        makeAdminConfirmation.value = view
+    }
+
+    fun onMakeAdminDismissed() {
+        makeAdminConfirmation.value = null
+        makeAdminLoading.value = false
+    }
+
+    fun onMakeAdminAccepted(view: SpaceMemberView) {
+        // No space-limit guard here: the "Admin" role option is already gated by
+        // canChangeReaderToWriter in the member dropdown (see getParticipantInfo),
+        // so the confirmation only opens when promotion is allowed.
+        if (view.obj.permissions == SpaceMemberPermissions.ADMIN) {
+            makeAdminConfirmation.value = null
+            return
+        }
+        viewModelScope.launch {
+            // Keep the confirmation sheet open with a loading indicator until the
+            // request completes; this call can take a moment.
+            makeAdminLoading.value = true
+            changeSpaceMemberPermissions.async(
+                ChangeSpaceMemberPermissions.Params(
+                    space = vmParams.space,
+                    identity = view.obj.identity,
+                    permission = SpaceMemberPermissions.ADMIN
+                )
+            ).fold(
+                onFailure = { e ->
+                    Timber.e(e, "Error while promoting member to admin")
+                    makeAdminLoading.value = false
+                    proceedWithMultiplayerError(e)
+                },
+                onSuccess = {
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.changeSpaceMemberPermissions,
+                        props = Props(mapOf(EventsPropertiesKey.type to "Admin"))
+                    )
+                    makeAdminLoading.value = false
+                    makeAdminConfirmation.value = null
+                }
+            )
+        }
+    }
+
     fun onRemoveMemberClicked(
         view: SpaceMemberView
     ) {
@@ -452,6 +511,7 @@ class ShareSpaceViewModel(
                             e,
                             "Error while removing space member (identity: $identity, space: ${vmParams.space})"
                         )
+                        commands.emit(Command.DismissRemoveMemberWarning)
                         when (e) {
                             is java.net.SocketTimeoutException,
                             is java.net.UnknownHostException,
@@ -465,10 +525,12 @@ class ShareSpaceViewModel(
                     onSuccess = {
                         Timber.d("Successfully removed space member (identity: $identity, space: ${vmParams.space})")
                         analytics.sendEvent(eventName = removeSpaceMember)
+                        commands.emit(Command.DismissRemoveMemberWarning)
                     }
                 )
             } catch (e: Exception) {
                 Timber.e(e, "Unexpected error while removing space member")
+                commands.emit(Command.DismissRemoveMemberWarning)
                 sendToast("An unexpected error occurred. Please try again.")
             }
         }
@@ -492,6 +554,7 @@ class ShareSpaceViewModel(
     fun onContextActionClicked(view: SpaceMemberView, actionType: ActionType) {
         Timber.d("onContextActionClicked, view: [$view], actionType: $actionType")
         when (actionType) {
+            ActionType.MAKE_ADMIN -> onMakeAdminClicked(view)
             ActionType.CAN_VIEW -> onProceedWithChangingParticipantToViewer(view)
             ActionType.CAN_EDIT -> onProceedWithChangingParticipantToEditor(view)
             ActionType.REMOVE_MEMBER -> onRemoveMemberClicked(view)
@@ -501,14 +564,8 @@ class ShareSpaceViewModel(
 
     fun onIncentiveClicked() {
         Timber.d("onIncentiveClicked")
-        val activeTier = (_activeTier.value as? ActiveTierState.Success) ?: return
-        val isPossibleToUpgrade = activeTier.tierId.isPossibleToUpgradeNumberOfSpaceMembers()
         viewModelScope.launch {
-            if (isPossibleToUpgrade) {
-                commands.emit(Command.ShowMembershipScreen)
-            } else {
-                commands.emit(Command.ShowMembershipUpgradeScreen)
-            }
+            commands.emit(Command.ShowMembershipScreen)
         }
     }
 
@@ -975,12 +1032,12 @@ class ShareSpaceViewModel(
         data class ShareInviteLink(val link: String) : Command()
         data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
         data class ShowRemoveMemberWarning(val identity: Id, val name: String) : Command()
+        data object DismissRemoveMemberWarning : Command()
         data class ShowMultiplayerError(val error: MultiplayerError.Generic) : Command()
         data object ShowHowToShareSpace : Command()
         data object ToastPermission : Command()
         data object Dismiss : Command()
         data object ShowMembershipScreen : Command()
-        data object ShowMembershipUpgradeScreen : Command()
         data class OpenParticipantObject(val objectId: Id, val space: SpaceId) : Command()
         data object ShowManageSpacesScreen : Command()
     }
@@ -1007,6 +1064,7 @@ class ShareSpaceViewModel(
 
     data class CombineResult(
         val isCurrentUserOwner: Boolean,
+        val currentUserPermissions: SpaceMemberPermissions?,
         val spaceView: ObjectWrapper.SpaceView,
         val tierId: TierId,
         val spaceMembers: List<ObjectWrapper.SpaceMember>,
@@ -1034,6 +1092,7 @@ data class SpaceMemberView(
     )
 
     enum class ActionType {
+        MAKE_ADMIN,
         CAN_VIEW,
         CAN_EDIT,
         REMOVE_MEMBER,
@@ -1057,6 +1116,8 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
     canChangeWriterToReader: Boolean,
     canChangeReaderToWriter: Boolean,
     isCurrentUserOwner: Boolean,
+    currentUserPermissions: SpaceMemberPermissions?,
+    isUser: Boolean,
     stringResourceProvider: StringResourceProvider
 ): ParticipantInfo {
     return when (status) {
@@ -1064,16 +1125,57 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
             // Status text shows permission level for active participants
             val statusText = when (permissions) {
                 SpaceMemberPermissions.READER -> stringResourceProvider.getMultiplayerViewer()
-                SpaceMemberPermissions.WRITER,
-                SpaceMemberPermissions.ADMIN -> stringResourceProvider.getMultiplayerEditor()
+                SpaceMemberPermissions.WRITER -> stringResourceProvider.getMultiplayerEditor()
+                SpaceMemberPermissions.ADMIN -> stringResourceProvider.getMultiplayerAdmin()
                 SpaceMemberPermissions.OWNER -> stringResourceProvider.getMultiplayerOwner()
                 SpaceMemberPermissions.NO_PERMISSIONS -> stringResourceProvider.getMultiplayerNoPermissions()
                 null -> null
             }
 
-            // Context actions are only available for non-owners when current user is owner
-            val contextActions = if (isCurrentUserOwner && permissions != SpaceMemberPermissions.OWNER) {
-                buildList {
+            // Role assignment (Admin/Editor/Viewer) is Owner-only.
+            // Removal: Owner can remove any non-owner; Admin can remove Editors/Viewers only.
+            // A member's own row never shows the role selector.
+            val isOwnerActor = currentUserPermissions == SpaceMemberPermissions.OWNER
+            val isAdminActor = currentUserPermissions == SpaceMemberPermissions.ADMIN
+            val showRoleOptions = isOwnerActor &&
+                    permissions != SpaceMemberPermissions.OWNER &&
+                    !isUser
+            val canRemoveTarget = when {
+                isUser -> false
+                permissions == SpaceMemberPermissions.OWNER -> false
+                isOwnerActor -> true
+                isAdminActor -> permissions == SpaceMemberPermissions.READER ||
+                        permissions == SpaceMemberPermissions.WRITER
+                else -> false
+            }
+            val contextActions = buildList {
+                if (showRoleOptions) {
+                    // Promote to Admin action
+                    add(
+                        ContextAction(
+                            title = stringResourceProvider.getMultiplayerAdmin(),
+                            isSelected = permissions == SpaceMemberPermissions.ADMIN,
+                            isDestructive = false,
+                            isEnabled = canChangeReaderToWriter ||
+                                    permissions == SpaceMemberPermissions.WRITER ||
+                                    permissions == SpaceMemberPermissions.ADMIN,
+                            actionType = ActionType.MAKE_ADMIN
+                        )
+                    )
+
+                    // Change to Editor action
+                    add(
+                        ContextAction(
+                            title = stringResourceProvider.getMultiplayerEditor(),
+                            isSelected = permissions == SpaceMemberPermissions.WRITER,
+                            isDestructive = false,
+                            isEnabled = canChangeReaderToWriter ||
+                                    permissions == SpaceMemberPermissions.WRITER ||
+                                    permissions == SpaceMemberPermissions.ADMIN,
+                            actionType = ActionType.CAN_EDIT
+                        )
+                    )
+
                     // Change to Viewer action
                     add(
                         ContextAction(
@@ -1084,22 +1186,10 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
                             actionType = ActionType.CAN_VIEW
                         )
                     )
+                }
 
-                    // Change to Editor action
-                    add(
-                        ContextAction(
-                            title = stringResourceProvider.getMultiplayerEditor(),
-                            isSelected = permissions == SpaceMemberPermissions.WRITER ||
-                                    permissions == SpaceMemberPermissions.ADMIN,
-                            isDestructive = false,
-                            isEnabled = canChangeReaderToWriter ||
-                                    permissions == SpaceMemberPermissions.WRITER ||
-                                    permissions == SpaceMemberPermissions.ADMIN,
-                            actionType = ActionType.CAN_EDIT
-                        )
-                    )
-
-                    // Remove Member action
+                // Remove Member action
+                if (canRemoveTarget) {
                     add(
                         ContextAction(
                             title = stringResourceProvider.getMultiplayerRemoveMember(),
@@ -1110,8 +1200,6 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
                         )
                     )
                 }
-            } else {
-                emptyList()
             }
 
             ParticipantInfo(statusText = statusText, contextActions = contextActions)
@@ -1177,6 +1265,8 @@ fun List<ObjectWrapper.SpaceMember>.toSpaceMemberView(
     spaceView: ObjectWrapper.SpaceView,
     urlBuilder: UrlBuilder,
     isCurrentUserOwner: Boolean,
+    currentUserPermissions: SpaceMemberPermissions? =
+        if (isCurrentUserOwner) SpaceMemberPermissions.OWNER else null,
     account: Id? = null,
     stringResourceProvider: StringResourceProvider
 ): List<SpaceMemberView> = mapNotNull { spaceMember ->
@@ -1196,6 +1286,8 @@ fun List<ObjectWrapper.SpaceMember>.toSpaceMemberView(
         canChangeWriterToReader = canChangeWriterToReader,
         canChangeReaderToWriter = canChangeReaderToWriter,
         isCurrentUserOwner = isCurrentUserOwner,
+        currentUserPermissions = currentUserPermissions,
+        isUser = isUser,
         stringResourceProvider = stringResourceProvider
     )
 

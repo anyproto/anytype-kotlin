@@ -4948,6 +4948,8 @@ message Rpc {
                 string contextId = 1;
                 repeated anytype.model.Block blocks = 2;
                 anytype.model.Range selectedTextRange = 3;
+                // optional. when set and the request contains multiple blocks, selectedTextRange is applied to the first block and selectedTextRangeLastBlock to the last block. {0,0} range means the whole block
+                anytype.model.Range selectedTextRangeLastBlock = 4;
             }
 
             message Response {
@@ -5017,6 +5019,8 @@ message Rpc {
                 string contextId = 1;
                 repeated anytype.model.Block blocks = 2;
                 anytype.model.Range selectedTextRange = 3;
+                // optional. when set and the request contains multiple blocks, selectedTextRange is applied to the first block and selectedTextRangeLastBlock to the last block. {0,0} range means the whole block
+                anytype.model.Range selectedTextRangeLastBlock = 4;
             }
 
             message Response {

@@ -14,6 +14,8 @@ interface AuthDataStore {
     suspend fun selectAccount(command: Command.AccountSelect): AccountSetup
     suspend fun createAccount(command: Command.AccountCreate): AccountSetup
 
+    suspend fun preloadRemainingSpaces()
+
     suspend fun deleteAccount() : AccountStatus
     suspend fun restoreAccount() : AccountStatus
 

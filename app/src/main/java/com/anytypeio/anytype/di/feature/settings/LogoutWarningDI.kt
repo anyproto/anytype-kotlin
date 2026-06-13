@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.launch.RemainingSpacesPreloader
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -57,13 +58,15 @@ object LogoutWarningModule {
         user: UserSettingsRepository,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
-        awaitAccountStartManager: AwaitAccountStartManager
+        awaitAccountStartManager: AwaitAccountStartManager,
+        remainingSpacesPreloader: RemainingSpacesPreloader
     ): Logout = Logout(
         repo = repo,
         config = provider,
         user = user,
         dispatchers = dispatchers,
         spaceManager = spaceManager,
-        awaitAccountStartManager = awaitAccountStartManager
+        awaitAccountStartManager = awaitAccountStartManager,
+        remainingSpacesPreloader = remainingSpacesPreloader
     )
 }

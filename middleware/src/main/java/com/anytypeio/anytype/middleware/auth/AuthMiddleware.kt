@@ -29,6 +29,10 @@ class AuthMiddleware(
         command: Command.AccountCreate
     ) : AccountSetup = middleware.accountCreate(command)
 
+    override suspend fun preloadRemainingSpaces() {
+        middleware.accountPreloadRemainingSpaces()
+    }
+
     override suspend fun migrateAccount(
         account: Id,
         path: String

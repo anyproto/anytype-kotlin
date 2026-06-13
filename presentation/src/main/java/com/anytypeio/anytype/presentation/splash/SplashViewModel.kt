@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
+import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.core_models.DVFilter
@@ -76,7 +77,8 @@ class SplashViewModel(
     private val migration: MigrationHelperDelegate,
     private val deepLinkResolver: DeepLinkResolver,
     private val pendingIntentStore: PendingIntentStore,
-    private val searchObjects: SearchObjects
+    private val searchObjects: SearchObjects,
+    private val preferredSpaceIdHolder: PreferredSpaceIdHolder
 ) : ViewModel(),
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate,
     MigrationHelperDelegate by migration {
@@ -288,6 +290,7 @@ class SplashViewModel(
     }
 
     fun onIntentTriggeredByChatPush(space: Id, chat: Id) {
+        preferredSpaceIdHolder.set(space)
         viewModelScope.launch {
             spaceManager.set(space = space)
                 .onSuccess {

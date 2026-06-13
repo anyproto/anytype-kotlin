@@ -24,6 +24,8 @@
     <string name="data">Datos</string>
     <string name="mode">Modo</string>
     <string name="log_out">Cerrar sesión</string>
+    <string name="resume_account_failed_title">No se ha restaurado la sesión</string>
+    <string name="resume_account_failed_message">No ha sido posible reanudar tu sesión. Si cierras la sesión ahora, se borrará el estado de la aplicación en este dispositivo y necesitarás tu frase de recuperación para volver a entrar. ¿Quieres cerrar la sesión? </string>
     <string name="pin_code">Código PIN</string>
     <string name="access">Acceso</string>
     <string name="wallpaper">Fondo de pantalla</string>
@@ -77,6 +79,7 @@
     <string name="space_settings_error_icon">No se ha podido actualizar el icono del espacio. Inténtalo de nuevo.</string>
     <string name="manage_sections_title">Gestionar secciones</string>
     <string name="section_unread">No leído</string>
+    <string name="section_my_favorites">Mis favoritos</string>
     <string name="section_pinned">Anclado</string>
     <string name="section_objects">Objetos</string>
     <string name="section_recently_edited">Editado recientemente</string>
@@ -867,12 +870,17 @@
     <string name="create_space_space_name">Nombre del espacio</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Crear Inicio</string>
-    <string name="homepage_picker_description">Elige lo que veréis tú y otros miembros del canal al abrirlo. Puedes cambiarlo en los ajustes en cualquier momento.</string>
+    <string name="homepage_picker_description">Los miembros llegarán directamente aquí en lugar de explorar la navegación.</string>
     <string name="homepage_picker_chat">Chat</string>
     <string name="homepage_picker_page">Página</string>
     <string name="homepage_picker_collection">Colección</string>
-    <string name="homepage_picker_empty">Vacío</string>
-    <string name="homepage_picker_later">Más tarde</string>
+    <string name="homepage_picker_continue">Continuar</string>
+    <string name="homepage_picker_not_now">Ahora no</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Inicio</string>
+    <string name="space_home_no_home_title">Sin Inicio </string>
+    <string name="space_home_no_home_subtitle">Al entrar, se abre la navegación </string>
+    <string name="widget_menu_change_home">Cambiar Inicio</string>
     <string name="invite_members_widget_title">Invitar a otras personas</string>
     <string name="invite_members_widget_description">Invita a otras personas a este canal para empezar a colaborar. </string>
     <string name="generic_error">Algo ha salido mal. Inténtalo de nuevo.</string>
@@ -1339,6 +1347,10 @@
     <string name="multiplayer_approve_request">Establecer acceso</string>
     <string name="multiplayer_view_request">Ver solicitud</string>
     <string name="multiplayer_owner">Propietario</string>
+    <string name="multiplayer_admin">Administrador</string>
+    <string name="multiplayer_make_admin_title">¿Quieres convertir a este miembro en administrador?</string>
+    <string name="multiplayer_make_admin_description">Los administradores pueden borrar mensajes, eliminar miembros y borrar definitivamente los objetos de la papelera.</string>
+    <string name="multiplayer_make_admin_button">Hacer administrador</string>
     <string name="multiplayer_no_permissions">Sin permisos</string>
     <string name="multiplayer_pending">Pendiente</string>
     <string name="multiplayer_can_edit">Puede editar</string>
@@ -1351,6 +1363,9 @@
     <string name="multiplayer_space_join_request_header">%1$s solicita acceder al espacio %2$s</string>
     <string name="multiplayer_remove_member">Eliminar miembro</string>
     <string name="multiplayer_remove_member_warning_text">%1$s se eliminará del espacio.</string>
+    <string name="multiplayer_remove_member_title">¿Quieres eliminar este miembro del canal?</string>
+    <string name="multiplayer_remove_member_description">Perderá el acceso al canal inmediatamente. Según la configuración de tu invitación, es posible que vuelva a unirse o a solicitar la admisión.</string>
+    <string name="multiplayer_remove_member_button">Eliminar miembro</string>
     <string name="multiplayer_request_sent_toast">Solicitud enviada</string>
     <string name="multiplayer_space_stop_sharing">Dejar de compartir</string>
     <string name="multiplayer_space_stop_sharing_space">Dejar de compartir el espacio</string>
@@ -1772,6 +1787,11 @@
     <string name="chat_attachment_media">Subir medios</string>
     <string name="chat_attachment_upload">Cargar</string>
     <string name="chat_attach">Adjuntar</string>
+    <string name="upload_success_snackbar_image">Imagen nueva añadida</string>
+    <string name="upload_success_snackbar_video">Vídeo nuevo añadido</string>
+    <string name="upload_success_snackbar_file">Archivo nuevo añadido</string>
+    <string name="upload_success_snackbar_mixed">Archivos nuevos añadidos</string>
+    <string name="upload_success_snackbar_action_open">Abrir %1$s</string>
     <string name="chats_reply">Responder</string>
     <string name="chats_add_reaction">Añadir reacción</string>
     <string name="chat_send_message_rate_limit_title">¡Calma! ¡Estás escribiendo muy deprisa!</string>
@@ -2010,6 +2030,9 @@
     <string name="notifications_all_short">Todo</string>
     <string name="notifications_mentions_short">Menciones</string>
     <string name="notifications_disable_short">Desactivar</string>
+    <string name="notification_option_enable">Habilitar</string>
+    <string name="notification_option_mute_and_hide">Silenciar y ocultar</string>
+    <string name="notification_option_disabled">Deshabilitado</string>
     <string name="space_notify_unmute">No silenciar</string>
     <string name="space_notify_mute">Silenciar</string>
     <string name="vault_pinned_limit_message">Tu límite actual es de %1$d espacios anclados. Desancla alguno si quieres añadir otro nuevo.</string>
@@ -2068,8 +2091,8 @@
     <string name="share_space_error_make_private_failed">No se ha podido hacer privado el espacio. Inténtalo de nuevo más tarde.</string>
     <string name="private_local_yours_forever">cifrado, local, tuyo para siempre</string>
     <string name="private_channel">Canal directo</string>
-    <string name="space_header_private_channel">Private channel</string>
-    <string name="space_header_group_channel">Group channel</string>
+    <string name="space_header_private_channel">Canal privado</string>
+    <string name="space_header_group_channel">Canal de grupo</string>
     <string name="wallpaper_item_space_icon_color">Color por defecto</string>
     <string name="publish_to_web">Publicar en la web</string>
     <string name="preferences">Preferencias</string>
@@ -2086,7 +2109,8 @@
     <string name="web_publishing_copy_web_link">Copiar enlace web</string>
     <string name="widgets_section_pinned">Anclado</string>
     <string name="widgets_section_unread">No leído</string>
-    <string name="widgets_section_object_types">Objetos</string>
+    <string name="widgets_section_my_favorites">Mis favoritos</string>
+    <string name="widgets_section_object_types">Tipos</string>
     <string name="widgets_section_recently_edited">Editado recientemente</string>
     <string name="widgets_menu_new_object_type">Nuevo</string>
     <string name="widgets_menu_delete_object_type">Eliminar tipo de objeto</string>

@@ -24,6 +24,8 @@
     <string name="data">Данные</string>
     <string name="mode">Режим</string>
     <string name="log_out">Выйти</string>
+    <string name="resume_account_failed_title">Couldn\'t restore session</string>
+    <string name="resume_account_failed_message">Your session can\'t be resumed. Logging out will clear local app state; you\'ll need your recovery phrase to sign back in. Do you want to log out?</string>
     <string name="pin_code">PIN-код</string>
     <string name="access">Доступ</string>
     <string name="wallpaper">Обои</string>
@@ -77,6 +79,7 @@
     <string name="space_settings_error_icon">Не удалось обновить значок пространства. Попробуйте ещё раз. </string>
     <string name="manage_sections_title">Manage sections</string>
     <string name="section_unread">Непрочитанные</string>
+    <string name="section_my_favorites">My Favorites</string>
     <string name="section_pinned">Закреплённые</string>
     <string name="section_objects">Объекты</string>
     <string name="section_recently_edited">Недавно обновлено</string>
@@ -871,12 +874,17 @@
     <string name="create_space_space_name">Название пространства</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Create Home</string>
-    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
     <string name="homepage_picker_chat">Чат</string>
     <string name="homepage_picker_page">Страница</string>
     <string name="homepage_picker_collection">Коллекция</string>
-    <string name="homepage_picker_empty">Пусто</string>
-    <string name="homepage_picker_later">Не сейчас</string>
+    <string name="homepage_picker_continue">Продолжить</string>
+    <string name="homepage_picker_not_now">Не сейчас</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Главная</string>
+    <string name="space_home_no_home_title">No home</string>
+    <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
+    <string name="widget_menu_change_home">Change Home</string>
     <string name="invite_members_widget_title">Invite Members</string>
     <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
     <string name="generic_error">Произошла ошибка. Попробуйте ещё раз.</string>
@@ -1090,7 +1098,7 @@
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Это Ваш Ключ</string>
-    <string name="onboarding_key_description">Заменяет логин и пароль. Берегите его — только Вы отвечаете за Ваши данные. Ключ также можно будет найти в настройках приложения.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Показать мой Ключ</string>
     <string name="onboarding_tap_to_reveal">Показать и скопировать</string>
     <string name="onboarding_key_skip">Пропустить</string>
@@ -1111,7 +1119,7 @@
     <string name="onboarding_recovery_phrase_description">Ключ представляет собой фразу восстановления — 12 случайных слов, которые генерируют Ваше Хранилище на этом устройстве. </string>
     <string name="onboarding_recovery_phrase_description_2_title">У кого Ключ — у того и доступ</string>
     <string name="onboarding_recovery_phrase_description_2">Любой, кто знает эти слова, сможет получить доступ к Вашему Хранилищу. Сейчас Вы — единственный в мире человек, кому они известны.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Только Вы отвечаете за него</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
     <string name="onboarding_recovery_phrase_description_3">Даже всех вычислительных ресурсов на Земле не хватит для взлома. Если Вы потеряете Ключ, доступ будет утерян навсегда. Храните его в надёжном месте: в менеджере паролей или на бумаге. </string>
     <string name="onboarding_recovery_phrase_description_4">Даже всех вычислительных ресурсов на Земле не хватит для взлома. Если Вы его потеряете, восстановить его будет невозможно. Так что храните Ключ в надёжном месте!</string>
     <string name="onboarding_how_to_save_my_phrase">Как хранить мой Ключ?</string>
@@ -1347,6 +1355,10 @@
     <string name="multiplayer_approve_request">Установить доступ</string>
     <string name="multiplayer_view_request">Посмотреть запрос</string>
     <string name="multiplayer_owner">Владелец</string>
+    <string name="multiplayer_admin">Admin</string>
+    <string name="multiplayer_make_admin_title">Make the member an admin?</string>
+    <string name="multiplayer_make_admin_description">Admins can delete messages, remove members, and permanently delete objects from Bin.</string>
+    <string name="multiplayer_make_admin_button">Make Admin</string>
     <string name="multiplayer_no_permissions">Разрешения не требуются</string>
     <string name="multiplayer_pending">Ожидание</string>
     <string name="multiplayer_can_edit">Can edit</string>
@@ -1359,6 +1371,9 @@
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_remove_member_warning_text">%1$s будет удален из пространства</string>
+    <string name="multiplayer_remove_member_title">Remove the member from this channel?</string>
+    <string name="multiplayer_remove_member_description">%@ будет удален из пространства.</string>
+    <string name="multiplayer_remove_member_button">Remove Member</string>
     <string name="multiplayer_request_sent_toast">Запрос отправлен</string>
     <string name="multiplayer_space_stop_sharing">Закрыть доступ</string>
     <string name="multiplayer_space_stop_sharing_space">Прекратить совместное использование пространства</string>
@@ -1798,6 +1813,11 @@
     <string name="chat_attachment_media">Загрузить медиафайл</string>
     <string name="chat_attachment_upload">Загрузить</string>
     <string name="chat_attach">Прикрепить</string>
+    <string name="upload_success_snackbar_image">New image added</string>
+    <string name="upload_success_snackbar_video">New video added</string>
+    <string name="upload_success_snackbar_file">New file added</string>
+    <string name="upload_success_snackbar_mixed">New files added</string>
+    <string name="upload_success_snackbar_action_open">Open %1$s</string>
     <string name="chats_reply">Ответить</string>
     <string name="chats_add_reaction">Добавить реакцию</string>
     <string name="chat_send_message_rate_limit_title">Удерживаем! Обнаружен Turbo typing!</string>
@@ -2036,6 +2056,9 @@
     <string name="notifications_all_short">Все</string>
     <string name="notifications_mentions_short">Упоминания</string>
     <string name="notifications_disable_short">Отключить</string>
+    <string name="notification_option_enable">Включить</string>
+    <string name="notification_option_mute_and_hide">Mute and hide</string>
+    <string name="notification_option_disabled">Отключено</string>
     <string name="space_notify_unmute">Включить звук</string>
     <string name="space_notify_mute">Заглушить</string>
     <string name="vault_pinned_limit_message">%1$d Закрепленные пробелы являются вашим текущим лимитом. Отсоедините один, чтобы добавить в избранное.</string>
@@ -2112,7 +2135,8 @@
     <string name="web_publishing_copy_web_link">Копировать ссылку</string>
     <string name="widgets_section_pinned">Закреплённые</string>
     <string name="widgets_section_unread">Непрочитанные</string>
-    <string name="widgets_section_object_types">Объекты</string>
+    <string name="widgets_section_my_favorites">My Favorites</string>
+    <string name="widgets_section_object_types">Типы</string>
     <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">Новый</string>
     <string name="widgets_menu_delete_object_type">Удалить тип объекта</string>

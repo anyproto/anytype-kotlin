@@ -24,6 +24,8 @@
     <string name="data">Gegevens</string>
     <string name="mode">Instelling</string>
     <string name="log_out">Meld af</string>
+    <string name="resume_account_failed_title">Couldn\'t restore session</string>
+    <string name="resume_account_failed_message">Your session can\'t be resumed. Logging out will clear local app state; you\'ll need your recovery phrase to sign back in. Do you want to log out?</string>
     <string name="pin_code">Pincode</string>
     <string name="access">Toegang</string>
     <string name="wallpaper">Achtergrond</string>
@@ -77,6 +79,7 @@
     <string name="space_settings_error_icon">Bijwerken van ruimtepictogram is mislukt. Probeer het alsjeblieft opnieuw.</string>
     <string name="manage_sections_title">Manage sections</string>
     <string name="section_unread">Ongelezen</string>
+    <string name="section_my_favorites">My Favorites</string>
     <string name="section_pinned">Vastgezet</string>
     <string name="section_objects">Objecten</string>
     <string name="section_recently_edited">Onlangs bewerkt</string>
@@ -867,12 +870,17 @@
     <string name="create_space_space_name">Naam ruimte</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Create Home</string>
-    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
     <string name="homepage_picker_chat">Chat</string>
     <string name="homepage_picker_page">Pagina</string>
     <string name="homepage_picker_collection">Verzameling</string>
-    <string name="homepage_picker_empty">Leeg</string>
-    <string name="homepage_picker_later">Later</string>
+    <string name="homepage_picker_continue">Volgende</string>
+    <string name="homepage_picker_not_now">Niet nu</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Home</string>
+    <string name="space_home_no_home_title">No home</string>
+    <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
+    <string name="widget_menu_change_home">Change Home</string>
     <string name="invite_members_widget_title">Invite Members</string>
     <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
     <string name="generic_error">Er is iets misgegaan. Probeer het alsjeblieft opnieuw.</string>
@@ -1086,7 +1094,7 @@
     <string name="onboarding_void_title">Dit is jouw ruimte</string>
     <string name="onboarding_void_description">Het is een versleutelde locatie voor alles wat je aanmaakt. Alles wordt opgeslagen op jouw apparaat en opgeslagen op het gedistribueerde netwerk.</string>
     <string name="onboarding_this_is_your_key_title">Dit is je herstelsleutel</string>
-    <string name="onboarding_key_description">Het vervangt login en wachtwoord. Houd het veilig - alleen jij bent verantwoordelijk voor jouw gegevens. Je kunt deze sleutel later vinden in de app instellingen.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Toon mijn herstelsleutel</string>
     <string name="onboarding_tap_to_reveal">Onthul en kopieer</string>
     <string name="onboarding_key_skip">Overslaan</string>
@@ -1107,7 +1115,7 @@
     <string name="onboarding_recovery_phrase_description">Jouw sleutel wordt vertegenwoordigd door een herstelzin — 12 willekeurige woorden die jouw kluis genereren op dit apparaat.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Degene die de sleutel heeft, heeft toegang</string>
     <string name="onboarding_recovery_phrase_description_2">Iedereen die deze woorden kent, kan jouw kluis binnen gaan. Op dit moment ben jij de enige ter wereld die ze kent.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Alleen jij bent er verantwoordelijk voor</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
     <string name="onboarding_recovery_phrase_description_3">Alle rekenkracht op aarde is niet genoeg om in te breken. Als je jouw sleutel verliest, kan deze niet worden hersteld. Sla het ergens veilig op — in een wachtwoordbeheerder of opgeschreven op papier.</string>
     <string name="onboarding_recovery_phrase_description_4">Alle computercapaciteit op aarde is niet genoeg om in te breken. Als je het verliest, kan het niet worden hersteld. Bewaar het dus op een veilige plek!</string>
     <string name="onboarding_how_to_save_my_phrase">Hoe bewaar ik mijn herstelsleutel?</string>
@@ -1339,6 +1347,10 @@
     <string name="multiplayer_approve_request">Stel toegang in</string>
     <string name="multiplayer_view_request">Bekijk verzoek</string>
     <string name="multiplayer_owner">Eigenaar</string>
+    <string name="multiplayer_admin">Admin</string>
+    <string name="multiplayer_make_admin_title">Make the member an admin?</string>
+    <string name="multiplayer_make_admin_description">Admins can delete messages, remove members, and permanently delete objects from Bin.</string>
+    <string name="multiplayer_make_admin_button">Make Admin</string>
     <string name="multiplayer_no_permissions">Geen machtigingen</string>
     <string name="multiplayer_pending">In behandeling</string>
     <string name="multiplayer_can_edit">Kan bewerken</string>
@@ -1351,6 +1363,9 @@
     <string name="multiplayer_space_join_request_header">%1$s heeft verzocht om deel te nemen aan de ruimte %2$s</string>
     <string name="multiplayer_remove_member">Verwijder lid</string>
     <string name="multiplayer_remove_member_warning_text">%1$s wordt uit de ruimte verwijderd</string>
+    <string name="multiplayer_remove_member_title">Remove the member from this channel?</string>
+    <string name="multiplayer_remove_member_description">%@ will be removed from the space.</string>
+    <string name="multiplayer_remove_member_button">Remove Member</string>
     <string name="multiplayer_request_sent_toast">Verzoek verzonden</string>
     <string name="multiplayer_space_stop_sharing">Delen stoppen</string>
     <string name="multiplayer_space_stop_sharing_space">Stop met delen van de ruimte</string>
@@ -1772,6 +1787,11 @@
     <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Upload</string>
     <string name="chat_attach">Voeg bij</string>
+    <string name="upload_success_snackbar_image">New image added</string>
+    <string name="upload_success_snackbar_video">New video added</string>
+    <string name="upload_success_snackbar_file">New file added</string>
+    <string name="upload_success_snackbar_mixed">New files added</string>
+    <string name="upload_success_snackbar_action_open">Open %1$s</string>
     <string name="chats_reply">Antwoord</string>
     <string name="chats_add_reaction">Voeg reactie toe</string>
     <string name="chat_send_message_rate_limit_title">Wacht even! Turbo typen gedetecteerd!</string>
@@ -2010,6 +2030,9 @@
     <string name="notifications_all_short">Alles</string>
     <string name="notifications_mentions_short">Vermeldingen</string>
     <string name="notifications_disable_short">Schakel uit</string>
+    <string name="notification_option_enable">Activeren</string>
+    <string name="notification_option_mute_and_hide">Mute and hide</string>
+    <string name="notification_option_disabled">Uitgeschakeld</string>
     <string name="space_notify_unmute">Demp niet meer</string>
     <string name="space_notify_mute">Demp</string>
     <string name="vault_pinned_limit_message">%1$d vastgezette ruimten is jouw huidige limiet. Maak er een los om een nieuwe favoriet toe te voegen.</string>
@@ -2087,7 +2110,8 @@
     <string name="web_publishing_copy_web_link">Kopieer webkoppeling</string>
     <string name="widgets_section_pinned">Vastgezet</string>
     <string name="widgets_section_unread">Ongelezen</string>
-    <string name="widgets_section_object_types">Objecten</string>
+    <string name="widgets_section_my_favorites">My Favorites</string>
+    <string name="widgets_section_object_types">Types</string>
     <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">Nieuw</string>
     <string name="widgets_menu_delete_object_type">Verwijder objecttype</string>

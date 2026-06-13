@@ -15,8 +15,8 @@
     <string name="debug_sync_report">Debug Sync Bericht</string>
     <string name="debug">Debug</string>
     <string name="experimental_features">Experimentelle Funktionen</string>
-    <string name="experimental_features_compact_vault">Compact vault mode</string>
-    <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
+    <string name="experimental_features_compact_vault">Kompakter Tresormodus</string>
+    <string name="experimental_features_compact_vault_description">Versteckt Nachrichtenvorschau für gelesene Kanäle im Tresor</string>
     <string name="account">Tresor</string>
     <string name="reset_account">Tresor zurücksetzen</string>
     <string name="delete_account">Tresor löschen</string>
@@ -24,6 +24,8 @@
     <string name="data">Daten</string>
     <string name="mode">Modus</string>
     <string name="log_out">Abmelden</string>
+    <string name="resume_account_failed_title">Sitzung konnte nicht wiederhergestellt werden</string>
+    <string name="resume_account_failed_message">Ihre Sitzung kann nicht fortgesetzt werden. Ausloggen wird den lokalen App-Status löschen. Sie benötigen Ihre Wiederherstellungsphrase, um sich wieder anzumelden. Möchten Sie sich abmelden?</string>
     <string name="pin_code">PIN-Code</string>
     <string name="access">Zugriff</string>
     <string name="wallpaper">Hintergrundbild</string>
@@ -60,7 +62,7 @@
     <string name="remove_image">Bild entfernen</string>
     <string name="delete_space">Space löschen</string>
     <string name="you_can_store">Du kannst bis zu %1$s deiner Dateien auf unserem verschlüsselten und kostenlosen Backup-Knoten speichern. Wenn das Limit erreicht wurde, werden Dateien nur noch lokal gespeichert.</string>
-    <string name="in_order_to_save">Free up space by offloading files to encrypted backup. They’ll load when you open them.</string>
+    <string name="in_order_to_save">Stellen Sie Speicherplatz frei, indem Sie Dateien zu verschlüsselten Sicherungen ablegen. Sie werden beim Öffnen geladen.</string>
     <string name="manage_files">Dateien verwalten</string>
     <string name="local_storage">Lokaler Speicher</string>
     <string name="offload_files">Dateien abladen</string>
@@ -77,6 +79,7 @@
     <string name="space_settings_error_icon">Fehler beim Aktualisieren des Space-Symbols. Bitte erneut versuchen.</string>
     <string name="manage_sections_title">Bereiche verwalten</string>
     <string name="section_unread">Ungelesen</string>
+    <string name="section_my_favorites">Meine Favoriten</string>
     <string name="section_pinned">Angeheftet</string>
     <string name="section_objects">Objekte</string>
     <string name="section_recently_edited">Zuletzt bearbeitet</string>
@@ -356,7 +359,7 @@
     <string name="dv_filter_checkbox_checked">Ausgewählt</string>
     <string name="dv_filter_checkbox_not_checked">Nicht ausgewählt</string>
     <string name="advanced_filter_title">Erweiterter Filter</string>
-    <string name="advanced_filter_description">Editing is available on Desktop</string>
+    <string name="advanced_filter_description">Bearbeitung ist auf dem Desktop verfügbar</string>
     <string name="paste_or_type_a_url">URL einfügen oder eingeben</string>
     <string name="callout">Textbox</string>
     <string name="highlight">Hervorhebung</string>
@@ -861,20 +864,25 @@
     <string name="personal">Standard</string>
     <string name="create_space">Space erstellen</string>
     <string name="create_chat">Chat erstellen</string>
-    <string name="create_channel">New Channel</string>
+    <string name="create_channel">Neuer Kanal</string>
     <string name="create_space_change_icon">Symbol ändern</string>
     <string name="create_space_chat_name">Chatname</string>
     <string name="create_space_space_name">Space-Name</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Create Home</string>
-    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
     <string name="homepage_picker_chat">Chat</string>
     <string name="homepage_picker_page">Seite</string>
     <string name="homepage_picker_collection">Sammlung</string>
-    <string name="homepage_picker_empty">Leer</string>
-    <string name="homepage_picker_later">Später</string>
-    <string name="invite_members_widget_title">Invite Members</string>
-    <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
+    <string name="homepage_picker_continue">Fortfahren</string>
+    <string name="homepage_picker_not_now">Nicht jetzt</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Startseite</string>
+    <string name="space_home_no_home_title">No home</string>
+    <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
+    <string name="widget_menu_change_home">Change Home</string>
+    <string name="invite_members_widget_title">Mitglieder einladen</string>
+    <string name="invite_members_widget_description">Lade Leute in diesen Kanal ein, um mit der Zusammenarbeit zu beginnen.</string>
     <string name="generic_error">Etwas ist schiefgelaufen. Bitte versuche es erneut.</string>
     <string name="type">Typ</string>
     <string name="format">Format</string>
@@ -1175,16 +1183,16 @@
     <string name="sharing_snackbar_link_added">Link zu \'%1$s\' hinzugefügt</string>
     <string name="sharing_snackbar_content_added">Inhalt zu \'%1$s\' hinzugefügt</string>
     <!-- Snackbar messages for content linked to an object in a space -->
-    <string name="sharing_snackbar_image_linked">Image linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_images_linked">Images linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_video_linked">Video linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_audio_linked">Audio linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_pdf_linked">PDF linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_file_linked">File linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_files_linked">Files linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_text_linked">Text linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_link_linked">Link linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_content_linked">Content linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_image_linked">Bild verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
+    <string name="sharing_snackbar_images_linked">Bilder verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
+    <string name="sharing_snackbar_video_linked">Video verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
+    <string name="sharing_snackbar_audio_linked">Audio verlinkt mit \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_pdf_linked">PDF verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
+    <string name="sharing_snackbar_file_linked">Datei verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
+    <string name="sharing_snackbar_files_linked">Verlinkte Dateien mit \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_text_linked">Text verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
+    <string name="sharing_snackbar_link_linked">Link verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
+    <string name="sharing_snackbar_content_linked">Inhalt verlinkt mit ‚%1$s‘ in ‚%2$s‘</string>
     <!--endregion-->
     <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Keine</string>
@@ -1292,7 +1300,7 @@
     <string name="multiplayer_viewer_access_desc">Personen mit Link können den Chat ansehen und lesen</string>
     <string name="multiplayer_request_access">Zugriff anfragen</string>
     <string name="multiplayer_request_access_desc">Eigentümer muss jede Beitrittsanfrage genehmigen</string>
-    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
+    <string name="channel_members_subtitle">%1$d/%2$d Editoren, %3$d/%4$d Betrachter</string>
     <string name="multiplayer_qr_code">QR-Code</string>
     <string name="multiplayer_mute">Stummschalten</string>
     <string name="multiplayer_unmute">Stummschaltung aufheben</string>
@@ -1339,6 +1347,10 @@
     <string name="multiplayer_approve_request">Zugriff festlegen</string>
     <string name="multiplayer_view_request">Anfrage ansehen</string>
     <string name="multiplayer_owner">Eigentümer</string>
+    <string name="multiplayer_admin">Administrator</string>
+    <string name="multiplayer_make_admin_title">Make the member an admin?</string>
+    <string name="multiplayer_make_admin_description">Admins can delete messages, remove members, and permanently delete objects from Bin.</string>
+    <string name="multiplayer_make_admin_button">Make Admin</string>
     <string name="multiplayer_no_permissions">Keine Berechtigungen</string>
     <string name="multiplayer_pending">Ausstehend</string>
     <string name="multiplayer_can_edit">Darf bearbeiten</string>
@@ -1351,6 +1363,9 @@
     <string name="multiplayer_space_join_request_header">%1$s beantragte den Beitritt zu %2$s</string>
     <string name="multiplayer_remove_member">Mitglied entfernen</string>
     <string name="multiplayer_remove_member_warning_text">%1$s wird aus dem Space entfernt</string>
+    <string name="multiplayer_remove_member_title">Remove the member from this channel?</string>
+    <string name="multiplayer_remove_member_description">%@ will be removed from the space.</string>
+    <string name="multiplayer_remove_member_button">Mitglied entfernen</string>
     <string name="multiplayer_request_sent_toast">Anfrage gesendet</string>
     <string name="multiplayer_space_stop_sharing">Beende Teilen</string>
     <string name="multiplayer_space_stop_sharing_space">Space nichtmehr freigeben</string>
@@ -1638,7 +1653,7 @@
     <string name="error_login_select_vault_error">Fehler beim Auswählen des Tresors.</string>
     <string name="error_login_account_deleted_error">Dieses Konto wurde gelöscht. Versuche es mit einem anderen Konto oder erstelle ein neues.</string>
     <string name="error_login_account_need_update_error">Konto kann nicht abgerufen werden. Bitte aktualisiere Anytype auf die neueste Version.</string>
-    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
+    <string name="error_wallet_setup">Wallet konnte nicht eingerichtet werden. Bitte überprüfen Sie Ihren Gerätespeicher und versuchen Sie es erneut.</string>
     <string name="error_network_error">Netzwerkfehler aufgetreten. Bitte überprüfe deine Internetverbindung und versuche es erneut.</string>
     <string name="error_offline_device">Dein Gerät scheint offline zu sein. Bitte verbinde dich mit dem Internet und versuche es erneut.</string>
     <string name="global_search_related_to">"Zugehörig zu: "</string>
@@ -1744,9 +1759,9 @@
     <string name="main_navigation_content_desc_search_button">Schaltfläche zum Suchen von Objekten</string>
     <string name="main_navigation_content_desc_create_button">Schaltfläche zum Erstellen eines Objekts</string>
     <string name="chat">Chat</string>
-    <string name="discussion_comments">comments</string>
-    <string name="discussion_no_comments">No comments yet</string>
-    <string name="discussion_leave_comment">Leave a comment…</string>
+    <string name="discussion_comments">Kommentare</string>
+    <string name="discussion_no_comments">Bisher keine Kommentare</string>
+    <string name="discussion_leave_comment">Kommentar hinzufügen…</string>
     <string name="copy">Kopieren</string>
     <string name="copy_text">Text kopieren</string>
     <string name="copy_plain_text">Klartext kopieren</string>
@@ -1756,7 +1771,7 @@
     <string name="chat_empty_state_title">Noch keine Nachrichten</string>
     <string name="chat_empty_state_subtitle">Lade Leute ein und beginne die Konversation!</string>
     <string name="chat_empty_state_feature_yours_forever">Für immer deins</string>
-    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_offline">Nachrichten, Dokumente &amp; Dateien offline verfügbar</string>
     <string name="chat_empty_state_feature_encrypted">Vollständig privat und verschlüsselt</string>
     <string name="chat_empty_state_add_members_button">Mitglieder hinzufügen</string>
     <string name="chat_empty_state_show_qr_button">QR-Code anzeigen</string>
@@ -1772,6 +1787,11 @@
     <string name="chat_attachment_media">Medien hochladen</string>
     <string name="chat_attachment_upload">Hochladen</string>
     <string name="chat_attach">Anhängen</string>
+    <string name="upload_success_snackbar_image">Neues Bild hinzugefügt</string>
+    <string name="upload_success_snackbar_video">Neues Video hinzugefügt</string>
+    <string name="upload_success_snackbar_file">Neue Datei hinzugefügt</string>
+    <string name="upload_success_snackbar_mixed">Neue Dateien hinzugefügt</string>
+    <string name="upload_success_snackbar_action_open">Öffne %1$s</string>
     <string name="chats_reply">Antworten</string>
     <string name="chats_add_reaction">Reaktion hinzufügen</string>
     <string name="chat_send_message_rate_limit_title">Moment mal! Turbotippen erkannt!</string>
@@ -1786,7 +1806,7 @@
     <string name="object_type_templates_menu_duplicate">Duplizieren</string>
     <string name="object_type_templates_menu_delete">Löschen</string>
     <string name="object_type_fields_section_header">Überschrift</string>
-    <string name="object_type_fields_section_fields_menu">Properties panel</string>
+    <string name="object_type_fields_section_fields_menu">Eigenschaften-Panel</string>
     <string name="object_type_fields_section_hidden">Ausgeblendet</string>
     <string name="object_type_fields_section_file">Datei</string>
     <string name="object_type_fields_section_local_fields">In Objekten gefunden </string>
@@ -1896,7 +1916,7 @@
     <string name="space_settings_icon_title">Bild bearbeiten</string>
     <string name="space_settings_save_button">Speichern</string>
     <string name="space_settings_join_space_by_qr_title">Beitreten</string>
-    <string name="profile_qr_code_title">Connect with me</string>
+    <string name="profile_qr_code_title">Mit mir verbinden</string>
     <string name="profile_qr_code_title_with_name">Mit %1$s verbinden</string>
     <string name="profile_qr_code_button">Mein QR-Code</string>
     <string name="profile_qr_share_button">Teilen</string>
@@ -1928,7 +1948,7 @@
     <string name="migration_screen_read_more">Weiterlesen</string>
     <string name="migration_screen_what_to_expect">Was dich erwartet</string>
     <string name="migration_screen_your_data_remains_safe">Deine Daten bleiben sicher</string>
-    <string name="migration_screen_your_data_description">During this update, your data remains fully secure. The update is performed directly on your device, and your synced data remains unaffected. We’ll just copy it to a new format, and a local backup will be created on your device, containing all your data in the previous format.</string>
+    <string name="migration_screen_your_data_description">Während dieser Aktualisierung bleiben Ihre Daten vollkommen sicher. Die Aktualisierung wird direkt auf Ihrem Gerät durchgeführt und Ihre synchronisierten Daten bleiben davon unberührt. Wir kopieren es einfach in ein neues Format, und ein lokales Backup wird auf Ihrem Gerät erstellt, das alle Ihre Daten im vorherigen Format enthält.</string>
     <string name="migration_screen_your_data_description_2">The reason we’re retaining this backup is to debug and assist you, in case of unforeseen.</string>
     <string name="migration_screen_what_to_expect_description">You\'ll see a loading screen during the update. Once finished, you can continue using the app normally.</string>
     <string name="object_type_icon_change_title">Symbol ändern</string>
@@ -1958,19 +1978,19 @@
     <!-- Account creation error messages -->
     <string name="onboarding_error_network_error">Konto konnte aufgrund eines Netzwerkfehlers nicht erstellt werden. Bitte prüfe deine Verbindung.</string>
     <string name="onboarding_error_offline_device">Dein Gerät scheint offline zu sein. Bitte verbinde dich mit dem Internet und versuche es erneut.</string>
-    <string name="onboarding_error_account_created_but_failed_to_start_node">Account was created but failed to start the node. Please try logging in.</string>
-    <string name="onboarding_error_account_created_but_failed_to_set_name">Account was created but failed to set name. You can update it later in settings.</string>
-    <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
-    <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
-    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
+    <string name="onboarding_error_account_created_but_failed_to_start_node">Konto wurde angelegt, aber der Knoten konnte nicht gestartet werden. Bitte versuchen Sie sich einzuloggen.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">Konto wurde angelegt, konnte aber keinen Namen setzen. Sie können es später in den Einstellungen aktualisieren.</string>
+    <string name="onboarding_error_failed_to_stop_running_node">Fehler beim Stoppen des Knotens. Bitte starten Sie die App neu und versuchen Sie es erneut.</string>
+    <string name="onboarding_error_failed_to_write_config">Fehler beim Speichern der Konfiguration. Bitte überprüfen Sie die Speicherberechtigungen.</string>
+    <string name="onboarding_error_failed_to_create_local_repo">Fehler beim Erstellen des lokalen Repositorys. Bitte überprüfen Sie den verfügbaren Speicherplatz.</string>
     <string name="onboarding_error_account_creation_canceled">Kontoerstellung wurde abgebrochen.</string>
     <string name="onboarding_error_config_file_not_found">Konfigurationsdatei nicht gefunden. Bitte die App neu installieren.</string>
     <string name="onboarding_error_config_file_invalid">Ungültige Konfigurationsdatei. Bitte die App neu installieren.</string>
     <string name="onboarding_error_config_file_network_id_mismatch">Netzwerkkonfiguration stimmt nicht überein. Bitte überprüfe deine Netzwerkeinstellungen.</string>
     <string name="onboarding_set_your_name_title">Füge deinen Namen hinzu</string>
-    <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>
+    <string name="onboarding_soul_creation_description">Nur für Personen sichtbar, mit denen du etwas teilst. Es existiert kein zentrales Verzeichnis für diese Namen.</string>
     <string name="onboarding_email_add_title">Bleib auf dem Laufenden</string>
-    <string name="onboarding_email_add_description">We’d love to share tips, tricks and product updates with you. Your email is never linked to your identity. We won’t share your data. Ever.</string>
+    <string name="onboarding_email_add_description">Wir würden gerne Tipps, Tricks und Produktneuigkeiten mit dir teilen. Deine E-Mail wird niemals mit deiner Identität verknüpft. Wir geben deine Daten nicht weiter. Niemals.</string>
     <string name="onboarding_enter_email">Gib deine E-Mail-Adresse ein</string>
     <string name="onboarding_button_continue">Fortfahren</string>
     <string name="onboarding_button_skip">Überspringen</string>
@@ -1995,7 +2015,7 @@
     <string name="spaces_introduction_page3_description">Ideen teilen, Dokumente ablegen, gemeinsam bearbeiten — alles läuft in Echtzeit ab.</string>
     <string name="spaces_introduction_page4_title">Alles an seinem richtigen Platz</string>
     <string name="spaces_introduction_page4_description">Deine Seiten, Listen und Dateien — strukturiert, übersichtlich und immer griffbereit.</string>
-    <string name="spaces_introduction_try_it">Let\'s try it</string>
+    <string name="spaces_introduction_try_it">Probiere es aus</string>
     <string name="vault_empty_state_text">Es gibt noch keine Spaces</string>
     <string name="vault_empty_search_state_text">Keine Übereinstimmungen gefunden</string>
     <string name="chat_new_messages_section_text">Neue Nachrichten</string>
@@ -2010,6 +2030,9 @@
     <string name="notifications_all_short">Alle</string>
     <string name="notifications_mentions_short">Erwähnungen</string>
     <string name="notifications_disable_short">Deaktivieren</string>
+    <string name="notification_option_enable">Aktivieren</string>
+    <string name="notification_option_mute_and_hide">Stummschalten und ausblenden</string>
+    <string name="notification_option_disabled">Deaktiviert</string>
     <string name="space_notify_unmute">Stummschaltung aufheben</string>
     <string name="space_notify_mute">Stummschalten</string>
     <string name="vault_pinned_limit_message">%1$d angepinnte Spaces sind dein aktuelles Limit. Entferne einen, um einen neuen Favoriten hinzuzufügen.</string>
@@ -2026,7 +2049,7 @@
     <string name="failed_to_load_image">Bild konnte nicht geladen werden</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Über QR-Code beitreten</string>
-    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_select_members_title">Mitglieder auswählen</string>
     <string name="channel_next">Weiter</string>
     <string name="vault_qr_scan_error_title">QR-Code konnte nicht gescannt werden</string>
     <string name="vault_qr_scan_error_description">Stelle sicher, dass es deutlich sichtbar ist und versuche es erneut.</string>
@@ -2034,16 +2057,16 @@
     <string name="vault_qr_invalid_description">Der gescannte QR-Code entspricht keiner gültigen Einladung. Bitte überprüfe ihn und versuche es erneut.</string>
     <string name="vault_qr_try_again">Erneut versuchen</string>
     <string name="camera_permission_required_title">Kameraberechtigung erforderlich</string>
-    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
+    <string name="barcode_scanner_unavailable">QR Scanner ist auf diesem Gerät nicht verfügbar</string>
     <string name="camera_permission_rationale_message">Um QR-Codes zu scannen, benötigt Anytype Zugriff auf deine Kamera. Diese Berechtigung wird ausschließlich zum Scannen von QR-Codes verwendet.</string>
     <string name="camera_permission_settings_message">Um QR-Codes zu scannen, musst du den Kamerazugriff in den Geräteeinstellungen erlauben.</string>
     <string name="open_settings">Einstellungen öffnen</string>
     <string name="allow">Zulassen</string>
-    <string name="attachment_image">Attachment image</string>
+    <string name="attachment_image">Anhang-Bild</string>
     <!-- Shared Space Limit (DROID-4388) -->
-    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
-    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
-    <string name="vault_manage_channels">Manage Channels</string>
+    <string name="vault_shared_space_limit_title">Freigabelimit erreicht</string>
+    <string name="vault_shared_space_limit_description">Ihr Plan erlaubt %1$d geteilte Räume. Verbessern Sie Ihre Mitgliedschaft, um mehr zu erstellen.</string>
+    <string name="vault_manage_channels">Kanäle verwalten</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Fotos</string>
     <string name="attachment_menu_camera">Kamera</string>
@@ -2054,7 +2077,7 @@
     <string name="create_object_empty_state">Keine Objekttypen verfügbar</string>
     <string name="create_object_no_results">Keine Typen gefunden</string>
     <string name="create_object_search_types">Objekttypen suchen</string>
-    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_error">Fehler beim Öffnen des Objekttyps</string>
     <string name="create_object_retry">Erneut versuchen</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Limit für diesen Space erreicht. Bitte erweitere deine Mitgliedschaft oder kontaktiere den Support für Hilfe.</string>
@@ -2063,14 +2086,14 @@
     <string name="share_space_error_space_deleted">Es sieht so aus, als sei der Speicherplatz gelöscht worden. Bitte stelle sicher, dass deine Geräte synchronisiert sind.</string>
     <string name="share_space_error_generic">Ein unerwarteter Fehler ist aufgetreten: %1$s. Bitte versuche es später erneut.</string>
     <string name="share_space_error_incorrect_permissions">Dir fehlen die erforderlichen Berechtigungen. Bitte kontaktiere den Space-Besitzer für Unterstützung. </string>
-    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    <string name="share_space_error_no_such_space">        Der Bereich, den Sie freigeben möchten, existiert nicht. Bitte überprüfen Sie die Space-ID und versuchen Sie es erneut.
     </string>
-    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    <string name="share_space_error_make_private_failed">        Konnte den Raum nicht privat machen. Bitte versuchen Sie es später erneut.
     </string>
     <string name="private_local_yours_forever">verschlüsselt, lokal, für immer deins</string>
     <string name="private_channel">Direkter Kanal</string>
-    <string name="space_header_private_channel">Private channel</string>
-    <string name="space_header_group_channel">Group channel</string>
+    <string name="space_header_private_channel">Privater Kanal</string>
+    <string name="space_header_group_channel">Gruppen-Kanal</string>
     <string name="wallpaper_item_space_icon_color">Standardfarbe</string>
     <string name="publish_to_web">Im Web veröffentlichen</string>
     <string name="preferences">Einstellungen</string>
@@ -2087,7 +2110,8 @@
     <string name="web_publishing_copy_web_link">Weblink kopieren</string>
     <string name="widgets_section_pinned">Angeheftet</string>
     <string name="widgets_section_unread">Ungelesen</string>
-    <string name="widgets_section_object_types">Objekte</string>
+    <string name="widgets_section_my_favorites">Meine Favoriten</string>
+    <string name="widgets_section_object_types">Typen</string>
     <string name="widgets_section_recently_edited">Zuletzt bearbeitet</string>
     <string name="widgets_menu_new_object_type">Neu</string>
     <string name="widgets_menu_delete_object_type">Objekttyp löschen</string>
@@ -2114,8 +2138,8 @@
         <item quantity="one">%d neue Nachricht</item>
         <item quantity="other">%d neue Nachrichten</item>
     </plurals>
-    <string name="any_id_info_title">This is your ANY ID</string>
-    <string name="any_id_info_description">Become a member to make your ID human-readable, so other members can easily find and connect with you.</string>
+    <string name="any_id_info_title">Das ist deine ANY-ID</string>
+    <string name="any_id_info_description">Werde Mitglied, um deine ID für Personen lesbarer zu machen, damit andere dich leichter finden und kontaktieren können.</string>
     <string name="any_id_info_button">Pläne erkunden</string>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Genehmigen</string>
@@ -2141,33 +2165,33 @@
     <string name="sharing_send_to_chat">An Chat senden</string>
     <string name="sharing_select_dest">Ziel auswählen</string>
     <string name="sharing_no_objects_found">Keine Objekte gefunden</string>
-    <string name="sharing_success">Success!</string>
-    <string name="sharing_added_to_space">Content added to %1$s</string>
+    <string name="sharing_success">Geschafft!</string>
+    <string name="sharing_added_to_space">Inhalt zu \'%1$s\' hinzugefügt</string>
     <string name="sharing_error">Etwas ist schiefgelaufen</string>
     <string name="sharing_send_to">An %1$s senden</string>
-    <string name="sharing_send_to_multiple">Send to %1$d chats</string>
-    <string name="sharing_selection_limit_reached">You can select up to %1$d destinations</string>
-    <string name="sharing_sending_to">Sending to</string>
-    <string name="clear_selection">Clear selection</string>
+    <string name="sharing_send_to_multiple">An %1$d Chats senden</string>
+    <string name="sharing_selection_limit_reached">Sie können bis zu %1$d Ziele auswählen</string>
+    <string name="sharing_sending_to">Senden an</string>
+    <string name="clear_selection">Auswahl aufheben</string>
     <string name="save">Speichern</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
-    <string name="loading_channels">Loading channels</string>
+    <string name="loading_channels">Kanäle werden geladen</string>
     <!-- OS Widgets -->
     <string name="os_widget_spaces_title">Spaces</string>
     <string name="os_widget_spaces_description">Quick access to your pinned spaces</string>
     <string name="os_widget_create_object_title">Neues Objekt</string>
-    <string name="os_widget_create_object_description">Create object of chosen type</string>
+    <string name="os_widget_create_object_description">Objekt des ausgewählten Typs erstellen</string>
     <string name="os_widget_space_shortcut_title">Space Shortcut</string>
     <string name="os_widget_space_shortcut_description">Open a space directly</string>
     <string name="os_widget_object_shortcut_title">Object Shortcut</string>
-    <string name="os_widget_object_shortcut_description">Open an object directly</string>
+    <string name="os_widget_object_shortcut_description">Objekt direkt öffnen</string>
     <string name="os_widget_not_configured">Zum Bearbeiten tippen</string>
     <string name="os_widget_tap_to_create">Zum Erstellen tippen</string>
     <string name="os_widget_open_app_to_see_spaces">Your pinned spaces will appear here</string>
-    <string name="os_widget_no_items">No items</string>
+    <string name="os_widget_no_items">Keine Elemente</string>
     <string name="no_spaces_available">No spaces available</string>
-    <string name="select_view">Select view</string>
-    <string name="os_widget_data_view_title">Data View</string>
+    <string name="select_view">Ansicht auswählen</string>
+    <string name="os_widget_data_view_title">Datenansicht</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
     <string name="chats_search_close_content_description">Suche schließen</string>
     <!-- DROID-4358 Offline Downloads settings -->
@@ -2181,5 +2205,5 @@
     <string name="offline_downloads_value_250mb">250 MB</string>
     <string name="offline_downloads_value_1gb">1 GB</string>
     <string name="offline_downloads_value_unlimited">Unbegrenzt</string>
-    <string name="device_storage_used">Device storage used</string>
+    <string name="device_storage_used">Belegter Gerätespeicher</string>
 </resources>

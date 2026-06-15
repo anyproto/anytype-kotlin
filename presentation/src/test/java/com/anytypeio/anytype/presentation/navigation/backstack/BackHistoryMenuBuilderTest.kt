@@ -115,6 +115,38 @@ class BackHistoryMenuBuilderTest {
         )
     }
 
+    @Test
+    fun `should exclude the current screen by entry id even when it is not the last entry`() {
+        val a = entry(entryId = "e1", objectId = "objA")
+        val b = entry(entryId = "e2", objectId = "objB")
+        val current = entry(entryId = "e3", objectId = "objC")
+        val trailing = entry(entryId = "e4", objectId = "objD")
+
+        // current screen is "e3" but a stray entry sits after it in the back-stack list
+        assertEquals(
+            expected = listOf(trailing, b, a),
+            actual = buildBackHistoryCandidates(
+                entries = listOf(a, b, current, trailing),
+                currentEntryId = "e3"
+            )
+        )
+    }
+
+    @Test
+    fun `should fall back to the last entry as current when the current entry id is unknown`() {
+        val a = entry(entryId = "e1", objectId = "objA")
+        val b = entry(entryId = "e2", objectId = "objB")
+        val current = entry(entryId = "e3", objectId = "objC")
+
+        assertEquals(
+            expected = listOf(b, a),
+            actual = buildBackHistoryCandidates(
+                entries = listOf(a, b, current),
+                currentEntryId = "missing"
+            )
+        )
+    }
+
     companion object {
         const val SPACE = "space-id"
     }

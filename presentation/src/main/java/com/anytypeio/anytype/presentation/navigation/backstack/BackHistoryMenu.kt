@@ -41,18 +41,21 @@ const val BACK_HISTORY_MENU_LIMIT = 5
 /**
  * Builds the list of back-history candidates for the long-press menu.
  *
- * @param entries object-screen entries in back-stack order, bottom -> top (last = current screen).
+ * @param entries object-screen entries in back-stack order, bottom -> top.
+ * @param currentEntryId back-stack id of the currently visible screen. When provided, that exact
+ * entry is treated as current; otherwise the last entry is assumed to be current.
  * @return previous objects, most-recent-first, deduped by object id, capped at [limit];
- * entries showing the same object as the current screen are excluded.
+ * the current screen and any other entries showing the same object are excluded.
  */
 fun buildBackHistoryCandidates(
     entries: List<BackStackObjectEntry>,
+    currentEntryId: String? = null,
     limit: Int = BACK_HISTORY_MENU_LIMIT
 ): List<BackStackObjectEntry> {
-    if (entries.size < 2) return emptyList()
-    val current = entries.last()
-    return entries.dropLast(1)
-        .filter { it.objectId != current.objectId }
+    if (entries.isEmpty()) return emptyList()
+    val current = entries.firstOrNull { it.entryId == currentEntryId } ?: entries.last()
+    return entries
+        .filter { it.entryId != current.entryId && it.objectId != current.objectId }
         .reversed()
         .distinctBy { it.objectId }
         .take(limit)

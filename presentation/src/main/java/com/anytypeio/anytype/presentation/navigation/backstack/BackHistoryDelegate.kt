@@ -43,7 +43,8 @@ interface BackHistoryDelegate {
 
         override suspend fun onBackButtonLongPressed() {
             val candidates = buildBackHistoryCandidates(
-                entries = inspector.objectScreenEntries()
+                entries = inspector.objectScreenEntries(),
+                currentEntryId = inspector.currentEntryId()
             )
             val homeEntryId = inspector.homeScreenEntryId()
             if (candidates.isEmpty() && homeEntryId == null) return

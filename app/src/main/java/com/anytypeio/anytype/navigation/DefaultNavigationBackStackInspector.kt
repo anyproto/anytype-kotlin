@@ -64,6 +64,8 @@ class DefaultNavigationBackStackInspector @Inject constructor() : NavigationBack
         }.getOrDefault(emptyList())
     }
 
+    override fun currentEntryId(): String? = navController?.currentBackStackEntry?.id
+
     @SuppressLint("RestrictedApi") // NavController.currentBackStack is RestrictTo(LIBRARY_GROUP)
     override fun homeScreenEntryId(): String? {
         val controller = navController ?: return null

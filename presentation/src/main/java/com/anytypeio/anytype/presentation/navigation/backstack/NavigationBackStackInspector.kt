@@ -16,4 +16,11 @@ interface NavigationBackStackInspector {
      * navigation history, or null if there is none.
      */
     fun homeScreenEntryId(): String?
+
+    /**
+     * @return the back-stack id of the currently visible destination, as reported by the
+     * NavController, or null. Used to exclude the current screen from the history regardless
+     * of its position in the back-stack list.
+     */
+    fun currentEntryId(): String?
 }

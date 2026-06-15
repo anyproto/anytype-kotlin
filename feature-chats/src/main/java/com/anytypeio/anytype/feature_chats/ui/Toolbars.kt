@@ -33,6 +33,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -42,7 +44,9 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.menu.BackHistoryMenu
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations1
@@ -51,6 +55,8 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuItem
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuState
 
 
 internal val ChatToolbarHeight = 44.dp
@@ -76,8 +82,14 @@ fun ChatTopToolbar(
     onProperties: () -> Unit = {},
     onNotificationSettingChanged: (NotificationSetting) -> Unit,
     onSearchClick: () -> Unit = {},
-    onSpaceSettingsClicked: () -> Unit = {}
+    onSpaceSettingsClicked: () -> Unit = {},
+    backHistoryMenu: BackHistoryMenuState = BackHistoryMenuState.Hidden,
+    onBackButtonLongClicked: () -> Unit = {},
+    onBackHistoryItemClicked: (BackHistoryMenuItem) -> Unit = {},
+    onBackHistoryChannelsClicked: () -> Unit = {},
+    onBackHistoryMenuDismissed: () -> Unit = {}
 ) {
+    val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
 
     val showMenuButton = when (header) {
@@ -123,12 +135,24 @@ fun ChatTopToolbar(
                     color = colorResource(id = R.color.navigation_panel),
                     shape = CircleShape
                 )
-                .noRippleThrottledClickable { onBackButtonClicked() },
+                .noRippleCombinedClickable(
+                    onClick = { onBackButtonClicked() },
+                    onLongClicked = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onBackButtonLongClicked()
+                    }
+                ),
             contentAlignment = Alignment.Center
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_default_top_back),
                 contentDescription = stringResource(R.string.content_desc_back_button)
+            )
+            BackHistoryMenu(
+                state = backHistoryMenu,
+                onChannelsClicked = onBackHistoryChannelsClicked,
+                onItemClicked = onBackHistoryItemClicked,
+                onDismiss = onBackHistoryMenuDismissed
             )
         }
 

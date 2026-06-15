@@ -28,9 +28,14 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.GetObjectRelationListById
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVMFactory
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.NavigationBackStackInspector
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import dagger.Binds
 import dagger.BindsInstance
@@ -146,6 +151,32 @@ object DateObjectModule {
         dispatchers: AppCoroutineDispatchers
     ): SetObjectListIsArchived = SetObjectListIsArchived(repo, dispatchers)
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBackHistoryDelegate(
+        inspector: NavigationBackStackInspector,
+        searchObjects: SearchObjects,
+        fieldParser: FieldParser,
+        dispatchers: AppCoroutineDispatchers
+    ): BackHistoryDelegate = BackHistoryDelegate.Default(
+        inspector = inspector,
+        searchObjects = searchObjects,
+        fieldParser = fieldParser,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideExitToVaultDelegate(
+        spaceManager: SpaceManager,
+        clearLastOpenedSpace: ClearLastOpenedSpace
+    ): ExitToVaultDelegate = ExitToVaultDelegate.Default(
+        spaceManager = spaceManager,
+        clearLastOpenedSpace = clearLastOpenedSpace
+    )
+
     @Module
     interface Declarations {
         @PerScreen
@@ -176,4 +207,6 @@ interface DateObjectDependencies : ComponentDependencies {
     fun fieldParser(): FieldParser
     fun provideGetDateObjectByTimestamp(): GetDateObjectByTimestamp
     fun provideSpaceViews(): SpaceViewSubscriptionContainer
+    fun spaceManager(): SpaceManager
+    fun navigationBackStackInspector(): NavigationBackStackInspector
 }

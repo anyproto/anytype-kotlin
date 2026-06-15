@@ -34,7 +34,9 @@ import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
@@ -43,6 +45,9 @@ import com.anytypeio.anytype.feature_object_type.viewmodel.CreateTypeVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.NavigationBackStackInspector
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
 import com.anytypeio.anytype.feature_properties.space.SpacePropertiesVmFactory
 import com.anytypeio.anytype.presentation.types.SpaceTypesViewModel
@@ -197,6 +202,32 @@ object ObjectTypeModule {
         repo = repo
     )
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBackHistoryDelegate(
+        inspector: NavigationBackStackInspector,
+        searchObjects: SearchObjects,
+        fieldParser: FieldParser,
+        dispatchers: AppCoroutineDispatchers
+    ): BackHistoryDelegate = BackHistoryDelegate.Default(
+        inspector = inspector,
+        searchObjects = searchObjects,
+        fieldParser = fieldParser,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideExitToVaultDelegate(
+        spaceManager: SpaceManager,
+        clearLastOpenedSpace: ClearLastOpenedSpace
+    ): ExitToVaultDelegate = ExitToVaultDelegate.Default(
+        spaceManager = spaceManager,
+        clearLastOpenedSpace = clearLastOpenedSpace
+    )
+
     @Module
     interface Declarations {
         @PerScreen
@@ -227,6 +258,7 @@ interface ObjectTypeDependencies : ComponentDependencies {
     fun provideStringResourceProvider(): StringResourceProvider
     fun dispatcher(): Dispatcher<Payload>
     fun spaceManager(): SpaceManager
+    fun navigationBackStackInspector(): NavigationBackStackInspector
 }
 
 //region Space Types Screen

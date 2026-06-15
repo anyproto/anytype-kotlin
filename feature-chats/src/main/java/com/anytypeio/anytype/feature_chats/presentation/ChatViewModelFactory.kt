@@ -34,6 +34,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.PinObjectAsWidgetDelegate
 import javax.inject.Inject
@@ -74,7 +75,8 @@ class ChatViewModelFactory @Inject constructor(
     private val setChatNotificationMode: SetChatNotificationMode,
     private val fieldParser: FieldParser,
     private val chatSearchDelegate: ChatSearchDelegate,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val backHistoryDelegate: BackHistoryDelegate
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -113,6 +115,7 @@ class ChatViewModelFactory @Inject constructor(
         setChatNotificationMode = setChatNotificationMode,
         fieldParser = fieldParser,
         chatSearchDelegate = chatSearchDelegate,
-        deepLinkResolver = deepLinkResolver
+        deepLinkResolver = deepLinkResolver,
+        backHistoryDelegate = backHistoryDelegate
     ) as T
 }

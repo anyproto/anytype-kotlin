@@ -78,6 +78,9 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuItem
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -213,9 +216,13 @@ class ObjectSetViewModel(
     private val emojiSuggester: EmojiSuggester,
     private val stringResourceProvider: StringResourceProvider,
     private val getDefaultObjectType: GetDefaultObjectType,
-    private val addDiscussion: AddDiscussion
+    private val addDiscussion: AddDiscussion,
+    private val backHistoryDelegate: BackHistoryDelegate,
+    private val exitToVaultDelegate: ExitToVaultDelegate
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
+    BackHistoryDelegate by backHistoryDelegate,
+    ExitToVaultDelegate by exitToVaultDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
 {
 
@@ -2335,6 +2342,36 @@ class ObjectSetViewModel(
 
     fun onBackButtonClicked() {
         proceedWithClosingAndExit()
+    }
+
+    fun onBackButtonLongClicked() {
+        viewModelScope.launch {
+            backHistoryDelegate.onBackButtonLongPressed()
+        }
+    }
+
+    fun onBackHistoryItemClicked(item: BackHistoryMenuItem) {
+        onBackHistoryMenuDismissed()
+        viewModelScope.launch {
+            closeObject.async(
+                CloseObject.Params(target = vmParams.ctx, space = vmParams.space)
+            ).fold(
+                onSuccess = { dispatch(AppNavigation.Command.PopToBackStackEntry(item.entryId)) },
+                onFailure = {
+                    Timber.e(it, "Error while closing object set before back-history jump")
+                    dispatch(AppNavigation.Command.PopToBackStackEntry(item.entryId))
+                }
+            )
+        }
+    }
+
+    fun onBackHistoryChannelsClicked() {
+        onBackHistoryMenuDismissed()
+        viewModelScope.launch {
+            closeObject.async(CloseObject.Params(target = vmParams.ctx, space = vmParams.space))
+            proceedWithClearingSpaceBeforeExitingToVault()
+            dispatch(AppNavigation.Command.ExitToVault)
+        }
     }
 
     fun onAddNewDocumentClicked(objType: ObjectWrapper.Type? = null) {

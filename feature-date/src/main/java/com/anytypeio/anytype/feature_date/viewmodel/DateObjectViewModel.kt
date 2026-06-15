@@ -35,10 +35,13 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.GetObjectRelationListById
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.feature_date.mapping.toUiFieldsItem
 import com.anytypeio.anytype.feature_date.ui.models.DateEvent
 import com.anytypeio.anytype.feature_date.viewmodel.UiErrorState.Reason
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickDateBack
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickDateCalendarView
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickDateForward
@@ -98,8 +101,14 @@ class DateObjectViewModel(
     private val fieldParser: FieldParser,
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val getDateObjectByTimestamp: GetDateObjectByTimestamp,
-    private val spaceViews: SpaceViewSubscriptionContainer
-) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val searchObjects: SearchObjects,
+    private val backHistoryDelegate: BackHistoryDelegate,
+    private val exitToVaultDelegate: ExitToVaultDelegate
+) : ViewModel(),
+    BackHistoryDelegate by backHistoryDelegate,
+    ExitToVaultDelegate by exitToVaultDelegate,
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiCalendarIconState = MutableStateFlow<UiCalendarIconState>(UiCalendarIconState.Hidden)
     val uiSyncStatusBadgeState =
@@ -792,6 +801,29 @@ class DateObjectViewModel(
                     effects.emit(DateObjectCommand.Back)
                 }
             }
+
+            DateEvent.TopToolbar.OnBackLongClick -> {
+                viewModelScope.launch {
+                    backHistoryDelegate.onBackButtonLongPressed()
+                }
+            }
+
+            is DateEvent.TopToolbar.OnBackHistoryItemClick -> {
+                onBackHistoryMenuDismissed()
+                viewModelScope.launch {
+                    effects.emit(DateObjectCommand.PopToBackStackEntry(event.item.entryId))
+                }
+            }
+
+            DateEvent.TopToolbar.OnBackHistoryChannelsClick -> {
+                onBackHistoryMenuDismissed()
+                viewModelScope.launch {
+                    proceedWithClearingSpaceBeforeExitingToVault()
+                    effects.emit(DateObjectCommand.ExitToVault)
+                }
+            }
+
+            DateEvent.TopToolbar.OnBackHistoryMenuDismiss -> onBackHistoryMenuDismissed()
 
             DateEvent.TopToolbar.OnTitleClick -> {
                 viewModelScope.launch {

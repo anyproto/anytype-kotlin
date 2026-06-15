@@ -84,6 +84,8 @@ import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible.View
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsLocalPropertyResolve
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsPropertiesLocalInfo
@@ -144,8 +146,13 @@ class ObjectTypeViewModel(
     private val addToFeaturedRelations: AddToFeaturedRelations,
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
     private val updateText: UpdateText,
-    private val searchObjects: SearchObjects
-) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
+    private val searchObjects: SearchObjects,
+    private val backHistoryDelegate: BackHistoryDelegate,
+    private val exitToVaultDelegate: ExitToVaultDelegate
+) : ViewModel(),
+    BackHistoryDelegate by backHistoryDelegate,
+    ExitToVaultDelegate by exitToVaultDelegate,
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
     //top bar
@@ -606,6 +613,29 @@ class ObjectTypeViewModel(
                     commands.emit(Back)
                 }
             }
+
+            TypeEvent.OnBackLongClick -> {
+                viewModelScope.launch {
+                    backHistoryDelegate.onBackButtonLongPressed()
+                }
+            }
+
+            is TypeEvent.OnBackHistoryItemClick -> {
+                onBackHistoryMenuDismissed()
+                viewModelScope.launch {
+                    commands.emit(ObjectTypeCommand.PopToBackStackEntry(event.item.entryId))
+                }
+            }
+
+            TypeEvent.OnBackHistoryChannelsClick -> {
+                onBackHistoryMenuDismissed()
+                viewModelScope.launch {
+                    proceedWithClearingSpaceBeforeExitingToVault()
+                    commands.emit(ObjectTypeCommand.ExitToVault)
+                }
+            }
+
+            TypeEvent.OnBackHistoryMenuDismiss -> onBackHistoryMenuDismissed()
 
             TypeEvent.OnTopBarTitleClick -> {
                 // Handled by the hosting screen (opens the widgets overlay).

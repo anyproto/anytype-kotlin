@@ -65,6 +65,7 @@ import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
 import com.anytypeio.anytype.core_ui.features.sets.SetObjectNameBottomSheet
+import com.anytypeio.anytype.core_ui.menu.BackHistoryMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectHeaderContextMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectSetRelationPopupMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectSetTypePopupMenu
@@ -329,6 +330,22 @@ open class ObjectSetFragment :
                 }
             }
             subscribe(topBackButton.clicks().throttleFirst()) { vm.onBackButtonClicked() }
+            topBackButton.setOnLongClickListener {
+                vm.onBackButtonLongClicked()
+                true
+            }
+            binding.backHistoryMenu.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    val state by vm.backHistoryMenu.collectAsStateWithLifecycle()
+                    BackHistoryMenu(
+                        state = state,
+                        onChannelsClicked = { vm.onBackHistoryChannelsClicked() },
+                        onItemClicked = { vm.onBackHistoryItemClicked(it) },
+                        onDismiss = { vm.onBackHistoryMenuDismissed() }
+                    )
+                }
+            }
             binding.topToolbar.container.setOnClickListener {
                 WidgetOverlayFragment.show(parentFragmentManager, space)
             }

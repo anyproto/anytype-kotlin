@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType.Layout
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.ui.CustomIconColor
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuItem
 import com.anytypeio.anytype.presentation.templates.TemplateView
 
 sealed class TypeEvent {
@@ -16,6 +17,10 @@ sealed class TypeEvent {
     data object OnAlertDeleteDismiss : TypeEvent()
     data object OnAlertDeleteConfirm : TypeEvent()
     data object OnBackClick : TypeEvent()
+    data object OnBackLongClick : TypeEvent()
+    data class OnBackHistoryItemClick(val item: BackHistoryMenuItem) : TypeEvent()
+    data object OnBackHistoryChannelsClick : TypeEvent()
+    data object OnBackHistoryMenuDismiss : TypeEvent()
     data object OnTopBarTitleClick : TypeEvent()
     //endregion
 

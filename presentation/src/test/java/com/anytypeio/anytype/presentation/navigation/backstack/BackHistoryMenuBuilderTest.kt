@@ -34,13 +34,13 @@ class BackHistoryMenuBuilderTest {
     }
 
     @Test
-    fun `should drop the current screen entry and return previous ones most-recent-first`() {
+    fun `should drop the current screen entry and return previous ones oldest-first`() {
         val a = entry(entryId = "e1", objectId = "objA")
         val b = entry(entryId = "e2", objectId = "objB")
         val current = entry(entryId = "e3", objectId = "objC")
 
         assertEquals(
-            expected = listOf(b, a),
+            expected = listOf(a, b),
             actual = buildBackHistoryCandidates(entries = listOf(a, b, current))
         )
     }
@@ -68,7 +68,7 @@ class BackHistoryMenuBuilderTest {
         val current = entry(entryId = "e4", objectId = "objC")
 
         assertEquals(
-            expected = listOf(aRecent, b),
+            expected = listOf(b, aRecent),
             actual = buildBackHistoryCandidates(
                 entries = listOf(aOld, b, aRecent, current)
             )
@@ -85,8 +85,9 @@ class BackHistoryMenuBuilderTest {
         val result = buildBackHistoryCandidates(entries = entries + current)
 
         assertEquals(expected = 5, actual = result.size)
+        // keeps the 5 most-recent (obj4..obj8), displayed oldest-first
         assertEquals(
-            expected = listOf("obj8", "obj7", "obj6", "obj5", "obj4"),
+            expected = listOf("obj4", "obj5", "obj6", "obj7", "obj8"),
             actual = result.map { it.objectId }
         )
     }
@@ -124,7 +125,7 @@ class BackHistoryMenuBuilderTest {
 
         // current screen is "e3" but a stray entry sits after it in the back-stack list
         assertEquals(
-            expected = listOf(trailing, b, a),
+            expected = listOf(a, b, trailing),
             actual = buildBackHistoryCandidates(
                 entries = listOf(a, b, current, trailing),
                 currentEntryId = "e3"
@@ -139,7 +140,7 @@ class BackHistoryMenuBuilderTest {
         val current = entry(entryId = "e3", objectId = "objC")
 
         assertEquals(
-            expected = listOf(b, a),
+            expected = listOf(a, b),
             actual = buildBackHistoryCandidates(
                 entries = listOf(a, b, current),
                 currentEntryId = "missing"

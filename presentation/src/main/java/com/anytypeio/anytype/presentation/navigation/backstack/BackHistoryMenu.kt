@@ -44,8 +44,9 @@ const val BACK_HISTORY_MENU_LIMIT = 5
  * @param entries object-screen entries in back-stack order, bottom -> top.
  * @param currentEntryId back-stack id of the currently visible screen. When provided, that exact
  * entry is treated as current; otherwise the last entry is assumed to be current.
- * @return previous objects, most-recent-first, deduped by object id, capped at [limit];
- * the current screen and any other entries showing the same object are excluded.
+ * @return the [limit] most-recently visited previous objects, deduped by object id, returned
+ * **oldest-first** for breadcrumb-style display; the current screen and any other entries showing
+ * the same object are excluded.
  */
 fun buildBackHistoryCandidates(
     entries: List<BackStackObjectEntry>,
@@ -56,7 +57,8 @@ fun buildBackHistoryCandidates(
     val current = entries.firstOrNull { it.entryId == currentEntryId } ?: entries.last()
     return entries
         .filter { it.entryId != current.entryId && it.objectId != current.objectId }
-        .reversed()
+        .reversed()                 // newest-first, so dedupe/cap keep the most recent visit
         .distinctBy { it.objectId }
-        .take(limit)
+        .take(limit)                // the most-recent objects
+        .reversed()                 // display oldest-first (breadcrumb order)
 }

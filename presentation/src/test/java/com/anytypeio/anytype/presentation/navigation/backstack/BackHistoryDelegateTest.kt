@@ -141,8 +141,8 @@ class BackHistoryDelegateTest {
             expected = BackHistoryMenuState.Visible(
                 homeEntryId = "home-entry",
                 items = listOf(
-                    BackHistoryMenuItem(entryId = "e2", objectId = "objB", space = SPACE, name = "Beta"),
-                    BackHistoryMenuItem(entryId = "e1", objectId = "objA", space = SPACE, name = "Alpha")
+                    BackHistoryMenuItem(entryId = "e1", objectId = "objA", space = SPACE, name = "Alpha"),
+                    BackHistoryMenuItem(entryId = "e2", objectId = "objB", space = SPACE, name = "Beta")
                 )
             ),
             actual = delegate.backHistoryMenu.value
@@ -173,8 +173,8 @@ class BackHistoryDelegateTest {
         assertEquals(
             expected = BackHistoryMenuState.Visible(
                 items = listOf(
-                    BackHistoryMenuItem(entryId = "e2", objectId = "objB", space = SPACE, name = "Beta"),
-                    BackHistoryMenuItem(entryId = "e1", objectId = "objA", space = SPACE, name = "Alpha")
+                    BackHistoryMenuItem(entryId = "e1", objectId = "objA", space = SPACE, name = "Alpha"),
+                    BackHistoryMenuItem(entryId = "e2", objectId = "objB", space = SPACE, name = "Beta")
                 )
             ),
             actual = delegate.backHistoryMenu.value
@@ -271,8 +271,8 @@ class BackHistoryDelegateTest {
         assertEquals(
             expected = BackHistoryMenuState.Visible(
                 items = listOf(
-                    BackHistoryMenuItem(entryId = "e2", objectId = "objB", space = SPACE, name = "Beta"),
-                    BackHistoryMenuItem(entryId = "e1", objectId = "objA", space = SPACE, name = "Alpha")
+                    BackHistoryMenuItem(entryId = "e1", objectId = "objA", space = SPACE, name = "Alpha"),
+                    BackHistoryMenuItem(entryId = "e2", objectId = "objB", space = SPACE, name = "Beta")
                 )
             ),
             actual = delegate.backHistoryMenu.value

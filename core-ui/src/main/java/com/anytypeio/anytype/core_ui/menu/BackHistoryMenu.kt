@@ -18,7 +18,8 @@ import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuSt
 
 /**
  * Long-press-on-back-button history menu (DROID-4518).
- * Shows "Channels" (exit to vault) followed by up to 5 recently visited objects.
+ * Shows "Channels" (exit to vault), an optional "Home" entry when the space home (widgets)
+ * screen is in the back stack, then up to 5 recently visited objects.
  * Renders nothing while [state] is [BackHistoryMenuState.Hidden].
  */
 @Composable
@@ -28,7 +29,9 @@ fun BackHistoryMenu(
     onItemClicked: (BackHistoryMenuItem) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val items = (state as? BackHistoryMenuState.Visible)?.items.orEmpty()
+    val visible = state as? BackHistoryMenuState.Visible
+    val items = visible?.items.orEmpty()
+    val homeEntryId = visible?.homeEntryId
     StyledDropdownMenu(
         expanded = state is BackHistoryMenuState.Visible,
         onDismissRequest = onDismiss,
@@ -48,6 +51,36 @@ fun BackHistoryMenu(
                 )
             }
         )
+        if (homeEntryId != null) {
+            Divider(
+                height = 0.5.dp,
+                paddingStart = 0.dp,
+                paddingEnd = 0.dp,
+                color = colorResource(R.color.shape_primary)
+            )
+            DropdownMenuItem(
+                modifier = Modifier.height(44.dp),
+                onClick = {
+                    onItemClicked(
+                        BackHistoryMenuItem(
+                            entryId = homeEntryId,
+                            objectId = "",
+                            space = "",
+                            name = ""
+                        )
+                    )
+                },
+                text = {
+                    Text(
+                        text = stringResource(R.string.space_home_row_title),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            )
+        }
         items.forEach { item ->
             Divider(
                 height = 0.5.dp,

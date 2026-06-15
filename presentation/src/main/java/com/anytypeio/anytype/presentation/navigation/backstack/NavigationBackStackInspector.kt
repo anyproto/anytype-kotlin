@@ -10,4 +10,10 @@ interface NavigationBackStackInspector {
      * (the last entry corresponds to the currently visible screen).
      */
     fun objectScreenEntries(): List<BackStackObjectEntry>
+
+    /**
+     * @return the back-stack id of the topmost space home (widgets) screen present in the
+     * navigation history, or null if there is none.
+     */
+    fun homeScreenEntryId(): String?
 }

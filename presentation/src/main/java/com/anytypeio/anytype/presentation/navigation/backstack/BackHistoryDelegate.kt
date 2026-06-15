@@ -45,9 +45,11 @@ interface BackHistoryDelegate {
             val candidates = buildBackHistoryCandidates(
                 entries = inspector.objectScreenEntries()
             )
-            if (candidates.isEmpty()) return
+            val homeEntryId = inspector.homeScreenEntryId()
+            if (candidates.isEmpty() && homeEntryId == null) return
             val names = resolveNames(candidates)
             state.value = BackHistoryMenuState.Visible(
+                homeEntryId = homeEntryId,
                 items = candidates.map { candidate ->
                     BackHistoryMenuItem(
                         entryId = candidate.entryId,

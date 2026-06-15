@@ -97,6 +97,59 @@ class BackHistoryDelegateTest {
     }
 
     @Test
+    fun `should show menu with only home entry when home is in back stack and no objects`() = runTest {
+        inspector.stub {
+            on { objectScreenEntries() } doReturn listOf(entry("e1", "obj1"))
+            on { homeScreenEntryId() } doReturn "home-entry"
+        }
+
+        delegate.onBackButtonLongPressed()
+
+        assertEquals(
+            expected = BackHistoryMenuState.Visible(
+                homeEntryId = "home-entry",
+                items = emptyList()
+            ),
+            actual = delegate.backHistoryMenu.value
+        )
+        verify(searchObjects, never()).invoke(any())
+    }
+
+    @Test
+    fun `should include home entry alongside object history`() = runTest {
+        inspector.stub {
+            on { objectScreenEntries() } doReturn listOf(
+                entry("e1", "objA"),
+                entry("e2", "objB"),
+                entry("e3", "objC")
+            )
+            on { homeScreenEntryId() } doReturn "home-entry"
+        }
+        whenever(searchObjects.invoke(any())).thenReturn(
+            Either.Right(
+                listOf(
+                    wrapper(id = "objA", name = "Alpha"),
+                    wrapper(id = "objB", name = "Beta")
+                )
+            )
+        )
+        stubNamesFromWrapperName()
+
+        delegate.onBackButtonLongPressed()
+
+        assertEquals(
+            expected = BackHistoryMenuState.Visible(
+                homeEntryId = "home-entry",
+                items = listOf(
+                    BackHistoryMenuItem(entryId = "e2", objectId = "objB", space = SPACE, name = "Beta"),
+                    BackHistoryMenuItem(entryId = "e1", objectId = "objA", space = SPACE, name = "Alpha")
+                )
+            ),
+            actual = delegate.backHistoryMenu.value
+        )
+    }
+
+    @Test
     fun `should show visible menu with resolved names`() = runTest {
         inspector.stub {
             on { objectScreenEntries() } doReturn listOf(

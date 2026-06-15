@@ -51,6 +51,18 @@ class DefaultNavigationBackStackInspector @Inject constructor() : NavigationBack
         }.getOrDefault(emptyList())
     }
 
+    @SuppressLint("RestrictedApi") // NavController.currentBackStack is RestrictTo(LIBRARY_GROUP)
+    override fun homeScreenEntryId(): String? {
+        val controller = navController ?: return null
+        return runCatching {
+            controller.currentBackStack.value
+                .lastOrNull { it.destination.id == R.id.homeScreen }
+                ?.id
+        }.onFailure {
+            Timber.e(it, "Error while reading home screen back stack entry")
+        }.getOrNull()
+    }
+
     companion object {
         /** destination id -> (object-id arg key, space-id arg key) */
         private val argKeysByDestination = mapOf(

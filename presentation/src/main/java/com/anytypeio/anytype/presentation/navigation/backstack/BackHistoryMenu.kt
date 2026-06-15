@@ -17,7 +17,16 @@ data class BackStackObjectEntry(
 
 sealed class BackHistoryMenuState {
     data object Hidden : BackHistoryMenuState()
-    data class Visible(val items: List<BackHistoryMenuItem>) : BackHistoryMenuState()
+
+    /**
+     * @property homeEntryId back-stack id of the space home (widgets) screen if it is present
+     * in the navigation history, otherwise null. When set, the menu shows a "Home" entry.
+     * @property items previously visited objects, most-recent-first.
+     */
+    data class Visible(
+        val homeEntryId: String? = null,
+        val items: List<BackHistoryMenuItem>
+    ) : BackHistoryMenuState()
 }
 
 data class BackHistoryMenuItem(

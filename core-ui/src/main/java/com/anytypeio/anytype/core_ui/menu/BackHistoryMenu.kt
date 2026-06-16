@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuSt
 fun BackHistoryMenu(
     state: BackHistoryMenuState,
     onChannelsClicked: () -> Unit,
+    onHomeClicked: () -> Unit,
     onItemClicked: (BackHistoryMenuItem) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -60,16 +61,7 @@ fun BackHistoryMenu(
             )
             DropdownMenuItem(
                 modifier = Modifier.height(44.dp),
-                onClick = {
-                    onItemClicked(
-                        BackHistoryMenuItem(
-                            entryId = homeEntryId,
-                            objectId = "",
-                            space = "",
-                            name = ""
-                        )
-                    )
-                },
+                onClick = onHomeClicked,
                 text = {
                     Text(
                         text = stringResource(R.string.space_home_row_title),

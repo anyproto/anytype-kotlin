@@ -278,6 +278,7 @@ class ChatFragment : Fragment() {
                 onBackButtonLongClicked = vm::onBackButtonLongClicked,
                 onBackHistoryItemClicked = vm::onBackHistoryItemClicked,
                 onBackHistoryChannelsClicked = vm::onBackHistoryChannelsClicked,
+                onBackHistoryHomeClicked = vm::onBackHistoryHomeClicked,
                 onBackHistoryMenuDismissed = vm::onBackHistoryMenuDismissed
             )
             } // close Box

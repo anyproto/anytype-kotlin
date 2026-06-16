@@ -749,6 +749,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 BackHistoryMenu(
                     state = state,
                     onChannelsClicked = { vm.onBackHistoryChannelsClicked() },
+                    onHomeClicked = { vm.onBackHistoryHomeClicked() },
                     onItemClicked = { vm.onBackHistoryItemClicked(it) },
                     onDismiss = { vm.onBackHistoryMenuDismissed() }
                 )

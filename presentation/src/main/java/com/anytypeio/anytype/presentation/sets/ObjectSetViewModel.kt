@@ -2351,15 +2351,24 @@ class ObjectSetViewModel(
     }
 
     fun onBackHistoryItemClicked(item: BackHistoryMenuItem) {
+        proceedWithBackHistoryJump(item.entryId)
+    }
+
+    fun onBackHistoryHomeClicked() {
+        val entryId = currentHomeEntryId ?: return
+        proceedWithBackHistoryJump(entryId)
+    }
+
+    private fun proceedWithBackHistoryJump(entryId: String) {
         onBackHistoryMenuDismissed()
         viewModelScope.launch {
             closeObject.async(
                 CloseObject.Params(target = vmParams.ctx, space = vmParams.space)
             ).fold(
-                onSuccess = { dispatch(AppNavigation.Command.PopToBackStackEntry(item.entryId)) },
+                onSuccess = { dispatch(AppNavigation.Command.PopToBackStackEntry(entryId)) },
                 onFailure = {
                     Timber.e(it, "Error while closing object set before back-history jump")
-                    dispatch(AppNavigation.Command.PopToBackStackEntry(item.entryId))
+                    dispatch(AppNavigation.Command.PopToBackStackEntry(entryId))
                 }
             )
         }

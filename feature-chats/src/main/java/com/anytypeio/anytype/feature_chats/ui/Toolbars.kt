@@ -87,6 +87,7 @@ fun ChatTopToolbar(
     onBackButtonLongClicked: () -> Unit = {},
     onBackHistoryItemClicked: (BackHistoryMenuItem) -> Unit = {},
     onBackHistoryChannelsClicked: () -> Unit = {},
+    onBackHistoryHomeClicked: () -> Unit = {},
     onBackHistoryMenuDismissed: () -> Unit = {}
 ) {
     val haptic = LocalHapticFeedback.current
@@ -151,6 +152,7 @@ fun ChatTopToolbar(
             BackHistoryMenu(
                 state = backHistoryMenu,
                 onChannelsClicked = onBackHistoryChannelsClicked,
+                onHomeClicked = onBackHistoryHomeClicked,
                 onItemClicked = onBackHistoryItemClicked,
                 onDismiss = onBackHistoryMenuDismissed
             )

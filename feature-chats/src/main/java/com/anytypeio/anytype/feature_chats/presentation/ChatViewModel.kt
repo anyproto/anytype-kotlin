@@ -1955,12 +1955,21 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onBackHistoryItemClicked(item: BackHistoryMenuItem) {
+        proceedWithBackHistoryJump(item.entryId)
+    }
+
+    fun onBackHistoryHomeClicked() {
+        val entryId = currentHomeEntryId ?: return
+        proceedWithBackHistoryJump(entryId)
+    }
+
+    private fun proceedWithBackHistoryJump(entryId: String) {
         onBackHistoryMenuDismissed()
         viewModelScope.launch {
             withContext(dispatchers.io) {
                 chatContainer.stop(chat = vmParams.ctx)
             }
-            commands.emit(ViewModelCommand.PopToBackStackEntry(item.entryId))
+            commands.emit(ViewModelCommand.PopToBackStackEntry(entryId))
         }
     }
 

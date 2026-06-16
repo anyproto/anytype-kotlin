@@ -16,6 +16,7 @@ sealed class DateEvent {
         data object OnBackLongClick : TopToolbar()
         data class OnBackHistoryItemClick(val item: BackHistoryMenuItem) : TopToolbar()
         data object OnBackHistoryChannelsClick : TopToolbar()
+        data object OnBackHistoryHomeClick : TopToolbar()
         data object OnBackHistoryMenuDismiss : TopToolbar()
         data object OnTitleClick : TopToolbar()
     }

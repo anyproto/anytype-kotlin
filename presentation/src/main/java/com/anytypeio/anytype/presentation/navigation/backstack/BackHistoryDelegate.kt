@@ -1,13 +1,13 @@
 package com.anytypeio.anytype.presentation.navigation.backstack
 
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.presentation.search.buildDeletedFilter
+import com.anytypeio.anytype.presentation.search.buildLimitedObjectIdsFilter
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
@@ -20,6 +20,12 @@ import timber.log.Timber
 interface BackHistoryDelegate {
 
     val backHistoryMenu: StateFlow<BackHistoryMenuState>
+
+    /**
+     * Back-stack id of the "Home" row the menu is currently offering, or null when no Home row
+     * is shown. Read by screens when the user taps Home, to pop back to that entry.
+     */
+    val currentHomeEntryId: String?
 
     /**
      * Takes a fresh snapshot of the navigation back stack and shows the menu
@@ -40,6 +46,9 @@ interface BackHistoryDelegate {
         private val state = MutableStateFlow<BackHistoryMenuState>(BackHistoryMenuState.Hidden)
 
         override val backHistoryMenu: StateFlow<BackHistoryMenuState> = state
+
+        override val currentHomeEntryId: String?
+            get() = (state.value as? BackHistoryMenuState.Visible)?.homeEntryId
 
         override suspend fun onBackButtonLongPressed() {
             val candidates = buildBackHistoryCandidates(
@@ -74,13 +83,14 @@ interface BackHistoryDelegate {
                 searchObjects(
                     SearchObjects.Params(
                         space = SpaceId(space),
-                        filters = listOf(
-                            DVFilter(
-                                relation = Relations.ID,
-                                condition = DVFilterCondition.IN,
-                                value = group.map { it.objectId }
+                        filters = buildList {
+                            add(
+                                buildLimitedObjectIdsFilter(
+                                limitedObjectIds = group.map { it.objectId }
                             )
-                        ),
+                            )
+                            addAll(buildDeletedFilter())
+                        },
                         keys = listOf(
                             Relations.ID,
                             Relations.NAME,

@@ -20,6 +20,7 @@ sealed class TypeEvent {
     data object OnBackLongClick : TypeEvent()
     data class OnBackHistoryItemClick(val item: BackHistoryMenuItem) : TypeEvent()
     data object OnBackHistoryChannelsClick : TypeEvent()
+    data object OnBackHistoryHomeClick : TypeEvent()
     data object OnBackHistoryMenuDismiss : TypeEvent()
     data object OnTopBarTitleClick : TypeEvent()
     //endregion

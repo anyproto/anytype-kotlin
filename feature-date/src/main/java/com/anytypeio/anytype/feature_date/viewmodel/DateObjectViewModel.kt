@@ -809,10 +809,11 @@ class DateObjectViewModel(
             }
 
             is DateEvent.TopToolbar.OnBackHistoryItemClick -> {
-                onBackHistoryMenuDismissed()
-                viewModelScope.launch {
-                    effects.emit(DateObjectCommand.PopToBackStackEntry(event.item.entryId))
-                }
+                proceedWithBackHistoryJump(event.item.entryId)
+            }
+
+            DateEvent.TopToolbar.OnBackHistoryHomeClick -> {
+                currentHomeEntryId?.let { proceedWithBackHistoryJump(it) }
             }
 
             DateEvent.TopToolbar.OnBackHistoryChannelsClick -> {
@@ -830,6 +831,13 @@ class DateObjectViewModel(
                     effects.emit(DateObjectCommand.OpenWidgets)
                 }
             }
+        }
+    }
+
+    private fun proceedWithBackHistoryJump(entryId: String) {
+        onBackHistoryMenuDismissed()
+        viewModelScope.launch {
+            effects.emit(DateObjectCommand.PopToBackStackEntry(entryId))
         }
     }
 

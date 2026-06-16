@@ -621,10 +621,11 @@ class ObjectTypeViewModel(
             }
 
             is TypeEvent.OnBackHistoryItemClick -> {
-                onBackHistoryMenuDismissed()
-                viewModelScope.launch {
-                    commands.emit(ObjectTypeCommand.PopToBackStackEntry(event.item.entryId))
-                }
+                proceedWithBackHistoryJump(event.item.entryId)
+            }
+
+            TypeEvent.OnBackHistoryHomeClick -> {
+                currentHomeEntryId?.let { proceedWithBackHistoryJump(it) }
             }
 
             TypeEvent.OnBackHistoryChannelsClick -> {
@@ -749,6 +750,13 @@ class ObjectTypeViewModel(
                     proceedWithPinType()
                 }
             }
+        }
+    }
+
+    private fun proceedWithBackHistoryJump(entryId: String) {
+        onBackHistoryMenuDismissed()
+        viewModelScope.launch {
+            commands.emit(ObjectTypeCommand.PopToBackStackEntry(entryId))
         }
     }
 

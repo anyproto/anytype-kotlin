@@ -341,6 +341,7 @@ open class ObjectSetFragment :
                     BackHistoryMenu(
                         state = state,
                         onChannelsClicked = { vm.onBackHistoryChannelsClicked() },
+                        onHomeClicked = { vm.onBackHistoryHomeClicked() },
                         onItemClicked = { vm.onBackHistoryItemClicked(it) },
                         onDismiss = { vm.onBackHistoryMenuDismissed() }
                     )

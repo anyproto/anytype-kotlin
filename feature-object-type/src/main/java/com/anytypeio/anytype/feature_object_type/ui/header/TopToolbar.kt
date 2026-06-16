@@ -97,6 +97,7 @@ fun TopToolbar(
             BackHistoryMenu(
                 state = backHistoryMenu,
                 onChannelsClicked = { onTypeEvent(TypeEvent.OnBackHistoryChannelsClick) },
+                onHomeClicked = { onTypeEvent(TypeEvent.OnBackHistoryHomeClick) },
                 onItemClicked = { onTypeEvent(TypeEvent.OnBackHistoryItemClick(it)) },
                 onDismiss = { onTypeEvent(TypeEvent.OnBackHistoryMenuDismiss) }
             )

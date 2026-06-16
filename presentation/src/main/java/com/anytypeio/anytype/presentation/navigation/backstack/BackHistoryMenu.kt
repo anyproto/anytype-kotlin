@@ -21,7 +21,7 @@ sealed class BackHistoryMenuState {
     /**
      * @property homeEntryId back-stack id of the space home (widgets) screen if it is present
      * in the navigation history, otherwise null. When set, the menu shows a "Home" entry.
-     * @property items previously visited objects, most-recent-first.
+     * @property items previously visited objects, oldest-first (breadcrumb order).
      */
     data class Visible(
         val homeEntryId: String? = null,

@@ -1332,13 +1332,22 @@ class EditorViewModel(
     }
 
     fun onBackHistoryItemClicked(item: BackHistoryMenuItem) {
+        proceedWithBackHistoryJump(item.entryId)
+    }
+
+    fun onBackHistoryHomeClicked() {
+        val entryId = currentHomeEntryId ?: return
+        proceedWithBackHistoryJump(entryId)
+    }
+
+    private fun proceedWithBackHistoryJump(entryId: String) {
         onBackHistoryMenuDismissed()
         viewModelScope.launch {
             closePage.async(CloseObject.Params(vmParams.ctx, vmParams.space)).fold(
-                onSuccess = { navigate(EventWrapper(AppNavigation.Command.PopToBackStackEntry(item.entryId))) },
+                onSuccess = { navigate(EventWrapper(AppNavigation.Command.PopToBackStackEntry(entryId))) },
                 onFailure = {
                     Timber.e(it, "Error while closing document before back-history jump")
-                    navigate(EventWrapper(AppNavigation.Command.PopToBackStackEntry(item.entryId)))
+                    navigate(EventWrapper(AppNavigation.Command.PopToBackStackEntry(entryId)))
                 }
             )
         }

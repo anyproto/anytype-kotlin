@@ -6,8 +6,9 @@ package com.anytypeio.anytype.presentation.navigation.backstack
  */
 interface NavigationBackStackInspector {
     /**
-     * @return object-screen entries in back-stack order, bottom -> top
-     * (the last entry corresponds to the currently visible screen).
+     * @return object-screen entries in back-stack order, bottom -> top. The currently visible
+     * screen is identified separately via [currentEntryId] rather than assumed to be the last
+     * entry, since the back stack can hold trailing entries that are not yet on screen.
      */
     fun objectScreenEntries(): List<BackStackObjectEntry>
 

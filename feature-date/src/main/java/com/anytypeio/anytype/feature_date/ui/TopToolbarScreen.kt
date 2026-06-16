@@ -94,6 +94,7 @@ fun TopToolbarScreen(
             BackHistoryMenu(
                 state = backHistoryMenu,
                 onChannelsClicked = { onDateEvent(DateEvent.TopToolbar.OnBackHistoryChannelsClick) },
+                onHomeClicked = { onDateEvent(DateEvent.TopToolbar.OnBackHistoryHomeClick) },
                 onItemClicked = { onDateEvent(DateEvent.TopToolbar.OnBackHistoryItemClick(it)) },
                 onDismiss = { onDateEvent(DateEvent.TopToolbar.OnBackHistoryMenuDismiss) }
             )

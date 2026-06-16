@@ -200,6 +200,7 @@
     <string name="hint_paste_link">Lim inn lenke</string>
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
     <string name="untitled">Untitled</string>
+    <string name="back_history_channels">Channels</string>
     <string name="untitled_set">Untitled query</string>
     <string name="untitled_collection">Navnløs samling</string>
     <string name="archived">Arkivert</string>

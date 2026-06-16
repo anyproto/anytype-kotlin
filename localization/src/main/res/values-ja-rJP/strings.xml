@@ -200,6 +200,7 @@
     <string name="hint_paste_link">リンクを貼り付け</string>
     <string name="empty_tap_to_create_new_block">何もありません。タップして作成</string>
     <string name="untitled">無題</string>
+    <string name="back_history_channels">スペース</string>
     <string name="untitled_set">無題のクエリ</string>
     <string name="untitled_collection">無題のコレクション</string>
     <string name="archived">アーカイブ済み</string>

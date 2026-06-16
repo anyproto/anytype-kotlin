@@ -21,6 +21,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,7 +36,9 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.menu.BackHistoryMenu
 import com.anytypeio.anytype.core_ui.syncstatus.StatusBadge
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.TypeIconView
@@ -43,6 +47,7 @@ import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuState
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,8 +56,10 @@ fun TopToolbar(
     uiSyncStatusBadgeState: UiSyncStatusBadgeState,
     uiTitleState: UiTitleState,
     uiIconState: UiIconState,
-    onTypeEvent: (TypeEvent) -> Unit
+    onTypeEvent: (TypeEvent) -> Unit,
+    backHistoryMenu: BackHistoryMenuState = BackHistoryMenuState.Hidden
 ) {
+    val haptic = LocalHapticFeedback.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,15 +80,26 @@ fun TopToolbar(
                     color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.background_secondary),
                     shape = CircleShape
                 )
-                .noRippleThrottledClickable {
-                    onTypeEvent(TypeEvent.OnBackClick)
-                },
+                .noRippleCombinedClickable(
+                    onClick = { onTypeEvent(TypeEvent.OnBackClick) },
+                    onLongClicked = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onTypeEvent(TypeEvent.OnBackLongClick)
+                    }
+                ),
             contentAlignment = Alignment.Center
         ) {
             Image(
                 modifier = Modifier.wrapContentSize(),
                 painter = painterResource(R.drawable.ic_default_top_back),
                 contentDescription = stringResource(R.string.content_desc_back_button)
+            )
+            BackHistoryMenu(
+                state = backHistoryMenu,
+                onChannelsClicked = { onTypeEvent(TypeEvent.OnBackHistoryChannelsClick) },
+                onHomeClicked = { onTypeEvent(TypeEvent.OnBackHistoryHomeClick) },
+                onItemClicked = { onTypeEvent(TypeEvent.OnBackHistoryItemClick(it)) },
+                onDismiss = { onTypeEvent(TypeEvent.OnBackHistoryMenuDismiss) }
             )
         }
 

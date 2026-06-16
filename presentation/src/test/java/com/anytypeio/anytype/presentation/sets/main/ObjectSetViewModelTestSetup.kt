@@ -372,7 +372,9 @@ open class ObjectSetViewModelTestSetup {
             createBlock = createBlock,
             stringResourceProvider = stringResourceProvider,
             getDefaultObjectType = getDefaultObjectType,
-            addDiscussion = addDiscussion
+            addDiscussion = addDiscussion,
+            backHistoryDelegate = mock(),
+            exitToVaultDelegate = mock()
         )
     }
 

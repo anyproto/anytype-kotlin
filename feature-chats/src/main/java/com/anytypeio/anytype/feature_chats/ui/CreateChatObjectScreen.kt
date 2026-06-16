@@ -94,7 +94,8 @@ fun CreateChatObjectScreen(
                 color = colorResource(id = R.color.background_primary),
                 shape = RoundedCornerShape(16.dp)
             )
-            .imePadding()
+            .imePadding(),
+        contentAlignment = Alignment.BottomCenter
     ) {
         Dragger(
             modifier = Modifier

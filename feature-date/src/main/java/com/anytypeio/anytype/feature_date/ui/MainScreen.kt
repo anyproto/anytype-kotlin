@@ -45,6 +45,7 @@ import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsState
 import com.anytypeio.anytype.feature_date.viewmodel.UiHeaderState
 import com.anytypeio.anytype.feature_date.viewmodel.UiSnackbarState
 import com.anytypeio.anytype.feature_date.viewmodel.UiSyncStatusBadgeState
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuState
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import androidx.compose.ui.res.dimensionResource
 import kotlinx.coroutines.CoroutineScope
@@ -64,7 +65,8 @@ fun DateMainScreen(
     uiContentState: UiContentState,
     uiSnackbarState: UiSnackbarState,
     canPaginate: Boolean,
-    onDateEvent: (DateEvent) -> Unit
+    onDateEvent: (DateEvent) -> Unit,
+    backHistoryMenu: BackHistoryMenuState = BackHistoryMenuState.Hidden
 ) {
 
     val snackBarHostState = remember { SnackbarHostState() }
@@ -109,7 +111,8 @@ fun DateMainScreen(
                     uiHeaderState = uiHeaderState,
                     uiCalendarIconState = uiCalendarIconState,
                     uiSyncStatusBadgeState = uiSyncStatusBadgeState,
-                    onDateEvent = onDateEvent
+                    onDateEvent = onDateEvent,
+                    backHistoryMenu = backHistoryMenu
                 )
                 Spacer(
                     modifier = Modifier.height(16.dp)

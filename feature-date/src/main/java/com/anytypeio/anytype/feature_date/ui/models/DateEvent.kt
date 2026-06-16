@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
 import com.anytypeio.anytype.feature_date.viewmodel.UiFieldsItem
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuItem
 import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 
 sealed class DateEvent {
@@ -12,6 +13,11 @@ sealed class DateEvent {
         data class OnSyncStatusClick(val status: SpaceSyncAndP2PStatusState) : TopToolbar()
         data class OnCalendarClick(val timestampInSeconds: TimestampInSeconds) : TopToolbar()
         data object OnBackClick : TopToolbar()
+        data object OnBackLongClick : TopToolbar()
+        data class OnBackHistoryItemClick(val item: BackHistoryMenuItem) : TopToolbar()
+        data object OnBackHistoryChannelsClick : TopToolbar()
+        data object OnBackHistoryHomeClick : TopToolbar()
+        data object OnBackHistoryMenuDismiss : TopToolbar()
         data object OnTitleClick : TopToolbar()
     }
 

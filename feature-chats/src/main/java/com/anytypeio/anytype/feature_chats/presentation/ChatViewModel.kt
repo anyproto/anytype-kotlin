@@ -93,6 +93,8 @@ import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuItem
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.PinObjectAsWidgetDelegate
 import java.text.SimpleDateFormat
@@ -155,10 +157,12 @@ class ChatViewModel @Inject constructor(
     private val setChatNotificationMode: SetChatNotificationMode,
     private val fieldParser: FieldParser,
     private val chatSearchDelegate: ChatSearchDelegate,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val backHistoryDelegate: BackHistoryDelegate
 ) : BaseViewModel(),
     ExitToVaultDelegate by exitToVaultDelegate,
     PinObjectAsWidgetDelegate by pinObjectAsWidgetDelegate,
+    BackHistoryDelegate by backHistoryDelegate,
     ChatSearchDelegate by chatSearchDelegate {
     private val preloadingJobs = mutableListOf<Job>()
 
@@ -1944,6 +1948,42 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onBackButtonLongClicked() {
+        viewModelScope.launch {
+            backHistoryDelegate.onBackButtonLongPressed()
+        }
+    }
+
+    fun onBackHistoryItemClicked(item: BackHistoryMenuItem) {
+        proceedWithBackHistoryJump(item.entryId)
+    }
+
+    fun onBackHistoryHomeClicked() {
+        val entryId = currentHomeEntryId ?: return
+        proceedWithBackHistoryJump(entryId)
+    }
+
+    private fun proceedWithBackHistoryJump(entryId: String) {
+        onBackHistoryMenuDismissed()
+        viewModelScope.launch {
+            withContext(dispatchers.io) {
+                chatContainer.stop(chat = vmParams.ctx)
+            }
+            commands.emit(ViewModelCommand.PopToBackStackEntry(entryId))
+        }
+    }
+
+    fun onBackHistoryChannelsClicked() {
+        onBackHistoryMenuDismissed()
+        viewModelScope.launch {
+            withContext(dispatchers.io) {
+                chatContainer.stop(chat = vmParams.ctx)
+            }
+            proceedWithClearingSpaceBeforeExitingToVault()
+            commands.emit(ViewModelCommand.ExitToVault)
+        }
+    }
+
     fun onSpaceIconClicked() {
         Timber.d("onSpaceIconClicked")
         viewModelScope.launch {
@@ -2615,6 +2655,8 @@ class ChatViewModel @Inject constructor(
 
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()
+        data object ExitToVault : ViewModelCommand()
+        data class PopToBackStackEntry(val entryId: String) : ViewModelCommand()
         data object OpenWidgets : ViewModelCommand()
         data class OpenSpaceMembers(val space: SpaceId) : ViewModelCommand()
         data class MediaPreview(val index: Int, val objects: List<Id>) : ViewModelCommand()

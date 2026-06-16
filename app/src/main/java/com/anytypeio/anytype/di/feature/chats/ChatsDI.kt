@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.notifications.SetChatNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
@@ -36,6 +37,8 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.NavigationBackStackInspector
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.defaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
@@ -111,6 +114,21 @@ object ChatModule {
         impl: ChatSearchDelegate.Default
     ): ChatSearchDelegate = impl
 
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideBackHistoryDelegate(
+        inspector: NavigationBackStackInspector,
+        searchObjects: SearchObjects,
+        fieldParser: FieldParser,
+        dispatchers: AppCoroutineDispatchers
+    ): BackHistoryDelegate = BackHistoryDelegate.Default(
+        inspector = inspector,
+        searchObjects = searchObjects,
+        fieldParser = fieldParser,
+        dispatchers = dispatchers
+    )
+
     @Module
     interface Declarations {
         @PerScreen
@@ -148,4 +166,5 @@ interface ChatComponentDependencies : ComponentDependencies {
     fun payloadDelegator(): PayloadDelegator
     fun fieldParser(): FieldParser
     fun deepLinkResolver(): DeepLinkResolver
+    fun navigationBackStackInspector(): NavigationBackStackInspector
 }

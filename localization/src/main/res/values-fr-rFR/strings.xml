@@ -200,6 +200,7 @@
     <string name="hint_paste_link">Coller le lien</string>
     <string name="empty_tap_to_create_new_block">Vide. Appuyer pour créer un nouveau bloc</string>
     <string name="untitled">Sans titre</string>
+    <string name="back_history_channels">Espaces</string>
     <string name="untitled_set">Requête sans nom</string>
     <string name="untitled_collection">Collection sans titre</string>
     <string name="archived">Archivé</string>

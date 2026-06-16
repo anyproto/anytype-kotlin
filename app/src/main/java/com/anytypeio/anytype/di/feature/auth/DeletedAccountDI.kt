@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
 import com.anytypeio.anytype.domain.launch.RemainingSpacesPreloader
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -67,7 +68,8 @@ object DeletedAccountModule {
         user: UserSettingsRepository,
         spaceManager: SpaceManager,
         awaitAccountStartManager: AwaitAccountStartManager,
-        remainingSpacesPreloader: RemainingSpacesPreloader
+        remainingSpacesPreloader: RemainingSpacesPreloader,
+        preferredSpaceIdHolder: PreferredSpaceIdHolder
     ): Logout = Logout(
         repo = repo,
         config = provider,
@@ -75,7 +77,8 @@ object DeletedAccountModule {
         dispatchers = dispatchers,
         spaceManager = spaceManager,
         awaitAccountStartManager = awaitAccountStartManager,
-        remainingSpacesPreloader = remainingSpacesPreloader
+        remainingSpacesPreloader = remainingSpacesPreloader,
+        preferredSpaceIdHolder = preferredSpaceIdHolder
     )
 
     @JvmStatic
@@ -107,4 +110,5 @@ interface DeletedAccountDependencies : ComponentDependencies {
     fun userPermissionProvider(): UserPermissionProvider
     fun globalSubscriptionManager(): GlobalSubscriptionManager
     fun remainingSpacesPreloader(): RemainingSpacesPreloader
+    fun preferredSpaceIdHolder(): PreferredSpaceIdHolder
 }

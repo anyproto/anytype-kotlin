@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
 import com.anytypeio.anytype.domain.launch.RemainingSpacesPreloader
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -113,4 +114,5 @@ interface OnboardingMnemonicLoginDependencies : ComponentDependencies {
     fun logger(): Logger
     fun eventProxy(): EventProxy
     fun remainingSpacesPreloader(): RemainingSpacesPreloader
+    fun preferredSpaceIdHolder(): PreferredSpaceIdHolder
 }

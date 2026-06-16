@@ -199,7 +199,8 @@ object MainEntryModule {
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         awaitAccountStartManager: AwaitAccountStartManager,
-        remainingSpacesPreloader: RemainingSpacesPreloader
+        remainingSpacesPreloader: RemainingSpacesPreloader,
+        preferredSpaceIdHolder: PreferredSpaceIdHolder
     ): Logout = Logout(
         repo = repo,
         user = user,
@@ -207,7 +208,8 @@ object MainEntryModule {
         dispatchers = dispatchers,
         spaceManager = spaceManager,
         awaitAccountStartManager = awaitAccountStartManager,
-        remainingSpacesPreloader = remainingSpacesPreloader
+        remainingSpacesPreloader = remainingSpacesPreloader,
+        preferredSpaceIdHolder = preferredSpaceIdHolder
     )
 
     @JvmStatic

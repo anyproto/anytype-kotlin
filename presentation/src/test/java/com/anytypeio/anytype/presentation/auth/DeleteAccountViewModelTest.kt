@@ -90,7 +90,8 @@ class DeleteAccountViewModelTest {
             user = userSettingsRepository,
             spaceManager = spaceManager,
             awaitAccountStartManager = awaitAccountStartManager,
-            remainingSpacesPreloader = mock()
+            remainingSpacesPreloader = mock(),
+            preferredSpaceIdHolder = mock()
         )
         vm = DeletedAccountViewModel(
             restoreAccount = restoreAccount,

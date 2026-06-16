@@ -200,6 +200,7 @@
     <string name="hint_paste_link">Pegar enlace</string>
     <string name="empty_tap_to_create_new_block">Vacío. Toca para crear un bloque.</string>
     <string name="untitled">Sin título</string>
+    <string name="back_history_channels">Canales</string>
     <string name="untitled_set">Consulta sin título</string>
     <string name="untitled_collection">Colección sin título</string>
     <string name="archived">Archivado</string>

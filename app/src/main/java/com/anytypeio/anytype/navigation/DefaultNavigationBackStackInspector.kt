@@ -34,19 +34,6 @@ class DefaultNavigationBackStackInspector @Inject constructor() : NavigationBack
     @SuppressLint("RestrictedApi") // NavController.currentBackStack is RestrictTo(LIBRARY_GROUP)
     override fun objectScreenEntries(): List<BackStackObjectEntry> {
         val controller = navController ?: return emptyList()
-        // TODO(DROID-4518) temporary diagnostic — remove once back-history menu ordering is confirmed.
-        runCatching {
-            val dump = controller.currentBackStack.value.joinToString(" -> ") { e ->
-                val name = e.destination.displayName.substringAfterLast('/')
-                val ctx = e.arguments?.let { args ->
-                    argKeysByDestination[e.destination.id]?.let { args.getString(it.first) }
-                }
-                "$name#${e.id.takeLast(4)}${ctx?.let { "(ctx=${it.takeLast(4)})" }.orEmpty()}"
-            }
-            val current = controller.currentBackStackEntry
-            Timber.i("BACK_HISTORY_DEBUG stack: $dump")
-            Timber.i("BACK_HISTORY_DEBUG current: ${current?.destination?.displayName?.substringAfterLast('/')}#${current?.id?.takeLast(4)}")
-        }
         return runCatching {
             controller.currentBackStack.value.mapNotNull { entry ->
                 val keys = argKeysByDestination[entry.destination.id] ?: return@mapNotNull null

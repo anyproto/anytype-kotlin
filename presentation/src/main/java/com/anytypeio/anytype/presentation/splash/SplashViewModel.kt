@@ -43,12 +43,14 @@ import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
@@ -82,7 +84,15 @@ class SplashViewModel(
     MigrationHelperDelegate by migration {
 
     val state = MutableStateFlow<State>(State.Init)
-    val commands = MutableSharedFlow<Command>(replay = 0)
+
+    /**
+     * One-shot navigation commands. Backed by an unbounded [Channel] (not a
+     * `replay = 0` SharedFlow) so a command emitted while [SplashFragment] is not
+     * collecting — e.g. during the activity stop -> resume gap on cold start — is
+     * buffered and delivered to the next subscriber instead of being silently dropped.
+     */
+    private val commandsChannel = Channel<Command>(Channel.UNLIMITED)
+    val commands: Flow<Command> = commandsChannel.receiveAsFlow()
 
     private var migrationRetryCount: Int = 0
 
@@ -144,7 +154,7 @@ class SplashViewModel(
                 onSuccess = { (status, account) ->
                     Timber.i("Authorization status: $status")
                     if (status == AuthStatus.UNAUTHORIZED) {
-                        commands.emit(Command.NavigateToAuthStart)
+                        commandsChannel.send(Command.NavigateToAuthStart)
                     } else {
                         proceedWithLaunchingWallet()
                     }
@@ -200,7 +210,7 @@ class SplashViewModel(
                         analyticsId = analyticsId
                     )
                     proceedWithGlobalSubscriptions()
-                    commands.emit(Command.CheckAppStartIntent)
+                    commandsChannel.send(Command.CheckAppStartIntent)
                 },
                 failure = { e ->
                     Timber.e(e, "Error while launching account")
@@ -244,7 +254,7 @@ class SplashViewModel(
             createObjectByTypeAndTemplate.async(params).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while creating a new object with type:$type")
-                    commands.emit(Command.Toast(e.message ?: "Error while creating object"))
+                    commandsChannel.send(Command.Toast(e.message ?: "Error while creating object"))
                     proceedWithNavigation()
                 },
                 onSuccess = { result ->
@@ -258,7 +268,7 @@ class SplashViewModel(
                     )
                     when (result) {
                         CreateObjectByTypeAndTemplate.Result.ObjectTypeNotFound -> {
-                            commands.emit(Command.Toast(ERROR_CREATE_OBJECT))
+                            commandsChannel.send(Command.Toast(ERROR_CREATE_OBJECT))
                             proceedWithVaultNavigation()
                         }
                         is CreateObjectByTypeAndTemplate.Result.Success -> {
@@ -270,7 +280,7 @@ class SplashViewModel(
                                     spaceView = view
                                 )
                                 // Layout may not be known here; open as an object and let UI resolve.
-                                commands.emit(
+                                commandsChannel.send(
                                     Command.NavigateToObject(
                                         id = target,
                                         space = spaceId,
@@ -292,7 +302,7 @@ class SplashViewModel(
             spaceManager.set(space = space)
                 .onSuccess {
                     pendingIntentStore.setPushSpaceEntry(space)
-                    commands.emit(
+                    commandsChannel.send(
                         Command.NavigateToChat(
                             space = space,
                             chat = chat
@@ -360,7 +370,7 @@ class SplashViewModel(
         when (layout) {
             ObjectType.Layout.SET,
             ObjectType.Layout.COLLECTION ->
-                commands.emit(
+                commandsChannel.send(
                     Command.NavigateToObjectSet(
                         id = id,
                         space = space,
@@ -368,7 +378,7 @@ class SplashViewModel(
                     )
                 )
             ObjectType.Layout.DATE -> {
-                commands.emit(
+                commandsChannel.send(
                     Command.NavigateToDateObject(
                         id = id,
                         space = space,
@@ -377,7 +387,7 @@ class SplashViewModel(
                 )
             }
             ObjectType.Layout.OBJECT_TYPE -> {
-                commands.emit(
+                commandsChannel.send(
                     Command.NavigateToObjectType(
                         id = id,
                         space = space,
@@ -386,7 +396,7 @@ class SplashViewModel(
                 )
             }
             else ->
-                commands.emit(
+                commandsChannel.send(
                     Command.NavigateToObject(
                         id = id,
                         space = space,
@@ -412,7 +422,7 @@ class SplashViewModel(
             val action = deepLinkResolver.resolve(deeplink)
             if (action is DeepLinkResolver.Action.InitiateOneToOneChat) {
                 Timber.d("One-to-one chat deeplink detected, navigating to Vault")
-                commands.emit(Command.NavigateToVault(deeplink))
+                commandsChannel.send(Command.NavigateToVault(deeplink))
                 return
             }
         }
@@ -429,7 +439,7 @@ class SplashViewModel(
                             spaceView = view
                         )
                         if (chat != null) {
-                            commands.emit(
+                            commandsChannel.send(
                                 Command.NavigateToChat(
                                     space = space.id,
                                     chat = chat,
@@ -438,7 +448,7 @@ class SplashViewModel(
                             )
                         } else {
                             Timber.w("Could not resolve chat ID for one-to-one space")
-                            commands.emit(
+                            commandsChannel.send(
                                 Command.NavigateToWidgets(
                                     space = space.id,
                                     deeplink = deeplink
@@ -458,11 +468,11 @@ class SplashViewModel(
                 }
             } else {
                 Timber.w("Timeout while waiting for active space view. Navigating to vault.")
-                commands.emit(Command.NavigateToVault(deeplink))
+                commandsChannel.send(Command.NavigateToVault(deeplink))
             }
         } else {
             Timber.w("No space found or space manager state is NoSpace. Navigating to vault.")
-            commands.emit(Command.NavigateToVault(deeplink))
+            commandsChannel.send(Command.NavigateToVault(deeplink))
         }
     }
 
@@ -483,7 +493,7 @@ class SplashViewModel(
         deeplink: String?
     ) {
         if (homepage.isNullOrEmpty() || homepage in HOMEPAGE_SPECIAL_CONSTANTS) {
-            commands.emit(Command.NavigateToWidgets(space = spaceId, deeplink = deeplink))
+            commandsChannel.send(Command.NavigateToWidgets(space = spaceId, deeplink = deeplink))
             return
         }
         // Homepage is an object ID — resolve and navigate
@@ -504,33 +514,33 @@ class SplashViewModel(
         val obj = results.getOrNull()?.firstOrNull()
         if (obj == null) {
             Timber.w("Homepage object $homepage not found, falling back to widgets")
-            commands.emit(Command.NavigateToWidgets(space = spaceId, deeplink = deeplink))
+            commandsChannel.send(Command.NavigateToWidgets(space = spaceId, deeplink = deeplink))
             return
         }
         when (obj.navigation()) {
             is OpenObjectNavigation.OpenEditor -> {
-                commands.emit(Command.NavigateToObject(id = homepage, space = spaceId, chat = null))
+                commandsChannel.send(Command.NavigateToObject(id = homepage, space = spaceId, chat = null))
             }
             is OpenObjectNavigation.OpenDataView -> {
-                commands.emit(Command.NavigateToObjectSet(id = homepage, space = spaceId, chat = null))
+                commandsChannel.send(Command.NavigateToObjectSet(id = homepage, space = spaceId, chat = null))
             }
             is OpenObjectNavigation.OpenChat -> {
-                commands.emit(Command.NavigateToChat(space = spaceId, chat = homepage, deeplink = deeplink))
+                commandsChannel.send(Command.NavigateToChat(space = spaceId, chat = homepage, deeplink = deeplink))
             }
             is OpenObjectNavigation.OpenType -> {
-                commands.emit(Command.NavigateToObjectType(id = homepage, space = spaceId, chat = null))
+                commandsChannel.send(Command.NavigateToObjectType(id = homepage, space = spaceId, chat = null))
             }
             is OpenObjectNavigation.OpenDateObject -> {
-                commands.emit(Command.NavigateToDateObject(id = homepage, space = spaceId, chat = null))
+                commandsChannel.send(Command.NavigateToDateObject(id = homepage, space = spaceId, chat = null))
             }
             is OpenObjectNavigation.OpenBookmarkUrl -> {
-                commands.emit(Command.NavigateToObject(id = homepage, space = spaceId, chat = null))
+                commandsChannel.send(Command.NavigateToObject(id = homepage, space = spaceId, chat = null))
             }
             is OpenObjectNavigation.OpenParticipant -> {
-                commands.emit(Command.NavigateToWidgets(space = spaceId, deeplink = deeplink))
+                commandsChannel.send(Command.NavigateToWidgets(space = spaceId, deeplink = deeplink))
             }
             else -> {
-                commands.emit(Command.NavigateToWidgets(space = spaceId, deeplink = deeplink))
+                commandsChannel.send(Command.NavigateToWidgets(space = spaceId, deeplink = deeplink))
             }
         }
     }

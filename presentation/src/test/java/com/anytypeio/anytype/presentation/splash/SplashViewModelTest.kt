@@ -202,6 +202,34 @@ class SplashViewModelTest {
     }
 
     @Test
+    fun `should not lose CheckAppStartIntent when emitted before splash starts collecting`() = runTest {
+        // GIVEN — a normal authorized cold start that launches wallet + account.
+        val status = AuthStatus.AUTHORIZED
+        val response = Resultat.Success(Pair(status, Account(id = "id")))
+
+        stubCheckAuthStatus(response)
+        stubLaunchWallet()
+        stubLaunchAccount()
+        stubGetLastOpenedObject()
+
+        // WHEN — the cold-start flow runs to completion and emits CheckAppStartIntent
+        // while no collector is active. This reproduces the activity stop -> resume gap
+        // during cold start, where SplashFragment has cancelled its command collector
+        // (BaseFragment.onStop) yet the ViewModel's viewModelScope keeps running.
+        initViewModel()
+
+        // THEN — a collector subscribing afterwards must still receive the command.
+        // With a replay=0 SharedFlow the command was dropped and the app stuck on the
+        // splash screen; a buffered channel delivers it to the late subscriber.
+        vm.commands.test {
+            assertEquals(
+                expected = SplashViewModel.Command.CheckAppStartIntent,
+                actual = awaitItem()
+            )
+        }
+    }
+
+    @Test
     fun `should navigate to vault if space view loading times out`() = runTest {
         // GIVEN
 
@@ -237,6 +265,9 @@ class SplashViewModelTest {
         }
 
         vm.commands.test {
+            // The cold-start CheckAppStartIntent is buffered and delivered first.
+            assertEquals(SplashViewModel.Command.CheckAppStartIntent, awaitItem())
+
             // Act: manually trigger proceedWithVaultNavigation
             vm.onDeepLinkLaunch(deeplink)
 
@@ -295,6 +326,9 @@ class SplashViewModelTest {
         }
 
         vm.commands.test {
+            // The cold-start CheckAppStartIntent is buffered and delivered first.
+            assertEquals(SplashViewModel.Command.CheckAppStartIntent, awaitItem())
+
             // Act: manually trigger proceedWithVaultNavigation
             vm.onDeepLinkLaunch(deeplink)
 
@@ -347,6 +381,9 @@ class SplashViewModelTest {
         }
 
         vm.commands.test {
+            // The cold-start CheckAppStartIntent is buffered and delivered first.
+            assertEquals(SplashViewModel.Command.CheckAppStartIntent, awaitItem())
+
             // Act
             vm.onDeepLinkLaunch(deeplink)
 
@@ -400,6 +437,9 @@ class SplashViewModelTest {
         }
 
         vm.commands.test {
+            // The cold-start CheckAppStartIntent is buffered and delivered first.
+            assertEquals(SplashViewModel.Command.CheckAppStartIntent, awaitItem())
+
             // Act
             vm.onDeepLinkLaunch(deeplink)
 

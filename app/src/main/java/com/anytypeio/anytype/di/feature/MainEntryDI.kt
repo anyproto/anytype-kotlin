@@ -15,11 +15,13 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
+import com.anytypeio.anytype.domain.launch.RemainingSpacesPreloader
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugRunProfiler
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
+import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
@@ -104,7 +106,9 @@ object MainEntryModule {
         participantSubscriptionContainer: ParticipantSubscriptionContainer,
         userSettingsRepository: UserSettingsRepository,
         resolveSpaceHomepage: ResolveSpaceHomepage,
-        debugRunProfiler: DebugRunProfiler
+        debugRunProfiler: DebugRunProfiler,
+        preferredSpaceIdHolder: PreferredSpaceIdHolder,
+        remainingSpacesPreloader: RemainingSpacesPreloader
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -136,7 +140,9 @@ object MainEntryModule {
         participantSubscriptionContainer = participantSubscriptionContainer,
         userSettingsRepository = userSettingsRepository,
         resolveSpaceHomepage = resolveSpaceHomepage,
-        debugRunProfiler = debugRunProfiler
+        debugRunProfiler = debugRunProfiler,
+        preferredSpaceIdHolder = preferredSpaceIdHolder,
+        remainingSpacesPreloader = remainingSpacesPreloader
     )
 
     @JvmStatic
@@ -192,14 +198,18 @@ object MainEntryModule {
         user: UserSettingsRepository,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
-        awaitAccountStartManager: AwaitAccountStartManager
+        awaitAccountStartManager: AwaitAccountStartManager,
+        remainingSpacesPreloader: RemainingSpacesPreloader,
+        preferredSpaceIdHolder: PreferredSpaceIdHolder
     ): Logout = Logout(
         repo = repo,
         user = user,
         config = provider,
         dispatchers = dispatchers,
         spaceManager = spaceManager,
-        awaitAccountStartManager = awaitAccountStartManager
+        awaitAccountStartManager = awaitAccountStartManager,
+        remainingSpacesPreloader = remainingSpacesPreloader,
+        preferredSpaceIdHolder = preferredSpaceIdHolder
     )
 
     @JvmStatic

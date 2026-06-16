@@ -139,7 +139,8 @@ class SplashViewModelTest {
             migration = migrationHelperDelegate,
             deepLinkResolver = mock(),
             pendingIntentStore = mock(),
-            searchObjects = mock()
+            searchObjects = mock(),
+            preferredSpaceIdHolder = mock()
         )
     }
 

@@ -126,6 +126,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun accountPreloadRemainingSpaces(
+        request: Rpc.Account.PreloadRemainingSpaces.Request
+    ): Rpc.Account.PreloadRemainingSpaces.Response {
+        val encoded = Service.accountPreloadRemainingSpaces(
+            Rpc.Account.PreloadRemainingSpaces.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Account.PreloadRemainingSpaces.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Account.PreloadRemainingSpaces.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun accountStop(request: Rpc.Account.Stop.Request): Rpc.Account.Stop.Response {
         val encoded = Service.accountStop(Rpc.Account.Stop.Request.ADAPTER.encode(request))
         val response = Rpc.Account.Stop.Response.ADAPTER.decode(encoded)

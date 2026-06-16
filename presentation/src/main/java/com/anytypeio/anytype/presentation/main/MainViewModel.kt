@@ -47,7 +47,10 @@ import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugRunProfiler
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
+import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
+import com.anytypeio.anytype.domain.launch.RemainingSpacesPreloader
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
+import com.anytypeio.anytype.domain.misc.preferredSpaceId
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
@@ -115,7 +118,9 @@ class MainViewModel(
     private val participantSubscriptionContainer: ParticipantSubscriptionContainer,
     private val userSettingsRepository: UserSettingsRepository,
     private val resolveSpaceHomepage: ResolveSpaceHomepage,
-    private val debugRunProfiler: DebugRunProfiler
+    private val debugRunProfiler: DebugRunProfiler,
+    private val preferredSpaceIdHolder: PreferredSpaceIdHolder,
+    private val remainingSpacesPreloader: RemainingSpacesPreloader
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -198,6 +203,7 @@ class MainViewModel(
         // Cold start push monitoring: check if SplashViewModel signaled a push space entry
         viewModelScope.launch {
             awaitAccountStartManager.awaitStart().take(1).collect {
+                remainingSpacesPreloader.scheduleOnce(viewModelScope)
                 val pendingPush = pendingIntentStore.getPushSpaceEntry()
                 if (pendingPush != null) {
                     pendingIntentStore.clearPushSpaceEntry()
@@ -467,6 +473,12 @@ class MainViewModel(
     }
 
     fun handleNewDeepLink(deeplink: DeepLinkResolver.Action) {
+        // Only relevant for cold start: LaunchAccount consumes the holder once at
+        // account start. On warm starts the account has already started, so setting
+        // it here would leave a stale value for a future (in-process) LaunchAccount.
+        if (!awaitAccountStartManager.hasStarted()) {
+            deeplink.preferredSpaceId()?.let { preferredSpaceIdHolder.set(it) }
+        }
         deepLinkJobs.cancel()
         viewModelScope.launch {
             checkAuthorizationStatus.async(Unit).fold(
@@ -683,6 +695,7 @@ class MainViewModel(
                 Timber.d("No deep link")
             }
         }
+        remainingSpacesPreloader.scheduleOnce(viewModelScope)
     }
 
     /**

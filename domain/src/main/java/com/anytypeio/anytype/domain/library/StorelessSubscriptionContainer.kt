@@ -90,6 +90,10 @@ interface StorelessSubscriptionContainer {
 
         override fun subscribe(searchParams: StoreSearchByIdsParams) = flow {
             with(searchParams) {
+                if (targets.isEmpty()) {
+                    emit(emptyList())
+                    return@with
+                }
                 val initial = repo.searchObjectsByIdWithSubscription(
                     space = space,
                     subscription = subscription,

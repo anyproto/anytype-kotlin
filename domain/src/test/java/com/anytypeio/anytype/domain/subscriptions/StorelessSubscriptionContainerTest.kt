@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -31,6 +32,7 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.verifyNoInteractions
 
 class StorelessSubscriptionContainerTest {
 
@@ -98,6 +100,27 @@ class StorelessSubscriptionContainerTest {
             )
             awaitComplete()
         }
+    }
+
+    @Test
+    fun `should emit empty list without hitting repo when targets are empty`() = runTest {
+
+        val params = StoreSearchByIdsParams(
+            space = defaultSpaceId,
+            subscription = MockDataFactory.randomUuid(),
+            keys = listOf(Relations.ID, Relations.NAME),
+            targets = emptyList()
+        )
+
+        container.subscribe(params).test {
+            assertEquals(
+                expected = emptyList<ObjectWrapper.Basic>(),
+                actual = awaitItem()
+            )
+            awaitComplete()
+        }
+
+        verifyNoInteractions(repo)
     }
 
     @Test

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
 import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
@@ -24,6 +25,7 @@ class LaunchAccount @Inject constructor(
     private val initialParamsProvider: InitialParamsProvider,
     private val settings: UserSettingsRepository,
     private val awaitAccountStartManager: AwaitAccountStartManager,
+    private val preferredSpaceIdHolder: PreferredSpaceIdHolder,
     context: CoroutineContext = Dispatchers.IO
     ) : BaseUseCase<Pair<String, String>, BaseUseCase.None>(context) {
 
@@ -34,11 +36,15 @@ class LaunchAccount @Inject constructor(
 
         val currentAccountId = repository.getCurrentAccountId()
 
+        val preferredSpaceId = preferredSpaceIdHolder.consume()
+            ?: settings.getCurrentSpace()?.id
+
         val command = Command.AccountSelect(
             id = currentAccountId,
             path = pathProvider.providePath(),
             networkMode = networkMode.networkMode,
-            networkConfigFilePath = networkMode.storedFilePath
+            networkConfigFilePath = networkMode.storedFilePath,
+            preferredSpaceId = preferredSpaceId
         )
 
         repository.selectAccount(command).let { setup ->

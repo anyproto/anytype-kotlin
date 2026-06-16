@@ -43,7 +43,9 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
@@ -97,7 +99,9 @@ class ObjectSetViewModelFactory(
     private val emojiSuggester: EmojiSuggester,
     private val stringResourceProvider: StringResourceProvider,
     private val getDefaultObjectType: GetDefaultObjectType,
-    private val addDiscussion: AddDiscussion
+    private val addDiscussion: AddDiscussion,
+    private val backHistoryDelegate: BackHistoryDelegate,
+    private val exitToVaultDelegate: ExitToVaultDelegate
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -149,7 +153,9 @@ class ObjectSetViewModelFactory(
             createBlock = createBlock,
             stringResourceProvider = stringResourceProvider,
             getDefaultObjectType = getDefaultObjectType,
-            addDiscussion = addDiscussion
+            addDiscussion = addDiscussion,
+            backHistoryDelegate = backHistoryDelegate,
+            exitToVaultDelegate = exitToVaultDelegate
         ) as T
     }
 }

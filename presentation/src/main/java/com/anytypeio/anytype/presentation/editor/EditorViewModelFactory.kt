@@ -52,6 +52,8 @@ import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -109,7 +111,9 @@ open class EditorViewModelFactory @Inject constructor(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val urlHelper: UrlHelper,
     private val addDiscussion: AddDiscussion,
-    private val getChatMessages: GetChatMessages
+    private val getChatMessages: GetChatMessages,
+    private val backHistoryDelegate: BackHistoryDelegate,
+    private val exitToVaultDelegate: ExitToVaultDelegate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -165,7 +169,9 @@ open class EditorViewModelFactory @Inject constructor(
             spaceViews = spaceViews,
             urlHelper = urlHelper,
             addDiscussion = addDiscussion,
-            getChatMessages = getChatMessages
+            getChatMessages = getChatMessages,
+            backHistoryDelegate = backHistoryDelegate,
+            exitToVaultDelegate = exitToVaultDelegate
         ) as T
     }
 }

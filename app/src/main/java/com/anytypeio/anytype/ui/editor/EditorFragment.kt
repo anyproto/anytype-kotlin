@@ -87,6 +87,7 @@ import com.anytypeio.anytype.core_ui.features.editor.modal.SelectLanguageBottomS
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveStateListener
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveTargetHighlighter
+import com.anytypeio.anytype.core_ui.menu.BackHistoryMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.longClicks
@@ -735,6 +736,25 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .throttleFirst()
             .onEach { vm.onBackButtonPressed() }
             .launchIn(lifecycleScope)
+
+        binding.topToolbar.back.setOnLongClickListener {
+            vm.onBackButtonLongClicked()
+            true
+        }
+
+        binding.backHistoryMenu.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val state by vm.backHistoryMenu.collectAsStateWithLifecycle()
+                BackHistoryMenu(
+                    state = state,
+                    onChannelsClicked = { vm.onBackHistoryChannelsClicked() },
+                    onHomeClicked = { vm.onBackHistoryHomeClicked() },
+                    onItemClicked = { vm.onBackHistoryItemClicked(it) },
+                    onDismiss = { vm.onBackHistoryMenuDismissed() }
+                )
+            }
+        }
 
         binding.topToolbar.container.setOnClickListener {
             WidgetOverlayFragment.show(parentFragmentManager, space)

@@ -111,7 +111,9 @@ class CollectionCreateAndAddObjectTest : ObjectSetViewModelTestSetup() {
             createBlock = mock(),
             stringResourceProvider = stringResourceProvider,
             getDefaultObjectType = getDefaultObjectType,
-            addDiscussion = mock()
+            addDiscussion = mock(),
+            backHistoryDelegate = mock(),
+            exitToVaultDelegate = mock()
         )
     }
 

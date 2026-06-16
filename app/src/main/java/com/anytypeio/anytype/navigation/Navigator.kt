@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.navigation
 
+import android.annotation.SuppressLint
 import androidx.annotation.IdRes
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
@@ -203,6 +204,24 @@ class Navigator : AppNavigation {
             }
         }.onFailure {
             Timber.e(it, "Error while exiting to space home")
+        }
+    }
+
+    @SuppressLint("RestrictedApi") // NavController.currentBackStack is RestrictTo(LIBRARY_GROUP); lint is non-fatal
+    override fun popToBackStackEntry(entryId: String) {
+        val controller = navController ?: return
+        runCatching {
+            val stack = controller.currentBackStack.value
+            if (stack.none { it.id == entryId }) {
+                Timber.w("popToBackStackEntry: entry $entryId no longer in back stack")
+                return
+            }
+            var guard = stack.size + 4
+            while (controller.currentBackStackEntry?.id != entryId && guard-- > 0) {
+                if (!controller.popBackStack()) break
+            }
+        }.onFailure {
+            Timber.e(it, "Error while popping to back stack entry")
         }
     }
 

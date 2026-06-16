@@ -35,12 +35,15 @@ import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationCont
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -66,7 +69,16 @@ class ObjectValueViewModel(
     val viewState = MutableStateFlow<ObjectValueViewState>(ObjectValueViewState.Loading())
     private val query = MutableSharedFlow<String>(replay = 1)
     private var isEditableRelation = false
-    val commands = MutableSharedFlow<Command>(replay = 0)
+    /**
+     * One-shot commands. Backed by an unbounded [Channel] (not a `replay = 0`
+     * [MutableSharedFlow]) so the `Command.Expand` emitted from the `init` pipeline
+     * on first load — before the bottom sheet has attached its collector — is buffered
+     * and delivered to the next subscriber instead of being silently dropped, which
+     * left the sheet stuck unexpanded (DROID-4523). The single collecting fragment
+     * makes [receiveAsFlow]'s single-consumer semantics correct.
+     */
+    private val commandsChannel = Channel<Command>(Channel.UNLIMITED)
+    val commands: Flow<Command> = commandsChannel.receiveAsFlow()
 
     private val initialIds = mutableListOf<Id>()
     private var isInitialSortDone = false
@@ -162,7 +174,7 @@ class ObjectValueViewModel(
     private fun emitCommand(command: Command, delay: Long = 0L) {
         viewModelScope.launch {
             delay(delay)
-            commands.emit(command)
+            commandsChannel.send(command)
         }
     }
 

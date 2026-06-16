@@ -950,6 +950,27 @@ message Rpc {
             }
         }
 
+        message PreloadRemainingSpaces {
+            message Request {
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0; // No error
+                        UNKNOWN_ERROR = 1; // Any other errors
+                        BAD_INPUT = 2;
+                        ACCOUNT_IS_NOT_RUNNING = 101;
+                    }
+                }
+            }
+        }
+
         message Migrate {
             message Request {
                 string id = 1; // Id of a selected account
@@ -1016,6 +1037,7 @@ message Rpc {
                 // if true - will run membership v2 polling loop, v2 methods will be available
                 // if false - will run membership v1 polling loop, v2 methods will return error
                 bool enableMembershipV2 = 10; // optional, default is false
+                string preferredSpaceId = 11; // optional. If set and resolvable, only this space + tech space load eagerly at start; the rest are deferred until AccountPreloadRemainingSpaces, a 10s timer, or this space fails. Empty = today's eager behavior.
             }
 
             /**
@@ -4926,6 +4948,8 @@ message Rpc {
                 string contextId = 1;
                 repeated anytype.model.Block blocks = 2;
                 anytype.model.Range selectedTextRange = 3;
+                // optional. when set and the request contains multiple blocks, selectedTextRange is applied to the first block and selectedTextRangeLastBlock to the last block. {0,0} range means the whole block
+                anytype.model.Range selectedTextRangeLastBlock = 4;
             }
 
             message Response {
@@ -4995,6 +5019,8 @@ message Rpc {
                 string contextId = 1;
                 repeated anytype.model.Block blocks = 2;
                 anytype.model.Range selectedTextRange = 3;
+                // optional. when set and the request contains multiple blocks, selectedTextRange is applied to the first block and selectedTextRangeLastBlock to the last block. {0,0} range means the whole block
+                anytype.model.Range selectedTextRangeLastBlock = 4;
             }
 
             message Response {

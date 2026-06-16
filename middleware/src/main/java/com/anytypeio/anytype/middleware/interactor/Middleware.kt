@@ -127,12 +127,23 @@ class Middleware @Inject constructor(
             networkMode = networkMode,
             networkCustomConfigFilePath = networkCustomConfigFilePath,
             preferYamuxTransport = command.preferYamuxTransport ?: false,
-            enableMembershipV2 = true
+            enableMembershipV2 = true,
+            preferredSpaceId = command.preferredSpaceId.orEmpty()
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.accountSelect(request) }
         logResponseIfDebug(response, time)
         return response.toAccountSetup()
+    }
+
+    @Throws(Exception::class)
+    fun accountPreloadRemainingSpaces() {
+        val request = Rpc.Account.PreloadRemainingSpaces.Request()
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue {
+            service.accountPreloadRemainingSpaces(request)
+        }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)

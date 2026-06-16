@@ -21,6 +21,12 @@ interface AuthRepository {
     suspend fun selectAccount(command: Command.AccountSelect): AccountSetup
     suspend fun createAccount(command: Command.AccountCreate): AccountSetup
 
+    /**
+     * Signals heart that the priority screen is up and the remaining spaces
+     * (deferred by AccountSelect.preferredSpaceId) may now be loaded.
+     */
+    suspend fun preloadRemainingSpaces()
+
     suspend fun migrateAccount(account: Id, path: String)
     suspend fun cancelAccountMigration(account: Id)
 

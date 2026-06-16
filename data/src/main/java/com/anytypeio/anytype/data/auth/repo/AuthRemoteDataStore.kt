@@ -20,6 +20,8 @@ class AuthRemoteDataStore(
         command: Command.AccountCreate
     ): AccountSetup = authRemote.createAccount(command)
 
+    override suspend fun preloadRemainingSpaces() = authRemote.preloadRemainingSpaces()
+
     override suspend fun deleteAccount(): AccountStatus = authRemote.deleteAccount()
 
     override suspend fun restoreAccount(): AccountStatus = authRemote.restoreAccount()

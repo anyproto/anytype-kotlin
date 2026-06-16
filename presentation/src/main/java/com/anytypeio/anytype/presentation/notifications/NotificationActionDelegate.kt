@@ -8,13 +8,14 @@ import com.anytypeio.anytype.domain.spaces.ResolveSpaceHomepage
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import timber.log.Timber
 
 interface NotificationActionDelegate {
 
-    val dispatcher: SharedFlow<NotificationCommand>
+    val dispatcher: Flow<NotificationCommand>
 
     suspend fun proceedWithNotificationAction(action: NotificationAction)
 
@@ -27,7 +28,12 @@ interface NotificationActionDelegate {
         private val resolveSpaceHomepage: ResolveSpaceHomepage
     ) : NotificationActionDelegate {
 
-        override val dispatcher: MutableSharedFlow<NotificationCommand> = MutableSharedFlow()
+        // Unbounded Channel (not a `replay = 0` SharedFlow): a notification command
+        // emitted while MainActivity isn't collecting — e.g. a notification tap on
+        // cold start, before the STARTED-scoped collector attaches — is buffered and
+        // delivered to the next subscriber instead of being dropped (DROID-4523).
+        private val dispatcherChannel = Channel<NotificationCommand>(Channel.UNLIMITED)
+        override val dispatcher: Flow<NotificationCommand> = dispatcherChannel.receiveAsFlow()
 
         override suspend fun proceedWithNotificationAction(action: NotificationAction) {
             Timber.d("Proceeding with notification action: $action")
@@ -67,7 +73,7 @@ interface NotificationActionDelegate {
                                 }
                             )
                         }
-                        dispatcher.emit(
+                        dispatcherChannel.send(
                             NotificationCommand.ViewSpaceJoinRequest(
                                 space = action.space,
                                 member = member.id
@@ -97,7 +103,7 @@ interface NotificationActionDelegate {
                     Timber.e(it, "Error while replying notification")
                 }
             )
-            dispatcher.emit(NotificationCommand.ViewSpaceLeaveRequest(space = action.space,))
+            dispatcherChannel.send(NotificationCommand.ViewSpaceLeaveRequest(space = action.space,))
             systemNotificationService.cancel(action.notification)
         }
 
@@ -125,7 +131,7 @@ interface NotificationActionDelegate {
                             Timber.e(it, "Error while saving current space")
                         }
                     )
-                dispatcher.emit(resolveGoToSpaceCommand(action.space))
+                dispatcherChannel.send(resolveGoToSpaceCommand(action.space))
             } else {
                 // TODO show error msg
             }

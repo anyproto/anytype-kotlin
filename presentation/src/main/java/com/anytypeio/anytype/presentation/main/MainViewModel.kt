@@ -73,7 +73,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
@@ -82,6 +83,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -132,8 +134,20 @@ class MainViewModel(
 
     private var spaceStatusMonitorJob: Job? = null
 
-    val commands = MutableSharedFlow<Command>(replay = 0)
-    val toasts = MutableSharedFlow<String>(replay = 0)
+    /**
+     * One-shot commands / toasts. Backed by unbounded [Channel]s (not `replay = 0`
+     * SharedFlows) so an item emitted while [MainActivity] is not collecting — e.g.
+     * during the activity stop -> resume gap on cold start, or while `onRestore()`
+     * runs in `onCreate` before the `repeatOnLifecycle(STARTED)` collectors attach —
+     * is buffered and delivered to the next subscriber instead of being silently
+     * dropped (DROID-4523). Each has exactly one collector in [MainActivity], so the
+     * single-consumer semantics of [receiveAsFlow] are correct here.
+     */
+    private val commandsChannel = Channel<Command>(Channel.UNLIMITED)
+    val commands: Flow<Command> = commandsChannel.receiveAsFlow()
+
+    private val toastsChannel = Channel<String>(Channel.UNLIMITED)
+    val toasts: Flow<String> = toastsChannel.receiveAsFlow()
 
     val wallpaperState: MutableStateFlow<WallpaperResult> = MutableStateFlow(WallpaperResult.None)
     val showSpacesIntroduction: MutableStateFlow<Account?> = MutableStateFlow(null)
@@ -151,7 +165,7 @@ class MainViewModel(
             interceptAccountStatus.build().collect { status ->
                 when (status) {
                     is AccountStatus.PendingDeletion -> {
-                        commands.emit(
+                        commandsChannel.send(
                             ShowDeletedAccountScreen(
                                 deadline = status.deadline
                             )
@@ -255,12 +269,12 @@ class MainViewModel(
             if (notification.payload is NotificationPayload.GalleryImport) {
                 // TODO migrate to system notifications
                 delay(DELAY_BEFORE_SHOWING_NOTIFICATION_SCREEN)
-                commands.emit(Command.Notifications)
+                commandsChannel.send(Command.Notifications)
             } else if (notification.status == NotificationStatus.CREATED) {
                 if (notificator.areNotificationsEnabled) {
                     notificator.notify(notification)
                 } else {
-                    commands.emit(Command.RequestNotificationPermission).also {
+                    commandsChannel.send(Command.RequestNotificationPermission).also {
                         notificator.setPendingNotification(notification)
                     }
                 }
@@ -285,16 +299,16 @@ class MainViewModel(
             logout(Logout.Params(clearLocalRepositoryData = false)).collect { status ->
                 when (status) {
                     is Interactor.Status.Error -> {
-                        toasts.emit("Error while logging out due to account deletion")
+                        toastsChannel.send("Error while logging out due to account deletion")
                     }
 
                     is Interactor.Status.Started -> {
-                        toasts.emit("Your account is deleted. Logging out...")
+                        toastsChannel.send("Your account is deleted. Logging out...")
                     }
 
                     is Interactor.Status.Success -> {
                         unsubscribeFromGlobalSubscriptions()
-                        commands.emit(Command.LogoutDueToAccountDeletion)
+                        commandsChannel.send(Command.LogoutDueToAccountDeletion)
                     }
                 }
             }
@@ -363,7 +377,7 @@ class MainViewModel(
                 failure = { error ->
                     when (error) {
                         is NeedToUpdateApplicationException -> {
-                            commands.emit(Command.Error(SplashViewModel.ERROR_NEED_UPDATE))
+                            commandsChannel.send(Command.Error(SplashViewModel.ERROR_NEED_UPDATE))
                             Timber.e(error, "Error while launching account after activity recreation")
                         }
 
@@ -372,11 +386,11 @@ class MainViewModel(
                             // transient prefs read failure). Logout is destructive, so ask
                             // the user before wiping local state.
                             Timber.w("onRestore: mnemonic empty, asking user to confirm logout")
-                            commands.emit(Command.ConfirmResumeAccountLogout)
+                            commandsChannel.send(Command.ConfirmResumeAccountLogout)
                         }
 
                         else -> {
-                            commands.emit(Command.Error(SplashViewModel.ERROR_MESSAGE))
+                            commandsChannel.send(Command.Error(SplashViewModel.ERROR_MESSAGE))
                             Timber.e(error, "Error while launching account after activity recreation")
                         }
                     }
@@ -401,7 +415,7 @@ class MainViewModel(
                 onFailure = { e -> Timber.e(e, "Error while checking auth status") },
                 onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
-                        commands.emit(Command.OpenCreateNewType(type))
+                        commandsChannel.send(Command.OpenCreateNewType(type))
                     }
                 }
             )
@@ -424,15 +438,15 @@ class MainViewModel(
                     .onSuccess { config ->
                         Timber.d("onCreateObjectFromWidget: switched to space $spaceId successfully, config=$config")
                         Timber.d("onCreateObjectFromWidget: emitting OpenCreateObjectFromOsWidget with typeKey=$typeKey")
-                        commands.emit(Command.Deeplink.OpenCreateObjectFromOsWidget(typeKey = typeKey))
+                        commandsChannel.send(Command.Deeplink.OpenCreateObjectFromOsWidget(typeKey = typeKey))
                     }
                     .onFailure { e ->
                         Timber.e(e, "onCreateObjectFromWidget: failed to switch space to $spaceId")
-                        toasts.emit("Failed to switch space")
+                        toastsChannel.send("Failed to switch space")
                     }
             } else {
                 Timber.d("onCreateObjectFromWidget: already in space $spaceId, emitting create command")
-                commands.emit(Command.Deeplink.OpenCreateObjectFromOsWidget(typeKey = typeKey))
+                commandsChannel.send(Command.Deeplink.OpenCreateObjectFromOsWidget(typeKey = typeKey))
             }
         }
     }
@@ -530,7 +544,7 @@ class MainViewModel(
         Timber.d("Proceeding with the new deep link, deeplink: $deeplink")
         when (deeplink) {
             is DeepLinkResolver.Action.Import.Experience -> {
-                commands.emit(
+                commandsChannel.send(
                     Command.Deeplink.GalleryInstallation(
                         deepLinkType = deeplink.type,
                         deepLinkSource = deeplink.source
@@ -539,7 +553,7 @@ class MainViewModel(
             }
 
             is DeepLinkResolver.Action.Invite -> {
-                commands.emit(Command.Deeplink.Invite(deeplink.link))
+                commandsChannel.send(Command.Deeplink.Invite(deeplink.link))
             }
 
             is DeepLinkResolver.Action.DeepLinkToObject -> {
@@ -561,7 +575,7 @@ class MainViewModel(
                                     )
                                 )
                             )
-                            commands.emit(
+                            commandsChannel.send(
                                 Command.Deeplink.Invite(
                                     spaceInviteResolver.createInviteLink(
                                         contentId = link.cid,
@@ -570,7 +584,7 @@ class MainViewModel(
                                 )
                             )
                         } else {
-                            commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
+                            commandsChannel.send(Command.Deeplink.DeepLinkToObjectNotWorking)
                         }
                     }
 
@@ -609,7 +623,7 @@ class MainViewModel(
                                                 )
                                             )
                                         )
-                                        commands.emit(
+                                        commandsChannel.send(
                                             Command.Deeplink.DeepLinkToObject(
                                                 navigation = result.obj.navigation(),
                                                 sideEffect = null,
@@ -637,7 +651,7 @@ class MainViewModel(
                                                 )
                                             )
                                         )
-                                        commands.emit(
+                                        commandsChannel.send(
                                             Command.Deeplink.DeepLinkToObject(
                                                 navigation = result.obj.navigation(),
                                                 sideEffect = null,
@@ -654,7 +668,7 @@ class MainViewModel(
             }
 
             is DeepLinkResolver.Action.DeepLinkToMembership -> {
-                commands.emit(
+                commandsChannel.send(
                     Command.Deeplink.MembershipScreen(tierId = deeplink.tierId)
                 )
             }
@@ -663,7 +677,7 @@ class MainViewModel(
                 // Data was already stored immediately in processDeepLinkBasedOnAuth()
                 // to avoid race condition with VaultViewModel.processPendingDeeplink()
                 Timber.d("Emitting InitiateOneToOneChat command: ${deeplink.identity}")
-                commands.emit(
+                commandsChannel.send(
                     Command.Deeplink.InitiateOneToOneChat(
                         identity = deeplink.identity,
                         metadataKey = deeplink.metadataKey
@@ -678,7 +692,7 @@ class MainViewModel(
 
             is DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToCreateObject -> {
                 Timber.d("Processing OS widget deep link to create object: appWidgetId=${deeplink.appWidgetId}")
-                commands.emit(
+                commandsChannel.send(
                     Command.Deeplink.DeepLinkToCreateObject(
                         appWidgetId = deeplink.appWidgetId,
                         token = deeplink.token
@@ -728,7 +742,7 @@ class MainViewModel(
                     // `OpenChat` with a toast.
                     when (val nav = homepageResult.navigation) {
                         is OpenObjectNavigation.OpenChat -> {
-                            commands.emit(
+                            commandsChannel.send(
                                 Command.Deeplink.DeepLinkToSpace(
                                     space = targetSpace,
                                     shouldNavigateDirectlyToChat = true,
@@ -737,7 +751,7 @@ class MainViewModel(
                             )
                         }
                         else -> {
-                            commands.emit(
+                            commandsChannel.send(
                                 Command.Deeplink.DeepLinkToObjectFromWidget(
                                     space = targetSpace,
                                     obj = spaceView?.homepage.orEmpty(),
@@ -751,7 +765,7 @@ class MainViewModel(
                 }
             }
 
-            commands.emit(
+            commandsChannel.send(
                 Command.Deeplink.DeepLinkToSpace(
                     space = targetSpace,
                     shouldNavigateDirectlyToChat = shouldNavigateDirectlyToChat,
@@ -795,7 +809,7 @@ class MainViewModel(
             is DeepLinkToObjectDelegate.Result.Success -> {
                 val navigation = result.obj.navigation()
                 Timber.d("OS widget object navigation determined: $navigation")
-                commands.emit(
+                commandsChannel.send(
                     Command.Deeplink.DeepLinkToObjectFromWidget(
                         space = targetSpace,
                         obj = objectId,
@@ -806,15 +820,15 @@ class MainViewModel(
             }
             is DeepLinkToObjectDelegate.Result.Error.ObjectNotFound -> {
                 Timber.w("OS widget: Object not found: $objectId")
-                toasts.emit("Object not found")
+                toastsChannel.send("Object not found")
             }
             is DeepLinkToObjectDelegate.Result.Error.PermissionNeeded -> {
                 Timber.w("OS widget: Permission needed to access object: $objectId")
-                toasts.emit("Permission needed")
+                toastsChannel.send("Permission needed")
             }
             is DeepLinkToObjectDelegate.Result.Error.CouldNotOpenSpace -> {
                 Timber.w("OS widget: Could not open space: $targetSpace")
-                toasts.emit("Could not open space")
+                toastsChannel.send("Could not open space")
             }
         }
     }
@@ -838,7 +852,7 @@ class MainViewModel(
                         )
                     )
                 )
-                commands.emit(
+                commandsChannel.send(
                     Command.Deeplink.DeepLinkToObject(
                         navigation = result.obj.navigation(),
                         sideEffect = sideEffect,
@@ -868,7 +882,7 @@ class MainViewModel(
                 spaceManager.set(spaceId)
                     .onSuccess {
                         monitorSpaceLocalStatus(spaceId)
-                        commands.emit(
+                        commandsChannel.send(
                             Command.LaunchChat(
                                 space = spaceId,
                                 chat = chatId,
@@ -884,7 +898,7 @@ class MainViewModel(
                     }
             } else {
                 monitorSpaceLocalStatus(spaceId)
-                commands.emit(
+                commandsChannel.send(
                     Command.LaunchChat(
                         space = spaceId,
                         chat = chatId,
@@ -1002,7 +1016,7 @@ class MainViewModel(
                     "PUSH_SPACE_STATUS: Space $spaceId local status still LOADING after ${PUSH_SPACE_STATUS_TIMEOUT / 1000}s"
                 )
                 if (BuildConfig.ENABLE_SPACE_PUSH_DIAGNOSTICS) {
-                    commands.emit(
+                    commandsChannel.send(
                         Command.Snackbar(
                             "Space local status is still LOADING after ${PUSH_SPACE_STATUS_TIMEOUT / 1000} seconds (push)"
                         )
@@ -1023,7 +1037,7 @@ class MainViewModel(
      * completes.
      */
     fun showSnackbarWithOk(msg: String) {
-        viewModelScope.launch { commands.emit(Command.SnackbarWithOk(msg)) }
+        viewModelScope.launch { commandsChannel.send(Command.SnackbarWithOk(msg)) }
     }
 
     /**
@@ -1035,7 +1049,7 @@ class MainViewModel(
      */
     fun showSnackbarWithOpenType(msg: String, typeId: Id, space: Id, actionLabel: String) {
         viewModelScope.launch {
-            commands.emit(
+            commandsChannel.send(
                 Command.SnackbarWithOpenType(
                     msg = msg,
                     typeId = typeId,

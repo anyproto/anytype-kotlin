@@ -200,6 +200,7 @@
     <string name="hint_paste_link">粘贴链接</string>
     <string name="empty_tap_to_create_new_block">空的。点击创建一个新块</string>
     <string name="untitled">无标题</string>
+    <string name="back_history_channels">空间</string>
     <string name="untitled_set">未命名查询</string>
     <string name="untitled_collection">未命名合集</string>
     <string name="archived">已归档</string>

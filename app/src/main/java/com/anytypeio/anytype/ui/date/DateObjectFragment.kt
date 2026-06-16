@@ -97,9 +97,16 @@ class DateObjectFragment : BaseComposeFragment() {
                 }
                 DateObjectCommand.ExitToVault -> {
                     runCatching {
-                        findNavController().navigate(R.id.actionOpenVault)
+                        navigation().exitToVault()
                     }.onFailure { e ->
-                        Timber.e(e, "Error while exiting to vault from all content")
+                        Timber.e(e, "Error while exiting to vault from date object screen")
+                    }
+                }
+                is DateObjectCommand.PopToBackStackEntry -> {
+                    runCatching {
+                        navigation().popToBackStackEntry(effect.entryId)
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while popping to back-history entry from date object screen")
                     }
                 }
                 is DateObjectCommand.NavigateToEditor -> {
@@ -269,7 +276,8 @@ class DateObjectFragment : BaseComposeFragment() {
                             } else {
                                 vm.onDateEvent(event)
                             }
-                        }
+                        },
+                        backHistoryMenu = vm.backHistoryMenu.collectAsStateWithLifecycle().value
                     )
                     CreateObjectSheetHost(
                         vm = createObjectVm,

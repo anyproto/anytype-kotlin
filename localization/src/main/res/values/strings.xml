@@ -234,6 +234,7 @@
 
 
     <string name="untitled">Untitled</string>
+    <string name="back_history_channels">Channels</string>
     <string name="untitled_set">Untitled query</string>
     <string name="untitled_collection">Untitled collection</string>
     <string name="archived">Archived</string>

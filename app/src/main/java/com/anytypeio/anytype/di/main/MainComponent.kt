@@ -102,7 +102,8 @@ import javax.inject.Singleton
         NetworkModeModule::class,
         NotificationsModule::class,
         MembershipModule::class,
-        DispatcherModule::class
+        DispatcherModule::class,
+        NavigationModule::class
     ]
 )
 interface MainComponent :

@@ -90,6 +90,7 @@ import com.anytypeio.anytype.feature_chats.ui.EditChatInfoScreen
 import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.feature_vault.ui.AlertScreenModals
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
+import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
@@ -272,7 +273,13 @@ class ChatFragment : Fragment() {
                 onMoveToBin = vm::onMoveToBin,
                 onNotificationSettingChanged = vm::onNotificationSettingChanged,
                 onSearchClick = vm::onSearchTriggered,
-                onSpaceSettingsClicked = vm::onOpenSpaceSettings
+                onSpaceSettingsClicked = vm::onOpenSpaceSettings,
+                backHistoryMenu = vm.backHistoryMenu.collectAsStateWithLifecycle().value,
+                onBackButtonLongClicked = vm::onBackButtonLongClicked,
+                onBackHistoryItemClicked = vm::onBackHistoryItemClicked,
+                onBackHistoryChannelsClicked = vm::onBackHistoryChannelsClicked,
+                onBackHistoryHomeClicked = vm::onBackHistoryHomeClicked,
+                onBackHistoryMenuDismissed = vm::onBackHistoryMenuDismissed
             )
             } // close Box
 
@@ -503,6 +510,22 @@ class ChatFragment : Fragment() {
                                 }
                             }.onFailure {
                                 Timber.e(it, "Error while back on vault from chat screen")
+                            }
+                        }
+
+                        is ChatViewModel.ViewModelCommand.ExitToVault -> {
+                            runCatching {
+                                navigation().exitToVault()
+                            }.onFailure {
+                                Timber.e(it, "Error while exiting to vault from chat screen")
+                            }
+                        }
+
+                        is ChatViewModel.ViewModelCommand.PopToBackStackEntry -> {
+                            runCatching {
+                                navigation().popToBackStackEntry(command.entryId)
+                            }.onFailure {
+                                Timber.e(it, "Error while popping to back-history entry from chat screen")
                             }
                         }
 
@@ -887,8 +910,8 @@ class ChatFragment : Fragment() {
     }
 
     companion object {
-        private const val CTX_KEY = "arg.discussion.ctx"
-        private const val SPACE_KEY = "arg.discussion.space"
+        internal const val CTX_KEY = "arg.discussion.ctx"
+        internal const val SPACE_KEY = "arg.discussion.space"
         private const val TRIGGERED_BY_PUSH_KEY = "arg.discussion.triggered-by-push"
         private const val POP_UP_TO_VAULT_KEY = "arg.discussion.pop-up-to-vault"
         const val PERMISSIONS_REQUEST_CODE = 100

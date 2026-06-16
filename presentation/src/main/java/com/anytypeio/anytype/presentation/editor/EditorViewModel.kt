@@ -264,9 +264,12 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation.Command.OpenP
 import com.anytypeio.anytype.presentation.navigation.AppNavigation.Command.OpenSetOrCollection
 import com.anytypeio.anytype.presentation.navigation.AppNavigation.Command.OpenTypeObject
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuItem
 import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NewObject
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.navigation.SectionDates
 import com.anytypeio.anytype.presentation.navigation.SectionObjects
 import com.anytypeio.anytype.presentation.navigation.SelectDateItem
@@ -368,7 +371,9 @@ class EditorViewModel(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val urlHelper: UrlHelper,
     private val addDiscussion: AddDiscussion,
-    private val getChatMessages: GetChatMessages
+    private val getChatMessages: GetChatMessages,
+    private val backHistoryDelegate: BackHistoryDelegate,
+    private val exitToVaultDelegate: ExitToVaultDelegate
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -378,6 +383,8 @@ class EditorViewModel(
     SelectionStateHolder by orchestrator.memory.selections,
     EditorTableDelegate by tableDelegate,
     StateReducer<List<Block>, Event> by reducer,
+    BackHistoryDelegate by backHistoryDelegate,
+    ExitToVaultDelegate by exitToVaultDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val actions = MutableStateFlow(ActionItemType.defaultSorting)
@@ -1316,6 +1323,44 @@ class EditorViewModel(
 
     fun proceedWithExitingBack() {
         exitBack()
+    }
+
+    fun onBackButtonLongClicked() {
+        viewModelScope.launch {
+            backHistoryDelegate.onBackButtonLongPressed()
+        }
+    }
+
+    fun onBackHistoryItemClicked(item: BackHistoryMenuItem) {
+        proceedWithBackHistoryJump(item.entryId)
+    }
+
+    fun onBackHistoryHomeClicked() {
+        val entryId = currentHomeEntryId ?: return
+        proceedWithBackHistoryJump(entryId)
+    }
+
+    private fun proceedWithBackHistoryJump(entryId: String) {
+        onBackHistoryMenuDismissed()
+        viewModelScope.launch {
+            closePage.async(CloseObject.Params(vmParams.ctx, vmParams.space)).fold(
+                onSuccess = { navigate(EventWrapper(AppNavigation.Command.PopToBackStackEntry(entryId))) },
+                onFailure = {
+                    Timber.e(it, "Error while closing document before back-history jump")
+                    navigate(EventWrapper(AppNavigation.Command.PopToBackStackEntry(entryId)))
+                }
+            )
+        }
+    }
+
+    fun onBackHistoryChannelsClicked() {
+        onBackHistoryMenuDismissed()
+        viewModelScope.launch {
+            clearLastOpenedObject(ClearLastOpenedObject.Params(vmParams.space))
+            closePage.async(CloseObject.Params(vmParams.ctx, vmParams.space))
+            proceedWithClearingSpaceBeforeExitingToVault()
+            navigate(EventWrapper(AppNavigation.Command.ExitToVault))
+        }
     }
 
     private fun proceedWithLeftButtonAnalytics() {

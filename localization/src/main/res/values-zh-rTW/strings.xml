@@ -200,6 +200,7 @@
     <string name="hint_paste_link">貼上連結</string>
     <string name="empty_tap_to_create_new_block">空的。點擊以新建區塊</string>
     <string name="untitled">未命名</string>
+    <string name="back_history_channels">空間</string>
     <string name="untitled_set">Untitled query</string>
     <string name="untitled_collection">未命名集錦</string>
     <string name="archived">已封存</string>

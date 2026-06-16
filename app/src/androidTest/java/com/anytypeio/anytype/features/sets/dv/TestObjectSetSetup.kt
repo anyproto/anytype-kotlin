@@ -357,7 +357,9 @@ abstract class TestObjectSetSetup {
             emojiSuggester = mock(),
             stringResourceProvider = stringResourceProvider,
             getDefaultObjectType = getDefaultObjectType,
-            addDiscussion = mock()
+            addDiscussion = mock(),
+            backHistoryDelegate = org.mockito.kotlin.mock(),
+            exitToVaultDelegate = org.mockito.kotlin.mock()
         )
 
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())

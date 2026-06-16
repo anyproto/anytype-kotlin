@@ -19,12 +19,13 @@ class PushKeySpaceViewChannel @Inject constructor(
     override fun observe(): Flow<PushKeyUpdate> =
         spaceViewSubscriptionContainer.observe()
             // The space-view subscription amends many times on cold start, re-emitting the
-            // full list each time. Collapse to the distinct set of push keys so the expensive
-            // Base64 + SHA-256 id computation below only runs when the keys actually change.
+            // full list each time. Collapse to the distinct SET of push keys (order-insensitive,
+            // so reordering spaces is a no-op) and dedupe, so the expensive Base64 + SHA-256 id
+            // computation below only runs when the set of keys actually changes.
             .map { spaceViews ->
                 spaceViews
                     .mapNotNull { it.spacePushNotificationEncryptionKey?.takeIf(String::isNotEmpty) }
-                    .distinct()
+                    .toSet()
             }
             .distinctUntilChanged()
             .flatMapLatest { keys ->

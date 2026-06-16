@@ -200,6 +200,7 @@
     <string name="hint_paste_link">Bağlantıyı yapıştır</string>
     <string name="empty_tap_to_create_new_block">Boş. Yeni bir blok oluşturmak için dokunun.</string>
     <string name="untitled">Başlıksız</string>
+    <string name="back_history_channels">Alanlar</string>
     <string name="untitled_set">Başlıksız sorgu</string>
     <string name="untitled_collection">Başlıksız koleksiyon</string>
     <string name="archived">Arşivlenmiş</string>

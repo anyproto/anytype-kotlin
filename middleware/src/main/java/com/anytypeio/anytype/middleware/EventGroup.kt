@@ -114,6 +114,7 @@ enum class EventGroup {
             // file limits / usage
             if (message.fileSpaceUsage != null ||
                 message.fileLocalUsage != null ||
+                message.fileLimitReached != null ||
                 message.fileLimitUpdated != null
             ) {
                 mask = mask or FILE.bit

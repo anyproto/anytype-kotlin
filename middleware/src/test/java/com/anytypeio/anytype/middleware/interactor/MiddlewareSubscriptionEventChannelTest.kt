@@ -1,4 +1,5 @@
 package com.anytypeio.anytype.middleware.interactor
+import com.anytypeio.anytype.middleware.EventGroup
 
 import anytype.Event
 import app.cash.turbine.test
@@ -28,7 +29,7 @@ class MiddlewareSubscriptionEventChannelTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         upstream = MutableSharedFlow(extraBufferCapacity = 16)
-        proxy.stub { on { flow() } doReturn upstream }
+        proxy.stub { on { flow(EventGroup.SUBSCRIPTION) } doReturn upstream }
     }
 
     private fun event(vararg messages: Event.Message) = Event(messages = messages.toList())

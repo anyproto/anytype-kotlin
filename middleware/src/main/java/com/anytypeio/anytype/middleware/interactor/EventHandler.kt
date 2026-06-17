@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Event
 import com.anytypeio.anytype.data.auth.status.SyncAndP2PStatusEventsStore
+import com.anytypeio.anytype.middleware.EventGroup
 import com.anytypeio.anytype.middleware.EventProxy
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
@@ -22,8 +23,7 @@ class EventHandler @Inject constructor(
 
     // Unbounded FIFO inbox of RAW bytes. Single producer (Go delivers events sequentially) + a
     // single consumer => strict FIFO. UNLIMITED => trySend never suspends and never fails on a full
-    // buffer (only when the channel is closed). Buffering raw bytes costs less than the old
-    // per-event coroutine + decoded-Event accumulation.
+    // buffer (only when the channel is closed).
     private val inbox = Channel<ByteArray>(capacity = Channel.UNLIMITED)
 
     // Observability only: approximate number of queued-but-unprocessed events.
@@ -35,8 +35,7 @@ class EventHandler @Inject constructor(
         }
 
         // EXACTLY ONE consumer. A single coroutine running a single for-loop processes items
-        // strictly serially (decode -> log -> emit for event N completes before event N+1 is
-        // received). This single consumer — not any dispatcher trick — is what guarantees ordering.
+        // strictly serially. This single consumer — not any dispatcher trick — guarantees ordering.
         // Do NOT add an inner launch or a withContext hop inside this loop; either would re-break FIFO.
         scope.launch {
             try {
@@ -78,12 +77,12 @@ class EventHandler @Inject constructor(
         }
     }
 
-    // Runs ONLY on the single consumer. suspend so channel.emit applies real backpressure to the
-    // consumer (never to the Go thread).
+    // Runs ONLY on the single consumer. suspend only to propagate CancellationException; channel.dispatch
+    // is non-blocking, so a slow consumer grows its own UNLIMITED inbox (no backpressure to the pump or Go thread).
     private suspend fun handle(bytes: ByteArray) {
         try {
             val event = Event.ADAPTER.decode(bytes).also { logEvent(it) }
-            channel.emit(event)
+            channel.dispatch(event)
         } catch (e: CancellationException) {
             throw e // never swallow cancellation — the consumer must stop when the scope is cancelled
         } catch (e: Exception) {
@@ -97,7 +96,7 @@ class EventHandler @Inject constructor(
         logger.logEvent(event)
     }
 
-    override fun flow(): Flow<Event> = channel.flow()
+    override fun flow(group: EventGroup): Flow<Event> = channel.flow(group)
 
     companion object {
         private const val BACKLOG_WARN_THRESHOLD = 5_000

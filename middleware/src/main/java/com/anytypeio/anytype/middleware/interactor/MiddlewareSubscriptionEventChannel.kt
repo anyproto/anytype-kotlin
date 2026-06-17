@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.data.auth.event.SubscriptionEventRemoteChannel
 import com.anytypeio.anytype.middleware.EventProxy
+import com.anytypeio.anytype.middleware.EventGroup
 import com.anytypeio.anytype.middleware.mappers.parse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -24,7 +25,7 @@ class MiddlewareSubscriptionEventChannel(
      * subscriber independently collected [EventProxy.flow] and re-parsed every event.
      */
     private val parsed: Flow<List<ParsedSubEvent>> = events
-        .flow()
+        .flow(EventGroup.SUBSCRIPTION)
         .map { payload -> payload.messages.mapNotNull { parseMessage(it) } }
         .filter { it.isNotEmpty() }
         .shareIn(

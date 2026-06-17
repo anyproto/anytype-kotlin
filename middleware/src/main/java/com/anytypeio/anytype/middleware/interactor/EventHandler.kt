@@ -39,9 +39,15 @@ class EventHandler @Inject constructor(
         // received). This single consumer — not any dispatcher trick — is what guarantees ordering.
         // Do NOT add an inner launch or a withContext hop inside this loop; either would re-break FIFO.
         scope.launch {
-            for (bytes in inbox) {
-                backlog.decrementAndGet()
-                handle(bytes)
+            try {
+                for (bytes in inbox) {
+                    backlog.decrementAndGet()
+                    handle(bytes)
+                }
+            } finally {
+                // Teardown (app scope cancelled): close the inbox so a late JNI callback hits the
+                // drop-and-log path in onRawEvent instead of silently buffering into a dead consumer.
+                inbox.close()
             }
         }
 
@@ -66,7 +72,8 @@ class EventHandler @Inject constructor(
                 Timber.w("Middleware event backlog high: $depth queued")
             }
         } else {
-            // Only reachable once the channel is closed (app scope cancelled). Benign at teardown.
+            // Reachable at teardown: when the app scope is cancelled the consumer closes the inbox,
+            // so a late JNI callback lands here. Dropping is correct (no consumer remains); never throws.
             Timber.w("Dropping middleware event: inbox closed")
         }
     }

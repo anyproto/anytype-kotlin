@@ -3,10 +3,12 @@ package com.anytypeio.anytype.middleware.interactor
 import anytype.Event
 import app.cash.turbine.test
 import com.anytypeio.anytype.data.auth.status.SyncAndP2PStatusEventsStore
+import com.anytypeio.anytype.middleware.EventGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -14,6 +16,13 @@ import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.mock
 import kotlin.test.assertEquals
 
+/**
+ * Pump tests (FIFO order / burst no-loss / decode-failure isolation / poison survival) for
+ * EventHandler. Events carry a SYNC_P2P message so they route through the demux to flow(SYNC_P2P);
+ * the assertions are about the pump (decode + serial ordering + error isolation), independent of the
+ * group. UnconfinedTestDispatcher ensures the flow(SYNC_P2P) collector registers before the pump
+ * dispatches.
+ */
 class EventHandlerTest {
 
     private fun TestScope.handler(
@@ -30,15 +39,20 @@ class EventHandlerTest {
         registrar = registrar
     )
 
-    private fun event(id: String) = Event(contextId = id)
+    // Carries a SYNC_P2P message so groupBits routes it to flow(SYNC_P2P).
+    private fun event(id: String) = Event(
+        contextId = id,
+        messages = listOf(Event.Message(p2pStatusUpdate = Event.P2PStatus.Update()))
+    )
+
     private fun bytes(id: String): ByteArray = Event.ADAPTER.encode(event(id))
 
     @Test
-    fun `preserves FIFO order of events`() = runTest {
+    fun `preserves FIFO order of events`() = runTest(UnconfinedTestDispatcher()) {
         val channel = EventHandlerChannelImpl()
         val eventHandler = handler(channel)
 
-        eventHandler.flow().test {
+        eventHandler.flow(EventGroup.SYNC_P2P).test {
             eventHandler.onRawEvent(bytes("1"))
             eventHandler.onRawEvent(bytes("2"))
             eventHandler.onRawEvent(bytes("3"))
@@ -51,12 +65,12 @@ class EventHandlerTest {
     }
 
     @Test
-    fun `buffers a burst without dropping events`() = runTest {
+    fun `buffers a burst without dropping events`() = runTest(UnconfinedTestDispatcher()) {
         val channel = EventHandlerChannelImpl()
         val eventHandler = handler(channel)
         val n = 50
 
-        eventHandler.flow().test {
+        eventHandler.flow(EventGroup.SYNC_P2P).test {
             repeat(n) { eventHandler.onRawEvent(bytes(it.toString())) }
             val received = (0 until n).map { awaitItem().contextId }
             assertEquals((0 until n).map { it.toString() }, received)
@@ -65,11 +79,11 @@ class EventHandlerTest {
     }
 
     @Test
-    fun `skips an undecodable event and keeps processing`() = runTest {
+    fun `skips an undecodable event and keeps processing`() = runTest(UnconfinedTestDispatcher()) {
         val channel = EventHandlerChannelImpl()
         val eventHandler = handler(channel)
 
-        eventHandler.flow().test {
+        eventHandler.flow(EventGroup.SYNC_P2P).test {
             eventHandler.onRawEvent(bytes("1"))
             eventHandler.onRawEvent(byteArrayOf(0x08)) // varint tag with no value -> decode throws IOException
             eventHandler.onRawEvent(bytes("2"))
@@ -81,7 +95,7 @@ class EventHandlerTest {
     }
 
     @Test
-    fun `survives a non-IOException thrown while handling one event`() = runTest {
+    fun `survives a non-IOException thrown while handling one event`() = runTest(UnconfinedTestDispatcher()) {
         val channel = EventHandlerChannelImpl()
         val logger = mock<MiddlewareProtobufLogger> {
             on { logEvent(any()) } doAnswer { invocation ->
@@ -91,7 +105,7 @@ class EventHandlerTest {
         }
         val eventHandler = handler(channel, logger = logger)
 
-        eventHandler.flow().test {
+        eventHandler.flow(EventGroup.SYNC_P2P).test {
             eventHandler.onRawEvent(bytes("1"))
             eventHandler.onRawEvent(bytes("poison"))
             eventHandler.onRawEvent(bytes("2"))
@@ -103,7 +117,7 @@ class EventHandlerTest {
     }
 
     @Test
-    fun `onRawEvent never throws (null, and after scope cancellation)`() = runTest {
+    fun `onRawEvent never throws (null, and after scope cancellation)`() = runTest(UnconfinedTestDispatcher()) {
         val channel = EventHandlerChannelImpl()
         val ownScope = CoroutineScope(coroutineContext + Job())
         val eventHandler = handler(channel, scope = ownScope)

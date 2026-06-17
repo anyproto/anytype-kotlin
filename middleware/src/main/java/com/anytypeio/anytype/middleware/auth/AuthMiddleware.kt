@@ -1,4 +1,5 @@
 package com.anytypeio.anytype.middleware.auth
+import com.anytypeio.anytype.middleware.EventGroup
 
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
@@ -57,7 +58,7 @@ class AuthMiddleware(
     }
 
     override fun observeAccounts() = events
-        .flow()
+        .flow(EventGroup.ACCOUNT)
         .filter { event ->
             event.messages.any { message ->
                 message.accountShow != null

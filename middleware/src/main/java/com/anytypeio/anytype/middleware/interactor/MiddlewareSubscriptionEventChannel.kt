@@ -1,4 +1,5 @@
 package com.anytypeio.anytype.middleware.interactor
+import com.anytypeio.anytype.middleware.EventGroup
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SubscriptionEvent
@@ -14,7 +15,7 @@ class MiddlewareSubscriptionEventChannel(
 ) : SubscriptionEventRemoteChannel {
 
     override fun subscribe(subscriptions: List<Id>) = events
-        .flow()
+        .flow(EventGroup.SUBSCRIPTION)
         .mapNotNull { payload ->
             payload.messages.mapNotNull { e ->
                 when {

@@ -1,4 +1,5 @@
 package com.anytypeio.anytype.middleware.interactor
+import com.anytypeio.anytype.middleware.EventGroup
 
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
@@ -17,7 +18,7 @@ class MiddlewareEventChannel(
     override fun observeEvents(
         context: String?
     ): Flow<List<Event>> = events
-        .flow()
+        .flow(EventGroup.EDITOR)
         .filter { event -> context == null || event.contextId == context }
         .map { event ->
             event.messages.filter { it.isAccepted() }.map { message -> Pair(event.contextId, message) }

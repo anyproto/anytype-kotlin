@@ -77,7 +77,7 @@ class EventHandler @Inject constructor(
     private suspend fun handle(bytes: ByteArray) {
         try {
             val event = Event.ADAPTER.decode(bytes).also { logEvent(it) }
-            channel.emit(event)
+            channel.dispatch(event)
         } catch (e: CancellationException) {
             throw e // never swallow cancellation — the consumer must stop when the scope is cancelled
         } catch (e: Exception) {

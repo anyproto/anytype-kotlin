@@ -1,4 +1,5 @@
 package com.anytypeio.anytype.middleware.interactor
+import com.anytypeio.anytype.middleware.EventGroup
 
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.data.auth.account.AccountStatusRemoteChannel
@@ -11,7 +12,7 @@ class AccountStatusMiddlewareChannel(
     private val events: EventProxy
 ) : AccountStatusRemoteChannel {
 
-    override fun observe(): Flow<AccountStatus> = events.flow().mapNotNull { e ->
+    override fun observe(): Flow<AccountStatus> = events.flow(EventGroup.ACCOUNT).mapNotNull { e ->
         val updates = e.messages.filter { m ->
             m.accountUpdate != null
         }

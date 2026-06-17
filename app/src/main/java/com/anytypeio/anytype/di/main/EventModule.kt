@@ -104,8 +104,12 @@ object EventModule {
     @Provides
     @Singleton
     fun provideSubscriptionEventRemoteChannel(
-        proxy: EventProxy
-    ): SubscriptionEventRemoteChannel = MiddlewareSubscriptionEventChannel(events = proxy)
+        proxy: EventProxy,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
+    ): SubscriptionEventRemoteChannel = MiddlewareSubscriptionEventChannel(
+        events = proxy,
+        scope = scope
+    )
 
     @JvmStatic
     @Provides

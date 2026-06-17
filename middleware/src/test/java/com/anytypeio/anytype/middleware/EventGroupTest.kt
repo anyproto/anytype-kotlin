@@ -10,10 +10,9 @@ import kotlin.test.assertEquals
  * consumers migrate to flow(group). This test asserts EXACT routing per accepted field, so a missing
  * or wrong arm is a CI failure.
  *
- * Coverage is exhaustive per accepted field for every consumer EXCEPT EDITOR's block* family (all of
- * which route to EDITOR via a single arm, audited field-by-field against MiddlewareEventChannel.
- * isAccepted; a representative block field + objectRelations are covered here). Any NEW accepted field
- * must be added to BOTH EventGroup.groupBits AND this list.
+ * Coverage is exhaustive per accepted field for every consumer (including EDITOR's full block* family,
+ * mirroring MiddlewareEventChannel.isAccepted). Any NEW accepted field must be added to BOTH
+ * EventGroup.groupBits AND this list, or this test fails in CI.
  */
 class EventGroupTest {
 
@@ -34,8 +33,28 @@ class EventGroupTest {
         Case("subscriptionRemove", Event.Message(subscriptionRemove = Event.Object.Subscription.Remove()), setOf(EventGroup.SUBSCRIPTION)),
         Case("subscriptionPosition", Event.Message(subscriptionPosition = Event.Object.Subscription.Position()), setOf(EventGroup.SUBSCRIPTION)),
         Case("subscriptionCounters", Event.Message(subscriptionCounters = Event.Object.Subscription.Counters()), setOf(EventGroup.SUBSCRIPTION)),
-        // editor (representative block + objectRelations; block* family audited in groupBits)
+        // editor: every block*/blockDataview*/objectRelations* field accepted by MiddlewareEventChannel.isAccepted
+        Case("blockAdd", Event.Message(blockAdd = Event.Block.Add()), setOf(EventGroup.EDITOR)),
+        Case("blockDelete", Event.Message(blockDelete = Event.Block.Delete()), setOf(EventGroup.EDITOR)),
+        Case("blockSetFields", Event.Message(blockSetFields = Event.Block.Set.Fields()), setOf(EventGroup.EDITOR)),
+        Case("blockSetChildrenIds", Event.Message(blockSetChildrenIds = Event.Block.Set.ChildrenIds()), setOf(EventGroup.EDITOR)),
+        Case("blockSetBackgroundColor", Event.Message(blockSetBackgroundColor = Event.Block.Set.BackgroundColor()), setOf(EventGroup.EDITOR)),
         Case("blockSetText", Event.Message(blockSetText = Event.Block.Set.Text()), setOf(EventGroup.EDITOR)),
+        Case("blockSetFile", Event.Message(blockSetFile = Event.Block.Set.File()), setOf(EventGroup.EDITOR)),
+        Case("blockSetLink", Event.Message(blockSetLink = Event.Block.Set.Link()), setOf(EventGroup.EDITOR)),
+        Case("blockSetBookmark", Event.Message(blockSetBookmark = Event.Block.Set.Bookmark()), setOf(EventGroup.EDITOR)),
+        Case("blockSetAlign", Event.Message(blockSetAlign = Event.Block.Set.Align()), setOf(EventGroup.EDITOR)),
+        Case("blockSetDiv", Event.Message(blockSetDiv = Event.Block.Set.Div()), setOf(EventGroup.EDITOR)),
+        Case("blockSetRelation", Event.Message(blockSetRelation = Event.Block.Set.Relation()), setOf(EventGroup.EDITOR)),
+        Case("blockSetWidget", Event.Message(blockSetWidget = Event.Block.Set.Widget()), setOf(EventGroup.EDITOR)),
+        Case("blockDataviewViewSet", Event.Message(blockDataviewViewSet = Event.Block.Dataview.ViewSet()), setOf(EventGroup.EDITOR)),
+        Case("blockDataviewViewDelete", Event.Message(blockDataviewViewDelete = Event.Block.Dataview.ViewDelete()), setOf(EventGroup.EDITOR)),
+        Case("blockDataviewViewOrder", Event.Message(blockDataviewViewOrder = Event.Block.Dataview.ViewOrder()), setOf(EventGroup.EDITOR)),
+        Case("blockDataviewRelationDelete", Event.Message(blockDataviewRelationDelete = Event.Block.Dataview.RelationDelete()), setOf(EventGroup.EDITOR)),
+        Case("blockDataviewRelationSet", Event.Message(blockDataviewRelationSet = Event.Block.Dataview.RelationSet()), setOf(EventGroup.EDITOR)),
+        Case("blockDataviewViewUpdate", Event.Message(blockDataviewViewUpdate = Event.Block.Dataview.ViewUpdate()), setOf(EventGroup.EDITOR)),
+        Case("blockDataviewTargetObjectIdSet", Event.Message(blockDataviewTargetObjectIdSet = Event.Block.Dataview.TargetObjectIdSet()), setOf(EventGroup.EDITOR)),
+        Case("blockDataviewIsCollectionSet", Event.Message(blockDataviewIsCollectionSet = Event.Block.Dataview.IsCollectionSet()), setOf(EventGroup.EDITOR)),
         Case("objectRelationsAmend", Event.Message(objectRelationsAmend = Event.Object.Relations.Amend()), setOf(EventGroup.EDITOR)),
         Case("objectRelationsRemove", Event.Message(objectRelationsRemove = Event.Object.Relations.Remove()), setOf(EventGroup.EDITOR)),
         // chat (all 8)

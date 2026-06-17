@@ -72,8 +72,8 @@ class EventHandler @Inject constructor(
         }
     }
 
-    // Runs ONLY on the single consumer. suspend so channel.emit applies real backpressure to the
-    // consumer (never to the Go thread).
+    // Runs ONLY on the single consumer. suspend only to propagate CancellationException; channel.dispatch
+    // is non-blocking, so a slow consumer grows its own UNLIMITED inbox (no backpressure to the pump or Go thread).
     private suspend fun handle(bytes: ByteArray) {
         try {
             val event = Event.ADAPTER.decode(bytes).also { logEvent(it) }

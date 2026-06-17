@@ -334,7 +334,12 @@ interface ChatPreviewContainer {
                             preview = preview,
                             attachments = attachmentsBySpace[preview.space].orEmpty()
                         )
-                        preview.copy(dependencies = deps)
+                        // combine() re-fires for every space whenever any single space's
+                        // attachment flow emits, so most previews are unchanged. Reuse the
+                        // existing instance when deps didn't change so the downstream
+                        // distinctUntilChanged() can drop the redundant emission instead of
+                        // forcing a full vault re-render.
+                        if (deps == preview.dependencies) preview else preview.copy(dependencies = deps)
                     }
                     PreviewState.Ready(enriched)
                 }

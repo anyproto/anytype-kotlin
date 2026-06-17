@@ -43,13 +43,13 @@ class MiddlewareSubscriptionEventChannel(
         }
         return parsed
             .map { parsedEvents ->
-                parsedEvents.mapNotNull { parsed ->
-                    val matches = if (parsed.dep) {
-                        parsed.keys.any { it in dep }
+                parsedEvents.mapNotNull { parsedEvent ->
+                    val matches = if (parsedEvent.dep) {
+                        parsedEvent.keys.any { it in dep }
                     } else {
-                        parsed.keys.any { it in exact }
+                        parsedEvent.keys.any { it in exact }
                     }
-                    if (matches) parsed.event else null
+                    if (matches) parsedEvent.event else null
                 }
             }
             .filter { it.isNotEmpty() }

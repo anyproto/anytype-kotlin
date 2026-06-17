@@ -86,6 +86,40 @@ class MiddlewareSubscriptionEventChannelTest {
     }
 
     @Test
+    fun `Set with null details is dropped`() = runTest(UnconfinedTestDispatcher()) {
+        val channel = MiddlewareSubscriptionEventChannel(events = proxy, scope = backgroundScope)
+        val nullData = Event.Message(
+            objectDetailsSet = Event.Object.Details.Set(
+                id = "obj-null",
+                details = null,
+                subIds = listOf("sub-1")
+            )
+        )
+        val withData = Event.Message(
+            objectDetailsSet = Event.Object.Details.Set(
+                id = "obj-1",
+                details = mapOf("name" to "Doc"),
+                subIds = listOf("sub-1")
+            )
+        )
+        channel.subscribe(listOf("sub-1")).test {
+            upstream.emit(event(nullData)) // null details -> dropped
+            upstream.emit(event(withData)) // present details -> emitted
+            assertEquals(
+                listOf(
+                    SubscriptionEvent.Set(
+                        target = "obj-1",
+                        data = mapOf("name" to "Doc"),
+                        subscriptions = listOf("sub-1")
+                    )
+                ),
+                awaitItem()
+            )
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `Position matches exact subId`() = runTest(UnconfinedTestDispatcher()) {
         val channel = MiddlewareSubscriptionEventChannel(events = proxy, scope = backgroundScope)
         val msg = Event.Message(

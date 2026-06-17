@@ -931,7 +931,8 @@ class ObjectSetViewModel(
                     store = objectStore,
                     storeOfRelations = storeOfRelations,
                     fieldParser = fieldParser,
-                    storeOfObjectTypes = storeOfObjectTypes
+                    storeOfObjectTypes = storeOfObjectTypes,
+                    stringResourceProvider = stringResourceProvider
                 )
 
                 when {
@@ -1007,7 +1008,8 @@ class ObjectSetViewModel(
                     store = objectStore,
                     storeOfRelations = storeOfRelations,
                     fieldParser = fieldParser,
-                    storeOfObjectTypes = storeOfObjectTypes
+                    storeOfObjectTypes = storeOfObjectTypes,
+                    stringResourceProvider = stringResourceProvider
                 )
 
                 when {
@@ -1056,7 +1058,8 @@ class ObjectSetViewModel(
                 objectOrderIds = objectOrderIds,
                 storeOfRelations = storeOfRelations,
                 fieldParser = fieldParser,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                stringResourceProvider = stringResourceProvider
             )
         }
     }

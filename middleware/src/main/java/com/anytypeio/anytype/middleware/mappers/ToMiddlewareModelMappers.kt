@@ -347,6 +347,8 @@ fun Block.Content.DataView.Viewer.toMiddlewareModel(): MDVView =
         },
         defaultTemplateId = defaultTemplate.orEmpty(),
         defaultObjectTypeId = defaultObjectType.orEmpty(),
+        groupRelationKey = groupRelationKey.orEmpty(),
+        groupBackgroundColors = groupBackgroundColors,
     )
 
 fun Block.Content.DataView.Viewer.Type.toMiddlewareModel(): MDVViewType = when (this) {

@@ -80,6 +80,7 @@ import com.anytypeio.anytype.core_ui.widgets.CircularFabButton
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.TypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ObjectSetTitle
+import com.anytypeio.anytype.core_ui.widgets.dv.board.BoardScreen
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerEditWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerLayoutWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewersWidget
@@ -924,6 +925,7 @@ open class ObjectSetFragment :
                     galleryView.gone()
                     listView.gone()
                     listView.setViews(emptyList())
+                    boardView.gone()
                 }
                 viewerGridHeaderAdapter.submitList(viewer.columns)
                 viewerGridAdapter.submitList(viewer.rows)
@@ -941,6 +943,7 @@ open class ObjectSetFragment :
                         views = viewer.items,
                         largeCards = viewer.largeCards
                     )
+                    boardView.gone()
                 }
             }
             is Viewer.ListView -> {
@@ -953,6 +956,29 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.visible()
                     listView.setViews(viewer.items)
+                    boardView.gone()
+                }
+            }
+            is Viewer.Board -> {
+                viewerGridHeaderAdapter.submitList(emptyList())
+                viewerGridAdapter.submitList(emptyList())
+                with(binding) {
+                    unsupportedViewError.gone()
+                    unsupportedViewError.text = null
+                    galleryView.gone()
+                    galleryView.clear()
+                    listView.gone()
+                    listView.setViews(emptyList())
+                    boardView.visible()
+                    boardView.setViewCompositionStrategy(
+                        ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
+                    )
+                    boardView.setContent {
+                        BoardScreen(
+                            board = viewer,
+                            onCardClick = { id -> vm.onObjectHeaderClicked(id) }
+                        )
+                    }
                 }
             }
             is Viewer.Unsupported -> {
@@ -963,6 +989,7 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.gone()
                     listView.setViews(emptyList())
+                    boardView.gone()
                     when(viewer.type) {
                         Viewer.Unsupported.TYPE_GRAPH -> {
                             unsupportedViewError.setText(R.string.error_graph_view_not_supported)
@@ -988,6 +1015,7 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.gone()
                     listView.setViews(emptyList())
+                    boardView.gone()
                     unsupportedViewError.gone()
                     unsupportedViewError.text = null
                 }

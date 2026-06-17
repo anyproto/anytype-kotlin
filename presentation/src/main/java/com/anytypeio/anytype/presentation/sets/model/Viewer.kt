@@ -133,6 +133,26 @@ sealed class Viewer {
         }
     }
 
+    data class Board(
+        override val id: String,
+        override val title: String,
+        val columns: List<Column> = emptyList()
+    ) : Viewer() {
+        data class Column(
+            val id: String,
+            val label: String,
+            val color: String? = null,
+            val cards: List<Card> = emptyList()
+        )
+        data class Card(
+            val objectId: Id,
+            val name: String,
+            val icon: ObjectIcon,
+            val relations: List<DefaultObjectRelationValueView>,
+            val hideIcon: Boolean
+        )
+    }
+
     enum class SortType { ASC, DESC, CUSTOM }
     enum class FilterOperator { And, Or, No }
 

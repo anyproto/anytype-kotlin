@@ -286,6 +286,8 @@ data class Block(
                 val coverRelationKey: String? = null,
                 val defaultTemplate: Id? = null,
                 val defaultObjectType: Id? = null,
+                val groupRelationKey: String? = null,
+                val groupBackgroundColors: Boolean = false,
             ) {
 
                 enum class Type(val formattedName: String) {

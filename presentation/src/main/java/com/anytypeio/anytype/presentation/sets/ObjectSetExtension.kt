@@ -338,6 +338,7 @@ fun Viewer.isEmpty(): Boolean =
         is Viewer.GalleryView -> this.items.isEmpty()
         is Viewer.GridView -> this.rows.isEmpty()
         is Viewer.ListView -> this.items.isEmpty()
+        is Viewer.Board -> this.columns.all { it.cards.isEmpty() }
         is Viewer.Unsupported -> false
     }
 

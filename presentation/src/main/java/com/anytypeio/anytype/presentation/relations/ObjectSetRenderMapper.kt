@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.getObject
@@ -37,6 +38,7 @@ import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.toObjects
+import com.anytypeio.anytype.presentation.sets.buildBoardViews
 import com.anytypeio.anytype.presentation.sets.buildGalleryViews
 import com.anytypeio.anytype.presentation.sets.buildListViews
 import com.anytypeio.anytype.presentation.sets.dataViewState
@@ -74,7 +76,8 @@ suspend fun DVViewer.render(
     objectOrderIds: List<Id> = emptyList(),
     storeOfRelations: StoreOfRelations,
     fieldParser: FieldParser,
-    storeOfObjectTypes: StoreOfObjectTypes
+    storeOfObjectTypes: StoreOfObjectTypes,
+    stringResourceProvider: StringResourceProvider
 ): Viewer {
     return when (type) {
         DVViewerType.GRID -> {
@@ -128,6 +131,24 @@ suspend fun DVViewer.render(
             )
         }
 
+        DVViewerType.BOARD -> {
+            Viewer.Board(
+                id = id,
+                title = name,
+                columns = buildBoardViews(
+                    objectIds = objects,
+                    relations = dataViewRelations,
+                    urlBuilder = builder,
+                    objectStore = store,
+                    objectOrderIds = objectOrderIds,
+                    storeOfRelations = storeOfRelations,
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes,
+                    stringResourceProvider = stringResourceProvider
+                )
+            )
+        }
+
         else -> {
             if (useFallbackView) {
                 buildGridView(
@@ -144,7 +165,6 @@ suspend fun DVViewer.render(
                     id = id,
                     title = name,
                     type = when (type) {
-                        DVViewerType.BOARD -> Viewer.Unsupported.TYPE_KANBAN
                         DVViewerType.CALENDAR -> {
                             Viewer.Unsupported.TYPE_CALENDAR
                         }

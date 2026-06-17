@@ -6,19 +6,12 @@ import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.atomic.AtomicInteger
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 
 interface EventHandlerChannel {
-    /** @deprecated legacy shared firehose; migrate consumers to [flow] with an [EventGroup]. */
-    fun flow(): Flow<Event>
-
     /** Per-event-type buffered stream backed by a per-collector UNLIMITED channel. */
     fun flow(group: EventGroup): Flow<Event>
-
-    /** @deprecated legacy suspending emit into the shared firehose; use [dispatch]. */
-    suspend fun emit(event: Event)
 
     /**
      * Non-blocking demux into the per-type registry.
@@ -28,27 +21,11 @@ interface EventHandlerChannel {
     fun dispatch(event: Event)
 }
 
+/**
+ * Per-collector buffered fan-out of middleware events.
+ * See docs/superpowers/specs/2026-06-17-event-fanout-per-type-buffer-design.md
+ */
 class EventHandlerChannelImpl : EventHandlerChannel {
-
-    // --- Legacy shared-flow path (still used by un-migrated consumers; removed once every consumer
-    //     moves to flow(group)/dispatch). ---
-    private val _channel = MutableSharedFlow<Event>(
-        replay = 0,
-        extraBufferCapacity = 1
-    )
-
-    override fun flow(): Flow<Event> = _channel
-
-    override suspend fun emit(event: Event) {
-        _channel.emit(event)
-    }
-
-    fun trySend(event: Event) {
-        _channel.tryEmit(event)
-    }
-
-    // --- Per-collector buffered fan-out.
-    //     See docs/superpowers/specs/2026-06-17-event-fanout-per-type-buffer-design.md ---
 
     /** One live collector: its UNLIMITED inbox + its own backlog gauge (so a cancelled collector's
      *  residual count dies with it — no global leak). */
@@ -84,7 +61,7 @@ class EventHandlerChannelImpl : EventHandlerChannel {
     // Per-collector UNLIMITED buffer. Registers on collect, drains FIFO to this collector, and
     // unregisters (then closes) in finally.
     override fun flow(group: EventGroup): Flow<Event> = flow {
-        val collector = this // FlowCollector — bound explicitly so a future refactor can't rebind to the legacy member emit()
+        val collector = this
         val sub = Subscriber()
         val subs = subscribers.getValue(group)
         subs.add(sub)

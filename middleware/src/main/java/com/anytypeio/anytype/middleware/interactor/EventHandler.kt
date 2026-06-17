@@ -91,8 +91,6 @@ class EventHandler @Inject constructor(
         logger.logEvent(event)
     }
 
-    override fun flow(): Flow<Event> = channel.flow()
-
     override fun flow(group: EventGroup): Flow<Event> = channel.flow(group)
 
     companion object {

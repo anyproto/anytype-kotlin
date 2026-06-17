@@ -23,8 +23,7 @@ class EventHandler @Inject constructor(
 
     // Unbounded FIFO inbox of RAW bytes. Single producer (Go delivers events sequentially) + a
     // single consumer => strict FIFO. UNLIMITED => trySend never suspends and never fails on a full
-    // buffer (only when the channel is closed). Buffering raw bytes costs less than the old
-    // per-event coroutine + decoded-Event accumulation.
+    // buffer (only when the channel is closed).
     private val inbox = Channel<ByteArray>(capacity = Channel.UNLIMITED)
 
     // Observability only: approximate number of queued-but-unprocessed events.
@@ -36,13 +35,18 @@ class EventHandler @Inject constructor(
         }
 
         // EXACTLY ONE consumer. A single coroutine running a single for-loop processes items
-        // strictly serially (decode -> log -> emit for event N completes before event N+1 is
-        // received). This single consumer — not any dispatcher trick — is what guarantees ordering.
+        // strictly serially. This single consumer — not any dispatcher trick — guarantees ordering.
         // Do NOT add an inner launch or a withContext hop inside this loop; either would re-break FIFO.
         scope.launch {
-            for (bytes in inbox) {
-                backlog.decrementAndGet()
-                handle(bytes)
+            try {
+                for (bytes in inbox) {
+                    backlog.decrementAndGet()
+                    handle(bytes)
+                }
+            } finally {
+                // Teardown (app scope cancelled): close the inbox so a late JNI callback hits the
+                // drop-and-log path in onRawEvent instead of silently buffering into a dead consumer.
+                inbox.close()
             }
         }
 
@@ -67,7 +71,8 @@ class EventHandler @Inject constructor(
                 Timber.w("Middleware event backlog high: $depth queued")
             }
         } else {
-            // Only reachable once the channel is closed (app scope cancelled). Benign at teardown.
+            // Reachable at teardown: when the app scope is cancelled the consumer closes the inbox,
+            // so a late JNI callback lands here. Dropping is correct (no consumer remains); never throws.
             Timber.w("Dropping middleware event: inbox closed")
         }
     }

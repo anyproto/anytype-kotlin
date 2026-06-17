@@ -4,12 +4,19 @@ import anytype.Event
 import app.cash.turbine.test
 import com.anytypeio.anytype.data.auth.status.SyncAndP2PStatusEventsStore
 import com.anytypeio.anytype.middleware.EventGroup
+import java.util.concurrent.CopyOnWriteArrayList
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.withTimeout
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
@@ -61,6 +68,47 @@ class EventHandlerTest {
             assertEquals(event("2"), awaitItem())
             assertEquals(event("3"), awaitItem())
             cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `preserves order under real multi-threaded dispatch`() = runBlocking {
+        // The runTest cases above run on a single deterministic test dispatcher, where a reordering
+        // seam (e.g. a reintroduced inner launch / withContext in the consumer) cannot manifest. This
+        // case drives the consumer on a real multi-threaded dispatcher: a single producer feeds in
+        // order (matching the sequential gomobile callback) and the single consumer must emit in that
+        // exact order, every repetition. The old per-event scope.launch on Dispatchers.Default flaked.
+        repeat(STRESS_REPEATS) {
+            val scope = CoroutineScope(Dispatchers.Default + Job())
+            try {
+                val channel = EventHandlerChannelImpl()
+                val eventHandler = EventHandler(
+                    logger = mock(),
+                    scope = scope,
+                    channel = channel,
+                    syncP2PStore = mock(),
+                    registrar = MiddlewareEventRegistrar { }
+                )
+
+                val received = CopyOnWriteArrayList<Int>()
+                val done = CompletableDeferred<Unit>()
+
+                // UNDISPATCHED: flow(group) runs subs.add synchronously before launch() returns, so
+                // the collector is registered before we feed (flow(group) is cold, no onSubscription).
+                scope.launch(start = CoroutineStart.UNDISPATCHED) {
+                    channel.flow(EventGroup.SYNC_P2P).collect { event ->
+                        received.add(event.contextId.toInt())
+                        if (received.size == STRESS_EVENTS) done.complete(Unit)
+                    }
+                }
+
+                repeat(STRESS_EVENTS) { eventHandler.onRawEvent(bytes(it.toString())) }
+
+                withTimeout(STRESS_TIMEOUT_MS) { done.await() }
+                assertEquals((0 until STRESS_EVENTS).toList(), received.toList())
+            } finally {
+                scope.cancel()
+            }
         }
     }
 
@@ -127,5 +175,11 @@ class EventHandlerTest {
         ownScope.cancel()
         // A late JNI callback after the consumer is gone must not throw across the JNI boundary.
         eventHandler.onRawEvent(bytes("late"))
+    }
+
+    companion object {
+        private const val STRESS_REPEATS = 25
+        private const val STRESS_EVENTS = 200
+        private const val STRESS_TIMEOUT_MS = 10_000L
     }
 }

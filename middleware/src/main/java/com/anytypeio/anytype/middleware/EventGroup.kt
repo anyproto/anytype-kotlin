@@ -74,6 +74,15 @@ enum class EventGroup {
                 message.blockDataviewViewUpdate != null ||
                 message.blockDataviewTargetObjectIdSet != null ||
                 message.blockDataviewIsCollectionSet != null ||
+                message.blockDataviewSourceSet != null ||
+                message.blockDataviewOldRelationSet != null ||
+                message.blockDataviewOldRelationDelete != null ||
+                message.blockDataViewGroupOrderUpdate != null ||
+                message.blockDataViewObjectOrderUpdate != null ||
+                message.blockSetLatex != null ||
+                message.blockSetVerticalAlign != null ||
+                message.blockSetTableRow != null ||
+                message.blockSetRestrictions != null ||
                 message.objectRelationsAmend != null ||
                 message.objectRelationsRemove != null
             ) {
@@ -83,7 +92,8 @@ enum class EventGroup {
             if (message.subscriptionAdd != null ||
                 message.subscriptionRemove != null ||
                 message.subscriptionPosition != null ||
-                message.subscriptionCounters != null
+                message.subscriptionCounters != null ||
+                message.subscriptionGroups != null
             ) {
                 mask = mask or SUBSCRIPTION.bit
             }
@@ -95,7 +105,10 @@ enum class EventGroup {
                 message.chatUpdateReactions != null ||
                 message.chatUpdateMessageReadStatus != null ||
                 message.chatUpdateMentionReadStatus != null ||
-                message.chatUpdateMessageSyncStatus != null
+                message.chatUpdateMessageSyncStatus != null ||
+                message.chatUpdateMessageCount != null ||
+                message.chatUpdatePinnedStatus != null ||
+                message.chatUpdateReactionReadStatus != null
             ) {
                 mask = mask or CHAT.bit
             }
@@ -108,19 +121,30 @@ enum class EventGroup {
                 mask = mask or PROCESS.bit
             }
             // account (accountShow REQUIRED — AuthMiddleware/login)
-            if (message.accountShow != null || message.accountUpdate != null) {
+            if (message.accountShow != null ||
+                message.accountUpdate != null ||
+                message.accountConfigUpdate != null ||
+                message.accountDetails != null ||
+                message.accountLinkChallenge != null ||
+                message.accountLinkChallengeHide != null
+            ) {
                 mask = mask or ACCOUNT.bit
             }
             // file limits / usage
             if (message.fileSpaceUsage != null ||
                 message.fileLocalUsage != null ||
                 message.fileLimitReached != null ||
-                message.fileLimitUpdated != null
+                message.fileLimitUpdated != null ||
+                message.filesUpload != null
             ) {
                 mask = mask or FILE.bit
             }
             // membership
-            if (message.membershipUpdate != null || message.membershipTiersUpdate != null) {
+            if (message.membershipUpdate != null ||
+                message.membershipTiersUpdate != null ||
+                message.membershipV2Update != null ||
+                message.membershipV2ProductsUpdate != null
+            ) {
                 mask = mask or MEMBERSHIP.bit
             }
             // notifications

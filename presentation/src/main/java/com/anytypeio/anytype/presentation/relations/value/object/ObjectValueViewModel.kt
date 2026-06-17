@@ -80,6 +80,14 @@ class ObjectValueViewModel(
     private val commandsChannel = Channel<Command>(Channel.UNLIMITED)
     val commands: Flow<Command> = commandsChannel.receiveAsFlow()
 
+    override fun onCleared() {
+        // viewModelScope is already cancelled by the time onCleared() runs, so no
+        // send() can race this close(). Closing is explicit about intent: nothing
+        // will consume the channel once the ViewModel is gone.
+        commandsChannel.close()
+        super.onCleared()
+    }
+
     private val initialIds = mutableListOf<Id>()
     private var isInitialSortDone = false
 

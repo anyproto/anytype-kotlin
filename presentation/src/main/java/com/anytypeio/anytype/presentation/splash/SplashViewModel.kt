@@ -96,6 +96,14 @@ class SplashViewModel(
     private val commandsChannel = Channel<Command>(Channel.UNLIMITED)
     val commands: Flow<Command> = commandsChannel.receiveAsFlow()
 
+    override fun onCleared() {
+        // viewModelScope is already cancelled by the time onCleared() runs, so no
+        // send() can race this close(). Closing is explicit about intent: nothing
+        // will consume the channel once the ViewModel is gone.
+        commandsChannel.close()
+        super.onCleared()
+    }
+
     private var migrationRetryCount: Int = 0
 
     init {

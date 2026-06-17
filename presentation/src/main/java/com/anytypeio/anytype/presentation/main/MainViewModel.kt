@@ -1074,6 +1074,10 @@ class MainViewModel(
         //     }
         // }
         Timber.d("onCleared called - appShutdown disabled for FD crash testing")
+        // viewModelScope is already cancelled here, so no send() can race these
+        // close() calls. Explicit about intent: nothing consumes them once we're gone.
+        commandsChannel.close()
+        toastsChannel.close()
         super.onCleared()
     }
 

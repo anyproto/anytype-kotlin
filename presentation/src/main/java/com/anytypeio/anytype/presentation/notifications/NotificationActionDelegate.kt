@@ -15,6 +15,15 @@ import timber.log.Timber
 
 interface NotificationActionDelegate {
 
+    /**
+     * Buffered one-shot commands (see [Default] for the backing [Channel]).
+     *
+     * Single-consumer invariant: collect this from exactly ONE place. The backing
+     * channel hands each command to a single receiver, so a second concurrent
+     * collector would silently steal half the commands. Re-collecting sequentially
+     * across lifecycle bounces (e.g. `repeatOnLifecycle(STARTED)`) is fine — that is
+     * one consumer at a time, not two at once.
+     */
     val dispatcher: Flow<NotificationCommand>
 
     suspend fun proceedWithNotificationAction(action: NotificationAction)

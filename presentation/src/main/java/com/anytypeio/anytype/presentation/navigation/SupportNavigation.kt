@@ -28,6 +28,14 @@ open class NavigationViewModel<Navigation> : BaseViewModel() {
      * semantics are correct.
      */
     private val _navigation = Channel<Navigation>(Channel.UNLIMITED)
+
+    /**
+     * Single-consumer invariant: collect this from exactly ONE place. The backing
+     * channel hands each destination to a single receiver, so a second concurrent
+     * collector would silently steal half the destinations. Re-collecting
+     * sequentially across lifecycle bounces (`onStart`/`onStop`,
+     * `repeatOnLifecycle(STARTED)`) is fine — that is one consumer at a time.
+     */
     val navigation: Flow<Navigation> = _navigation.receiveAsFlow()
     fun navigate(destination: Navigation) = viewModelScope.launch {
         _navigation.send(destination)

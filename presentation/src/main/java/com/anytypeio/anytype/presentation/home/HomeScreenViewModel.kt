@@ -2910,6 +2910,9 @@ class HomeScreenViewModel(
             }
         }
 
+        // viewModelScope is already cancelled here, so no send() can race this close().
+        // Explicit about intent: nothing consumes the channel once the VM is gone.
+        commandsChannel.close()
         super.onCleared()
     }
 

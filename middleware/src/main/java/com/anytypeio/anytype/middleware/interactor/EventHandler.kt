@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Event
 import com.anytypeio.anytype.data.auth.status.SyncAndP2PStatusEventsStore
+import com.anytypeio.anytype.middleware.EventGroup
 import com.anytypeio.anytype.middleware.EventProxy
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
@@ -91,6 +92,8 @@ class EventHandler @Inject constructor(
     }
 
     override fun flow(): Flow<Event> = channel.flow()
+
+    override fun flow(group: EventGroup): Flow<Event> = channel.flow(group)
 
     companion object {
         private const val BACKLOG_WARN_THRESHOLD = 5_000

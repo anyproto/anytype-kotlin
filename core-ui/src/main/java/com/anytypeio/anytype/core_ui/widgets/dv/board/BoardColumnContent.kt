@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.widgets.dv.board
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,9 +19,18 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -34,18 +44,32 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 
 /**
  * A single board column: a header with the group label, a color dot and the card
- * count, followed by a vertically scrolling list of cards.
+ * count, followed by a vertically scrolling list of draggable cards. Highlights
+ * itself while a card from another column hovers over it.
  */
 @Composable
 fun BoardColumnContent(
     column: Viewer.Board.Column,
+    dragState: BoardDragState,
+    boardCoordsProvider: () -> LayoutCoordinates?,
     onCardClick: (Id) -> Unit,
+    onCardMoved: (cardId: Id, targetColumnId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val isDropTarget = dragState.isDragging &&
+        dragState.sourceColumnId != column.id &&
+        dragState.targetColumnId() == column.id
+
+    val background = if (isDropTarget) {
+        colorResource(id = R.color.shape_secondary)
+    } else {
+        colorResource(id = R.color.shape_tertiary)
+    }
+
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
-            .background(colorResource(id = R.color.shape_tertiary))
+            .background(background)
             .padding(8.dp)
     ) {
         Row(
@@ -104,13 +128,70 @@ fun BoardColumnContent(
                     items = column.cards,
                     key = { it.objectId }
                 ) { card ->
-                    BoardCardItem(
+                    DraggableBoardCard(
                         card = card,
-                        onClick = { onCardClick(card.objectId) },
-                        modifier = Modifier.fillMaxWidth()
+                        columnId = column.id,
+                        dragState = dragState,
+                        boardCoordsProvider = boardCoordsProvider,
+                        onCardClick = onCardClick,
+                        onCardMoved = onCardMoved
                     )
                 }
             }
         }
     }
+}
+
+@Composable
+private fun DraggableBoardCard(
+    card: Viewer.Board.Card,
+    columnId: String,
+    dragState: BoardDragState,
+    boardCoordsProvider: () -> LayoutCoordinates?,
+    onCardClick: (Id) -> Unit,
+    onCardMoved: (cardId: Id, targetColumnId: String) -> Unit
+) {
+    var cardCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
+    val isBeingDragged = dragState.draggedCard?.objectId == card.objectId
+
+    BoardCardItem(
+        card = card,
+        onClick = { onCardClick(card.objectId) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .onGloballyPositioned { cardCoords = it }
+            .alpha(if (isBeingDragged) 0.4f else 1f)
+            .pointerInput(card.objectId, columnId) {
+                val edge = 56.dp.toPx()
+                detectDragGesturesAfterLongPress(
+                    onDragStart = { startLocal ->
+                        val board = boardCoordsProvider()
+                        val coords = cardCoords
+                        if (board != null && coords != null && coords.isAttached) {
+                            dragState.start(
+                                card = card,
+                                columnId = columnId,
+                                topLeft = board.localPositionOf(coords, Offset.Zero),
+                                pointer = board.localPositionOf(coords, startLocal),
+                                size = coords.size
+                            )
+                        }
+                    },
+                    onDrag = { change, dragAmount ->
+                        change.consume()
+                        val boardWidth = boardCoordsProvider()?.size?.width ?: 0
+                        dragState.drag(delta = dragAmount, boardWidth = boardWidth, edge = edge)
+                    },
+                    onDragEnd = {
+                        val source = dragState.sourceColumnId
+                        val target = dragState.targetColumnId()
+                        if (source != null && target != null && source != target) {
+                            onCardMoved(card.objectId, target)
+                        }
+                        dragState.stop()
+                    },
+                    onDragCancel = { dragState.stop() }
+                )
+            }
+    )
 }

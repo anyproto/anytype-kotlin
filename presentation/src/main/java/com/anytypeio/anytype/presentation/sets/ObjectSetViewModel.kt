@@ -1540,6 +1540,42 @@ class ObjectSetViewModel(
         }
     }
 
+    /**
+     * Moves a Kanban card to another column by setting the dragged object's group
+     * relation value to the target column's option id (or clearing it when the card
+     * is dropped on the "no group" column).
+     */
+    fun onBoardCardDropped(cardId: Id, targetColumnId: String) {
+        Timber.d("onBoardCardDropped, cardId:[$cardId], targetColumnId:[$targetColumnId]")
+        val state = stateReducer.state.value.dataViewState() ?: return
+        val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+        val groupRelationKey = viewer.groupRelationKey
+        if (groupRelationKey.isNullOrEmpty()) {
+            Timber.e("onBoardCardDropped: active viewer has no group relation key")
+            return
+        }
+        val value: Any? = if (targetColumnId == BOARD_EMPTY_GROUP_ID) {
+            null
+        } else {
+            listOf(targetColumnId)
+        }
+        viewModelScope.launch {
+            setObjectDetails(
+                UpdateDetail.Params(
+                    target = cardId,
+                    key = groupRelationKey,
+                    value = value
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while moving board card to another column") },
+                success = {
+                    dispatcher.send(it)
+                    Timber.d("Board card moved successfully")
+                }
+            )
+        }
+    }
+
     fun onNewButtonIconClicked() {
         Timber.d("onNewButtonIconClicked, ")
         showTypeTemplatesWidgetForObjectCreation()

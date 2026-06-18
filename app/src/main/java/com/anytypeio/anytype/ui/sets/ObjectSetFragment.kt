@@ -976,7 +976,10 @@ open class ObjectSetFragment :
                     boardView.setContent {
                         BoardScreen(
                             board = viewer,
-                            onCardClick = { id -> vm.onObjectHeaderClicked(id) }
+                            onCardClick = { id -> vm.onObjectHeaderClicked(id) },
+                            onCardMoved = { cardId, targetColumnId ->
+                                vm.onBoardCardDropped(cardId, targetColumnId)
+                            }
                         )
                     }
                 }

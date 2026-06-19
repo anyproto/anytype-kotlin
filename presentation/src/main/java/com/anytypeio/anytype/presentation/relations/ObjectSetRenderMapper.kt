@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
@@ -74,6 +75,7 @@ suspend fun DVViewer.render(
     dataViewRelations: List<ObjectWrapper.Relation>,
     store: ObjectStore,
     objectOrderIds: List<Id> = emptyList(),
+    objectOrders: List<ObjectOrder> = emptyList(),
     storeOfRelations: StoreOfRelations,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes,
@@ -140,7 +142,7 @@ suspend fun DVViewer.render(
                     relations = dataViewRelations,
                     urlBuilder = builder,
                     objectStore = store,
-                    objectOrderIds = objectOrderIds,
+                    objectOrders = objectOrders,
                     storeOfRelations = storeOfRelations,
                     fieldParser = fieldParser,
                     storeOfObjectTypes = storeOfObjectTypes,

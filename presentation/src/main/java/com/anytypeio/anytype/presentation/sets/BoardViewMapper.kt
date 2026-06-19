@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.UrlBuilder
@@ -31,7 +32,7 @@ suspend fun DVViewer.buildBoardViews(
     relations: List<ObjectWrapper.Relation>,
     urlBuilder: UrlBuilder,
     objectStore: ObjectStore,
-    objectOrderIds: List<Id>,
+    objectOrders: List<ObjectOrder>,
     storeOfRelations: StoreOfRelations,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes,
@@ -47,8 +48,6 @@ suspend fun DVViewer.buildBoardViews(
             null
         }
     }
-
-    val orderMap = objectOrderIds.mapIndexed { index, id -> id to index }.toMap()
 
     // Group valid objects by their value of the group relation, preserving
     // first-seen order of the groups.
@@ -75,8 +74,12 @@ suspend fun DVViewer.buildBoardViews(
         }
         val color = option?.relationOptionColor?.takeIf { it.isNotBlank() }
 
+        // Order cards within the column by this group's saved object order;
+        // objects not present in the order keep their natural (stable) order.
+        val groupOrder = objectOrders.find { it.group == groupId }?.ids.orEmpty()
+        val orderIndex = groupOrder.withIndex().associate { (index, id) -> id to index }
         val cards = objects
-            .sortedBy { orderMap[it.id] }
+            .sortedBy { orderIndex[it.id] ?: Int.MAX_VALUE }
             .map { obj ->
                 val content = obj.buildCardContent(
                     urlBuilder = urlBuilder,

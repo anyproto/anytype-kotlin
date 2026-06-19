@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsageInfo
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectView
@@ -72,6 +73,7 @@ import com.anytypeio.anytype.middleware.mappers.config
 import com.anytypeio.anytype.middleware.mappers.core
 import com.anytypeio.anytype.middleware.mappers.mw
 import com.anytypeio.anytype.middleware.mappers.parse
+import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 import com.anytypeio.anytype.middleware.mappers.toCore
 import com.anytypeio.anytype.middleware.mappers.toCoreLinkPreview
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
@@ -291,6 +293,23 @@ class Middleware @Inject constructor(
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.blockDataViewViewSetPosition(request) }
+        logResponseIfDebug(response, time)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockDataViewObjectOrderUpdate(
+        ctx: Id,
+        dv: Id,
+        objectOrders: List<ObjectOrder>
+    ): Payload {
+        val request = Rpc.BlockDataview.ObjectOrder.Update.Request(
+            contextId = ctx,
+            blockId = dv,
+            objectOrders = objectOrders.map { it.toMiddlewareModel() }
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewObjectOrderUpdate(request) }
         logResponseIfDebug(response, time)
         return response.event.toPayload()
     }

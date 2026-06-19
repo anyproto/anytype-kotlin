@@ -979,6 +979,9 @@ open class ObjectSetFragment :
                             onCardClick = { id -> vm.onObjectHeaderClicked(id) },
                             onCardMoved = { cardId, targetColumnId ->
                                 vm.onBoardCardDropped(cardId, targetColumnId)
+                            },
+                            onCardReordered = { columnId, orderedCardIds ->
+                                vm.onBoardCardReordered(columnId, orderedCardIds)
                             }
                         )
                     }

@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
@@ -45,6 +46,7 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
+import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -212,6 +214,7 @@ class ObjectSetViewModel(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val deepLinkResolver: DeepLinkResolver,
     private val setDataViewProperties: SetDataViewProperties,
+    private val setDataViewObjectOrder: SetDataViewObjectOrder,
     private val emojiProvider: EmojiProvider,
     private val emojiSuggester: EmojiSuggester,
     private val stringResourceProvider: StringResourceProvider,
@@ -261,6 +264,14 @@ class ObjectSetViewModel(
     private val _currentViewer: MutableStateFlow<DataViewViewState> =
         MutableStateFlow(DataViewViewState.Init)
     val currentViewer = _currentViewer
+
+    /**
+     * Optimistic, per-group object orders for the Kanban board. Updated when a
+     * card is reordered so the board reflects the new order immediately (the
+     * order-update event is not reduced into [ObjectState]); the order is also
+     * persisted to the middleware and reloaded from server state on reopen.
+     */
+    private val boardObjectOrders = MutableStateFlow<List<ObjectOrder>>(emptyList())
 
     private val _dvViews = MutableStateFlow<List<ViewerView>>(emptyList())
 
@@ -782,8 +793,9 @@ class ObjectSetViewModel(
                 database.index,
                 stateReducer.state,
                 session.currentViewerId,
-                permission
-            ) { dataViewState, objectState, currentViewId, permission ->
+                permission,
+                boardObjectOrders
+            ) { dataViewState, objectState, currentViewId, permission, _ ->
                 processViewState(dataViewState, objectState, currentViewId, permission)
             }.distinctUntilChanged().collect { viewState ->
                 Timber.d("subscribeToDataViewViewer, newViewerState:[$viewState]")
@@ -929,6 +941,7 @@ class ObjectSetViewModel(
                     objects = dataViewState.objects,
                     dataViewRelations = relations,
                     store = objectStore,
+                    objectOrders = effectiveBoardOrders(objectState, viewer?.id),
                     storeOfRelations = storeOfRelations,
                     fieldParser = fieldParser,
                     storeOfObjectTypes = storeOfObjectTypes,
@@ -1006,6 +1019,7 @@ class ObjectSetViewModel(
                     objects = dataViewState.objects,
                     dataViewRelations = relations,
                     store = objectStore,
+                    objectOrders = effectiveBoardOrders(objectState, viewer?.id),
                     storeOfRelations = storeOfRelations,
                     fieldParser = fieldParser,
                     storeOfObjectTypes = storeOfObjectTypes,
@@ -1056,12 +1070,29 @@ class ObjectSetViewModel(
                 dataViewRelations = relations,
                 store = objectStore,
                 objectOrderIds = objectOrderIds,
+                objectOrders = effectiveBoardOrders(objectState, it.id),
                 storeOfRelations = storeOfRelations,
                 fieldParser = fieldParser,
                 storeOfObjectTypes = storeOfObjectTypes,
                 stringResourceProvider = stringResourceProvider
             )
         }
+    }
+
+    /**
+     * Effective per-group object orders for the board view [viewId]: server state
+     * orders overridden by any optimistic [boardObjectOrders] for the same group.
+     */
+    private fun effectiveBoardOrders(objectState: ObjectState, viewId: Id?): List<ObjectOrder> {
+        if (viewId == null) return emptyList()
+        val stateOrders = objectState.dataViewState()?.dataViewContent?.objectOrders
+            ?.filter { it.view == viewId }.orEmpty()
+        val optimistic = boardObjectOrders.value.filter { it.view == viewId }
+        if (optimistic.isEmpty()) return stateOrders
+        val byGroup = LinkedHashMap<Id, ObjectOrder>()
+        stateOrders.forEach { byGroup[it.group] = it }
+        optimistic.forEach { byGroup[it.group] = it }
+        return byGroup.values.toList()
     }
 
     fun onStop() {
@@ -1572,6 +1603,34 @@ class ObjectSetViewModel(
                     dispatcher.send(it)
                     Timber.d("Board card moved successfully")
                 }
+            )
+        }
+    }
+
+    /**
+     * Persists a new order of cards within a Kanban column (group). Updates the
+     * optimistic order first so the board reflects it immediately.
+     */
+    fun onBoardCardReordered(columnId: String, orderedCardIds: List<Id>) {
+        Timber.d("onBoardCardReordered, columnId:[$columnId], ids:[$orderedCardIds]")
+        val state = stateReducer.state.value.dataViewState() ?: return
+        val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+        val viewId = viewer.id
+        val dv = state.dataViewBlock.id
+        val newOrder = ObjectOrder(view = viewId, group = columnId, ids = orderedCardIds)
+        boardObjectOrders.update { orders ->
+            orders.filterNot { it.view == viewId && it.group == columnId } + newOrder
+        }
+        viewModelScope.launch {
+            setDataViewObjectOrder.async(
+                SetDataViewObjectOrder.Params(
+                    ctx = vmParams.ctx,
+                    dv = dv,
+                    objectOrders = listOf(newOrder)
+                )
+            ).fold(
+                onSuccess = { payload -> dispatcher.send(payload) },
+                onFailure = { Timber.e(it, "Error while persisting board card order") }
             )
         }
     }

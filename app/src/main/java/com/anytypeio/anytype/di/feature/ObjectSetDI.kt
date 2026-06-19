@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer
+import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewViewerPosition
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
@@ -259,6 +260,7 @@ object ObjectSetModule {
         spaceViews: SpaceViewSubscriptionContainer,
         deepLinkResolver: DeepLinkResolver,
         setDataViewProperties: SetDataViewProperties,
+        setDataViewObjectOrder: SetDataViewObjectOrder,
         emojiProvider: EmojiProvider,
         emojiSuggester: EmojiSuggester,
         stringResourceProvider: StringResourceProvider,
@@ -310,6 +312,7 @@ object ObjectSetModule {
         deepLinkResolver = deepLinkResolver,
         removeObjectFromCollection = removeObjectFromCollection,
         setDataViewProperties = setDataViewProperties,
+        setDataViewObjectOrder = setDataViewObjectOrder,
         emojiProvider = emojiProvider,
         emojiSuggester = emojiSuggester,
         stringResourceProvider = stringResourceProvider,
@@ -719,6 +722,14 @@ object ObjectSetModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): SetDataViewViewerPosition = SetDataViewViewerPosition(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetDataViewObjectOrderUseCase(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetDataViewObjectOrder = SetDataViewObjectOrder(repo = repo, dispatchers = dispatchers)
 
     @JvmStatic
     @Provides

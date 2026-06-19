@@ -363,6 +363,9 @@ interface MiddlewareService {
     fun blockDataViewViewSetPosition(request: Rpc.BlockDataview.View.SetPosition.Request): Rpc.BlockDataview.View.SetPosition.Response
 
     @Throws(Exception::class)
+    fun blockDataViewObjectOrderUpdate(request: Rpc.BlockDataview.ObjectOrder.Update.Request): Rpc.BlockDataview.ObjectOrder.Update.Response
+
+    @Throws(Exception::class)
     fun blockDataViewSetSource(request: Rpc.BlockDataview.SetSource.Request): Rpc.BlockDataview.SetSource.Response
 
     @Throws(Exception::class)

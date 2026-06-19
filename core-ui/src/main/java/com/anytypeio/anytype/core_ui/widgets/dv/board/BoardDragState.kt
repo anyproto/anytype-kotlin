@@ -39,6 +39,9 @@ class BoardDragState {
     /** Column bounds in board coordinates, keyed by column id. */
     val columnBounds = mutableStateMapOf<String, Rect>()
 
+    /** Card bounds in board coordinates, keyed by object id. */
+    val cardBounds = mutableStateMapOf<String, Rect>()
+
     val isDragging: Boolean get() = draggedCard != null
 
     fun start(card: Viewer.Board.Card, columnId: String, topLeft: Offset, pointer: Offset, size: IntSize) {

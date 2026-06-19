@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
@@ -112,7 +113,7 @@ class BoardViewMapperTest {
             relations = listOf(statusRelationWrapper()),
             urlBuilder = UrlBuilderImpl(gateway),
             objectStore = store,
-            objectOrderIds = emptyList(),
+            objectOrders = emptyList(),
             storeOfRelations = storeOfRelations,
             fieldParser = fieldParser,
             storeOfObjectTypes = storeOfObjectTypes,
@@ -182,7 +183,9 @@ class BoardViewMapperTest {
             relations = listOf(statusRelationWrapper()),
             urlBuilder = UrlBuilderImpl(gateway),
             objectStore = store,
-            objectOrderIds = listOf("C", "A", "B"),
+            objectOrders = listOf(
+                ObjectOrder(view = "view-1", group = todo.id, ids = listOf("C", "A", "B"))
+            ),
             storeOfRelations = storeOfRelations,
             fieldParser = fieldParser,
             storeOfObjectTypes = storeOfObjectTypes,

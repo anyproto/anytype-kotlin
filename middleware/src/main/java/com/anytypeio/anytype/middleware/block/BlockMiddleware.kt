@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ManifestInfo
@@ -299,6 +300,16 @@ class BlockMiddleware(
         dv = dv,
         view = view,
         pos = pos
+    )
+
+    override suspend fun setDataViewObjectOrder(
+        ctx: Id,
+        dv: Id,
+        objectOrders: List<ObjectOrder>
+    ): Payload = middleware.blockDataViewObjectOrderUpdate(
+        ctx = ctx,
+        dv = dv,
+        objectOrders = objectOrders
     )
 
     override suspend fun addRelationToDataView(

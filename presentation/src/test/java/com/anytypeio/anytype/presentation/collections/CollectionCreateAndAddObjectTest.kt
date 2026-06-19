@@ -106,6 +106,7 @@ class CollectionCreateAndAddObjectTest : ObjectSetViewModelTestSetup() {
             deepLinkResolver = deepLinkResolver,
             removeObjectFromCollection = removeObjectFromCollection,
             setDataViewProperties = setDataViewProperties,
+            setDataViewObjectOrder = setDataViewObjectOrder,
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
             createBlock = mock(),

@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ManifestInfo
@@ -327,6 +328,12 @@ interface BlockRepository {
         dv: Id,
         view: Id,
         pos: Int
+    ): Payload
+
+    suspend fun setDataViewObjectOrder(
+        ctx: Id,
+        dv: Id,
+        objectOrders: List<ObjectOrder>
     ): Payload
 
     suspend fun blockDataViewSetSource(ctx: Id, block: Id, sources: List<String>): Payload

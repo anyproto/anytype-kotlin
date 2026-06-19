@@ -38,6 +38,7 @@ import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
+import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.discussions.AddDiscussion
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -241,6 +242,9 @@ open class ObjectSetViewModelTestSetup {
     lateinit var setDataViewProperties: SetDataViewProperties
 
     @Mock
+    lateinit var setDataViewObjectOrder: SetDataViewObjectOrder
+
+    @Mock
     lateinit var emojiProvider: EmojiProvider
 
     @Mock
@@ -367,6 +371,7 @@ open class ObjectSetViewModelTestSetup {
             deepLinkResolver = deepLinkResolver,
             removeObjectFromCollection = removeObjectFromCollection,
             setDataViewProperties = setDataViewProperties,
+            setDataViewObjectOrder = setDataViewObjectOrder,
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
             createBlock = createBlock,

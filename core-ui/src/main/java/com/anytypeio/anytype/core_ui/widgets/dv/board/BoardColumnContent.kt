@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,7 +54,7 @@ fun BoardColumnContent(
     dragState: BoardDragState,
     boardCoordsProvider: () -> LayoutCoordinates?,
     onCardClick: (Id) -> Unit,
-    onCardMoved: (cardId: Id, targetColumnId: String) -> Unit,
+    onDrop: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isDropTarget = dragState.isDragging &&
@@ -134,7 +135,7 @@ fun BoardColumnContent(
                         dragState = dragState,
                         boardCoordsProvider = boardCoordsProvider,
                         onCardClick = onCardClick,
-                        onCardMoved = onCardMoved
+                        onDrop = onDrop
                     )
                 }
             }
@@ -149,17 +150,27 @@ private fun DraggableBoardCard(
     dragState: BoardDragState,
     boardCoordsProvider: () -> LayoutCoordinates?,
     onCardClick: (Id) -> Unit,
-    onCardMoved: (cardId: Id, targetColumnId: String) -> Unit
+    onDrop: () -> Unit
 ) {
     var cardCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
     val isBeingDragged = dragState.draggedCard?.objectId == card.objectId
+
+    DisposableEffect(card.objectId) {
+        onDispose { dragState.cardBounds.remove(card.objectId) }
+    }
 
     BoardCardItem(
         card = card,
         onClick = { onCardClick(card.objectId) },
         modifier = Modifier
             .fillMaxWidth()
-            .onGloballyPositioned { cardCoords = it }
+            .onGloballyPositioned { coords ->
+                cardCoords = coords
+                val board = boardCoordsProvider()
+                if (board != null && coords.isAttached) {
+                    dragState.cardBounds[card.objectId] = board.localBoundingBoxOf(coords)
+                }
+            }
             .alpha(if (isBeingDragged) 0.4f else 1f)
             .pointerInput(card.objectId, columnId) {
                 val edge = 56.dp.toPx()
@@ -182,14 +193,7 @@ private fun DraggableBoardCard(
                         val boardWidth = boardCoordsProvider()?.size?.width ?: 0
                         dragState.drag(delta = dragAmount, boardWidth = boardWidth, edge = edge)
                     },
-                    onDragEnd = {
-                        val source = dragState.sourceColumnId
-                        val target = dragState.targetColumnId()
-                        if (source != null && target != null && source != target) {
-                            onCardMoved(card.objectId, target)
-                        }
-                        dragState.stop()
-                    },
+                    onDragEnd = { onDrop() },
                     onDragCancel = { dragState.stop() }
                 )
             }

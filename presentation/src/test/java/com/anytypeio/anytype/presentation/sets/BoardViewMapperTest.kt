@@ -325,15 +325,17 @@ class BoardViewMapperTest {
             ),
             groupOrder = GroupOrder(
                 viewId = "view-1",
+                // List order deliberately differs from the index field: ordering must
+                // follow ViewGroup.index (done=0, todo=1), not list position.
                 viewGroups = listOf(
-                    ViewGroup(groupId = done.id, index = 0, isHidden = false, backgroundColor = ""),
                     ViewGroup(groupId = todo.id, index = 1, isHidden = false, backgroundColor = ""),
+                    ViewGroup(groupId = done.id, index = 0, isHidden = false, backgroundColor = ""),
                     ViewGroup(groupId = blocked.id, index = 2, isHidden = true, backgroundColor = "")
                 )
             )
         )
 
-        // "Blocked" is hidden -> dropped; saved order puts Done before To do;
+        // "Blocked" is hidden -> dropped; saved index puts Done (0) before To do (1);
         // the "No value" column is not in the saved order -> appended last.
         assertEquals(listOf(done.id, todo.id, BOARD_EMPTY_GROUP_ID), columns.map { it.id })
     }

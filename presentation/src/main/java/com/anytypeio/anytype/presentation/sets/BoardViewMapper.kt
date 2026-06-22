@@ -103,8 +103,11 @@ private suspend fun DVViewer.buildColumnsFromGroups(
     }
 
     val orderedIds = buildList {
-        add(emptyGroupId)
-        groups.forEach { if (it.id != emptyGroupId) add(it.id) }
+        // Preserve the backend (ObjectGroupsSubscribe) order; only synthesize the
+        // empty column if the backend didn't return one. Final column order is the
+        // saved GroupOrder index (see applyGroupOrder).
+        if (groups.none { it.id == emptyGroupId }) add(emptyGroupId)
+        groups.forEach { add(it.id) }
         byGroup.keys.forEach { id -> if (id != emptyGroupId && groups.none { it.id == id }) add(id) }
     }.distinct()
 
@@ -125,7 +128,7 @@ private suspend fun DVViewer.buildColumnsFromGroups(
         )
     }
 
-    return applyGroupOrder(columns, groupOrder, emptyGroupId)
+    return applyGroupOrder(columns, groupOrder)
 }
 
 private fun matchGroupId(
@@ -265,7 +268,7 @@ private suspend fun DVViewer.buildColumnsFromRecords(
 
     val viewGroups = groupOrder?.viewGroups.orEmpty()
     if (viewGroups.isNotEmpty()) {
-        return applyGroupOrder(columns, groupOrder, BOARD_EMPTY_GROUP_ID)
+        return applyGroupOrder(columns, groupOrder)
     }
     val optionOrder = groupOptions.keys.withIndex().associate { (index, id) -> id to index }
     return columns.sortedBy { column ->
@@ -328,19 +331,18 @@ private suspend fun ObjectWrapper.Basic.toCard(
 
 private fun applyGroupOrder(
     columns: List<Viewer.Board.Column>,
-    groupOrder: GroupOrder?,
-    emptyGroupId: Id
+    groupOrder: GroupOrder?
 ): List<Viewer.Board.Column> {
     val viewGroups = groupOrder?.viewGroups.orEmpty()
-    if (viewGroups.isNotEmpty()) {
-        val hidden = viewGroups.filter { it.isHidden }.map { it.groupId }.toSet()
-        val rank = viewGroups.withIndex().associate { (index, group) -> group.groupId to index }
-        return columns
-            .filter { it.id !in hidden }
-            .sortedBy { rank[it.id] ?: Int.MAX_VALUE }
-    }
-    // No saved order: keep the "no value" column first, preserve the rest.
-    return columns.sortedBy { if (it.id == emptyGroupId) 0 else 1 }
+    // No saved order: keep the backend (ObjectGroupsSubscribe) order as-is.
+    if (viewGroups.isEmpty()) return columns
+    // Order columns by the saved per-group index (drag-and-drop position); drop
+    // hidden groups. Groups without a stored index keep their backend order.
+    val hidden = viewGroups.filter { it.isHidden }.map { it.groupId }.toSet()
+    val rank = viewGroups.associate { it.groupId to it.index }
+    return columns
+        .filter { it.id !in hidden }
+        .sortedBy { rank[it.id] ?: Int.MAX_VALUE }
 }
 
 // endregion

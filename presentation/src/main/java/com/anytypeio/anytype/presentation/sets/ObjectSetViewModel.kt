@@ -275,14 +275,6 @@ class ObjectSetViewModel(
     val currentViewer = _currentViewer
 
     /**
-     * Optimistic, per-group object orders for the Kanban board. Updated when a
-     * card is reordered so the board reflects the new order immediately (the
-     * order-update event is not reduced into [ObjectState]); the order is also
-     * persisted to the middleware and reloaded from server state on reopen.
-     */
-    private val boardObjectOrders = MutableStateFlow<List<ObjectOrder>>(emptyList())
-
-    /**
      * Loaded options (label + color) for the active board's group relation, keyed
      * by option id, used to render readable column headers.
      */
@@ -293,10 +285,9 @@ class ObjectSetViewModel(
 
     /** Fires a board re-render whenever any board-specific flow changes. */
     private val boardRenderTrigger = combine(
-        boardObjectOrders,
         boardGroupOptions,
         boardGroups
-    ) { _, _, _ -> Unit }
+    ) { _, _ -> Unit }
 
     private val _dvViews = MutableStateFlow<List<ViewerView>>(emptyList())
 
@@ -1218,20 +1209,12 @@ class ObjectSetViewModel(
         return objectState.dataViewState()?.dataViewContent?.groupOrders?.find { it.viewId == viewId }
     }
 
-    /**
-     * Effective per-group object orders for the board view [viewId]: server state
-     * orders overridden by any optimistic [boardObjectOrders] for the same group.
-     */
+    /** Per-group object orders for the board view [viewId] from reduced state. */
     private fun effectiveBoardOrders(objectState: ObjectState, viewId: Id?): List<ObjectOrder> {
         if (viewId == null) return emptyList()
-        val stateOrders = objectState.dataViewState()?.dataViewContent?.objectOrders
-            ?.filter { it.view == viewId }.orEmpty()
-        val optimistic = boardObjectOrders.value.filter { it.view == viewId }
-        if (optimistic.isEmpty()) return stateOrders
-        val byGroup = LinkedHashMap<Id, ObjectOrder>()
-        stateOrders.forEach { byGroup[it.group] = it }
-        optimistic.forEach { byGroup[it.group] = it }
-        return byGroup.values.toList()
+        return objectState.dataViewState()?.dataViewContent?.objectOrders
+            ?.filter { it.view == viewId }
+            .orEmpty()
     }
 
     fun onStop() {
@@ -1781,9 +1764,6 @@ class ObjectSetViewModel(
         val viewId = viewer.id
         val dv = state.dataViewBlock.id
         val newOrder = ObjectOrder(view = viewId, group = columnId, ids = orderedCardIds)
-        boardObjectOrders.update { orders ->
-            orders.filterNot { it.view == viewId && it.group == columnId } + newOrder
-        }
         viewModelScope.launch {
             setDataViewObjectOrder.async(
                 SetDataViewObjectOrder.Params(
@@ -1792,6 +1772,8 @@ class ObjectSetViewModel(
                     objectOrders = listOf(newOrder)
                 )
             ).fold(
+                // The response payload carries the object-order-update event, which is
+                // reduced into state, so the board re-renders with the new order.
                 onSuccess = { payload -> dispatcher.send(payload) },
                 onFailure = { Timber.e(it, "Error while persisting board card order") }
             )

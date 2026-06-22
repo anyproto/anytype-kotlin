@@ -47,6 +47,7 @@ import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
+import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -215,6 +216,7 @@ class ObjectSetViewModel(
     private val deepLinkResolver: DeepLinkResolver,
     private val setDataViewProperties: SetDataViewProperties,
     private val setDataViewObjectOrder: SetDataViewObjectOrder,
+    private val getOptions: GetOptions,
     private val emojiProvider: EmojiProvider,
     private val emojiSuggester: EmojiSuggester,
     private val stringResourceProvider: StringResourceProvider,
@@ -272,6 +274,15 @@ class ObjectSetViewModel(
      * persisted to the middleware and reloaded from server state on reopen.
      */
     private val boardObjectOrders = MutableStateFlow<List<ObjectOrder>>(emptyList())
+
+    /**
+     * Loaded options (label + color) for the active board's group relation, keyed
+     * by option id, used to render readable column headers.
+     */
+    private val boardGroupOptions = MutableStateFlow<Map<Id, ObjectWrapper.Option>>(emptyMap())
+
+    /** Fires a board re-render whenever either board-specific flow changes. */
+    private val boardRenderTrigger = combine(boardObjectOrders, boardGroupOptions) { _, _ -> Unit }
 
     private val _dvViews = MutableStateFlow<List<ViewerView>>(emptyList())
 
@@ -358,6 +369,7 @@ class ObjectSetViewModel(
 
         subscribeToObjectState()
         subscribeToDataViewViewer()
+        subscribeToBoardGroupOptions()
 
         viewModelScope.launch {
             dispatcher.flow().collect { defaultPayloadConsumer(it) }
@@ -786,6 +798,38 @@ class ObjectSetViewModel(
         }
     }
 
+    /**
+     * Loads the relation options (labels + colors) for the active board view's
+     * group relation, so columns can show readable headers. Reloads when the
+     * active view's group relation changes.
+     */
+    private fun subscribeToBoardGroupOptions() {
+        viewModelScope.launch {
+            combine(stateReducer.state, session.currentViewerId) { state, currentViewId ->
+                val viewer = state.dataViewState()?.viewerByIdOrFirst(currentViewId)
+                if (viewer?.type == DVViewerType.BOARD) {
+                    viewer.groupRelationKey?.takeIf { it.isNotEmpty() }
+                } else {
+                    null
+                }
+            }.distinctUntilChanged().collect { groupRelationKey ->
+                if (groupRelationKey == null) {
+                    boardGroupOptions.value = emptyMap()
+                } else {
+                    getOptions(
+                        GetOptions.Params(
+                            relation = groupRelationKey,
+                            space = vmParams.space.id
+                        )
+                    ).process(
+                        success = { options -> boardGroupOptions.value = options.associateBy { it.id } },
+                        failure = { Timber.e(it, "Error while loading board group options") }
+                    )
+                }
+            }
+        }
+    }
+
     private fun subscribeToDataViewViewer() {
         Timber.d("subscribeToDataViewViewer, START SUBSCRIPTION by ctx:[${vmParams.ctx}]")
         viewModelScope.launch {
@@ -794,7 +838,7 @@ class ObjectSetViewModel(
                 stateReducer.state,
                 session.currentViewerId,
                 permission,
-                boardObjectOrders
+                boardRenderTrigger
             ) { dataViewState, objectState, currentViewId, permission, _ ->
                 processViewState(dataViewState, objectState, currentViewId, permission)
             }.distinctUntilChanged().collect { viewState ->
@@ -945,7 +989,8 @@ class ObjectSetViewModel(
                     storeOfRelations = storeOfRelations,
                     fieldParser = fieldParser,
                     storeOfObjectTypes = storeOfObjectTypes,
-                    stringResourceProvider = stringResourceProvider
+                    stringResourceProvider = stringResourceProvider,
+                    boardGroupOptions = boardGroupOptions.value
                 )
 
                 when {
@@ -1023,7 +1068,8 @@ class ObjectSetViewModel(
                     storeOfRelations = storeOfRelations,
                     fieldParser = fieldParser,
                     storeOfObjectTypes = storeOfObjectTypes,
-                    stringResourceProvider = stringResourceProvider
+                    stringResourceProvider = stringResourceProvider,
+                    boardGroupOptions = boardGroupOptions.value
                 )
 
                 when {
@@ -1074,7 +1120,8 @@ class ObjectSetViewModel(
                 storeOfRelations = storeOfRelations,
                 fieldParser = fieldParser,
                 storeOfObjectTypes = storeOfObjectTypes,
-                stringResourceProvider = stringResourceProvider
+                stringResourceProvider = stringResourceProvider,
+                boardGroupOptions = boardGroupOptions.value
             )
         }
     }

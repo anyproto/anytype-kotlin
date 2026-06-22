@@ -36,7 +36,8 @@ suspend fun DVViewer.buildBoardViews(
     storeOfRelations: StoreOfRelations,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes,
-    stringResourceProvider: StringResourceProvider
+    stringResourceProvider: StringResourceProvider,
+    groupOptions: Map<Id, ObjectWrapper.Option> = emptyMap()
 ): List<Viewer.Board.Column> {
 
     val groupRelationKey = groupRelationKey
@@ -66,13 +67,19 @@ suspend fun DVViewer.buildBoardViews(
         ?.takeIf { it.isNotBlank() }
 
     return grouped.map { (groupId, objects) ->
-        val option = if (groupId != BOARD_EMPTY_GROUP_ID) objectStore.get(groupId) else null
+        // Resolve the option's label/color from the loaded relation options first,
+        // falling back to the object store, then to the raw group id.
+        val mapped = if (groupId != BOARD_EMPTY_GROUP_ID) groupOptions[groupId] else null
+        val stored = if (groupId != BOARD_EMPTY_GROUP_ID && mapped == null) objectStore.get(groupId) else null
         val label = if (groupId == BOARD_EMPTY_GROUP_ID) {
             stringResourceProvider.getKanbanEmptyColumnTitle(relationName)
         } else {
-            option?.name?.takeIf { it.isNotBlank() } ?: groupId
+            mapped?.name?.takeIf { it.isNotBlank() }
+                ?: stored?.name?.takeIf { it.isNotBlank() }
+                ?: groupId
         }
-        val color = option?.relationOptionColor?.takeIf { it.isNotBlank() }
+        val color = mapped?.color?.takeIf { it.isNotBlank() }
+            ?: stored?.relationOptionColor?.takeIf { it.isNotBlank() }
 
         // Order cards within the column by this group's saved object order;
         // objects not present in the order keep their natural (stable) order.

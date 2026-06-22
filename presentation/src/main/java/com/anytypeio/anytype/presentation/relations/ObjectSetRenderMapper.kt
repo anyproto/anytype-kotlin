@@ -79,7 +79,8 @@ suspend fun DVViewer.render(
     storeOfRelations: StoreOfRelations,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes,
-    stringResourceProvider: StringResourceProvider
+    stringResourceProvider: StringResourceProvider,
+    boardGroupOptions: Map<Id, ObjectWrapper.Option> = emptyMap()
 ): Viewer {
     return when (type) {
         DVViewerType.GRID -> {
@@ -146,7 +147,8 @@ suspend fun DVViewer.render(
                     storeOfRelations = storeOfRelations,
                     fieldParser = fieldParser,
                     storeOfObjectTypes = storeOfObjectTypes,
-                    stringResourceProvider = stringResourceProvider
+                    stringResourceProvider = stringResourceProvider,
+                    groupOptions = boardGroupOptions
                 )
             )
         }

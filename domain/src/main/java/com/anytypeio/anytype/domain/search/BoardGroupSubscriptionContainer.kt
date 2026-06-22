@@ -47,8 +47,14 @@ class BoardGroupSubscriptionContainer(
                             result = if (event.remove) {
                                 result.filterNot { it.id == event.group.id }
                             } else {
-                                // Upsert: replace an existing group with the same id, else append.
-                                result.filterNot { it.id == event.group.id } + event.group
+                                val index = result.indexOfFirst { it.id == event.group.id }
+                                if (index >= 0) {
+                                    // Update in place — keep the backend column order stable.
+                                    result.toMutableList().also { it[index] = event.group }
+                                } else {
+                                    // New group — append (the backend prepends "empty").
+                                    result + event.group
+                                }
                             }
                         }
                     }

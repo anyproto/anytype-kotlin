@@ -121,23 +121,23 @@ class BoardViewMapperTest {
 
         assertEquals(3, columns.size)
 
-        val first = columns[0]
+        val empty = columns[0]
+        assertEquals(BOARD_EMPTY_GROUP_ID, empty.id)
+        assertEquals("No value", empty.label)
+        assertEquals(null, empty.color)
+        assertEquals(listOf("D"), empty.cards.map { it.objectId })
+
+        val first = columns[1]
         assertEquals(todo.id, first.id)
         assertEquals("To do", first.label)
         assertEquals("red", first.color)
         assertEquals(listOf("A", "B"), first.cards.map { it.objectId })
 
-        val second = columns[1]
+        val second = columns[2]
         assertEquals(doing.id, second.id)
         assertEquals("Doing", second.label)
         assertEquals("blue", second.color)
         assertEquals(listOf("C"), second.cards.map { it.objectId })
-
-        val empty = columns[2]
-        assertEquals(BOARD_EMPTY_GROUP_ID, empty.id)
-        assertEquals("No value", empty.label)
-        assertEquals(null, empty.color)
-        assertEquals(listOf("D"), empty.cards.map { it.objectId })
     }
 
     @Test
@@ -192,9 +192,9 @@ class BoardViewMapperTest {
         )
 
         assertEquals(2, columns.size)
-        assertEquals(listOf("C", "A", "B"), columns[0].cards.map { it.objectId })
-        assertEquals(BOARD_EMPTY_GROUP_ID, columns[1].id)
-        assertEquals(0, columns[1].cards.size)
+        assertEquals(BOARD_EMPTY_GROUP_ID, columns[0].id)
+        assertEquals(0, columns[0].cards.size)
+        assertEquals(listOf("C", "A", "B"), columns[1].cards.map { it.objectId })
     }
 
     private fun record(id: String, name: String, status: List<String>?): Map<String, Any?> = buildMap {

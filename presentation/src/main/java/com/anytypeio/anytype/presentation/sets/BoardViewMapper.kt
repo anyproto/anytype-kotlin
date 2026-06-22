@@ -112,8 +112,8 @@ suspend fun DVViewer.buildBoardViews(
         )
     }
 
-    // Keep the "no value" column last.
-    return columns.sortedBy { if (it.id == BOARD_EMPTY_GROUP_ID) 1 else 0 }
+    // Keep the "no value" column first.
+    return columns.sortedBy { if (it.id == BOARD_EMPTY_GROUP_ID) 0 else 1 }
 }
 
 private fun ObjectWrapper.Basic.resolveGroupId(groupRelationKey: String?): Id {

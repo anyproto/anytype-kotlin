@@ -150,11 +150,7 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
         return context.getString(LocalizationR.string.channel_members_subtitle, editors, writersLimit, viewers, readersLimit)
     }
 
-    override fun getKanbanEmptyColumnTitle(groupName: String?): String {
-        return if (groupName.isNullOrBlank()) {
-            context.getString(LocalizationR.string.dataview_board_group_uncategorized)
-        } else {
-            context.getString(LocalizationR.string.dataview_board_group_empty, groupName)
-        }
+    override fun getKanbanEmptyColumnTitle(): String {
+        return context.getString(LocalizationR.string.dataview_board_no_value)
     }
 }

@@ -60,12 +60,11 @@ class BoardViewMapperTest {
         MockitoAnnotations.openMocks(this)
         fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
         whenever(stringResourceProvider.getUntitledObjectTitle()).thenReturn("Untitled")
+        whenever(stringResourceProvider.getKanbanEmptyColumnTitle()).thenReturn("No value")
     }
 
     @Test
     fun `should group records into columns by status with resolved labels and colors`() = runTest {
-
-        whenever(stringResourceProvider.getKanbanEmptyColumnTitle("Status")).thenReturn("No Status")
 
         val todo = StubRelationOptionObject(
             id = MockDataFactory.randomUuid(),
@@ -136,7 +135,7 @@ class BoardViewMapperTest {
 
         val empty = columns[2]
         assertEquals(BOARD_EMPTY_GROUP_ID, empty.id)
-        assertEquals("No Status", empty.label)
+        assertEquals("No value", empty.label)
         assertEquals(null, empty.color)
         assertEquals(listOf("D"), empty.cards.map { it.objectId })
     }
@@ -192,8 +191,10 @@ class BoardViewMapperTest {
             stringResourceProvider = stringResourceProvider
         )
 
-        assertEquals(1, columns.size)
+        assertEquals(2, columns.size)
         assertEquals(listOf("C", "A", "B"), columns[0].cards.map { it.objectId })
+        assertEquals(BOARD_EMPTY_GROUP_ID, columns[1].id)
+        assertEquals(0, columns[1].cards.size)
     }
 
     private fun record(id: String, name: String, status: List<String>?): Map<String, Any?> = buildMap {

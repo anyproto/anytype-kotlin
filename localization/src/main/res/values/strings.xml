@@ -649,8 +649,7 @@
     <string name="view_gallery">Gallery</string>
     <string name="view_kanban">Kanban</string>
     <string name="dataview_board_no_objects">No objects</string>
-    <string name="dataview_board_group_empty">No %1$s</string>
-    <string name="dataview_board_group_uncategorized">Uncategorized</string>
+    <string name="dataview_board_no_value">No value</string>
     <string name="page_cover">Page cover</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Unpin</string>

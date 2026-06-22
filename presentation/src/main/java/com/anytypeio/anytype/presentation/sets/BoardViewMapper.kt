@@ -61,18 +61,17 @@ suspend fun DVViewer.buildBoardViews(
             grouped.getOrPut(groupId) { mutableListOf() }.add(obj)
         }
 
-    val relationName = groupRelationKey
-        ?.takeIf { it.isNotEmpty() }
-        ?.let { storeOfRelations.getByKey(it)?.name }
-        ?.takeIf { it.isNotBlank() }
+    // Always include a "no value" column so items without a value have a home,
+    // and cards can be dragged there to clear their value.
+    grouped.getOrPut(BOARD_EMPTY_GROUP_ID) { mutableListOf() }
 
-    return grouped.map { (groupId, objects) ->
+    val columns = grouped.map { (groupId, objects) ->
         // Resolve the option's label/color from the loaded relation options first,
         // falling back to the object store, then to the raw group id.
         val mapped = if (groupId != BOARD_EMPTY_GROUP_ID) groupOptions[groupId] else null
         val stored = if (groupId != BOARD_EMPTY_GROUP_ID && mapped == null) objectStore.get(groupId) else null
         val label = if (groupId == BOARD_EMPTY_GROUP_ID) {
-            stringResourceProvider.getKanbanEmptyColumnTitle(relationName)
+            stringResourceProvider.getKanbanEmptyColumnTitle()
         } else {
             mapped?.name?.takeIf { it.isNotBlank() }
                 ?: stored?.name?.takeIf { it.isNotBlank() }
@@ -112,6 +111,9 @@ suspend fun DVViewer.buildBoardViews(
             cards = cards
         )
     }
+
+    // Keep the "no value" column last.
+    return columns.sortedBy { if (it.id == BOARD_EMPTY_GROUP_ID) 1 else 0 }
 }
 
 private fun ObjectWrapper.Basic.resolveGroupId(groupRelationKey: String?): Id {

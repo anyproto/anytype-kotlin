@@ -2,7 +2,9 @@ package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.GroupOrder
 import com.anytypeio.anytype.core_models.ObjectOrder
+import com.anytypeio.anytype.core_models.ViewGroup
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
@@ -263,6 +265,76 @@ class BoardViewMapperTest {
         assertEquals("Done", columns[2].label)
         assertEquals("blue", columns[2].color)
         assertEquals(0, columns[2].cards.size)
+    }
+
+    @Test
+    fun `should order and hide columns by saved group order`() = runTest {
+
+        val todo = StubRelationOptionObject(
+            id = MockDataFactory.randomUuid(), space = defaultSpace, text = "To do", color = "red"
+        )
+        val done = StubRelationOptionObject(
+            id = MockDataFactory.randomUuid(), space = defaultSpace, text = "Done", color = "blue"
+        )
+        val blocked = StubRelationOptionObject(
+            id = MockDataFactory.randomUuid(), space = defaultSpace, text = "Blocked", color = "grey"
+        )
+
+        val store = DefaultObjectStore()
+        store.merge(
+            objects = listOf(
+                record(id = "T", name = "Task T", status = listOf(todo.id)),
+                record(id = "D", name = "Task D", status = listOf(done.id)),
+                record(id = "B", name = "Task B", status = listOf(blocked.id))
+            ).map { ObjectWrapper.Basic(it) },
+            dependencies = listOf(todo, done, blocked).map { ObjectWrapper.Basic(it.map) },
+            subscriptions = emptyList()
+        )
+
+        val storeOfRelations = DefaultStoreOfRelations().apply {
+            merge(listOf(statusRelation(name = "Status")))
+        }
+
+        val viewer = DVViewer(
+            id = "view-1",
+            name = "Board",
+            type = Block.Content.DataView.Viewer.Type.BOARD,
+            sorts = emptyList(),
+            filters = emptyList(),
+            viewerRelations = listOf(
+                Block.Content.DataView.Viewer.ViewerRelation(key = statusRelationKey, isVisible = true)
+            ),
+            groupRelationKey = statusRelationKey
+        )
+
+        val columns = viewer.buildBoardViews(
+            objectIds = listOf("T", "D", "B"),
+            relations = listOf(statusRelationWrapper()),
+            urlBuilder = UrlBuilderImpl(gateway),
+            objectStore = store,
+            objectOrders = emptyList(),
+            storeOfRelations = storeOfRelations,
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes,
+            stringResourceProvider = stringResourceProvider,
+            groupOptions = mapOf(
+                todo.id to ObjectWrapper.Option(todo.map),
+                done.id to ObjectWrapper.Option(done.map),
+                blocked.id to ObjectWrapper.Option(blocked.map)
+            ),
+            groupOrder = GroupOrder(
+                viewId = "view-1",
+                viewGroups = listOf(
+                    ViewGroup(groupId = done.id, index = 0, isHidden = false, backgroundColor = ""),
+                    ViewGroup(groupId = todo.id, index = 1, isHidden = false, backgroundColor = ""),
+                    ViewGroup(groupId = blocked.id, index = 2, isHidden = true, backgroundColor = "")
+                )
+            )
+        )
+
+        // "Blocked" is hidden -> dropped; saved order puts Done before To do;
+        // the "No value" column is not in the saved order -> appended last.
+        assertEquals(listOf(done.id, todo.id, BOARD_EMPTY_GROUP_ID), columns.map { it.id })
     }
 
     private fun record(id: String, name: String, status: List<String>?): Map<String, Any?> = buildMap {

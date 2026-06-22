@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.GroupOrder
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
@@ -990,7 +991,8 @@ class ObjectSetViewModel(
                     fieldParser = fieldParser,
                     storeOfObjectTypes = storeOfObjectTypes,
                     stringResourceProvider = stringResourceProvider,
-                    boardGroupOptions = boardGroupOptions.value
+                    boardGroupOptions = boardGroupOptions.value,
+                    boardGroupOrder = groupOrderForView(objectState, viewer?.id)
                 )
 
                 when {
@@ -1069,7 +1071,8 @@ class ObjectSetViewModel(
                     fieldParser = fieldParser,
                     storeOfObjectTypes = storeOfObjectTypes,
                     stringResourceProvider = stringResourceProvider,
-                    boardGroupOptions = boardGroupOptions.value
+                    boardGroupOptions = boardGroupOptions.value,
+                    boardGroupOrder = groupOrderForView(objectState, viewer?.id)
                 )
 
                 when {
@@ -1121,9 +1124,16 @@ class ObjectSetViewModel(
                 fieldParser = fieldParser,
                 storeOfObjectTypes = storeOfObjectTypes,
                 stringResourceProvider = stringResourceProvider,
-                boardGroupOptions = boardGroupOptions.value
+                boardGroupOptions = boardGroupOptions.value,
+                boardGroupOrder = groupOrderForView(objectState, it.id)
             )
         }
+    }
+
+    /** The saved group (column) order for the board view [viewId], if any. */
+    private fun groupOrderForView(objectState: ObjectState, viewId: Id?): GroupOrder? {
+        if (viewId == null) return null
+        return objectState.dataViewState()?.dataViewContent?.groupOrders?.find { it.viewId == viewId }
     }
 
     /**

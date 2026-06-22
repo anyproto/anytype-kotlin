@@ -270,7 +270,8 @@ data class Block(
             val relationLinks: List<RelationLink> = emptyList(),
             val targetObjectId: Id = "",
             val isCollection: Boolean = false,
-            val objectOrders: List<ObjectOrder> = emptyList()
+            val objectOrders: List<ObjectOrder> = emptyList(),
+            val groupOrders: List<GroupOrder> = emptyList()
         ) : Content() {
 
             data class Viewer(

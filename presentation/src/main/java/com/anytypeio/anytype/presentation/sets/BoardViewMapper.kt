@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.GroupOrder
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -37,7 +38,8 @@ suspend fun DVViewer.buildBoardViews(
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes,
     stringResourceProvider: StringResourceProvider,
-    groupOptions: Map<Id, ObjectWrapper.Option> = emptyMap()
+    groupOptions: Map<Id, ObjectWrapper.Option> = emptyMap(),
+    groupOrder: GroupOrder? = null
 ): List<Viewer.Board.Column> {
 
     val groupRelationKey = groupRelationKey
@@ -118,7 +120,18 @@ suspend fun DVViewer.buildBoardViews(
         )
     }
 
-    // Order columns: "no value" first, then options in their loaded order, then
+    // If the view has a saved group order, use it: drop hidden groups, sort by
+    // index, and append any groups not present in the saved order.
+    val viewGroups = groupOrder?.viewGroups.orEmpty()
+    if (viewGroups.isNotEmpty()) {
+        val hidden = viewGroups.filter { it.isHidden }.map { it.groupId }.toSet()
+        val savedRank = viewGroups.withIndex().associate { (index, group) -> group.groupId to index }
+        return columns
+            .filter { it.id !in hidden }
+            .sortedBy { savedRank[it.id] ?: Int.MAX_VALUE }
+    }
+
+    // Fallback order: "no value" first, then options in their loaded order, then
     // any remaining (e.g. orphaned) groups in first-seen order.
     val optionOrder = groupOptions.keys.withIndex().associate { (index, id) -> id to index }
     return columns.sortedBy { column ->

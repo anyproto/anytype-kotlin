@@ -197,6 +197,74 @@ class BoardViewMapperTest {
         assertEquals(listOf("C", "A", "B"), columns[1].cards.map { it.objectId })
     }
 
+    @Test
+    fun `should show options without records as empty columns`() = runTest {
+
+        val todo = StubRelationOptionObject(
+            id = MockDataFactory.randomUuid(),
+            space = defaultSpace,
+            text = "To do",
+            color = "red"
+        )
+        val done = StubRelationOptionObject(
+            id = MockDataFactory.randomUuid(),
+            space = defaultSpace,
+            text = "Done",
+            color = "blue"
+        )
+
+        val objA = record(id = "A", name = "Task A", status = listOf(todo.id))
+
+        val store = DefaultObjectStore()
+        store.merge(
+            objects = listOf(ObjectWrapper.Basic(objA)),
+            dependencies = listOf(todo, done).map { ObjectWrapper.Basic(it.map) },
+            subscriptions = emptyList()
+        )
+
+        val storeOfRelations = DefaultStoreOfRelations().apply {
+            merge(listOf(statusRelation(name = "Status")))
+        }
+
+        val viewer = DVViewer(
+            id = MockDataFactory.randomUuid(),
+            name = "Board",
+            type = Block.Content.DataView.Viewer.Type.BOARD,
+            sorts = emptyList(),
+            filters = emptyList(),
+            viewerRelations = listOf(
+                Block.Content.DataView.Viewer.ViewerRelation(key = statusRelationKey, isVisible = true)
+            ),
+            groupRelationKey = statusRelationKey
+        )
+
+        val columns = viewer.buildBoardViews(
+            objectIds = listOf("A"),
+            relations = listOf(statusRelationWrapper()),
+            urlBuilder = UrlBuilderImpl(gateway),
+            objectStore = store,
+            objectOrders = emptyList(),
+            storeOfRelations = storeOfRelations,
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes,
+            stringResourceProvider = stringResourceProvider,
+            groupOptions = mapOf(
+                todo.id to ObjectWrapper.Option(todo.map),
+                done.id to ObjectWrapper.Option(done.map)
+            )
+        )
+
+        // "No value" first, then options in loaded order (To do has the record, Done is empty).
+        assertEquals(3, columns.size)
+        assertEquals(BOARD_EMPTY_GROUP_ID, columns[0].id)
+        assertEquals(todo.id, columns[1].id)
+        assertEquals(listOf("A"), columns[1].cards.map { it.objectId })
+        assertEquals(done.id, columns[2].id)
+        assertEquals("Done", columns[2].label)
+        assertEquals("blue", columns[2].color)
+        assertEquals(0, columns[2].cards.size)
+    }
+
     private fun record(id: String, name: String, status: List<String>?): Map<String, Any?> = buildMap {
         put(ObjectSetConfig.ID_KEY, id)
         put(Relations.SPACE_ID, defaultSpace)

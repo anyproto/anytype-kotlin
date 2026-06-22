@@ -65,6 +65,12 @@ suspend fun DVViewer.buildBoardViews(
     // and cards can be dragged there to clear their value.
     grouped.getOrPut(BOARD_EMPTY_GROUP_ID) { mutableListOf() }
 
+    // Show every option of the group relation as a column, including options
+    // that currently have no records.
+    groupOptions.keys.forEach { optionId ->
+        grouped.getOrPut(optionId) { mutableListOf() }
+    }
+
     val columns = grouped.map { (groupId, objects) ->
         // Resolve the option's label/color from the loaded relation options first,
         // falling back to the object store, then to the raw group id.
@@ -112,8 +118,15 @@ suspend fun DVViewer.buildBoardViews(
         )
     }
 
-    // Keep the "no value" column first.
-    return columns.sortedBy { if (it.id == BOARD_EMPTY_GROUP_ID) 0 else 1 }
+    // Order columns: "no value" first, then options in their loaded order, then
+    // any remaining (e.g. orphaned) groups in first-seen order.
+    val optionOrder = groupOptions.keys.withIndex().associate { (index, id) -> id to index }
+    return columns.sortedBy { column ->
+        when (column.id) {
+            BOARD_EMPTY_GROUP_ID -> -1
+            else -> optionOrder[column.id] ?: Int.MAX_VALUE
+        }
+    }
 }
 
 private fun ObjectWrapper.Basic.resolveGroupId(groupRelationKey: String?): Id {

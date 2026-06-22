@@ -19,6 +19,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -83,6 +84,11 @@ fun BoardScreen(
     val density = LocalDensity.current
     var boardCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
 
+    // Single derived target-column id so columns don't each rescan bounds per frame.
+    val targetColumnId by remember {
+        derivedStateOf { if (dragState.isDragging) dragState.targetColumnId() else null }
+    }
+
     val onDrop: () -> Unit = {
         val card = dragState.draggedCard
         val source = dragState.sourceColumnId
@@ -125,6 +131,7 @@ fun BoardScreen(
                 BoardColumnContent(
                     column = column,
                     dragState = dragState,
+                    targetColumnId = targetColumnId,
                     boardCoordsProvider = { boardCoords },
                     onCardClick = onCardClick,
                     onDrop = onDrop,
@@ -144,7 +151,7 @@ fun BoardScreen(
         // Insertion indicator while reordering within a column.
         if (dragState.isDragging) {
             val source = dragState.sourceColumnId
-            val target = dragState.targetColumnId()
+            val target = targetColumnId
             val draggedId = dragState.draggedCard?.objectId
             if (target != null && target == source && draggedId != null) {
                 val column = board.columns.find { it.id == target }
@@ -194,7 +201,10 @@ fun BoardScreen(
         val dir = dragState.autoScroll
         if (dir != 0) {
             lazyRowState.scroll {
-                while (true) {
+                while (
+                    (dir > 0 && lazyRowState.canScrollForward) ||
+                    (dir < 0 && lazyRowState.canScrollBackward)
+                ) {
                     withFrameNanos { }
                     scrollBy(dir * AUTO_SCROLL_STEP_PX)
                 }

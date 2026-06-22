@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.GroupOrder
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectViewDetails
@@ -82,7 +83,8 @@ suspend fun DVViewer.render(
     storeOfObjectTypes: StoreOfObjectTypes,
     stringResourceProvider: StringResourceProvider,
     boardGroupOptions: Map<Id, ObjectWrapper.Option> = emptyMap(),
-    boardGroupOrder: GroupOrder? = null
+    boardGroupOrder: GroupOrder? = null,
+    boardGroups: List<DataViewGroup> = emptyList()
 ): Viewer {
     return when (type) {
         DVViewerType.GRID -> {
@@ -151,7 +153,8 @@ suspend fun DVViewer.render(
                     storeOfObjectTypes = storeOfObjectTypes,
                     stringResourceProvider = stringResourceProvider,
                     groupOptions = boardGroupOptions,
-                    groupOrder = boardGroupOrder
+                    groupOrder = boardGroupOrder,
+                    groups = boardGroups
                 )
             )
         }

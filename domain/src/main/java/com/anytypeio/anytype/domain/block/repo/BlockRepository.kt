@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Command.ObjectTypeConflictingFields
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
+import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
@@ -242,6 +243,15 @@ interface BlockRepository {
         ids: List<Id>,
         keys: List<String>
     ): SearchResult
+
+    suspend fun objectGroupsSubscribe(
+        space: SpaceId,
+        subscription: Id,
+        relationKey: Key,
+        filters: List<DVFilter>,
+        source: List<String>,
+        collection: Id?
+    ): List<DataViewGroup>
 
     /**
      * Subscribe to search results across all user spaces.

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
@@ -207,6 +208,15 @@ interface BlockRemote {
         ids: List<Id>,
         keys: List<String>
     ): SearchResult
+
+    suspend fun objectGroupsSubscribe(
+        space: SpaceId,
+        subscription: Id,
+        relationKey: Key,
+        filters: List<DVFilter>,
+        source: List<String>,
+        collection: Id?
+    ): List<DataViewGroup>
 
     suspend fun crossSpaceSearchSubscribe(
         command: Command.CrossSpaceSearchSubscribe

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
@@ -451,6 +452,22 @@ class BlockDataRepository(
         beforeId = beforeId,
         ignoreWorkspace = ignoreWorkspace,
         noDepSubscription = noDepSubscription,
+        collection = collection
+    )
+
+    override suspend fun objectGroupsSubscribe(
+        space: SpaceId,
+        subscription: Id,
+        relationKey: Key,
+        filters: List<DVFilter>,
+        source: List<String>,
+        collection: Id?
+    ): List<DataViewGroup> = remote.objectGroupsSubscribe(
+        space = space,
+        subscription = subscription,
+        relationKey = relationKey,
+        filters = filters,
+        source = source,
         collection = collection
     )
 

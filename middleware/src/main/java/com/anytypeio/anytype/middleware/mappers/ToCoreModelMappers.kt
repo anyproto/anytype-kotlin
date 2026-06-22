@@ -34,6 +34,7 @@ import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.NotificationStatus
+import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.GroupOrder
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ViewGroup
@@ -474,6 +475,20 @@ fun MDVViewGroup.toCoreModelsViewGroup(): ViewGroup = ViewGroup(
     isHidden = hidden,
     backgroundColor = backgroundColor
 )
+
+fun MDVGroup.toCoreModelsGroup(): DataViewGroup {
+    val status = status
+    val tag = tag
+    val checkbox = checkbox
+    val value = when {
+        status != null -> DataViewGroup.Value.Status(status.id)
+        tag != null -> DataViewGroup.Value.Tag(tag.ids)
+        checkbox != null -> DataViewGroup.Value.Checkbox(checkbox.checked)
+        date != null -> DataViewGroup.Value.Date
+        else -> DataViewGroup.Value.Empty
+    }
+    return DataViewGroup(id = id, value = value)
+}
 
 fun MBlock.toCoreModelsRelationBlock(): Block.Content.RelationBlock {
     val content = checkNotNull(relation)

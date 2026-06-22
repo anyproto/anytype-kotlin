@@ -52,6 +52,7 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 fun BoardColumnContent(
     column: Viewer.Board.Column,
     dragState: BoardDragState,
+    targetColumnId: String?,
     boardCoordsProvider: () -> LayoutCoordinates?,
     onCardClick: (Id) -> Unit,
     onDrop: () -> Unit,
@@ -59,7 +60,7 @@ fun BoardColumnContent(
 ) {
     val isDropTarget = dragState.isDragging &&
         dragState.sourceColumnId != column.id &&
-        dragState.targetColumnId() == column.id
+        targetColumnId == column.id
 
     val background = if (isDropTarget) {
         colorResource(id = R.color.shape_secondary)

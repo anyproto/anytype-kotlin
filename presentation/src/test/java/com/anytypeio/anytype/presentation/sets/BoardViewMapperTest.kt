@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.GroupOrder
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ViewGroup
@@ -335,6 +336,79 @@ class BoardViewMapperTest {
         // "Blocked" is hidden -> dropped; saved order puts Done before To do;
         // the "No value" column is not in the saved order -> appended last.
         assertEquals(listOf(done.id, todo.id, BOARD_EMPTY_GROUP_ID), columns.map { it.id })
+    }
+
+    @Test
+    fun `should build columns from backend groups and assign records by value`() = runTest {
+
+        val todo = StubRelationOptionObject(
+            id = MockDataFactory.randomUuid(), space = defaultSpace, text = "To do", color = "red"
+        )
+        val done = StubRelationOptionObject(
+            id = MockDataFactory.randomUuid(), space = defaultSpace, text = "Done", color = "blue"
+        )
+
+        val store = DefaultObjectStore()
+        store.merge(
+            objects = listOf(
+                record(id = "A", name = "Task A", status = listOf(todo.id)),
+                record(id = "B", name = "Task B", status = listOf(done.id)),
+                record(id = "C", name = "Task C", status = null)
+            ).map { ObjectWrapper.Basic(it) },
+            dependencies = listOf(todo, done).map { ObjectWrapper.Basic(it.map) },
+            subscriptions = emptyList()
+        )
+
+        val storeOfRelations = DefaultStoreOfRelations().apply {
+            merge(listOf(statusRelation(name = "Status")))
+        }
+
+        val viewer = DVViewer(
+            id = "view-1",
+            name = "Board",
+            type = Block.Content.DataView.Viewer.Type.BOARD,
+            sorts = emptyList(),
+            filters = emptyList(),
+            viewerRelations = listOf(
+                Block.Content.DataView.Viewer.ViewerRelation(key = statusRelationKey, isVisible = true)
+            ),
+            groupRelationKey = statusRelationKey
+        )
+
+        val groups = listOf(
+            DataViewGroup(id = "empty", value = DataViewGroup.Value.Empty),
+            DataViewGroup(id = todo.id, value = DataViewGroup.Value.Status(todo.id)),
+            DataViewGroup(id = done.id, value = DataViewGroup.Value.Status(done.id))
+        )
+
+        val columns = viewer.buildBoardViews(
+            objectIds = listOf("A", "B", "C"),
+            relations = listOf(statusRelationWrapper()),
+            urlBuilder = UrlBuilderImpl(gateway),
+            objectStore = store,
+            objectOrders = emptyList(),
+            storeOfRelations = storeOfRelations,
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes,
+            stringResourceProvider = stringResourceProvider,
+            groupOptions = mapOf(
+                todo.id to ObjectWrapper.Option(todo.map),
+                done.id to ObjectWrapper.Option(done.map)
+            ),
+            groups = groups
+        )
+
+        // Columns come from the backend groups: "No value" first, then the option groups.
+        assertEquals(3, columns.size)
+        assertEquals("empty", columns[0].id)
+        assertEquals("No value", columns[0].label)
+        assertEquals(listOf("C"), columns[0].cards.map { it.objectId })
+        assertEquals(todo.id, columns[1].id)
+        assertEquals("To do", columns[1].label)
+        assertEquals(listOf("A"), columns[1].cards.map { it.objectId })
+        assertEquals(done.id, columns[2].id)
+        assertEquals("Done", columns[2].label)
+        assertEquals(listOf("B"), columns[2].cards.map { it.objectId })
     }
 
     private fun record(id: String, name: String, status: List<String>?): Map<String, Any?> = buildMap {

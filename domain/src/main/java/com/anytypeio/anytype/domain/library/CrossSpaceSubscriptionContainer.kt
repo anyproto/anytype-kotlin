@@ -99,6 +99,7 @@ interface CrossSpaceSubscriptionContainer {
                         is SubscriptionEvent.Unset -> 5
                         is SubscriptionEvent.Position -> 6
                         is SubscriptionEvent.Counter -> 7
+                        is SubscriptionEvent.Group -> 8
                     }
                 }
             }

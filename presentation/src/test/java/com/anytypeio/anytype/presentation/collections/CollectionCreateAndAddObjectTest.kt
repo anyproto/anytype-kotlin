@@ -108,6 +108,7 @@ class CollectionCreateAndAddObjectTest : ObjectSetViewModelTestSetup() {
             setDataViewProperties = setDataViewProperties,
             setDataViewObjectOrder = setDataViewObjectOrder,
             getOptions = getOptions,
+            boardGroupSubscriptionContainer = boardGroupSubscriptionContainer,
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
             createBlock = mock(),

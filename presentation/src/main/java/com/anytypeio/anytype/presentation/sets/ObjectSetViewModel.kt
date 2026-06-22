@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.GroupOrder
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -49,6 +50,9 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
 import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.search.BoardGroupSubscriptionContainer
+import com.anytypeio.anytype.presentation.extension.removeUnsupportedFilters
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDataViewFilters
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -164,6 +168,7 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -218,6 +223,7 @@ class ObjectSetViewModel(
     private val setDataViewProperties: SetDataViewProperties,
     private val setDataViewObjectOrder: SetDataViewObjectOrder,
     private val getOptions: GetOptions,
+    private val boardGroupSubscriptionContainer: BoardGroupSubscriptionContainer,
     private val emojiProvider: EmojiProvider,
     private val emojiSuggester: EmojiSuggester,
     private val stringResourceProvider: StringResourceProvider,
@@ -282,8 +288,15 @@ class ObjectSetViewModel(
      */
     private val boardGroupOptions = MutableStateFlow<Map<Id, ObjectWrapper.Option>>(emptyMap())
 
-    /** Fires a board re-render whenever either board-specific flow changes. */
-    private val boardRenderTrigger = combine(boardObjectOrders, boardGroupOptions) { _, _ -> Unit }
+    /** Live groups (columns) of the active board view, from the backend group subscription. */
+    private val boardGroups = MutableStateFlow<List<DataViewGroup>>(emptyList())
+
+    /** Fires a board re-render whenever any board-specific flow changes. */
+    private val boardRenderTrigger = combine(
+        boardObjectOrders,
+        boardGroupOptions,
+        boardGroups
+    ) { _, _, _ -> Unit }
 
     private val _dvViews = MutableStateFlow<List<ViewerView>>(emptyList())
 
@@ -371,6 +384,7 @@ class ObjectSetViewModel(
         subscribeToObjectState()
         subscribeToDataViewViewer()
         subscribeToBoardGroupOptions()
+        subscribeToBoardGroups()
 
         viewModelScope.launch {
             dispatcher.flow().collect { defaultPayloadConsumer(it) }
@@ -800,6 +814,71 @@ class ObjectSetViewModel(
     }
 
     /**
+     * Subscribes to the backend groups (columns) of the active board view. Resubscribes
+     * when the active view or its group relation changes; clears when leaving a board.
+     */
+    private fun subscribeToBoardGroups() {
+        viewModelScope.launch {
+            combine(stateReducer.state, session.currentViewerId) { state, currentViewId ->
+                state to currentViewId
+            }.flatMapLatest { (objectState, currentViewId) ->
+                val dataView = objectState.dataViewState()
+                val viewer = dataView?.viewerByIdOrFirst(currentViewId)
+                val params = if (dataView != null && viewer != null && viewer.type == DVViewerType.BOARD) {
+                    buildBoardGroupParams(dataView, viewer)
+                } else {
+                    null
+                }
+                if (params != null) {
+                    boardGroupSubscriptionContainer.observe(params)
+                } else {
+                    flowOf(emptyList())
+                }
+            }.catch { e ->
+                Timber.e(e, "Error in board groups subscription")
+                emit(emptyList())
+            }.collect { groups ->
+                boardGroups.value = groups
+            }
+        }
+    }
+
+    private suspend fun buildBoardGroupParams(
+        state: ObjectState.DataView,
+        viewer: DVViewer
+    ): BoardGroupSubscriptionContainer.Params? {
+        val relationKey = viewer.groupRelationKey?.takeIf { it.isNotEmpty() } ?: return null
+        val filters = buildList {
+            addAll(viewer.filters.updateFormatForSubscription(storeOfRelations).removeUnsupportedFilters())
+            addAll(defaultDataViewFilters())
+        }
+        val sources: List<String>
+        val collection: Id?
+        when (state) {
+            is ObjectState.DataView.Collection -> {
+                sources = emptyList()
+                collection = vmParams.ctx
+            }
+            is ObjectState.DataView.Set -> {
+                sources = state.filterOutDeletedAndMissingObjects(state.getSetOfValue(vmParams.ctx))
+                collection = null
+            }
+            is ObjectState.DataView.TypeSet -> {
+                sources = state.filterOutDeletedAndMissingObjects(state.getSetOfValue(vmParams.ctx))
+                collection = null
+            }
+        }
+        return BoardGroupSubscriptionContainer.Params(
+            space = vmParams.space,
+            subscription = vmParams.ctx + BoardGroupSubscriptionContainer.SUBSCRIPTION_POSTFIX,
+            relationKey = relationKey,
+            filters = filters,
+            sources = sources,
+            collection = collection
+        )
+    }
+
+    /**
      * Loads the relation options (labels + colors) for the active board view's
      * group relation, so columns can show readable headers. Reloads when the
      * active view's group relation changes.
@@ -992,7 +1071,8 @@ class ObjectSetViewModel(
                     storeOfObjectTypes = storeOfObjectTypes,
                     stringResourceProvider = stringResourceProvider,
                     boardGroupOptions = boardGroupOptions.value,
-                    boardGroupOrder = groupOrderForView(objectState, viewer?.id)
+                    boardGroupOrder = groupOrderForView(objectState, viewer?.id),
+                    boardGroups = boardGroups.value
                 )
 
                 when {
@@ -1072,7 +1152,8 @@ class ObjectSetViewModel(
                     storeOfObjectTypes = storeOfObjectTypes,
                     stringResourceProvider = stringResourceProvider,
                     boardGroupOptions = boardGroupOptions.value,
-                    boardGroupOrder = groupOrderForView(objectState, viewer?.id)
+                    boardGroupOrder = groupOrderForView(objectState, viewer?.id),
+                    boardGroups = boardGroups.value
                 )
 
                 when {
@@ -1125,7 +1206,8 @@ class ObjectSetViewModel(
                 storeOfObjectTypes = storeOfObjectTypes,
                 stringResourceProvider = stringResourceProvider,
                 boardGroupOptions = boardGroupOptions.value,
-                boardGroupOrder = groupOrderForView(objectState, it.id)
+                boardGroupOrder = groupOrderForView(objectState, it.id),
+                boardGroups = boardGroups.value
             )
         }
     }
@@ -1191,6 +1273,9 @@ class ObjectSetViewModel(
                 "${vmParams.ctx}$SUBSCRIPTION_TEMPLATES_ID"
             )
             dataViewSubscription.unsubscribe(ids)
+            boardGroupSubscriptionContainer.unsubscribe(
+                vmParams.ctx + BoardGroupSubscriptionContainer.SUBSCRIPTION_POSTFIX
+            )
         }
     }
 
@@ -1630,11 +1715,16 @@ class ObjectSetViewModel(
 
     /**
      * Moves a Kanban card to another column by setting the dragged object's group
-     * relation value to the target column's option id (or clearing it when the card
-     * is dropped on the "no group" column).
+     * relation to the target column's value. The value is format-aware: Status →
+     * a single option, Tag → the column's tag combination, Checkbox → the boolean,
+     * and the "no value" column clears the relation.
      */
     fun onBoardCardDropped(cardId: Id, targetColumnId: String) {
         Timber.d("onBoardCardDropped, cardId:[$cardId], targetColumnId:[$targetColumnId]")
+        if (!isOwnerOrEditor) {
+            toast(NOT_ALLOWED)
+            return
+        }
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
         val groupRelationKey = viewer.groupRelationKey
@@ -1642,23 +1732,35 @@ class ObjectSetViewModel(
             Timber.e("onBoardCardDropped: active viewer has no group relation key")
             return
         }
-        val value: Any? = if (targetColumnId == BOARD_EMPTY_GROUP_ID) {
-            null
+        val value: Any? = if (boardGroups.value.isNotEmpty()) {
+            when (val groupValue = boardGroups.value.firstOrNull { it.id == targetColumnId }?.value) {
+                is DataViewGroup.Value.Status -> listOf(groupValue.id)
+                is DataViewGroup.Value.Tag -> groupValue.ids
+                is DataViewGroup.Value.Checkbox -> groupValue.checked
+                is DataViewGroup.Value.Date -> return
+                is DataViewGroup.Value.Empty, null -> null
+            }
         } else {
-            listOf(targetColumnId)
+            // Client-side fallback: the column id is an option id (or the empty sentinel).
+            if (targetColumnId == BOARD_EMPTY_GROUP_ID) null else listOf(targetColumnId)
         }
         viewModelScope.launch {
             setObjectDetails(
-                UpdateDetail.Params(
-                    target = cardId,
-                    key = groupRelationKey,
-                    value = value
-                )
+                UpdateDetail.Params(target = cardId, key = groupRelationKey, value = value)
             ).process(
                 failure = { Timber.e(it, "Error while moving board card to another column") },
-                success = {
-                    dispatcher.send(it)
-                    Timber.d("Board card moved successfully")
+                success = { payload ->
+                    dispatcher.send(payload)
+                    analytics.sendAnalyticsRelationEvent(
+                        eventName = if (value == null) {
+                            EventsDictionary.relationDeleteValue
+                        } else {
+                            EventsDictionary.relationChangeValue
+                        },
+                        relationKey = groupRelationKey,
+                        storeOfRelations = storeOfRelations,
+                        spaceParams = provideParams(vmParams.space.id)
+                    )
                 }
             )
         }
@@ -1670,6 +1772,10 @@ class ObjectSetViewModel(
      */
     fun onBoardCardReordered(columnId: String, orderedCardIds: List<Id>) {
         Timber.d("onBoardCardReordered, columnId:[$columnId], ids:[$orderedCardIds]")
+        if (!isOwnerOrEditor) {
+            toast(NOT_ALLOWED)
+            return
+        }
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
         val viewId = viewer.id

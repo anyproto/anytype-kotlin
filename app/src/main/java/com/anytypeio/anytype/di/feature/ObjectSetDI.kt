@@ -60,6 +60,8 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
+import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.search.BoardGroupSubscriptionContainer
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -262,6 +264,7 @@ object ObjectSetModule {
         setDataViewProperties: SetDataViewProperties,
         setDataViewObjectOrder: SetDataViewObjectOrder,
         getOptions: GetOptions,
+        boardGroupSubscriptionContainer: BoardGroupSubscriptionContainer,
         emojiProvider: EmojiProvider,
         emojiSuggester: EmojiSuggester,
         stringResourceProvider: StringResourceProvider,
@@ -315,6 +318,7 @@ object ObjectSetModule {
         setDataViewProperties = setDataViewProperties,
         setDataViewObjectOrder = setDataViewObjectOrder,
         getOptions = getOptions,
+        boardGroupSubscriptionContainer = boardGroupSubscriptionContainer,
         emojiProvider = emojiProvider,
         emojiSuggester = emojiSuggester,
         stringResourceProvider = stringResourceProvider,
@@ -577,6 +581,21 @@ object ObjectSetModule {
         channel = channel,
         store = store,
         dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun boardGroupSubscriptionContainer(
+        repo: BlockRepository,
+        channel: SubscriptionEventChannel,
+        dispatchers: AppCoroutineDispatchers,
+        logger: Logger
+    ): BoardGroupSubscriptionContainer = BoardGroupSubscriptionContainer(
+        repo = repo,
+        channel = channel,
+        dispatchers = dispatchers,
+        logger = logger
     )
 
     @JvmStatic

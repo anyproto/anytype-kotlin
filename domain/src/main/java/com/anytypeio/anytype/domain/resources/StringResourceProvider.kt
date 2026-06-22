@@ -33,4 +33,5 @@ interface StringResourceProvider {
     fun getDeletedTypeName(): String
     fun getChannelMembersSubtitle(editors: Int, writersLimit: Int, viewers: Int, readersLimit: Int): String
     fun getKanbanEmptyColumnTitle(): String
+    fun getKanbanCheckboxGroupTitle(checked: Boolean): String
 }

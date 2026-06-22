@@ -1174,6 +1174,18 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun objectGroupsSubscribe(request: Rpc.Object.GroupsSubscribe.Request): Rpc.Object.GroupsSubscribe.Response {
+        val encoded =
+            Service.objectGroupsSubscribe(Rpc.Object.GroupsSubscribe.Request.ADAPTER.encode(request))
+        val response = Rpc.Object.GroupsSubscribe.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.GroupsSubscribe.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun objectSearchUnsubscribe(request: Rpc.Object.SearchUnsubscribe.Request): Rpc.Object.SearchUnsubscribe.Response {
         val encoded = Service.objectSearchUnsubscribe(
             Rpc.Object.SearchUnsubscribe.Request.ADAPTER.encode(request)

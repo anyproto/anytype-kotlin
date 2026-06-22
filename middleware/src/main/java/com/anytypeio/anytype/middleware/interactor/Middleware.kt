@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -75,6 +76,7 @@ import com.anytypeio.anytype.middleware.mappers.mw
 import com.anytypeio.anytype.middleware.mappers.parse
 import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 import com.anytypeio.anytype.middleware.mappers.toCore
+import com.anytypeio.anytype.middleware.mappers.toCoreModelsGroup
 import com.anytypeio.anytype.middleware.mappers.toCoreLinkPreview
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModelSearchResults
@@ -1433,6 +1435,29 @@ class Middleware @Inject constructor(
             },
             counter = response.counters?.parse()
         )
+    }
+
+    @Throws(Exception::class)
+    fun objectGroupsSubscribe(
+        space: SpaceId,
+        subscription: Id,
+        relationKey: String,
+        filters: List<DVFilter>,
+        source: List<String>,
+        collection: Id?
+    ): List<DataViewGroup> {
+        val request = Rpc.Object.GroupsSubscribe.Request(
+            spaceId = space.id,
+            subId = subscription,
+            relationKey = relationKey,
+            filters = filters.map { it.toMiddlewareModel() },
+            source = source,
+            collectionId = collection.orEmpty()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectGroupsSubscribe(request) }
+        logResponseIfDebug(response, time)
+        return response.groups.map { it.toCoreModelsGroup() }
     }
 
     @Throws(Exception::class)

@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
 import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.search.BoardGroupSubscriptionContainer
 import com.anytypeio.anytype.domain.discussions.AddDiscussion
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -99,6 +100,7 @@ class ObjectSetViewModelFactory(
     private val setDataViewProperties: SetDataViewProperties,
     private val setDataViewObjectOrder: SetDataViewObjectOrder,
     private val getOptions: GetOptions,
+    private val boardGroupSubscriptionContainer: BoardGroupSubscriptionContainer,
     private val emojiProvider: EmojiProvider,
     private val emojiSuggester: EmojiSuggester,
     private val stringResourceProvider: StringResourceProvider,
@@ -154,6 +156,7 @@ class ObjectSetViewModelFactory(
             setDataViewProperties = setDataViewProperties,
             setDataViewObjectOrder = setDataViewObjectOrder,
             getOptions = getOptions,
+            boardGroupSubscriptionContainer = boardGroupSubscriptionContainer,
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
             createBlock = createBlock,

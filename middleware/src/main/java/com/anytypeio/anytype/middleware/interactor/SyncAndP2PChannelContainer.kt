@@ -1,4 +1,5 @@
 package com.anytypeio.anytype.middleware.interactor
+import com.anytypeio.anytype.middleware.EventGroup
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.multiplayer.P2PStatusUpdate
@@ -37,7 +38,7 @@ class SyncAndP2PStatusEventsStoreImpl(
         Timber.i("SyncAndP2PStatusEventsStoreImpl start")
         jobs.cancel()
         jobs += scope.launch(dispatcher) {
-            channel.flow()
+            channel.flow(EventGroup.SYNC_P2P)
                 .catch { e ->
                     Timber.e(e, "Error collecting P2P & Sync status updates")
                 }

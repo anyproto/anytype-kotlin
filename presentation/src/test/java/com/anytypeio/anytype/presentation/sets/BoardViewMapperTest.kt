@@ -400,20 +400,18 @@ class BoardViewMapperTest {
             groups = groups
         )
 
-        // Columns come from the backend groups. With no saved group order, the default
-        // sort puts "No value" first, then the option groups alphabetically by label
-        // (deterministic, since the backend group order is local-DB order). So Done
-        // ("Done") comes before To do.
+        // Status boards keep the backend group order: "No value" first, then the option
+        // groups in the order the backend returned them (no alphabetical re-sort).
         assertEquals(3, columns.size)
         assertEquals("empty", columns[0].id)
         assertEquals("No value", columns[0].label)
         assertEquals(listOf("C"), columns[0].cards.map { it.objectId })
-        assertEquals(done.id, columns[1].id)
-        assertEquals("Done", columns[1].label)
-        assertEquals(listOf("B"), columns[1].cards.map { it.objectId })
-        assertEquals(todo.id, columns[2].id)
-        assertEquals("To do", columns[2].label)
-        assertEquals(listOf("A"), columns[2].cards.map { it.objectId })
+        assertEquals(todo.id, columns[1].id)
+        assertEquals("To do", columns[1].label)
+        assertEquals(listOf("A"), columns[1].cards.map { it.objectId })
+        assertEquals(done.id, columns[2].id)
+        assertEquals("Done", columns[2].label)
+        assertEquals(listOf("B"), columns[2].cards.map { it.objectId })
     }
 
     @Test

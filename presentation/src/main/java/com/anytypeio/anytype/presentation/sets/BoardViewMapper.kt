@@ -128,20 +128,27 @@ private suspend fun DVViewer.buildColumnsFromGroups(
         )
     }
 
-    return if (groupOrder?.viewGroups.isNullOrEmpty()) {
-        sortGroupsByDefault(columns, groups, emptyGroupId)
-    } else {
-        applyGroupOrder(columns, groupOrder)
+    val viewGroups = groupOrder?.viewGroups.orEmpty()
+    return when {
+        // Manual arrangement (drag / hide) always wins.
+        viewGroups.isNotEmpty() -> applyGroupOrder(columns, groupOrder)
+        // Tag (multi-select) boards: the backend returns groups in local-DB order,
+        // which differs per device, so sort deterministically to match desktop.
+        groups.any { it.value is DataViewGroup.Value.Tag } ->
+            sortGroupsByDefault(columns, groups, emptyGroupId)
+        // Other boards (status / checkbox): keep the backend order as-is.
+        else -> columns
     }
 }
 
 /**
- * Default board column order when the user hasn't manually arranged columns (no saved
- * [GroupOrder]). The backend returns groups in local-database order, which differs per
- * device in a local-first app; this produces a deterministic, desktop-matching order
- * instead: the empty ("No value") column first, then multi-tag combination groups before
- * single-tag groups (mirroring the backend's raw-id-length ordering), and alphabetically
- * by label within each tier.
+ * Default column order for a Tag (multi-select) board when the user hasn't manually
+ * arranged columns (no saved [GroupOrder]). The backend returns groups in local-database
+ * order, which differs per device in a local-first app; this produces a deterministic,
+ * desktop-matching order instead: the empty ("No value") column first, then multi-tag
+ * combination groups before single-tag groups (mirroring the backend's raw-id-length
+ * ordering), and alphabetically by label within each tier. Status / checkbox boards keep
+ * the backend order.
  */
 private fun sortGroupsByDefault(
     columns: List<Viewer.Board.Column>,

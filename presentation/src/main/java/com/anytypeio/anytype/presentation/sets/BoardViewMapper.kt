@@ -128,7 +128,34 @@ private suspend fun DVViewer.buildColumnsFromGroups(
         )
     }
 
-    return applyGroupOrder(columns, groupOrder)
+    return if (groupOrder?.viewGroups.isNullOrEmpty()) {
+        sortGroupsByDefault(columns, groups, emptyGroupId)
+    } else {
+        applyGroupOrder(columns, groupOrder)
+    }
+}
+
+/**
+ * Default board column order when the user hasn't manually arranged columns (no saved
+ * [GroupOrder]). The backend returns groups in local-database order, which differs per
+ * device in a local-first app; this produces a deterministic, desktop-matching order
+ * instead: the empty ("No value") column first, then multi-tag combination groups before
+ * single-tag groups (mirroring the backend's raw-id-length ordering), and alphabetically
+ * by label within each tier.
+ */
+private fun sortGroupsByDefault(
+    columns: List<Viewer.Board.Column>,
+    groups: List<DataViewGroup>,
+    emptyGroupId: Id
+): List<Viewer.Board.Column> {
+    val tagCount = groups.associate { group ->
+        group.id to ((group.value as? DataViewGroup.Value.Tag)?.ids?.size ?: 1)
+    }
+    return columns.sortedWith(
+        compareBy<Viewer.Board.Column> { if (it.id == emptyGroupId) 0 else 1 }
+            .thenByDescending { tagCount[it.id] ?: 1 }
+            .thenBy { it.label.lowercase() }
+    )
 }
 
 private fun matchGroupId(

@@ -400,17 +400,94 @@ class BoardViewMapperTest {
             groups = groups
         )
 
-        // Columns come from the backend groups: "No value" first, then the option groups.
+        // Columns come from the backend groups. With no saved group order, the default
+        // sort puts "No value" first, then the option groups alphabetically by label
+        // (deterministic, since the backend group order is local-DB order). So Done
+        // ("Done") comes before To do.
         assertEquals(3, columns.size)
         assertEquals("empty", columns[0].id)
         assertEquals("No value", columns[0].label)
         assertEquals(listOf("C"), columns[0].cards.map { it.objectId })
-        assertEquals(todo.id, columns[1].id)
-        assertEquals("To do", columns[1].label)
-        assertEquals(listOf("A"), columns[1].cards.map { it.objectId })
-        assertEquals(done.id, columns[2].id)
-        assertEquals("Done", columns[2].label)
-        assertEquals(listOf("B"), columns[2].cards.map { it.objectId })
+        assertEquals(done.id, columns[1].id)
+        assertEquals("Done", columns[1].label)
+        assertEquals(listOf("B"), columns[1].cards.map { it.objectId })
+        assertEquals(todo.id, columns[2].id)
+        assertEquals("To do", columns[2].label)
+        assertEquals(listOf("A"), columns[2].cards.map { it.objectId })
+    }
+
+    @Test
+    fun `should order columns by default with combos before single tags then alphabetically`() = runTest {
+
+        val tag1 = StubRelationOptionObject(
+            id = "opt-tag1", space = defaultSpace, text = "tag1", color = "orange"
+        )
+        val tag2 = StubRelationOptionObject(
+            id = "opt-tag2", space = defaultSpace, text = "tag2", color = "teal"
+        )
+        val tag3 = StubRelationOptionObject(
+            id = "opt-tag3", space = defaultSpace, text = "tag3", color = "red"
+        )
+
+        val store = DefaultObjectStore()
+        store.merge(
+            objects = listOf(
+                record(id = "A", name = "Task A", status = listOf(tag1.id)),
+                record(id = "B", name = "Task B", status = listOf(tag2.id, tag3.id))
+            ).map { ObjectWrapper.Basic(it) },
+            dependencies = listOf(tag1, tag2, tag3).map { ObjectWrapper.Basic(it.map) },
+            subscriptions = emptyList()
+        )
+
+        val storeOfRelations = DefaultStoreOfRelations().apply {
+            merge(listOf(statusRelation(name = "Tag")))
+        }
+
+        val viewer = DVViewer(
+            id = "view-1",
+            name = "Board",
+            type = Block.Content.DataView.Viewer.Type.BOARD,
+            sorts = emptyList(),
+            filters = emptyList(),
+            viewerRelations = listOf(
+                Block.Content.DataView.Viewer.ViewerRelation(key = statusRelationKey, isVisible = true)
+            ),
+            groupRelationKey = statusRelationKey
+        )
+
+        // Backend order is local-DB order (single tags shuffled, combo not first).
+        val groups = listOf(
+            DataViewGroup(id = tag3.id, value = DataViewGroup.Value.Tag(listOf(tag3.id))),
+            DataViewGroup(id = "empty", value = DataViewGroup.Value.Tag(emptyList())),
+            DataViewGroup(id = "combo", value = DataViewGroup.Value.Tag(listOf(tag2.id, tag3.id))),
+            DataViewGroup(id = tag1.id, value = DataViewGroup.Value.Tag(listOf(tag1.id))),
+            DataViewGroup(id = tag2.id, value = DataViewGroup.Value.Tag(listOf(tag2.id)))
+        )
+
+        val columns = viewer.buildBoardViews(
+            objectIds = listOf("A", "B"),
+            relations = listOf(statusRelationWrapper()),
+            urlBuilder = UrlBuilderImpl(gateway),
+            objectStore = store,
+            objectOrders = emptyList(),
+            storeOfRelations = storeOfRelations,
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes,
+            stringResourceProvider = stringResourceProvider,
+            groupOptions = mapOf(
+                tag1.id to ObjectWrapper.Option(tag1.map),
+                tag2.id to ObjectWrapper.Option(tag2.map),
+                tag3.id to ObjectWrapper.Option(tag3.map)
+            ),
+            groups = groups
+        )
+
+        // No value first, then the multi-tag combo, then single tags alphabetically.
+        assertEquals(
+            listOf("empty", "combo", tag1.id, tag2.id, tag3.id),
+            columns.map { it.id }
+        )
+        assertEquals("tag2, tag3", columns[1].label)
     }
 
     private fun record(id: String, name: String, status: List<String>?): Map<String, Any?> = buildMap {

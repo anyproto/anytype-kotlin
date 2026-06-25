@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.widgets.dv.board
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,16 +19,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
@@ -55,7 +48,6 @@ fun BoardColumnContent(
     targetColumnId: String?,
     boardCoordsProvider: () -> LayoutCoordinates?,
     onCardClick: (Id) -> Unit,
-    onDrop: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isDropTarget = dragState.isDragging &&
@@ -130,13 +122,11 @@ fun BoardColumnContent(
                     items = column.cards,
                     key = { it.objectId }
                 ) { card ->
-                    DraggableBoardCard(
+                    BoardCard(
                         card = card,
-                        columnId = column.id,
                         dragState = dragState,
                         boardCoordsProvider = boardCoordsProvider,
-                        onCardClick = onCardClick,
-                        onDrop = onDrop
+                        onCardClick = onCardClick
                     )
                 }
             }
@@ -145,17 +135,16 @@ fun BoardColumnContent(
 }
 
 @Composable
-private fun DraggableBoardCard(
+private fun BoardCard(
     card: Viewer.Board.Card,
-    columnId: String,
     dragState: BoardDragState,
     boardCoordsProvider: () -> LayoutCoordinates?,
-    onCardClick: (Id) -> Unit,
-    onDrop: () -> Unit
+    onCardClick: (Id) -> Unit
 ) {
-    var cardCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
     val isBeingDragged = dragState.draggedCard?.objectId == card.objectId
 
+    // Keep the board's hit-test map current; the drag gesture itself lives on the board
+    // container (see BoardScreen), so this item can be disposed without killing a drag.
     DisposableEffect(card.objectId) {
         onDispose { dragState.cardBounds.remove(card.objectId) }
     }
@@ -166,37 +155,11 @@ private fun DraggableBoardCard(
         modifier = Modifier
             .fillMaxWidth()
             .onGloballyPositioned { coords ->
-                cardCoords = coords
                 val board = boardCoordsProvider()
                 if (board != null && coords.isAttached) {
                     dragState.cardBounds[card.objectId] = board.localBoundingBoxOf(coords)
                 }
             }
             .alpha(if (isBeingDragged) 0.4f else 1f)
-            .pointerInput(card.objectId, columnId) {
-                val edge = 56.dp.toPx()
-                detectDragGesturesAfterLongPress(
-                    onDragStart = { startLocal ->
-                        val board = boardCoordsProvider()
-                        val coords = cardCoords
-                        if (board != null && coords != null && coords.isAttached) {
-                            dragState.start(
-                                card = card,
-                                columnId = columnId,
-                                topLeft = board.localPositionOf(coords, Offset.Zero),
-                                pointer = board.localPositionOf(coords, startLocal),
-                                size = coords.size
-                            )
-                        }
-                    },
-                    onDrag = { change, dragAmount ->
-                        change.consume()
-                        val boardWidth = boardCoordsProvider()?.size?.width ?: 0
-                        dragState.drag(delta = dragAmount, boardWidth = boardWidth, edge = edge)
-                    },
-                    onDragEnd = { onDrop() },
-                    onDragCancel = { dragState.stop() }
-                )
-            }
     )
 }

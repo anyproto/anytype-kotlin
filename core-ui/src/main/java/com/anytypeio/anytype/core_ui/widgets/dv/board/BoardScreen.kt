@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.widgets.dv.board
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.withFrameNanos
@@ -36,8 +38,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.zIndex
@@ -84,6 +88,12 @@ fun BoardScreen(
     val density = LocalDensity.current
     var boardCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
 
+    // Read live across recompositions so the long-lived (key = Unit) drag gesture below
+    // never captures a stale board or callback — a board re-emit must not interrupt a drag.
+    val currentBoard by rememberUpdatedState(board)
+    val currentOnCardMoved by rememberUpdatedState(onCardMoved)
+    val currentOnCardReordered by rememberUpdatedState(onCardReordered)
+
     // Single derived target-column id so columns don't each rescan bounds per frame.
     val targetColumnId by remember {
         derivedStateOf { if (dragState.isDragging) dragState.targetColumnId() else null }
@@ -95,15 +105,15 @@ fun BoardScreen(
         val target = dragState.targetColumnId()
         if (card != null && source != null && target != null) {
             if (target == source) {
-                val column = board.columns.find { it.id == target }
+                val column = currentBoard.columns.find { it.id == target }
                 if (column != null) {
                     val newIds = reorderedIds(column, card.objectId, dragState.cardBounds, dragState.pointer)
                     if (newIds != column.cards.map { it.objectId }) {
-                        onCardReordered(target, newIds)
+                        currentOnCardReordered(target, newIds)
                     }
                 }
             } else {
-                onCardMoved(card.objectId, source, target)
+                currentOnCardMoved(card.objectId, source, target)
             }
         }
         dragState.stop()
@@ -113,6 +123,36 @@ fun BoardScreen(
         modifier = modifier
             .fillMaxSize()
             .onGloballyPositioned { boardCoords = it }
+            // The drag gesture lives on the stable board container, not inside a card's
+            // LazyColumn item: disposing/rebinding a card on a background re-emit can no
+            // longer cancel an in-flight drag. Keyed on Unit so it survives recomposition.
+            .pointerInput(Unit) {
+                val edge = 56.dp.toPx()
+                detectDragGesturesAfterLongPress(
+                    onDragStart = { startOffset ->
+                        val hit = findCardAt(startOffset, currentBoard.columns, dragState.cardBounds)
+                        val rect = hit?.let { dragState.cardBounds[it.card.objectId] }
+                        if (hit != null && rect != null) {
+                            dragState.start(
+                                card = hit.card,
+                                columnId = hit.columnId,
+                                topLeft = rect.topLeft,
+                                pointer = startOffset,
+                                size = IntSize(rect.width.roundToInt(), rect.height.roundToInt())
+                            )
+                        }
+                    },
+                    onDrag = { change, dragAmount ->
+                        if (dragState.isDragging) {
+                            change.consume()
+                            val boardWidth = boardCoords?.size?.width ?: 0
+                            dragState.drag(delta = dragAmount, boardWidth = boardWidth, edge = edge)
+                        }
+                    },
+                    onDragEnd = { if (dragState.isDragging) onDrop() },
+                    onDragCancel = { dragState.stop() }
+                )
+            }
     ) {
         LazyRow(
             state = lazyRowState,
@@ -134,7 +174,6 @@ fun BoardScreen(
                     targetColumnId = targetColumnId,
                     boardCoordsProvider = { boardCoords },
                     onCardClick = onCardClick,
-                    onDrop = onDrop,
                     modifier = Modifier
                         .width(COLUMN_WIDTH)
                         .fillMaxHeight()
@@ -211,6 +250,30 @@ fun BoardScreen(
             }
         }
     }
+}
+
+/** A card found under a board-local point, together with the column it belongs to. */
+internal data class BoardCardHit(val card: Viewer.Board.Card, val columnId: String)
+
+/**
+ * Finds the card whose laid-out bounds contain [point] (in board coordinates), or null
+ * if the point is over empty space or a not-yet-measured card. Used by the board-level
+ * long-press detector to decide which card to lift.
+ */
+internal fun findCardAt(
+    point: Offset,
+    columns: List<Viewer.Board.Column>,
+    cardBounds: Map<String, Rect>
+): BoardCardHit? {
+    columns.forEach { column ->
+        column.cards.forEach { card ->
+            val rect = cardBounds[card.objectId]
+            if (rect != null && rect.contains(point)) {
+                return BoardCardHit(card = card, columnId = column.id)
+            }
+        }
+    }
+    return null
 }
 
 /** Builds the new ordered ids for [column] with [draggedId] moved to the pointer position. */

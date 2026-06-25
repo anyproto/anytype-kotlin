@@ -80,7 +80,6 @@ import com.anytypeio.anytype.core_ui.widgets.CircularFabButton
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.TypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ObjectSetTitle
-import com.anytypeio.anytype.core_ui.widgets.dv.board.BoardScreen
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerEditWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerLayoutWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewersWidget
@@ -346,6 +345,20 @@ open class ObjectSetFragment :
                         onItemClicked = { vm.onBackHistoryItemClicked(it) },
                         onDismiss = { vm.onBackHistoryMenuDismissed() }
                     )
+                }
+            }
+            // Board (Kanban) viewer is hosted persistently: its composition is set up once
+            // here and fed view-state via setBoard(...) in setViewer, so emissions diff
+            // instead of tearing down the composition (which would reset scroll / cancel a
+            // drag). See BoardViewWidget.
+            binding.boardView.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                onCardClick = { id -> vm.onObjectHeaderClicked(id) }
+                onCardMoved = { cardId, sourceColumnId, targetColumnId ->
+                    vm.onBoardCardDropped(cardId, sourceColumnId, targetColumnId)
+                }
+                onCardReordered = { columnId, orderedCardIds ->
+                    vm.onBoardCardReordered(columnId, orderedCardIds)
                 }
             }
             binding.topToolbar.container.setOnClickListener {
@@ -970,21 +983,7 @@ open class ObjectSetFragment :
                     listView.gone()
                     listView.setViews(emptyList())
                     boardView.visible()
-                    boardView.setViewCompositionStrategy(
-                        ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
-                    )
-                    boardView.setContent {
-                        BoardScreen(
-                            board = viewer,
-                            onCardClick = { id -> vm.onObjectHeaderClicked(id) },
-                            onCardMoved = { cardId, sourceColumnId, targetColumnId ->
-                                vm.onBoardCardDropped(cardId, sourceColumnId, targetColumnId)
-                            },
-                            onCardReordered = { columnId, orderedCardIds ->
-                                vm.onBoardCardReordered(columnId, orderedCardIds)
-                            }
-                        )
-                    }
+                    boardView.setBoard(viewer)
                 }
             }
             is Viewer.Unsupported -> {

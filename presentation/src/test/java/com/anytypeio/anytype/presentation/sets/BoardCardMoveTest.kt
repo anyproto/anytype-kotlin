@@ -61,6 +61,26 @@ class BoardCardMoveTest {
     }
 
     @Test
+    fun `tag move collapses a multi-tag card to the target on a combination board`() {
+        // Pins the intended on-device behavior (verified via logcat): when the card's full
+        // tag set IS the source combination column, there is nothing outside the source to
+        // keep, so the card adopts the target column's tags. This is deliberate for the
+        // backend combination-column model — not the old "write the target wholesale" bug,
+        // which the read-modify-write still prevents whenever the card has tags outside its
+        // source column (see the single-tag fallback tests above).
+        val move = computeBoardCardMove(
+            format = RelationFormat.TAG,
+            currentValue = listOf("tag1", "tag3", "tag6"),
+            sourceColumnId = "group-tag1-tag3-tag6",
+            sourceGroup = DataViewGroup.Value.Tag(ids = listOf("tag1", "tag3", "tag6")),
+            targetColumnId = "group-tag2",
+            targetGroup = DataViewGroup.Value.Tag(ids = listOf("tag2"))
+        )
+
+        assertEquals(BoardCardMove.Write(listOf("tag2")), move)
+    }
+
+    @Test
     fun `tag move to the no-value column removes only the source column's tags`() {
         val move = computeBoardCardMove(
             format = RelationFormat.TAG,

@@ -812,26 +812,36 @@ class ObjectSetViewModel(
     private fun subscribeToBoardGroups() {
         viewModelScope.launch {
             combine(stateReducer.state, session.currentViewerId) { state, currentViewId ->
-                state to currentViewId
-            }.flatMapLatest { (objectState, currentViewId) ->
-                val dataView = objectState.dataViewState()
+                val dataView = state.dataViewState()
                 val viewer = dataView?.viewerByIdOrFirst(currentViewId)
-                val params = if (dataView != null && viewer != null && viewer.type == DVViewerType.BOARD) {
+                if (dataView != null && viewer != null && viewer.type == DVViewerType.BOARD) {
                     buildBoardGroupParams(dataView, viewer)
                 } else {
                     null
                 }
-                if (params != null) {
-                    boardGroupSubscriptionContainer.observe(params)
-                } else {
-                    flowOf(emptyList())
-                }
-            }.catch { e ->
-                Timber.e(e, "Error in board groups subscription")
-                emit(emptyList())
-            }.collect { groups ->
-                boardGroups.value = groups
             }
+                // Only (re)subscribe when the group query actually changes; otherwise every
+                // unrelated state emission would re-run objectGroupsSubscribe on the same id.
+                .distinctUntilChanged()
+                .flatMapLatest { params ->
+                    if (params != null) {
+                        boardGroupSubscriptionContainer.observe(params)
+                    } else {
+                        // Left the board view: drop the backend group subscription instead of
+                        // leaving it streaming until onStop.
+                        boardGroupSubscriptionContainer.unsubscribe(
+                            vmParams.ctx + BoardGroupSubscriptionContainer.SUBSCRIPTION_POSTFIX
+                        )
+                        flowOf(emptyList())
+                    }
+                }
+                .catch { e ->
+                    Timber.e(e, "Error in board groups subscription")
+                    emit(emptyList())
+                }
+                .collect { groups ->
+                    boardGroups.value = groups
+                }
         }
     }
 

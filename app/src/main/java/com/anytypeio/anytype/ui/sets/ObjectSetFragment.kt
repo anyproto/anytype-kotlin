@@ -977,8 +977,8 @@ open class ObjectSetFragment :
                         BoardScreen(
                             board = viewer,
                             onCardClick = { id -> vm.onObjectHeaderClicked(id) },
-                            onCardMoved = { cardId, targetColumnId ->
-                                vm.onBoardCardDropped(cardId, targetColumnId)
+                            onCardMoved = { cardId, sourceColumnId, targetColumnId ->
+                                vm.onBoardCardDropped(cardId, sourceColumnId, targetColumnId)
                             },
                             onCardReordered = { columnId, orderedCardIds ->
                                 vm.onBoardCardReordered(columnId, orderedCardIds)

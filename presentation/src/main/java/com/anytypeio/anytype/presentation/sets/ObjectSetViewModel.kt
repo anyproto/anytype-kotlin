@@ -40,6 +40,7 @@ import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
@@ -1697,13 +1698,15 @@ class ObjectSetViewModel(
     }
 
     /**
-     * Moves a Kanban card to another column by setting the dragged object's group
-     * relation to the target column's value. The value is format-aware: Status →
-     * a single option, Tag → the column's tag combination, Checkbox → the boolean,
-     * and the "no value" column clears the relation.
+     * Moves a Kanban card from [sourceColumnId] to [targetColumnId] by writing the
+     * dragged object's group relation. The write is format-aware and non-lossy: Status →
+     * a single option, Checkbox → the boolean, and Tag → a read-modify-write that removes
+     * only the source column's option(s) and adds the target's, preserving the card's
+     * other tags. The "No value" column clears the relation (or, for Tag, drops only the
+     * source tags). See [computeBoardCardMove].
      */
-    fun onBoardCardDropped(cardId: Id, targetColumnId: String) {
-        Timber.d("onBoardCardDropped, cardId:[$cardId], targetColumnId:[$targetColumnId]")
+    fun onBoardCardDropped(cardId: Id, sourceColumnId: String, targetColumnId: String) {
+        Timber.d("onBoardCardDropped, cardId:[$cardId], source:[$sourceColumnId], target:[$targetColumnId]")
         if (!isOwnerOrEditor) {
             toast(NOT_ALLOWED)
             return
@@ -1715,19 +1718,19 @@ class ObjectSetViewModel(
             Timber.e("onBoardCardDropped: active viewer has no group relation key")
             return
         }
-        val value: Any? = if (boardGroups.value.isNotEmpty()) {
-            when (val groupValue = boardGroups.value.firstOrNull { it.id == targetColumnId }?.value) {
-                is DataViewGroup.Value.Status -> listOf(groupValue.id)
-                is DataViewGroup.Value.Tag -> groupValue.ids
-                is DataViewGroup.Value.Checkbox -> groupValue.checked
-                is DataViewGroup.Value.Date -> return
-                is DataViewGroup.Value.Empty, null -> null
-            }
-        } else {
-            // Client-side fallback: the column id is an option id (or the empty sentinel).
-            if (targetColumnId == BOARD_EMPTY_GROUP_ID) null else listOf(targetColumnId)
-        }
         viewModelScope.launch {
+            val groups = boardGroups.value
+            val move = computeBoardCardMove(
+                format = storeOfRelations.getByKey(groupRelationKey)?.format,
+                currentValue = currentGroupValueIds(cardId, groupRelationKey),
+                sourceColumnId = sourceColumnId,
+                sourceGroup = groups.firstOrNull { it.id == sourceColumnId }?.value,
+                targetColumnId = targetColumnId,
+                targetGroup = groups.firstOrNull { it.id == targetColumnId }?.value
+            )
+            if (move !is BoardCardMove.Write) return@launch
+            val value = move.value
+            val cleared = value == null || (value is List<*> && value.isEmpty())
             setObjectDetails(
                 UpdateDetail.Params(target = cardId, key = groupRelationKey, value = value)
             ).process(
@@ -1735,7 +1738,7 @@ class ObjectSetViewModel(
                 success = { payload ->
                     dispatcher.send(payload)
                     analytics.sendAnalyticsRelationEvent(
-                        eventName = if (value == null) {
+                        eventName = if (cleared) {
                             EventsDictionary.relationDeleteValue
                         } else {
                             EventsDictionary.relationChangeValue
@@ -1746,6 +1749,18 @@ class ObjectSetViewModel(
                     )
                 }
             )
+        }
+    }
+
+    /**
+     * Reads the card's current value for the board's group relation as a list of option
+     * ids, normalising the single-value / list / absent cases.
+     */
+    private suspend fun currentGroupValueIds(cardId: Id, groupRelationKey: Key): List<Id> {
+        return when (val raw = objectStore.get(cardId)?.map?.get(groupRelationKey)) {
+            is Id -> if (raw.isNotEmpty()) listOf(raw) else emptyList()
+            is List<*> -> raw.typeOf()
+            else -> emptyList()
         }
     }
 

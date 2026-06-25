@@ -60,7 +60,7 @@ private val COLUMN_WIDTH = 280.dp
 fun BoardScreen(
     board: Viewer.Board,
     onCardClick: (Id) -> Unit,
-    onCardMoved: (cardId: Id, targetColumnId: String) -> Unit,
+    onCardMoved: (cardId: Id, sourceColumnId: String, targetColumnId: String) -> Unit,
     onCardReordered: (columnId: String, orderedCardIds: List<Id>) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -103,7 +103,7 @@ fun BoardScreen(
                     }
                 }
             } else {
-                onCardMoved(card.objectId, target)
+                onCardMoved(card.objectId, source, target)
             }
         }
         dragState.stop()

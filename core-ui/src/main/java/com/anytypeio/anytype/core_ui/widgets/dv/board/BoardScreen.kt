@@ -196,18 +196,26 @@ fun BoardScreen(
                 val column = board.columns.find { it.id == target }
                 val colRect = dragState.columnBounds[target]
                 if (column != null && colRect != null) {
-                    val y = insertionY(column, draggedId, dragState.cardBounds, dragState.pointer)
-                    if (y != null) {
-                        val pad = with(density) { 8.dp.toPx() }
-                        Box(
-                            modifier = Modifier
-                                .zIndex(2f)
-                                .offset { IntOffset((colRect.left + pad).roundToInt(), (y - 1f).roundToInt()) }
-                                .width(with(density) { (colRect.width - 2 * pad).toDp() })
-                                .height(2.dp)
-                                .background(colorResource(id = R.color.text_primary))
-                        )
-                    }
+                    val pad = with(density) { 8.dp.toPx() }
+                    Box(
+                        modifier = Modifier
+                            .zIndex(2f)
+                            // Read pointer / cardBounds in the layout phase (the offset
+                            // lambda), not in composition — otherwise every drag frame
+                            // recomposes the whole board. Park off-screen when the column has
+                            // no insertion line (no other cards).
+                            .offset {
+                                val y = insertionY(column, draggedId, dragState.cardBounds, dragState.pointer)
+                                if (y != null) {
+                                    IntOffset((colRect.left + pad).roundToInt(), (y - 1f).roundToInt())
+                                } else {
+                                    IntOffset(0, -10_000)
+                                }
+                            }
+                            .width(with(density) { (colRect.width - 2 * pad).toDp() })
+                            .height(2.dp)
+                            .background(colorResource(id = R.color.text_primary))
+                    )
                 }
             }
         }

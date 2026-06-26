@@ -24,6 +24,8 @@ import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts
@@ -52,8 +54,11 @@ import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.BoardGroupSubscriptionContainer
+import com.anytypeio.anytype.domain.search.BoardRecordsSubscriptionContainer
 import com.anytypeio.anytype.presentation.extension.removeUnsupportedFilters
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDataViewFilters
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDataViewKeys
+import com.anytypeio.anytype.presentation.sets.subscription.updateWithRelationFormat
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -225,6 +230,7 @@ class ObjectSetViewModel(
     private val setDataViewObjectOrder: SetDataViewObjectOrder,
     private val getOptions: GetOptions,
     private val boardGroupSubscriptionContainer: BoardGroupSubscriptionContainer,
+    private val boardRecordsSubscriptionContainer: BoardRecordsSubscriptionContainer,
     private val emojiProvider: EmojiProvider,
     private val emojiSuggester: EmojiSuggester,
     private val stringResourceProvider: StringResourceProvider,
@@ -284,11 +290,18 @@ class ObjectSetViewModel(
     /** Live groups (columns) of the active board view, from the backend group subscription. */
     private val boardGroups = MutableStateFlow<List<DataViewGroup>>(emptyList())
 
+    /** Per-column record pages (ids + backend total), one paged subscription per column. */
+    private val boardRecords = MutableStateFlow<Map<Id, BoardRecordsSubscriptionContainer.GroupPage>>(emptyMap())
+
+    /** Subscription ids of the currently active per-column record subscriptions, for cleanup. */
+    private var boardRecordSubscriptionIds: List<Id> = emptyList()
+
     /** Fires a board re-render whenever any board-specific flow changes. */
     private val boardRenderTrigger = combine(
         boardGroupOptions,
-        boardGroups
-    ) { _, _ -> Unit }
+        boardGroups,
+        boardRecords
+    ) { _, _, _ -> Unit }
 
     private val _dvViews = MutableStateFlow<List<ViewerView>>(emptyList())
 
@@ -665,6 +678,7 @@ class ObjectSetViewModel(
         // be re-established after the first background/foreground cycle.
         subscribeToBoardGroupOptions()
         subscribeToBoardGroups()
+        subscribeToBoardRecords()
         proceedWithOpeningCurrentObject(ctx = vmParams.ctx)
         proceedWithObservingSyncStatus()
     }
@@ -692,6 +706,12 @@ class ObjectSetViewModel(
                     currentViewerId = view
                 )
             }.flatMapLatest { query  ->
+                val activeViewer = query.state.dataViewState()?.viewerByIdOrFirst(query.currentViewerId)
+                if (activeViewer?.type == DVViewerType.BOARD) {
+                    // Boards are driven entirely by per-column record subscriptions
+                    // (subscribeToBoardRecords), not the single flat 50-record window.
+                    return@flatMapLatest flowOf(DataViewState.Loaded(objects = emptyList(), dependencies = emptyList()))
+                }
                 when (query.state) {
                     is ObjectState.DataView.Collection -> {
                         Timber.d("subscribeToObjectState, NEW COLLECTION STATE")
@@ -881,6 +901,102 @@ class ObjectSetViewModel(
             filters = filters,
             sources = sources,
             collection = collection
+        )
+    }
+
+    /**
+     * Subscribes to records per board column — one paged subscription each, server-side
+     * filtered to that column's group value — so every column populates independently (instead
+     * of distributing one shared 50-record page). Re-subscribes when the columns/query change;
+     * clears when leaving a board.
+     */
+    private fun subscribeToBoardRecords() {
+        jobs += viewModelScope.launch {
+            combine(stateReducer.state, session.currentViewerId, boardGroups) { state, currentViewId, groups ->
+                val dataView = state.dataViewState()
+                val viewer = dataView?.viewerByIdOrFirst(currentViewId)
+                if (dataView != null && viewer != null && viewer.type == DVViewerType.BOARD && groups.isNotEmpty()) {
+                    buildBoardRecordsParams(dataView, viewer, groups)
+                } else {
+                    null
+                }
+            }
+                .distinctUntilChanged()
+                .flatMapLatest { params ->
+                    if (params != null) {
+                        boardRecordsSubscriptionContainer.observe(params)
+                    } else {
+                        boardRecordsSubscriptionContainer.unsubscribe(boardRecordSubscriptionIds)
+                        boardRecordSubscriptionIds = emptyList()
+                        flowOf(emptyMap())
+                    }
+                }
+                .catch { e ->
+                    Timber.e(e, "Error in board records subscription")
+                    emit(emptyMap())
+                }
+                .collect { records ->
+                    boardRecords.value = records
+                }
+        }
+    }
+
+    private suspend fun buildBoardRecordsParams(
+        state: ObjectState.DataView,
+        viewer: DVViewer,
+        groups: List<DataViewGroup>
+    ): BoardRecordsSubscriptionContainer.Params? {
+        val relationKey = viewer.groupRelationKey?.takeIf { it.isNotEmpty() } ?: return null
+        val columnQueries = boardColumnQueries(groups, relationKey)
+        if (columnQueries.isEmpty()) return null
+        val baseFilters = buildList {
+            addAll(viewer.filters.updateFormatForSubscription(storeOfRelations).removeUnsupportedFilters())
+            addAll(defaultDataViewFilters())
+        }
+        val keys = defaultDataViewKeys + state.dataViewContent.relationLinks.map { it.key }
+        val sorts = viewer.sorts.ifEmpty {
+            listOf(
+                DVSort(
+                    relationKey = Relations.CREATED_DATE,
+                    type = DVSortType.DESC,
+                    includeTime = true,
+                    relationFormat = RelationFormat.DATE
+                )
+            )
+        }.updateWithRelationFormat(storeOfRelations)
+        val sources: List<String>
+        val collection: Id?
+        when (state) {
+            is ObjectState.DataView.Collection -> {
+                sources = emptyList()
+                collection = vmParams.ctx
+            }
+            is ObjectState.DataView.Set -> {
+                sources = state.filterOutDeletedAndMissingObjects(state.getSetOfValue(vmParams.ctx))
+                collection = null
+            }
+            is ObjectState.DataView.TypeSet -> {
+                sources = state.filterOutDeletedAndMissingObjects(state.getSetOfValue(vmParams.ctx))
+                collection = null
+            }
+        }
+        val columns = columnQueries.map { query ->
+            BoardRecordsSubscriptionContainer.Column(
+                subscription = vmParams.ctx + "-board-records-" + query.columnId,
+                columnId = query.columnId,
+                filter = query.filter
+            )
+        }
+        boardRecordSubscriptionIds = columns.map { it.subscription }
+        return BoardRecordsSubscriptionContainer.Params(
+            space = vmParams.space,
+            columns = columns,
+            sorts = sorts,
+            baseFilters = baseFilters,
+            keys = keys,
+            source = sources,
+            collection = collection,
+            limit = DEFAULT_LIMIT
         )
     }
 
@@ -1078,7 +1194,9 @@ class ObjectSetViewModel(
                     stringResourceProvider = stringResourceProvider,
                     boardGroupOptions = boardGroupOptions.value,
                     boardGroupOrder = groupOrderForView(objectState, viewer?.id),
-                    boardGroups = boardGroups.value
+                    boardGroups = boardGroups.value,
+                    boardRecordsByColumn = boardRecords.value.mapValues { it.value.ids },
+                    boardCountsByColumn = boardRecords.value.mapValues { it.value.total }
                 )
 
                 when {
@@ -1159,7 +1277,9 @@ class ObjectSetViewModel(
                     stringResourceProvider = stringResourceProvider,
                     boardGroupOptions = boardGroupOptions.value,
                     boardGroupOrder = groupOrderForView(objectState, viewer?.id),
-                    boardGroups = boardGroups.value
+                    boardGroups = boardGroups.value,
+                    boardRecordsByColumn = boardRecords.value.mapValues { it.value.ids },
+                    boardCountsByColumn = boardRecords.value.mapValues { it.value.total }
                 )
 
                 when {
@@ -1213,7 +1333,9 @@ class ObjectSetViewModel(
                 stringResourceProvider = stringResourceProvider,
                 boardGroupOptions = boardGroupOptions.value,
                 boardGroupOrder = groupOrderForView(objectState, it.id),
-                boardGroups = boardGroups.value
+                boardGroups = boardGroups.value,
+                boardRecordsByColumn = boardRecords.value.mapValues { entry -> entry.value.ids },
+                boardCountsByColumn = boardRecords.value.mapValues { entry -> entry.value.total }
             )
         }
     }
@@ -1237,11 +1359,12 @@ class ObjectSetViewModel(
         hideTemplatesWidget()
         unsubscribeFromAllSubscriptions()
         jobs.cancel()
-        // The board group collectors live in `jobs` (cancelled above) and are restarted in
-        // onStart; clear their state so a reopen re-subscribes from scratch instead of
+        // The board group/record collectors live in `jobs` (cancelled above) and are restarted
+        // in onStart; clear their state so a reopen re-subscribes from scratch instead of
         // rendering stale columns.
         boardGroups.value = emptyList()
         boardGroupOptions.value = emptyMap()
+        boardRecords.value = emptyMap()
     }
 
     fun onCloseObject() {
@@ -1279,6 +1402,10 @@ class ObjectSetViewModel(
             boardGroupSubscriptionContainer.unsubscribe(
                 vmParams.ctx + BoardGroupSubscriptionContainer.SUBSCRIPTION_POSTFIX
             )
+            if (boardRecordSubscriptionIds.isNotEmpty()) {
+                boardRecordsSubscriptionContainer.unsubscribe(boardRecordSubscriptionIds)
+                boardRecordSubscriptionIds = emptyList()
+            }
         }
     }
 

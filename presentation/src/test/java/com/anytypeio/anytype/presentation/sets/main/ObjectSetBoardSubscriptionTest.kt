@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.sets.main
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -17,6 +18,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -41,6 +43,9 @@ class ObjectSetBoardSubscriptionTest : ObjectSetViewModelTestSetup() {
 
     /** Opens the set as a Collection whose only viewer is a Kanban board grouped by [groupRelationKey]. */
     private fun stubBoardCollection() {
+        stringResourceProvider.stub {
+            on { getKanbanEmptyColumnTitle() } doReturn "No value"
+        }
         val boardViewer = DVViewer(
             id = boardViewerId,
             name = "Board",
@@ -100,5 +105,27 @@ class ObjectSetBoardSubscriptionTest : ObjectSetViewModelTestSetup() {
         // No authoritative group ids yet → the move must be refused, not written with a
         // client-fallback column id.
         verifyNoInteractions(setObjectDetails)
+    }
+
+    @Test
+    fun `board is driven by per-column record subscriptions once groups load (H3)`() = runTest {
+        stubBoardCollection()
+        // Groups load → per-column record subscriptions should be started.
+        boardGroupSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flowOf(
+                listOf(DataViewGroup(id = "g1", value = DataViewGroup.Value.Status("opt1")))
+            )
+        }
+        boardRecordsSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flowOf(emptyMap())
+        }
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        // The board sources its cards from per-column subscriptions (not the flat 50-record
+        // window, which is gated off for boards).
+        verify(boardRecordsSubscriptionContainer, atLeastOnce()).observe(any())
     }
 }

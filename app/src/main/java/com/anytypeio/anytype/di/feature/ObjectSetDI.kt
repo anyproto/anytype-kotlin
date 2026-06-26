@@ -62,6 +62,7 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.search.BoardGroupSubscriptionContainer
+import com.anytypeio.anytype.domain.search.BoardRecordsSubscriptionContainer
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -265,6 +266,7 @@ object ObjectSetModule {
         setDataViewObjectOrder: SetDataViewObjectOrder,
         getOptions: GetOptions,
         boardGroupSubscriptionContainer: BoardGroupSubscriptionContainer,
+        boardRecordsSubscriptionContainer: BoardRecordsSubscriptionContainer,
         emojiProvider: EmojiProvider,
         emojiSuggester: EmojiSuggester,
         stringResourceProvider: StringResourceProvider,
@@ -319,6 +321,7 @@ object ObjectSetModule {
         setDataViewObjectOrder = setDataViewObjectOrder,
         getOptions = getOptions,
         boardGroupSubscriptionContainer = boardGroupSubscriptionContainer,
+        boardRecordsSubscriptionContainer = boardRecordsSubscriptionContainer,
         emojiProvider = emojiProvider,
         emojiSuggester = emojiSuggester,
         stringResourceProvider = stringResourceProvider,
@@ -594,6 +597,23 @@ object ObjectSetModule {
     ): BoardGroupSubscriptionContainer = BoardGroupSubscriptionContainer(
         repo = repo,
         channel = channel,
+        dispatchers = dispatchers,
+        logger = logger
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun boardRecordsSubscriptionContainer(
+        repo: BlockRepository,
+        channel: SubscriptionEventChannel,
+        @Named("object-set-store") store: ObjectStore,
+        dispatchers: AppCoroutineDispatchers,
+        logger: Logger
+    ): BoardRecordsSubscriptionContainer = BoardRecordsSubscriptionContainer(
+        repo = repo,
+        channel = channel,
+        store = store,
         dispatchers = dispatchers,
         logger = logger
     )

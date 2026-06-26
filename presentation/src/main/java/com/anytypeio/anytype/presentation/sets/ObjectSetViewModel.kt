@@ -375,8 +375,6 @@ class ObjectSetViewModel(
 
         subscribeToObjectState()
         subscribeToDataViewViewer()
-        subscribeToBoardGroupOptions()
-        subscribeToBoardGroups()
 
         viewModelScope.launch {
             dispatcher.flow().collect { defaultPayloadConsumer(it) }
@@ -661,6 +659,12 @@ class ObjectSetViewModel(
             session.currentViewerId.value = view
         }
         subscribeToEvents(ctx = vmParams.ctx)
+        // Board group subscriptions are tied to the start/stop lifecycle (registered in
+        // `jobs`, cancelled in onStop) so each reopen gets a fresh collector that
+        // re-subscribes — otherwise the backend group sub, cancelled in onStop, would never
+        // be re-established after the first background/foreground cycle.
+        subscribeToBoardGroupOptions()
+        subscribeToBoardGroups()
         proceedWithOpeningCurrentObject(ctx = vmParams.ctx)
         proceedWithObservingSyncStatus()
     }
@@ -810,7 +814,7 @@ class ObjectSetViewModel(
      * when the active view or its group relation changes; clears when leaving a board.
      */
     private fun subscribeToBoardGroups() {
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             combine(stateReducer.state, session.currentViewerId) { state, currentViewId ->
                 val dataView = state.dataViewState()
                 val viewer = dataView?.viewerByIdOrFirst(currentViewId)
@@ -886,7 +890,7 @@ class ObjectSetViewModel(
      * active view's group relation changes.
      */
     private fun subscribeToBoardGroupOptions() {
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             combine(stateReducer.state, session.currentViewerId) { state, currentViewId ->
                 val viewer = state.dataViewState()?.viewerByIdOrFirst(currentViewId)
                 if (viewer?.type == DVViewerType.BOARD) {
@@ -1233,6 +1237,11 @@ class ObjectSetViewModel(
         hideTemplatesWidget()
         unsubscribeFromAllSubscriptions()
         jobs.cancel()
+        // The board group collectors live in `jobs` (cancelled above) and are restarted in
+        // onStart; clear their state so a reopen re-subscribes from scratch instead of
+        // rendering stale columns.
+        boardGroups.value = emptyList()
+        boardGroupOptions.value = emptyMap()
     }
 
     fun onCloseObject() {
@@ -1728,15 +1737,23 @@ class ObjectSetViewModel(
             Timber.e("onBoardCardDropped: active viewer has no group relation key")
             return
         }
+        val groups = boardGroups.value
+        if (groups.isEmpty()) {
+            // Columns aren't backed by the authoritative backend group set yet (client-side
+            // fallback render). A column id may be an option id there but a group hash once
+            // loaded, so refuse the write rather than risk persisting a hash as an option id.
+            Timber.w("onBoardCardDropped: board groups not loaded; ignoring move")
+            return
+        }
         viewModelScope.launch {
-            val groups = boardGroups.value
             val move = computeBoardCardMove(
                 format = storeOfRelations.getByKey(groupRelationKey)?.format,
                 currentValue = currentGroupValueIds(cardId, groupRelationKey),
                 sourceColumnId = sourceColumnId,
                 sourceGroup = groups.firstOrNull { it.id == sourceColumnId }?.value,
                 targetColumnId = targetColumnId,
-                targetGroup = groups.firstOrNull { it.id == targetColumnId }?.value
+                targetGroup = groups.firstOrNull { it.id == targetColumnId }?.value,
+                groupsLoaded = true
             )
             if (move !is BoardCardMove.Write) return@launch
             val value = move.value
@@ -1775,13 +1792,20 @@ class ObjectSetViewModel(
     }
 
     /**
-     * Persists a new order of cards within a Kanban column (group). Updates the
-     * optimistic order first so the board reflects it immediately.
+     * Persists a new order of cards within a Kanban column (group). The new order is sent
+     * to the backend; its response payload carries the object-order-update event, which is
+     * reduced into state, so the board re-renders with the new order.
      */
     fun onBoardCardReordered(columnId: String, orderedCardIds: List<Id>) {
         Timber.d("onBoardCardReordered, columnId:[$columnId], ids:[$orderedCardIds]")
         if (!isOwnerOrEditor) {
             toast(NOT_ALLOWED)
+            return
+        }
+        if (boardGroups.value.isEmpty()) {
+            // Mirror onBoardCardDropped: only persist order keyed by the authoritative
+            // backend group id, never the client-fallback column (option) id.
+            Timber.w("onBoardCardReordered: board groups not loaded; ignoring reorder")
             return
         }
         val state = stateReducer.state.value.dataViewState() ?: return

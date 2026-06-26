@@ -41,12 +41,18 @@ suspend fun DVViewer.buildBoardViews(
     stringResourceProvider: StringResourceProvider,
     groupOptions: Map<Id, ObjectWrapper.Option> = emptyMap(),
     groupOrder: GroupOrder? = null,
-    groups: List<DataViewGroup> = emptyList()
+    groups: List<DataViewGroup> = emptyList(),
+    // Per-column record ids + backend totals, one paged subscription per column (keyed by
+    // column id). When present, the group path is driven by these instead of bucketing a
+    // single flat page client-side.
+    recordsByColumn: Map<Id, List<Id>> = emptyMap(),
+    countsByColumn: Map<Id, Int> = emptyMap()
 ): List<Viewer.Board.Column> {
     return if (groups.isNotEmpty()) {
         buildColumnsFromGroups(
             groups = groups,
-            objectIds = objectIds,
+            recordsByColumn = recordsByColumn,
+            countsByColumn = countsByColumn,
             relations = relations,
             urlBuilder = urlBuilder,
             objectStore = objectStore,
@@ -77,7 +83,8 @@ suspend fun DVViewer.buildBoardViews(
 
 private suspend fun DVViewer.buildColumnsFromGroups(
     groups: List<DataViewGroup>,
-    objectIds: List<Id>,
+    recordsByColumn: Map<Id, List<Id>>,
+    countsByColumn: Map<Id, Int>,
     relations: List<ObjectWrapper.Relation>,
     urlBuilder: UrlBuilder,
     objectStore: ObjectStore,
@@ -88,7 +95,6 @@ private suspend fun DVViewer.buildColumnsFromGroups(
     groupOptions: Map<Id, ObjectWrapper.Option>,
     groupOrder: GroupOrder?
 ): List<Viewer.Board.Column> {
-    val key = groupRelationKey
     val filteredRelations = filteredRelations(relations)
     val emptyGroupId = groups.firstOrNull { it.value is DataViewGroup.Value.Empty }?.id ?: BOARD_EMPTY_GROUP_ID
     // Checkbox boards are exhaustively split into true/false groups by the backend — there
@@ -97,30 +103,23 @@ private suspend fun DVViewer.buildColumnsFromGroups(
     val isCheckbox = groups.any { it.value is DataViewGroup.Value.Checkbox }
     val includeEmptyColumn = !isCheckbox
 
-    val records = objectIds.mapNotNull { objectStore.get(it) }.filter { it.isValid }
-
-    val byGroup = LinkedHashMap<Id, MutableList<ObjectWrapper.Basic>>()
-    if (includeEmptyColumn) byGroup.getOrPut(emptyGroupId) { mutableListOf() }
-    groups.forEach { byGroup.getOrPut(it.id) { mutableListOf() } }
-    records.forEach { obj ->
-        val gid = matchGroupId(obj, key, groups, emptyGroupId)
-        byGroup.getOrPut(gid) { mutableListOf() }.add(obj)
-    }
-
     val orderedIds = buildList {
         // Preserve the backend (ObjectGroupsSubscribe) order; only synthesize the
         // empty column if the backend didn't return one (and the board isn't checkbox).
         // Final column order is the saved GroupOrder index (see applyGroupOrder).
         if (includeEmptyColumn && groups.none { it.id == emptyGroupId }) add(emptyGroupId)
         groups.forEach { add(it.id) }
-        byGroup.keys.forEach { id -> if (id != emptyGroupId && groups.none { it.id == id }) add(id) }
     }.distinct()
 
     val columns = orderedIds.map { gid ->
         val group = groups.firstOrNull { it.id == gid }
+        // Each column's records come from its own paged subscription (keyed by column id).
+        val recordIds = recordsByColumn[gid].orEmpty()
         val orderIds = objectOrders.find { it.group == gid }?.ids.orEmpty()
         val orderIndex = orderIds.withIndex().associate { (i, id) -> id to i }
-        val cards = (byGroup[gid] ?: emptyList())
+        val cards = recordIds
+            .mapNotNull { objectStore.get(it) }
+            .filter { it.isValid }
             .sortedBy { orderIndex[it.id] ?: Int.MAX_VALUE }
             .map { obj ->
                 obj.toCard(urlBuilder, viewerRelations, objectStore, filteredRelations, fieldParser, storeOfObjectTypes, hideIcon)
@@ -129,7 +128,8 @@ private suspend fun DVViewer.buildColumnsFromGroups(
             id = gid,
             label = groupLabel(gid, group, emptyGroupId, groupOptions, objectStore, stringResourceProvider),
             color = groupColor(gid, group, groupOrder, groupOptions, objectStore),
-            cards = cards
+            cards = cards,
+            count = countsByColumn[gid] ?: cards.size
         )
     }
 
@@ -168,32 +168,6 @@ private fun sortGroupsByDefault(
             .thenByDescending { tagCount[it.id] ?: 1 }
             .thenBy { it.label.lowercase() }
     )
-}
-
-private fun matchGroupId(
-    obj: ObjectWrapper.Basic,
-    key: String?,
-    groups: List<DataViewGroup>,
-    emptyGroupId: Id
-): Id {
-    if (key.isNullOrEmpty()) return emptyGroupId
-    val raw = obj.map[key]
-    val ids: List<Id> = when (raw) {
-        is Id -> if (raw.isNotEmpty()) listOf(raw) else emptyList()
-        is List<*> -> raw.typeOf()
-        else -> emptyList()
-    }
-    val bool = raw as? Boolean
-    val match = groups.firstOrNull { group ->
-        when (val v = group.value) {
-            is DataViewGroup.Value.Status -> ids.contains(v.id)
-            is DataViewGroup.Value.Tag -> ids.isNotEmpty() && ids.toSet() == v.ids.toSet()
-            is DataViewGroup.Value.Checkbox -> (bool ?: false) == v.checked
-            is DataViewGroup.Value.Empty -> ids.isEmpty() && bool == null
-            is DataViewGroup.Value.Date -> false
-        }
-    }
-    return match?.id ?: emptyGroupId
 }
 
 private suspend fun groupLabel(
@@ -302,7 +276,7 @@ private suspend fun DVViewer.buildColumnsFromRecords(
                 obj.toCard(urlBuilder, viewerRelations, objectStore, filteredRelations, fieldParser, storeOfObjectTypes, hideIcon)
             }
 
-        Viewer.Board.Column(id = groupId, label = label, color = color, cards = cards)
+        Viewer.Board.Column(id = groupId, label = label, color = color, cards = cards, count = cards.size)
     }
 
     val viewGroups = groupOrder?.viewGroups.orEmpty()

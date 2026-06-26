@@ -397,7 +397,12 @@ class BoardViewMapperTest {
                 todo.id to ObjectWrapper.Option(todo.map),
                 done.id to ObjectWrapper.Option(done.map)
             ),
-            groups = groups
+            groups = groups,
+            recordsByColumn = mapOf(
+                "empty" to listOf("C"),
+                todo.id to listOf("A"),
+                done.id to listOf("B")
+            )
         )
 
         // Status boards keep the backend group order: "No value" first, then the option
@@ -534,7 +539,8 @@ class BoardViewMapperTest {
             fieldParser = fieldParser,
             storeOfObjectTypes = storeOfObjectTypes,
             stringResourceProvider = stringResourceProvider,
-            groups = groups
+            groups = groups,
+            recordsByColumn = mapOf("true" to listOf("A"), "false" to listOf("B"))
         )
 
         // Checkbox boards have only Checked / Unchecked — no phantom "No value" column.
@@ -542,6 +548,55 @@ class BoardViewMapperTest {
         assertEquals(listOf("Checked", "Unchecked"), columns.map { it.label })
         assertEquals(listOf("A"), columns[0].cards.map { it.objectId })
         assertEquals(listOf("B"), columns[1].cards.map { it.objectId })
+    }
+
+    @Test
+    fun `column count reflects the backend total even when fewer cards are loaded`() = runTest {
+        val todo = StubRelationOptionObject(
+            id = MockDataFactory.randomUuid(), space = defaultSpace, text = "To do", color = "red"
+        )
+
+        val store = DefaultObjectStore()
+        store.merge(
+            objects = listOf(record(id = "A", name = "Task A", status = listOf(todo.id))).map { ObjectWrapper.Basic(it) },
+            dependencies = listOf(ObjectWrapper.Basic(todo.map)),
+            subscriptions = emptyList()
+        )
+
+        val storeOfRelations = DefaultStoreOfRelations().apply { merge(listOf(statusRelation(name = "Status"))) }
+
+        val viewer = DVViewer(
+            id = "view-1",
+            name = "Board",
+            type = Block.Content.DataView.Viewer.Type.BOARD,
+            sorts = emptyList(),
+            filters = emptyList(),
+            viewerRelations = listOf(
+                Block.Content.DataView.Viewer.ViewerRelation(key = statusRelationKey, isVisible = true)
+            ),
+            groupRelationKey = statusRelationKey
+        )
+
+        val columns = viewer.buildBoardViews(
+            objectIds = emptyList(),
+            relations = listOf(statusRelationWrapper()),
+            urlBuilder = UrlBuilderImpl(gateway),
+            objectStore = store,
+            objectOrders = emptyList(),
+            storeOfRelations = storeOfRelations,
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes,
+            stringResourceProvider = stringResourceProvider,
+            groupOptions = mapOf(todo.id to ObjectWrapper.Option(todo.map)),
+            groups = listOf(DataViewGroup(id = todo.id, value = DataViewGroup.Value.Status(todo.id))),
+            // Subscription loaded 1 card of a 120-card column.
+            recordsByColumn = mapOf(todo.id to listOf("A")),
+            countsByColumn = mapOf(todo.id to 120)
+        )
+
+        val column = columns.first { it.id == todo.id }
+        assertEquals(1, column.cards.size)
+        assertEquals(120, column.count)
     }
 
     private fun checkboxRecord(id: String, name: String, checked: Boolean): Map<String, Any?> = buildMap {

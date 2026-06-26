@@ -84,7 +84,9 @@ suspend fun DVViewer.render(
     stringResourceProvider: StringResourceProvider,
     boardGroupOptions: Map<Id, ObjectWrapper.Option> = emptyMap(),
     boardGroupOrder: GroupOrder? = null,
-    boardGroups: List<DataViewGroup> = emptyList()
+    boardGroups: List<DataViewGroup> = emptyList(),
+    boardRecordsByColumn: Map<Id, List<Id>> = emptyMap(),
+    boardCountsByColumn: Map<Id, Int> = emptyMap()
 ): Viewer {
     return when (type) {
         DVViewerType.GRID -> {
@@ -154,7 +156,9 @@ suspend fun DVViewer.render(
                     stringResourceProvider = stringResourceProvider,
                     groupOptions = boardGroupOptions,
                     groupOrder = boardGroupOrder,
-                    groups = boardGroups
+                    groups = boardGroups,
+                    recordsByColumn = boardRecordsByColumn,
+                    countsByColumn = boardCountsByColumn
                 )
             )
         }

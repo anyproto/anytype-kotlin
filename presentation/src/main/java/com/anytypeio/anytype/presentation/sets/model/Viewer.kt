@@ -142,7 +142,9 @@ sealed class Viewer {
             val id: String,
             val label: String,
             val color: String? = null,
-            val cards: List<Card> = emptyList()
+            val cards: List<Card> = emptyList(),
+            /** Total records in this column on the backend (may exceed [cards] when paged). */
+            val count: Int = 0
         )
         data class Card(
             val objectId: Id,

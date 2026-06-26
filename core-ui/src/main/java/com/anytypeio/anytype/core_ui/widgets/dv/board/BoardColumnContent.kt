@@ -92,7 +92,7 @@ fun BoardColumnContent(
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(
-                text = "${column.cards.size}",
+                text = "${column.count}",
                 style = Caption1Regular,
                 color = colorResource(id = R.color.text_secondary)
             )

@@ -292,13 +292,32 @@ private fun reorderedIds(
     pointer: Offset
 ): List<Id> {
     val remaining = column.cards.map { it.objectId }.filter { it != draggedId }
-    val insertIndex = remaining.count { id ->
-        val b = cardBounds[id]
-        b != null && (b.top + b.height / 2f) < pointer.y
+    val insertIndex = reorderInsertIndex(remaining, pointer.y) { id ->
+        cardBounds[id]?.let { it.top + it.height / 2f }
     }
     val result = remaining.toMutableList()
     result.add(insertIndex.coerceIn(0, result.size), draggedId)
     return result
+}
+
+/**
+ * The index in [remaining] (the column's card ids minus the dragged card, in model order) at
+ * which to insert the dragged card for a pointer at [pointerY] (board coordinates). [midY]
+ * returns a card's midpoint Y, or null for cards that aren't laid out (scrolled off-screen
+ * in the column's LazyColumn).
+ *
+ * It returns the **full-list index** of the first visible card whose midpoint is at/below the
+ * pointer (or the end if none) — so cards scrolled *above* the viewport still count toward the
+ * position. The previous implementation counted only measured cards, which collapsed the
+ * insert toward the top and persisted a corrupted order for columns taller than the viewport.
+ */
+internal fun reorderInsertIndex(
+    remaining: List<Id>,
+    pointerY: Float,
+    midY: (Id) -> Float?
+): Int {
+    val anchor = remaining.firstOrNull { id -> midY(id)?.let { mid -> mid >= pointerY } == true }
+    return if (anchor != null) remaining.indexOf(anchor) else remaining.size
 }
 
 /** The y (board coordinates) of the insertion line for the pointer, or null if the column is empty. */

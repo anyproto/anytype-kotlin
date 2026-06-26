@@ -408,28 +408,6 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         }
     }
 
-    private fun List<Id>.applySliceChanges(
-        changes: List<Command.DataView.ObjectOrderUpdate.SliceChange>
-    ): List<Id> {
-        var result = this
-        for (change in changes) {
-            result = when (change.operation) {
-                SliceOperation.ADD, SliceOperation.MOVE -> {
-                    val without = result.filterNot { it in change.ids }
-                    val insertAt = when {
-                        change.afterId.isEmpty() -> 0
-                        else -> without.indexOf(change.afterId).let { if (it < 0) without.size else it + 1 }
-                    }
-                    without.toMutableList().apply { addAll(insertAt, change.ids) }
-                }
-                SliceOperation.REMOVE -> result.filterNot { it in change.ids }
-                SliceOperation.REPLACE -> change.ids
-                SliceOperation.NONE -> result
-            }
-        }
-        return result
-    }
-
     /**
      * @see Command.DataView.UpdateView
      */
@@ -694,4 +672,34 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         state.value = ObjectState.Init
         _effects.tryEmit(emptyList())
     }
+}
+
+/**
+ * Applies an [Command.DataView.ObjectOrderUpdate]'s slice [changes] to an ordered id list.
+ * Extracted as a pure, testable function. For ADD/MOVE the items are inserted after
+ * [SliceChange.afterId]; when `afterId` is empty **or not present** in the list, they go to
+ * the top — matching the backend's reconciliation (anytype-heart) rather than appending.
+ */
+internal fun List<Id>.applySliceChanges(
+    changes: List<Command.DataView.ObjectOrderUpdate.SliceChange>
+): List<Id> {
+    var result = this
+    for (change in changes) {
+        result = when (change.operation) {
+            SliceOperation.ADD, SliceOperation.MOVE -> {
+                val without = result.filterNot { it in change.ids }
+                val insertAt = when {
+                    change.afterId.isEmpty() -> 0
+                    // Unknown anchor → top, matching the backend (anytype-heart) rather than
+                    // appending to the bottom.
+                    else -> without.indexOf(change.afterId).let { if (it < 0) 0 else it + 1 }
+                }
+                without.toMutableList().apply { addAll(insertAt, change.ids) }
+            }
+            SliceOperation.REMOVE -> result.filterNot { it in change.ids }
+            SliceOperation.REPLACE -> change.ids
+            SliceOperation.NONE -> result
+        }
+    }
+    return result
 }

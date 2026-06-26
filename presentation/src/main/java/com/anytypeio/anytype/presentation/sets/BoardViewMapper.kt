@@ -91,11 +91,16 @@ private suspend fun DVViewer.buildColumnsFromGroups(
     val key = groupRelationKey
     val filteredRelations = filteredRelations(relations)
     val emptyGroupId = groups.firstOrNull { it.value is DataViewGroup.Value.Empty }?.id ?: BOARD_EMPTY_GROUP_ID
+    // Checkbox boards are exhaustively split into true/false groups by the backend — there
+    // is no "No value" state, so don't synthesize an empty column (it would render as a live
+    // drop target that writes `checked = false`).
+    val isCheckbox = groups.any { it.value is DataViewGroup.Value.Checkbox }
+    val includeEmptyColumn = !isCheckbox
 
     val records = objectIds.mapNotNull { objectStore.get(it) }.filter { it.isValid }
 
     val byGroup = LinkedHashMap<Id, MutableList<ObjectWrapper.Basic>>()
-    byGroup.getOrPut(emptyGroupId) { mutableListOf() }
+    if (includeEmptyColumn) byGroup.getOrPut(emptyGroupId) { mutableListOf() }
     groups.forEach { byGroup.getOrPut(it.id) { mutableListOf() } }
     records.forEach { obj ->
         val gid = matchGroupId(obj, key, groups, emptyGroupId)
@@ -104,9 +109,9 @@ private suspend fun DVViewer.buildColumnsFromGroups(
 
     val orderedIds = buildList {
         // Preserve the backend (ObjectGroupsSubscribe) order; only synthesize the
-        // empty column if the backend didn't return one. Final column order is the
-        // saved GroupOrder index (see applyGroupOrder).
-        if (groups.none { it.id == emptyGroupId }) add(emptyGroupId)
+        // empty column if the backend didn't return one (and the board isn't checkbox).
+        // Final column order is the saved GroupOrder index (see applyGroupOrder).
+        if (includeEmptyColumn && groups.none { it.id == emptyGroupId }) add(emptyGroupId)
         groups.forEach { add(it.id) }
         byGroup.keys.forEach { id -> if (id != emptyGroupId && groups.none { it.id == id }) add(id) }
     }.distinct()

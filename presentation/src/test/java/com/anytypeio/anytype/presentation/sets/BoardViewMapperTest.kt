@@ -488,6 +488,69 @@ class BoardViewMapperTest {
         assertEquals("tag2, tag3", columns[1].label)
     }
 
+    @Test
+    fun `should not synthesize a No value column for checkbox boards`() = runTest {
+        whenever(stringResourceProvider.getKanbanCheckboxGroupTitle(true)).thenReturn("Checked")
+        whenever(stringResourceProvider.getKanbanCheckboxGroupTitle(false)).thenReturn("Unchecked")
+
+        val store = DefaultObjectStore()
+        store.merge(
+            objects = listOf(
+                checkboxRecord(id = "A", name = "Task A", checked = true),
+                checkboxRecord(id = "B", name = "Task B", checked = false)
+            ).map { ObjectWrapper.Basic(it) },
+            dependencies = emptyList(),
+            subscriptions = emptyList()
+        )
+
+        val storeOfRelations = DefaultStoreOfRelations().apply {
+            merge(listOf(statusRelation(name = "Done")))
+        }
+
+        val viewer = DVViewer(
+            id = "view-1",
+            name = "Board",
+            type = Block.Content.DataView.Viewer.Type.BOARD,
+            sorts = emptyList(),
+            filters = emptyList(),
+            viewerRelations = listOf(
+                Block.Content.DataView.Viewer.ViewerRelation(key = statusRelationKey, isVisible = true)
+            ),
+            groupRelationKey = statusRelationKey
+        )
+
+        val groups = listOf(
+            DataViewGroup(id = "true", value = DataViewGroup.Value.Checkbox(checked = true)),
+            DataViewGroup(id = "false", value = DataViewGroup.Value.Checkbox(checked = false))
+        )
+
+        val columns = viewer.buildBoardViews(
+            objectIds = listOf("A", "B"),
+            relations = listOf(statusRelationWrapper()),
+            urlBuilder = UrlBuilderImpl(gateway),
+            objectStore = store,
+            objectOrders = emptyList(),
+            storeOfRelations = storeOfRelations,
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes,
+            stringResourceProvider = stringResourceProvider,
+            groups = groups
+        )
+
+        // Checkbox boards have only Checked / Unchecked — no phantom "No value" column.
+        assertEquals(listOf("true", "false"), columns.map { it.id })
+        assertEquals(listOf("Checked", "Unchecked"), columns.map { it.label })
+        assertEquals(listOf("A"), columns[0].cards.map { it.objectId })
+        assertEquals(listOf("B"), columns[1].cards.map { it.objectId })
+    }
+
+    private fun checkboxRecord(id: String, name: String, checked: Boolean): Map<String, Any?> = buildMap {
+        put(ObjectSetConfig.ID_KEY, id)
+        put(Relations.SPACE_ID, defaultSpace)
+        put(Relations.NAME, name)
+        put(statusRelationKey, checked)
+    }
+
     private fun record(id: String, name: String, status: List<String>?): Map<String, Any?> = buildMap {
         put(ObjectSetConfig.ID_KEY, id)
         put(Relations.SPACE_ID, defaultSpace)

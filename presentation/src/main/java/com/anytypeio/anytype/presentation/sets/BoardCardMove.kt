@@ -43,11 +43,18 @@ fun computeBoardCardMove(
     sourceColumnId: Id,
     sourceGroup: DataViewGroup.Value?,
     targetColumnId: Id,
-    targetGroup: DataViewGroup.Value?
+    targetGroup: DataViewGroup.Value?,
+    groupsLoaded: Boolean
 ): BoardCardMove {
     if (targetGroup is DataViewGroup.Value.Date) return BoardCardMove.Ignore
 
     val emptyTarget = targetColumnId == BOARD_EMPTY_GROUP_ID || targetGroup is DataViewGroup.Value.Empty
+
+    // Once the backend groups are loaded a column id is a group id (e.g. an MD5 hash), not
+    // an option id. If a non-empty target column doesn't resolve to a loaded group, refuse
+    // the write rather than persisting the column id as if it were an option id. The
+    // column-id-as-option-id reading below is valid only for the client-side fallback render.
+    if (groupsLoaded && !emptyTarget && targetGroup == null) return BoardCardMove.Ignore
 
     // The backend group value is the most reliable signal of the relation format; fall
     // back to the relation's own format on the client-side (groups-not-loaded) path.
@@ -56,6 +63,12 @@ fun computeBoardCardMove(
             BoardCardMove.Write(if (emptyTarget) null else listOf(statusId(targetColumnId, targetGroup)))
 
         RelationFormat.TAG -> {
+            // The read-modify-write needs the source column's option ids; if the source
+            // column doesn't resolve to a loaded group, we'd otherwise treat its (hashed)
+            // id as an option id and strip the wrong tags — refuse instead.
+            if (groupsLoaded && sourceColumnId != BOARD_EMPTY_GROUP_ID && sourceGroup == null) {
+                return BoardCardMove.Ignore
+            }
             val sourceIds = tagIds(sourceColumnId, sourceGroup)
             val targetIds = if (emptyTarget) emptyList() else tagIds(targetColumnId, targetGroup)
             BoardCardMove.Write((currentValue - sourceIds.toSet() + targetIds).distinct())

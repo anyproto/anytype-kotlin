@@ -7,9 +7,11 @@ import kotlin.test.assertEquals
 
 /**
  * Tests for the format-aware, non-lossy value computed when a Kanban card is dragged
- * from one column to another (see [computeBoardCardMove]). The key guarantee is that a
+ * from one column to another (see [computeBoardCardMove]). The key guarantees are that a
  * Tag (multi-select) move is a read-modify-write that only touches the source/target
- * column's options and preserves the card's other tags — never a full replacement.
+ * column's options and preserves the card's other tags — never a full replacement — and
+ * that, once the backend groups are loaded, an unresolved column never has its (hashed)
+ * column id written as if it were an option id.
  */
 class BoardCardMoveTest {
 
@@ -25,7 +27,8 @@ class BoardCardMoveTest {
             sourceColumnId = "A",
             sourceGroup = null,
             targetColumnId = "C",
-            targetGroup = null
+            targetGroup = null,
+            groupsLoaded = false
         )
 
         assertEquals(BoardCardMove.Write(listOf("B", "C")), move)
@@ -39,7 +42,8 @@ class BoardCardMoveTest {
             sourceColumnId = "B",
             sourceGroup = null,
             targetColumnId = "D",
-            targetGroup = null
+            targetGroup = null,
+            groupsLoaded = false
         )
 
         assertEquals(BoardCardMove.Write(listOf("A", "C", "D")), move)
@@ -54,7 +58,8 @@ class BoardCardMoveTest {
             sourceColumnId = "group-ab",
             sourceGroup = DataViewGroup.Value.Tag(ids = listOf("A", "B")),
             targetColumnId = "group-c",
-            targetGroup = DataViewGroup.Value.Tag(ids = listOf("C"))
+            targetGroup = DataViewGroup.Value.Tag(ids = listOf("C")),
+            groupsLoaded = true
         )
 
         assertEquals(BoardCardMove.Write(listOf("C")), move)
@@ -74,7 +79,8 @@ class BoardCardMoveTest {
             sourceColumnId = "group-tag1-tag3-tag6",
             sourceGroup = DataViewGroup.Value.Tag(ids = listOf("tag1", "tag3", "tag6")),
             targetColumnId = "group-tag2",
-            targetGroup = DataViewGroup.Value.Tag(ids = listOf("tag2"))
+            targetGroup = DataViewGroup.Value.Tag(ids = listOf("tag2")),
+            groupsLoaded = true
         )
 
         assertEquals(BoardCardMove.Write(listOf("tag2")), move)
@@ -88,7 +94,8 @@ class BoardCardMoveTest {
             sourceColumnId = "A",
             sourceGroup = null,
             targetColumnId = BOARD_EMPTY_GROUP_ID,
-            targetGroup = DataViewGroup.Value.Empty
+            targetGroup = DataViewGroup.Value.Empty,
+            groupsLoaded = false
         )
 
         assertEquals(BoardCardMove.Write(listOf("B")), move)
@@ -102,7 +109,8 @@ class BoardCardMoveTest {
             sourceColumnId = BOARD_EMPTY_GROUP_ID,
             sourceGroup = DataViewGroup.Value.Empty,
             targetColumnId = "group-c",
-            targetGroup = DataViewGroup.Value.Tag(ids = listOf("C"))
+            targetGroup = DataViewGroup.Value.Tag(ids = listOf("C")),
+            groupsLoaded = true
         )
 
         assertEquals(BoardCardMove.Write(listOf("C")), move)
@@ -116,10 +124,62 @@ class BoardCardMoveTest {
             sourceColumnId = "A",
             sourceGroup = null,
             targetColumnId = "C",
-            targetGroup = null
+            targetGroup = null,
+            groupsLoaded = false
         )
 
         assertEquals(BoardCardMove.Write(listOf("C")), move)
+    }
+
+    // endregion
+
+    // region Unresolved-group guard (M3) — never write a hashed column id as an option id
+
+    @Test
+    fun `tag move is ignored when groups are loaded but the target column is unresolved`() {
+        // A real Tag column id is a group hash, not an option id. If it doesn't resolve to a
+        // loaded group, refuse the write rather than persisting the hash into the relation.
+        val move = computeBoardCardMove(
+            format = RelationFormat.TAG,
+            currentValue = listOf("A", "B"),
+            sourceColumnId = "group-a",
+            sourceGroup = DataViewGroup.Value.Tag(ids = listOf("A")),
+            targetColumnId = "5f4d3c2b1a",
+            targetGroup = null,
+            groupsLoaded = true
+        )
+
+        assertEquals(BoardCardMove.Ignore, move)
+    }
+
+    @Test
+    fun `tag move is ignored when groups are loaded but the source column is unresolved`() {
+        val move = computeBoardCardMove(
+            format = RelationFormat.TAG,
+            currentValue = listOf("A", "B"),
+            sourceColumnId = "1a2b3c4d5e",
+            sourceGroup = null,
+            targetColumnId = "group-c",
+            targetGroup = DataViewGroup.Value.Tag(ids = listOf("C")),
+            groupsLoaded = true
+        )
+
+        assertEquals(BoardCardMove.Ignore, move)
+    }
+
+    @Test
+    fun `checkbox move is ignored when groups are loaded but the target column is unresolved`() {
+        val move = computeBoardCardMove(
+            format = RelationFormat.CHECKBOX,
+            currentValue = emptyList(),
+            sourceColumnId = "group-false",
+            sourceGroup = DataViewGroup.Value.Checkbox(checked = false),
+            targetColumnId = "deadbeef",
+            targetGroup = null,
+            groupsLoaded = true
+        )
+
+        assertEquals(BoardCardMove.Ignore, move)
     }
 
     // endregion
@@ -134,7 +194,8 @@ class BoardCardMoveTest {
             sourceColumnId = "group-old",
             sourceGroup = DataViewGroup.Value.Status(id = "old"),
             targetColumnId = "group-new",
-            targetGroup = DataViewGroup.Value.Status(id = "new")
+            targetGroup = DataViewGroup.Value.Status(id = "new"),
+            groupsLoaded = true
         )
 
         assertEquals(BoardCardMove.Write(listOf("new")), move)
@@ -148,7 +209,8 @@ class BoardCardMoveTest {
             sourceColumnId = "old",
             sourceGroup = null,
             targetColumnId = "new",
-            targetGroup = null
+            targetGroup = null,
+            groupsLoaded = false
         )
 
         assertEquals(BoardCardMove.Write(listOf("new")), move)
@@ -162,7 +224,8 @@ class BoardCardMoveTest {
             sourceColumnId = "group-old",
             sourceGroup = DataViewGroup.Value.Status(id = "old"),
             targetColumnId = BOARD_EMPTY_GROUP_ID,
-            targetGroup = DataViewGroup.Value.Empty
+            targetGroup = DataViewGroup.Value.Empty,
+            groupsLoaded = true
         )
 
         assertEquals(BoardCardMove.Write(null), move)
@@ -180,7 +243,8 @@ class BoardCardMoveTest {
             sourceColumnId = "group-false",
             sourceGroup = DataViewGroup.Value.Checkbox(checked = false),
             targetColumnId = "group-true",
-            targetGroup = DataViewGroup.Value.Checkbox(checked = true)
+            targetGroup = DataViewGroup.Value.Checkbox(checked = true),
+            groupsLoaded = true
         )
 
         assertEquals(BoardCardMove.Write(true), move)
@@ -198,7 +262,8 @@ class BoardCardMoveTest {
             sourceColumnId = "group-a",
             sourceGroup = DataViewGroup.Value.Date,
             targetColumnId = "group-b",
-            targetGroup = DataViewGroup.Value.Date
+            targetGroup = DataViewGroup.Value.Date,
+            groupsLoaded = true
         )
 
         assertEquals(BoardCardMove.Ignore, move)

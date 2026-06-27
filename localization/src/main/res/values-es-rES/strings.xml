@@ -1950,7 +1950,7 @@
     <string name="migration_screen_what_to_expect">Qué ocurrirá</string>
     <string name="migration_screen_your_data_remains_safe">Tus datos están a salvo</string>
     <string name="migration_screen_your_data_description">Durante esta actualización, tus datos están protegidos por completo. La actualización se realiza en tu dispositivo y no afecta a los datos sincronizados. Lo que hacemos es copiarlos con un formato nuevo y crear en tu dispositivo una copia de respaldo que contiene todos los datos en el formato anterior.</string>
-    <string name="migration_screen_your_data_description_2">Esta copia de respaldo nos sirve para depurar errores y ofrecerte ayuda si se presenta algún imprevisto.</string>
+    <string name="migration_screen_your_data_description_2">Esta copia de respaldo nos sirve para detectar errores y ofrecerte ayuda si se presenta algún imprevisto.</string>
     <string name="migration_screen_what_to_expect_description">Verás una pantalla de carga durante la actualización. Cuando termine, podrás seguir usando la aplicación como siempre.</string>
     <string name="object_type_icon_change_title">Cambiar icono</string>
     <string name="object_type_icon_remove">Borrar</string>

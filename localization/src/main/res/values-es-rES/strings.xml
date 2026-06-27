@@ -12,7 +12,7 @@
     <string name="key">Clave</string>
     <string name="login_key">Clave de acceso</string>
     <string name="clear_file_cache">Limpiar caché de archivos</string>
-    <string name="debug_sync_report">Informe de sincronización de depuración</string>
+    <string name="debug_sync_report">Informe de depuración de sincronización</string>
     <string name="debug">Depurar</string>
     <string name="experimental_features">Funciones experimentales</string>
     <string name="experimental_features_compact_vault">Modo de arca compacto</string>

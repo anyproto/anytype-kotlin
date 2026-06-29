@@ -70,6 +70,7 @@ class MembershipViewModel(
 
     val viewState = MutableStateFlow<MembershipMainState>(MembershipMainState.Loading)
     val codeState = MutableStateFlow<MembershipEmailCodeState>(MembershipEmailCodeState.Hidden)
+    val activateCodeState = MutableStateFlow<ActivateCodeState>(ActivateCodeState.Hidden)
     val tierState = MutableStateFlow<MembershipTierState>(MembershipTierState.Hidden)
     val welcomeState = MutableStateFlow<WelcomeState>(WelcomeState.Hidden)
     val errorState = MutableStateFlow<MembershipErrorState>(MembershipErrorState.Hidden)
@@ -96,6 +97,8 @@ class MembershipViewModel(
     val anyNameState = TextFieldState(initialText = "")
 
     val anyEmailState = TextFieldState(initialText = "")
+
+    val activateCodeTextField = TextFieldState(initialText = "")
 
     private val forceRefreshTrigger = MutableStateFlow(false)
 
@@ -269,6 +272,12 @@ class MembershipViewModel(
             is TierAction.ContactUsError -> {
                 sendAnalyticsClickEvent(EventsDictionary.MembershipTierButton.CONTACT_US)
                 proceedWithSupportErrorEmail(action.error)
+            }
+            TierAction.OpenActivateCode -> {
+                openActivateCode()
+            }
+            is TierAction.OnActivateCodeClicked -> {
+                proceedWithRedeemingCode(action.code)
             }
         }
     }
@@ -541,6 +550,35 @@ class MembershipViewModel(
         Timber.d("onDismissCode")
         proceedWithNavigation(MembershipNavigation.Dismiss)
         codeState.value = MembershipEmailCodeState.Hidden
+    }
+
+    private fun openActivateCode() {
+        Timber.d("openActivateCode")
+        activateCodeTextField.clearText()
+        activateCodeState.value = ActivateCodeState.Visible.Default
+        proceedWithNavigation(MembershipNavigation.ActivateCode)
+    }
+
+    /**
+     * STUB for Step 1 (UI only). Drives the real [ActivateCodeState.Visible.Loading] state so the
+     * loading button + disabled-input UX is demoable, but performs no network call yet.
+     *
+     * TODO(step 2): replace the simulated delay with the RedeemMembershipCode use case
+     *  (Rpc.MembershipV2.CodeRedeem) and map success/error to the corresponding states.
+     */
+    private fun proceedWithRedeemingCode(code: String) {
+        Timber.d("proceedWithRedeemingCode, code:$code")
+        activateCodeState.value = ActivateCodeState.Visible.Loading
+        viewModelScope.launch {
+            delay(1500)
+            activateCodeState.value = ActivateCodeState.Visible.Default
+        }
+    }
+
+    fun onDismissActivateCode() {
+        Timber.d("onDismissActivateCode")
+        proceedWithNavigation(MembershipNavigation.Dismiss)
+        activateCodeState.value = ActivateCodeState.Hidden
     }
 
     fun onDismissWelcome() {

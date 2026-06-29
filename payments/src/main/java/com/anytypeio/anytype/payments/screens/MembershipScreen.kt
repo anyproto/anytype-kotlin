@@ -122,6 +122,8 @@ private fun MainContent(
             }
             TiersList(tiers = state.tiersPreview, onClick = tierClicked)
             Spacer(modifier = Modifier.height(32.dp))
+            ActivateCodeEntry(action = { tierAction(TierAction.OpenActivateCode) })
+            Divider()
             LinkButton(text = stringResource(id = R.string.payments_member_link), action = {
                 tierAction(TierAction.OpenUrl(state.membershipLevelDetails))
             })
@@ -267,6 +269,27 @@ fun InfoCards() {
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun ActivateCodeEntry(action: () -> Unit) {
+    Box(
+        modifier = Modifier
+            .height(52.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .noRippleThrottledClickable { action.invoke() }
+    ) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center),
+            text = stringResource(id = R.string.payments_activate_code_entry),
+            style = BodyRegular,
+            color = colorResource(id = R.color.glyph_accent),
+            textAlign = TextAlign.Center
+        )
     }
 }
 

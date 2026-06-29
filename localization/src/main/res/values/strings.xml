@@ -1777,6 +1777,13 @@
     <string name="payments_code_resend">Resend</string>
     <string name="payments_code_resend_in">Resend in %1$d sec</string>
 
+    <!-- Membership Activate Code -->
+    <string name="payments_activate_code_entry">Have a code?</string>
+    <string name="payments_activate_code_title">Activate Your Code</string>
+    <string name="payments_activate_code_subtitle">Enter the code you received after purchase or from an invitation. Your membership will be activated instantly.</string>
+    <string name="payments_activate_code_hint">Enter your code</string>
+    <string name="payments_activate_code_button">Activate</string>
+
 
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>

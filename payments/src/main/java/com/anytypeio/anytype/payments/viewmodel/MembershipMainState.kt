@@ -50,6 +50,8 @@ sealed class TierAction {
     data class OnVerifyCodeClicked(val code: String) : TierAction()
     data object ChangeEmail : TierAction()
     data class ContactUsError(val error: String): TierAction()
+    data object OpenActivateCode : TierAction()
+    data class OnActivateCodeClicked(val code: String) : TierAction()
 }
 
 sealed class MembershipEmailCodeState {
@@ -65,6 +67,17 @@ sealed class MembershipEmailCodeState {
     }
 }
 
+sealed class ActivateCodeState {
+    data object Hidden : ActivateCodeState()
+
+    sealed class Visible : ActivateCodeState() {
+        data object Default : Visible()
+        data object Loading : Visible()
+        data object Success : Visible()
+        data class Error(val message: String?) : Visible()
+    }
+}
+
 sealed class WelcomeState {
     data object Hidden : WelcomeState()
     data class Initial(val tier: Tier) : WelcomeState()
@@ -74,6 +87,7 @@ sealed class MembershipNavigation(val route: String) {
     data object Main : MembershipNavigation("main")
     data object Tier : MembershipNavigation("tier")
     data object Code : MembershipNavigation("code")
+    data object ActivateCode : MembershipNavigation("activate_code")
     data object Welcome : MembershipNavigation("welcome")
     data object Dismiss : MembershipNavigation("")
     data class OpenUrl(val url: String?) : MembershipNavigation("")

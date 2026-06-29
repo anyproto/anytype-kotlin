@@ -940,6 +940,7 @@ open class ObjectSetFragment :
                     listView.gone()
                     listView.setViews(emptyList())
                     boardView.gone()
+                    boardView.clear()
                 }
                 viewerGridHeaderAdapter.submitList(viewer.columns)
                 viewerGridAdapter.submitList(viewer.rows)
@@ -958,6 +959,7 @@ open class ObjectSetFragment :
                         largeCards = viewer.largeCards
                     )
                     boardView.gone()
+                    boardView.clear()
                 }
             }
             is Viewer.ListView -> {
@@ -971,6 +973,7 @@ open class ObjectSetFragment :
                     listView.visible()
                     listView.setViews(viewer.items)
                     boardView.gone()
+                    boardView.clear()
                 }
             }
             is Viewer.Board -> {
@@ -996,6 +999,7 @@ open class ObjectSetFragment :
                     listView.gone()
                     listView.setViews(emptyList())
                     boardView.gone()
+                    boardView.clear()
                     when(viewer.type) {
                         Viewer.Unsupported.TYPE_GRAPH -> {
                             unsupportedViewError.setText(R.string.error_graph_view_not_supported)
@@ -1022,6 +1026,7 @@ open class ObjectSetFragment :
                     listView.gone()
                     listView.setViews(emptyList())
                     boardView.gone()
+                    boardView.clear()
                     unsupportedViewError.gone()
                     unsupportedViewError.text = null
                 }

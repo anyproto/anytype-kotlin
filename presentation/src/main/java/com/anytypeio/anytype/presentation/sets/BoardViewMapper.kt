@@ -168,7 +168,9 @@ private suspend fun groupLabel(
                 .joinToString(", ")
                 .ifBlank { stringResourceProvider.getKanbanEmptyColumnTitle() }
         is DataViewGroup.Value.Checkbox -> stringResourceProvider.getKanbanCheckboxGroupTitle(v.checked)
-        is DataViewGroup.Value.Date -> gid
+        // Date boards aren't supported (Date groups are filtered out of the column query);
+        // never surface a raw group id as a label if one somehow reaches here.
+        is DataViewGroup.Value.Date -> stringResourceProvider.getKanbanEmptyColumnTitle()
         is DataViewGroup.Value.Empty, null -> stringResourceProvider.getKanbanEmptyColumnTitle()
     }
 }

@@ -50,4 +50,9 @@ class BoardViewWidget @JvmOverloads constructor(
     fun setBoard(board: Viewer.Board) {
         this.boardState = board
     }
+
+    /** Releases the held board state when another view is shown, so its cards aren't retained. */
+    fun clear() {
+        this.boardState = null
+    }
 }

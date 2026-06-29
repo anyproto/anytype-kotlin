@@ -195,7 +195,7 @@ private fun ActivateCodeContent(
         val (messageColor, messageText) = when (state) {
             is ActivateCodeState.Visible.Error -> colorResource(id = R.color.palette_system_red) to
                     (state.codeError?.let { codeErrorMessage(it) }
-                        ?: state.message
+                        ?: state.message?.takeIf { it.isNotBlank() }
                         ?: stringResource(id = R.string.membership_any_name_unknown))
 
             else -> Color.Transparent to ""

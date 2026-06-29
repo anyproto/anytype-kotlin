@@ -31,7 +31,9 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 @Composable
 fun ExperimentalFeaturesScreen(
     isCompactModeEnabled: Boolean,
-    onCompactModeToggled: (Boolean) -> Unit
+    onCompactModeToggled: (Boolean) -> Unit,
+    isKanbanEnabled: Boolean,
+    onKanbanToggled: (Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -61,6 +63,15 @@ fun ExperimentalFeaturesScreen(
             description = stringResource(R.string.experimental_features_compact_vault_description),
             isEnabled = isCompactModeEnabled,
             onToggle = onCompactModeToggled
+        )
+
+        Divider()
+
+        ToggleItemWithDescription(
+            title = stringResource(R.string.experimental_features_kanban),
+            description = stringResource(R.string.experimental_features_kanban_description),
+            isEnabled = isKanbanEnabled,
+            onToggle = onKanbanToggled
         )
 
         Divider()
@@ -108,6 +119,8 @@ private fun ToggleItemWithDescription(
 fun ExperimentalFeaturesScreenPreview() {
     ExperimentalFeaturesScreen(
         isCompactModeEnabled = false,
-        onCompactModeToggled = {}
+        onCompactModeToggled = {},
+        isKanbanEnabled = false,
+        onKanbanToggled = {}
     )
 }

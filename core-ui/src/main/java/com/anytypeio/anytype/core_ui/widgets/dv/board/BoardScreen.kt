@@ -107,7 +107,9 @@ fun BoardScreen(
         if (card != null && source != null && target != null) {
             if (target == source) {
                 val column = currentBoard.columns.find { it.id == target }
-                if (column != null) {
+                // Only persist a reorder when the column is fully loaded — otherwise we'd write a
+                // page-truncated order over the backend's full one (mirrors the cross-column guard).
+                if (column != null && isColumnFullyLoaded(column.cards.size, column.count)) {
                     val newIds = reorderedIds(column, card.objectId, dragState.cardBounds, dragState.pointer)
                     if (newIds != column.cards.map { it.objectId }) {
                         currentOnCardReordered(target, newIds)
@@ -117,7 +119,7 @@ fun BoardScreen(
                 // Persist the drop position in the target column, but only when it's fully
                 // loaded — otherwise we'd write a page-truncated order over the backend's full one.
                 val targetColumn = currentBoard.columns.find { it.id == target }
-                val targetOrder = if (targetColumn != null && targetColumn.cards.size >= targetColumn.count) {
+                val targetOrder = if (targetColumn != null && isColumnFullyLoaded(targetColumn.cards.size, targetColumn.count)) {
                     val ids = targetColumn.cards.map { it.objectId }
                     val index = reorderInsertIndex(ids, dragState.pointer.y) { id ->
                         dragState.cardBounds[id]?.let { it.top + it.height / 2f }
@@ -306,6 +308,13 @@ internal fun shouldLoadMore(
     canPaginate: Boolean,
     threshold: Int
 ): Boolean = canPaginate && lastVisibleIndex >= totalItemsCount - threshold
+
+/**
+ * Whether a column's [loadedCards] cover its full backend [count]. Only a fully-loaded column
+ * can have its object order persisted from the client: writing a partially-paged column's order
+ * would truncate the backend's full order. Used to gate both reorder and cross-column drops.
+ */
+internal fun isColumnFullyLoaded(loadedCards: Int, count: Int): Boolean = loadedCards >= count
 
 /** A card found under a board-local point, together with the column it belongs to. */
 internal data class BoardCardHit(val card: Viewer.Board.Card, val columnId: String)

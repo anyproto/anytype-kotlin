@@ -52,4 +52,12 @@ class BoardReorderTest {
 
         assertEquals(1, index) // between a and b
     }
+
+    @Test
+    fun `order is persisted only when the column is fully loaded`() {
+        // All records loaded → persisting the client order is safe.
+        assertEquals(true, isColumnFullyLoaded(loadedCards = 12, count = 12))
+        // Only a page loaded of a larger column → persisting would truncate the backend order.
+        assertEquals(false, isColumnFullyLoaded(loadedCards = 50, count = 120))
+    }
 }

@@ -1539,18 +1539,18 @@
     <string name="payments_code_resend">Reenviar</string>
     <string name="payments_code_resend_in">Reenviar dentro de %1$d s</string>
     <!-- Membership Activate Code -->
-    <string name="payments_activate_code_entry">Have a code?</string>
-    <string name="payments_activate_code_title">Activate Your Code</string>
-    <string name="payments_activate_code_subtitle">Enter the code you received after purchase or from an invitation. Your membership will be activated instantly.</string>
-    <string name="payments_activate_code_hint">Paste activation code…</string>
-    <string name="payments_activate_code_button">Activate</string>
+    <string name="payments_activate_code_entry">¿Tienes un código?</string>
+    <string name="payments_activate_code_title">Activa tu código</string>
+    <string name="payments_activate_code_subtitle">Introduce el código que recibiste tras la compra o con la invitación. Tu suscripción se activará al momento.</string>
+    <string name="payments_activate_code_hint">Pegar código de activación…</string>
+    <string name="payments_activate_code_button">Activar</string>
     <!-- Membership Activate Code — errors (CodeGetInfo) -->
-    <string name="membership_code_error_unknown">Unknown error occured</string>
-    <string name="membership_code_error_bad_input">Bad input</string>
-    <string name="membership_code_error_not_logged_in">Not logged in</string>
-    <string name="membership_code_error_payment_node">No connection to payment node. Please try again.</string>
-    <string name="membership_code_error_code_invalid">The code is not valid. Please check and try again.</string>
-    <string name="membership_code_error_already_member">Membership already exists for the current identity</string>
+    <string name="membership_code_error_unknown">Error desconocido.</string>
+    <string name="membership_code_error_bad_input">Error de entrada</string>
+    <string name="membership_code_error_not_logged_in">No has iniciado sesión</string>
+    <string name="membership_code_error_payment_node">No hay conexión con el nodo de pago. Inténtalo de nuevo, por favor.</string>
+    <string name="membership_code_error_code_invalid">El código no es válido. Compruébalo e inténtalo de nuevo, por favor.</string>
+    <string name="membership_code_error_already_member">Ya existe una suscripción para la identidad actual.</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Te damos la bienvenida a la red,\n%1$s</string>
     <string name="payments_welcome_subtitle">¡Enhorabuena por tu curiosidad!</string>

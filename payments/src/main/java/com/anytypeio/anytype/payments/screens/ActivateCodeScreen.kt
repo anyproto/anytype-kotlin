@@ -45,8 +45,10 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.payments.R
 import com.anytypeio.anytype.payments.viewmodel.ActivateCodeState
@@ -107,15 +109,15 @@ private fun ActivateCodeContent(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .size(56.dp),
-            painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ci_key),
+            painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_payment_code),
             contentDescription = null,
-            colorFilter = ColorFilter.tint(colorResource(id = R.color.glyph_accent))
+            colorFilter = ColorFilter.tint(colorResource(id = R.color.palette_system_teal))
         )
         Spacer(modifier = Modifier.height(20.dp))
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.payments_activate_code_title),
-            style = BodySemiBold,
+            style = HeadlineSubheading,
             color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center
         )
@@ -124,7 +126,7 @@ private fun ActivateCodeContent(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.payments_activate_code_subtitle),
             style = BodyCallout,
-            color = colorResource(id = R.color.text_secondary),
+            color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(24.dp))
@@ -205,10 +207,10 @@ private fun ActivateCodeContent(
         )
 
         Spacer(modifier = Modifier.height(16.dp))
-        ButtonPrimaryLoading(
+        ButtonOnboardingPrimaryLarge(
             text = stringResource(id = R.string.payments_activate_code_button),
             size = ButtonSize.Large,
-            modifierButton = Modifier.fillMaxWidth(),
+            modifierBox = Modifier.fillMaxWidth(),
             enabled = canSubmit,
             loading = isLoading,
             onClick = {

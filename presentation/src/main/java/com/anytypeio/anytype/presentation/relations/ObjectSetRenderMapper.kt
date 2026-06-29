@@ -86,7 +86,8 @@ suspend fun DVViewer.render(
     boardGroupOrder: GroupOrder? = null,
     boardGroups: List<DataViewGroup> = emptyList(),
     boardRecordsByColumn: Map<Id, List<Id>> = emptyMap(),
-    boardCountsByColumn: Map<Id, Int> = emptyMap()
+    boardCountsByColumn: Map<Id, Int> = emptyMap(),
+    kanbanEnabled: Boolean = false
 ): Viewer {
     return when (type) {
         DVViewerType.GRID -> {
@@ -140,7 +141,10 @@ suspend fun DVViewer.render(
             )
         }
 
-        DVViewerType.BOARD -> {
+        DVViewerType.BOARD -> if (!kanbanEnabled) {
+            // Kanban is gated behind an experimental flag; treat it as unsupported when off.
+            Viewer.Unsupported(id = id, title = name, type = Viewer.Unsupported.TYPE_KANBAN)
+        } else {
             Viewer.Board(
                 id = id,
                 title = name,

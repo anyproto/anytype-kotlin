@@ -272,6 +272,7 @@ object ObjectSetModule {
         stringResourceProvider: StringResourceProvider,
         getDefaultObjectType: GetDefaultObjectType,
         addDiscussion: AddDiscussion,
+        userSettingsRepository: UserSettingsRepository,
         backHistoryDelegate: BackHistoryDelegate,
         exitToVaultDelegate: ExitToVaultDelegate
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
@@ -327,6 +328,7 @@ object ObjectSetModule {
         stringResourceProvider = stringResourceProvider,
         getDefaultObjectType = getDefaultObjectType,
         addDiscussion = addDiscussion,
+        userSettingsRepository = userSettingsRepository,
         backHistoryDelegate = backHistoryDelegate,
         exitToVaultDelegate = exitToVaultDelegate
     )

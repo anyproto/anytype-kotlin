@@ -373,10 +373,11 @@ suspend fun ObjectState.DataView.toViewersView(
     ctx: Id,
     session: ObjectSetSession,
     storeOfRelations: StoreOfRelations,
-    stringResourceProvider: StringResourceProvider
+    stringResourceProvider: StringResourceProvider,
+    kanbanEnabled: Boolean = false
 ): List<ViewerView> {
     val viewers = dataViewContent.viewers
-    return when (this) {
+    val mapped = when (this) {
         is ObjectState.DataView.Collection -> mapViewers(
             defaultObjectType = { it.defaultObjectType },
             viewers = viewers,
@@ -415,6 +416,12 @@ suspend fun ObjectState.DataView.toViewersView(
                 stringResourceProvider = stringResourceProvider
             )
         }
+    }
+    // The BOARD (Kanban) viewer is "unsupported" only while the experimental flag is off.
+    return if (kanbanEnabled) {
+        mapped.map { if (it.type == VIEW_TYPE_UNSUPPORTED) it.copy(isUnsupported = false) else it }
+    } else {
+        mapped
     }
 }
 

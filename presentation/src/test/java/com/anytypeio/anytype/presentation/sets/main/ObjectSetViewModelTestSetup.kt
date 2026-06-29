@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
@@ -257,6 +258,9 @@ open class ObjectSetViewModelTestSetup {
     lateinit var boardRecordsSubscriptionContainer: BoardRecordsSubscriptionContainer
 
     @Mock
+    lateinit var userSettingsRepository: UserSettingsRepository
+
+    @Mock
     lateinit var emojiProvider: EmojiProvider
 
     @Mock
@@ -334,6 +338,11 @@ open class ObjectSetViewModelTestSetup {
         spacedViews.stub {
             onBlocking { get(space = SpaceId(defaultSpace)) } doReturn spaceView
         }
+        // Kanban is gated behind an experimental flag; default the tests to enabled so the
+        // board-specific tests exercise the live board. Tests that need it off override this.
+        userSettingsRepository.stub {
+            on { observeKanbanEnabled() } doReturn flowOf(true)
+        }
     }
 
     fun givenViewModel(): ObjectSetViewModel {
@@ -393,6 +402,7 @@ open class ObjectSetViewModelTestSetup {
             stringResourceProvider = stringResourceProvider,
             getDefaultObjectType = getDefaultObjectType,
             addDiscussion = addDiscussion,
+            userSettingsRepository = userSettingsRepository,
             backHistoryDelegate = mock(),
             exitToVaultDelegate = mock()
         )

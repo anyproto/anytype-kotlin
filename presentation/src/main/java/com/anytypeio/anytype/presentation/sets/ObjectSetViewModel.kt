@@ -165,7 +165,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
@@ -236,6 +239,7 @@ class ObjectSetViewModel(
     private val stringResourceProvider: StringResourceProvider,
     private val getDefaultObjectType: GetDefaultObjectType,
     private val addDiscussion: AddDiscussion,
+    private val userSettingsRepository: UserSettingsRepository,
     private val backHistoryDelegate: BackHistoryDelegate,
     private val exitToVaultDelegate: ExitToVaultDelegate
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -296,12 +300,17 @@ class ObjectSetViewModel(
     /** Subscription ids of the currently active per-column record subscriptions, for cleanup. */
     private var boardRecordSubscriptionIds: List<Id> = emptyList()
 
+    /** Whether the experimental Kanban (Board) view is enabled; when off, BOARD views are unsupported. */
+    private val isKanbanEnabled = userSettingsRepository.observeKanbanEnabled()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     /** Fires a board re-render whenever any board-specific flow changes. */
     private val boardRenderTrigger = combine(
         boardGroupOptions,
         boardGroups,
-        boardRecords
-    ) { _, _, _ -> Unit }
+        boardRecords,
+        isKanbanEnabled
+    ) { _, _, _, _ -> Unit }
 
     private val _dvViews = MutableStateFlow<List<ViewerView>>(emptyList())
 
@@ -707,9 +716,10 @@ class ObjectSetViewModel(
                 )
             }.flatMapLatest { query  ->
                 val activeViewer = query.state.dataViewState()?.viewerByIdOrFirst(query.currentViewerId)
-                if (activeViewer?.type == DVViewerType.BOARD) {
-                    // Boards are driven entirely by per-column record subscriptions
-                    // (subscribeToBoardRecords), not the single flat 50-record window.
+                if (activeViewer?.type == DVViewerType.BOARD && isKanbanEnabled.value) {
+                    // An enabled board is driven entirely by per-column record subscriptions
+                    // (subscribeToBoardRecords), not the single flat 50-record window. When the
+                    // experimental flag is off the board is unsupported, so the normal sub runs.
                     return@flatMapLatest flowOf(DataViewState.Loaded(objects = emptyList(), dependencies = emptyList()))
                 }
                 when (query.state) {
@@ -835,10 +845,10 @@ class ObjectSetViewModel(
      */
     private fun subscribeToBoardGroups() {
         jobs += viewModelScope.launch {
-            combine(stateReducer.state, session.currentViewerId) { state, currentViewId ->
+            combine(stateReducer.state, session.currentViewerId, isKanbanEnabled) { state, currentViewId, kanbanEnabled ->
                 val dataView = state.dataViewState()
                 val viewer = dataView?.viewerByIdOrFirst(currentViewId)
-                if (dataView != null && viewer != null && viewer.type == DVViewerType.BOARD) {
+                if (kanbanEnabled && dataView != null && viewer != null && viewer.type == DVViewerType.BOARD) {
                     buildBoardGroupParams(dataView, viewer)
                 } else {
                     null
@@ -912,10 +922,10 @@ class ObjectSetViewModel(
      */
     private fun subscribeToBoardRecords() {
         jobs += viewModelScope.launch {
-            combine(stateReducer.state, session.currentViewerId, boardGroups) { state, currentViewId, groups ->
+            combine(stateReducer.state, session.currentViewerId, boardGroups, isKanbanEnabled) { state, currentViewId, groups, kanbanEnabled ->
                 val dataView = state.dataViewState()
                 val viewer = dataView?.viewerByIdOrFirst(currentViewId)
-                if (dataView != null && viewer != null && viewer.type == DVViewerType.BOARD && groups.isNotEmpty()) {
+                if (kanbanEnabled && dataView != null && viewer != null && viewer.type == DVViewerType.BOARD && groups.isNotEmpty()) {
                     buildBoardRecordsParams(dataView, viewer, groups)
                 } else {
                     null
@@ -1007,9 +1017,9 @@ class ObjectSetViewModel(
      */
     private fun subscribeToBoardGroupOptions() {
         jobs += viewModelScope.launch {
-            combine(stateReducer.state, session.currentViewerId) { state, currentViewId ->
+            combine(stateReducer.state, session.currentViewerId, isKanbanEnabled) { state, currentViewId, kanbanEnabled ->
                 val viewer = state.dataViewState()?.viewerByIdOrFirst(currentViewId)
-                if (viewer?.type == DVViewerType.BOARD) {
+                if (kanbanEnabled && viewer?.type == DVViewerType.BOARD) {
                     viewer.groupRelationKey?.takeIf { it.isNotEmpty() }
                 } else {
                     null
@@ -1111,7 +1121,8 @@ class ObjectSetViewModel(
                     ctx = vmParams.ctx,
                     session = session,
                     storeOfRelations = storeOfRelations,
-                    stringResourceProvider = stringResourceProvider
+                    stringResourceProvider = stringResourceProvider,
+                    kanbanEnabled = isKanbanEnabled.value
                 ) ?: emptyList()
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
@@ -1176,7 +1187,8 @@ class ObjectSetViewModel(
                     ctx = vmParams.ctx,
                     session = session,
                     storeOfRelations = storeOfRelations,
-                    stringResourceProvider = stringResourceProvider
+                    stringResourceProvider = stringResourceProvider,
+                    kanbanEnabled = isKanbanEnabled.value
                 ) ?: emptyList()
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
@@ -1196,7 +1208,8 @@ class ObjectSetViewModel(
                     boardGroupOrder = groupOrderForView(objectState, viewer?.id),
                     boardGroups = boardGroups.value,
                     boardRecordsByColumn = boardRecords.value.mapValues { it.value.ids },
-                    boardCountsByColumn = boardRecords.value.mapValues { it.value.total }
+                    boardCountsByColumn = boardRecords.value.mapValues { it.value.total },
+                    kanbanEnabled = isKanbanEnabled.value
                 )
 
                 when {
@@ -1259,7 +1272,8 @@ class ObjectSetViewModel(
                     ctx = vmParams.ctx,
                     session = session,
                     storeOfRelations = storeOfRelations,
-                    stringResourceProvider = stringResourceProvider
+                    stringResourceProvider = stringResourceProvider,
+                    kanbanEnabled = isKanbanEnabled.value
                 ) ?: emptyList()
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
@@ -1279,7 +1293,8 @@ class ObjectSetViewModel(
                     boardGroupOrder = groupOrderForView(objectState, viewer?.id),
                     boardGroups = boardGroups.value,
                     boardRecordsByColumn = boardRecords.value.mapValues { it.value.ids },
-                    boardCountsByColumn = boardRecords.value.mapValues { it.value.total }
+                    boardCountsByColumn = boardRecords.value.mapValues { it.value.total },
+                    kanbanEnabled = isKanbanEnabled.value
                 )
 
                 when {
@@ -1335,7 +1350,8 @@ class ObjectSetViewModel(
                 boardGroupOrder = groupOrderForView(objectState, it.id),
                 boardGroups = boardGroups.value,
                 boardRecordsByColumn = boardRecords.value.mapValues { entry -> entry.value.ids },
-                boardCountsByColumn = boardRecords.value.mapValues { entry -> entry.value.total }
+                boardCountsByColumn = boardRecords.value.mapValues { entry -> entry.value.total },
+                kanbanEnabled = isKanbanEnabled.value
             )
         }
     }

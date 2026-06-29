@@ -116,6 +116,7 @@ class CollectionCreateAndAddObjectTest : ObjectSetViewModelTestSetup() {
             stringResourceProvider = stringResourceProvider,
             getDefaultObjectType = getDefaultObjectType,
             addDiscussion = mock(),
+            userSettingsRepository = userSettingsRepository,
             backHistoryDelegate = mock(),
             exitToVaultDelegate = mock()
         )

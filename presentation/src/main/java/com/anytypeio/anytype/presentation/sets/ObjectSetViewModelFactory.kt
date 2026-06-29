@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
@@ -108,6 +109,7 @@ class ObjectSetViewModelFactory(
     private val stringResourceProvider: StringResourceProvider,
     private val getDefaultObjectType: GetDefaultObjectType,
     private val addDiscussion: AddDiscussion,
+    private val userSettingsRepository: UserSettingsRepository,
     private val backHistoryDelegate: BackHistoryDelegate,
     private val exitToVaultDelegate: ExitToVaultDelegate
 ) : ViewModelProvider.Factory {
@@ -166,6 +168,7 @@ class ObjectSetViewModelFactory(
             stringResourceProvider = stringResourceProvider,
             getDefaultObjectType = getDefaultObjectType,
             addDiscussion = addDiscussion,
+            userSettingsRepository = userSettingsRepository,
             backHistoryDelegate = backHistoryDelegate,
             exitToVaultDelegate = exitToVaultDelegate
         ) as T

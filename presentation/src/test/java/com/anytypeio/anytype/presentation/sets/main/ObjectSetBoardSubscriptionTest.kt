@@ -23,6 +23,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -140,6 +141,21 @@ class ObjectSetBoardSubscriptionTest : ObjectSetViewModelTestSetup() {
         vm.onBoardColumnLoadMore("g1")
 
         verify(boardRecordsSubscriptionContainer).loadMore("g1", ObjectSetConfig.DEFAULT_LIMIT)
+    }
+
+    @Test
+    fun `board is inert when the experimental Kanban flag is off`() = runTest {
+        // Override the default (enabled) stub: Kanban experimental flag is off.
+        userSettingsRepository.stub { on { observeKanbanEnabled() } doReturn flowOf(false) }
+        stubBoardCollection()
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        // No board group/record subscriptions are started for a BOARD view while the flag is off.
+        verify(boardGroupSubscriptionContainer, never()).observe(any())
+        verify(boardRecordsSubscriptionContainer, never()).observe(any())
     }
 
     @Test

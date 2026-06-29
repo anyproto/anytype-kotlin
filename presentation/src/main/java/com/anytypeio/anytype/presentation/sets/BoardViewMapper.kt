@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.UrlBuilder
-import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -22,15 +21,13 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 const val BOARD_EMPTY_GROUP_ID = "empty"
 
 /**
- * Builds the columns of a [Viewer.Board] (Kanban) view.
- *
- * When [groups] (from the backend group subscription) are present, columns are
- * built from them — canonical group ids, empty option columns, Checkbox / Tag
- * combination groups, ordering and hidden state. Otherwise (groups not loaded
- * yet) falls back to deriving columns client-side from the loaded records.
+ * Builds the columns of a [Viewer.Board] (Kanban) view from the backend group subscription
+ * [groups] — canonical group ids, empty option columns, Checkbox / Tag combination groups,
+ * ordering and hidden state. Each column's cards come from its own paged record subscription
+ * ([recordsByColumn] / [countsByColumn]). Until the groups load this returns no columns (the
+ * board shows its loading/empty state); there is no client-side record-bucketing fallback.
  */
 suspend fun DVViewer.buildBoardViews(
-    objectIds: List<Id>,
     relations: List<ObjectWrapper.Relation>,
     urlBuilder: UrlBuilder,
     objectStore: ObjectStore,
@@ -42,41 +39,25 @@ suspend fun DVViewer.buildBoardViews(
     groupOptions: Map<Id, ObjectWrapper.Option> = emptyMap(),
     groupOrder: GroupOrder? = null,
     groups: List<DataViewGroup> = emptyList(),
-    // Per-column record ids + backend totals, one paged subscription per column (keyed by
-    // column id). When present, the group path is driven by these instead of bucketing a
-    // single flat page client-side.
+    // Per-column record ids + backend totals, one paged subscription per column (keyed by column id).
     recordsByColumn: Map<Id, List<Id>> = emptyMap(),
     countsByColumn: Map<Id, Int> = emptyMap()
 ): List<Viewer.Board.Column> {
-    return if (groups.isNotEmpty()) {
-        buildColumnsFromGroups(
-            groups = groups,
-            recordsByColumn = recordsByColumn,
-            countsByColumn = countsByColumn,
-            relations = relations,
-            urlBuilder = urlBuilder,
-            objectStore = objectStore,
-            objectOrders = objectOrders,
-            fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes,
-            stringResourceProvider = stringResourceProvider,
-            groupOptions = groupOptions,
-            groupOrder = groupOrder
-        )
-    } else {
-        buildColumnsFromRecords(
-            objectIds = objectIds,
-            relations = relations,
-            urlBuilder = urlBuilder,
-            objectStore = objectStore,
-            objectOrders = objectOrders,
-            fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes,
-            stringResourceProvider = stringResourceProvider,
-            groupOptions = groupOptions,
-            groupOrder = groupOrder
-        )
-    }
+    if (groups.isEmpty()) return emptyList()
+    return buildColumnsFromGroups(
+        groups = groups,
+        recordsByColumn = recordsByColumn,
+        countsByColumn = countsByColumn,
+        relations = relations,
+        urlBuilder = urlBuilder,
+        objectStore = objectStore,
+        objectOrders = objectOrders,
+        fieldParser = fieldParser,
+        storeOfObjectTypes = storeOfObjectTypes,
+        stringResourceProvider = stringResourceProvider,
+        groupOptions = groupOptions,
+        groupOrder = groupOrder
+    )
 }
 
 // region Backend-group-driven columns
@@ -224,83 +205,6 @@ private suspend fun optionColor(
     store: ObjectStore
 ): String? = groupOptions[id]?.color?.takeIf { it.isNotBlank() }
     ?: store.get(id)?.relationOptionColor?.takeIf { it.isNotBlank() }
-
-// endregion
-
-// region Client-side fallback (groups not yet loaded)
-
-private suspend fun DVViewer.buildColumnsFromRecords(
-    objectIds: List<Id>,
-    relations: List<ObjectWrapper.Relation>,
-    urlBuilder: UrlBuilder,
-    objectStore: ObjectStore,
-    objectOrders: List<ObjectOrder>,
-    fieldParser: FieldParser,
-    storeOfObjectTypes: StoreOfObjectTypes,
-    stringResourceProvider: StringResourceProvider,
-    groupOptions: Map<Id, ObjectWrapper.Option>,
-    groupOrder: GroupOrder?
-): List<Viewer.Board.Column> {
-    val groupRelationKey = groupRelationKey
-    val filteredRelations = filteredRelations(relations)
-
-    val grouped = LinkedHashMap<Id, MutableList<ObjectWrapper.Basic>>()
-    objectIds
-        .mapNotNull { objectStore.get(it) }
-        .filter { it.isValid }
-        .forEach { obj ->
-            grouped.getOrPut(obj.resolveGroupId(groupRelationKey)) { mutableListOf() }.add(obj)
-        }
-
-    grouped.getOrPut(BOARD_EMPTY_GROUP_ID) { mutableListOf() }
-    groupOptions.keys.forEach { optionId -> grouped.getOrPut(optionId) { mutableListOf() } }
-
-    val columns = grouped.map { (groupId, objects) ->
-        val mapped = if (groupId != BOARD_EMPTY_GROUP_ID) groupOptions[groupId] else null
-        val stored = if (groupId != BOARD_EMPTY_GROUP_ID && mapped == null) objectStore.get(groupId) else null
-        val label = if (groupId == BOARD_EMPTY_GROUP_ID) {
-            stringResourceProvider.getKanbanEmptyColumnTitle()
-        } else {
-            mapped?.name?.takeIf { it.isNotBlank() }
-                ?: stored?.name?.takeIf { it.isNotBlank() }
-                ?: groupId
-        }
-        val color = mapped?.color?.takeIf { it.isNotBlank() }
-            ?: stored?.relationOptionColor?.takeIf { it.isNotBlank() }
-
-        val orderIds = objectOrders.find { it.group == groupId }?.ids.orEmpty()
-        val orderIndex = orderIds.withIndex().associate { (index, id) -> id to index }
-        val cards = objects
-            .sortedBy { orderIndex[it.id] ?: Int.MAX_VALUE }
-            .map { obj ->
-                obj.toCard(urlBuilder, viewerRelations, objectStore, filteredRelations, fieldParser, storeOfObjectTypes, hideIcon)
-            }
-
-        Viewer.Board.Column(id = groupId, label = label, color = color, cards = cards, count = cards.size)
-    }
-
-    val viewGroups = groupOrder?.viewGroups.orEmpty()
-    if (viewGroups.isNotEmpty()) {
-        return applyGroupOrder(columns, groupOrder)
-    }
-    val optionOrder = groupOptions.keys.withIndex().associate { (index, id) -> id to index }
-    return columns.sortedBy { column ->
-        when (column.id) {
-            BOARD_EMPTY_GROUP_ID -> -1
-            else -> optionOrder[column.id] ?: Int.MAX_VALUE
-        }
-    }
-}
-
-private fun ObjectWrapper.Basic.resolveGroupId(groupRelationKey: String?): Id {
-    if (groupRelationKey.isNullOrEmpty()) return BOARD_EMPTY_GROUP_ID
-    val groupValue: Id? = when (val value = map[groupRelationKey]) {
-        is Id -> value
-        is List<*> -> value.typeOf<Id>().firstOrNull()
-        else -> null
-    }
-    return groupValue?.takeIf { it.isNotEmpty() } ?: BOARD_EMPTY_GROUP_ID
-}
 
 // endregion
 

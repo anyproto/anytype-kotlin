@@ -67,83 +67,6 @@ class BoardViewMapperTest {
     }
 
     @Test
-    fun `should group records into columns by status with resolved labels and colors`() = runTest {
-
-        val todo = StubRelationOptionObject(
-            id = MockDataFactory.randomUuid(),
-            space = defaultSpace,
-            text = "To do",
-            color = "red"
-        )
-        val doing = StubRelationOptionObject(
-            id = MockDataFactory.randomUuid(),
-            space = defaultSpace,
-            text = "Doing",
-            color = "blue"
-        )
-
-        val objA = record(id = "A", name = "Task A", status = listOf(todo.id))
-        val objB = record(id = "B", name = "Task B", status = listOf(todo.id))
-        val objC = record(id = "C", name = "Task C", status = listOf(doing.id))
-        val objD = record(id = "D", name = "Task D", status = null)
-
-        val store = DefaultObjectStore()
-        store.merge(
-            objects = listOf(objA, objB, objC, objD).map { ObjectWrapper.Basic(it) },
-            dependencies = listOf(todo, doing).map { ObjectWrapper.Basic(it.map) },
-            subscriptions = emptyList()
-        )
-
-        val storeOfRelations = DefaultStoreOfRelations().apply {
-            merge(listOf(statusRelation(name = "Status")))
-        }
-
-        val viewer = DVViewer(
-            id = MockDataFactory.randomUuid(),
-            name = "Board",
-            type = Block.Content.DataView.Viewer.Type.BOARD,
-            sorts = emptyList(),
-            filters = emptyList(),
-            viewerRelations = listOf(
-                Block.Content.DataView.Viewer.ViewerRelation(key = statusRelationKey, isVisible = true)
-            ),
-            groupRelationKey = statusRelationKey
-        )
-
-        val columns = viewer.buildBoardViews(
-            objectIds = listOf("A", "B", "C", "D"),
-            relations = listOf(statusRelationWrapper()),
-            urlBuilder = UrlBuilderImpl(gateway),
-            objectStore = store,
-            objectOrders = emptyList(),
-            storeOfRelations = storeOfRelations,
-            fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes,
-            stringResourceProvider = stringResourceProvider
-        )
-
-        assertEquals(3, columns.size)
-
-        val empty = columns[0]
-        assertEquals(BOARD_EMPTY_GROUP_ID, empty.id)
-        assertEquals("No value", empty.label)
-        assertEquals(null, empty.color)
-        assertEquals(listOf("D"), empty.cards.map { it.objectId })
-
-        val first = columns[1]
-        assertEquals(todo.id, first.id)
-        assertEquals("To do", first.label)
-        assertEquals("red", first.color)
-        assertEquals(listOf("A", "B"), first.cards.map { it.objectId })
-
-        val second = columns[2]
-        assertEquals(doing.id, second.id)
-        assertEquals("Doing", second.label)
-        assertEquals("blue", second.color)
-        assertEquals(listOf("C"), second.cards.map { it.objectId })
-    }
-
-    @Test
     fun `should order cards within a column by object order`() = runTest {
 
         val todo = StubRelationOptionObject(
@@ -181,7 +104,6 @@ class BoardViewMapperTest {
         )
 
         val columns = viewer.buildBoardViews(
-            objectIds = listOf("A", "B", "C"),
             relations = listOf(statusRelationWrapper()),
             urlBuilder = UrlBuilderImpl(gateway),
             objectStore = store,
@@ -191,7 +113,10 @@ class BoardViewMapperTest {
             storeOfRelations = storeOfRelations,
             fieldParser = fieldParser,
             storeOfObjectTypes = storeOfObjectTypes,
-            stringResourceProvider = stringResourceProvider
+            stringResourceProvider = stringResourceProvider,
+            groupOptions = mapOf(todo.id to ObjectWrapper.Option(todo.map)),
+            groups = listOf(DataViewGroup(id = todo.id, value = DataViewGroup.Value.Status(todo.id))),
+            recordsByColumn = mapOf(todo.id to listOf("A", "B", "C"))
         )
 
         assertEquals(2, columns.size)
@@ -242,7 +167,6 @@ class BoardViewMapperTest {
         )
 
         val columns = viewer.buildBoardViews(
-            objectIds = listOf("A"),
             relations = listOf(statusRelationWrapper()),
             urlBuilder = UrlBuilderImpl(gateway),
             objectStore = store,
@@ -254,10 +178,16 @@ class BoardViewMapperTest {
             groupOptions = mapOf(
                 todo.id to ObjectWrapper.Option(todo.map),
                 done.id to ObjectWrapper.Option(done.map)
-            )
+            ),
+            groups = listOf(
+                DataViewGroup(id = todo.id, value = DataViewGroup.Value.Status(todo.id)),
+                DataViewGroup(id = done.id, value = DataViewGroup.Value.Status(done.id))
+            ),
+            // Only "To do" has a record; "Done" stays an empty column.
+            recordsByColumn = mapOf(todo.id to listOf("A"))
         )
 
-        // "No value" first, then options in loaded order (To do has the record, Done is empty).
+        // "No value" first, then groups in backend order (To do has the record, Done is empty).
         assertEquals(3, columns.size)
         assertEquals(BOARD_EMPTY_GROUP_ID, columns[0].id)
         assertEquals(todo.id, columns[1].id)
@@ -309,7 +239,6 @@ class BoardViewMapperTest {
         )
 
         val columns = viewer.buildBoardViews(
-            objectIds = listOf("T", "D", "B"),
             relations = listOf(statusRelationWrapper()),
             urlBuilder = UrlBuilderImpl(gateway),
             objectStore = store,
@@ -322,6 +251,11 @@ class BoardViewMapperTest {
                 todo.id to ObjectWrapper.Option(todo.map),
                 done.id to ObjectWrapper.Option(done.map),
                 blocked.id to ObjectWrapper.Option(blocked.map)
+            ),
+            groups = listOf(
+                DataViewGroup(id = todo.id, value = DataViewGroup.Value.Status(todo.id)),
+                DataViewGroup(id = done.id, value = DataViewGroup.Value.Status(done.id)),
+                DataViewGroup(id = blocked.id, value = DataViewGroup.Value.Status(blocked.id))
             ),
             groupOrder = GroupOrder(
                 viewId = "view-1",
@@ -384,7 +318,6 @@ class BoardViewMapperTest {
         )
 
         val columns = viewer.buildBoardViews(
-            objectIds = listOf("A", "B", "C"),
             relations = listOf(statusRelationWrapper()),
             urlBuilder = UrlBuilderImpl(gateway),
             objectStore = store,
@@ -468,7 +401,6 @@ class BoardViewMapperTest {
         )
 
         val columns = viewer.buildBoardViews(
-            objectIds = listOf("A", "B"),
             relations = listOf(statusRelationWrapper()),
             urlBuilder = UrlBuilderImpl(gateway),
             objectStore = store,
@@ -530,7 +462,6 @@ class BoardViewMapperTest {
         )
 
         val columns = viewer.buildBoardViews(
-            objectIds = listOf("A", "B"),
             relations = listOf(statusRelationWrapper()),
             urlBuilder = UrlBuilderImpl(gateway),
             objectStore = store,
@@ -578,7 +509,6 @@ class BoardViewMapperTest {
         )
 
         val columns = viewer.buildBoardViews(
-            objectIds = emptyList(),
             relations = listOf(statusRelationWrapper()),
             urlBuilder = UrlBuilderImpl(gateway),
             objectStore = store,

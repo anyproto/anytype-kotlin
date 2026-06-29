@@ -98,7 +98,7 @@ class ObjectSetBoardSubscriptionTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `does not write a board card move while groups are not loaded (M3)`() = runTest {
         stubBoardCollection()
-        // observe() emits an empty group set, so boardGroups stays empty (client-fallback render).
+        // observe() emits an empty group set, so boardGroups stays empty (no columns rendered).
         boardGroupSubscriptionContainer.stub {
             on { observe(any()) } doReturn flowOf(emptyList())
         }
@@ -110,8 +110,8 @@ class ObjectSetBoardSubscriptionTest : ObjectSetViewModelTestSetup() {
         vm.onBoardCardDropped(cardId = "card-1", sourceColumnId = "src", targetColumnId = "tgt")
         advanceUntilIdle()
 
-        // No authoritative group ids yet → the move must be refused, not written with a
-        // client-fallback column id.
+        // No authoritative group ids yet → the move must be refused, not written with an
+        // unresolved column id.
         verifyNoInteractions(setObjectDetails)
     }
 

@@ -149,7 +149,6 @@ suspend fun DVViewer.render(
                 id = id,
                 title = name,
                 columns = buildBoardViews(
-                    objectIds = objects,
                     relations = dataViewRelations,
                     urlBuilder = builder,
                     objectStore = store,

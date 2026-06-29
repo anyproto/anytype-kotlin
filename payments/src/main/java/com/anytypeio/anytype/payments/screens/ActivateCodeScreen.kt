@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.membership.MembershipErrors
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -65,6 +66,7 @@ fun ActivateCodeScreen(
         ModalBottomSheet(
             sheetState = sheetState,
             onDismissRequest = onDismiss,
+            dragHandle = null,
             containerColor = colorResource(id = R.color.background_primary),
             content = {
                 ActivateCodeContent(
@@ -102,7 +104,11 @@ private fun ActivateCodeContent(
             .wrapContentHeight()
             .padding(horizontal = 16.dp)
     ) {
-        Spacer(modifier = Modifier.height(24.dp))
+        Dragger(modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(vertical = 6.dp)
+        )
+        Spacer(modifier = Modifier.height(60.dp))
         Image(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -111,7 +117,7 @@ private fun ActivateCodeContent(
             contentDescription = null,
             colorFilter = ColorFilter.tint(colorResource(id = R.color.palette_system_teal))
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.height(12.dp))
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.payments_activate_code_title),
@@ -210,6 +216,7 @@ private fun ActivateCodeContent(
             text = stringResource(id = R.string.payments_activate_code_button),
             size = ButtonSize.Large,
             modifierBox = Modifier.fillMaxWidth(),
+            enabled = canSubmit,
             loading = isLoading,
             onClick = {
                 if (!isLoading) {

@@ -320,7 +320,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 runCatching {
                                     findNavController(R.id.fragment).navigate(
                                         R.id.paymentsScreen,
-                                        MembershipFragment.args(tierId = command.tierId),
+                                        MembershipFragment.args(tierId = command.tierId, code = command.code),
                                         NavOptions.Builder().setLaunchSingleTop(true).build()
                                     )
                                 }.onFailure {

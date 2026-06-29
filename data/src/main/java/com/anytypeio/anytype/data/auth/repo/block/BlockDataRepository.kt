@@ -1118,6 +1118,14 @@ class BlockDataRepository(
         return remote.membershipGetTiers(command)
     }
 
+    override suspend fun membershipCodeGetInfo(command: Command.Membership.CodeGetInfo): Int {
+        return remote.membershipCodeGetInfo(command)
+    }
+
+    override suspend fun membershipCodeRedeem(command: Command.Membership.CodeRedeem) {
+        remote.membershipCodeRedeem(command)
+    }
+
     override suspend fun processCancel(command: Command.ProcessCancel) {
         remote.processCancel(command)
     }

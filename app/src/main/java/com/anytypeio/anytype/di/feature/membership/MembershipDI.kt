@@ -9,9 +9,11 @@ import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.payments.GetMembershipCodeInfo
 import com.anytypeio.anytype.domain.payments.GetMembershipEmailStatus
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
+import com.anytypeio.anytype.domain.payments.RedeemMembershipCode
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
@@ -91,6 +93,22 @@ object MembershipModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): VerifyMembershipEmailCode = VerifyMembershipEmailCode(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGetMembershipCodeInfo(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetMembershipCodeInfo = GetMembershipCodeInfo(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideRedeemMembershipCode(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): RedeemMembershipCode = RedeemMembershipCode(repo = repo, dispatchers = dispatchers)
 
     @Module
     interface Declarations {

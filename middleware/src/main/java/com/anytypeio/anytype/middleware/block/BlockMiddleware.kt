@@ -1083,6 +1083,14 @@ class BlockMiddleware(
         return middleware.membershipGetTiers(command)
     }
 
+    override suspend fun membershipCodeGetInfo(command: Command.Membership.CodeGetInfo): Int {
+        return middleware.membershipCodeGetInfo(command)
+    }
+
+    override suspend fun membershipCodeRedeem(command: Command.Membership.CodeRedeem) {
+        middleware.membershipCodeRedeem(command)
+    }
+
     override suspend fun processCancel(command: Command.ProcessCancel) {
         middleware.processCancel(command)
     }

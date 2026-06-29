@@ -1120,7 +1120,8 @@ class VaultViewModel(
                 is DeepLinkResolver.Action.DeepLinkToMembership -> {
                     commands.emit(
                         VaultCommand.Deeplink.MembershipScreen(
-                            tierId = deeplink.tierId
+                            tierId = deeplink.tierId,
+                            code = deeplink.code
                         )
                     )
                 }

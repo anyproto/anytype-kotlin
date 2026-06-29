@@ -2482,6 +2482,40 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun membershipCodeGetInfo(request: Rpc.Membership.CodeGetInfo.Request): Rpc.Membership.CodeGetInfo.Response {
+        val encoded = Service.membershipCodeGetInfo(
+            Rpc.Membership.CodeGetInfo.Request.ADAPTER.encode(request)
+        ) ?: return Rpc.Membership.CodeGetInfo.Response(
+            error = Rpc.Membership.CodeGetInfo.Response.Error(
+                code = Rpc.Membership.CodeGetInfo.Response.Error.Code.NULL
+            )
+        )
+        val response = Rpc.Membership.CodeGetInfo.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.CodeGetInfo.Response.Error.Code.NULL) {
+            throw error.toCore()
+        } else {
+            return response
+        }
+    }
+
+    override fun membershipCodeRedeem(request: Rpc.Membership.CodeRedeem.Request): Rpc.Membership.CodeRedeem.Response {
+        val encoded = Service.membershipCodeRedeem(
+            Rpc.Membership.CodeRedeem.Request.ADAPTER.encode(request)
+        ) ?: return Rpc.Membership.CodeRedeem.Response(
+            error = Rpc.Membership.CodeRedeem.Response.Error(
+                code = Rpc.Membership.CodeRedeem.Response.Error.Code.NULL
+            )
+        )
+        val response = Rpc.Membership.CodeRedeem.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.CodeRedeem.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun membershipGetTiers(request: Rpc.Membership.GetTiers.Request): Rpc.Membership.GetTiers.Response {
         val encoded = Service.membershipGetTiers(
             Rpc.Membership.GetTiers.Request.ADAPTER.encode(request)

@@ -2353,7 +2353,8 @@ class HomeScreenViewModel(
                 viewModelScope.launch {
                     commandsChannel.send(
                         Command.Deeplink.MembershipScreen(
-                            tierId = deeplink.tierId
+                            tierId = deeplink.tierId,
+                            code = deeplink.code
                         )
                     )
                 }
@@ -4643,7 +4644,7 @@ sealed class Command {
             val deepLinkType: String,
             val deepLinkSource: String
         ) : Deeplink()
-        data class MembershipScreen(val tierId: String?) : Deeplink()
+        data class MembershipScreen(val tierId: String?, val code: String? = null) : Deeplink()
     }
 
     data object ShowLeaveSpaceWarning : Command()

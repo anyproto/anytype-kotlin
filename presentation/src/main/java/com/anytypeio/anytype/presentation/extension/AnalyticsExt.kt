@@ -2511,6 +2511,35 @@ fun CoroutineScope.sendAnalyticsMembershipPurchaseEvent(
         props = Props(mapOf(EventsPropertiesKey.name to tier))
     )
 }
+
+fun CoroutineScope.sendAnalyticsScreenMembershipCodeEvent(
+    analytics: Analytics,
+    route: EventsDictionary.MembershipCodeRoute
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.screenMembershipCode,
+        props = Props(mapOf(EventsPropertiesKey.route to route.value))
+    )
+}
+
+fun CoroutineScope.sendAnalyticsClickMembershipCodeEvent(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.clickMembershipCode
+    )
+}
+
+fun CoroutineScope.sendAnalyticsActivateMembershipCodeEvent(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.activateMembershipCode
+    )
+}
 //endregion
 
 suspend fun Analytics.sendAnalyticsApproveInvite(

@@ -44,9 +44,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipErrors
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
-import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.Relations2
@@ -193,6 +191,7 @@ private fun ActivateCodeContent(
                     (state.codeError?.let { codeErrorMessage(it) }
                         ?: state.message
                         ?: stringResource(id = R.string.membership_any_name_unknown))
+
             else -> Color.Transparent to ""
         }
         Spacer(modifier = Modifier.height(6.dp))
@@ -211,10 +210,11 @@ private fun ActivateCodeContent(
             text = stringResource(id = R.string.payments_activate_code_button),
             size = ButtonSize.Large,
             modifierBox = Modifier.fillMaxWidth(),
-            enabled = canSubmit,
             loading = isLoading,
             onClick = {
-                action(TierAction.OnActivateCodeClicked(textField.text.toString()))
+                if (!isLoading) {
+                    action(TierAction.OnActivateCodeClicked(textField.text.toString()))
+                }
             }
         )
         Spacer(modifier = Modifier.height(32.dp))

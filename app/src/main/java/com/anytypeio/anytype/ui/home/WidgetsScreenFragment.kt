@@ -482,7 +482,7 @@ class WidgetsScreenFragment : Fragment(),
                 runCatching {
                     findNavController().navigate(
                         R.id.paymentsScreen,
-                        MembershipFragment.args(command.tierId),
+                        MembershipFragment.args(command.tierId, command.code),
                         Builder().setLaunchSingleTop(true).build()
                     )
                 }.onFailure {

@@ -646,6 +646,12 @@ interface MiddlewareService {
     fun membershipGetTiers(request: Rpc.Membership.GetTiers.Request): Rpc.Membership.GetTiers.Response
 
     @Throws(Exception::class)
+    fun membershipCodeGetInfo(request: Rpc.Membership.CodeGetInfo.Request): Rpc.Membership.CodeGetInfo.Response
+
+    @Throws(Exception::class)
+    fun membershipCodeRedeem(request: Rpc.Membership.CodeRedeem.Request): Rpc.Membership.CodeRedeem.Response
+
+    @Throws(Exception::class)
     fun membershipSubscribeToUpdates(request: Rpc.MembershipV2.SubscribeToUpdates.Request): Rpc.MembershipV2.SubscribeToUpdates.Response
 
     @Throws(Exception::class)

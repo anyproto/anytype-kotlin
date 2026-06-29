@@ -74,7 +74,10 @@ sealed class ActivateCodeState {
         data object Default : Visible()
         data object Loading : Visible()
         data object Success : Visible()
-        data class Error(val message: String?) : Visible()
+        data class Error(
+            val codeError: MembershipErrors.CodeGetInfo? = null,
+            val message: String? = null
+        ) : Visible()
     }
 }
 

@@ -475,6 +475,8 @@ interface BlockRemote {
     suspend fun membershipSubscribeToUpdates(email: String)
     suspend fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode)
     suspend fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData>
+    suspend fun membershipCodeGetInfo(command: Command.Membership.CodeGetInfo): Int
+    suspend fun membershipCodeRedeem(command: Command.Membership.CodeRedeem)
 
     suspend fun processCancel(command: Command.ProcessCancel)
 

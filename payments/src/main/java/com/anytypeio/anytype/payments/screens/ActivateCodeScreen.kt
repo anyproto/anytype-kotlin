@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +18,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -38,6 +40,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.membership.MembershipErrors
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
@@ -125,7 +129,9 @@ private fun ActivateCodeContent(
         )
         Spacer(modifier = Modifier.height(24.dp))
 
-        Box(
+        val canSubmit = textField.text.isNotBlank() && !isLoading
+
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
@@ -134,39 +140,57 @@ private fun ActivateCodeContent(
                     shape = RoundedCornerShape(16.dp)
                 )
                 .padding(horizontal = 16.dp),
-            contentAlignment = Alignment.CenterStart
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            if (textField.text.isEmpty()) {
-                Text(
-                    text = stringResource(id = R.string.payments_activate_code_hint),
-                    style = BodyRegular,
-                    color = colorResource(id = R.color.text_tertiary)
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                if (textField.text.isEmpty()) {
+                    Text(
+                        text = stringResource(id = R.string.payments_activate_code_hint),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_tertiary)
+                    )
+                }
+                BasicTextField(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = textField,
+                    textStyle = BodyRegular.copy(color = colorResource(id = R.color.text_primary)),
+                    enabled = !isLoading,
+                    cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        imeAction = ImeAction.Done
+                    ),
+                    onKeyboardAction = {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                        if (canSubmit) {
+                            action(TierAction.OnActivateCodeClicked(textField.text.toString()))
+                        }
+                    },
+                    lineLimits = TextFieldLineLimits.SingleLine,
+                    interactionSource = remember { MutableInteractionSource() }
                 )
             }
-            BasicTextField(
-                modifier = Modifier.fillMaxWidth(),
-                state = textField,
-                textStyle = BodyRegular.copy(color = colorResource(id = R.color.text_primary)),
-                enabled = !isLoading,
-                cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done
-                ),
-                onKeyboardAction = {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                    action(TierAction.OnActivateCodeClicked(textField.text.toString()))
-                },
-                lineLimits = TextFieldLineLimits.SingleLine,
-                interactionSource = remember { MutableInteractionSource() }
-            )
+            if (textField.text.isNotEmpty() && !isLoading) {
+                Image(
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .size(20.dp)
+                        .noRippleThrottledClickable { textField.clearText() },
+                    painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ci_close_circle),
+                    contentDescription = "Clear code",
+                    colorFilter = ColorFilter.tint(colorResource(id = R.color.glyph_inactive))
+                )
+            }
         }
 
         val (messageColor, messageText) = when (state) {
             is ActivateCodeState.Visible.Error -> colorResource(id = R.color.palette_system_red) to
-                    (state.message ?: stringResource(id = R.string.membership_any_name_unknown))
-            ActivateCodeState.Visible.Success -> colorResource(id = R.color.palette_dark_lime) to
-                    stringResource(id = R.string.membership_email_code_success)
+                    (state.codeError?.let { codeErrorMessage(it) }
+                        ?: state.message
+                        ?: stringResource(id = R.string.membership_any_name_unknown))
             else -> Color.Transparent to ""
         }
         Spacer(modifier = Modifier.height(6.dp))
@@ -185,6 +209,7 @@ private fun ActivateCodeContent(
             text = stringResource(id = R.string.payments_activate_code_button),
             size = ButtonSize.Large,
             modifierButton = Modifier.fillMaxWidth(),
+            enabled = canSubmit,
             loading = isLoading,
             onClick = {
                 action(TierAction.OnActivateCodeClicked(textField.text.toString()))
@@ -192,6 +217,20 @@ private fun ActivateCodeContent(
         )
         Spacer(modifier = Modifier.height(32.dp))
     }
+}
+
+@Composable
+private fun codeErrorMessage(error: MembershipErrors.CodeGetInfo): String {
+    val res = when (error) {
+        is MembershipErrors.CodeGetInfo.UnknownError -> R.string.membership_code_error_unknown
+        is MembershipErrors.CodeGetInfo.BadInput -> R.string.membership_code_error_bad_input
+        is MembershipErrors.CodeGetInfo.NotLoggedIn -> R.string.membership_code_error_not_logged_in
+        is MembershipErrors.CodeGetInfo.PaymentNodeError -> R.string.membership_code_error_payment_node
+        is MembershipErrors.CodeGetInfo.CodeNotFound -> R.string.membership_code_error_code_invalid
+        is MembershipErrors.CodeGetInfo.CodeAlreadyUsed -> R.string.membership_code_error_already_member
+        is MembershipErrors.CodeGetInfo.Null -> R.string.membership_code_error_unknown
+    }
+    return stringResource(id = res)
 }
 
 @OptIn(ExperimentalFoundationApi::class)

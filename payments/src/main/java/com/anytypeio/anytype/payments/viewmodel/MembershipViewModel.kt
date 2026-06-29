@@ -3,6 +3,7 @@ package com.anytypeio.anytype.payments.viewmodel
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
+import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,9 +22,11 @@ import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.payments.GetMembershipCodeInfo
 import com.anytypeio.anytype.domain.payments.GetMembershipEmailStatus
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
+import com.anytypeio.anytype.domain.payments.RedeemMembershipCode
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.mapping.toMainView
@@ -35,9 +38,12 @@ import com.anytypeio.anytype.payments.models.TierEmail
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
 import com.anytypeio.anytype.payments.playbilling.BillingClientState
 import com.anytypeio.anytype.payments.playbilling.BillingPurchaseState
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsActivateMembershipCodeEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsClickMembershipCodeEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMembershipClickEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMembershipPurchaseEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMembershipScreenEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenMembershipCodeEvent
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
@@ -65,7 +71,9 @@ class MembershipViewModel(
     private val isMembershipNameValid: IsMembershipNameValid,
     private val setMembershipEmail: SetMembershipEmail,
     private val verifyMembershipEmailCode: VerifyMembershipEmailCode,
-    private val getMembershipEmailStatus: GetMembershipEmailStatus
+    private val getMembershipEmailStatus: GetMembershipEmailStatus,
+    private val getMembershipCodeInfo: GetMembershipCodeInfo,
+    private val redeemMembershipCode: RedeemMembershipCode
 ) : ViewModel() {
 
     val viewState = MutableStateFlow<MembershipMainState>(MembershipMainState.Loading)
@@ -552,26 +560,80 @@ class MembershipViewModel(
         codeState.value = MembershipEmailCodeState.Hidden
     }
 
+    /**
+     * Manual entry from the membership screen ("Have a code?"). Opens the redemption modal empty.
+     */
     private fun openActivateCode() {
         Timber.d("openActivateCode")
         activateCodeTextField.clearText()
-        activateCodeState.value = ActivateCodeState.Visible.Default
-        proceedWithNavigation(MembershipNavigation.ActivateCode)
+        proceedWithOpeningActivateCode(EventsDictionary.MembershipCodeRoute.SETTINGS_MEMBERSHIP)
     }
 
     /**
-     * STUB for Step 1 (UI only). Drives the real [ActivateCodeState.Visible.Loading] state so the
-     * loading button + disabled-input UX is demoable, but performs no network call yet.
-     *
-     * TODO(step 2): replace the simulated delay with the RedeemMembershipCode use case
-     *  (Rpc.MembershipV2.CodeRedeem) and map success/error to the corresponding states.
+     * Deep-link entry (e.g. returning from Stripe in a browser via anytype://membership?code=…).
+     * Opens the redemption modal with the code pre-filled and ready to submit.
+     */
+    fun showCodeOnStart(code: String?) {
+        Timber.d("showCodeOnStart, code:$code")
+        if (code.isNullOrBlank()) return
+        activateCodeTextField.setTextAndPlaceCursorAtEnd(code)
+        proceedWithOpeningActivateCode(EventsDictionary.MembershipCodeRoute.STRIPE)
+    }
+
+    private fun proceedWithOpeningActivateCode(route: EventsDictionary.MembershipCodeRoute) {
+        activateCodeState.value = ActivateCodeState.Visible.Default
+        proceedWithNavigation(MembershipNavigation.ActivateCode)
+        viewModelScope.launch {
+            sendAnalyticsScreenMembershipCodeEvent(analytics = analytics, route = route)
+        }
+    }
+
+    /**
+     * Two-step redemption sequence against anytype-heart (mirrors desktop activation.tsx):
+     * 1. [GetMembershipCodeInfo] validates the code; on error we stop and surface the mapped error.
+     * 2. [RedeemMembershipCode] activates the membership; we check ITS OWN result (desktop has a
+     *    latent bug inspecting the previous step's error). On success we silently dismiss and
+     *    refresh membership status so the new tier is reflected.
      */
     private fun proceedWithRedeemingCode(code: String) {
-        Timber.d("proceedWithRedeemingCode, code:$code")
+        Timber.d("proceedWithRedeemingCode")
+        viewModelScope.launch {
+            sendAnalyticsClickMembershipCodeEvent(analytics = analytics)
+        }
         activateCodeState.value = ActivateCodeState.Visible.Loading
         viewModelScope.launch {
-            delay(1500)
-            activateCodeState.value = ActivateCodeState.Visible.Default
+            getMembershipCodeInfo.async(GetMembershipCodeInfo.Params(code)).fold(
+                onSuccess = {
+                    redeemMembershipCode.async(RedeemMembershipCode.Params(code)).fold(
+                        onSuccess = {
+                            Timber.d("Membership code redeemed")
+                            sendAnalyticsActivateMembershipCodeEvent(analytics = analytics)
+                            forceRefreshTrigger.value = true
+                            // Silent dismiss (desktop parity); status refresh reflects the new tier.
+                            proceedWithNavigation(MembershipNavigation.Dismiss)
+                            activateCodeState.value = ActivateCodeState.Hidden
+                            launch {
+                                delay(FORCE_REFRESH_RESET_DELAY_MS)
+                                forceRefreshTrigger.value = false
+                            }
+                        },
+                        onFailure = { error ->
+                            Timber.e(error, "Error while redeeming membership code")
+                            activateCodeState.value =
+                                ActivateCodeState.Visible.Error(message = error.message)
+                        }
+                    )
+                },
+                onFailure = { error ->
+                    Timber.e(error, "Error while getting membership code info")
+                    activateCodeState.value = when (error) {
+                        is MembershipErrors.CodeGetInfo ->
+                            ActivateCodeState.Visible.Error(codeError = error)
+                        else ->
+                            ActivateCodeState.Visible.Error(message = error.message)
+                    }
+                }
+            )
         }
     }
 

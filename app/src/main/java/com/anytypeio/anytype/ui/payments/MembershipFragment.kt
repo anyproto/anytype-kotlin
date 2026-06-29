@@ -62,6 +62,7 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
     private lateinit var navController: NavHostController
 
     private val argTierId get() = argOrNull<String>(ARG_TIER_ID)
+    private val argCode get() = argOrNull<String>(ARG_CODE)
 
     @Inject
     lateinit var billingClientLifecycle: BillingClientLifecycle
@@ -201,6 +202,7 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
         skipCollapsed()
         expand()
         vm.showTierOnStart(tierId = argTierId)
+        vm.showCodeOnStart(code = argCode)
         subscribe(vm.navigation) { command ->
             Timber.d("MembershipFragment command: $command")
             when (command) {
@@ -273,6 +275,10 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
 
     companion object {
         const val ARG_TIER_ID = "args.membership.tier"
-        fun args(tierId: String?) = bundleOf(ARG_TIER_ID to tierId)
+        const val ARG_CODE = "args.membership.code"
+        fun args(tierId: String?, code: String? = null) = bundleOf(
+            ARG_TIER_ID to tierId,
+            ARG_CODE to code
+        )
     }
 }

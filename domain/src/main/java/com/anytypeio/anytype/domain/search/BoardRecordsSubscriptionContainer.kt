@@ -12,15 +12,20 @@ import com.anytypeio.anytype.domain.base.runCatchingL
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
 /**
@@ -40,15 +45,35 @@ class BoardRecordsSubscriptionContainer(
     /** A column's loaded page: the [ids] currently held and the backend [total] for the group. */
     data class GroupPage(val ids: List<Id>, val total: Int)
 
+    /** Per-column subscription limit (column id -> limit), grown by [loadMore]. */
+    private val limits = MutableStateFlow<Map<Id, Int>>(emptyMap())
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun observe(params: Params): Flow<Map<Id, GroupPage>> {
         if (params.columns.isEmpty()) return flowOf(emptyMap())
-        val flows = params.columns.map { column -> observeColumn(params, column) }
+        limits.value = params.columns.associate { it.columnId to params.limit }
+        val flows = params.columns.map { column ->
+            limits
+                .map { it[column.columnId] ?: params.limit }
+                .distinctUntilChanged()
+                .flatMapLatest { limit -> observeColumn(params, column, limit) }
+        }
         return combine(flows) { pages -> pages.toMap() }
             .catch { logger.logException(it, "Error in board records subscription container") }
             .flowOn(dispatchers.io)
     }
 
-    private fun observeColumn(params: Params, column: Column): Flow<Pair<Id, GroupPage>> = flow {
+    /**
+     * Grows a single column's subscription limit by [additional], so only that column re-fetches
+     * (a larger page on the same subscription id); other columns are untouched.
+     */
+    fun loadMore(columnId: Id, additional: Int) {
+        limits.update { current ->
+            current + (columnId to ((current[columnId] ?: 0) + additional))
+        }
+    }
+
+    private fun observeColumn(params: Params, column: Column, limit: Int): Flow<Pair<Id, GroupPage>> = flow {
         val initial = repo.searchObjectsWithSubscription(
             space = params.space,
             subscription = column.subscription,
@@ -57,7 +82,7 @@ class BoardRecordsSubscriptionContainer(
             keys = params.keys.distinct(),
             source = params.source,
             offset = 0,
-            limit = params.limit,
+            limit = limit,
             beforeId = null,
             afterId = null,
             ignoreWorkspace = null,

@@ -81,7 +81,7 @@ class BoardRecordsSubscriptionContainerTest {
             assertEquals(120, page.getValue("A").total)
             assertEquals(listOf("b1"), page.getValue("B").ids)
             assertEquals(1, page.getValue("B").total)
-            awaitComplete()
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -102,13 +102,35 @@ class BoardRecordsSubscriptionContainerTest {
             assertEquals(listOf("a1", "a2"), updated.getValue("A").ids)
             assertEquals(2, updated.getValue("A").total)
             assertEquals(listOf("b1"), updated.getValue("B").ids)
-            awaitComplete()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `loadMore grows only the requested column`() = runTest {
+        // Column A: 1 of 2 loaded at the default limit; B: 1 of 1.
+        stubColumn(subA, filterA, SearchResult(objects("a1"), emptyList(), counter(2)), limit = 50)
+        // After loadMore, A re-subscribes at the larger limit and gets both records.
+        stubColumn(subA, filterA, SearchResult(objects("a1", "a2"), emptyList(), counter(2)), limit = 100)
+        stubColumn(subB, filterB, SearchResult(objects("b1"), emptyList(), counter(1)), limit = 50)
+        stubNoChannelEvents()
+
+        container.observe(params()).test {
+            assertEquals(listOf("a1"), awaitItem().getValue("A").ids)
+
+            container.loadMore("A", additional = 50)
+
+            val grown = awaitItem()
+            assertEquals(listOf("a1", "a2"), grown.getValue("A").ids)
+            // B was not re-fetched.
+            assertEquals(listOf("b1"), grown.getValue("B").ids)
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
     // Exact-arg stubbing (matchers can't be used: SpaceId is an inline value class and any()
     // would unbox null). Args mirror what observeColumn passes.
-    private fun stubColumn(subId: String, filter: DVFilter, result: SearchResult) {
+    private fun stubColumn(subId: String, filter: DVFilter, result: SearchResult, limit: Int = 50) {
         repo.stub {
             onBlocking {
                 searchObjectsWithSubscription(
@@ -119,7 +141,7 @@ class BoardRecordsSubscriptionContainerTest {
                     keys = emptyList(),
                     source = emptyList(),
                     offset = 0,
-                    limit = 50,
+                    limit = limit,
                     beforeId = null,
                     afterId = null,
                     ignoreWorkspace = null,

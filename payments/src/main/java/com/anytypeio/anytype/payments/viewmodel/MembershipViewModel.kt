@@ -604,6 +604,7 @@ class MembershipViewModel(
         viewModelScope.launch {
             getMembershipCodeInfo.async(GetMembershipCodeInfo.Params(code)).fold(
                 onSuccess = {
+                    Timber.d("Membership code info retrieved")
                     redeemMembershipCode.async(RedeemMembershipCode.Params(code)).fold(
                         onSuccess = {
                             Timber.d("Membership code redeemed")

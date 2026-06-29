@@ -14,11 +14,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -32,9 +38,15 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title2
+import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
+import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+
+/** How close to the end of a column (in items) triggers the next page request. */
+private const val BOARD_LOAD_MORE_THRESHOLD = 3
 
 /**
  * A single board column: a header with the group label, a color dot and the card
@@ -48,6 +60,7 @@ fun BoardColumnContent(
     targetColumnId: String?,
     boardCoordsProvider: () -> LayoutCoordinates?,
     onCardClick: (Id) -> Unit,
+    onColumnLoadMore: (columnId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isDropTarget = dragState.isDragging &&
@@ -114,7 +127,24 @@ fun BoardColumnContent(
                 )
             }
         } else {
+            val listState = rememberLazyListState()
+            // More records exist on the backend than are currently loaded for this column.
+            val canPaginate = rememberUpdatedState(column.cards.size < column.count)
+            val shouldPage by remember {
+                derivedStateOf {
+                    shouldLoadMore(
+                        lastVisibleIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1,
+                        totalItemsCount = listState.layoutInfo.totalItemsCount,
+                        canPaginate = canPaginate.value,
+                        threshold = BOARD_LOAD_MORE_THRESHOLD
+                    )
+                }
+            }
+            LaunchedEffect(shouldPage) {
+                if (shouldPage) onColumnLoadMore(column.id)
+            }
             LazyColumn(
+                state = listState,
                 modifier = Modifier.fillMaxHeight(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
@@ -128,6 +158,23 @@ fun BoardColumnContent(
                         boardCoordsProvider = boardCoordsProvider,
                         onCardClick = onCardClick
                     )
+                }
+                if (canPaginate.value) {
+                    item(key = "board-load-more") {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            DotsLoadingIndicator(
+                                animating = true,
+                                animationSpecs = FadeAnimationSpecs(itemCount = 3),
+                                color = colorResource(id = R.color.glyph_active),
+                                size = ButtonSize.Small
+                            )
+                        }
+                    }
                 }
             }
         }

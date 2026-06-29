@@ -66,6 +66,7 @@ fun BoardScreen(
     onCardClick: (Id) -> Unit,
     onCardMoved: (cardId: Id, sourceColumnId: String, targetColumnId: String) -> Unit,
     onCardReordered: (columnId: String, orderedCardIds: List<Id>) -> Unit,
+    onColumnLoadMore: (columnId: String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (board.columns.isEmpty()) {
@@ -174,6 +175,7 @@ fun BoardScreen(
                     targetColumnId = targetColumnId,
                     boardCoordsProvider = { boardCoords },
                     onCardClick = onCardClick,
+                    onColumnLoadMore = onColumnLoadMore,
                     modifier = Modifier
                         .width(COLUMN_WIDTH)
                         .fillMaxHeight()
@@ -259,6 +261,17 @@ fun BoardScreen(
         }
     }
 }
+
+/**
+ * Whether a column should request its next page: only when it [canPaginate] (more records exist
+ * than are loaded) and the last visible item is within [threshold] of the end of the list.
+ */
+internal fun shouldLoadMore(
+    lastVisibleIndex: Int,
+    totalItemsCount: Int,
+    canPaginate: Boolean,
+    threshold: Int
+): Boolean = canPaginate && lastVisibleIndex >= totalItemsCount - threshold
 
 /** A card found under a board-local point, together with the column it belongs to. */
 internal data class BoardCardHit(val card: Viewer.Board.Card, val columnId: String)

@@ -1956,6 +1956,15 @@ class ObjectSetViewModel(
         }
     }
 
+    /**
+     * Loads the next page of cards for a Kanban column when it is scrolled to its end —
+     * grows just that column's record subscription limit (other columns are untouched).
+     */
+    fun onBoardColumnLoadMore(columnId: String) {
+        Timber.d("onBoardColumnLoadMore, columnId:[$columnId]")
+        boardRecordsSubscriptionContainer.loadMore(columnId, additional = DEFAULT_LIMIT)
+    }
+
     fun onNewButtonIconClicked() {
         Timber.d("onNewButtonIconClicked, ")
         showTypeTemplatesWidgetForObjectCreation()

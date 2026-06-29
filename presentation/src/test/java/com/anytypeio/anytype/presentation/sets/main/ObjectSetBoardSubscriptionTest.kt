@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubDataView
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -127,5 +128,14 @@ class ObjectSetBoardSubscriptionTest : ObjectSetViewModelTestSetup() {
         // The board sources its cards from per-column subscriptions (not the flat 50-record
         // window, which is gated off for boards).
         verify(boardRecordsSubscriptionContainer, atLeastOnce()).observe(any())
+    }
+
+    @Test
+    fun `load more grows the requested column's subscription`() = runTest {
+        val vm = givenViewModel()
+
+        vm.onBoardColumnLoadMore("g1")
+
+        verify(boardRecordsSubscriptionContainer).loadMore("g1", ObjectSetConfig.DEFAULT_LIMIT)
     }
 }

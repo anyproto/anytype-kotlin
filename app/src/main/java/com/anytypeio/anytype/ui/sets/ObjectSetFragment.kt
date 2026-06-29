@@ -360,6 +360,7 @@ open class ObjectSetFragment :
                 onCardReordered = { columnId, orderedCardIds ->
                     vm.onBoardCardReordered(columnId, orderedCardIds)
                 }
+                onColumnLoadMore = { columnId -> vm.onBoardColumnLoadMore(columnId) }
             }
             binding.topToolbar.container.setOnClickListener {
                 WidgetOverlayFragment.show(parentFragmentManager, space)

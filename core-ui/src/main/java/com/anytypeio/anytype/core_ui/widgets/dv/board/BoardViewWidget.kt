@@ -32,6 +32,7 @@ class BoardViewWidget @JvmOverloads constructor(
     var onCardMoved: (cardId: Id, sourceColumnId: String, targetColumnId: String) -> Unit =
         { _, _, _ -> }
     var onCardReordered: (columnId: String, orderedCardIds: List<Id>) -> Unit = { _, _ -> }
+    var onColumnLoadMore: (columnId: String) -> Unit = {}
 
     @Composable
     override fun Content() {
@@ -40,7 +41,8 @@ class BoardViewWidget @JvmOverloads constructor(
                 board = current,
                 onCardClick = onCardClick,
                 onCardMoved = onCardMoved,
-                onCardReordered = onCardReordered
+                onCardReordered = onCardReordered,
+                onColumnLoadMore = onColumnLoadMore
             )
         }
     }

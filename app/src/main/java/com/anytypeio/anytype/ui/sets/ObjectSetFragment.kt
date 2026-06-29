@@ -354,8 +354,8 @@ open class ObjectSetFragment :
             binding.boardView.apply {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 onCardClick = { id -> vm.onObjectHeaderClicked(id) }
-                onCardMoved = { cardId, sourceColumnId, targetColumnId ->
-                    vm.onBoardCardDropped(cardId, sourceColumnId, targetColumnId)
+                onCardMoved = { cardId, sourceColumnId, targetColumnId, targetOrderedIds ->
+                    vm.onBoardCardDropped(cardId, sourceColumnId, targetColumnId, targetOrderedIds)
                 }
                 onCardReordered = { columnId, orderedCardIds ->
                     vm.onBoardCardReordered(columnId, orderedCardIds)

@@ -6,10 +6,12 @@ import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubDataView
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -24,6 +26,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
 
 /**
@@ -137,5 +140,37 @@ class ObjectSetBoardSubscriptionTest : ObjectSetViewModelTestSetup() {
         vm.onBoardColumnLoadMore("g1")
 
         verify(boardRecordsSubscriptionContainer).loadMore("g1", ObjectSetConfig.DEFAULT_LIMIT)
+    }
+
+    @Test
+    fun `a cross-column move persists the drop position in the target column`() = runTest {
+        stubBoardCollection()
+        boardGroupSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flowOf(
+                listOf(DataViewGroup(id = "g1", value = DataViewGroup.Value.Status("opt1")))
+            )
+        }
+        boardRecordsSubscriptionContainer.stub { on { observe(any()) } doReturn flowOf(emptyMap()) }
+        setObjectDetails.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Payload(context = root, events = emptyList()))
+        }
+        setDataViewObjectOrder.stub {
+            onBlocking { async(any()) } doReturn Resultat.Success(Payload(context = root, events = emptyList()))
+        }
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        vm.onBoardCardDropped(
+            cardId = "card-1",
+            sourceColumnId = "g0",
+            targetColumnId = "g1",
+            targetOrderedIds = listOf("x", "card-1")
+        )
+        advanceUntilIdle()
+
+        // Relation move + an order write that places the card at the drop position.
+        verifyBlocking(setDataViewObjectOrder) { async(any()) }
     }
 }

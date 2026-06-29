@@ -64,7 +64,7 @@ private val COLUMN_WIDTH = 280.dp
 fun BoardScreen(
     board: Viewer.Board,
     onCardClick: (Id) -> Unit,
-    onCardMoved: (cardId: Id, sourceColumnId: String, targetColumnId: String) -> Unit,
+    onCardMoved: (cardId: Id, sourceColumnId: String, targetColumnId: String, targetOrderedIds: List<Id>?) -> Unit,
     onCardReordered: (columnId: String, orderedCardIds: List<Id>) -> Unit,
     onColumnLoadMore: (columnId: String) -> Unit,
     modifier: Modifier = Modifier
@@ -114,7 +114,19 @@ fun BoardScreen(
                     }
                 }
             } else {
-                currentOnCardMoved(card.objectId, source, target)
+                // Persist the drop position in the target column, but only when it's fully
+                // loaded — otherwise we'd write a page-truncated order over the backend's full one.
+                val targetColumn = currentBoard.columns.find { it.id == target }
+                val targetOrder = if (targetColumn != null && targetColumn.cards.size >= targetColumn.count) {
+                    val ids = targetColumn.cards.map { it.objectId }
+                    val index = reorderInsertIndex(ids, dragState.pointer.y) { id ->
+                        dragState.cardBounds[id]?.let { it.top + it.height / 2f }
+                    }
+                    ids.toMutableList().apply { add(index.coerceIn(0, size), card.objectId) }
+                } else {
+                    null
+                }
+                currentOnCardMoved(card.objectId, source, target, targetOrder)
             }
         }
         dragState.stop()

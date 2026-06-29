@@ -29,8 +29,8 @@ class BoardViewWidget @JvmOverloads constructor(
     private var boardState by mutableStateOf<Viewer.Board?>(null)
 
     var onCardClick: (Id) -> Unit = {}
-    var onCardMoved: (cardId: Id, sourceColumnId: String, targetColumnId: String) -> Unit =
-        { _, _, _ -> }
+    var onCardMoved: (cardId: Id, sourceColumnId: String, targetColumnId: String, targetOrderedIds: List<Id>?) -> Unit =
+        { _, _, _, _ -> }
     var onCardReordered: (columnId: String, orderedCardIds: List<Id>) -> Unit = { _, _ -> }
     var onColumnLoadMore: (columnId: String) -> Unit = {}
 

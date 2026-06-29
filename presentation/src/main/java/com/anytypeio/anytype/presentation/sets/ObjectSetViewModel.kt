@@ -1851,7 +1851,12 @@ class ObjectSetViewModel(
      * other tags. The "No value" column clears the relation (or, for Tag, drops only the
      * source tags). See [computeBoardCardMove].
      */
-    fun onBoardCardDropped(cardId: Id, sourceColumnId: String, targetColumnId: String) {
+    fun onBoardCardDropped(
+        cardId: Id,
+        sourceColumnId: String,
+        targetColumnId: String,
+        targetOrderedIds: List<Id>? = null
+    ) {
         Timber.d("onBoardCardDropped, cardId:[$cardId], source:[$sourceColumnId], target:[$targetColumnId]")
         if (!isOwnerOrEditor) {
             toast(NOT_ALLOWED)
@@ -1901,6 +1906,11 @@ class ObjectSetViewModel(
                         storeOfRelations = storeOfRelations,
                         spaceParams = provideParams(vmParams.space.id)
                     )
+                    // Persist the drop position in the target column so the card lands where it
+                    // was dropped (only when the UI provided the full target order).
+                    if (targetOrderedIds != null) {
+                        persistBoardColumnOrder(viewer.id, state.dataViewBlock.id, targetColumnId, targetOrderedIds)
+                    }
                 }
             )
         }
@@ -1937,23 +1947,32 @@ class ObjectSetViewModel(
         }
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
-        val viewId = viewer.id
-        val dv = state.dataViewBlock.id
-        val newOrder = ObjectOrder(view = viewId, group = columnId, ids = orderedCardIds)
         viewModelScope.launch {
-            setDataViewObjectOrder.async(
-                SetDataViewObjectOrder.Params(
-                    ctx = vmParams.ctx,
-                    dv = dv,
-                    objectOrders = listOf(newOrder)
-                )
-            ).fold(
-                // The response payload carries the object-order-update event, which is
-                // reduced into state, so the board re-renders with the new order.
-                onSuccess = { payload -> dispatcher.send(payload) },
-                onFailure = { Timber.e(it, "Error while persisting board card order") }
-            )
+            persistBoardColumnOrder(viewer.id, state.dataViewBlock.id, columnId, orderedCardIds)
         }
+    }
+
+    /**
+     * Persists [orderedCardIds] as the order of a Kanban column (group). The response payload
+     * carries the object-order-update event, which is reduced into state, so the board
+     * re-renders with the new order.
+     */
+    private suspend fun persistBoardColumnOrder(
+        viewId: Id,
+        dv: Id,
+        columnId: String,
+        orderedCardIds: List<Id>
+    ) {
+        setDataViewObjectOrder.async(
+            SetDataViewObjectOrder.Params(
+                ctx = vmParams.ctx,
+                dv = dv,
+                objectOrders = listOf(ObjectOrder(view = viewId, group = columnId, ids = orderedCardIds))
+            )
+        ).fold(
+            onSuccess = { payload -> dispatcher.send(payload) },
+            onFailure = { Timber.e(it, "Error while persisting board card order") }
+        )
     }
 
     /**

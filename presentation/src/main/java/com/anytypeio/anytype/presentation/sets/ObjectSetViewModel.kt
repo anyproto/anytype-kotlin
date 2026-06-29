@@ -4028,7 +4028,10 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
                 }
             }
             is ViewEditAction.Layout -> {
-                viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.copy(showWidget = true)
+                viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.copy(
+                    showWidget = true,
+                    kanbanEnabled = isKanbanEnabled.value
+                )
             }
             is ViewEditAction.Relations -> {
                 viewModelScope.launch {

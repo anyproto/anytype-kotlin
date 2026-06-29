@@ -21,7 +21,9 @@ data class ViewerLayoutWidgetUi(
     val cardSize: State.CardSize,
     val imagePreviewItems: List<State.ImagePreview>,
     val showCardSize: Boolean,
-    val showCoverMenu: Boolean
+    val showCoverMenu: Boolean,
+    /** Whether the experimental Kanban (Board) layout is offered in the type picker. */
+    val kanbanEnabled: Boolean = false
 ) {
 
     fun dismiss() = copy(showWidget = false)
@@ -46,7 +48,8 @@ data class ViewerLayoutWidgetUi(
             cardSize = State.CardSize.Small,
             showCardSize = false,
             showCoverMenu = false,
-            imagePreviewItems = emptyList()
+            imagePreviewItems = emptyList(),
+            kanbanEnabled = false
         )
     }
 

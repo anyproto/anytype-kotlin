@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.presentation.sets.ViewEditAction
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -29,6 +30,8 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 /**
  * ViewModel-level coverage for the Kanban board subscription lifecycle (review H1) and the
@@ -141,6 +144,27 @@ class ObjectSetBoardSubscriptionTest : ObjectSetViewModelTestSetup() {
         vm.onBoardColumnLoadMore("g1")
 
         verify(boardRecordsSubscriptionContainer).loadMore("g1", ObjectSetConfig.DEFAULT_LIMIT)
+    }
+
+    @Test
+    fun `view-type picker offers Kanban when the flag is on`() = runTest {
+        val vm = givenViewModel()
+        advanceUntilIdle()
+
+        vm.onViewerEditWidgetAction(ViewEditAction.Layout(id = "view-1"))
+
+        assertTrue(vm.viewerLayoutWidgetState.value.kanbanEnabled)
+    }
+
+    @Test
+    fun `view-type picker hides Kanban when the flag is off`() = runTest {
+        userSettingsRepository.stub { on { observeKanbanEnabled() } doReturn flowOf(false) }
+        val vm = givenViewModel()
+        advanceUntilIdle()
+
+        vm.onViewerEditWidgetAction(ViewEditAction.Layout(id = "view-1"))
+
+        assertFalse(vm.viewerLayoutWidgetState.value.kanbanEnabled)
     }
 
     @Test

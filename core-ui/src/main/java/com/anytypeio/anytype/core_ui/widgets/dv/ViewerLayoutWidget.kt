@@ -309,37 +309,40 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Act
             contentDescription = stringResource(id = R.string.view_list),
             click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.LIST)) }
         )
-        LayoutIcon(
-            modifier = itemModifier.padding(top = 8.dp),
-            uiState = uiState,
-            layoutType = DVViewerType.BOARD,
-            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
-            imageResource = R.drawable.ic_layout_kanban,
-            contentDescription = stringResource(id = R.string.view_kanban),
-            click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.BOARD)) }
-        )
-        LayoutIcon(
-            modifier = itemModifier
-                .padding(top = 8.dp)
-                .alpha(0F),
-            uiState = uiState,
-            layoutType = DVViewerType.BOARD,
-            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
-            imageResource = R.drawable.ic_layout_kanban,
-            contentDescription = "",
-            click = { }
-        )
-        LayoutIcon(
-            modifier = itemModifier
-                .padding(top = 8.dp)
-                .alpha(0F),
-            uiState = uiState,
-            layoutType = DVViewerType.BOARD,
-            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
-            imageResource = R.drawable.ic_layout_kanban,
-            contentDescription = "",
-            click = { }
-        )
+        // Kanban (Board) is experimental: only offer it in the picker when the flag is on.
+        if (uiState.kanbanEnabled) {
+            LayoutIcon(
+                modifier = itemModifier.padding(top = 8.dp),
+                uiState = uiState,
+                layoutType = DVViewerType.BOARD,
+                imageResourceSelected = R.drawable.ic_layout_kanban_selected,
+                imageResource = R.drawable.ic_layout_kanban,
+                contentDescription = stringResource(id = R.string.view_kanban),
+                click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.BOARD)) }
+            )
+            LayoutIcon(
+                modifier = itemModifier
+                    .padding(top = 8.dp)
+                    .alpha(0F),
+                uiState = uiState,
+                layoutType = DVViewerType.BOARD,
+                imageResourceSelected = R.drawable.ic_layout_kanban_selected,
+                imageResource = R.drawable.ic_layout_kanban,
+                contentDescription = "",
+                click = { }
+            )
+            LayoutIcon(
+                modifier = itemModifier
+                    .padding(top = 8.dp)
+                    .alpha(0F),
+                uiState = uiState,
+                layoutType = DVViewerType.BOARD,
+                imageResourceSelected = R.drawable.ic_layout_kanban_selected,
+                imageResource = R.drawable.ic_layout_kanban,
+                contentDescription = "",
+                click = { }
+            )
+        }
     }
 }
 

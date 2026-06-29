@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.widgets.dv.board
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -8,6 +9,18 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.unit.IntSize
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+
+/**
+ * Auto-scroll direction for a pointer at [position] within a container of [size] (px): +1 past
+ * the far edge, -1 before the near edge (within [edge] px), 0 otherwise. Shared by the
+ * horizontal row and the vertical per-column auto-scroll.
+ */
+internal fun edgeAutoScroll(position: Float, size: Int, edge: Float): Int = when {
+    size <= 0 -> 0
+    position > size - edge -> 1
+    position < edge -> -1
+    else -> 0
+}
 
 /**
  * Shared mutable state for cross-column card dragging on the Kanban board.
@@ -36,8 +49,15 @@ class BoardDragState {
     var autoScroll by mutableStateOf(0)
         private set
 
+    /** -1 = auto-scroll the hovered column up, +1 = down, 0 = none. */
+    var verticalAutoScroll by mutableStateOf(0)
+        private set
+
     /** Column bounds in board coordinates, keyed by column id. */
     val columnBounds = mutableStateMapOf<String, Rect>()
+
+    /** Each column's LazyColumn state, keyed by column id — for vertical auto-scroll during drag. */
+    val columnListStates = mutableMapOf<String, LazyListState>()
 
     /** Card bounds in board coordinates, keyed by object id. */
     val cardBounds = mutableStateMapOf<String, Rect>()
@@ -51,17 +71,14 @@ class BoardDragState {
         this.pointer = pointer
         cardSize = size
         autoScroll = 0
+        verticalAutoScroll = 0
     }
 
-    fun drag(delta: Offset, boardWidth: Int, edge: Float) {
+    fun drag(delta: Offset, boardWidth: Int, boardHeight: Int, edge: Float) {
         pointer += delta
         cardTopLeft += delta
-        autoScroll = when {
-            boardWidth <= 0 -> 0
-            pointer.x > boardWidth - edge -> 1
-            pointer.x < edge -> -1
-            else -> 0
-        }
+        autoScroll = edgeAutoScroll(pointer.x, boardWidth, edge)
+        verticalAutoScroll = edgeAutoScroll(pointer.y, boardHeight, edge)
     }
 
     /** The column currently under the pointer, or null if none. */
@@ -73,5 +90,6 @@ class BoardDragState {
         sourceColumnId = null
         cardSize = IntSize.Zero
         autoScroll = 0
+        verticalAutoScroll = 0
     }
 }

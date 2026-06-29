@@ -158,8 +158,12 @@ fun BoardScreen(
                     onDrag = { change, dragAmount ->
                         if (dragState.isDragging) {
                             change.consume()
-                            val boardWidth = boardCoords?.size?.width ?: 0
-                            dragState.drag(delta = dragAmount, boardWidth = boardWidth, edge = edge)
+                            dragState.drag(
+                                delta = dragAmount,
+                                boardWidth = boardCoords?.size?.width ?: 0,
+                                boardHeight = boardCoords?.size?.height ?: 0,
+                                edge = edge
+                            )
                         }
                     },
                     onDragEnd = { if (dragState.isDragging) onDrop() },
@@ -265,6 +269,24 @@ fun BoardScreen(
                 while (
                     (dir > 0 && lazyRowState.canScrollForward) ||
                     (dir < 0 && lazyRowState.canScrollBackward)
+                ) {
+                    withFrameNanos { }
+                    scrollBy(dir * AUTO_SCROLL_STEP_PX)
+                }
+            }
+        }
+    }
+
+    // Auto-scroll the hovered column vertically while a dragged card hovers near its top/bottom,
+    // so a card can be dropped at an off-screen position in a tall column.
+    LaunchedEffect(dragState.verticalAutoScroll, targetColumnId) {
+        val dir = dragState.verticalAutoScroll
+        val listState = targetColumnId?.let { dragState.columnListStates[it] }
+        if (dir != 0 && listState != null) {
+            listState.scroll {
+                while (
+                    (dir > 0 && listState.canScrollForward) ||
+                    (dir < 0 && listState.canScrollBackward)
                 ) {
                     withFrameNanos { }
                     scrollBy(dir * AUTO_SCROLL_STEP_PX)

@@ -128,6 +128,11 @@ fun BoardColumnContent(
             }
         } else {
             val listState = rememberLazyListState()
+            // Expose this column's list state for vertical auto-scroll during a drag (see BoardScreen).
+            DisposableEffect(column.id) {
+                dragState.columnListStates[column.id] = listState
+                onDispose { dragState.columnListStates.remove(column.id) }
+            }
             // More records exist on the backend than are currently loaded for this column.
             val canPaginate = rememberUpdatedState(column.cards.size < column.count)
             val shouldPage by remember {

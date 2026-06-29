@@ -86,7 +86,7 @@
     <string name="section_bin">回收站</string>
     <string name="error_loading_sections">加载分区时出错</string>
     <string name="data_management">数据管理</string>
-    <string name="deleted_account_danger_zone_msg">一旦将删除此库的请求发出，您将有 30 天的时间取消此请求。在 30 天后，您的加密库数据将会被永久性地从备份节点移除，您将无法在新设备上登录 Anytype。</string>
+    <string name="deleted_account_danger_zone_msg">提交删除库请求后，您可在 30 天内撤销该请求。30 天后，备份节点中的加密库数据将被永久删除，届时您将无法在新设备上登录 Anytype。</string>
     <string name="danger_zone">危险操作区域</string>
     <string name="snackbar_template_add">新模板已添加到类型</string>
     <string name="template_name_prefill_title">预填名称</string>
@@ -473,7 +473,7 @@
     <string name="paste_link">链接</string>
     <string name="next">下一步</string>
     <string name="limit_object_types">限制对象类型</string>
-    <string name="deleted_account_msg">很抱歉看到您离开。在您申请删除库后，您有 30 天的时间可以撤回该请求。30 天后，您加密的库数据将从备份节点中永久移除。</string>
+    <string name="deleted_account_msg">很遗憾您即将离开。提交删除库请求后，您可在 30 天内撤销该请求。30 天后，备份节点中的加密资料库数据将被永久删除。</string>
     <string name="swipe_down_to_skip">向下滑动以跳过</string>
     <string name="show">显示</string>
     <string name="this_type_has_templates">此类型有 %1$d 个模板</string>
@@ -878,7 +878,7 @@
     <!-- Space Settings / Home -->
     <string name="space_home_row_title">主页</string>
     <string name="space_home_no_home_title">无主页</string>
-    <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
+    <string name="space_home_no_home_subtitle">进入时自动打开导航栏</string>
     <string name="widget_menu_change_home">更改主页</string>
     <string name="invite_members_widget_title">邀请成员</string>
     <string name="invite_members_widget_description">邀请成员加入此频道，开始协作。</string>
@@ -1344,10 +1344,10 @@
     <string name="multiplayer_approve_request">设置访问权限</string>
     <string name="multiplayer_view_request">查看请求</string>
     <string name="multiplayer_owner">所有者</string>
-    <string name="multiplayer_admin">Admin</string>
-    <string name="multiplayer_make_admin_title">Make the member an admin?</string>
-    <string name="multiplayer_make_admin_description">Admins can delete messages, remove members, and permanently delete objects from Bin.</string>
-    <string name="multiplayer_make_admin_button">Make Admin</string>
+    <string name="multiplayer_admin">管理员</string>
+    <string name="multiplayer_make_admin_title">要将该成员设为管理员吗？</string>
+    <string name="multiplayer_make_admin_description">管理员可以删除消息、移除成员，以及永久删除回收站中的对象。</string>
+    <string name="multiplayer_make_admin_button">设为管理员</string>
     <string name="multiplayer_no_permissions">没有权限</string>
     <string name="multiplayer_pending">等待处理</string>
     <string name="multiplayer_can_edit">可编辑</string>
@@ -1360,7 +1360,7 @@
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_remove_member_warning_text">%1$s 将从空间中移除。</string>
-    <string name="multiplayer_remove_member_title">Remove the member from this channel?</string>
+    <string name="multiplayer_remove_member_title">要将该成员移出此频道吗？</string>
     <string name="multiplayer_remove_member_description">%@ 将从空间中移除。</string>
     <string name="multiplayer_remove_member_button">移除成员</string>
     <string name="multiplayer_request_sent_toast">已发送申请</string>

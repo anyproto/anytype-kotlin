@@ -4200,14 +4200,15 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
         Timber.d("onViewerLayoutWidgetAction, action:[$action]")
         when (action) {
             ViewerLayoutWidgetUi.Action.Dismiss -> {
-                val isCoverMenuVisible = viewerLayoutWidgetState.value.showCoverMenu
-                viewerLayoutWidgetState.value = if (isCoverMenuVisible) {
-                    viewerLayoutWidgetState.value.copy(showCoverMenu = false)
-                } else {
-                    viewerLayoutWidgetState.value.copy(
+                val current = viewerLayoutWidgetState.value
+                viewerLayoutWidgetState.value = when {
+                    current.showCoverMenu -> current.copy(showCoverMenu = false)
+                    current.showGroupByMenu -> current.copy(showGroupByMenu = false)
+                    else -> current.copy(
                         showWidget = false,
                         showCardSize = false,
-                        showCoverMenu = false
+                        showCoverMenu = false,
+                        showGroupByMenu = false
                     )
                 }
             }
@@ -4347,6 +4348,8 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
                 } else {
                     Timber.i("Group-by relation [${action.item.relationKey.key}] is already set")
                 }
+                viewerLayoutWidgetState.value =
+                    viewerLayoutWidgetState.value.copy(showGroupByMenu = false)
             }
         }
     }

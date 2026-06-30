@@ -41,7 +41,9 @@ data class ViewerLayoutWidgetUi(
         fitImage = State.Toggle.FitImage(toggled = false),
         cardSize = State.CardSize.Small,
         showCardSize = false,
-        imagePreviewItems = emptyList()
+        imagePreviewItems = emptyList(),
+        groupByItems = emptyList(),
+        showGroupByMenu = false
     )
 
     companion object {

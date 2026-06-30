@@ -10,9 +10,11 @@ import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.payments.GetMembershipCodeInfo
 import com.anytypeio.anytype.domain.payments.GetMembershipEmailStatus
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
+import com.anytypeio.anytype.domain.payments.RedeemMembershipCode
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.core_models.membership.MembershipConstants
@@ -86,6 +88,12 @@ open class MembershipTestsSetup {
 
     @Mock
     lateinit var getMembershipPaymentUrl: GetMembershipPaymentUrl
+
+    @Mock
+    lateinit var getMembershipCodeInfo: GetMembershipCodeInfo
+
+    @Mock
+    lateinit var redeemMembershipCode: RedeemMembershipCode
     protected val androidProductId = "id_android_builder"
     protected val accountId = "accountId-${RandomString.make()}"
 
@@ -170,7 +178,9 @@ open class MembershipTestsSetup {
         isMembershipNameValid = isMembershipNameValid,
         setMembershipEmail = setMembershipEmail,
         verifyMembershipEmailCode = verifyMembershipEmailCode,
-        getMembershipEmailStatus = getMembershipEmailStatus
+        getMembershipEmailStatus = getMembershipEmailStatus,
+        getMembershipCodeInfo = getMembershipCodeInfo,
+        redeemMembershipCode = redeemMembershipCode
     )
 
     protected fun stubAccount() {

@@ -69,11 +69,17 @@ fun ActivateCodeScreen(
             dragHandle = null,
             containerColor = colorResource(id = R.color.background_primary),
             content = {
-                ActivateCodeContent(
-                    state = state,
-                    textField = textField,
-                    action = action
-                )
+                when (state) {
+                    is ActivateCodeState.Visible.Success -> ActivateCodeSuccessContent(
+                        state = state,
+                        onDone = onDismiss
+                    )
+                    else -> ActivateCodeContent(
+                        state = state,
+                        textField = textField,
+                        action = action
+                    )
+                }
             }
         )
     }
@@ -229,6 +235,81 @@ private fun ActivateCodeContent(
 }
 
 @Composable
+private fun ActivateCodeSuccessContent(
+    state: ActivateCodeState.Visible.Success,
+    onDone: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+        Dragger(modifier = Modifier
+            .align(Alignment.CenterHorizontally)
+            .padding(vertical = 6.dp)
+        )
+        Spacer(modifier = Modifier.height(60.dp))
+        Image(
+            modifier = Modifier
+                .align(Alignment.CenterHorizontally)
+                .size(56.dp),
+            painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ci_checkmark_circle),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(colorResource(id = R.color.palette_system_green))
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            text = stringResource(id = R.string.payments_activate_code_success_title),
+            style = HeadlineSubheading,
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            text = state.tierName
+                ?.let { stringResource(id = R.string.payments_activate_code_success_subtitle, it) }
+                ?: stringResource(id = R.string.payments_activate_code_success_subtitle_generic),
+            style = BodyCallout,
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center
+        )
+        if (state.features.isNotEmpty()) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 20.dp, end = 20.dp, top = 25.dp),
+                text = stringResource(id = R.string.payments_details_whats_included),
+                style = BodyCallout,
+                color = colorResource(id = R.color.text_secondary)
+            )
+            Spacer(modifier = Modifier.height(9.dp))
+            state.features.forEach { feature ->
+                Benefit(benefit = feature)
+                Spacer(modifier = Modifier.height(9.dp))
+            }
+        }
+        Spacer(modifier = Modifier.height(24.dp))
+        ButtonOnboardingPrimaryLarge(
+            text = stringResource(id = R.string.payments_welcome_button),
+            size = ButtonSize.Large,
+            modifierBox = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+            enabled = true,
+            loading = false,
+            onClick = onDone
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+@Composable
 private fun codeErrorMessage(error: MembershipErrors.CodeGetInfo): String {
     val res = when (error) {
         is MembershipErrors.CodeGetInfo.UnknownError -> R.string.membership_code_error_unknown
@@ -261,5 +342,17 @@ fun ActivateCodeLoadingPreview() {
         state = ActivateCodeState.Visible.Loading,
         textField = TextFieldState(initialText = "KJ419-01091-13933-321ZV-ONYEE"),
         action = {}
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ActivateCodeSuccessPreview() {
+    ActivateCodeSuccessContent(
+        state = ActivateCodeState.Visible.Success(
+            tierName = "Plus",
+            features = listOf("Unlimited storage", "Priority support", "Custom domain")
+        ),
+        onDone = {}
     )
 }

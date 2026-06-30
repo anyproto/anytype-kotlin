@@ -347,6 +347,21 @@ open class ObjectSetFragment :
                     )
                 }
             }
+            // Board (Kanban) viewer is hosted persistently: its composition is set up once
+            // here and fed view-state via setBoard(...) in setViewer, so emissions diff
+            // instead of tearing down the composition (which would reset scroll / cancel a
+            // drag). See BoardViewWidget.
+            binding.boardView.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                onCardClick = { id -> vm.onObjectHeaderClicked(id) }
+                onCardMoved = { cardId, sourceColumnId, targetColumnId, targetOrderedIds ->
+                    vm.onBoardCardDropped(cardId, sourceColumnId, targetColumnId, targetOrderedIds)
+                }
+                onCardReordered = { columnId, orderedCardIds ->
+                    vm.onBoardCardReordered(columnId, orderedCardIds)
+                }
+                onColumnLoadMore = { columnId -> vm.onBoardColumnLoadMore(columnId) }
+            }
             binding.topToolbar.container.setOnClickListener {
                 WidgetOverlayFragment.show(parentFragmentManager, space)
             }
@@ -924,6 +939,8 @@ open class ObjectSetFragment :
                     galleryView.gone()
                     listView.gone()
                     listView.setViews(emptyList())
+                    boardView.gone()
+                    boardView.clear()
                 }
                 viewerGridHeaderAdapter.submitList(viewer.columns)
                 viewerGridAdapter.submitList(viewer.rows)
@@ -941,6 +958,8 @@ open class ObjectSetFragment :
                         views = viewer.items,
                         largeCards = viewer.largeCards
                     )
+                    boardView.gone()
+                    boardView.clear()
                 }
             }
             is Viewer.ListView -> {
@@ -953,6 +972,22 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.visible()
                     listView.setViews(viewer.items)
+                    boardView.gone()
+                    boardView.clear()
+                }
+            }
+            is Viewer.Board -> {
+                viewerGridHeaderAdapter.submitList(emptyList())
+                viewerGridAdapter.submitList(emptyList())
+                with(binding) {
+                    unsupportedViewError.gone()
+                    unsupportedViewError.text = null
+                    galleryView.gone()
+                    galleryView.clear()
+                    listView.gone()
+                    listView.setViews(emptyList())
+                    boardView.visible()
+                    boardView.setBoard(viewer)
                 }
             }
             is Viewer.Unsupported -> {
@@ -963,6 +998,8 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.gone()
                     listView.setViews(emptyList())
+                    boardView.gone()
+                    boardView.clear()
                     when(viewer.type) {
                         Viewer.Unsupported.TYPE_GRAPH -> {
                             unsupportedViewError.setText(R.string.error_graph_view_not_supported)
@@ -988,6 +1025,8 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.gone()
                     listView.setViews(emptyList())
+                    boardView.gone()
+                    boardView.clear()
                     unsupportedViewError.gone()
                     unsupportedViewError.text = null
                 }

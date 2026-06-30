@@ -270,7 +270,8 @@ data class Block(
             val relationLinks: List<RelationLink> = emptyList(),
             val targetObjectId: Id = "",
             val isCollection: Boolean = false,
-            val objectOrders: List<ObjectOrder> = emptyList()
+            val objectOrders: List<ObjectOrder> = emptyList(),
+            val groupOrders: List<GroupOrder> = emptyList()
         ) : Content() {
 
             data class Viewer(
@@ -286,6 +287,8 @@ data class Block(
                 val coverRelationKey: String? = null,
                 val defaultTemplate: Id? = null,
                 val defaultObjectType: Id? = null,
+                val groupRelationKey: String? = null,
+                val groupBackgroundColors: Boolean = false,
             ) {
 
                 enum class Type(val formattedName: String) {

@@ -9,6 +9,9 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.DataViewGroup
+import com.anytypeio.anytype.core_models.GroupOrder
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
@@ -22,6 +25,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.extension.getObject
@@ -37,6 +41,7 @@ import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.objects.toObjects
+import com.anytypeio.anytype.presentation.sets.buildBoardViews
 import com.anytypeio.anytype.presentation.sets.buildGalleryViews
 import com.anytypeio.anytype.presentation.sets.buildListViews
 import com.anytypeio.anytype.presentation.sets.dataViewState
@@ -72,9 +77,17 @@ suspend fun DVViewer.render(
     dataViewRelations: List<ObjectWrapper.Relation>,
     store: ObjectStore,
     objectOrderIds: List<Id> = emptyList(),
+    objectOrders: List<ObjectOrder> = emptyList(),
     storeOfRelations: StoreOfRelations,
     fieldParser: FieldParser,
-    storeOfObjectTypes: StoreOfObjectTypes
+    storeOfObjectTypes: StoreOfObjectTypes,
+    stringResourceProvider: StringResourceProvider,
+    boardGroupOptions: Map<Id, ObjectWrapper.Option> = emptyMap(),
+    boardGroupOrder: GroupOrder? = null,
+    boardGroups: List<DataViewGroup> = emptyList(),
+    boardRecordsByColumn: Map<Id, List<Id>> = emptyMap(),
+    boardCountsByColumn: Map<Id, Int> = emptyMap(),
+    kanbanEnabled: Boolean = false
 ): Viewer {
     return when (type) {
         DVViewerType.GRID -> {
@@ -128,6 +141,31 @@ suspend fun DVViewer.render(
             )
         }
 
+        DVViewerType.BOARD -> if (!kanbanEnabled) {
+            // Kanban is gated behind an experimental flag; treat it as unsupported when off.
+            Viewer.Unsupported(id = id, title = name, type = Viewer.Unsupported.TYPE_KANBAN)
+        } else {
+            Viewer.Board(
+                id = id,
+                title = name,
+                columns = buildBoardViews(
+                    relations = dataViewRelations,
+                    urlBuilder = builder,
+                    objectStore = store,
+                    objectOrders = objectOrders,
+                    storeOfRelations = storeOfRelations,
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes,
+                    stringResourceProvider = stringResourceProvider,
+                    groupOptions = boardGroupOptions,
+                    groupOrder = boardGroupOrder,
+                    groups = boardGroups,
+                    recordsByColumn = boardRecordsByColumn,
+                    countsByColumn = boardCountsByColumn
+                )
+            )
+        }
+
         else -> {
             if (useFallbackView) {
                 buildGridView(
@@ -144,7 +182,6 @@ suspend fun DVViewer.render(
                     id = id,
                     title = name,
                     type = when (type) {
-                        DVViewerType.BOARD -> Viewer.Unsupported.TYPE_KANBAN
                         DVViewerType.CALENDAR -> {
                             Viewer.Unsupported.TYPE_CALENDAR
                         }

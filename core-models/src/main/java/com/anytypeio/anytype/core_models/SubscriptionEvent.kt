@@ -72,6 +72,17 @@ sealed class SubscriptionEvent {
         val afterId: Id?,
         val subscription: Id
     ) : SubscriptionEvent(), Target
+
+    /**
+     * A data-view group (Kanban column) was added/updated or removed.
+     * @property [group] the group payload.
+     * @property [remove] true if the group was removed.
+     */
+    data class Group(
+        val group: DataViewGroup,
+        val remove: Boolean,
+        val subscription: Id
+    ) : SubscriptionEvent()
 }
 
 data class Subscription(

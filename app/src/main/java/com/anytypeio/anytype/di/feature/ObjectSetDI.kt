@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer
+import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewViewerPosition
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
@@ -59,6 +60,9 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
+import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.search.BoardGroupSubscriptionContainer
+import com.anytypeio.anytype.domain.search.BoardRecordsSubscriptionContainer
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -259,11 +263,16 @@ object ObjectSetModule {
         spaceViews: SpaceViewSubscriptionContainer,
         deepLinkResolver: DeepLinkResolver,
         setDataViewProperties: SetDataViewProperties,
+        setDataViewObjectOrder: SetDataViewObjectOrder,
+        getOptions: GetOptions,
+        boardGroupSubscriptionContainer: BoardGroupSubscriptionContainer,
+        boardRecordsSubscriptionContainer: BoardRecordsSubscriptionContainer,
         emojiProvider: EmojiProvider,
         emojiSuggester: EmojiSuggester,
         stringResourceProvider: StringResourceProvider,
         getDefaultObjectType: GetDefaultObjectType,
         addDiscussion: AddDiscussion,
+        userSettingsRepository: UserSettingsRepository,
         backHistoryDelegate: BackHistoryDelegate,
         exitToVaultDelegate: ExitToVaultDelegate
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
@@ -310,11 +319,16 @@ object ObjectSetModule {
         deepLinkResolver = deepLinkResolver,
         removeObjectFromCollection = removeObjectFromCollection,
         setDataViewProperties = setDataViewProperties,
+        setDataViewObjectOrder = setDataViewObjectOrder,
+        getOptions = getOptions,
+        boardGroupSubscriptionContainer = boardGroupSubscriptionContainer,
+        boardRecordsSubscriptionContainer = boardRecordsSubscriptionContainer,
         emojiProvider = emojiProvider,
         emojiSuggester = emojiSuggester,
         stringResourceProvider = stringResourceProvider,
         getDefaultObjectType = getDefaultObjectType,
         addDiscussion = addDiscussion,
+        userSettingsRepository = userSettingsRepository,
         backHistoryDelegate = backHistoryDelegate,
         exitToVaultDelegate = exitToVaultDelegate
     )
@@ -577,6 +591,38 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun boardGroupSubscriptionContainer(
+        repo: BlockRepository,
+        channel: SubscriptionEventChannel,
+        dispatchers: AppCoroutineDispatchers,
+        logger: Logger
+    ): BoardGroupSubscriptionContainer = BoardGroupSubscriptionContainer(
+        repo = repo,
+        channel = channel,
+        dispatchers = dispatchers,
+        logger = logger
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun boardRecordsSubscriptionContainer(
+        repo: BlockRepository,
+        channel: SubscriptionEventChannel,
+        @Named("object-set-store") store: ObjectStore,
+        dispatchers: AppCoroutineDispatchers,
+        logger: Logger
+    ): BoardRecordsSubscriptionContainer = BoardRecordsSubscriptionContainer(
+        repo = repo,
+        channel = channel,
+        store = store,
+        dispatchers = dispatchers,
+        logger = logger
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     @Named("object-set-store")
     fun provideObjectStore(): ObjectStore = DefaultObjectStore()
 
@@ -719,6 +765,14 @@ object ObjectSetModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): SetDataViewViewerPosition = SetDataViewViewerPosition(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetDataViewObjectOrderUseCase(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetDataViewObjectOrder = SetDataViewObjectOrder(repo = repo, dispatchers = dispatchers)
 
     @JvmStatic
     @Provides

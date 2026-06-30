@@ -114,6 +114,9 @@ interface MiddlewareService {
     fun objectSearchSubscribe(request: Rpc.Object.SearchSubscribe.Request): Rpc.Object.SearchSubscribe.Response
 
     @Throws(Exception::class)
+    fun objectGroupsSubscribe(request: Rpc.Object.GroupsSubscribe.Request): Rpc.Object.GroupsSubscribe.Response
+
+    @Throws(Exception::class)
     fun objectCrossSpaceSubscribe(request: Rpc.Object.CrossSpaceSearchSubscribe.Request): Rpc.Object.CrossSpaceSearchSubscribe.Response
 
     @Throws(Exception::class)
@@ -361,6 +364,9 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun blockDataViewViewSetPosition(request: Rpc.BlockDataview.View.SetPosition.Request): Rpc.BlockDataview.View.SetPosition.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewObjectOrderUpdate(request: Rpc.BlockDataview.ObjectOrder.Update.Request): Rpc.BlockDataview.ObjectOrder.Update.Response
 
     @Throws(Exception::class)
     fun blockDataViewSetSource(request: Rpc.BlockDataview.SetSource.Request): Rpc.BlockDataview.SetSource.Response

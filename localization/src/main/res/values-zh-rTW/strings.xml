@@ -17,6 +17,8 @@
     <string name="experimental_features">Experimental Features</string>
     <string name="experimental_features_compact_vault">Compact vault mode</string>
     <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
+    <string name="experimental_features_kanban">Kanban board</string>
+    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
     <string name="account">帳戶</string>
     <string name="reset_account">重置筆記庫</string>
     <string name="delete_account">刪除帳戶</string>
@@ -584,6 +586,10 @@
     <string name="view_grid">網格</string>
     <string name="view_gallery">畫廊</string>
     <string name="view_kanban">看板</string>
+    <string name="dataview_board_no_objects">沒有物件</string>
+    <string name="dataview_board_no_value">無數值</string>
+    <string name="dataview_board_checked">已勾選</string>
+    <string name="dataview_board_unchecked">未勾選</string>
     <string name="page_cover">頁面封面</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">取消釘選</string>

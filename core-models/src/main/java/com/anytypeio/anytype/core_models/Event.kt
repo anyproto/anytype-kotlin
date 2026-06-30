@@ -304,7 +304,9 @@ sealed class Event {
                     val cardSize: DVViewerCardSize,
                     val coverFit: Boolean,
                     val defaultTemplateId: String?,
-                    val defaultObjectTypeId: String?
+                    val defaultObjectTypeId: String?,
+                    val groupRelationKey: String? = null,
+                    val groupBackgroundColors: Boolean = false
                 )
             }
 

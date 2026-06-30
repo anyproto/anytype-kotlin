@@ -46,7 +46,9 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.payments.R
@@ -263,7 +265,7 @@ private fun ActivateCodeSuccessContent(
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
             text = stringResource(id = R.string.payments_activate_code_success_title),
-            style = HeadlineSubheading,
+            style = HeadlineHeading,
             color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center
         )
@@ -295,15 +297,13 @@ private fun ActivateCodeSuccessContent(
             }
         }
         Spacer(modifier = Modifier.height(24.dp))
-        ButtonOnboardingPrimaryLarge(
+        ButtonSecondary(
             text = stringResource(id = R.string.payments_welcome_button),
-            size = ButtonSize.Large,
-            modifierBox = Modifier
+            modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-            enabled = true,
-            loading = false,
-            onClick = onDone
+            onClick = onDone,
+            size = ButtonSize.LargeSecondary
         )
         Spacer(modifier = Modifier.height(32.dp))
     }

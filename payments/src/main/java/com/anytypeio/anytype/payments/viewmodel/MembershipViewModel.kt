@@ -675,8 +675,12 @@ class MembershipViewModel(
                     .first()
             }
             activateCodeState.value = settled?.let {
+                Timber.d("Redeemed tier settled: ${it.title}")
                 ActivateCodeState.Visible.Success(tierName = it.title, features = it.features)
-            } ?: ActivateCodeState.Visible.Success(tierName = null, features = emptyList())
+            } ?: run {
+                Timber.w("Redeemed tier did not settle within ${REDEEM_SETTLE_TIMEOUT_MS}ms; showing generic confirmation")
+                ActivateCodeState.Visible.Success(tierName = null, features = emptyList())
+            }
         }
     }
 

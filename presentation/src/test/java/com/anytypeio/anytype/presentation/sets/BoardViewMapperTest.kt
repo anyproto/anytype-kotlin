@@ -353,7 +353,7 @@ class BoardViewMapperTest {
     }
 
     @Test
-    fun `cards carry the group background color when groupBackgroundColors is on`() = runTest {
+    fun `column carries the group background color when groupBackgroundColors is on`() = runTest {
 
         val todo = StubRelationOptionObject(
             id = MockDataFactory.randomUuid(), space = defaultSpace, text = "To do", color = "red"
@@ -417,21 +417,18 @@ class BoardViewMapperTest {
             )
         )
 
-        // Cards inherit their column's group color as a background tint.
+        // Each column gets its group color as a background tint; the dot (color) is unchanged.
         assertEquals("red", columns[1].color)
-        assertEquals(true, columns[1].cards.isNotEmpty())
-        assertEquals(true, columns[1].cards.all { it.backgroundColor == "red" })
+        assertEquals("red", columns[1].backgroundColor)
         assertEquals("blue", columns[2].color)
-        assertEquals(true, columns[2].cards.isNotEmpty())
-        assertEquals(true, columns[2].cards.all { it.backgroundColor == "blue" })
-        // The empty ("No value") column has no group color: its cards stay un-tinted.
+        assertEquals("blue", columns[2].backgroundColor)
+        // The empty ("No value") column has no group color: it stays un-tinted.
         assertEquals(null, columns[0].color)
-        assertEquals(true, columns[0].cards.isNotEmpty())
-        assertEquals(true, columns[0].cards.all { it.backgroundColor == null })
+        assertEquals(null, columns[0].backgroundColor)
     }
 
     @Test
-    fun `cards have no background color when groupBackgroundColors is off`() = runTest {
+    fun `column has no background color when groupBackgroundColors is off`() = runTest {
 
         val todo = StubRelationOptionObject(
             id = MockDataFactory.randomUuid(), space = defaultSpace, text = "To do", color = "red"
@@ -492,10 +489,9 @@ class BoardViewMapperTest {
             )
         )
 
-        // Toggle off: columns keep their color dot, but cards are never tinted.
-        val cards = columns.flatMap { it.cards }
-        assertEquals(true, cards.isNotEmpty())
-        assertEquals(true, cards.all { it.backgroundColor == null })
+        // Toggle off: columns keep their color dot, but are never tinted.
+        assertEquals(true, columns.isNotEmpty())
+        assertEquals(true, columns.all { it.backgroundColor == null })
         // Column color (the dot) is unaffected by the toggle.
         assertEquals("red", columns.first { it.id == todo.id }.color)
         assertEquals("blue", columns.first { it.id == done.id }.color)

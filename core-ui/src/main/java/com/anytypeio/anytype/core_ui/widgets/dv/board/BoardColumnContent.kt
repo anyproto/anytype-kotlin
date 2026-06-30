@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title2
@@ -67,10 +68,13 @@ fun BoardColumnContent(
         dragState.sourceColumnId != column.id &&
         targetColumnId == column.id
 
-    val background = if (isDropTarget) {
-        colorResource(id = R.color.shape_secondary)
-    } else {
-        colorResource(id = R.color.shape_tertiary)
+    // "Color columns": tint the whole column with its group color when set. The drop-target
+    // highlight still takes precedence while a card from another column hovers over it.
+    val columnBackgroundColor = column.backgroundColor
+    val background = when {
+        isDropTarget -> colorResource(id = R.color.shape_secondary)
+        columnBackgroundColor != null -> light(columnBackgroundColor)
+        else -> colorResource(id = R.color.shape_tertiary)
     }
 
     Column(

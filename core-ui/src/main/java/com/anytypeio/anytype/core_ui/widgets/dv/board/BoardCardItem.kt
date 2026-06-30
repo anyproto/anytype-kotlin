@@ -41,14 +41,10 @@ fun BoardCardItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val backgroundColor = card.backgroundColor
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .background(
-                if (backgroundColor != null) light(backgroundColor)
-                else colorResource(id = R.color.background_primary)
-            )
+            .background(colorResource(id = R.color.background_primary))
             .clickable(onClick = onClick)
             .padding(12.dp)
     ) {

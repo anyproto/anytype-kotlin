@@ -142,6 +142,8 @@ sealed class Viewer {
             val id: String,
             val label: String,
             val color: String? = null,
+            /** Group color tint for the column background when "Color columns" is on; null = default. */
+            val backgroundColor: String? = null,
             val cards: List<Card> = emptyList(),
             /** Total records in this column on the backend (may exceed [cards] when paged). */
             val count: Int = 0
@@ -151,9 +153,7 @@ sealed class Viewer {
             val name: String,
             val icon: ObjectIcon,
             val relations: List<DefaultObjectRelationValueView>,
-            val hideIcon: Boolean,
-            /** Group color tint when "Color columns" is on; null = default background. */
-            val backgroundColor: String? = null
+            val hideIcon: Boolean
         )
     }
 

@@ -95,6 +95,40 @@ class ViewerLayoutWidgetStateTest {
     }
 
     @Test
+    fun `groupByItems includes the bundled done checkbox relation`() = runTest {
+        // "done" is a system relation key, but it is a user-facing checkbox that desktop
+        // allows grouping by, so it must NOT be filtered out like other system keys.
+        val done = relation(Relations.DONE, RelationFormat.CHECKBOX, "Done")
+        val storeOfRelations = store(done)
+        val links = listOf(RelationLink(Relations.DONE, RelationFormat.CHECKBOX))
+
+        val result = ViewerLayoutWidgetUi.init().updateState(
+            viewer = viewer(),
+            storeOfRelations = storeOfRelations,
+            relationLinks = links
+        )
+
+        assertEquals(listOf(Relations.DONE), result.groupByItems.map { it.relationKey.key })
+    }
+
+    @Test
+    fun `groupByItems excludes non-done system relations`() = runTest {
+        // Other system relations of groupable format (e.g. the internal "isReadonly" flag)
+        // stay excluded even when not hidden.
+        val internal = relation("isReadonly", RelationFormat.CHECKBOX, "Read only")
+        val storeOfRelations = store(internal)
+        val links = listOf(RelationLink("isReadonly", RelationFormat.CHECKBOX))
+
+        val result = ViewerLayoutWidgetUi.init().updateState(
+            viewer = viewer(),
+            storeOfRelations = storeOfRelations,
+            relationLinks = links
+        )
+
+        assertTrue(result.groupByItems.isEmpty())
+    }
+
+    @Test
     fun `groupBackgroundColors reflects viewer`() = runTest {
         val storeOfRelations = store()
         val result = ViewerLayoutWidgetUi.init().updateState(

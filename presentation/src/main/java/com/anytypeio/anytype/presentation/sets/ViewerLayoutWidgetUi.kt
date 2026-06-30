@@ -168,7 +168,9 @@ private suspend fun DVViewer.getGroupByItems(
         .mapNotNull { storeOfRelations.getByKey(it.key) }
         .filter { relation ->
             relation.isValid && relation.isHidden != true && relation.isArchived != true &&
-                    !relation.key.isSystemKey()
+                    // Bundled "done" is a system key but a user-facing checkbox desktop
+                    // groups by, so allow it through while excluding other system relations.
+                    (!relation.key.isSystemKey() || relation.key == Relations.DONE)
         }
         .map { relation ->
             ViewerLayoutWidgetUi.State.GroupBy(

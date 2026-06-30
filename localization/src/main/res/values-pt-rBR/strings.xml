@@ -17,6 +17,8 @@
     <string name="experimental_features">Experimental Features</string>
     <string name="experimental_features_compact_vault">Compact vault mode</string>
     <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
+    <string name="experimental_features_kanban">Kanban board</string>
+    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
     <string name="account">Cofre</string>
     <string name="reset_account">Redefinir o cofre</string>
     <string name="delete_account">Excluir cofre</string>
@@ -585,6 +587,10 @@
     <string name="view_grid">Grade</string>
     <string name="view_gallery">Galeria</string>
     <string name="view_kanban">Kanban</string>
+    <string name="dataview_board_no_objects">Sem objetos</string>
+    <string name="dataview_board_no_value">Sem valor</string>
+    <string name="dataview_board_checked">Marcado</string>
+    <string name="dataview_board_unchecked">Desmarcado</string>
     <string name="page_cover">Capa da página</string>
     <string name="object_action_pin">Fixar</string>
     <string name="object_action_unpin">Desafixar</string>

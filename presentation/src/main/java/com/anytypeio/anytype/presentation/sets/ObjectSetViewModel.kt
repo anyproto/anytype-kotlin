@@ -4322,6 +4322,32 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
                 viewerLayoutWidgetState.value.copy(
                     showCoverMenu = false
                 )
+
+            is ViewerLayoutWidgetUi.Action.ColorColumns -> {
+                viewModelScope.launch {
+                    proceedWithUpdateViewer(
+                        viewerId = viewerLayoutWidgetState.value.viewer
+                    ) { it.copy(groupBackgroundColors = action.toggled) }
+                }
+            }
+
+            ViewerLayoutWidgetUi.Action.GroupByMenu -> {
+                val isGroupByMenuVisible = viewerLayoutWidgetState.value.showGroupByMenu
+                viewerLayoutWidgetState.value =
+                    viewerLayoutWidgetState.value.copy(showGroupByMenu = !isGroupByMenuVisible)
+            }
+
+            is ViewerLayoutWidgetUi.Action.GroupByUpdate -> {
+                if (!action.item.isChecked) {
+                    viewModelScope.launch {
+                        proceedWithUpdateViewer(
+                            viewerId = viewerLayoutWidgetState.value.viewer
+                        ) { it.copy(groupRelationKey = action.item.relationKey.key) }
+                    }
+                } else {
+                    Timber.i("Group-by relation [${action.item.relationKey.key}] is already set")
+                }
+            }
         }
     }
 

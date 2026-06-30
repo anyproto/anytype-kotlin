@@ -17,6 +17,8 @@
     <string name="experimental_features">Funzionalità Sperimentali</string>
     <string name="experimental_features_compact_vault">Modalità cassaforte compatta</string>
     <string name="experimental_features_compact_vault_description">Nasconde le anteprime dei messaggi per i canali letti nella cassaforte</string>
+    <string name="experimental_features_kanban">Kanban board</string>
+    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
     <string name="account">Cassaforte</string>
     <string name="reset_account">Reimposta cassaforte</string>
     <string name="delete_account">Elimina cassaforte</string>
@@ -585,6 +587,10 @@
     <string name="view_grid">Griglia</string>
     <string name="view_gallery">Galleria</string>
     <string name="view_kanban">Kanban</string>
+    <string name="dataview_board_no_objects">Nessun oggetto</string>
+    <string name="dataview_board_no_value">Nessun valore</string>
+    <string name="dataview_board_checked">Spuntato</string>
+    <string name="dataview_board_unchecked">Non spuntato</string>
     <string name="page_cover">Copertina della pagina</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Togli</string>

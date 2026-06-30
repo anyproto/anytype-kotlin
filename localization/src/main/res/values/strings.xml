@@ -632,6 +632,9 @@
     <string name="type_templates_widget_title">Create object</string>
     <string name="view_layout_widget_title">Layout</string>
     <string name="view_layout_cover_widget_title">Cover</string>
+    <string name="view_layout_group_by_widget_title">Group by</string>
+    <string name="group_by">Group by</string>
+    <string name="color_columns">Color columns</string>
     <string name="blank">Blank</string>
 
     <string name="templates_menu_default_for_view">Default for this view</string>

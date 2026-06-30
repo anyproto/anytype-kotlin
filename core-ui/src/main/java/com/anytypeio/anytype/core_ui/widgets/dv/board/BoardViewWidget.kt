@@ -36,7 +36,9 @@ class BoardViewWidget @JvmOverloads constructor(
     var onCreateInColumn: (String) -> Unit = {}
 
     /** Whether the current permission allows creating objects; gates the per-column "＋ New" item. */
-    var canCreateObject: Boolean by mutableStateOf(true)
+    // Fail closed: stay hidden until the host sets it from permission state, so a
+    // read-only viewer can't briefly see the "+ New" affordance.
+    var canCreateObject: Boolean by mutableStateOf(false)
 
     @Composable
     override fun Content() {

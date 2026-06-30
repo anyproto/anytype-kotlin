@@ -615,6 +615,10 @@ class MembershipViewModel(
                             Timber.d("Membership code redeemed")
                             sendAnalyticsActivateMembershipCodeEvent(analytics = analytics)
                             forceRefreshTrigger.value = true
+                            // Reset the trigger detached from the settle/dismiss lifecycle so a
+                            // quick dismiss can't leave it stuck at true (which would make later
+                            // force-refreshes a no-op).
+                            scheduleForceRefreshReset()
                             // Keep the sheet on Loading (reconciling) and confirm with the
                             // settled tier once the status/tiers refresh lands.
                             observeRedeemedTier()
@@ -673,10 +677,18 @@ class MembershipViewModel(
             activateCodeState.value = settled?.let {
                 ActivateCodeState.Visible.Success(tierName = it.title, features = it.features)
             } ?: ActivateCodeState.Visible.Success(tierName = null, features = emptyList())
-            launch {
-                delay(FORCE_REFRESH_RESET_DELAY_MS)
-                forceRefreshTrigger.value = false
-            }
+        }
+    }
+
+    /**
+     * Reset [forceRefreshTrigger] after a delay, detached from [redeemSettleJob] so a dismiss
+     * (which cancels that job) can't leave it stuck at true — a stuck trigger would make later
+     * force-refreshes a no-op, since the StateFlow only re-emits on value changes.
+     */
+    private fun scheduleForceRefreshReset() {
+        viewModelScope.launch {
+            delay(FORCE_REFRESH_RESET_DELAY_MS)
+            forceRefreshTrigger.value = false
         }
     }
 

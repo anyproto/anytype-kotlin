@@ -17,6 +17,8 @@
     <string name="experimental_features">Experimentelle Funktionen</string>
     <string name="experimental_features_compact_vault">Kompakter Tresormodus</string>
     <string name="experimental_features_compact_vault_description">Versteckt Nachrichtenvorschau für gelesene Kanäle im Tresor</string>
+    <string name="experimental_features_kanban">Kanban board</string>
+    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
     <string name="account">Tresor</string>
     <string name="reset_account">Tresor zurücksetzen</string>
     <string name="delete_account">Tresor löschen</string>
@@ -585,6 +587,10 @@
     <string name="view_grid">Raster</string>
     <string name="view_gallery">Galerie</string>
     <string name="view_kanban">Kanban</string>
+    <string name="dataview_board_no_objects">Keine Objekte</string>
+    <string name="dataview_board_no_value">Kein Wert</string>
+    <string name="dataview_board_checked">Ausgewählt</string>
+    <string name="dataview_board_unchecked">Nicht ausgewählt</string>
     <string name="page_cover">Seitencover</string>
     <string name="object_action_pin">Anheften</string>
     <string name="object_action_unpin">Loslösen</string>

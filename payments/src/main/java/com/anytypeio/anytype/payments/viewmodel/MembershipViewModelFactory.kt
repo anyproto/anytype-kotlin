@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.payments.GetMembershipCodeInfo
 import com.anytypeio.anytype.domain.payments.GetMembershipEmailStatus
 import com.anytypeio.anytype.domain.payments.GetMembershipPaymentUrl
 import com.anytypeio.anytype.domain.payments.IsMembershipNameValid
+import com.anytypeio.anytype.domain.payments.RedeemMembershipCode
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.payments.VerifyMembershipEmailCode
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
@@ -22,7 +24,9 @@ class MembershipViewModelFactory @Inject constructor(
     private val isMembershipNameValid: IsMembershipNameValid,
     private val setMembershipEmail: SetMembershipEmail,
     private val verifyMembershipEmailCode: VerifyMembershipEmailCode,
-    private val getMembershipEmailStatus: GetMembershipEmailStatus
+    private val getMembershipEmailStatus: GetMembershipEmailStatus,
+    private val getMembershipCodeInfo: GetMembershipCodeInfo,
+    private val redeemMembershipCode: RedeemMembershipCode
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -35,7 +39,9 @@ class MembershipViewModelFactory @Inject constructor(
             isMembershipNameValid = isMembershipNameValid,
             setMembershipEmail = setMembershipEmail,
             verifyMembershipEmailCode = verifyMembershipEmailCode,
-            getMembershipEmailStatus = getMembershipEmailStatus
+            getMembershipEmailStatus = getMembershipEmailStatus,
+            getMembershipCodeInfo = getMembershipCodeInfo,
+            redeemMembershipCode = redeemMembershipCode
         ) as T
     }
 }

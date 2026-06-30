@@ -2990,6 +2990,29 @@ class Middleware @Inject constructor(
     }
 
     @Throws
+    fun membershipCodeGetInfo(command: Command.Membership.CodeGetInfo): Int {
+        val request = Rpc.Membership.CodeGetInfo.Request(
+            code = command.code
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipCodeGetInfo(request) }
+        logResponseIfDebug(response, time)
+        return response.requestedTier
+    }
+
+    @Throws
+    fun membershipCodeRedeem(command: Command.Membership.CodeRedeem) {
+        val request = Rpc.Membership.CodeRedeem.Request(
+            code = command.code,
+            nsName = command.name,
+            nsNameType = command.nameType.toMw()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipCodeRedeem(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws
     fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {
         val request = Rpc.Membership.GetTiers.Request(
             noCache = command.noCache,

@@ -593,6 +593,12 @@ sealed class Command {
 
         data class VerifyEmailCode(val code: String) : Membership()
         data class GetTiers(val noCache: Boolean, val locale: String) : Membership()
+        data class CodeGetInfo(val code: String) : Membership()
+        data class CodeRedeem(
+            val code: String,
+            val name: String = "",
+            val nameType: NameServiceNameType = NameServiceNameType.ANY_NAME
+        ) : Membership()
     }
 
     data class SearchWithMeta(

@@ -297,7 +297,7 @@ class VaultFragment : BaseComposeFragment() {
             is VaultCommand.Deeplink.MembershipScreen -> {
                 findNavController().navigate(
                     R.id.paymentsScreen,
-                    MembershipFragment.args(command.tierId),
+                    MembershipFragment.args(command.tierId, command.code),
                     Builder().setLaunchSingleTop(true).build()
                 )
             }

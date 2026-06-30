@@ -190,7 +190,10 @@ private fun ViewerLayoutContent(
             )
         }
 
-        if (isBoard) {
+        // Kanban-only rows. Gated on kanbanEnabled too (not just BOARD), so a Board viewer
+        // synced from desktop while the experimental flag is off doesn't expose grouping
+        // controls for a board that won't render on mobile — consistent with the type picker.
+        if (isBoard && currentState.kanbanEnabled) {
             Divider()
             ColumnItem(
                 modifier = Modifier.padding(start = 20.dp, end = 20.dp),

@@ -361,6 +361,7 @@ open class ObjectSetFragment :
                     vm.onBoardCardReordered(columnId, orderedCardIds)
                 }
                 onColumnLoadMore = { columnId -> vm.onBoardColumnLoadMore(columnId) }
+                onCreateInColumn = { columnId -> vm.onBoardCreateObjectInColumn(columnId) }
             }
             binding.topToolbar.container.setOnClickListener {
                 WidgetOverlayFragment.show(parentFragmentManager, space)
@@ -759,6 +760,7 @@ open class ObjectSetFragment :
                 setupNewButtons(state.isCreateObjectAllowed)
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
+                binding.boardView.canCreateObject = state.isCreateObjectAllowed
                 setViewer(viewer = state.viewer)
             }
             is DataViewViewState.Set.NoQuery -> {
@@ -819,6 +821,7 @@ open class ObjectSetFragment :
                 }
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
+                binding.boardView.canCreateObject = state.isCreateObjectAllowed
                 setViewer(viewer = state.viewer)
                 dataViewInfo.hide()
             }
@@ -859,6 +862,7 @@ open class ObjectSetFragment :
                 }
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
+                binding.boardView.canCreateObject = state.isCreateObjectAllowed
                 setViewer(viewer = state.viewer)
                 dataViewInfo.hide()
             }

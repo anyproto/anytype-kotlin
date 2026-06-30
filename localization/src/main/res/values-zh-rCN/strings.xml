@@ -1539,11 +1539,11 @@
     <string name="payments_activate_code_hint">粘贴激活码…</string>
     <string name="payments_activate_code_button">激活</string>
     <!-- Membership Activate Code — errors (CodeGetInfo) -->
-    <string name="membership_code_error_unknown">Unknown error occured</string>
-    <string name="membership_code_error_bad_input">Bad input</string>
-    <string name="membership_code_error_not_logged_in">Not logged in</string>
-    <string name="membership_code_error_payment_node">No connection to payment node. Please try again.</string>
-    <string name="membership_code_error_code_invalid">The code is not valid. Please check and try again.</string>
+    <string name="membership_code_error_unknown">发生未知错误</string>
+    <string name="membership_code_error_bad_input">非法输入</string>
+    <string name="membership_code_error_not_logged_in">未登录</string>
+    <string name="membership_code_error_payment_node">连接不到支付节点。请重试。</string>
+    <string name="membership_code_error_code_invalid">代码无效。请检查并重试。</string>
     <string name="membership_code_error_already_member">当前身份已拥有会员资格</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">欢迎来到网络，\n%1$s</string>

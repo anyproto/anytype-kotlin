@@ -27,7 +27,9 @@ class ExperimentalFeaturesFragment : BaseBottomSheetComposeFragment() {
     ): View = content {
         ExperimentalFeaturesScreen(
             isCompactModeEnabled = vm.isCompactModeEnabled.collectAsStateWithLifecycle().value,
-            onCompactModeToggled = vm::onCompactModeToggled
+            onCompactModeToggled = vm::onCompactModeToggled,
+            isKanbanEnabled = vm.isKanbanEnabled.collectAsStateWithLifecycle().value,
+            onKanbanToggled = vm::onKanbanToggled
         )
     }
 

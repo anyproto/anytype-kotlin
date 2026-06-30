@@ -12,6 +12,7 @@ import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
 import com.anytypeio.anytype.middleware.mappers.toCoreModelsAlign
 import com.anytypeio.anytype.middleware.mappers.toCoreModelsBookmarkState
+import com.anytypeio.anytype.middleware.mappers.toCoreModelsGroupOrder
 import timber.log.Timber
 
 fun anytype.Event.Message.toCoreModels(
@@ -286,6 +287,31 @@ fun anytype.Event.Message.toCoreModels(
             isCollection = event.value_
         )
     }
+    blockDataViewGroupOrderUpdate != null -> {
+        val event = blockDataViewGroupOrderUpdate
+        checkNotNull(event)
+        val groupOrder = event.groupOrder
+        if (groupOrder != null) {
+            Event.Command.DataView.GroupOrderUpdate(
+                context = context,
+                dv = event.id,
+                groupOrder = groupOrder.toCoreModelsGroupOrder()
+            )
+        } else {
+            null
+        }
+    }
+    blockDataViewObjectOrderUpdate != null -> {
+        val event = blockDataViewObjectOrderUpdate
+        checkNotNull(event)
+        Event.Command.DataView.ObjectOrderUpdate(
+            context = context,
+            dv = event.id,
+            viewId = event.viewId,
+            groupId = event.groupId,
+            changes = event.sliceChanges.map { it.toCoreModelsSliceChange() }
+        )
+    }
     chatAdd != null -> {
         val event = chatAdd
         checkNotNull(event)
@@ -370,4 +396,25 @@ fun anytype.Event.Message.toCoreModels(
         }
         null
     }
+}
+
+private fun anytype.Event.Block.Dataview.SliceChange.toCoreModelsSliceChange():
+    Event.Command.DataView.ObjectOrderUpdate.SliceChange {
+    val operation = when (op) {
+        anytype.Event.Block.Dataview.SliceOperation.SliceOperationAdd ->
+            Event.Command.DataView.ObjectOrderUpdate.SliceOperation.ADD
+        anytype.Event.Block.Dataview.SliceOperation.SliceOperationMove ->
+            Event.Command.DataView.ObjectOrderUpdate.SliceOperation.MOVE
+        anytype.Event.Block.Dataview.SliceOperation.SliceOperationRemove ->
+            Event.Command.DataView.ObjectOrderUpdate.SliceOperation.REMOVE
+        anytype.Event.Block.Dataview.SliceOperation.SliceOperationReplace ->
+            Event.Command.DataView.ObjectOrderUpdate.SliceOperation.REPLACE
+        anytype.Event.Block.Dataview.SliceOperation.SliceOperationNone ->
+            Event.Command.DataView.ObjectOrderUpdate.SliceOperation.NONE
+    }
+    return Event.Command.DataView.ObjectOrderUpdate.SliceChange(
+        operation = operation,
+        ids = ids,
+        afterId = afterId
+    )
 }

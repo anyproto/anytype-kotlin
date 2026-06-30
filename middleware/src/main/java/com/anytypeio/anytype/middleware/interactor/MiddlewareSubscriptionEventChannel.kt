@@ -7,6 +7,7 @@ import com.anytypeio.anytype.data.auth.event.SubscriptionEventRemoteChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.EventGroup
 import com.anytypeio.anytype.middleware.mappers.parse
+import com.anytypeio.anytype.middleware.mappers.toCoreModelsGroup
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -148,6 +149,24 @@ class MiddlewareSubscriptionEventChannel(
                 keys = listOf(event.subId),
                 dep = false
             )
+        }
+        message.subscriptionGroups != null -> {
+            val event = message.subscriptionGroups
+            checkNotNull(event)
+            val group = event.group
+            if (group != null) {
+                ParsedSubEvent(
+                    event = SubscriptionEvent.Group(
+                        group = group.toCoreModelsGroup(),
+                        remove = event.remove,
+                        subscription = event.subId
+                    ),
+                    keys = listOf(event.subId),
+                    dep = false
+                )
+            } else {
+                null
+            }
         }
         else -> null
     }

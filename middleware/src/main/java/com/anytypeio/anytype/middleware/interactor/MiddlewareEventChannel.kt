@@ -56,6 +56,8 @@ class MiddlewareEventChannel(
         blockDataviewViewUpdate != null -> true
         blockDataviewTargetObjectIdSet != null -> true
         blockDataviewIsCollectionSet != null -> true
+        blockDataViewGroupOrderUpdate != null -> true
+        blockDataViewObjectOrderUpdate != null -> true
         blockSetWidget != null -> true
         else -> false.also {
             if (featureToggles.isLogMiddlewareInteraction)

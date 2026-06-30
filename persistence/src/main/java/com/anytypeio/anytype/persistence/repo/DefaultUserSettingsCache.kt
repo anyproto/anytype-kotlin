@@ -58,6 +58,10 @@ class DefaultUserSettingsCache(
         prefs.getBoolean(COMPACT_MODE_ENABLED_KEY, true)
     )
 
+    private val _kanbanFlow = MutableStateFlow(
+        prefs.getBoolean(KANBAN_ENABLED_KEY, false)
+    )
+
     private val _fileDownloadLimitFlow = MutableStateFlow(
         FileDownloadLimit.fromStorageKey(prefs.getString(FILE_DOWNLOAD_LIMIT_KEY, null))
     )
@@ -780,6 +784,19 @@ class DefaultUserSettingsCache(
 
     override fun observeCompactModeEnabled(): Flow<Boolean> = _compactModeFlow.asStateFlow()
 
+    override suspend fun getKanbanEnabled(): Boolean {
+        return prefs.getBoolean(KANBAN_ENABLED_KEY, false)
+    }
+
+    override suspend fun setKanbanEnabled(enabled: Boolean) {
+        prefs.edit()
+            .putBoolean(KANBAN_ENABLED_KEY, enabled)
+            .apply()
+        _kanbanFlow.value = enabled
+    }
+
+    override fun observeKanbanEnabled(): Flow<Boolean> = _kanbanFlow.asStateFlow()
+
     override suspend fun getFileDownloadLimit(): FileDownloadLimit =
         FileDownloadLimit.fromStorageKey(prefs.getString(FILE_DOWNLOAD_LIMIT_KEY, null))
 
@@ -951,6 +968,7 @@ class DefaultUserSettingsCache(
         const val RUN_PROFILER_ON_STARTUP_KEY = "prefs.device.run_profiler_on_startup"
         const val DEBUG_MENU_ENABLED_KEY = "prefs.device.debug_menu_enabled"
         const val COMPACT_MODE_ENABLED_KEY = "prefs.device.compact_mode_enabled"
+        const val KANBAN_ENABLED_KEY = "prefs.device.kanban_enabled"
         const val FILE_DOWNLOAD_LIMIT_KEY = "prefs.device.file_download_limit"
         const val USE_CELLULAR_FOR_DOWNLOADS_KEY = "prefs.device.use_cellular_for_downloads"
     }

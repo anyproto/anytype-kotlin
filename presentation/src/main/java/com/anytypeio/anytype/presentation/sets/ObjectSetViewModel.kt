@@ -1933,6 +1933,60 @@ class ObjectSetViewModel(
     }
 
     /**
+     * Creates a new object pre-set to the group value of the Kanban column [columnId], routing
+     * through the existing create-object flow (so the post-create "name your object" sheet is
+     * reused). The column's group value is derived with [computeBoardCardMove] — the same
+     * format-aware logic as a card drop — and merged into the new object's prefilled details.
+     * The "No value" column (and any column whose value can't be resolved) creates an object
+     * with no group value.
+     */
+    fun onBoardCreateObjectInColumn(columnId: String) {
+        Timber.d("onBoardCreateObjectInColumn, columnId:[$columnId]")
+        if (!isOwnerOrEditor) {
+            toast(NOT_ALLOWED)
+            return
+        }
+        val state = stateReducer.state.value.dataViewState() ?: return
+        val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+        val groupRelationKey = viewer.groupRelationKey
+        val groups = boardGroups.value
+        viewModelScope.launch {
+            val extraPrefilled: Map<Key, Any?> = if (!groupRelationKey.isNullOrEmpty() && groups.isNotEmpty()) {
+                val move = computeBoardCardMove(
+                    format = storeOfRelations.getByKey(groupRelationKey)?.format,
+                    currentValue = emptyList(),
+                    sourceColumnId = BOARD_EMPTY_GROUP_ID,
+                    sourceGroup = null,
+                    targetColumnId = columnId,
+                    targetGroup = groups.firstOrNull { it.id == columnId }?.value,
+                    groupsLoaded = true
+                )
+                val value = (move as? BoardCardMove.Write)?.value
+                    ?.takeUnless { it == null || (it is List<*> && it.isEmpty()) }
+                if (value != null) mapOf(groupRelationKey to value) else emptyMap()
+            } else {
+                emptyMap()
+            }
+            when (state) {
+                is ObjectState.DataView.Collection ->
+                    proceedWithAddingObjectToCollection(extraPrefilled = extraPrefilled)
+                is ObjectState.DataView.TypeSet ->
+                    proceedWithCreatingObjectTypeSetObject(
+                        currentState = state,
+                        templateChosenBy = null,
+                        extraPrefilled = extraPrefilled
+                    )
+                is ObjectState.DataView.Set ->
+                    proceedWithCreatingSetObject(
+                        currentState = state,
+                        templateChosenBy = null,
+                        extraPrefilled = extraPrefilled
+                    )
+            }
+        }
+    }
+
+    /**
      * Reads the card's current value for the board's group relation as a list of option
      * ids, normalising the single-value / list / absent cases.
      */
@@ -2006,7 +2060,11 @@ class ObjectSetViewModel(
     }
 
     // TODO Multispaces refactor this method
-    private suspend fun proceedWithCreatingSetObject(currentState: ObjectState.DataView, templateChosenBy: Id?) {
+    private suspend fun proceedWithCreatingSetObject(
+        currentState: ObjectState.DataView,
+        templateChosenBy: Id?,
+        extraPrefilled: Map<Key, Any?> = emptyMap()
+    ) {
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
             toast(NOT_ALLOWED)
         } else {
@@ -2075,7 +2133,7 @@ class ObjectSetViewModel(
                                 val prefilled = viewer.prefillNewObjectDetails(
                                     storeOfRelations = storeOfRelations,
                                     dateProvider = dateProvider
-                                )
+                                ) + extraPrefilled
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
                                         type = TypeKey(uniqueKey),
@@ -2100,7 +2158,7 @@ class ObjectSetViewModel(
                                     storeOfRelations = storeOfRelations,
                                     dateProvider = dateProvider,
                                     objSetByRelation = ObjectWrapper.Relation(wrapper.map)
-                                )
+                                ) + extraPrefilled
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByRelation(
                                         filters = viewer.filters,
@@ -2122,7 +2180,8 @@ class ObjectSetViewModel(
 
     private suspend fun proceedWithCreatingObjectTypeSetObject(
         currentState: ObjectState.DataView.TypeSet,
-        templateChosenBy: String?
+        templateChosenBy: String?,
+        extraPrefilled: Map<Key, Any?> = emptyMap()
     ) {
         val objectType = storeOfObjectTypes.get(vmParams.ctx)
 
@@ -2141,7 +2200,7 @@ class ObjectSetViewModel(
             val prefilled = viewer.prefillNewObjectDetails(
                 storeOfRelations = storeOfRelations,
                 dateProvider = dateProvider
-            )
+            ) + extraPrefilled
             proceedWithCreatingDataViewObject(
                 CreateDataViewObject.Params.SetByType(
                     type = TypeKey(objectTypeUniqueKey),
@@ -2159,7 +2218,8 @@ class ObjectSetViewModel(
 
     private suspend fun proceedWithAddingObjectToCollection(
         typeChosenByUser: TypeKey? = null,
-        templateChosenBy: Id? = null
+        templateChosenBy: Id? = null,
+        extraPrefilled: Map<Key, Any?> = emptyMap()
     ) {
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
@@ -2201,7 +2261,7 @@ class ObjectSetViewModel(
         val prefilled = viewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
             dateProvider = dateProvider
-        )
+        ) + extraPrefilled
         val type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!
         val createObjectParams = CreateDataViewObject.Params.Collection(
             template = validTemplateId,

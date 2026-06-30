@@ -17,6 +17,8 @@
     <string name="experimental_features">Fitur Percobaan</string>
     <string name="experimental_features_compact_vault">Mode brankas ringkas</string>
     <string name="experimental_features_compact_vault_description">Sembunyikan pratinjau pesan untuk kanal yang sudah dibaca</string>
+    <string name="experimental_features_kanban">Kanban board</string>
+    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
     <string name="account">Brankas</string>
     <string name="reset_account">Setel ulang brankas</string>
     <string name="delete_account">Hapus brankas</string>
@@ -584,6 +586,10 @@
     <string name="view_grid">Tabel</string>
     <string name="view_gallery">Galeri</string>
     <string name="view_kanban">Kanban</string>
+    <string name="dataview_board_no_objects">Tidak ada objek</string>
+    <string name="dataview_board_no_value">Tak bernilai</string>
+    <string name="dataview_board_checked">Telah diperiksa</string>
+    <string name="dataview_board_unchecked">Belum diperiksa</string>
     <string name="page_cover">Page cover</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Lepas sematan</string>

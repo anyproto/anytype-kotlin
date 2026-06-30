@@ -17,6 +17,8 @@
     <string name="experimental_features">实验性功能</string>
     <string name="experimental_features_compact_vault">紧凑库模式</string>
     <string name="experimental_features_compact_vault_description">隐藏库中已读频道的消息预览</string>
+    <string name="experimental_features_kanban">Kanban board</string>
+    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
     <string name="account">库</string>
     <string name="reset_account">重置库</string>
     <string name="delete_account">删除库</string>
@@ -584,6 +586,10 @@
     <string name="view_grid">网格</string>
     <string name="view_gallery">相册</string>
     <string name="view_kanban">看板</string>
+    <string name="dataview_board_no_objects">无对象</string>
+    <string name="dataview_board_no_value">输入为空</string>
+    <string name="dataview_board_checked">选中</string>
+    <string name="dataview_board_unchecked">未选中</string>
     <string name="page_cover">页面封面</string>
     <string name="object_action_pin">置顶</string>
     <string name="object_action_unpin">取消置顶</string>

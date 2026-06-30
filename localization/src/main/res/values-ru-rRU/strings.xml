@@ -17,6 +17,8 @@
     <string name="experimental_features">Экспериментальные функции</string>
     <string name="experimental_features_compact_vault">Compact vault mode</string>
     <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
+    <string name="experimental_features_kanban">Kanban board</string>
+    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
     <string name="account">Хранилище</string>
     <string name="reset_account">Сбросить хранилище</string>
     <string name="delete_account">Удалить хранилище</string>
@@ -587,6 +589,10 @@
     <string name="view_grid">Сетка</string>
     <string name="view_gallery">Галерея</string>
     <string name="view_kanban">Канбан</string>
+    <string name="dataview_board_no_objects">Нет объектов</string>
+    <string name="dataview_board_no_value">Нет значения</string>
+    <string name="dataview_board_checked">Отмечено</string>
+    <string name="dataview_board_unchecked">Не отмечено</string>
     <string name="page_cover">Обложка страницы</string>
     <string name="object_action_pin">Закрепить</string>
     <string name="object_action_unpin">Открепить</string>

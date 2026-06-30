@@ -17,6 +17,8 @@
     <string name="experimental_features">Experimental Features</string>
     <string name="experimental_features_compact_vault">Compact vault mode</string>
     <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
+    <string name="experimental_features_kanban">Kanban board</string>
+    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
     <string name="account">保管庫</string>
     <string name="reset_account">保管庫をリセット</string>
     <string name="delete_account">保管庫を削除</string>
@@ -584,6 +586,10 @@
     <string name="view_grid">テーブル</string>
     <string name="view_gallery">ギャラリー</string>
     <string name="view_kanban">ボード</string>
+    <string name="dataview_board_no_objects">オブジェクトがありません</string>
+    <string name="dataview_board_no_value">値なし</string>
+    <string name="dataview_board_checked">チェック済み</string>
+    <string name="dataview_board_unchecked">未チェック</string>
     <string name="page_cover">カバー画像</string>
     <string name="object_action_pin">ピン留め</string>
     <string name="object_action_unpin">ピン留め解除</string>

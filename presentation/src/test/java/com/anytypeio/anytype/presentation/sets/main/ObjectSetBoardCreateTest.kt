@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.presentation.sets.BOARD_EMPTY_GROUP_ID
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -120,6 +121,63 @@ class ObjectSetBoardCreateTest : ObjectSetViewModelTestSetup() {
                 argThat {
                     this is CreateDataViewObject.Params.Collection &&
                         prefilled[groupRelationKey] == listOf("opt1")
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `two fast taps create only one object (re-entrancy guard)`() = runTest {
+        stubStatusBoardCollection()
+        boardGroupSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flowOf(
+                listOf(DataViewGroup(id = "g1", value = DataViewGroup.Value.Status("opt1")))
+            )
+        }
+        boardRecordsSubscriptionContainer.stub { on { observe(any()) } doReturn flowOf(emptyMap()) }
+        stubAddObjectToCollection()
+        stubCreateDataViewObject()
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        // Two synchronous taps before the first create coroutine runs: the shared
+        // isObjectCreationInProgress flag must block the second.
+        vm.onBoardCreateObjectInColumn("g1")
+        vm.onBoardCreateObjectInColumn("g1")
+        advanceUntilIdle()
+
+        verifyBlocking(createDataViewObject, times(1)) { async(any()) }
+    }
+
+    @Test
+    fun `creating in the No value column creates an object with no group value`() = runTest {
+        stubStatusBoardCollection()
+        boardGroupSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flowOf(
+                listOf(
+                    DataViewGroup(id = "g1", value = DataViewGroup.Value.Status("opt1")),
+                    DataViewGroup(id = BOARD_EMPTY_GROUP_ID, value = DataViewGroup.Value.Empty)
+                )
+            )
+        }
+        boardRecordsSubscriptionContainer.stub { on { observe(any()) } doReturn flowOf(emptyMap()) }
+        stubAddObjectToCollection()
+        stubCreateDataViewObject()
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        vm.onBoardCreateObjectInColumn(BOARD_EMPTY_GROUP_ID)
+        advanceUntilIdle()
+
+        verifyBlocking(createDataViewObject, times(1)) {
+            async(
+                argThat {
+                    this is CreateDataViewObject.Params.Collection &&
+                        !prefilled.containsKey(groupRelationKey)
                 }
             )
         }

@@ -1946,42 +1946,61 @@ class ObjectSetViewModel(
             toast(NOT_ALLOWED)
             return
         }
-        val state = stateReducer.state.value.dataViewState() ?: return
-        val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+        // Coordinate with the main "+ New" path (proceedWithDataViewObjectCreate): both entry
+        // points share this flag so two fast taps can't spawn two objects.
+        if (!isObjectCreationInProgress.compareAndSet(false, true)) {
+            Timber.d("onBoardCreateObjectInColumn: creation already in progress, skipping")
+            return
+        }
+        val state = stateReducer.state.value.dataViewState()
+        if (state == null) {
+            isObjectCreationInProgress.set(false)
+            return
+        }
+        val viewer = state.viewerByIdOrFirst(session.currentViewerId.value)
+        if (viewer == null) {
+            isObjectCreationInProgress.set(false)
+            return
+        }
         val groupRelationKey = viewer.groupRelationKey
         val groups = boardGroups.value
         viewModelScope.launch {
-            val extraPrefilled: Map<Key, Any?> = if (!groupRelationKey.isNullOrEmpty() && groups.isNotEmpty()) {
-                val move = computeBoardCardMove(
-                    format = storeOfRelations.getByKey(groupRelationKey)?.format,
-                    currentValue = emptyList(),
-                    sourceColumnId = BOARD_EMPTY_GROUP_ID,
-                    sourceGroup = null,
-                    targetColumnId = columnId,
-                    targetGroup = groups.firstOrNull { it.id == columnId }?.value,
-                    groupsLoaded = true
-                )
-                val value = (move as? BoardCardMove.Write)?.value
-                    ?.takeUnless { it == null || (it is List<*> && it.isEmpty()) }
-                if (value != null) mapOf(groupRelationKey to value) else emptyMap()
-            } else {
-                emptyMap()
-            }
-            when (state) {
-                is ObjectState.DataView.Collection ->
-                    proceedWithAddingObjectToCollection(extraPrefilled = extraPrefilled)
-                is ObjectState.DataView.TypeSet ->
-                    proceedWithCreatingObjectTypeSetObject(
-                        currentState = state,
-                        templateChosenBy = null,
-                        extraPrefilled = extraPrefilled
+            try {
+                val extraPrefilled: Map<Key, Any?> = if (!groupRelationKey.isNullOrEmpty() && groups.isNotEmpty()) {
+                    val move = computeBoardCardMove(
+                        format = storeOfRelations.getByKey(groupRelationKey)?.format,
+                        currentValue = emptyList(),
+                        sourceColumnId = BOARD_EMPTY_GROUP_ID,
+                        sourceGroup = null,
+                        targetColumnId = columnId,
+                        targetGroup = groups.firstOrNull { it.id == columnId }?.value,
+                        groupsLoaded = true
                     )
-                is ObjectState.DataView.Set ->
-                    proceedWithCreatingSetObject(
-                        currentState = state,
-                        templateChosenBy = null,
-                        extraPrefilled = extraPrefilled
-                    )
+                    val value = (move as? BoardCardMove.Write)?.value
+                        ?.takeUnless { it == null || (it is List<*> && it.isEmpty()) }
+                    if (value != null) mapOf(groupRelationKey to value) else emptyMap()
+                } else {
+                    // Groups not loaded or no group relation: create without a group value (lands in "No value").
+                    emptyMap()
+                }
+                when (state) {
+                    is ObjectState.DataView.Collection ->
+                        proceedWithAddingObjectToCollection(extraPrefilled = extraPrefilled)
+                    is ObjectState.DataView.TypeSet ->
+                        proceedWithCreatingObjectTypeSetObject(
+                            currentState = state,
+                            templateChosenBy = null,
+                            extraPrefilled = extraPrefilled
+                        )
+                    is ObjectState.DataView.Set ->
+                        proceedWithCreatingSetObject(
+                            currentState = state,
+                            templateChosenBy = null,
+                            extraPrefilled = extraPrefilled
+                        )
+                }
+            } finally {
+                isObjectCreationInProgress.set(false)
             }
         }
     }

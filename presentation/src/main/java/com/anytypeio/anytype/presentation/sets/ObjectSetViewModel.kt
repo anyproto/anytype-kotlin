@@ -4348,6 +4348,8 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
                 } else {
                     Timber.i("Group-by relation [${action.item.relationKey.key}] is already set")
                 }
+                // Deliberate divergence from ImagePreviewUpdate: selecting a group-by relation
+                // closes the picker, whereas the cover picker stays open after a selection.
                 viewerLayoutWidgetState.value =
                     viewerLayoutWidgetState.value.copy(showGroupByMenu = false)
             }

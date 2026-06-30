@@ -43,6 +43,7 @@ data class ViewerLayoutWidgetUi(
         showCardSize = false,
         imagePreviewItems = emptyList(),
         groupByItems = emptyList(),
+        groupBackgroundColors = State.Toggle.ColorColumns(false),
         showGroupByMenu = false
     )
 

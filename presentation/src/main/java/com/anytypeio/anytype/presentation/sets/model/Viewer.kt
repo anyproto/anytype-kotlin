@@ -151,7 +151,9 @@ sealed class Viewer {
             val name: String,
             val icon: ObjectIcon,
             val relations: List<DefaultObjectRelationValueView>,
-            val hideIcon: Boolean
+            val hideIcon: Boolean,
+            /** Group color tint when "Color columns" is on; null = default background. */
+            val backgroundColor: String? = null
         )
     }
 

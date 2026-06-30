@@ -98,17 +98,20 @@ private suspend fun DVViewer.buildColumnsFromGroups(
         val recordIds = recordsByColumn[gid].orEmpty()
         val orderIds = objectOrders.find { it.group == gid }?.ids.orEmpty()
         val orderIndex = orderIds.withIndex().associate { (i, id) -> id to i }
+        val columnColor = groupColor(gid, group, groupOrder, groupOptions, objectStore)
+        // Cards are tinted with their column's group color only when "Color columns" is on.
+        val cardBackgroundColor = if (groupBackgroundColors) columnColor else null
         val cards = recordIds
             .mapNotNull { objectStore.get(it) }
             .filter { it.isValid }
             .sortedBy { orderIndex[it.id] ?: Int.MAX_VALUE }
             .map { obj ->
-                obj.toCard(urlBuilder, viewerRelations, objectStore, filteredRelations, fieldParser, storeOfObjectTypes, hideIcon)
+                obj.toCard(urlBuilder, viewerRelations, objectStore, filteredRelations, fieldParser, storeOfObjectTypes, hideIcon, cardBackgroundColor)
             }
         Viewer.Board.Column(
             id = gid,
             label = groupLabel(gid, group, emptyGroupId, groupOptions, objectStore, stringResourceProvider),
-            color = groupColor(gid, group, groupOrder, groupOptions, objectStore),
+            color = columnColor,
             cards = cards,
             count = countsByColumn[gid] ?: cards.size
         )
@@ -229,7 +232,8 @@ private suspend fun ObjectWrapper.Basic.toCard(
     filteredRelations: List<ObjectWrapper.Relation>,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes,
-    hideIcon: Boolean
+    hideIcon: Boolean,
+    backgroundColor: String?
 ): Viewer.Board.Card {
     val content = buildCardContent(
         urlBuilder = urlBuilder,
@@ -244,7 +248,8 @@ private suspend fun ObjectWrapper.Basic.toCard(
         name = content.name,
         icon = content.icon,
         relations = content.relations,
-        hideIcon = hideIcon
+        hideIcon = hideIcon,
+        backgroundColor = backgroundColor
     )
 }
 

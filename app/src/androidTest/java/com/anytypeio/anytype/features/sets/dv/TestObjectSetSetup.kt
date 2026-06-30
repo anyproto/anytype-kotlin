@@ -362,7 +362,9 @@ abstract class TestObjectSetSetup {
             getDefaultObjectType = getDefaultObjectType,
             addDiscussion = mock(),
             backHistoryDelegate = org.mockito.kotlin.mock(),
-            exitToVaultDelegate = org.mockito.kotlin.mock()
+            exitToVaultDelegate = org.mockito.kotlin.mock(),
+            boardRecordsSubscriptionContainer = org.mockito.kotlin.mock(),
+            userSettingsRepository = userSettingsRepository
         )
 
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())

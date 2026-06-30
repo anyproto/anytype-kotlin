@@ -8,12 +8,14 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ManifestInfo
@@ -130,6 +132,12 @@ interface BlockRemote {
         pos: Int
     ): Payload
 
+    suspend fun setDataViewObjectOrder(
+        ctx: Id,
+        dv: Id,
+        objectOrders: List<ObjectOrder>
+    ): Payload
+
     suspend fun addRelationToDataView(ctx: Id, dv: Id, relation: Id): Payload
     suspend fun deleteRelationFromDataView(ctx: Id, dv: Id, relation: Id): Payload
 
@@ -200,6 +208,15 @@ interface BlockRemote {
         ids: List<Id>,
         keys: List<String>
     ): SearchResult
+
+    suspend fun objectGroupsSubscribe(
+        space: SpaceId,
+        subscription: Id,
+        relationKey: Key,
+        filters: List<DVFilter>,
+        source: List<String>,
+        collection: Id?
+    ): List<DataViewGroup>
 
     suspend fun crossSpaceSearchSubscribe(
         command: Command.CrossSpaceSearchSubscribe

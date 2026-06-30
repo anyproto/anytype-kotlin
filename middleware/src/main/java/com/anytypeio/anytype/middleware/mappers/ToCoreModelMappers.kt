@@ -34,7 +34,10 @@ import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.NotificationStatus
+import com.anytypeio.anytype.core_models.DataViewGroup
+import com.anytypeio.anytype.core_models.GroupOrder
 import com.anytypeio.anytype.core_models.ObjectOrder
+import com.anytypeio.anytype.core_models.ViewGroup
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -448,7 +451,8 @@ fun MBlock.toCoreModelsDataView(): Block.Content.DataView {
         relationLinks = content.relationLinks.map { it.toCoreModels() },
         targetObjectId = content.TargetObjectId,
         isCollection = content.isCollection,
-        objectOrders = content.objectOrders.map { it.toCoreModelsObjectOrder() }
+        objectOrders = content.objectOrders.map { it.toCoreModelsObjectOrder() },
+        groupOrders = content.groupOrders.map { it.toCoreModelsGroupOrder() }
     )
 }
 
@@ -458,6 +462,32 @@ fun MDVObjectOrder.toCoreModelsObjectOrder(): ObjectOrder {
         group = groupId,
         ids = objectIds
     )
+}
+
+fun MDVGroupOrder.toCoreModelsGroupOrder(): GroupOrder = GroupOrder(
+    viewId = viewId,
+    viewGroups = viewGroups.map { it.toCoreModelsViewGroup() }
+)
+
+fun MDVViewGroup.toCoreModelsViewGroup(): ViewGroup = ViewGroup(
+    groupId = groupId,
+    index = index,
+    isHidden = hidden,
+    backgroundColor = backgroundColor
+)
+
+fun MDVGroup.toCoreModelsGroup(): DataViewGroup {
+    val status = status
+    val tag = tag
+    val checkbox = checkbox
+    val value = when {
+        status != null -> DataViewGroup.Value.Status(status.id)
+        tag != null -> DataViewGroup.Value.Tag(tag.ids)
+        checkbox != null -> DataViewGroup.Value.Checkbox(checkbox.checked)
+        date != null -> DataViewGroup.Value.Date
+        else -> DataViewGroup.Value.Empty
+    }
+    return DataViewGroup(id = id, value = value)
 }
 
 fun MBlock.toCoreModelsRelationBlock(): Block.Content.RelationBlock {
@@ -600,7 +630,9 @@ fun MDVView.toCoreModels(): DVViewer = DVViewer(
     coverFit = coverFit,
     coverRelationKey = coverRelationKey.ifEmpty { null },
     defaultTemplate = defaultTemplateId.ifEmpty { null },
-    defaultObjectType = defaultObjectTypeId.ifEmpty { null }
+    defaultObjectType = defaultObjectTypeId.ifEmpty { null },
+    groupRelationKey = groupRelationKey.ifEmpty { null },
+    groupBackgroundColors = groupBackgroundColors
 )
 
 fun MDVRelation.toCoreModels(): DVViewerRelation = DVViewerRelation(

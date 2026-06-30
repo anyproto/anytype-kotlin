@@ -106,12 +106,17 @@ class CollectionCreateAndAddObjectTest : ObjectSetViewModelTestSetup() {
             deepLinkResolver = deepLinkResolver,
             removeObjectFromCollection = removeObjectFromCollection,
             setDataViewProperties = setDataViewProperties,
+            setDataViewObjectOrder = setDataViewObjectOrder,
+            getOptions = getOptions,
+            boardGroupSubscriptionContainer = boardGroupSubscriptionContainer,
+            boardRecordsSubscriptionContainer = boardRecordsSubscriptionContainer,
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
             createBlock = mock(),
             stringResourceProvider = stringResourceProvider,
             getDefaultObjectType = getDefaultObjectType,
             addDiscussion = mock(),
+            userSettingsRepository = userSettingsRepository,
             backHistoryDelegate = mock(),
             exitToVaultDelegate = mock()
         )

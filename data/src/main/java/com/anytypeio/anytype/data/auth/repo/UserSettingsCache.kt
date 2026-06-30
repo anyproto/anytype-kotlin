@@ -75,6 +75,10 @@ interface UserSettingsCache {
     suspend fun setCompactModeEnabled(enabled: Boolean)
     fun observeCompactModeEnabled(): Flow<Boolean>
 
+    suspend fun getKanbanEnabled(): Boolean
+    suspend fun setKanbanEnabled(enabled: Boolean)
+    fun observeKanbanEnabled(): Flow<Boolean>
+
     suspend fun getFileDownloadLimit(): FileDownloadLimit
     suspend fun setFileDownloadLimit(limit: FileDownloadLimit)
     fun observeFileDownloadLimit(): Flow<FileDownloadLimit>

@@ -312,6 +312,29 @@ sealed class Event {
                 override val context: Id,
                 val hasConflict: Boolean
             ) : DataView()
+
+            data class GroupOrderUpdate(
+                override val context: Id,
+                val dv: Id,
+                val groupOrder: GroupOrder
+            ) : DataView()
+
+            data class ObjectOrderUpdate(
+                override val context: Id,
+                val dv: Id,
+                val viewId: Id,
+                val groupId: Id,
+                val changes: List<SliceChange>
+            ) : DataView() {
+
+                data class SliceChange(
+                    val operation: SliceOperation,
+                    val ids: List<Id>,
+                    val afterId: Id
+                )
+
+                enum class SliceOperation { NONE, ADD, MOVE, REMOVE, REPLACE }
+            }
         }
 
         sealed class Chats : Command() {

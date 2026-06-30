@@ -17,6 +17,8 @@
     <string name="experimental_features">Deneysel Özellikler</string>
     <string name="experimental_features_compact_vault">Kompakt kasa modu</string>
     <string name="experimental_features_compact_vault_description">Kasa içindeki okunmuş kanalların mesaj önizlemelerini gizler</string>
+    <string name="experimental_features_kanban">Kanban board</string>
+    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
     <string name="account">Kasa</string>
     <string name="reset_account">Kasayı sıfırla</string>
     <string name="delete_account">Kasayı sil</string>
@@ -585,6 +587,10 @@
     <string name="view_grid">Izgara</string>
     <string name="view_gallery">Galeri</string>
     <string name="view_kanban">Kanban</string>
+    <string name="dataview_board_no_objects">Nesne yok</string>
+    <string name="dataview_board_no_value">Değer yok</string>
+    <string name="dataview_board_checked">İşaretli</string>
+    <string name="dataview_board_unchecked">İşaretsiz</string>
     <string name="page_cover">Sayfa kapağı</string>
     <string name="object_action_pin">Sabitle</string>
     <string name="object_action_unpin">Sabitlemeyi kaldır</string>

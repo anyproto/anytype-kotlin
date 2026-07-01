@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.widgets.dv.board
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -44,7 +45,6 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
-import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title2
@@ -248,27 +248,26 @@ private fun BoardCard(
  */
 @Composable
 private fun BoardAddCardButton(onClick: () -> Unit) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    // Matches Figma "Gallery Card" (node 10521:24257): a card-shaped tile with a centered
+    // 24dp plus, white fill, subtle transparent-secondary border, 16dp corners.
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
+            .clip(RoundedCornerShape(16.dp))
             .background(colorResource(id = R.color.background_primary))
+            .border(
+                width = 1.dp,
+                color = colorResource(id = R.color.shape_transparent_secondary),
+                shape = RoundedCornerShape(16.dp)
+            )
             .noRippleThrottledClickable { onClick() }
-            .padding(12.dp)
+            .padding(vertical = 10.dp),
+        contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_plus_18),
-            contentDescription = null,
-            modifier = Modifier.size(18.dp)
-        )
-        Spacer(modifier = Modifier.width(6.dp))
-        Text(
-            text = stringResource(id = R.string.dataview_board_new_object),
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_secondary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            painter = painterResource(id = R.drawable.ic_default_plus),
+            contentDescription = stringResource(id = R.string.dataview_board_new_object),
+            modifier = Modifier.size(24.dp)
         )
     }
 }

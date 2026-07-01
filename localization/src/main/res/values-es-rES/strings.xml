@@ -1551,9 +1551,9 @@
     <string name="payments_activate_code_hint">Pegar código de activación…</string>
     <string name="payments_activate_code_button">Activar</string>
     <!-- Membership Activate Code — success -->
-    <string name="payments_activate_code_success_title">You\'re all set</string>
-    <string name="payments_activate_code_success_subtitle">Your %1$s membership is now active</string>
-    <string name="payments_activate_code_success_subtitle_generic">Your membership is now active</string>
+    <string name="payments_activate_code_success_title">Todo listo</string>
+    <string name="payments_activate_code_success_subtitle">Tu suscripción a %1$s ya está activa</string>
+    <string name="payments_activate_code_success_subtitle_generic">Tu suscripción ya está activa</string>
     <!-- Membership Activate Code — errors (CodeGetInfo) -->
     <string name="membership_code_error_unknown">Error desconocido.</string>
     <string name="membership_code_error_bad_input">Error de entrada</string>

@@ -73,7 +73,17 @@ sealed class ActivateCodeState {
     sealed class Visible : ActivateCodeState() {
         data object Default : Visible()
         data object Loading : Visible()
-        data object Success : Visible()
+
+        /**
+         * Shown after a successful [RedeemMembershipCode]. Carries the settled active tier
+         * read from GetStatus/GetTiers (never inferred from the tier id / requestedTier).
+         * [tierName] is null when the settle timed out — render a generic confirmation then.
+         */
+        data class Success(
+            val tierName: String? = null,
+            val features: List<String> = emptyList()
+        ) : Visible()
+
         data class Error(
             val codeError: MembershipErrors.CodeGetInfo? = null,
             val message: String? = null

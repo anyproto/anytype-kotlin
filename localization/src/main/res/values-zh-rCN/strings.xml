@@ -1544,6 +1544,10 @@
     <string name="payments_activate_code_subtitle">输入购买后或通过邀请获得的兑换码，即可立即激活会员。</string>
     <string name="payments_activate_code_hint">粘贴激活码…</string>
     <string name="payments_activate_code_button">激活</string>
+    <!-- Membership Activate Code — success -->
+    <string name="payments_activate_code_success_title">You\'re all set</string>
+    <string name="payments_activate_code_success_subtitle">Your %1$s membership is now active</string>
+    <string name="payments_activate_code_success_subtitle_generic">Your membership is now active</string>
     <!-- Membership Activate Code — errors (CodeGetInfo) -->
     <string name="membership_code_error_unknown">发生未知错误</string>
     <string name="membership_code_error_bad_input">非法输入</string>

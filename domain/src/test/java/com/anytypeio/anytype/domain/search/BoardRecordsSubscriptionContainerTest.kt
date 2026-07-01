@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BoardRecordsSubscriptionContainerTest {
@@ -127,6 +128,50 @@ class BoardRecordsSubscriptionContainerTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    @Test
+    fun `a content amend on a loaded card bumps the revision to force a board re-render`() = runTest {
+        // Single column so combine() can't conflate the seed + amended emissions.
+        stubColumn(subA, filterA, SearchResult(objects("a1"), emptyList(), counter(1)))
+        channel.stub {
+            on { subscribe(listOf(subA)) } doReturn flow {
+                emit(
+                    listOf(
+                        SubscriptionEvent.Amend(
+                            target = "a1",
+                            diff = mapOf(Relations.NAME to "renamed"),
+                            subscriptions = listOf(subA)
+                        )
+                    )
+                )
+            }
+        }
+
+        container.observe(singleColumnParams()).test {
+            val initial = awaitItem().getValue("A")
+            assertEquals(listOf("a1"), initial.ids)
+            val amended = awaitItem().getValue("A")
+            // ids/total are unchanged, but the revision must bump so the downstream StateFlow
+            // (which dedups equal values) re-emits and the board re-renders the new name.
+            assertEquals(listOf("a1"), amended.ids)
+            assertEquals(initial.total, amended.total)
+            assertTrue(amended.revision > initial.revision)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun singleColumnParams() = BoardRecordsSubscriptionContainer.Params(
+        space = space,
+        columns = listOf(
+            BoardRecordsSubscriptionContainer.Column(subscription = subA, columnId = "A", filter = filterA)
+        ),
+        sorts = emptyList(),
+        baseFilters = emptyList(),
+        keys = emptyList(),
+        source = emptyList(),
+        collection = null,
+        limit = 50
+    )
 
     // Exact-arg stubbing (matchers can't be used: SpaceId is an inline value class and any()
     // would unbox null). Args mirror what observeColumn passes.

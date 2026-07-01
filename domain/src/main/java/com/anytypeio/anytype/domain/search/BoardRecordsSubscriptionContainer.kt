@@ -42,8 +42,13 @@ class BoardRecordsSubscriptionContainer(
     private val logger: Logger
 ) {
 
-    /** A column's loaded page: the [ids] currently held and the backend [total] for the group. */
-    data class GroupPage(val ids: List<Id>, val total: Int)
+    /**
+     * A column's loaded page: the [ids] currently held and the backend [total] for the group.
+     * [revision] bumps on every record content change (Amend/Set/Unset) so a downstream
+     * StateFlow — which dedups value-equal maps — still re-emits and the board re-renders a
+     * card whose name/relations/icon changed (its id and the group total are unchanged).
+     */
+    data class GroupPage(val ids: List<Id>, val total: Int, val revision: Int = 0)
 
     /** Per-column subscription limit (column id -> limit), grown by [loadMore]. */
     private val limits = MutableStateFlow<Map<Id, Int>>(emptyMap())
@@ -112,6 +117,7 @@ class BoardRecordsSubscriptionContainer(
     ): GroupPage {
         var ids = page.ids
         var total = page.total
+        var revision = page.revision
         payload.forEach { event ->
             when (event) {
                 is SubscriptionEvent.Add -> {
@@ -136,12 +142,17 @@ class BoardRecordsSubscriptionContainer(
                 }
                 is SubscriptionEvent.Amend -> {
                     store.amend(target = event.target, diff = event.diff, subscriptions = event.subscriptions)
+                    // Content (name/relations/icon) changed; ids/total are the same, so bump the
+                    // revision to force the board to re-render this card from the updated store.
+                    revision++
                 }
                 is SubscriptionEvent.Set -> {
                     store.set(target = event.target, data = event.data, subscriptions = event.subscriptions)
+                    revision++
                 }
                 is SubscriptionEvent.Unset -> {
                     store.unset(target = event.target, keys = event.keys, subscriptions = event.subscriptions)
+                    revision++
                 }
                 is SubscriptionEvent.Counter -> {
                     // Counter is the authoritative absolute total; it corrects any add/remove drift.
@@ -152,7 +163,7 @@ class BoardRecordsSubscriptionContainer(
                 }
             }
         }
-        return GroupPage(ids = ids, total = total)
+        return GroupPage(ids = ids, total = total, revision = revision)
     }
 
     suspend fun unsubscribe(subscriptions: List<Id>) {

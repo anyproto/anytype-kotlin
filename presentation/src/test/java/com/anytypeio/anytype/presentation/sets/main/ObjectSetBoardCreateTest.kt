@@ -184,6 +184,69 @@ class ObjectSetBoardCreateTest : ObjectSetViewModelTestSetup() {
     }
 
     @Test
+    fun `creating in a tag column prefills the group relation with the tag ids`() = runTest {
+        stubStatusBoardCollection()
+        boardGroupSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flowOf(
+                listOf(DataViewGroup(id = "g1", value = DataViewGroup.Value.Tag(listOf("t1", "t2"))))
+            )
+        }
+        boardRecordsSubscriptionContainer.stub { on { observe(any()) } doReturn flowOf(emptyMap()) }
+        stubAddObjectToCollection()
+        stubCreateDataViewObject()
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        vm.onBoardCreateObjectInColumn("g1")
+        advanceUntilIdle()
+
+        verifyBlocking(createDataViewObject, times(1)) {
+            async(
+                argThat {
+                    this is CreateDataViewObject.Params.Collection &&
+                        prefilled[groupRelationKey] == listOf("t1", "t2")
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `creating in a checkbox column prefills the group relation with the boolean`() = runTest {
+        stubStatusBoardCollection()
+        // Rendering a checkbox board needs the true/false column titles (create reads raw groups).
+        stringResourceProvider.stub {
+            on { getKanbanCheckboxGroupTitle(true) } doReturn "Checked"
+            on { getKanbanCheckboxGroupTitle(false) } doReturn "Unchecked"
+        }
+        boardGroupSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flowOf(
+                listOf(DataViewGroup(id = "g1", value = DataViewGroup.Value.Checkbox(true)))
+            )
+        }
+        boardRecordsSubscriptionContainer.stub { on { observe(any()) } doReturn flowOf(emptyMap()) }
+        stubAddObjectToCollection()
+        stubCreateDataViewObject()
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        vm.onBoardCreateObjectInColumn("g1")
+        advanceUntilIdle()
+
+        verifyBlocking(createDataViewObject, times(1)) {
+            async(
+                argThat {
+                    this is CreateDataViewObject.Params.Collection &&
+                        prefilled[groupRelationKey] == true
+                }
+            )
+        }
+    }
+
+    @Test
     fun `a Viewer (no edit permission) cannot create in a column`() = runTest {
         stubObservePermissions(SpaceMemberPermissions.READER)
         stubStatusBoardCollection()

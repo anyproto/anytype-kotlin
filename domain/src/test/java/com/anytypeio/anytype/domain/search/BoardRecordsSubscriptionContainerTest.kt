@@ -160,6 +160,32 @@ class BoardRecordsSubscriptionContainerTest {
         }
     }
 
+    @Test
+    fun `a metadata-only amend does not bump the revision`() = runTest {
+        stubColumn(subA, filterA, SearchResult(objects("a1"), emptyList(), counter(1)))
+        channel.stub {
+            on { subscribe(listOf(subA)) } doReturn flow {
+                emit(
+                    listOf(
+                        SubscriptionEvent.Amend(
+                            target = "a1",
+                            // Only bookkeeping the card never renders → must not re-render the board.
+                            diff = mapOf(Relations.LAST_MODIFIED_DATE to 123.0),
+                            subscriptions = listOf(subA)
+                        )
+                    )
+                )
+            }
+        }
+
+        container.observe(singleColumnParams()).test {
+            val initial = awaitItem().getValue("A")
+            val amended = awaitItem().getValue("A")
+            assertEquals(initial.revision, amended.revision)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
     private fun singleColumnParams() = BoardRecordsSubscriptionContainer.Params(
         space = space,
         columns = listOf(

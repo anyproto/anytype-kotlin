@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.`object`.move
@@ -27,6 +28,19 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
+
+/**
+ * Amend keys that never change a card's rendered content, so an amend touching only these must
+ * NOT bump [BoardRecordsSubscriptionContainer.GroupPage.revision] — otherwise the board would
+ * re-render on every edit's bookkeeping fields (e.g. the automatic `lastModifiedBy` amend that
+ * fires right after create, while the "name your object" sheet is animating in).
+ */
+private val SILENT_AMEND_KEYS: Set<Key> = setOf(
+    Relations.LAST_MODIFIED_DATE,
+    Relations.LAST_OPENED_DATE,
+    Relations.LAST_USED_DATE,
+    "lastModifiedBy"
+)
 
 /**
  * Runs one paged record subscription per Kanban column, so each column populates independently
@@ -142,9 +156,10 @@ class BoardRecordsSubscriptionContainer(
                 }
                 is SubscriptionEvent.Amend -> {
                     store.amend(target = event.target, diff = event.diff, subscriptions = event.subscriptions)
-                    // Content (name/relations/icon) changed; ids/total are the same, so bump the
-                    // revision to force the board to re-render this card from the updated store.
-                    revision++
+                    // A rendered field (name/relations/icon) changed; ids/total are the same, so
+                    // bump the revision to force the board to re-render this card from the updated
+                    // store. Skip amends that only touch metadata a card never displays.
+                    if (event.diff.keys.any { it !in SILENT_AMEND_KEYS }) revision++
                 }
                 is SubscriptionEvent.Set -> {
                     store.set(target = event.target, data = event.data, subscriptions = event.subscriptions)

@@ -1550,6 +1550,10 @@
     <string name="payments_activate_code_subtitle">Enter the code you received after purchase or from an invitation. Your membership will be activated instantly.</string>
     <string name="payments_activate_code_hint">Paste activation code…</string>
     <string name="payments_activate_code_button">Activate</string>
+    <!-- Membership Activate Code — success -->
+    <string name="payments_activate_code_success_title">You\'re all set</string>
+    <string name="payments_activate_code_success_subtitle">Your %1$s membership is now active</string>
+    <string name="payments_activate_code_success_subtitle_generic">Your membership is now active</string>
     <!-- Membership Activate Code — errors (CodeGetInfo) -->
     <string name="membership_code_error_unknown">Unknown error occured</string>
     <string name="membership_code_error_bad_input">Bad input</string>

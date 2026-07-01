@@ -131,18 +131,6 @@ fun BoardColumnContent(
                     .fillMaxWidth()
                     .wrapContentHeight()
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 12.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.dataview_board_no_objects),
-                        style = Caption1Regular,
-                        color = colorResource(id = R.color.text_tertiary)
-                    )
-                }
                 if (canCreateObject) {
                     BoardAddCardButton(onClick = { onCreateInColumn(column.id) })
                 }

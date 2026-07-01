@@ -17,8 +17,8 @@
     <string name="experimental_features">实验性功能</string>
     <string name="experimental_features_compact_vault">紧凑库模式</string>
     <string name="experimental_features_compact_vault_description">隐藏库中已读频道的消息预览</string>
-    <string name="experimental_features_kanban">Kanban board</string>
-    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
+    <string name="experimental_features_kanban">看板面板</string>
+    <string name="experimental_features_kanban_description">为集合和合集启用看板布局</string>
     <string name="account">库</string>
     <string name="reset_account">重置库</string>
     <string name="delete_account">删除库</string>

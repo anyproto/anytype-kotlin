@@ -570,6 +570,9 @@
     <string name="type_templates_widget_title">Maak object</string>
     <string name="view_layout_widget_title">Opmaak</string>
     <string name="view_layout_cover_widget_title">Omslag</string>
+    <string name="view_layout_group_by_widget_title">Groepeer op</string>
+    <string name="group_by">Groepeer op</string>
+    <string name="color_columns">Kleur kolommen</string>
     <string name="blank">Leeg</string>
     <string name="templates_menu_default_for_view">Standaard voor deze weergave</string>
     <string name="templates_menu_edit">Sjabloon bewerken</string>
@@ -591,6 +594,7 @@
     <string name="dataview_board_no_value">Geen waarde</string>
     <string name="dataview_board_checked">Geselecteerd</string>
     <string name="dataview_board_unchecked">Niet geselecteerd</string>
+    <string name="dataview_board_new_object">Nieuw</string>
     <string name="page_cover">Paginaomslag</string>
     <string name="object_action_pin">Zet vast</string>
     <string name="object_action_unpin">Losmaken</string>

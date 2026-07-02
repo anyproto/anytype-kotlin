@@ -570,6 +570,9 @@
     <string name="type_templates_widget_title">Objekt erstellen</string>
     <string name="view_layout_widget_title">Layout</string>
     <string name="view_layout_cover_widget_title">Titelbild</string>
+    <string name="view_layout_group_by_widget_title">Gruppieren nach</string>
+    <string name="group_by">Gruppieren nach</string>
+    <string name="color_columns">Farbspalten</string>
     <string name="blank">Leer</string>
     <string name="templates_menu_default_for_view">Standard für diese Ansicht</string>
     <string name="templates_menu_edit">Vorlage bearbeiten</string>
@@ -591,6 +594,7 @@
     <string name="dataview_board_no_value">Kein Wert</string>
     <string name="dataview_board_checked">Ausgewählt</string>
     <string name="dataview_board_unchecked">Nicht ausgewählt</string>
+    <string name="dataview_board_new_object">Neu</string>
     <string name="page_cover">Seitencover</string>
     <string name="object_action_pin">Anheften</string>
     <string name="object_action_unpin">Loslösen</string>

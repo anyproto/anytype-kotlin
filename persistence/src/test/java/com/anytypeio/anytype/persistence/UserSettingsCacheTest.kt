@@ -52,21 +52,21 @@ class UserSettingsCacheTest {
     }
 
     @Test
-    fun `kanban experimental flag defaults to false and round-trips`() = runTest {
+    fun `kanban experimental flag defaults to true and round-trips`() = runTest {
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,
             context = ApplicationProvider.getApplicationContext(),
             appDefaultDateFormatProvider = dateFormatProvider
         )
 
-        assertEquals(expected = false, actual = cache.getKanbanEnabled())
-
-        cache.setKanbanEnabled(true)
         assertEquals(expected = true, actual = cache.getKanbanEnabled())
-        assertEquals(expected = true, actual = cache.observeKanbanEnabled().first())
 
         cache.setKanbanEnabled(false)
         assertEquals(expected = false, actual = cache.getKanbanEnabled())
+        assertEquals(expected = false, actual = cache.observeKanbanEnabled().first())
+
+        cache.setKanbanEnabled(true)
+        assertEquals(expected = true, actual = cache.getKanbanEnabled())
     }
 
     @Test

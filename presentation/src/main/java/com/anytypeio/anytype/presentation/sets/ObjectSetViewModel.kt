@@ -302,7 +302,7 @@ class ObjectSetViewModel(
 
     /** Whether the experimental Kanban (Board) view is enabled; when off, BOARD views are unsupported. */
     private val isKanbanEnabled = userSettingsRepository.observeKanbanEnabled()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     /** Fires a board re-render whenever any board-specific flow changes. */
     private val boardRenderTrigger = combine(

@@ -17,7 +17,7 @@ class ExperimentalFeaturesViewModel(
     private val _isCompactModeEnabled = MutableStateFlow(true)
     val isCompactModeEnabled: StateFlow<Boolean> = _isCompactModeEnabled.asStateFlow()
 
-    private val _isKanbanEnabled = MutableStateFlow(false)
+    private val _isKanbanEnabled = MutableStateFlow(true)
     val isKanbanEnabled: StateFlow<Boolean> = _isKanbanEnabled.asStateFlow()
 
     init {

@@ -59,7 +59,7 @@ class DefaultUserSettingsCache(
     )
 
     private val _kanbanFlow = MutableStateFlow(
-        prefs.getBoolean(KANBAN_ENABLED_KEY, false)
+        prefs.getBoolean(KANBAN_ENABLED_KEY, true)
     )
 
     private val _fileDownloadLimitFlow = MutableStateFlow(
@@ -785,7 +785,7 @@ class DefaultUserSettingsCache(
     override fun observeCompactModeEnabled(): Flow<Boolean> = _compactModeFlow.asStateFlow()
 
     override suspend fun getKanbanEnabled(): Boolean {
-        return prefs.getBoolean(KANBAN_ENABLED_KEY, false)
+        return prefs.getBoolean(KANBAN_ENABLED_KEY, true)
     }
 
     override suspend fun setKanbanEnabled(enabled: Boolean) {

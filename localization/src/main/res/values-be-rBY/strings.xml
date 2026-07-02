@@ -572,6 +572,9 @@
     <string name="type_templates_widget_title">Стварыць аб\'ект</string>
     <string name="view_layout_widget_title">Знешні выгляд</string>
     <string name="view_layout_cover_widget_title">Вокладка</string>
+    <string name="view_layout_group_by_widget_title">Згрупаваць па</string>
+    <string name="group_by">Згрупаваць па</string>
+    <string name="color_columns">Каляровыя слупкі</string>
     <string name="blank">Пуста</string>
     <string name="templates_menu_default_for_view">Прадвызначаны для гэтага выгляду</string>
     <string name="templates_menu_edit">Рэдагаваць шаблон</string>
@@ -593,6 +596,7 @@
     <string name="dataview_board_no_value">Няма значэння</string>
     <string name="dataview_board_checked">Пазначаны</string>
     <string name="dataview_board_unchecked">Не пазначаны</string>
+    <string name="dataview_board_new_object">Новы</string>
     <string name="page_cover">Вокладка старонкі</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Адмацаваць</string>

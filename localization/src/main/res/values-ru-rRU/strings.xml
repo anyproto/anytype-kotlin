@@ -572,6 +572,9 @@
     <string name="type_templates_widget_title">Создать объект</string>
     <string name="view_layout_widget_title">Макет</string>
     <string name="view_layout_cover_widget_title">Обложка</string>
+    <string name="view_layout_group_by_widget_title">Группировать по</string>
+    <string name="group_by">Группировать по</string>
+    <string name="color_columns">Цветные столбцы</string>
     <string name="blank">Пусто</string>
     <string name="templates_menu_default_for_view">По умолчанию для этого представления</string>
     <string name="templates_menu_edit">Изменить шаблон</string>
@@ -593,6 +596,7 @@
     <string name="dataview_board_no_value">Нет значения</string>
     <string name="dataview_board_checked">Отмечено</string>
     <string name="dataview_board_unchecked">Не отмечено</string>
+    <string name="dataview_board_new_object">Новый</string>
     <string name="page_cover">Обложка страницы</string>
     <string name="object_action_pin">Закрепить</string>
     <string name="object_action_unpin">Открепить</string>

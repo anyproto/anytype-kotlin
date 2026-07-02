@@ -225,9 +225,10 @@ open class FilterViewModel(
         return if (index == null) {
             relation.toConditionView(condition = null)
         } else {
-            val filter = viewer.filters[index]
-            check(filter.relation == relation.key) { "Incorrect filter state" }
-            relation.toConditionView(condition = filter.condition)
+            val filter = viewer.filters.getOrNull(index)
+                ?.takeIf { it.relation == relation.key }
+                ?: viewer.filters.firstOrNull { it.relation == relation.key }
+            relation.toConditionView(condition = filter?.condition)
         }
     }
 
@@ -264,8 +265,14 @@ open class FilterViewModel(
                     fieldParser = fieldParser
                 )
             } else {
-                val filter = viewer.filters[index]
-                check(filter.relation == relation.key) { "Incorrect filter state" }
+                val filter = viewer.filters.getOrNull(index)
+                    ?.takeIf { it.relation == relation.key }
+                    ?: viewer.filters.firstOrNull { it.relation == relation.key }
+                    ?: run {
+                        filterValueState.value = null
+                        filterValueListState.value = emptyList()
+                        return
+                    }
                 filterValueState.value = relation.toFilterValue(
                     value = filter.value,
                     urlBuilder = urlBuilder,
@@ -684,7 +691,9 @@ open class FilterViewModel(
         val state = objectState.value.dataViewState() ?: return
         val viewer = state.viewerById(viewerId) ?: return
         viewModelScope.launch {
-            val filterId = viewer.filters.getOrNull(idx)?.id
+            val filterId = (viewer.filters.getOrNull(idx)
+                ?.takeIf { it.relation == relation }
+                ?: viewer.filters.firstOrNull { it.relation == relation })?.id
             if (filterId == null) {
                 commands.emit(Commands.Toast("Filter with index $idx not found"))
                 Timber.e("Filter with index $idx not found")
@@ -714,7 +723,10 @@ open class FilterViewModel(
         val state = objectState.value.dataViewState() ?: return
         val viewer = state.viewerById(viewerId) ?: return
         viewModelScope.launch {
-            val filterId = viewer.filters.getOrNull(idx)?.id
+            val dvFilter = viewer.filters.getOrNull(idx)
+                ?.takeIf { it.relation == relation }
+                ?: viewer.filters.firstOrNull { it.relation == relation }
+            val filterId = dvFilter?.id
             if (filterId == null) {
                 commands.emit(Commands.Toast("Filter with index $idx not found"))
                 Timber.e("Filter with index $idx not found")

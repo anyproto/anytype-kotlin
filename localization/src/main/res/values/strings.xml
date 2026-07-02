@@ -632,6 +632,9 @@
     <string name="type_templates_widget_title">Create object</string>
     <string name="view_layout_widget_title">Layout</string>
     <string name="view_layout_cover_widget_title">Cover</string>
+    <string name="view_layout_group_by_widget_title">Group by</string>
+    <string name="group_by">Group by</string>
+    <string name="color_columns">Color columns</string>
     <string name="blank">Blank</string>
 
     <string name="templates_menu_default_for_view">Default for this view</string>
@@ -654,6 +657,7 @@
     <string name="dataview_board_no_value">No value</string>
     <string name="dataview_board_checked">Checked</string>
     <string name="dataview_board_unchecked">Unchecked</string>
+    <string name="dataview_board_new_object">New</string>
     <string name="page_cover">Page cover</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Unpin</string>

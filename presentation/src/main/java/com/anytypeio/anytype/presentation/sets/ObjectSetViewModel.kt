@@ -998,12 +998,19 @@ class ObjectSetViewModel(
             )
         }
         boardRecordSubscriptionIds = columns.map { it.subscription }
+        // Keys the board card actually displays (visible viewer relations); mirrors
+        // BoardViewMapper.filteredRelations. Used to keep amend re-render suppression fail-safe.
+        val displayedKeys = viewer.viewerRelations
+            .filter { it.isVisible }
+            .map { it.key }
+            .toSet()
         return BoardRecordsSubscriptionContainer.Params(
             space = vmParams.space,
             columns = columns,
             sorts = sorts,
             baseFilters = baseFilters,
             keys = keys,
+            displayedKeys = displayedKeys,
             source = sources,
             collection = collection,
             limit = DEFAULT_LIMIT
@@ -1933,6 +1940,79 @@ class ObjectSetViewModel(
     }
 
     /**
+     * Creates a new object pre-set to the group value of the Kanban column [columnId], routing
+     * through the existing create-object flow (so the post-create "name your object" sheet is
+     * reused). The column's group value is derived with [computeBoardCardMove] — the same
+     * format-aware logic as a card drop — and merged into the new object's prefilled details.
+     * The "No value" column (and any column whose value can't be resolved) creates an object
+     * with no group value.
+     */
+    fun onBoardCreateObjectInColumn(columnId: String) {
+        Timber.d("onBoardCreateObjectInColumn, columnId:[$columnId]")
+        if (!isOwnerOrEditor) {
+            toast(NOT_ALLOWED)
+            return
+        }
+        // Coordinate with the main "+ New" path (proceedWithDataViewObjectCreate): both entry
+        // points share this flag so two fast taps can't spawn two objects.
+        if (!isObjectCreationInProgress.compareAndSet(false, true)) {
+            Timber.d("onBoardCreateObjectInColumn: creation already in progress, skipping")
+            return
+        }
+        val state = stateReducer.state.value.dataViewState()
+        if (state == null) {
+            isObjectCreationInProgress.set(false)
+            return
+        }
+        val viewer = state.viewerByIdOrFirst(session.currentViewerId.value)
+        if (viewer == null) {
+            isObjectCreationInProgress.set(false)
+            return
+        }
+        val groupRelationKey = viewer.groupRelationKey
+        val groups = boardGroups.value
+        viewModelScope.launch {
+            try {
+                val extraPrefilled: Map<Key, Any?> = if (!groupRelationKey.isNullOrEmpty() && groups.isNotEmpty()) {
+                    val move = computeBoardCardMove(
+                        format = storeOfRelations.getByKey(groupRelationKey)?.format,
+                        currentValue = emptyList(),
+                        sourceColumnId = BOARD_EMPTY_GROUP_ID,
+                        sourceGroup = null,
+                        targetColumnId = columnId,
+                        targetGroup = groups.firstOrNull { it.id == columnId }?.value,
+                        groupsLoaded = true
+                    )
+                    val value = (move as? BoardCardMove.Write)?.value
+                        ?.takeUnless { it == null || (it is List<*> && it.isEmpty()) }
+                    if (value != null) mapOf(groupRelationKey to value) else emptyMap()
+                } else {
+                    // Groups not loaded or no group relation: create without a group value (lands in "No value").
+                    emptyMap()
+                }
+                when (state) {
+                    is ObjectState.DataView.Collection ->
+                        proceedWithAddingObjectToCollection(extraPrefilled = extraPrefilled)
+                    is ObjectState.DataView.TypeSet ->
+                        proceedWithCreatingObjectTypeSetObject(
+                            currentState = state,
+                            templateChosenBy = null,
+                            extraPrefilled = extraPrefilled
+                        )
+                    is ObjectState.DataView.Set ->
+                        proceedWithCreatingSetObject(
+                            currentState = state,
+                            templateChosenBy = null,
+                            extraPrefilled = extraPrefilled
+                        )
+                }
+            } finally {
+                isObjectCreationInProgress.set(false)
+            }
+        }
+    }
+
+    /**
      * Reads the card's current value for the board's group relation as a list of option
      * ids, normalising the single-value / list / absent cases.
      */
@@ -2006,7 +2086,11 @@ class ObjectSetViewModel(
     }
 
     // TODO Multispaces refactor this method
-    private suspend fun proceedWithCreatingSetObject(currentState: ObjectState.DataView, templateChosenBy: Id?) {
+    private suspend fun proceedWithCreatingSetObject(
+        currentState: ObjectState.DataView,
+        templateChosenBy: Id?,
+        extraPrefilled: Map<Key, Any?> = emptyMap()
+    ) {
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
             toast(NOT_ALLOWED)
         } else {
@@ -2075,7 +2159,7 @@ class ObjectSetViewModel(
                                 val prefilled = viewer.prefillNewObjectDetails(
                                     storeOfRelations = storeOfRelations,
                                     dateProvider = dateProvider
-                                )
+                                ) + extraPrefilled
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
                                         type = TypeKey(uniqueKey),
@@ -2100,7 +2184,7 @@ class ObjectSetViewModel(
                                     storeOfRelations = storeOfRelations,
                                     dateProvider = dateProvider,
                                     objSetByRelation = ObjectWrapper.Relation(wrapper.map)
-                                )
+                                ) + extraPrefilled
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByRelation(
                                         filters = viewer.filters,
@@ -2122,7 +2206,8 @@ class ObjectSetViewModel(
 
     private suspend fun proceedWithCreatingObjectTypeSetObject(
         currentState: ObjectState.DataView.TypeSet,
-        templateChosenBy: String?
+        templateChosenBy: String?,
+        extraPrefilled: Map<Key, Any?> = emptyMap()
     ) {
         val objectType = storeOfObjectTypes.get(vmParams.ctx)
 
@@ -2141,7 +2226,7 @@ class ObjectSetViewModel(
             val prefilled = viewer.prefillNewObjectDetails(
                 storeOfRelations = storeOfRelations,
                 dateProvider = dateProvider
-            )
+            ) + extraPrefilled
             proceedWithCreatingDataViewObject(
                 CreateDataViewObject.Params.SetByType(
                     type = TypeKey(objectTypeUniqueKey),
@@ -2159,7 +2244,8 @@ class ObjectSetViewModel(
 
     private suspend fun proceedWithAddingObjectToCollection(
         typeChosenByUser: TypeKey? = null,
-        templateChosenBy: Id? = null
+        templateChosenBy: Id? = null,
+        extraPrefilled: Map<Key, Any?> = emptyMap()
     ) {
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
@@ -2201,7 +2287,7 @@ class ObjectSetViewModel(
         val prefilled = viewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
             dateProvider = dateProvider
-        )
+        ) + extraPrefilled
         val type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!
         val createObjectParams = CreateDataViewObject.Params.Collection(
             template = validTemplateId,
@@ -4200,14 +4286,15 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
         Timber.d("onViewerLayoutWidgetAction, action:[$action]")
         when (action) {
             ViewerLayoutWidgetUi.Action.Dismiss -> {
-                val isCoverMenuVisible = viewerLayoutWidgetState.value.showCoverMenu
-                viewerLayoutWidgetState.value = if (isCoverMenuVisible) {
-                    viewerLayoutWidgetState.value.copy(showCoverMenu = false)
-                } else {
-                    viewerLayoutWidgetState.value.copy(
+                val current = viewerLayoutWidgetState.value
+                viewerLayoutWidgetState.value = when {
+                    current.showCoverMenu -> current.copy(showCoverMenu = false)
+                    current.showGroupByMenu -> current.copy(showGroupByMenu = false)
+                    else -> current.copy(
                         showWidget = false,
                         showCardSize = false,
-                        showCoverMenu = false
+                        showCoverMenu = false,
+                        showGroupByMenu = false
                     )
                 }
             }
@@ -4322,6 +4409,36 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
                 viewerLayoutWidgetState.value.copy(
                     showCoverMenu = false
                 )
+
+            is ViewerLayoutWidgetUi.Action.ColorColumns -> {
+                viewModelScope.launch {
+                    proceedWithUpdateViewer(
+                        viewerId = viewerLayoutWidgetState.value.viewer
+                    ) { it.copy(groupBackgroundColors = action.toggled) }
+                }
+            }
+
+            ViewerLayoutWidgetUi.Action.GroupByMenu -> {
+                val isGroupByMenuVisible = viewerLayoutWidgetState.value.showGroupByMenu
+                viewerLayoutWidgetState.value =
+                    viewerLayoutWidgetState.value.copy(showGroupByMenu = !isGroupByMenuVisible)
+            }
+
+            is ViewerLayoutWidgetUi.Action.GroupByUpdate -> {
+                if (!action.item.isChecked) {
+                    viewModelScope.launch {
+                        proceedWithUpdateViewer(
+                            viewerId = viewerLayoutWidgetState.value.viewer
+                        ) { it.copy(groupRelationKey = action.item.relationKey.key) }
+                    }
+                } else {
+                    Timber.i("Group-by relation [${action.item.relationKey.key}] is already set")
+                }
+                // Deliberate divergence from ImagePreviewUpdate: selecting a group-by relation
+                // closes the picker, whereas the cover picker stays open after a selection.
+                viewerLayoutWidgetState.value =
+                    viewerLayoutWidgetState.value.copy(showGroupByMenu = false)
+            }
         }
     }
 

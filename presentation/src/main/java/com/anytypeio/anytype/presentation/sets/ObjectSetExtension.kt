@@ -329,7 +329,9 @@ fun DVViewer.updateFields(fields: DVViewerFields?): DVViewer {
         cardSize = fields.cardSize,
         coverFit = fields.coverFit,
         defaultTemplate = fields.defaultTemplateId,
-        defaultObjectType = fields.defaultObjectTypeId
+        defaultObjectType = fields.defaultObjectTypeId,
+        groupRelationKey = fields.groupRelationKey,
+        groupBackgroundColors = fields.groupBackgroundColors
     )
 }
 

@@ -23,7 +23,13 @@ data class ViewerLayoutWidgetUi(
     val showCardSize: Boolean,
     val showCoverMenu: Boolean,
     /** Whether the experimental Kanban (Board) layout is offered in the type picker. */
-    val kanbanEnabled: Boolean = false
+    val kanbanEnabled: Boolean = false,
+    /** Kanban: relations the board can be grouped by (Status/Tag/Checkbox). */
+    val groupByItems: List<State.GroupBy> = emptyList(),
+    /** Kanban: groupBackgroundColors — colorize columns by group option color. */
+    val groupBackgroundColors: State.Toggle.ColorColumns = State.Toggle.ColorColumns(false),
+    /** Kanban: visibility of the nested "Group by" relation picker. */
+    val showGroupByMenu: Boolean = false
 ) {
 
     fun dismiss() = copy(showWidget = false)
@@ -35,7 +41,10 @@ data class ViewerLayoutWidgetUi(
         fitImage = State.Toggle.FitImage(toggled = false),
         cardSize = State.CardSize.Small,
         showCardSize = false,
-        imagePreviewItems = emptyList()
+        imagePreviewItems = emptyList(),
+        groupByItems = emptyList(),
+        groupBackgroundColors = State.Toggle.ColorColumns(false),
+        showGroupByMenu = false
     )
 
     companion object {
@@ -64,6 +73,7 @@ data class ViewerLayoutWidgetUi(
 
             data class FitImage(override val toggled: Boolean) : Toggle()
             data class WithIcon(override val toggled: Boolean) : Toggle()
+            data class ColorColumns(override val toggled: Boolean) : Toggle()
         }
 
         sealed class ImagePreview : State() {
@@ -86,6 +96,13 @@ data class ViewerLayoutWidgetUi(
                 val name: String
             ) : ImagePreview()
         }
+
+        data class GroupBy(
+            val relationKey: RelationKey,
+            val name: String,
+            val format: RelationFormat,
+            val isChecked: Boolean
+        ) : State()
     }
 
     sealed class Action {
@@ -98,6 +115,9 @@ data class ViewerLayoutWidgetUi(
         data class CardSize(val cardSize: State.CardSize) : Action()
         data class ImagePreviewUpdate(val item: State.ImagePreview) : Action()
         data class Type(val type: DVViewerType) : Action()
+        data class ColorColumns(val toggled: Boolean) : Action()
+        data object GroupByMenu : Action()
+        data class GroupByUpdate(val item: State.GroupBy) : Action()
     }
 }
 
@@ -122,7 +142,44 @@ suspend fun ViewerLayoutWidgetUi.updateState(
             storeOfRelations = storeOfRelations,
             relationLinks = relationLinks
         ),
+        groupBackgroundColors = ViewerLayoutWidgetUi.State.Toggle.ColorColumns(
+            viewer.groupBackgroundColors
+        ),
+        groupByItems = viewer.getGroupByItems(
+            storeOfRelations = storeOfRelations,
+            relationLinks = relationLinks
+        ),
     )
+}
+
+private val GROUP_BY_FORMATS = setOf(
+    RelationFormat.STATUS,
+    RelationFormat.TAG,
+    RelationFormat.CHECKBOX
+)
+
+private suspend fun DVViewer.getGroupByItems(
+    storeOfRelations: StoreOfRelations,
+    relationLinks: List<RelationLink>
+): List<ViewerLayoutWidgetUi.State.GroupBy> {
+    val selectedGroupKey = groupRelationKey
+    return relationLinks
+        .filter { it.format in GROUP_BY_FORMATS }
+        .mapNotNull { storeOfRelations.getByKey(it.key) }
+        .filter { relation ->
+            relation.isValid && relation.isHidden != true && relation.isArchived != true &&
+                    // Bundled "done" is a system key but a user-facing checkbox desktop
+                    // groups by, so allow it through while excluding other system relations.
+                    (!relation.key.isSystemKey() || relation.key == Relations.DONE)
+        }
+        .map { relation ->
+            ViewerLayoutWidgetUi.State.GroupBy(
+                relationKey = RelationKey(relation.key),
+                name = relation.name.orEmpty(),
+                format = relation.format,
+                isChecked = relation.key == selectedGroupKey
+            )
+        }
 }
 
 private suspend fun DVViewer.getImagePreviewItems(

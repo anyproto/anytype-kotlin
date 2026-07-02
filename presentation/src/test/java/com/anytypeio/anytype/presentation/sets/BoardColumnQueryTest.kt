@@ -78,6 +78,28 @@ class BoardColumnQueryTest {
     }
 
     @Test
+    fun `the empty group at the empty column id is queried as EMPTY and not duplicated`() {
+        // The backend's "No value" group arrives at group id BOARD_EMPTY_GROUP_ID; the middleware
+        // group mapper normalizes its (empty-id Status) value to Value.Empty, so here it maps to a
+        // single EMPTY column and is NOT also synthesized as a duplicate (same subscription id),
+        // which previously double-subscribed the "No value" column.
+        val queries = boardColumnQueries(
+            groups = listOf(
+                DataViewGroup(id = "g-a", value = DataViewGroup.Value.Status("a")),
+                DataViewGroup(id = BOARD_EMPTY_GROUP_ID, value = DataViewGroup.Value.Empty)
+            ),
+            groupRelationKey = key
+        )
+
+        assertEquals(listOf("g-a", BOARD_EMPTY_GROUP_ID), queries.map { it.columnId })
+        assertEquals(1, queries.count { it.columnId == BOARD_EMPTY_GROUP_ID })
+        assertEquals(
+            DVFilterCondition.EMPTY,
+            queries.first { it.columnId == BOARD_EMPTY_GROUP_ID }.filter.condition
+        )
+    }
+
+    @Test
     fun `date groups are skipped`() {
         val queries = boardColumnQueries(
             groups = listOf(DataViewGroup(id = "g-date", value = DataViewGroup.Value.Date)),

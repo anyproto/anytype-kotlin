@@ -361,6 +361,7 @@ open class ObjectSetFragment :
                     vm.onBoardCardReordered(columnId, orderedCardIds)
                 }
                 onColumnLoadMore = { columnId -> vm.onBoardColumnLoadMore(columnId) }
+                onCreateInColumn = { columnId -> vm.onBoardCreateObjectInColumn(columnId) }
             }
             binding.topToolbar.container.setOnClickListener {
                 WidgetOverlayFragment.show(parentFragmentManager, space)
@@ -759,7 +760,7 @@ open class ObjectSetFragment :
                 setupNewButtons(state.isCreateObjectAllowed)
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
-                setViewer(viewer = state.viewer)
+                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed)
             }
             is DataViewViewState.Set.NoQuery -> {
                 topToolbarThreeDotsButton.visible()
@@ -819,7 +820,7 @@ open class ObjectSetFragment :
                 }
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
-                setViewer(viewer = state.viewer)
+                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed)
                 dataViewInfo.hide()
             }
             DataViewViewState.Init -> {
@@ -859,7 +860,7 @@ open class ObjectSetFragment :
                 }
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
-                setViewer(viewer = state.viewer)
+                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed)
                 dataViewInfo.hide()
             }
             is DataViewViewState.TypeSet.NoItems -> {
@@ -929,7 +930,7 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun setViewer(viewer: Viewer?) {
+    private fun setViewer(viewer: Viewer?, canCreateObject: Boolean = false) {
         when (viewer) {
             is Viewer.GridView -> {
                 with(binding) {
@@ -987,6 +988,10 @@ open class ObjectSetFragment :
                     listView.gone()
                     listView.setViews(emptyList())
                     boardView.visible()
+                    // Set the create permission here — co-located with board rendering — so any
+                    // viewer-rendering state that routes through setViewer() can't forget it and
+                    // silently hide the per-column "＋ New" affordance (widget default is false).
+                    boardView.canCreateObject = canCreateObject
                     boardView.setBoard(viewer)
                 }
             }

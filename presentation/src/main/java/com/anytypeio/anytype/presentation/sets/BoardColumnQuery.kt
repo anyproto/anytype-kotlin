@@ -27,6 +27,10 @@ fun boardColumnQueries(
     groups: List<DataViewGroup>,
     groupRelationKey: Key
 ): List<BoardColumnQuery> {
+    val emptyFilter = DVFilter(relation = groupRelationKey, condition = DVFilterCondition.EMPTY)
+    // The backend's "No value" group is normalized to Value.Empty by the middleware group mapper
+    // (ToCoreModelMappers.toCoreModelsGroup), so it maps to an "relation is empty" filter here like
+    // any other value — no need to special-case the magic group id.
     val queries = groups.mapNotNull { group ->
         groupValueFilter(groupRelationKey, group.value)?.let { filter ->
             BoardColumnQuery(columnId = group.id, filter = filter)
@@ -37,10 +41,7 @@ fun boardColumnQueries(
     val isCheckbox = groups.any { it.value is DataViewGroup.Value.Checkbox }
     val hasEmpty = groups.any { it.value is DataViewGroup.Value.Empty }
     return if (!isCheckbox && !hasEmpty) {
-        queries + BoardColumnQuery(
-            columnId = BOARD_EMPTY_GROUP_ID,
-            filter = DVFilter(relation = groupRelationKey, condition = DVFilterCondition.EMPTY)
-        )
+        queries + BoardColumnQuery(columnId = BOARD_EMPTY_GROUP_ID, filter = emptyFilter)
     } else {
         queries
     }

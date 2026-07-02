@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BoardRecordsSubscriptionContainerTest {
@@ -127,6 +128,135 @@ class BoardRecordsSubscriptionContainerTest {
             cancelAndIgnoreRemainingEvents()
         }
     }
+
+    @Test
+    fun `a content amend on a loaded card bumps the revision to force a board re-render`() = runTest {
+        // Single column so combine() can't conflate the seed + amended emissions.
+        stubColumn(subA, filterA, SearchResult(objects("a1"), emptyList(), counter(1)))
+        channel.stub {
+            on { subscribe(listOf(subA)) } doReturn flow {
+                emit(
+                    listOf(
+                        SubscriptionEvent.Amend(
+                            target = "a1",
+                            diff = mapOf(Relations.NAME to "renamed"),
+                            subscriptions = listOf(subA)
+                        )
+                    )
+                )
+            }
+        }
+
+        container.observe(singleColumnParams()).test {
+            val initial = awaitItem().getValue("A")
+            assertEquals(listOf("a1"), initial.ids)
+            val amended = awaitItem().getValue("A")
+            // ids/total are unchanged, but the revision must bump so the downstream StateFlow
+            // (which dedups equal values) re-emits and the board re-renders the new name.
+            assertEquals(listOf("a1"), amended.ids)
+            assertEquals(initial.total, amended.total)
+            assertTrue(amended.revision > initial.revision)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `a metadata-only amend does not bump the revision`() = runTest {
+        stubColumn(subA, filterA, SearchResult(objects("a1"), emptyList(), counter(1)))
+        channel.stub {
+            on { subscribe(listOf(subA)) } doReturn flow {
+                emit(
+                    listOf(
+                        SubscriptionEvent.Amend(
+                            target = "a1",
+                            // Only bookkeeping the card never renders → must not re-render the board.
+                            diff = mapOf(Relations.LAST_MODIFIED_DATE to 123.0),
+                            subscriptions = listOf(subA)
+                        )
+                    )
+                )
+            }
+        }
+
+        container.observe(singleColumnParams()).test {
+            val initial = awaitItem().getValue("A")
+            val amended = awaitItem().getValue("A")
+            assertEquals(initial.revision, amended.revision)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `a bookkeeping amend on a key the view displays bumps the revision`() = runTest {
+        stubColumn(subA, filterA, SearchResult(objects("a1"), emptyList(), counter(1)))
+        channel.stub {
+            on { subscribe(listOf(subA)) } doReturn flow {
+                emit(
+                    listOf(
+                        SubscriptionEvent.Amend(
+                            target = "a1",
+                            // A bookkeeping key, but this view shows it as a visible card relation,
+                            // so its displayed value must refresh instead of going stale.
+                            diff = mapOf(Relations.LAST_MODIFIED_DATE to 123.0),
+                            subscriptions = listOf(subA)
+                        )
+                    )
+                )
+            }
+        }
+
+        container.observe(
+            singleColumnParams(displayedKeys = setOf(Relations.LAST_MODIFIED_DATE))
+        ).test {
+            val initial = awaitItem().getValue("A")
+            val amended = awaitItem().getValue("A")
+            assertTrue(amended.revision > initial.revision)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `an amend touching an unknown key bumps the revision (fail-safe default)`() = runTest {
+        stubColumn(subA, filterA, SearchResult(objects("a1"), emptyList(), counter(1)))
+        channel.stub {
+            on { subscribe(listOf(subA)) } doReturn flow {
+                emit(
+                    listOf(
+                        SubscriptionEvent.Amend(
+                            target = "a1",
+                            // Not in the bookkeeping set → must re-render, even if the card
+                            // doesn't obviously display it.
+                            diff = mapOf("someNewBackendField" to "x"),
+                            subscriptions = listOf(subA)
+                        )
+                    )
+                )
+            }
+        }
+
+        container.observe(singleColumnParams()).test {
+            val initial = awaitItem().getValue("A")
+            val amended = awaitItem().getValue("A")
+            assertTrue(amended.revision > initial.revision)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun singleColumnParams(
+        displayedKeys: Set<String> = emptySet()
+    ) = BoardRecordsSubscriptionContainer.Params(
+        space = space,
+        columns = listOf(
+            BoardRecordsSubscriptionContainer.Column(subscription = subA, columnId = "A", filter = filterA)
+        ),
+        sorts = emptyList(),
+        baseFilters = emptyList(),
+        keys = emptyList(),
+        displayedKeys = displayedKeys,
+        source = emptyList(),
+        collection = null,
+        limit = 50
+    )
 
     // Exact-arg stubbing (matchers can't be used: SpaceId is an inline value class and any()
     // would unbox null). Args mirror what observeColumn passes.

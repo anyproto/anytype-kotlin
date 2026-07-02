@@ -98,6 +98,9 @@ private suspend fun DVViewer.buildColumnsFromGroups(
         val recordIds = recordsByColumn[gid].orEmpty()
         val orderIds = objectOrders.find { it.group == gid }?.ids.orEmpty()
         val orderIndex = orderIds.withIndex().associate { (i, id) -> id to i }
+        val columnColor = groupColor(gid, group, groupOrder, groupOptions, objectStore)
+        // The column background is tinted with its group color only when "Color columns" is on.
+        val columnBackgroundColor = if (groupBackgroundColors) columnColor else null
         val cards = recordIds
             .mapNotNull { objectStore.get(it) }
             .filter { it.isValid }
@@ -108,7 +111,8 @@ private suspend fun DVViewer.buildColumnsFromGroups(
         Viewer.Board.Column(
             id = gid,
             label = groupLabel(gid, group, emptyGroupId, groupOptions, objectStore, stringResourceProvider),
-            color = groupColor(gid, group, groupOrder, groupOptions, objectStore),
+            color = columnColor,
+            backgroundColor = columnBackgroundColor,
             cards = cards,
             count = countsByColumn[gid] ?: cards.size
         )

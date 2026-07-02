@@ -353,6 +353,151 @@ class BoardViewMapperTest {
     }
 
     @Test
+    fun `column carries the group background color when groupBackgroundColors is on`() = runTest {
+
+        val todo = StubRelationOptionObject(
+            id = MockDataFactory.randomUuid(), space = defaultSpace, text = "To do", color = "red"
+        )
+        val done = StubRelationOptionObject(
+            id = MockDataFactory.randomUuid(), space = defaultSpace, text = "Done", color = "blue"
+        )
+
+        val store = DefaultObjectStore()
+        store.merge(
+            objects = listOf(
+                record(id = "A", name = "Task A", status = listOf(todo.id)),
+                record(id = "B", name = "Task B", status = listOf(done.id)),
+                record(id = "C", name = "Task C", status = null)
+            ).map { ObjectWrapper.Basic(it) },
+            dependencies = listOf(todo, done).map { ObjectWrapper.Basic(it.map) },
+            subscriptions = emptyList()
+        )
+
+        val storeOfRelations = DefaultStoreOfRelations().apply {
+            merge(listOf(statusRelation(name = "Status")))
+        }
+
+        val viewer = DVViewer(
+            id = "view-1",
+            name = "Board",
+            type = Block.Content.DataView.Viewer.Type.BOARD,
+            sorts = emptyList(),
+            filters = emptyList(),
+            viewerRelations = listOf(
+                Block.Content.DataView.Viewer.ViewerRelation(key = statusRelationKey, isVisible = true)
+            ),
+            groupRelationKey = statusRelationKey,
+            groupBackgroundColors = true
+        )
+
+        val groups = listOf(
+            DataViewGroup(id = "empty", value = DataViewGroup.Value.Empty),
+            DataViewGroup(id = todo.id, value = DataViewGroup.Value.Status(todo.id)),
+            DataViewGroup(id = done.id, value = DataViewGroup.Value.Status(done.id))
+        )
+
+        val columns = viewer.buildBoardViews(
+            relations = listOf(statusRelationWrapper()),
+            urlBuilder = UrlBuilderImpl(gateway),
+            objectStore = store,
+            objectOrders = emptyList(),
+            storeOfRelations = storeOfRelations,
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes,
+            stringResourceProvider = stringResourceProvider,
+            groupOptions = mapOf(
+                todo.id to ObjectWrapper.Option(todo.map),
+                done.id to ObjectWrapper.Option(done.map)
+            ),
+            groups = groups,
+            recordsByColumn = mapOf(
+                "empty" to listOf("C"),
+                todo.id to listOf("A"),
+                done.id to listOf("B")
+            )
+        )
+
+        // Each column gets its group color as a background tint; the dot (color) is unchanged.
+        assertEquals("red", columns[1].color)
+        assertEquals("red", columns[1].backgroundColor)
+        assertEquals("blue", columns[2].color)
+        assertEquals("blue", columns[2].backgroundColor)
+        // The empty ("No value") column has no group color: it stays un-tinted.
+        assertEquals(null, columns[0].color)
+        assertEquals(null, columns[0].backgroundColor)
+    }
+
+    @Test
+    fun `column has no background color when groupBackgroundColors is off`() = runTest {
+
+        val todo = StubRelationOptionObject(
+            id = MockDataFactory.randomUuid(), space = defaultSpace, text = "To do", color = "red"
+        )
+        val done = StubRelationOptionObject(
+            id = MockDataFactory.randomUuid(), space = defaultSpace, text = "Done", color = "blue"
+        )
+
+        val store = DefaultObjectStore()
+        store.merge(
+            objects = listOf(
+                record(id = "A", name = "Task A", status = listOf(todo.id)),
+                record(id = "B", name = "Task B", status = listOf(done.id))
+            ).map { ObjectWrapper.Basic(it) },
+            dependencies = listOf(todo, done).map { ObjectWrapper.Basic(it.map) },
+            subscriptions = emptyList()
+        )
+
+        val storeOfRelations = DefaultStoreOfRelations().apply {
+            merge(listOf(statusRelation(name = "Status")))
+        }
+
+        val viewer = DVViewer(
+            id = "view-1",
+            name = "Board",
+            type = Block.Content.DataView.Viewer.Type.BOARD,
+            sorts = emptyList(),
+            filters = emptyList(),
+            viewerRelations = listOf(
+                Block.Content.DataView.Viewer.ViewerRelation(key = statusRelationKey, isVisible = true)
+            ),
+            groupRelationKey = statusRelationKey,
+            groupBackgroundColors = false
+        )
+
+        val groups = listOf(
+            DataViewGroup(id = todo.id, value = DataViewGroup.Value.Status(todo.id)),
+            DataViewGroup(id = done.id, value = DataViewGroup.Value.Status(done.id))
+        )
+
+        val columns = viewer.buildBoardViews(
+            relations = listOf(statusRelationWrapper()),
+            urlBuilder = UrlBuilderImpl(gateway),
+            objectStore = store,
+            objectOrders = emptyList(),
+            storeOfRelations = storeOfRelations,
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes,
+            stringResourceProvider = stringResourceProvider,
+            groupOptions = mapOf(
+                todo.id to ObjectWrapper.Option(todo.map),
+                done.id to ObjectWrapper.Option(done.map)
+            ),
+            groups = groups,
+            recordsByColumn = mapOf(
+                todo.id to listOf("A"),
+                done.id to listOf("B")
+            )
+        )
+
+        // Toggle off: columns keep their color dot, but are never tinted.
+        assertEquals(true, columns.isNotEmpty())
+        assertEquals(true, columns.all { it.backgroundColor == null })
+        // Column color (the dot) is unaffected by the toggle.
+        assertEquals("red", columns.first { it.id == todo.id }.color)
+        assertEquals("blue", columns.first { it.id == done.id }.color)
+    }
+
+    @Test
     fun `should order columns by default with combos before single tags then alphabetically`() = runTest {
 
         val tag1 = StubRelationOptionObject(

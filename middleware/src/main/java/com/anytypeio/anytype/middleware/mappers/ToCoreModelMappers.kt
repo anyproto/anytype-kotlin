@@ -481,8 +481,11 @@ fun MDVGroup.toCoreModelsGroup(): DataViewGroup {
     val tag = tag
     val checkbox = checkbox
     val value = when {
-        status != null -> DataViewGroup.Value.Status(status.id)
-        tag != null -> DataViewGroup.Value.Tag(tag.ids)
+        // The backend encodes the "No value" group as an empty-id Status / blank-ids Tag.
+        // Normalize it to Value.Empty here so downstream board logic (column queries, labeling,
+        // drag/create) can trust the group's value instead of special-casing the magic group id.
+        status != null && status.id.isNotBlank() -> DataViewGroup.Value.Status(status.id)
+        tag != null && tag.ids.any { it.isNotBlank() } -> DataViewGroup.Value.Tag(tag.ids)
         checkbox != null -> DataViewGroup.Value.Checkbox(checkbox.checked)
         date != null -> DataViewGroup.Value.Date
         else -> DataViewGroup.Value.Empty

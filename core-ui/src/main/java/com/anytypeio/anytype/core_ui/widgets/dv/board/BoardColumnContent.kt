@@ -1,17 +1,19 @@
 package com.anytypeio.anytype.core_ui.widgets.dv.board
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -32,12 +34,17 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title2
@@ -61,16 +68,21 @@ fun BoardColumnContent(
     boardCoordsProvider: () -> LayoutCoordinates?,
     onCardClick: (Id) -> Unit,
     onColumnLoadMore: (columnId: String) -> Unit,
+    canCreateObject: Boolean = false,
+    onCreateInColumn: (columnId: String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val isDropTarget = dragState.isDragging &&
         dragState.sourceColumnId != column.id &&
         targetColumnId == column.id
 
-    val background = if (isDropTarget) {
-        colorResource(id = R.color.shape_secondary)
-    } else {
-        colorResource(id = R.color.shape_tertiary)
+    // "Color columns": tint the whole column with its group color when set. The drop-target
+    // highlight still takes precedence while a card from another column hovers over it.
+    val columnBackgroundColor = column.backgroundColor
+    val background = when {
+        isDropTarget -> colorResource(id = R.color.shape_secondary)
+        columnBackgroundColor != null -> light(columnBackgroundColor)
+        else -> colorResource(id = R.color.shape_tertiary)
     }
 
     Column(
@@ -114,17 +126,14 @@ fun BoardColumnContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         if (column.cards.isEmpty()) {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(),
-                contentAlignment = Alignment.Center
+                    .wrapContentHeight()
             ) {
-                Text(
-                    text = stringResource(id = R.string.dataview_board_no_objects),
-                    style = Caption1Regular,
-                    color = colorResource(id = R.color.text_tertiary)
-                )
+                if (canCreateObject) {
+                    BoardAddCardButton(onClick = { onCreateInColumn(column.id) })
+                }
             }
         } else {
             val listState = rememberLazyListState()
@@ -150,7 +159,7 @@ fun BoardColumnContent(
             }
             LazyColumn(
                 state = listState,
-                modifier = Modifier.fillMaxHeight(),
+                modifier = Modifier.wrapContentHeight(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(
@@ -163,6 +172,11 @@ fun BoardColumnContent(
                         boardCoordsProvider = boardCoordsProvider,
                         onCardClick = onCardClick
                     )
+                }
+                if (canCreateObject) {
+                    item(key = "add-card-${column.id}") {
+                        BoardAddCardButton(onClick = { onCreateInColumn(column.id) })
+                    }
                 }
                 if (canPaginate.value) {
                     item(key = "board-load-more") {
@@ -213,5 +227,92 @@ private fun BoardCard(
                 }
             }
             .alpha(if (isBeingDragged) 0.4f else 1f)
+    )
+}
+
+/**
+ * A card-styled "＋ New" row at the bottom of a column. Tapping it asks the host to create a
+ * new object whose group value matches this column (wired in [BoardColumnContent]).
+ */
+@Composable
+private fun BoardAddCardButton(onClick: () -> Unit) {
+    // Matches Figma "Gallery Card" (node 10521:24257): a card-shaped tile with a centered
+    // 24dp plus, white fill, subtle transparent-secondary border, 16dp corners.
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(colorResource(id = R.color.background_primary))
+            .border(
+                width = 1.dp,
+                color = colorResource(id = R.color.shape_transparent_secondary),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .noRippleThrottledClickable { onClick() }
+            .padding(vertical = 10.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_default_plus),
+            contentDescription = stringResource(id = R.string.dataview_board_new_object),
+            modifier = Modifier.size(24.dp)
+        )
+    }
+}
+
+@Preview(name = "Short column + add button", widthDp = 280, backgroundColor = 0xFFEFEFEF, showBackground = true)
+@Composable
+private fun BoardColumnShortPreview() {
+    BoardColumnContent(
+        column = Viewer.Board.Column(
+            id = "todo",
+            label = "To Do",
+            cards = listOf(
+                Viewer.Board.Card(
+                    objectId = "1",
+                    name = "Buy milk",
+                    icon = ObjectIcon.None,
+                    relations = emptyList(),
+                    hideIcon = true
+                ),
+                Viewer.Board.Card(
+                    objectId = "2",
+                    name = "Walk the dog",
+                    icon = ObjectIcon.None,
+                    relations = emptyList(),
+                    hideIcon = true
+                )
+            ),
+            count = 2
+        ),
+        dragState = remember { BoardDragState() },
+        targetColumnId = null,
+        boardCoordsProvider = { null },
+        onCardClick = {},
+        onColumnLoadMore = {},
+        canCreateObject = true,
+        onCreateInColumn = {},
+        modifier = Modifier.width(280.dp)
+    )
+}
+
+@Preview(name = "Empty column + add button", widthDp = 280, backgroundColor = 0xFFEFEFEF, showBackground = true)
+@Composable
+private fun BoardColumnEmptyPreview() {
+    BoardColumnContent(
+        column = Viewer.Board.Column(
+            id = "done",
+            label = "Done",
+            cards = emptyList(),
+            count = 0
+        ),
+        dragState = remember { BoardDragState() },
+        targetColumnId = null,
+        boardCoordsProvider = { null },
+        onCardClick = {},
+        onColumnLoadMore = {},
+        canCreateObject = true,
+        onCreateInColumn = {},
+        modifier = Modifier.width(280.dp)
     )
 }

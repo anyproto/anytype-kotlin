@@ -33,6 +33,12 @@ class BoardViewWidget @JvmOverloads constructor(
         { _, _, _, _ -> }
     var onCardReordered: (columnId: String, orderedCardIds: List<Id>) -> Unit = { _, _ -> }
     var onColumnLoadMore: (columnId: String) -> Unit = {}
+    var onCreateInColumn: (String) -> Unit = {}
+
+    /** Whether the current permission allows creating objects; gates the per-column "＋ New" item. */
+    // Fail closed: stay hidden until the host sets it from permission state, so a
+    // read-only viewer can't briefly see the "+ New" affordance.
+    var canCreateObject: Boolean by mutableStateOf(false)
 
     @Composable
     override fun Content() {
@@ -42,7 +48,9 @@ class BoardViewWidget @JvmOverloads constructor(
                 onCardClick = onCardClick,
                 onCardMoved = onCardMoved,
                 onCardReordered = onCardReordered,
-                onColumnLoadMore = onColumnLoadMore
+                onColumnLoadMore = onColumnLoadMore,
+                canCreateObject = canCreateObject,
+                onCreateInColumn = onCreateInColumn
             )
         }
     }

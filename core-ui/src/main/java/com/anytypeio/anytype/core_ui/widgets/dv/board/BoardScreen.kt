@@ -6,12 +6,12 @@ import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -67,6 +67,8 @@ fun BoardScreen(
     onCardMoved: (cardId: Id, sourceColumnId: String, targetColumnId: String, targetOrderedIds: List<Id>?) -> Unit,
     onCardReordered: (columnId: String, orderedCardIds: List<Id>) -> Unit,
     onColumnLoadMore: (columnId: String) -> Unit,
+    canCreateObject: Boolean = false,
+    onCreateInColumn: (columnId: String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     if (board.columns.isEmpty()) {
@@ -194,9 +196,11 @@ fun BoardScreen(
                     boardCoordsProvider = { boardCoords },
                     onCardClick = onCardClick,
                     onColumnLoadMore = onColumnLoadMore,
+                    canCreateObject = canCreateObject,
+                    onCreateInColumn = onCreateInColumn,
                     modifier = Modifier
                         .width(COLUMN_WIDTH)
-                        .fillMaxHeight()
+                        .wrapContentHeight(Alignment.Top)
                         .onGloballyPositioned { coords ->
                             val board = boardCoords
                             if (board != null && coords.isAttached) {

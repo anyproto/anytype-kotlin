@@ -569,6 +569,9 @@
     <string name="type_templates_widget_title">创建对象</string>
     <string name="view_layout_widget_title">布局</string>
     <string name="view_layout_cover_widget_title">封面</string>
+    <string name="view_layout_group_by_widget_title">分组</string>
+    <string name="group_by">分组</string>
+    <string name="color_columns">颜色列表</string>
     <string name="blank">空白</string>
     <string name="templates_menu_default_for_view">此视图的默认</string>
     <string name="templates_menu_edit">编辑模板</string>
@@ -590,6 +593,7 @@
     <string name="dataview_board_no_value">输入为空</string>
     <string name="dataview_board_checked">选中</string>
     <string name="dataview_board_unchecked">未选中</string>
+    <string name="dataview_board_new_object">新建</string>
     <string name="page_cover">页面封面</string>
     <string name="object_action_pin">置顶</string>
     <string name="object_action_unpin">取消置顶</string>

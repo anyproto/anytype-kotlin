@@ -30,12 +30,18 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
 /**
- * Amend keys that never change a card's rendered content, so an amend touching only these must
- * NOT bump [BoardRecordsSubscriptionContainer.GroupPage.revision] — otherwise the board would
- * re-render on every edit's bookkeeping fields (e.g. the automatic `lastModifiedBy` amend that
- * fires right after create, while the "name your object" sheet is animating in).
+ * Non-visual bookkeeping keys that don't change a card's rendered content *by default*. An amend
+ * touching only these is suppressed (does NOT bump [BoardRecordsSubscriptionContainer.GroupPage
+ * .revision]) — otherwise the board would re-render on every edit's bookkeeping fields (e.g. the
+ * automatic `lastModifiedBy` amend that fires right after create, while the "name your object"
+ * sheet is animating in).
+ *
+ * This is the DEFAULT suppression set only. The effective set is this minus the keys the current
+ * view actually displays ([Params.displayedKeys]), so the gate is fail-safe: any unknown/new key
+ * re-renders, and a bookkeeping key that the viewer shows as a visible card relation (e.g. "Last
+ * modified date") also re-renders instead of going stale.
  */
-private val SILENT_AMEND_KEYS: Set<Key> = setOf(
+private val BOOKKEEPING_AMEND_KEYS: Set<Key> = setOf(
     Relations.LAST_MODIFIED_DATE,
     Relations.LAST_OPENED_DATE,
     Relations.LAST_USED_DATE,
@@ -93,6 +99,9 @@ class BoardRecordsSubscriptionContainer(
     }
 
     private fun observeColumn(params: Params, column: Column, limit: Int): Flow<Pair<Id, GroupPage>> = flow {
+        // Fail-safe: a bookkeeping key that this view actually displays must still re-render the
+        // card, so drop the displayed keys from the effective suppression set.
+        val silentKeys = BOOKKEEPING_AMEND_KEYS - params.displayedKeys
         val initial = repo.searchObjectsWithSubscription(
             space = params.space,
             subscription = column.subscription,
@@ -119,7 +128,7 @@ class BoardRecordsSubscriptionContainer(
         )
         emitAll(
             channel.subscribe(listOf(column.subscription))
-                .scan(seed) { page, payload -> reduce(page, payload, column.subscription) }
+                .scan(seed) { page, payload -> reduce(page, payload, column.subscription, silentKeys) }
                 .map { page -> column.columnId to page }
         )
     }
@@ -127,7 +136,8 @@ class BoardRecordsSubscriptionContainer(
     private suspend fun reduce(
         page: GroupPage,
         payload: List<SubscriptionEvent>,
-        subscription: Id
+        subscription: Id,
+        silentKeys: Set<Key>
     ): GroupPage {
         var ids = page.ids
         var total = page.total
@@ -158,8 +168,8 @@ class BoardRecordsSubscriptionContainer(
                     store.amend(target = event.target, diff = event.diff, subscriptions = event.subscriptions)
                     // A rendered field (name/relations/icon) changed; ids/total are the same, so
                     // bump the revision to force the board to re-render this card from the updated
-                    // store. Skip amends that only touch metadata a card never displays.
-                    if (event.diff.keys.any { it !in SILENT_AMEND_KEYS }) revision++
+                    // store. Skip amends that only touch bookkeeping keys this view doesn't display.
+                    if (event.diff.keys.any { it !in silentKeys }) revision++
                 }
                 is SubscriptionEvent.Set -> {
                     store.set(target = event.target, data = event.data, subscriptions = event.subscriptions)
@@ -199,6 +209,9 @@ class BoardRecordsSubscriptionContainer(
         val sorts: List<DVSort>,
         val baseFilters: List<DVFilter>,
         val keys: List<Key>,
+        // Keys the current viewer displays as visible card relations. Bookkeeping keys in this set
+        // are excluded from amend suppression so a displayed value never goes stale (fail-safe).
+        val displayedKeys: Set<Key> = emptySet(),
         val source: List<String> = emptyList(),
         val collection: Id? = null,
         val limit: Int

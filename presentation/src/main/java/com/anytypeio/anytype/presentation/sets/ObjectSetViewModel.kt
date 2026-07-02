@@ -998,12 +998,19 @@ class ObjectSetViewModel(
             )
         }
         boardRecordSubscriptionIds = columns.map { it.subscription }
+        // Keys the board card actually displays (visible viewer relations); mirrors
+        // BoardViewMapper.filteredRelations. Used to keep amend re-render suppression fail-safe.
+        val displayedKeys = viewer.viewerRelations
+            .filter { it.isVisible }
+            .map { it.key }
+            .toSet()
         return BoardRecordsSubscriptionContainer.Params(
             space = vmParams.space,
             columns = columns,
             sorts = sorts,
             baseFilters = baseFilters,
             keys = keys,
+            displayedKeys = displayedKeys,
             source = sources,
             collection = collection,
             limit = DEFAULT_LIMIT

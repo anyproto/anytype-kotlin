@@ -186,7 +186,65 @@ class BoardRecordsSubscriptionContainerTest {
         }
     }
 
-    private fun singleColumnParams() = BoardRecordsSubscriptionContainer.Params(
+    @Test
+    fun `a bookkeeping amend on a key the view displays bumps the revision`() = runTest {
+        stubColumn(subA, filterA, SearchResult(objects("a1"), emptyList(), counter(1)))
+        channel.stub {
+            on { subscribe(listOf(subA)) } doReturn flow {
+                emit(
+                    listOf(
+                        SubscriptionEvent.Amend(
+                            target = "a1",
+                            // A bookkeeping key, but this view shows it as a visible card relation,
+                            // so its displayed value must refresh instead of going stale.
+                            diff = mapOf(Relations.LAST_MODIFIED_DATE to 123.0),
+                            subscriptions = listOf(subA)
+                        )
+                    )
+                )
+            }
+        }
+
+        container.observe(
+            singleColumnParams(displayedKeys = setOf(Relations.LAST_MODIFIED_DATE))
+        ).test {
+            val initial = awaitItem().getValue("A")
+            val amended = awaitItem().getValue("A")
+            assertTrue(amended.revision > initial.revision)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `an amend touching an unknown key bumps the revision (fail-safe default)`() = runTest {
+        stubColumn(subA, filterA, SearchResult(objects("a1"), emptyList(), counter(1)))
+        channel.stub {
+            on { subscribe(listOf(subA)) } doReturn flow {
+                emit(
+                    listOf(
+                        SubscriptionEvent.Amend(
+                            target = "a1",
+                            // Not in the bookkeeping set → must re-render, even if the card
+                            // doesn't obviously display it.
+                            diff = mapOf("someNewBackendField" to "x"),
+                            subscriptions = listOf(subA)
+                        )
+                    )
+                )
+            }
+        }
+
+        container.observe(singleColumnParams()).test {
+            val initial = awaitItem().getValue("A")
+            val amended = awaitItem().getValue("A")
+            assertTrue(amended.revision > initial.revision)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    private fun singleColumnParams(
+        displayedKeys: Set<String> = emptySet()
+    ) = BoardRecordsSubscriptionContainer.Params(
         space = space,
         columns = listOf(
             BoardRecordsSubscriptionContainer.Column(subscription = subA, columnId = "A", filter = filterA)
@@ -194,6 +252,7 @@ class BoardRecordsSubscriptionContainerTest {
         sorts = emptyList(),
         baseFilters = emptyList(),
         keys = emptyList(),
+        displayedKeys = displayedKeys,
         source = emptyList(),
         collection = null,
         limit = 50

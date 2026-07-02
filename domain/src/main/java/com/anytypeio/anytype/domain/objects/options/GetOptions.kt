@@ -27,15 +27,15 @@ class GetOptions(
             add(
                 DVFilter(
                     relation = Relations.IS_DELETED,
-                    condition = DVFilterCondition.EQUAL,
-                    value = false
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
                 )
             )
             add(
                 DVFilter(
                     relation = Relations.IS_ARCHIVED,
-                    condition = DVFilterCondition.EQUAL,
-                    value = false
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
                 )
             )
             add(

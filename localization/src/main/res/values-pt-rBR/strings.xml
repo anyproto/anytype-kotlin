@@ -570,6 +570,9 @@
     <string name="type_templates_widget_title">Criar objeto</string>
     <string name="view_layout_widget_title">Leiaute</string>
     <string name="view_layout_cover_widget_title">Capa</string>
+    <string name="view_layout_group_by_widget_title">Agrupar por</string>
+    <string name="group_by">Agrupar por</string>
+    <string name="color_columns">Colunas de cor</string>
     <string name="blank">Em branco</string>
     <string name="templates_menu_default_for_view">Padrão para esta exibição</string>
     <string name="templates_menu_edit">Editar modelo</string>
@@ -591,6 +594,7 @@
     <string name="dataview_board_no_value">Sem valor</string>
     <string name="dataview_board_checked">Marcado</string>
     <string name="dataview_board_unchecked">Desmarcado</string>
+    <string name="dataview_board_new_object">Novo</string>
     <string name="page_cover">Capa da página</string>
     <string name="object_action_pin">Fixar</string>
     <string name="object_action_unpin">Desafixar</string>

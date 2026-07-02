@@ -208,6 +208,59 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
     }
 
     @Test
+    fun `when click on text cell in edit mode - should set focus on that cell`() = runTest {
+
+        val columns = StubTableColumns(size = 3)
+        val rows = StubTableRows(size = 2)
+        val cells = StubTableCells(columns = columns, rows = rows)
+        val columnLayout = StubLayoutColumns(children = columns.map { it.id })
+        val rowLayout = StubLayoutRows(children = rows.map { it.id })
+        val table = StubTable(children = listOf(columnLayout.id, rowLayout.id))
+
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+        val page = StubSmartBlock(
+            id = root,
+            children = listOf(header.id, table.id)
+        )
+
+        val document =
+            listOf(page, header, title, table, columnLayout, rowLayout) + columns + rows + cells
+
+        stubInterceptEvents()
+        stubOpenDocument(document)
+        val vm = buildViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+        advanceUntilIdle()
+
+        val clickedCell = BlockView.Table.Cell(
+            row = BlockView.Table.Row(
+                id = BlockView.Table.RowId(rows[0].id),
+                index = BlockView.Table.RowIndex(0),
+                isHeader = false
+            ),
+            column = BlockView.Table.Column(
+                id = BlockView.Table.ColumnId(columns[1].id),
+                index = BlockView.Table.ColumnIndex(1)
+            ),
+            block = BlockView.Text.Paragraph(
+                id = cells[0].id,
+                text = cells[0].content.asText().text
+            ),
+            tableId = table.id
+        )
+
+        vm.onClickListener(ListenerType.TableTextCell(cell = clickedCell))
+        advanceUntilIdle()
+
+        assertEquals(
+            clickedCell.getId(),
+            orchestrator.stores.focus.current().requireTarget()
+        )
+    }
+
+    @Test
     fun `when click on menu icon - should enter table mode with 1 selected cell`() = runTest {
 
         //SETUP

@@ -4422,6 +4422,9 @@ class EditorViewModel(
             }
             is ListenerType.TableTextCell -> {
                 when (val m = mode) {
+                    EditorMode.Edit -> {
+                        setFocusInCellWhenInEditMode(cellId = clicked.cell.getId())
+                    }
                     EditorMode.Select -> {
                         onBlockMultiSelectClicked(target = clicked.cell.tableId)
                     }

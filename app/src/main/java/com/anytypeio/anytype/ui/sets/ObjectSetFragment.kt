@@ -347,6 +347,22 @@ open class ObjectSetFragment :
                     )
                 }
             }
+            // Board (Kanban) viewer is hosted persistently: its composition is set up once
+            // here and fed view-state via setBoard(...) in setViewer, so emissions diff
+            // instead of tearing down the composition (which would reset scroll / cancel a
+            // drag). See BoardViewWidget.
+            binding.boardView.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                onCardClick = { id -> vm.onObjectHeaderClicked(id) }
+                onCardMoved = { cardId, sourceColumnId, targetColumnId, targetOrderedIds ->
+                    vm.onBoardCardDropped(cardId, sourceColumnId, targetColumnId, targetOrderedIds)
+                }
+                onCardReordered = { columnId, orderedCardIds ->
+                    vm.onBoardCardReordered(columnId, orderedCardIds)
+                }
+                onColumnLoadMore = { columnId -> vm.onBoardColumnLoadMore(columnId) }
+                onCreateInColumn = { columnId -> vm.onBoardCreateObjectInColumn(columnId) }
+            }
             binding.topToolbar.container.setOnClickListener {
                 WidgetOverlayFragment.show(parentFragmentManager, space)
             }
@@ -744,7 +760,7 @@ open class ObjectSetFragment :
                 setupNewButtons(state.isCreateObjectAllowed)
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
-                setViewer(viewer = state.viewer)
+                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed)
             }
             is DataViewViewState.Set.NoQuery -> {
                 topToolbarThreeDotsButton.visible()
@@ -804,7 +820,7 @@ open class ObjectSetFragment :
                 }
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
-                setViewer(viewer = state.viewer)
+                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed)
                 dataViewInfo.hide()
             }
             DataViewViewState.Init -> {
@@ -844,7 +860,7 @@ open class ObjectSetFragment :
                 }
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
-                setViewer(viewer = state.viewer)
+                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed)
                 dataViewInfo.hide()
             }
             is DataViewViewState.TypeSet.NoItems -> {
@@ -914,7 +930,7 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun setViewer(viewer: Viewer?) {
+    private fun setViewer(viewer: Viewer?, canCreateObject: Boolean = false) {
         when (viewer) {
             is Viewer.GridView -> {
                 with(binding) {
@@ -924,6 +940,8 @@ open class ObjectSetFragment :
                     galleryView.gone()
                     listView.gone()
                     listView.setViews(emptyList())
+                    boardView.gone()
+                    boardView.clear()
                 }
                 viewerGridHeaderAdapter.submitList(viewer.columns)
                 viewerGridAdapter.submitList(viewer.rows)
@@ -941,6 +959,8 @@ open class ObjectSetFragment :
                         views = viewer.items,
                         largeCards = viewer.largeCards
                     )
+                    boardView.gone()
+                    boardView.clear()
                 }
             }
             is Viewer.ListView -> {
@@ -953,6 +973,26 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.visible()
                     listView.setViews(viewer.items)
+                    boardView.gone()
+                    boardView.clear()
+                }
+            }
+            is Viewer.Board -> {
+                viewerGridHeaderAdapter.submitList(emptyList())
+                viewerGridAdapter.submitList(emptyList())
+                with(binding) {
+                    unsupportedViewError.gone()
+                    unsupportedViewError.text = null
+                    galleryView.gone()
+                    galleryView.clear()
+                    listView.gone()
+                    listView.setViews(emptyList())
+                    boardView.visible()
+                    // Set the create permission here — co-located with board rendering — so any
+                    // viewer-rendering state that routes through setViewer() can't forget it and
+                    // silently hide the per-column "＋ New" affordance (widget default is false).
+                    boardView.canCreateObject = canCreateObject
+                    boardView.setBoard(viewer)
                 }
             }
             is Viewer.Unsupported -> {
@@ -963,6 +1003,8 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.gone()
                     listView.setViews(emptyList())
+                    boardView.gone()
+                    boardView.clear()
                     when(viewer.type) {
                         Viewer.Unsupported.TYPE_GRAPH -> {
                             unsupportedViewError.setText(R.string.error_graph_view_not_supported)
@@ -988,6 +1030,8 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.gone()
                     listView.setViews(emptyList())
+                    boardView.gone()
+                    boardView.clear()
                     unsupportedViewError.gone()
                     unsupportedViewError.text = null
                 }

@@ -20,6 +20,8 @@
     <string name="experimental_features">Experimental Features</string>
     <string name="experimental_features_compact_vault">Compact vault mode</string>
     <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
+    <string name="experimental_features_kanban">Kanban board</string>
+    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
     <string name="account">Vault</string>
     <string name="reset_account">Reset vault</string>
     <string name="delete_account">Delete vault</string>
@@ -630,6 +632,9 @@
     <string name="type_templates_widget_title">Create object</string>
     <string name="view_layout_widget_title">Layout</string>
     <string name="view_layout_cover_widget_title">Cover</string>
+    <string name="view_layout_group_by_widget_title">Group by</string>
+    <string name="group_by">Group by</string>
+    <string name="color_columns">Color columns</string>
     <string name="blank">Blank</string>
 
     <string name="templates_menu_default_for_view">Default for this view</string>
@@ -648,6 +653,11 @@
     <string name="view_grid">Grid</string>
     <string name="view_gallery">Gallery</string>
     <string name="view_kanban">Kanban</string>
+    <string name="dataview_board_no_objects">No objects</string>
+    <string name="dataview_board_no_value">No value</string>
+    <string name="dataview_board_checked">Checked</string>
+    <string name="dataview_board_unchecked">Unchecked</string>
+    <string name="dataview_board_new_object">New</string>
     <string name="page_cover">Page cover</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Unpin</string>
@@ -1776,6 +1786,24 @@
     <string name="payments_code_title">Enter the code sent to your email</string>
     <string name="payments_code_resend">Resend</string>
     <string name="payments_code_resend_in">Resend in %1$d sec</string>
+
+    <!-- Membership Activate Code -->
+    <string name="payments_activate_code_entry">Have a code?</string>
+    <string name="payments_activate_code_title">Activate Your Code</string>
+    <string name="payments_activate_code_subtitle">Enter the code you received after purchase or from an invitation. Your membership will be activated instantly.</string>
+    <string name="payments_activate_code_hint">Paste activation code…</string>
+    <string name="payments_activate_code_button">Activate</string>
+    <!-- Membership Activate Code — success -->
+    <string name="payments_activate_code_success_title">You\'re all set</string>
+    <string name="payments_activate_code_success_subtitle">Your %1$s membership is now active</string>
+    <string name="payments_activate_code_success_subtitle_generic">Your membership is now active</string>
+    <!-- Membership Activate Code — errors (CodeGetInfo) -->
+    <string name="membership_code_error_unknown">Unknown error occured</string>
+    <string name="membership_code_error_bad_input">Bad input</string>
+    <string name="membership_code_error_not_logged_in">Not logged in</string>
+    <string name="membership_code_error_payment_node">No connection to payment node. Please try again.</string>
+    <string name="membership_code_error_code_invalid">The code is not valid. Please check and try again.</string>
+    <string name="membership_code_error_already_member">Membership already exists for the current identity</string>
 
 
     <!-- Membership Welcome -->

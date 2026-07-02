@@ -133,6 +133,30 @@ sealed class Viewer {
         }
     }
 
+    data class Board(
+        override val id: String,
+        override val title: String,
+        val columns: List<Column> = emptyList()
+    ) : Viewer() {
+        data class Column(
+            val id: String,
+            val label: String,
+            val color: String? = null,
+            /** Group color tint for the column background when "Color columns" is on; null = default. */
+            val backgroundColor: String? = null,
+            val cards: List<Card> = emptyList(),
+            /** Total records in this column on the backend (may exceed [cards] when paged). */
+            val count: Int = 0
+        )
+        data class Card(
+            val objectId: Id,
+            val name: String,
+            val icon: ObjectIcon,
+            val relations: List<DefaultObjectRelationValueView>,
+            val hideIcon: Boolean
+        )
+    }
+
     enum class SortType { ASC, DESC, CUSTOM }
     enum class FilterOperator { And, Or, No }
 

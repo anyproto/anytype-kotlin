@@ -149,4 +149,15 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
     override fun getChannelMembersSubtitle(editors: Int, writersLimit: Int, viewers: Int, readersLimit: Int): String {
         return context.getString(LocalizationR.string.channel_members_subtitle, editors, writersLimit, viewers, readersLimit)
     }
+
+    override fun getKanbanEmptyColumnTitle(): String {
+        return context.getString(LocalizationR.string.dataview_board_no_value)
+    }
+
+    override fun getKanbanCheckboxGroupTitle(checked: Boolean): String {
+        return context.getString(
+            if (checked) LocalizationR.string.dataview_board_checked
+            else LocalizationR.string.dataview_board_unchecked
+        )
+    }
 }

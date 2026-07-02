@@ -17,8 +17,10 @@ import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.objects.setTypeRelationIconsAsNone
+import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.objects.values
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.CoverContainer
@@ -97,9 +99,49 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
     storeOfObjectTypes: StoreOfObjectTypes,
     hideName: Boolean
 ): Viewer.GalleryView.Item {
-    val obj = this
+    val content = buildCardContent(
+        urlBuilder = urlBuilder,
+        viewerRelations = viewerRelations,
+        store = store,
+        filteredRelations = filteredRelations,
+        fieldParser = fieldParser,
+        storeOfObjectTypes = storeOfObjectTypes
+    )
     return Viewer.GalleryView.Item.Default(
-        objectId = obj.id,
+        objectId = id,
+        relations = content.relations,
+        hideIcon = hideIcon,
+        hideName = hideName,
+        name = content.name,
+        icon = content.icon
+    )
+}
+
+/**
+ * The visual content shared by gallery/list/board cards built from a single object:
+ * its display [name], [icon] and the resolved [relations] to show on the card.
+ */
+internal data class ObjectCardContent(
+    val name: String,
+    val icon: ObjectIcon,
+    val relations: List<DefaultObjectRelationValueView>
+)
+
+internal suspend fun ObjectWrapper.Basic.buildCardContent(
+    urlBuilder: UrlBuilder,
+    viewerRelations: List<DVViewerRelation>,
+    store: ObjectStore,
+    filteredRelations: List<ObjectWrapper.Relation>,
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
+): ObjectCardContent {
+    val obj = this
+    return ObjectCardContent(
+        name = fieldParser.getObjectName(obj),
+        icon = obj.objectIcon(
+            builder = urlBuilder,
+            objType = storeOfObjectTypes.getTypeOfObject(obj)
+        ),
         relations = obj.values(
             relations = filteredRelations,
             urlBuilder = urlBuilder,
@@ -107,14 +149,7 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
             storeOfObjects = store,
             fieldParser = fieldParser,
             storeOfObjectTypes = storeOfObjectTypes
-        ).setTypeRelationIconsAsNone(),
-        hideIcon = hideIcon,
-        hideName = hideName,
-        name = fieldParser.getObjectName(obj),
-        icon = obj.objectIcon(
-            builder = urlBuilder,
-            objType = storeOfObjectTypes.getTypeOfObject(obj)
-        )
+        ).setTypeRelationIconsAsNone()
     )
 }
 

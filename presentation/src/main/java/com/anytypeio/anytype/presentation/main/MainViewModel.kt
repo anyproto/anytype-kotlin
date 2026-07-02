@@ -669,7 +669,7 @@ class MainViewModel(
 
             is DeepLinkResolver.Action.DeepLinkToMembership -> {
                 commandsChannel.send(
-                    Command.Deeplink.MembershipScreen(tierId = deeplink.tierId)
+                    Command.Deeplink.MembershipScreen(tierId = deeplink.tierId, code = deeplink.code)
                 )
             }
 
@@ -1128,7 +1128,7 @@ class MainViewModel(
                 val deepLinkSource: String
             ) : Deeplink()
 
-            data class MembershipScreen(val tierId: String?) : Deeplink()
+            data class MembershipScreen(val tierId: String?, val code: String? = null) : Deeplink()
             data class InitiateOneToOneChat(
                 val identity: Id,
                 val metadataKey: String

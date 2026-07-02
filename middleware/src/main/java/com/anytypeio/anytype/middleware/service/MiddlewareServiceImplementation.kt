@@ -305,6 +305,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun blockDataViewObjectOrderUpdate(request: Rpc.BlockDataview.ObjectOrder.Update.Request): Rpc.BlockDataview.ObjectOrder.Update.Response {
+        val encoded = Service.blockDataviewObjectOrderUpdate(
+            Rpc.BlockDataview.ObjectOrder.Update.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.ObjectOrder.Update.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.ObjectOrder.Update.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun blockDataViewViewCreate(request: Rpc.BlockDataview.View.Create.Request): Rpc.BlockDataview.View.Create.Response {
         val encoded = Service.blockDataviewViewCreate(
             Rpc.BlockDataview.View.Create.Request.ADAPTER.encode(request)
@@ -1155,6 +1168,18 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Object.SearchSubscribe.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Object.SearchSubscribe.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectGroupsSubscribe(request: Rpc.Object.GroupsSubscribe.Request): Rpc.Object.GroupsSubscribe.Response {
+        val encoded =
+            Service.objectGroupsSubscribe(Rpc.Object.GroupsSubscribe.Request.ADAPTER.encode(request))
+        val response = Rpc.Object.GroupsSubscribe.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.GroupsSubscribe.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response
@@ -2477,6 +2502,40 @@ class MiddlewareServiceImplementation @Inject constructor(
         val error = response.error
         if (error != null && error.code != Rpc.Membership.VerifyEmailCode.Response.Error.Code.NULL) {
             throw error.toCore()
+        } else {
+            return response
+        }
+    }
+
+    override fun membershipCodeGetInfo(request: Rpc.Membership.CodeGetInfo.Request): Rpc.Membership.CodeGetInfo.Response {
+        val encoded = Service.membershipCodeGetInfo(
+            Rpc.Membership.CodeGetInfo.Request.ADAPTER.encode(request)
+        ) ?: return Rpc.Membership.CodeGetInfo.Response(
+            error = Rpc.Membership.CodeGetInfo.Response.Error(
+                code = Rpc.Membership.CodeGetInfo.Response.Error.Code.NULL
+            )
+        )
+        val response = Rpc.Membership.CodeGetInfo.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.CodeGetInfo.Response.Error.Code.NULL) {
+            throw error.toCore()
+        } else {
+            return response
+        }
+    }
+
+    override fun membershipCodeRedeem(request: Rpc.Membership.CodeRedeem.Request): Rpc.Membership.CodeRedeem.Response {
+        val encoded = Service.membershipCodeRedeem(
+            Rpc.Membership.CodeRedeem.Request.ADAPTER.encode(request)
+        ) ?: return Rpc.Membership.CodeRedeem.Response(
+            error = Rpc.Membership.CodeRedeem.Response.Error(
+                code = Rpc.Membership.CodeRedeem.Response.Error.Code.NULL
+            )
+        )
+        val response = Rpc.Membership.CodeRedeem.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.CodeRedeem.Response.Error.Code.NULL) {
+            throw Exception(error.description)
         } else {
             return response
         }

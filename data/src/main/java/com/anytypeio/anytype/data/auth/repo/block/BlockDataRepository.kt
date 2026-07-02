@@ -8,12 +8,14 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ManifestInfo
@@ -453,6 +455,22 @@ class BlockDataRepository(
         collection = collection
     )
 
+    override suspend fun objectGroupsSubscribe(
+        space: SpaceId,
+        subscription: Id,
+        relationKey: Key,
+        filters: List<DVFilter>,
+        source: List<String>,
+        collection: Id?
+    ): List<DataViewGroup> = remote.objectGroupsSubscribe(
+        space = space,
+        subscription = subscription,
+        relationKey = relationKey,
+        filters = filters,
+        source = source,
+        collection = collection
+    )
+
     override suspend fun searchObjectsByIdWithSubscription(
         space: SpaceId,
         subscription: Id,
@@ -609,6 +627,16 @@ class BlockDataRepository(
         dv = dv,
         view = view,
         pos = pos
+    )
+
+    override suspend fun setDataViewObjectOrder(
+        ctx: Id,
+        dv: Id,
+        objectOrders: List<ObjectOrder>
+    ): Payload = remote.setDataViewObjectOrder(
+        ctx = ctx,
+        dv = dv,
+        objectOrders = objectOrders
     )
 
     override suspend fun blockDataViewSetSource(
@@ -1116,6 +1144,14 @@ class BlockDataRepository(
 
     override suspend fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {
         return remote.membershipGetTiers(command)
+    }
+
+    override suspend fun membershipCodeGetInfo(command: Command.Membership.CodeGetInfo): Int {
+        return remote.membershipCodeGetInfo(command)
+    }
+
+    override suspend fun membershipCodeRedeem(command: Command.Membership.CodeRedeem) {
+        remote.membershipCodeRedeem(command)
     }
 
     override suspend fun processCancel(command: Command.ProcessCancel) {

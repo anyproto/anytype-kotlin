@@ -70,6 +70,9 @@ class DataViewSubscriptionContainer(
                     var result = s
                     payload.forEach { event ->
                         when (event) {
+                            is SubscriptionEvent.Group -> {
+                                // Group events are not delivered on the record subscription.
+                            }
                             is SubscriptionEvent.Add -> {
                                 if (event.subscription == params.subscription) {
                                     // Main subscription

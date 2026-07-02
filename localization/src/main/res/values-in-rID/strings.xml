@@ -1461,8 +1461,6 @@
     <string name="payments_member_link">Detail level langganan</string>
     <string name="payments_privacy_link">Kebijakan privasi</string>
     <string name="payments_terms_link">Syarat dan ketentuan</string>
-    <string name="payments_let_us_link_start">Apakah Anda ingin menggunakan Anytype untuk bisnis, pendidikan, dll.?</string>
-    <string name="payments_let_us_link_end">Silakan beri tahu kami di sini.</string>
     <string name="payments_current_label">Saat ini</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Pilih nama unikmu</string>
@@ -1542,14 +1540,6 @@
 
         Best regards,       \n
     </string>
-    <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Tingkatkan %1$s</string>
-    <string name="payments_email_body">Halo tim Anytype! Saya ingin memperpanjang masa berlangganan saya saat ini (pilih salah satu opsi):\n
-- Ekstra penyimpanan daring\n
-- Lebih banyak editor\n
-- Ruang bersama tambahan\n
-Secara khusus,
-Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Ada yang salah dengan masukan, coba lagi</string>
     <string name="membership_name_cache_error">Gangguan dari pihak kami, coba lagi nanti</string>
@@ -1618,9 +1608,6 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="multiplayer_space_join_request_new_member_error">Gangguan pada permintaan anggota</string>
     <string name="multiplayer_space_join_request_current_user_error">Gangguan pada status pengguna saat ini</string>
     <string name="multiplayer_space_join_request_membership_status_error">Gangguan pada status keanggotaan saat ini</string>
-    <string name="membership_upgrade_title">Gangguan pada status keanggotaan saat ini</string>
-    <string name="membership_upgrade_description">Hubungi kami untuk penyimpanan ekstra, tambahan editor, atau lebih banyak ruang bersama. Tim Anytype akan memberikan detail dan ketentuan yang disesuaikan dengan kebutuhan Anda.</string>
-    <string name="membership_upgrade_button">Hubungi Tim Anytype</string>
     <string name="membership_space_settings_share_limit">Kamu telah mencapai batas %1$d ruang terbagi</string>
     <string name="membership_space_settings_share_limit_2">Tingkatkan akun untuk menambah atau menghapus ruang.</string>
     <plurals name="period_years">

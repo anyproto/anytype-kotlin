@@ -25,12 +25,14 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvide
 import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -66,7 +68,24 @@ class TagOrStatusValueViewModel(
         )
     }
     private var isEditableRelation = false
-    val commands = MutableSharedFlow<Command>(replay = 0)
+    /**
+     * One-shot commands. Backed by an unbounded [Channel] (not a `replay = 0`
+     * SharedFlow) so the `Command.Expand` emitted from the `init` pipeline on first
+     * load — before the bottom sheet has attached its collector — is buffered and
+     * delivered to the next subscriber instead of being silently dropped, which left
+     * the sheet stuck unexpanded (DROID-4523). The single collecting fragment makes
+     * [receiveAsFlow]'s single-consumer semantics correct.
+     */
+    private val commandsChannel = Channel<Command>(Channel.UNLIMITED)
+    val commands: Flow<Command> = commandsChannel.receiveAsFlow()
+
+    override fun onCleared() {
+        // viewModelScope is already cancelled by the time onCleared() runs, so no
+        // send() can race this close(). Closing is explicit about intent: nothing
+        // will consume the channel once the ViewModel is gone.
+        commandsChannel.close()
+        super.onCleared()
+    }
 
     private var isInitialExpandDone = false
 
@@ -242,13 +261,13 @@ class TagOrStatusValueViewModel(
     private fun emitCommand(command: Command, delay: Long = 0L) {
         viewModelScope.launch {
             delay(delay)
-            commands.emit(command)
+            commandsChannel.send(command)
         }
     }
 
     private fun openOptionScreen(command: Command.OpenOptionScreen) {
         viewModelScope.launch {
-            commands.emit(command)
+            commandsChannel.send(command)
         }
     }
 

@@ -39,6 +39,7 @@ const val INVITE_ID_HTTPS_PARAM = "inviteId"
 const val SOURCE_PARAM = "source"
 const val TYPE_VALUE_EXPERIENCE = "experience"
 const val TIER_ID_PARAM = "tier"
+const val CODE_PARAM = "code"
 
 const val IMPORT_EXPERIENCE_DEEPLINK = "$DEEP_LINK_PATTERN$MAIN_PATH/$IMPORT_PATH/?$TYPE_PARAM=$TYPE_VALUE_EXPERIENCE"
 
@@ -160,7 +161,8 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
 
     private fun resolveMembershipPath(uri: Uri): DeepLinkResolver.Action {
         return DeepLinkResolver.Action.DeepLinkToMembership(
-            tierId = uri.getQueryParameter(TIER_ID_PARAM)
+            tierId = uri.getQueryParameter(TIER_ID_PARAM),
+            code = uri.getQueryParameter(CODE_PARAM)
         )
     }
 

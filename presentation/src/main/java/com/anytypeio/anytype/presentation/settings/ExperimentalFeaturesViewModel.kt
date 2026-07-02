@@ -17,9 +17,13 @@ class ExperimentalFeaturesViewModel(
     private val _isCompactModeEnabled = MutableStateFlow(true)
     val isCompactModeEnabled: StateFlow<Boolean> = _isCompactModeEnabled.asStateFlow()
 
+    private val _isKanbanEnabled = MutableStateFlow(false)
+    val isKanbanEnabled: StateFlow<Boolean> = _isKanbanEnabled.asStateFlow()
+
     init {
         viewModelScope.launch {
             _isCompactModeEnabled.value = userSettingsRepository.getCompactModeEnabled()
+            _isKanbanEnabled.value = userSettingsRepository.getKanbanEnabled()
         }
     }
 
@@ -27,6 +31,13 @@ class ExperimentalFeaturesViewModel(
         viewModelScope.launch {
             userSettingsRepository.setCompactModeEnabled(enabled)
             _isCompactModeEnabled.value = enabled
+        }
+    }
+
+    fun onKanbanToggled(enabled: Boolean) {
+        viewModelScope.launch {
+            userSettingsRepository.setKanbanEnabled(enabled)
+            _isKanbanEnabled.value = enabled
         }
     }
 

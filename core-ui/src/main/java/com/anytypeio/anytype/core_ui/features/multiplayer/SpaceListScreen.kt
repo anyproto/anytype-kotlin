@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -44,13 +45,13 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.foundation.Header
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_utils.ui.ViewState
@@ -75,7 +76,23 @@ fun SpaceListScreen(
                 .padding(vertical = 6.dp)
                 .align(Alignment.CenterHorizontally)
         )
-        Header(text = stringResource(id = R.string.multiplayer_spaces))
+        Box(
+            modifier = Modifier
+                .height(40.dp)
+                .fillMaxWidth()
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .fillMaxWidth()
+                    .align(Alignment.Center),
+                text = stringResource(id = R.string.multiplayer_spaces),
+                color = colorResource(id = R.color.text_primary),
+                style = Title1,
+                maxLines = 1,
+                textAlign = TextAlign.Center
+            )
+        }
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -94,7 +111,7 @@ fun SpaceListScreen(
                                 start = 10.dp,
                                 end = 10.dp,
                                 top = 7.dp,
-                                bottom = if (idx == state.data.lastIndex) 24.dp else 7.dp
+                                bottom = 7.dp
                             ),
                             onDeleteSpaceClicked = {
                                 onDeleteSpaceClicked(item)
@@ -233,7 +250,8 @@ fun SpaceListCardItem(
             text = when(permissions) {
                 SpaceMemberPermissions.OWNER -> stringResource(id = R.string.multiplayer_owner)
                 SpaceMemberPermissions.READER -> stringResource(id = R.string.multiplayer_can_view)
-                SpaceMemberPermissions.WRITER -> stringResource(id = R.string.multiplayer_can_edit)
+                SpaceMemberPermissions.WRITER,
+                SpaceMemberPermissions.ADMIN -> stringResource(id = R.string.multiplayer_can_edit)
                 SpaceMemberPermissions.NO_PERMISSIONS -> EMPTY_STRING_VALUE
             },
             style = Relations2,

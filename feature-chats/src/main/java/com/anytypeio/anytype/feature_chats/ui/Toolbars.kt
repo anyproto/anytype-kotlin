@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -32,6 +33,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,13 +44,19 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.menu.BackHistoryMenu
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
+import com.anytypeio.anytype.core_ui.views.Relations1
+import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuItem
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuState
 
 
 internal val ChatToolbarHeight = 44.dp
@@ -73,8 +82,15 @@ fun ChatTopToolbar(
     onProperties: () -> Unit = {},
     onNotificationSettingChanged: (NotificationSetting) -> Unit,
     onSearchClick: () -> Unit = {},
-    onSpaceSettingsClicked: () -> Unit = {}
+    onSpaceSettingsClicked: () -> Unit = {},
+    backHistoryMenu: BackHistoryMenuState = BackHistoryMenuState.Hidden,
+    onBackButtonLongClicked: () -> Unit = {},
+    onBackHistoryItemClicked: (BackHistoryMenuItem) -> Unit = {},
+    onBackHistoryChannelsClicked: () -> Unit = {},
+    onBackHistoryHomeClicked: () -> Unit = {},
+    onBackHistoryMenuDismissed: () -> Unit = {}
 ) {
+    val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
 
     val showMenuButton = when (header) {
@@ -99,6 +115,9 @@ fun ChatTopToolbar(
         }
         is ChatViewModel.HeaderView.Init -> ""
     }
+    val displayIdentity = (header as? ChatViewModel.HeaderView.Default)
+        ?.displayIdentity
+        ?.takeIf { it.isNotEmpty() }
 
     Box(
         modifier = modifier.height(ChatToolbarHeight)
@@ -117,12 +136,25 @@ fun ChatTopToolbar(
                     color = colorResource(id = R.color.navigation_panel),
                     shape = CircleShape
                 )
-                .noRippleThrottledClickable { onBackButtonClicked() },
+                .noRippleCombinedClickable(
+                    onClick = { onBackButtonClicked() },
+                    onLongClicked = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        onBackButtonLongClicked()
+                    }
+                ),
             contentAlignment = Alignment.Center
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_default_top_back),
                 contentDescription = stringResource(R.string.content_desc_back_button)
+            )
+            BackHistoryMenu(
+                state = backHistoryMenu,
+                onChannelsClicked = onBackHistoryChannelsClicked,
+                onHomeClicked = onBackHistoryHomeClicked,
+                onItemClicked = onBackHistoryItemClicked,
+                onDismiss = onBackHistoryMenuDismissed
             )
         }
 
@@ -157,7 +189,7 @@ fun ChatTopToolbar(
                 is ChatViewModel.HeaderView.Default -> {
                     SpaceIconView(
                         modifier = Modifier,
-                        mainSize = 24.dp,
+                        mainSize = 32.dp,
                         icon = header.icon,
                         onSpaceIconClick = { onTitleClick() }
                     )
@@ -165,14 +197,26 @@ fun ChatTopToolbar(
                 }
                 ChatViewModel.HeaderView.Init -> Unit
             }
-            Text(
-                text = titleText,
-                color = colorResource(R.color.text_primary),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = PreviewTitle2Regular,
+            Column(
                 modifier = Modifier.weight(1f, fill = false)
-            )
+            ) {
+                Text(
+                    text = titleText,
+                    color = colorResource(R.color.text_primary),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = Title2
+                )
+                if (displayIdentity != null) {
+                    Text(
+                        text = displayIdentity,
+                        color = colorResource(R.color.text_transparent_secondary),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = Relations1
+                    )
+                }
+            }
             if (isMuted) {
                 Spacer(modifier = Modifier.width(6.dp))
                 Image(
@@ -304,7 +348,8 @@ fun ChatTopToolbarPreview() {
         header = ChatViewModel.HeaderView.Default(
             title = LoremIpsum(words = 10).values.joinToString(),
             icon = SpaceIconView.ChatSpace.Placeholder(name = "Us"),
-            isMuted = true
+            isMuted = true,
+            displayIdentity = "My Identity",
         ),
         onSpaceIconClicked = {},
         onBackButtonClicked = {},

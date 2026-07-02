@@ -19,6 +19,10 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
         throw UnsupportedOperationException()
     }
 
+    override suspend fun preloadRemainingSpaces() {
+        throw UnsupportedOperationException()
+    }
+
     override suspend fun deleteAccount(): AccountStatus {
         throw UnsupportedOperationException()
     }

@@ -51,6 +51,11 @@ interface MiddlewareService {
     fun accountSelect(request: Rpc.Account.Select.Request): Rpc.Account.Select.Response
 
     @Throws(Exception::class)
+    fun accountPreloadRemainingSpaces(
+        request: Rpc.Account.PreloadRemainingSpaces.Request
+    ): Rpc.Account.PreloadRemainingSpaces.Response
+
+    @Throws(Exception::class)
     fun accountStop(request: Rpc.Account.Stop.Request): Rpc.Account.Stop.Response
 
     @Throws(Exception::class)
@@ -107,6 +112,9 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun objectSearchSubscribe(request: Rpc.Object.SearchSubscribe.Request): Rpc.Object.SearchSubscribe.Response
+
+    @Throws(Exception::class)
+    fun objectGroupsSubscribe(request: Rpc.Object.GroupsSubscribe.Request): Rpc.Object.GroupsSubscribe.Response
 
     @Throws(Exception::class)
     fun objectCrossSpaceSubscribe(request: Rpc.Object.CrossSpaceSearchSubscribe.Request): Rpc.Object.CrossSpaceSearchSubscribe.Response
@@ -356,6 +364,9 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun blockDataViewViewSetPosition(request: Rpc.BlockDataview.View.SetPosition.Request): Rpc.BlockDataview.View.SetPosition.Response
+
+    @Throws(Exception::class)
+    fun blockDataViewObjectOrderUpdate(request: Rpc.BlockDataview.ObjectOrder.Update.Request): Rpc.BlockDataview.ObjectOrder.Update.Response
 
     @Throws(Exception::class)
     fun blockDataViewSetSource(request: Rpc.BlockDataview.SetSource.Request): Rpc.BlockDataview.SetSource.Response
@@ -639,6 +650,12 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun membershipGetTiers(request: Rpc.Membership.GetTiers.Request): Rpc.Membership.GetTiers.Response
+
+    @Throws(Exception::class)
+    fun membershipCodeGetInfo(request: Rpc.Membership.CodeGetInfo.Request): Rpc.Membership.CodeGetInfo.Response
+
+    @Throws(Exception::class)
+    fun membershipCodeRedeem(request: Rpc.Membership.CodeRedeem.Request): Rpc.Membership.CodeRedeem.Response
 
     @Throws(Exception::class)
     fun membershipSubscribeToUpdates(request: Rpc.MembershipV2.SubscribeToUpdates.Request): Rpc.MembershipV2.SubscribeToUpdates.Response

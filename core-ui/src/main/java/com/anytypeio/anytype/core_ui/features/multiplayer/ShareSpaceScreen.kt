@@ -72,6 +72,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.TwoVerticalButtonsAlert
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_PRIMARY
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -107,6 +108,10 @@ fun ShareSpaceScreen(
     inviteLinkAccessLevel: SpaceInviteLinkAccessLevel,
     inviteLinkAccessLoading: Boolean,
     confirmationDialogLevel: SpaceInviteLinkAccessLevel?,
+    makeAdminConfirmation: SpaceMemberView?,
+    makeAdminLoading: Boolean,
+    onMakeAdminConfirmed: (SpaceMemberView) -> Unit,
+    onMakeAdminCancelled: () -> Unit,
     onContextActionClicked: (SpaceMemberView, SpaceMemberView.ActionType) -> Unit,
     onIncentiveClicked: () -> Unit,
     onManageSpacesClicked: () -> Unit,
@@ -312,6 +317,44 @@ fun ShareSpaceScreen(
                 isLoading = inviteLinkAccessLoading
             )
         }
+
+        // Confirmation dialog for promoting a member to Admin
+        if (makeAdminConfirmation != null) {
+            MakeAdminConfirmationSheet(
+                isLoading = makeAdminLoading,
+                onConfirmed = { onMakeAdminConfirmed(makeAdminConfirmation) },
+                onCancelled = onMakeAdminCancelled,
+                onDismissRequest = onMakeAdminCancelled
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MakeAdminConfirmationSheet(
+    isLoading: Boolean,
+    onConfirmed: () -> Unit,
+    onCancelled: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismissRequest,
+        containerColor = colorResource(id = R.color.background_secondary),
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        dragHandle = null
+    ) {
+        TwoVerticalButtonsAlert(
+            icon = R.drawable.ic_popup_make_admin_56,
+            title = stringResource(id = R.string.multiplayer_make_admin_title),
+            description = stringResource(id = R.string.multiplayer_make_admin_description),
+            actionText = stringResource(id = R.string.multiplayer_make_admin_button),
+            cancelText = stringResource(id = R.string.cancel),
+            isActionDestructive = true,
+            isActionLoading = isLoading,
+            onActionClicked = onConfirmed,
+            onCancelClicked = onCancelled
+        )
     }
 }
 
@@ -1168,6 +1211,10 @@ fun ShareSpaceScreenPreview1() {
         inviteLinkAccessLevel = SpaceInviteLinkAccessLevel.EditorAccess("https://example.com/invite"),
         inviteLinkAccessLoading = false,
         confirmationDialogLevel = null,
+        makeAdminConfirmation = null,
+        makeAdminLoading = false,
+        onMakeAdminConfirmed = {},
+        onMakeAdminCancelled = {},
         onInviteLinkAccessLevelSelected = {},
         onInviteLinkAccessChangeConfirmed = {},
         onInviteLinkAccessChangeCancel = {},

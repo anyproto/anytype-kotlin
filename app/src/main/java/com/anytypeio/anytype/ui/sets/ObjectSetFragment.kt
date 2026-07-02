@@ -20,14 +20,18 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -61,6 +65,7 @@ import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
 import com.anytypeio.anytype.core_ui.features.sets.SetObjectNameBottomSheet
+import com.anytypeio.anytype.core_ui.menu.BackHistoryMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectHeaderContextMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectSetRelationPopupMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectSetTypePopupMenu
@@ -71,6 +76,7 @@ import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
+import com.anytypeio.anytype.core_ui.widgets.CircularFabButton
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.TypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ObjectSetTitle
@@ -296,8 +302,8 @@ open class ObjectSetFragment :
 
         setupGridAdapters()
 
-        // DROID-4318: Bottom buttons stay fixed across scrolling. Visibility
-        // is driven by view-state and discussionButtonState, not by scroll.
+        // DROID-4318: Bottom buttons (Search + Create) stay fixed across
+        // scrolling. Visibility is driven by view-state, not by scroll.
         binding.fabCreate.isVisible = true
 
         title.clearFocus()
@@ -324,6 +330,39 @@ open class ObjectSetFragment :
                 }
             }
             subscribe(topBackButton.clicks().throttleFirst()) { vm.onBackButtonClicked() }
+            topBackButton.setOnLongClickListener {
+                vm.onBackButtonLongClicked()
+                true
+            }
+            binding.backHistoryMenu.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    val state by vm.backHistoryMenu.collectAsStateWithLifecycle()
+                    BackHistoryMenu(
+                        state = state,
+                        onChannelsClicked = { vm.onBackHistoryChannelsClicked() },
+                        onHomeClicked = { vm.onBackHistoryHomeClicked() },
+                        onItemClicked = { vm.onBackHistoryItemClicked(it) },
+                        onDismiss = { vm.onBackHistoryMenuDismissed() }
+                    )
+                }
+            }
+            // Board (Kanban) viewer is hosted persistently: its composition is set up once
+            // here and fed view-state via setBoard(...) in setViewer, so emissions diff
+            // instead of tearing down the composition (which would reset scroll / cancel a
+            // drag). See BoardViewWidget.
+            binding.boardView.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                onCardClick = { id -> vm.onObjectHeaderClicked(id) }
+                onCardMoved = { cardId, sourceColumnId, targetColumnId, targetOrderedIds ->
+                    vm.onBoardCardDropped(cardId, sourceColumnId, targetColumnId, targetOrderedIds)
+                }
+                onCardReordered = { columnId, orderedCardIds ->
+                    vm.onBoardCardReordered(columnId, orderedCardIds)
+                }
+                onColumnLoadMore = { columnId -> vm.onBoardColumnLoadMore(columnId) }
+                onCreateInColumn = { columnId -> vm.onBoardCreateObjectInColumn(columnId) }
+            }
             binding.topToolbar.container.setOnClickListener {
                 WidgetOverlayFragment.show(parentFragmentManager, space)
             }
@@ -354,23 +393,53 @@ open class ObjectSetFragment :
 
             subscribe(binding.bottomPanel.root.touches()) { swipeDetector.onTouchEvent(it) }
 
-            // DROID-4318: Two-button bottom layout — Discussion (left) +
-            // Create (right) — mirrors the editor. Buttons stay fixed at
-            // all times; visibility comes from VM state, not scroll.
-            subscribe(binding.fabCreate.clicks().throttleFirst()) {
-                showCreateObjectSheet()
-            }
-
-            subscribe(binding.discussionButton.clicks().throttleFirst()) {
-                vm.onDiscussionButtonClicked()
-            }
-
-            vm.discussionButtonState
-                .onEach { state ->
-                    binding.discussionButton.isVisible =
-                        state !is ObjectSetViewModel.DiscussionButtonState.Hidden
+            // DROID-4508: Two Compose bottom-bar buttons — Search (left) +
+            // Create (right) — mirror the editor's look (CircularFabButton,
+            // background_secondary, subtle shadow, no border). Buttons stay
+            // fixed; visibility comes from VM state, not scroll.
+            binding.fabSearchOnPage.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    Box(modifier = Modifier.padding(8.dp)) {
+                        CircularFabButton(
+                            iconRes = R.drawable.ic_doc_search,
+                            contentDescription = stringResource(id = R.string.content_desc_search_button),
+                            backgroundColor = colorResource(id = R.color.background_secondary),
+                            elevation = 2.dp,
+                            showBorder = false,
+                            iconSize = 24.dp,
+                            onClick = { vm.onSearchButtonClicked() }
+                        )
+                    }
                 }
-                .launchIn(lifecycleScope)
+            }
+
+            binding.fabCreate.apply {
+                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+                setContent {
+                    val navState by vm.navPanelState.collectAsStateWithLifecycle(
+                        initialValue = NavPanelState.Init
+                    )
+                    val isCreateEnabled =
+                        (navState as? NavPanelState.Default)?.isCreateEnabled == true
+                    Box(modifier = Modifier.padding(8.dp)) {
+                        CircularFabButton(
+                            iconRes = R.drawable.ic_create_obj_32,
+                            contentDescription = stringResource(
+                                id = R.string.main_navigation_content_desc_create_button
+                            ),
+                            backgroundColor = colorResource(id = R.color.background_secondary),
+                            elevation = 2.dp,
+                            showBorder = false,
+                            iconSize = 24.dp,
+                            isEnabled = isCreateEnabled,
+                            onClick = { showCreateObjectSheet() }
+                        )
+                    }
+                }
+            }
+
+            binding.fabSearchOnPage.isVisible = true
         }
 
         with(binding.paginatorToolbar) {
@@ -691,7 +760,7 @@ open class ObjectSetFragment :
                 setupNewButtons(state.isCreateObjectAllowed)
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
-                setViewer(viewer = state.viewer)
+                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed)
             }
             is DataViewViewState.Set.NoQuery -> {
                 topToolbarThreeDotsButton.visible()
@@ -751,7 +820,7 @@ open class ObjectSetFragment :
                 }
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
-                setViewer(viewer = state.viewer)
+                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed)
                 dataViewInfo.hide()
             }
             DataViewViewState.Init -> {
@@ -791,7 +860,7 @@ open class ObjectSetFragment :
                 }
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
-                setViewer(viewer = state.viewer)
+                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed)
                 dataViewInfo.hide()
             }
             is DataViewViewState.TypeSet.NoItems -> {
@@ -861,7 +930,7 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun setViewer(viewer: Viewer?) {
+    private fun setViewer(viewer: Viewer?, canCreateObject: Boolean = false) {
         when (viewer) {
             is Viewer.GridView -> {
                 with(binding) {
@@ -871,6 +940,8 @@ open class ObjectSetFragment :
                     galleryView.gone()
                     listView.gone()
                     listView.setViews(emptyList())
+                    boardView.gone()
+                    boardView.clear()
                 }
                 viewerGridHeaderAdapter.submitList(viewer.columns)
                 viewerGridAdapter.submitList(viewer.rows)
@@ -888,6 +959,8 @@ open class ObjectSetFragment :
                         views = viewer.items,
                         largeCards = viewer.largeCards
                     )
+                    boardView.gone()
+                    boardView.clear()
                 }
             }
             is Viewer.ListView -> {
@@ -900,6 +973,26 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.visible()
                     listView.setViews(viewer.items)
+                    boardView.gone()
+                    boardView.clear()
+                }
+            }
+            is Viewer.Board -> {
+                viewerGridHeaderAdapter.submitList(emptyList())
+                viewerGridAdapter.submitList(emptyList())
+                with(binding) {
+                    unsupportedViewError.gone()
+                    unsupportedViewError.text = null
+                    galleryView.gone()
+                    galleryView.clear()
+                    listView.gone()
+                    listView.setViews(emptyList())
+                    boardView.visible()
+                    // Set the create permission here — co-located with board rendering — so any
+                    // viewer-rendering state that routes through setViewer() can't forget it and
+                    // silently hide the per-column "＋ New" affordance (widget default is false).
+                    boardView.canCreateObject = canCreateObject
+                    boardView.setBoard(viewer)
                 }
             }
             is Viewer.Unsupported -> {
@@ -910,6 +1003,8 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.gone()
                     listView.setViews(emptyList())
+                    boardView.gone()
+                    boardView.clear()
                     when(viewer.type) {
                         Viewer.Unsupported.TYPE_GRAPH -> {
                             unsupportedViewError.setText(R.string.error_graph_view_not_supported)
@@ -935,6 +1030,8 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.gone()
                     listView.setViews(emptyList())
+                    boardView.gone()
+                    boardView.clear()
                     unsupportedViewError.gone()
                     unsupportedViewError.text = null
                 }
@@ -1494,21 +1591,9 @@ open class ObjectSetFragment :
 
         title.addTextChangedListener(titleTextWatcher)
 
-        // fabCreate stays visible. NavPanelState only mirrors the enabled
-        // flag here (read-only contexts grey the button out).
-        vm.navPanelState
-            .distinctUntilChanged()
-            .onEach { state ->
-                if (hasBinding) {
-                    // Mirror NavPanelState.Default.isCreateEnabled into
-                    // fabCreate so disabled contexts (read-only, etc.) still
-                    // grey the button out.
-                    val isCreateEnabled =
-                        (state as? NavPanelState.Default)?.isCreateEnabled == true
-                    binding.fabCreate.isEnabled = isCreateEnabled
-                    binding.fabCreate.alpha = if (isCreateEnabled) 1f else 0.5f
-                }
-            }.launchIn(lifecycleScope)
+        // fabCreate stays visible. NavPanelState.isCreateEnabled is consumed
+        // directly inside the fabCreate ComposeView (see onViewCreated) to gate
+        // its click and dim it in read-only contexts.
 
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header) { header ->

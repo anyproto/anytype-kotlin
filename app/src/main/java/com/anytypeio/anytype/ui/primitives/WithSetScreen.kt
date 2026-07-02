@@ -32,6 +32,7 @@ import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.BottomSyncStatus
 import com.anytypeio.anytype.feature_object_type.ui.TopBarContent
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuState
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteTypeAlertState
 import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
@@ -77,6 +78,7 @@ fun WithSetScreen(
     objectId: String,
     space: String,
     view: String? = null,
+    backHistoryMenu: BackHistoryMenuState = BackHistoryMenuState.Hidden,
 ) {
     val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         state = rememberTopAppBarState()
@@ -110,7 +112,8 @@ fun WithSetScreen(
                         }
                     }
                     onTypeEvent(typeEvent)
-                }
+                },
+                backHistoryMenu = backHistoryMenu
             )
         },
         content = { paddingValues ->

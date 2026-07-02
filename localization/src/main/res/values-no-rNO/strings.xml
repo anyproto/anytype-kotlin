@@ -1467,8 +1467,6 @@
     <string name="payments_member_link">Detaljer om medlemskap</string>
     <string name="payments_privacy_link">Personvernregler</string>
     <string name="payments_terms_link">Vilkår og betingelser</string>
-    <string name="payments_let_us_link_start">Ønsker du å bruke Anytype for virksomhet, utdanning osv.?</string>
-    <string name="payments_let_us_link_end">Vennligst gi oss beskjed her.</string>
     <string name="payments_current_label">Gjeldende</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Velg ditt unike navn</string>
@@ -1548,14 +1546,6 @@
 
         Best regards,       \n
     </string>
-    <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Upgrade %1$s</string>
-    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
-- Extra remote storage\n
-- More space editors\n
-- Additional shared spaces\n
-Specifically,
-Please provide specific details of your needs here.</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Noe gikk galt, vennligst prøv på nytt</string>
     <string name="membership_name_cache_error">Feil på vår side, prøv på nytt senere</string>
@@ -1624,9 +1614,6 @@ Please provide specific details of your needs here.</string>
     <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
     <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
     <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
-    <string name="membership_upgrade_title">Membership upgrade</string>
-    <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
-    <string name="membership_upgrade_button">Contact Anytype Team</string>
     <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
     <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">

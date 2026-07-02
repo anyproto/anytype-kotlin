@@ -27,8 +27,16 @@ class ExperimentalFeaturesFragment : BaseBottomSheetComposeFragment() {
     ): View = content {
         ExperimentalFeaturesScreen(
             isCompactModeEnabled = vm.isCompactModeEnabled.collectAsStateWithLifecycle().value,
-            onCompactModeToggled = vm::onCompactModeToggled
+            onCompactModeToggled = vm::onCompactModeToggled,
+            isKanbanEnabled = vm.isKanbanEnabled.collectAsStateWithLifecycle().value,
+            onKanbanToggled = vm::onKanbanToggled
         )
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        skipCollapsed()
+        expand()
     }
 
     override fun injectDependencies() {

@@ -25,6 +25,7 @@ dependencies {
     testImplementation libs.mockitoKotlin
     testImplementation libs.coroutineTesting
     testImplementation libs.turbine
+    testImplementation "org.jetbrains.kotlin:kotlin-reflect:2.2.10"
 }
 
 android {

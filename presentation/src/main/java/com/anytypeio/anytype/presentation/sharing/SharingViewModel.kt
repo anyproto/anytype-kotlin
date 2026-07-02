@@ -828,7 +828,7 @@ class SharingViewModel(
                 val objType = typeId?.let { typesMap[it] }
                 SelectableObjectView(
                     id = obj.id,
-                    name = fieldParser.getObjectPluralName(obj),
+                    name = fieldParser.getObjectNameOrPluralsForTypes(obj),
                     icon = obj.objectIcon(
                         builder = urlBuilder,
                         objType = objType
@@ -930,7 +930,7 @@ class SharingViewModel(
                 val objType = typeId?.let { typesMap[it] }
                 SelectableObjectView(
                     id = obj.id,
-                    name = fieldParser.getObjectPluralName(obj),
+                    name = fieldParser.getObjectNameOrPluralsForTypes(obj),
                     icon = obj.objectIcon(
                         builder = urlBuilder,
                         objType = objType

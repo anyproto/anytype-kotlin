@@ -25,7 +25,8 @@ sealed class Command {
         val path: String,
         val networkMode: NetworkMode = NetworkMode.DEFAULT,
         val networkConfigFilePath: String? = null,
-        val preferYamuxTransport: Boolean? = null
+        val preferYamuxTransport: Boolean? = null,
+        val preferredSpaceId: String? = null
     ) : Command()
 
     data class SetInitialParams(
@@ -592,6 +593,12 @@ sealed class Command {
 
         data class VerifyEmailCode(val code: String) : Membership()
         data class GetTiers(val noCache: Boolean, val locale: String) : Membership()
+        data class CodeGetInfo(val code: String) : Membership()
+        data class CodeRedeem(
+            val code: String,
+            val name: String = "",
+            val nameType: NameServiceNameType = NameServiceNameType.ANY_NAME
+        ) : Membership()
     }
 
     data class SearchWithMeta(

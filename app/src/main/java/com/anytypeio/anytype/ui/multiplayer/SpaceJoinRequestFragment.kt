@@ -77,9 +77,6 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
             is SpaceJoinRequestViewModel.Command.NavigateToMembership -> {
                 findNavController().navigate(R.id.paymentsScreen)
             }
-            is SpaceJoinRequestViewModel.Command.NavigateToMembershipUpdate -> {
-                findNavController().navigate(R.id.membershipUpdateScreen)
-            }
             is SpaceJoinRequestViewModel.Command.ShowGenericMultiplayerError -> {
                 when(command.error) {
                     is MultiplayerError.Generic.LimitReached -> {

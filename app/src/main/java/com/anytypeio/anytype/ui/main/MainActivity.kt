@@ -59,6 +59,7 @@ import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.feature_vault.ui.SpacesIntroductionScreen
 import com.anytypeio.anytype.middleware.discovery.MDNSProvider
+import com.anytypeio.anytype.navigation.DefaultNavigationBackStackInspector
 import com.anytypeio.anytype.navigation.Navigator
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.main.MainViewModel
@@ -116,6 +117,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     @Inject
     lateinit var featureToggles: FeatureToggles
+
+    @Inject
+    lateinit var navigationBackStackInspector: DefaultNavigationBackStackInspector
 
     val container: FragmentContainerView get() = findViewById(R.id.fragment)
 
@@ -316,7 +320,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 runCatching {
                                     findNavController(R.id.fragment).navigate(
                                         R.id.paymentsScreen,
-                                        MembershipFragment.args(tierId = command.tierId),
+                                        MembershipFragment.args(tierId = command.tierId, code = command.code),
                                         NavOptions.Builder().setLaunchSingleTop(true).build()
                                     )
                                 }.onFailure {
@@ -863,12 +867,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         super.onResume()
         mdnsProvider.start()
         navigator.bind(findNavController(R.id.fragment))
+        navigationBackStackInspector.bind(findNavController(R.id.fragment))
     }
 
     override fun onPause() {
         super.onPause()
         mdnsProvider.stop()
         navigator.unbind()
+        navigationBackStackInspector.unbind()
     }
 
     override fun onDestroy() {

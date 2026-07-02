@@ -22,7 +22,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.Caption2Medium
+import com.anytypeio.anytype.core_ui.views.Title2
 
 @Composable
 fun GlobalNameOrIdentity(
@@ -57,7 +57,7 @@ fun GlobalNameOrIdentity(
             )
             Text(
                 text = globalName,
-                style = Caption2Medium,
+                style = Title2,
                 color = colorResource(id = R.color.text_primary),
                 textAlign = TextAlign.Center,
                 overflow = TextOverflow.MiddleEllipsis,
@@ -76,7 +76,7 @@ fun GlobalNameOrIdentity(
             )
             Text(
                 text = identity.orEmpty(),
-                style = Caption2Medium,
+                style = Title2,
                 color = colorResource(id = R.color.text_primary),
                 overflow = TextOverflow.MiddleEllipsis,
                 textAlign = TextAlign.Center,

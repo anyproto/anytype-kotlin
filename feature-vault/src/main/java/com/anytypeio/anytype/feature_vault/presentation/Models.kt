@@ -102,7 +102,7 @@ sealed class VaultCommand {
             val deepLinkSource: String
         ) : Deeplink()
 
-        data class MembershipScreen(val tierId: String?) : Deeplink()
+        data class MembershipScreen(val tierId: String?, val code: String? = null) : Deeplink()
         data class InitiateOneToOneChat(
             val identity: Id,
             val metadataKey: String

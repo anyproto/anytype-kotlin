@@ -552,7 +552,9 @@ open class EditorPresentationTestSetup {
             spaceViews = spacedViews,
             urlHelper = mock(),
             addDiscussion = mock(),
-            getChatMessages = mock()
+            getChatMessages = mock(),
+            backHistoryDelegate = mock(),
+            exitToVaultDelegate = mock()
         )
     }
 

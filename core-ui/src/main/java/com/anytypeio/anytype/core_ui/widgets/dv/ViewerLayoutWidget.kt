@@ -106,6 +106,10 @@ fun ViewerLayoutWidget(
             uiState = uiState,
             action = action,
         )
+        ViewerLayoutGroupByWidget(
+            uiState = uiState,
+            action = action,
+        )
     }
 }
 
@@ -149,50 +153,64 @@ private fun ViewerLayoutContent(
             onCheckedChanged = { action(Icon(it)) }
         )
         val isGallery = currentState.layoutType == DVViewerType.GALLERY
-        Divider(visible = isGallery)
-        ColumnItem(
-            modifier = Modifier
-                .padding(start = 20.dp, end = 20.dp)
-                .alpha(if (isGallery) 1f else 0f),
-            title = stringResource(id = R.string.card_size),
-            value = when (currentState.cardSize) {
-                CardSize.Large -> stringResource(id = R.string.large)
-                CardSize.Small -> stringResource(id = R.string.small)
-            },
-            onClick = {
-                action(CardSizeMenu)
-            },
-            arrow = painterResource(id = R.drawable.ic_list_arrow_18),
-            imageModifier = Modifier
-                .onGloballyPositioned { coordinates ->
+        val isBoard = currentState.layoutType == DVViewerType.BOARD
+
+        if (isGallery) {
+            Divider()
+            ColumnItem(
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+                title = stringResource(id = R.string.card_size),
+                value = when (currentState.cardSize) {
+                    CardSize.Large -> stringResource(id = R.string.large)
+                    CardSize.Small -> stringResource(id = R.string.small)
+                },
+                onClick = { action(CardSizeMenu) },
+                arrow = painterResource(id = R.drawable.ic_list_arrow_18),
+                imageModifier = Modifier.onGloballyPositioned { coordinates ->
                     if (coordinates.isAttached) {
-                        with(coordinates.boundsInRoot()) {
-                            updateCurrentCoordinates(this)
-                        }
+                        with(coordinates.boundsInRoot()) { updateCurrentCoordinates(this) }
                     } else {
                         updateCurrentCoordinates(Rect.Zero)
                     }
                 }
-        )
-        Divider(visible = isGallery)
-        ColumnItem(
-            modifier = Modifier
-                .padding(start = 20.dp, end = 20.dp)
-                .alpha(if (isGallery) 1f else 0f),
-            title = stringResource(id = R.string.cover),
-            value = currentCoverItem.getTitle(),
-            onClick = {
-                action(ViewerLayoutWidgetUi.Action.CoverMenu)
-            },
-            arrow = painterResource(id = R.drawable.ic_arrow_disclosure_18)
-        )
-        Divider(visible = isGallery)
-        LayoutSwitcherItem(
-            modifier = Modifier.alpha(if (isGallery) 1f else 0f),
-            text = stringResource(id = R.string.fit_image),
-            checked = currentState.fitImage.toggled,
-            onCheckedChanged = { action(FitImage(it)) }
-        )
+            )
+            Divider()
+            ColumnItem(
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+                title = stringResource(id = R.string.cover),
+                value = currentCoverItem.getTitle(),
+                onClick = { action(ViewerLayoutWidgetUi.Action.CoverMenu) },
+                arrow = painterResource(id = R.drawable.ic_arrow_disclosure_18)
+            )
+            Divider()
+            LayoutSwitcherItem(
+                text = stringResource(id = R.string.fit_image),
+                checked = currentState.fitImage.toggled,
+                onCheckedChanged = { action(FitImage(it)) }
+            )
+        }
+
+        // Kanban-only rows. Gated on kanbanEnabled too (not just BOARD), so a Board viewer
+        // synced from desktop while the experimental flag is off doesn't expose grouping
+        // controls for a board that won't render on mobile — consistent with the type picker.
+        if (isBoard && currentState.kanbanEnabled) {
+            Divider()
+            ColumnItem(
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+                title = stringResource(id = R.string.group_by),
+                value = currentState.groupByItems
+                    .firstOrNull { it.isChecked }?.name
+                    ?: stringResource(id = R.string.none),
+                onClick = { action(ViewerLayoutWidgetUi.Action.GroupByMenu) },
+                arrow = painterResource(id = R.drawable.ic_arrow_disclosure_18)
+            )
+            Divider()
+            LayoutSwitcherItem(
+                text = stringResource(id = R.string.color_columns),
+                checked = currentState.groupBackgroundColors.toggled,
+                onCheckedChanged = { action(ViewerLayoutWidgetUi.Action.ColorColumns(it)) }
+            )
+        }
     }
 }
 
@@ -309,37 +327,40 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Act
             contentDescription = stringResource(id = R.string.view_list),
             click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.LIST)) }
         )
-        LayoutIcon(
-            modifier = itemModifier.padding(top = 8.dp),
-            uiState = uiState,
-            layoutType = DVViewerType.BOARD,
-            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
-            imageResource = R.drawable.ic_layout_kanban,
-            contentDescription = stringResource(id = R.string.view_kanban),
-            click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.BOARD)) }
-        )
-        LayoutIcon(
-            modifier = itemModifier
-                .padding(top = 8.dp)
-                .alpha(0F),
-            uiState = uiState,
-            layoutType = DVViewerType.BOARD,
-            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
-            imageResource = R.drawable.ic_layout_kanban,
-            contentDescription = "",
-            click = { }
-        )
-        LayoutIcon(
-            modifier = itemModifier
-                .padding(top = 8.dp)
-                .alpha(0F),
-            uiState = uiState,
-            layoutType = DVViewerType.BOARD,
-            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
-            imageResource = R.drawable.ic_layout_kanban,
-            contentDescription = "",
-            click = { }
-        )
+        // Kanban (Board) is experimental: only offer it in the picker when the flag is on.
+        if (uiState.kanbanEnabled) {
+            LayoutIcon(
+                modifier = itemModifier.padding(top = 8.dp),
+                uiState = uiState,
+                layoutType = DVViewerType.BOARD,
+                imageResourceSelected = R.drawable.ic_layout_kanban_selected,
+                imageResource = R.drawable.ic_layout_kanban,
+                contentDescription = stringResource(id = R.string.view_kanban),
+                click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.BOARD)) }
+            )
+            LayoutIcon(
+                modifier = itemModifier
+                    .padding(top = 8.dp)
+                    .alpha(0F),
+                uiState = uiState,
+                layoutType = DVViewerType.BOARD,
+                imageResourceSelected = R.drawable.ic_layout_kanban_selected,
+                imageResource = R.drawable.ic_layout_kanban,
+                contentDescription = "",
+                click = { }
+            )
+            LayoutIcon(
+                modifier = itemModifier
+                    .padding(top = 8.dp)
+                    .alpha(0F),
+                uiState = uiState,
+                layoutType = DVViewerType.BOARD,
+                imageResourceSelected = R.drawable.ic_layout_kanban_selected,
+                imageResource = R.drawable.ic_layout_kanban,
+                contentDescription = "",
+                click = { }
+            )
+        }
     }
 }
 
@@ -400,6 +421,20 @@ fun PreviewLayoutScreen() {
             viewer = "",
             showCoverMenu = false,
             imagePreviewItems = emptyList()
+        ),
+        action = {}
+    )
+}
+
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true, device = Devices.NEXUS_7)
+@Composable
+fun PreviewKanbanLayoutScreen() {
+    ViewerLayoutWidget(
+        uiState = ViewerLayoutWidgetUi.init().copy(
+            showWidget = true,
+            layoutType = DVViewerType.BOARD,
+            kanbanEnabled = true,
+            groupBackgroundColors = ViewerLayoutWidgetUi.State.Toggle.ColorColumns(true)
         ),
         action = {}
     )

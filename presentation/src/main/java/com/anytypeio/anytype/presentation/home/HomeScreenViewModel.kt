@@ -185,10 +185,12 @@ import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import com.anytypeio.anytype.presentation.notifications.UploadSuccessSnackbar
 import com.anytypeio.anytype.presentation.notifications.toSnackbarVariant
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -308,7 +310,16 @@ class HomeScreenViewModel(
 
     private val mutex = Mutex()
 
-    val commands = MutableSharedFlow<Command>()
+    /**
+     * One-shot commands. Backed by an unbounded [Channel] (not a `replay = 0`
+     * [MutableSharedFlow]) so a command emitted while the fragment isn't collecting —
+     * e.g. the deeplink commands fired from [onResume] during the activity
+     * stop -> resume gap on cold start — is buffered and delivered to the next
+     * subscriber instead of being silently dropped (DROID-4523). The single
+     * collecting fragment makes [receiveAsFlow]'s single-consumer semantics correct.
+     */
+    private val commandsChannel = Channel<Command>(Channel.UNLIMITED)
+    val commands: Flow<Command> = commandsChannel.receiveAsFlow()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
 
     val showHomepagePicker = MutableStateFlow(vmParams.showHomepagePicker)
@@ -889,6 +900,7 @@ class HomeScreenViewModel(
                     userPermissions.value = permission
                     when (permission) {
                         SpaceMemberPermissions.WRITER,
+                        SpaceMemberPermissions.ADMIN,
                         SpaceMemberPermissions.OWNER -> {
                             if (mode.value == InteractionMode.ReadOnly) {
                                 mode.value = InteractionMode.Default
@@ -1225,7 +1237,7 @@ class HomeScreenViewModel(
                                     target = dispatch.target
                                 )
                             } else {
-                                commands.emit(
+                                commandsChannel.send(
                                     Command.SelectWidgetType(
                                         ctx = config.widgets,
                                         source = dispatch.source,
@@ -1250,7 +1262,7 @@ class HomeScreenViewModel(
                                     target = dispatch.target
                                 )
                             } else {
-                                commands.emit(
+                                commandsChannel.send(
                                     Command.SelectWidgetType(
                                         ctx = config.widgets,
                                         source = dispatch.source,
@@ -1279,7 +1291,7 @@ class HomeScreenViewModel(
                             )
                         }
                         is WidgetDispatchEvent.NewWithWidgetWithNewSource -> {
-                            commands.emit(
+                            commandsChannel.send(
                                 Command.CreateSourceForNewWidget(
                                     space = SpaceId(config.space),
                                     widgets = config.widgets
@@ -1441,7 +1453,7 @@ class HomeScreenViewModel(
                     analytics = analytics,
                     isInEditMode = isInEditMode()
                 )
-                commands.emit(
+                commandsChannel.send(
                     Command.SelectWidgetSource(
                         ctx = config.widgets,
                         isInEditMode = isInEditMode(),
@@ -1479,7 +1491,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             val permission = userPermissionProvider.get(vmParams.spaceId)
             if (permission?.isOwnerOrEditor() == true) {
-                commands.emit(Command.CreateNewType(vmParams.spaceId.id))
+                commandsChannel.send(Command.CreateNewType(vmParams.spaceId.id))
             } else {
                 sendToast("You don't have permission to create new type")
             }
@@ -2073,7 +2085,7 @@ class HomeScreenViewModel(
                     analytics = analytics,
                     isInEditMode = isInEditMode()
                 )
-                commands.emit(
+                commandsChannel.send(
                     Command.SelectWidgetSource(
                         ctx = config.widgets,
                         target = widget,
@@ -2093,7 +2105,7 @@ class HomeScreenViewModel(
             viewModelScope.launch {
                 val config = spaceManager.getConfig()
                 if (config != null) {
-                    commands.emit(
+                    commandsChannel.send(
                         Command.ChangeWidgetType(
                             ctx = config.widgets,
                             widget = widget,
@@ -2122,7 +2134,7 @@ class HomeScreenViewModel(
             viewModelScope.launch {
                 val config = spaceManager.getConfig()
                 if (config != null) {
-                    commands.emit(
+                    commandsChannel.send(
                         Command.ChangeWidgetSource(
                             ctx = config.widgets,
                             widget = widget,
@@ -2287,7 +2299,7 @@ class HomeScreenViewModel(
         when (deeplink) {
             is DeepLinkResolver.Action.Import.Experience -> {
                 viewModelScope.launch {
-                    commands.emit(
+                    commandsChannel.send(
                         Command.Deeplink.GalleryInstallation(
                             deepLinkType = deeplink.type,
                             deepLinkSource = deeplink.source
@@ -2299,7 +2311,7 @@ class HomeScreenViewModel(
             is DeepLinkResolver.Action.Invite -> {
                 viewModelScope.launch {
                     delay(1000)
-                    commands.emit(Command.Deeplink.Invite(deeplink.link))
+                    commandsChannel.send(Command.Deeplink.Invite(deeplink.link))
                 }
             }
             is DeepLinkResolver.Action.Unknown -> {
@@ -2318,7 +2330,7 @@ class HomeScreenViewModel(
                             is DeepLinkToObjectDelegate.Result.Error -> {
                                 val link = deeplink.invite
                                 if (link != null && result is DeepLinkToObjectDelegate.Result.Error.PermissionNeeded) {
-                                    commands.emit(
+                                    commandsChannel.send(
                                         Command.Deeplink.Invite(
                                             link = spaceInviteResolver.createInviteLink(
                                                 contentId = link.cid,
@@ -2327,7 +2339,7 @@ class HomeScreenViewModel(
                                         )
                                     )
                                 } else {
-                                    commands.emit(Command.Deeplink.DeepLinkToObjectNotWorking)
+                                    commandsChannel.send(Command.Deeplink.DeepLinkToObjectNotWorking)
                                 }
                             }
                             is DeepLinkToObjectDelegate.Result.Success -> {
@@ -2339,9 +2351,10 @@ class HomeScreenViewModel(
             }
             is DeepLinkResolver.Action.DeepLinkToMembership -> {
                 viewModelScope.launch {
-                    commands.emit(
+                    commandsChannel.send(
                         Command.Deeplink.MembershipScreen(
-                            tierId = deeplink.tierId
+                            tierId = deeplink.tierId,
+                            code = deeplink.code
                         )
                     )
                 }
@@ -2818,7 +2831,7 @@ class HomeScreenViewModel(
             navPanelState.value.leftButtonClickAnalytics(analytics)
         }
         viewModelScope.launch {
-            commands.emit(Command.ShareSpace(vmParams.spaceId))
+            commandsChannel.send(Command.ShareSpace(vmParams.spaceId))
         }
     }
 
@@ -2830,7 +2843,7 @@ class HomeScreenViewModel(
         proceedWithCloseOpenObjects()
         viewModelScope.launch {
             val currentSpaceView = _spaceViewState.value as? SpaceViewState.Success
-            commands.emit(
+            commandsChannel.send(
                 Command.HandleChatSpaceBackNavigation(
                     isOneToOneSpace = currentSpaceView?.isOneToOneSpace == true,
                     spaceChatId = currentSpaceView?.spaceChatId
@@ -2898,12 +2911,15 @@ class HomeScreenViewModel(
             }
         }
 
+        // viewModelScope is already cancelled here, so no send() can race this close().
+        // Explicit about intent: nothing consumes the channel once the VM is gone.
+        commandsChannel.close()
         super.onCleared()
     }
 
     fun onSearchIconClicked() {
         viewModelScope.launch {
-            commands.emit(
+            commandsChannel.send(
                 Command.OpenGlobalSearchScreen(space = vmParams.spaceId.id)
             )
         }
@@ -3008,14 +3024,14 @@ class HomeScreenViewModel(
     fun onManageSectionsClicked() {
         Timber.d("onManageSectionsClicked")
         viewModelScope.launch {
-            commands.emit(Command.OpenManageSections)
+            commandsChannel.send(Command.OpenManageSections)
         }
     }
 
     fun onMembersClicked() {
         Timber.d("onMembersClicked")
         viewModelScope.launch {
-            commands.emit(ShareSpace(vmParams.spaceId))
+            commandsChannel.send(ShareSpace(vmParams.spaceId))
         }
     }
 
@@ -3025,14 +3041,14 @@ class HomeScreenViewModel(
             val spaceView = spaceViewSubscriptionContainer.get(vmParams.spaceId)
             if (spaceView == null) {
                 Timber.w("Space view not found for mute toggle")
-                commands.emit(Command.Toast.UnableToChangeNotificationSettings)
+                commandsChannel.send(Command.Toast.UnableToChangeNotificationSettings)
                 return@launch
             }
 
             val targetSpaceId = spaceView.targetSpaceId
             if (targetSpaceId == null) {
                 Timber.w("Target space ID is null for mute toggle")
-                commands.emit(Command.Toast.UnableToChangeNotificationSettings)
+                commandsChannel.send(Command.Toast.UnableToChangeNotificationSettings)
                 return@launch
             }
 
@@ -3054,7 +3070,7 @@ class HomeScreenViewModel(
             ).fold(
                 onSuccess = {
                     Timber.d("Successfully set notification mode to $newMode")
-                    commands.emit(
+                    commandsChannel.send(
                         if (newMode == NotificationState.DISABLE) {
                             Command.Toast.SpaceMuted
                         } else {
@@ -3064,7 +3080,7 @@ class HomeScreenViewModel(
                 },
                 onFailure = { error ->
                     Timber.e(error, "Failed to set notification mode")
-                    commands.emit(Command.Toast.FailedToChangeNotificationSettings)
+                    commandsChannel.send(Command.Toast.FailedToChangeNotificationSettings)
                 }
             )
         }
@@ -3135,14 +3151,14 @@ class HomeScreenViewModel(
                 }
             }
             UiEvent.OnInviteClicked -> {
-                viewModelScope.launch { commands.emit(ShareSpace(space)) }
+                viewModelScope.launch { commandsChannel.send(ShareSpace(space)) }
             }
             UiEvent.OnLeaveSpaceClicked -> {
-                viewModelScope.launch { commands.emit(Command.ShowLeaveSpaceWarning) }
+                viewModelScope.launch { commandsChannel.send(Command.ShowLeaveSpaceWarning) }
             }
             is UiEvent.OnShareLinkClicked -> {
                 viewModelScope.launch {
-                    commands.emit(Command.ShareInviteLink(uiEvent.link))
+                    commandsChannel.send(Command.ShareInviteLink(uiEvent.link))
                 }
             }
             is UiEvent.OnCopyLinkClicked -> {
@@ -3344,7 +3360,7 @@ class HomeScreenViewModel(
             // Check if chat creation is allowed for the current space.
             val currentSpaceState = spaceViewState.value as? SpaceViewState.Success
             if (currentSpaceState?.canCreateAdditionalChats == true) {
-                commands.emit(
+                commandsChannel.send(
                     Command.CreateChatObject(
                         space = SpaceId(space)
                     )
@@ -3701,7 +3717,7 @@ class HomeScreenViewModel(
             val currentSpaceState = spaceViewState.value as? SpaceViewState.Success
             if (currentSpaceState?.canCreateAdditionalChats == true) {
                 viewModelScope.launch {
-                    commands.emit(Command.CreateChatObject(vmParams.spaceId))
+                    commandsChannel.send(Command.CreateChatObject(vmParams.spaceId))
                 }
             } else {
                 Timber.d("Chat creation not allowed in current space")
@@ -4358,7 +4374,7 @@ class HomeScreenViewModel(
 
     fun onInviteMembersWidgetClicked() {
         viewModelScope.launch {
-            commands.emit(Command.ShareSpace(vmParams.spaceId))
+            commandsChannel.send(Command.ShareSpace(vmParams.spaceId))
         }
     }
 
@@ -4628,7 +4644,7 @@ sealed class Command {
             val deepLinkType: String,
             val deepLinkSource: String
         ) : Deeplink()
-        data class MembershipScreen(val tierId: String?) : Deeplink()
+        data class MembershipScreen(val tierId: String?, val code: String? = null) : Deeplink()
     }
 
     data object ShowLeaveSpaceWarning : Command()

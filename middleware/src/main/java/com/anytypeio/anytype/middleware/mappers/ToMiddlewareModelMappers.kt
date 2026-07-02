@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.BlockSplitMode
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVSortEmptyType
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.NetworkMode
@@ -347,7 +348,15 @@ fun Block.Content.DataView.Viewer.toMiddlewareModel(): MDVView =
         },
         defaultTemplateId = defaultTemplate.orEmpty(),
         defaultObjectTypeId = defaultObjectType.orEmpty(),
+        groupRelationKey = groupRelationKey.orEmpty(),
+        groupBackgroundColors = groupBackgroundColors,
     )
+
+fun ObjectOrder.toMiddlewareModel(): MDVObjectOrder = MDVObjectOrder(
+    viewId = view,
+    groupId = group,
+    objectIds = ids
+)
 
 fun Block.Content.DataView.Viewer.Type.toMiddlewareModel(): MDVViewType = when (this) {
     Block.Content.DataView.Viewer.Type.GRID -> MDVViewType.Table
@@ -563,6 +572,7 @@ fun SpaceMemberPermissions.toMw() : MParticipantPermission = when(this) {
     SpaceMemberPermissions.WRITER -> MParticipantPermission.Writer
     SpaceMemberPermissions.OWNER -> MParticipantPermission.Owner
     SpaceMemberPermissions.NO_PERMISSIONS -> MParticipantPermission.NoPermissions
+    SpaceMemberPermissions.ADMIN -> MParticipantPermission.Admin
 }
 
 fun NameServiceNameType.toMw(): MNameServiceNameType = when (this) {

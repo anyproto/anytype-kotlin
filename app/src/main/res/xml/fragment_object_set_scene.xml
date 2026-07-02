@@ -87,6 +87,13 @@
             motion:layout_constraintTop_toBottomOf="@+id/controlDivider2"
             motion:visibilityMode="ignore" />
         <Constraint
+            android:id="@+id/boardView"
+            motion:layout_constraintBottom_toTopOf="@id/paginatorToolbar"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@+id/controlDivider2"
+            motion:visibilityMode="ignore" />
+        <Constraint
             android:id="@+id/dataViewInfo"
             android:layout_width="0dp"
             android:layout_height="190dp"
@@ -104,20 +111,20 @@
             motion:layout_constraintTop_toTopOf="parent"
             motion:visibilityMode="ignore" />
         <Constraint
-            android:id="@+id/discussionButton"
-            android:layout_width="@dimen/nav_fab_button_size"
-            android:layout_height="@dimen/nav_fab_button_size"
-            android:layout_marginStart="@dimen/nav_fab_margin"
-            android:layout_marginBottom="@dimen/nav_fab_margin"
+            android:id="@+id/fabSearchOnPage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
             motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             motion:visibilityMode="ignore" />
         <Constraint
             android:id="@+id/fabCreate"
-            android:layout_width="@dimen/nav_fab_button_size"
-            android:layout_height="@dimen/nav_fab_button_size"
-            android:layout_marginEnd="@dimen/nav_fab_margin"
-            android:layout_marginBottom="@dimen/nav_fab_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:visibilityMode="ignore" />
@@ -209,6 +216,13 @@
             motion:layout_constraintTop_toBottomOf="@+id/controlDivider2"
             motion:visibilityMode="ignore" />
         <Constraint
+            android:id="@+id/boardView"
+            motion:layout_constraintBottom_toTopOf="@id/paginatorToolbar"
+            motion:layout_constraintEnd_toEndOf="parent"
+            motion:layout_constraintStart_toStartOf="parent"
+            motion:layout_constraintTop_toBottomOf="@+id/controlDivider2"
+            motion:visibilityMode="ignore" />
+        <Constraint
             android:id="@+id/dataViewInfo"
             android:layout_width="0dp"
             android:layout_height="190dp"
@@ -227,20 +241,20 @@
             motion:visibilityMode="ignore" />
 
         <Constraint
-            android:id="@+id/discussionButton"
-            android:layout_width="@dimen/nav_fab_button_size"
-            android:layout_height="@dimen/nav_fab_button_size"
-            android:layout_marginStart="@dimen/nav_fab_margin"
-            android:layout_marginBottom="@dimen/nav_fab_margin"
+            android:id="@+id/fabSearchOnPage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
             motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
             motion:visibilityMode="ignore" />
         <Constraint
             android:id="@+id/fabCreate"
-            android:layout_width="@dimen/nav_fab_button_size"
-            android:layout_height="@dimen/nav_fab_button_size"
-            android:layout_marginEnd="@dimen/nav_fab_margin"
-            android:layout_marginBottom="@dimen/nav_fab_margin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
             motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:visibilityMode="ignore" />

@@ -1467,8 +1467,6 @@
     <string name="payments_member_link">Üyelik plan detayları</string>
     <string name="payments_privacy_link">Gizlilik politikası</string>
     <string name="payments_terms_link">Şartlar ve koşullar</string>
-    <string name="payments_let_us_link_start">Anytype\'ı iş, eğitim vb. için kullanmak ister misin?</string>
-    <string name="payments_let_us_link_end">Lütfen bize buradan bildirin.</string>
     <string name="payments_current_label">Şu anki</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">Benzersiz isminizi seçin</string>
@@ -1548,14 +1546,6 @@
 
         Saygılarımızla,       \n
     </string>
-    <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Yükselt %1$s</string>
-    <string name="payments_email_body">Merhaba Anytype ekibi! Daha fazlası için mevcut üyeliğimi uzatmak istiyorum (lütfen bir seçenek belirleyin):\n
-- Ekstra uzak depolama\n
-- Daha fazla alan düzenleyici\n
-- Ek paylaşılan alanlar\n
-Özellikle,
-Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Girdide bir sorun var, tekrar deneyin</string>
     <string name="membership_name_cache_error">Bizden kaynaklı bir hata oluştu. Daha sonra tekrar deneyin.</string>
@@ -1624,9 +1614,6 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="multiplayer_space_join_request_new_member_error">İstek üye hatası</string>
     <string name="multiplayer_space_join_request_current_user_error">Mevcut kullanıcı durumu hatası</string>
     <string name="multiplayer_space_join_request_membership_status_error">Mevcut üyelik durumu hatası</string>
-    <string name="membership_upgrade_title">Üyelik yükseltme</string>
-    <string name="membership_upgrade_description">Ekstra depolama, alan editörleri veya daha fazla ortak alan için bize ulaşın. Anytype ekibi ihtiyaçlarınıza göre uyarlanmış ayrıntılar ve koşullar sağlayacaktır.</string>
-    <string name="membership_upgrade_button">Anytype ekibi ile iletişime geçin</string>
     <string name="membership_space_settings_share_limit">%1$d paylaşılan alan sınırına ulaştınız</string>
     <string name="membership_space_settings_share_limit_2">Daha fazlası için yükseltin veya var olan alanları kaldırın.</string>
     <plurals name="period_years">

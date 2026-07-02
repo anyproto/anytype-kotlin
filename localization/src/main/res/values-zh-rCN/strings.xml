@@ -1461,8 +1461,6 @@
     <string name="payments_member_link">会员等级详情</string>
     <string name="payments_privacy_link">隐私政策</string>
     <string name="payments_terms_link">条款与条件</string>
-    <string name="payments_let_us_link_start">您想要使用 Anytype 用于例如商业、教育或者其他类似用途吗？</string>
-    <string name="payments_let_us_link_end">请在这里告诉我们。</string>
     <string name="payments_current_label">当前</string>
     <!-- Tier details -->
     <string name="payments_tier_details_name_title">选择您独有的名字</string>
@@ -1541,11 +1539,6 @@
 感谢您协助解决此问题。\n\n
 
 致以最诚挚的问候，\n</string>
-    <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">升级 %1$s</string>
-    <string name="payments_email_body">您好，Anytype 团队！我想要延长我当前的会员资格(请选择一个选项)：\n- 额外远程存储\n- 更多空间编辑者\n- 额外的共享空间
-具体来说，
-请在这里提供您需要的具体细节。</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">输入出错，请重试</string>
     <string name="membership_name_cache_error">我们这边出错了，请稍后再试</string>
@@ -1614,9 +1607,6 @@
     <string name="multiplayer_space_join_request_new_member_error">请求成员错误</string>
     <string name="multiplayer_space_join_request_current_user_error">当前用户状态错误</string>
     <string name="multiplayer_space_join_request_membership_status_error">当前会员状态错误</string>
-    <string name="membership_upgrade_title">会员升级</string>
-    <string name="membership_upgrade_description">联系我们以获取额外的存储空间、空间编辑器或更多共享空间。任何类型的团队都将根据您的需求提供量身定制的细节和条件。</string>
-    <string name="membership_upgrade_button">联系 Anytype 团队</string>
     <string name="membership_space_settings_share_limit">您已达到 %1$d 个共享空间的上限</string>
     <string name="membership_space_settings_share_limit_2">升级以获取更多额度，或移除部分空间。</string>
     <plurals name="period_years">

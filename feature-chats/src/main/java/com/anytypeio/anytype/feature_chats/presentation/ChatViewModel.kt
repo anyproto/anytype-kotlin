@@ -93,6 +93,8 @@ import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuItem
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.PinObjectAsWidgetDelegate
 import java.text.SimpleDateFormat
@@ -155,10 +157,12 @@ class ChatViewModel @Inject constructor(
     private val setChatNotificationMode: SetChatNotificationMode,
     private val fieldParser: FieldParser,
     private val chatSearchDelegate: ChatSearchDelegate,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val backHistoryDelegate: BackHistoryDelegate
 ) : BaseViewModel(),
     ExitToVaultDelegate by exitToVaultDelegate,
     PinObjectAsWidgetDelegate by pinObjectAsWidgetDelegate,
+    BackHistoryDelegate by backHistoryDelegate,
     ChatSearchDelegate by chatSearchDelegate {
     private val preloadingJobs = mutableListOf<Job>()
 
@@ -309,10 +313,11 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             combine(
                 spaceViews.observe(vmParams.space).distinctUntilChanged(),
-                _chatObjectWrapper
-            ) { view, wrapper ->
-                Pair(view, wrapper)
-            }.collect { (spaceView, chatObject) ->
+                _chatObjectWrapper,
+                members.observe(vmParams.space)
+            ) { view, wrapper, memberStore ->
+                Triple(view, wrapper, memberStore)
+            }.collect { (spaceView, chatObject, memberStore) ->
                 Timber.d("Space view updated: $spaceView or chatObject: $chatObject")
                 _currentSpaceUxType.value = spaceView.spaceUxType
                 val notificationSetting = NotificationStateCalculator
@@ -325,9 +330,18 @@ class ChatViewModel @Inject constructor(
 
                 // 1-1 space
                 if (spaceView.isOneToOneSpace) {
+                    val otherIdentity = spaceView.oneToOneIdentity
+                    val displayIdentity = if (otherIdentity != null && memberStore is Store.Data) {
+                        val otherMember = memberStore.members.find { it.identity == otherIdentity }
+                        val globalName = otherMember?.globalName
+                        globalName?.takeIf { it.isNotEmpty() }
+                    } else {
+                        null
+                    }
                     header.value = HeaderView.Default(
                         title = spaceView.name.orEmpty(),
                         icon = spaceView.spaceIcon(builder = urlBuilder),
+                        displayIdentity = displayIdentity,
                         isMuted = isMuted,
                         notificationSetting = notificationSetting,
                         canEdit = canEdit,
@@ -440,8 +454,11 @@ class ChatViewModel @Inject constructor(
             chatContainer.watchWhileTrackingAttachments(chat = chat).distinctUntilChanged(),
             chatContainer.subscribeToAttachments(vmParams.ctx, vmParams.space)
                 .distinctUntilChanged(),
-            chatContainer.fetchReplies(chat = chat).distinctUntilChanged()
-        ) { result, dependencies, replies ->
+            chatContainer.fetchReplies(chat = chat).distinctUntilChanged(),
+            currentPermission
+        ) { result, dependencies, replies, permission ->
+            // Owners and Admins may moderate (delete any message); see DROID-4250.
+            val canModerateMessages = permission?.isOwnerOrAdmin() == true
             Timber.d("DROID-2966 Chat counter state from container: ${result.state}, unread section: ${result.initialUnreadSectionMessageId}")
             Timber.d("DROID-2966 Intent from container: ${result.intent}")
             Timber.d("DROID-2966 Message results size from container: ${result.messages.size}")
@@ -543,6 +560,7 @@ class ChatViewModel @Inject constructor(
                         author = member?.name.orEmpty(),
                         creator = member?.id,
                         isUserAuthor = msg.creator == account,
+                        canDelete = msg.creator == account || canModerateMessages,
                         shouldHideUsername = shouldHideUsername,
                         isEdited = msg.modifiedAt > msg.createdAt,
                         isSynced = msg.synced,
@@ -1930,6 +1948,42 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onBackButtonLongClicked() {
+        viewModelScope.launch {
+            backHistoryDelegate.onBackButtonLongPressed()
+        }
+    }
+
+    fun onBackHistoryItemClicked(item: BackHistoryMenuItem) {
+        proceedWithBackHistoryJump(item.entryId)
+    }
+
+    fun onBackHistoryHomeClicked() {
+        val entryId = currentHomeEntryId ?: return
+        proceedWithBackHistoryJump(entryId)
+    }
+
+    private fun proceedWithBackHistoryJump(entryId: String) {
+        onBackHistoryMenuDismissed()
+        viewModelScope.launch {
+            withContext(dispatchers.io) {
+                chatContainer.stop(chat = vmParams.ctx)
+            }
+            commands.emit(ViewModelCommand.PopToBackStackEntry(entryId))
+        }
+    }
+
+    fun onBackHistoryChannelsClicked() {
+        onBackHistoryMenuDismissed()
+        viewModelScope.launch {
+            withContext(dispatchers.io) {
+                chatContainer.stop(chat = vmParams.ctx)
+            }
+            proceedWithClearingSpaceBeforeExitingToVault()
+            commands.emit(ViewModelCommand.ExitToVault)
+        }
+    }
+
     fun onSpaceIconClicked() {
         Timber.d("onSpaceIconClicked")
         viewModelScope.launch {
@@ -2601,6 +2655,8 @@ class ChatViewModel @Inject constructor(
 
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()
+        data object ExitToVault : ViewModelCommand()
+        data class PopToBackStackEntry(val entryId: String) : ViewModelCommand()
         data object OpenWidgets : ViewModelCommand()
         data class OpenSpaceMembers(val space: SpaceId) : ViewModelCommand()
         data class MediaPreview(val index: Int, val objects: List<Id>) : ViewModelCommand()
@@ -2690,6 +2746,7 @@ class ChatViewModel @Inject constructor(
         data class Default(
             val icon: SpaceIconView,
             val title: String,
+            val displayIdentity: String? = null,
             val isMuted: Boolean = false,
             val showDropDownMenu: Boolean = true,
             val showAddMembers: Boolean = true,

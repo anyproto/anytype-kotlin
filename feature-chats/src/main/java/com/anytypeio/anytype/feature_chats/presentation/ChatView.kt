@@ -31,6 +31,11 @@ sealed interface ChatView {
         val attachments: List<Attachment> = emptyList(),
         val reactions: List<Reaction> = emptyList(),
         val isUserAuthor: Boolean = false,
+        /**
+         * Whether the current user may delete this message: the author always can,
+         * and Owners/Admins can delete any message (DROID-4250, chat moderation).
+         */
+        val canDelete: Boolean = false,
         val shouldHideUsername: Boolean = false,
         val isEdited: Boolean = false,
         val isSynced: Boolean,

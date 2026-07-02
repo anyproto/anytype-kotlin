@@ -30,6 +30,8 @@ import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import javax.inject.Inject
@@ -63,7 +65,9 @@ class ObjectTypeVMFactory @Inject constructor(
     private val addToFeaturedRelations: AddToFeaturedRelations,
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
     private val updateText: UpdateText,
-    private val searchObjects: SearchObjects
+    private val searchObjects: SearchObjects,
+    private val backHistoryDelegate: BackHistoryDelegate,
+    private val exitToVaultDelegate: ExitToVaultDelegate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -97,6 +101,8 @@ class ObjectTypeVMFactory @Inject constructor(
             addToFeaturedRelations = addToFeaturedRelations,
             removeFromFeaturedRelations = removeFromFeaturedRelations,
             updateText = updateText,
-            searchObjects = searchObjects
+            searchObjects = searchObjects,
+            backHistoryDelegate = backHistoryDelegate,
+            exitToVaultDelegate = exitToVaultDelegate
         ) as T
 }

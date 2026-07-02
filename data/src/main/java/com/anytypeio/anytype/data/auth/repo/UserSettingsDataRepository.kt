@@ -198,6 +198,18 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         return cache.observeCompactModeEnabled()
     }
 
+    override suspend fun getKanbanEnabled(): Boolean {
+        return cache.getKanbanEnabled()
+    }
+
+    override suspend fun setKanbanEnabled(enabled: Boolean) {
+        cache.setKanbanEnabled(enabled)
+    }
+
+    override fun observeKanbanEnabled(): Flow<Boolean> {
+        return cache.observeKanbanEnabled()
+    }
+
     override suspend fun getFileDownloadLimit(): FileDownloadLimit {
         return cache.getFileDownloadLimit()
     }

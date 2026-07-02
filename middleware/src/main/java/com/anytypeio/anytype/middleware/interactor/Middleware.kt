@@ -110,7 +110,7 @@ class Middleware @Inject constructor(
             icon = command.icon.toLong(),
             networkMode = command.networkMode.toMiddlewareModel(),
             networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty(),
-            enableMembershipV2 = true
+            enableMembershipV2 = false
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.accountCreate(request) }
@@ -131,7 +131,7 @@ class Middleware @Inject constructor(
             networkMode = networkMode,
             networkCustomConfigFilePath = networkCustomConfigFilePath,
             preferYamuxTransport = command.preferYamuxTransport ?: false,
-            enableMembershipV2 = true,
+            enableMembershipV2 = false,
             preferredSpaceId = command.preferredSpaceId.orEmpty()
         )
         logRequestIfDebug(request)

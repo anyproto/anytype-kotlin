@@ -570,6 +570,9 @@
     <string name="type_templates_widget_title">Nesne oluştur</string>
     <string name="view_layout_widget_title">Düzen</string>
     <string name="view_layout_cover_widget_title">Kapak</string>
+    <string name="view_layout_group_by_widget_title">Grupla</string>
+    <string name="group_by">Grupla</string>
+    <string name="color_columns">Sütunları renklendir</string>
     <string name="blank">Boş</string>
     <string name="templates_menu_default_for_view">Bu görünüm için varsayılan</string>
     <string name="templates_menu_edit">Şablonu düzenle</string>
@@ -591,6 +594,7 @@
     <string name="dataview_board_no_value">Değer yok</string>
     <string name="dataview_board_checked">İşaretli</string>
     <string name="dataview_board_unchecked">İşaretsiz</string>
+    <string name="dataview_board_new_object">Yeni</string>
     <string name="page_cover">Sayfa kapağı</string>
     <string name="object_action_pin">Sabitle</string>
     <string name="object_action_unpin">Sabitlemeyi kaldır</string>

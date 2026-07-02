@@ -570,6 +570,9 @@
     <string name="type_templates_widget_title">Créer un objet</string>
     <string name="view_layout_widget_title">Mise en page</string>
     <string name="view_layout_cover_widget_title">Couverture</string>
+    <string name="view_layout_group_by_widget_title">Grouper par</string>
+    <string name="group_by">Grouper par</string>
+    <string name="color_columns">Colonnes de couleur</string>
     <string name="blank">Vide</string>
     <string name="templates_menu_default_for_view">Default for this view</string>
     <string name="templates_menu_edit">Modifier le modèle</string>
@@ -591,6 +594,7 @@
     <string name="dataview_board_no_value">Aucune valeur</string>
     <string name="dataview_board_checked">Coché</string>
     <string name="dataview_board_unchecked">Décoché</string>
+    <string name="dataview_board_new_object">Nouveau</string>
     <string name="page_cover">Page cover</string>
     <string name="object_action_pin">Épingler</string>
     <string name="object_action_unpin">Désépingler</string>

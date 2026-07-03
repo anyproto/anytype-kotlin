@@ -17,8 +17,8 @@
     <string name="experimental_features">Fitur Percobaan</string>
     <string name="experimental_features_compact_vault">Mode brankas ringkas</string>
     <string name="experimental_features_compact_vault_description">Sembunyikan pratinjau pesan untuk kanal yang sudah dibaca</string>
-    <string name="experimental_features_kanban">Kanban board</string>
-    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
+    <string name="experimental_features_kanban">Papan Kanban</string>
+    <string name="experimental_features_kanban_description">Aktifkan tata letak Kanban untuk set dan koleksi</string>
     <string name="account">Brankas</string>
     <string name="reset_account">Setel ulang brankas</string>
     <string name="delete_account">Hapus brankas</string>
@@ -1543,21 +1543,21 @@
     <string name="payments_code_resend">Kirim ulang</string>
     <string name="payments_code_resend_in">Kirim ulang dalam %1$d detik</string>
     <!-- Membership Activate Code -->
-    <string name="payments_activate_code_entry">Have a code?</string>
-    <string name="payments_activate_code_title">Activate Your Code</string>
-    <string name="payments_activate_code_subtitle">Enter the code you received after purchase or from an invitation. Your membership will be activated instantly.</string>
-    <string name="payments_activate_code_hint">Paste activation code…</string>
-    <string name="payments_activate_code_button">Activate</string>
+    <string name="payments_activate_code_entry">Punya kode?</string>
+    <string name="payments_activate_code_title">Aktifkan Kodemu</string>
+    <string name="payments_activate_code_subtitle">Masukan kode yang diterima setelah pembelian atau dari undangan. Keanggotaanmu akan diaktifkan secara langsung.</string>
+    <string name="payments_activate_code_hint">Tempel kode aktivasi …</string>
+    <string name="payments_activate_code_button">Aktifkan</string>
     <!-- Membership Activate Code — success -->
-    <string name="payments_activate_code_success_title">You\'re all set</string>
-    <string name="payments_activate_code_success_subtitle">Your %1$s membership is now active</string>
-    <string name="payments_activate_code_success_subtitle_generic">Your membership is now active</string>
+    <string name="payments_activate_code_success_title">Sudah siap</string>
+    <string name="payments_activate_code_success_subtitle">Keanggotaan %1$s Anda sudah aktif</string>
+    <string name="payments_activate_code_success_subtitle_generic">Kenggotaan Anda sudah aktif</string>
     <!-- Membership Activate Code — errors (CodeGetInfo) -->
-    <string name="membership_code_error_unknown">Unknown error occured</string>
-    <string name="membership_code_error_bad_input">Bad input</string>
-    <string name="membership_code_error_not_logged_in">Not logged in</string>
-    <string name="membership_code_error_payment_node">No connection to payment node. Please try again.</string>
-    <string name="membership_code_error_code_invalid">The code is not valid. Please check and try again.</string>
+    <string name="membership_code_error_unknown">Terjadi galat tak diketahui</string>
+    <string name="membership_code_error_bad_input">Input salah</string>
+    <string name="membership_code_error_not_logged_in">Belum masuk</string>
+    <string name="membership_code_error_payment_node">Tidak terhubung ke simpul pembayaran. Silakan coba lagi.</string>
+    <string name="membership_code_error_code_invalid">Kode tidak valid. Silakan periksa dan coba lagi.</string>
     <string name="membership_code_error_already_member">Membership already exists for the current identity</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Selamat datang di jaringan,\n%1$s</string>

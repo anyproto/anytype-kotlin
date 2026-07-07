@@ -1517,6 +1517,7 @@ class EditorViewModel(
             id = view.id,
             text = view.text,
             marks = view.marks.map { it.mark() },
+            viewMarks = view.marks,
             syncViewsStore = {
                 viewModelScope.launch {
                     val store = orchestrator.stores.views
@@ -1595,6 +1596,18 @@ class EditorViewModel(
         Timber.d("onBlockFocusChanged, id:[$id] hasFocus:[$hasFocus]")
         if (hasFocus) {
             isUndoRedoToolbarIsVisible.value = false
+            // Remember where the user moved the caret while a block-identity
+            // request is in flight, so the swap doesn't steal focus back.
+            identityFork?.let { fork ->
+                fork.userFocus = id.takeIf { it != fork.oldId && it != fork.forked }
+            }
+            trailingPlaceholder?.let { state ->
+                if (state.isMaterializing) {
+                    state.userFocus = id.takeIf {
+                        it != VIRTUAL_TRAILING_BLOCK_ID && it != state.materialized
+                    }
+                }
+            }
             viewModelScope.launch {
                 orchestrator.stores.focus.update(
                     Editor.Focus.id(id = id, isPending = false)
@@ -1651,9 +1664,8 @@ class EditorViewModel(
             fork.onForked += { id -> proceedWithEnterEvent(id, range, text, marks) }
             return
         }
-        val redirected = lastForkedBlock
-        if (redirected != null && target == redirected.first) {
-            proceedWithEnterEvent(redirected.second, range, text, marks)
+        forkRedirectOrNull(target)?.let { redirected ->
+            proceedWithEnterEvent(redirected, range, text, marks)
             return
         }
 
@@ -1837,9 +1849,8 @@ class EditorViewModel(
             fork.onForked += { newId -> onEmptyBlockBackspaceClicked(newId) }
             return
         }
-        val redirected = lastForkedBlock
-        if (redirected != null && id == redirected.first) {
-            onEmptyBlockBackspaceClicked(redirected.second)
+        forkRedirectOrNull(id)?.let { redirected ->
+            onEmptyBlockBackspaceClicked(redirected)
             return
         }
         val position = views.indexOfFirst { it.id == id }
@@ -1916,9 +1927,8 @@ class EditorViewModel(
             }
             return
         }
-        val redirected = lastForkedBlock
-        if (redirected != null && id == redirected.first) {
-            onNonEmptyBlockBackspaceClicked(id = redirected.second, text = text, marks = marks)
+        forkRedirectOrNull(id)?.let { redirected ->
+            onNonEmptyBlockBackspaceClicked(id = redirected, text = text, marks = marks)
             return
         }
 
@@ -2639,6 +2649,14 @@ class EditorViewModel(
             return
         }
 
+        val fork = identityFork
+        if (focused != null && focused == fork?.oldId) {
+            // Identity-fork replace in flight — apply the chosen style after the swap.
+            fork.onForked += { onAddTextBlockClicked(style) }
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
+            return
+        }
+
         val target = if (focused != null)
             blocks.find { it.id == focused }
         else
@@ -2710,7 +2728,7 @@ class EditorViewModel(
 
     fun onAddFileBlockClicked(type: Content.File.Type) {
         Timber.d("onAddFileBlockClicked, type:[$type]")
-        if (deferUntilTrailingPlaceholderMaterialized { onAddFileBlockClicked(type) }) return
+        if (deferUntilBlockIdentitySettled { onAddFileBlockClicked(type) }) return
         val focused = orchestrator.stores.focus.current().targetOrNull()
         val target = if (focused != null)
             blocks.find { it.id == focused }
@@ -2898,7 +2916,7 @@ class EditorViewModel(
 
     fun onBlockToolbarStyleClicked() {
         Timber.d("onBlockToolbarStyleClicked, ")
-        if (deferUntilTrailingPlaceholderMaterialized { onBlockToolbarStyleClicked() }) return
+        if (deferUntilBlockIdentitySettled { onBlockToolbarStyleClicked() }) return
         val focus = orchestrator.stores.focus.current().targetOrNull()
         val targetId = focus.orEmpty()
         if (targetId.isNotEmpty()) {
@@ -3084,7 +3102,7 @@ class EditorViewModel(
 
     fun onBlockToolbarBlockActionsClicked() {
         Timber.d("onBlockToolbarBlockActionsClicked, ")
-        if (deferUntilTrailingPlaceholderMaterialized { onBlockToolbarBlockActionsClicked() }) return
+        if (deferUntilBlockIdentitySettled { onBlockToolbarBlockActionsClicked() }) return
         val target = orchestrator.stores.focus.current().targetOrNull()
         val view = if (target != null) views.find { it.id == target } else null
         if (view == null) {
@@ -3423,7 +3441,7 @@ class EditorViewModel(
 
     fun onAddDividerBlockClicked(style: Content.Divider.Style) {
         Timber.d("onAddDividerBlockClicked, style:[$style]")
-        if (deferUntilTrailingPlaceholderMaterialized { onAddDividerBlockClicked(style) }) return
+        if (deferUntilBlockIdentitySettled { onAddDividerBlockClicked(style) }) return
         addDividerBlock(style)
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
     }
@@ -3545,6 +3563,8 @@ class EditorViewModel(
         /** Text/marks last known to be synced to the middleware for the created block. */
         var syncedText: String = EMPTY_TEXT,
         var syncedMarks: List<Content.Text.Mark> = emptyList(),
+        /** Block the user moved focus to while the create was in flight. */
+        var userFocus: Id? = null,
         /**
          * Actions deferred until the created block is swapped in, replayed in
          * the order the user performed them.
@@ -3631,16 +3651,7 @@ class EditorViewModel(
         val marks = state.marks
         state.syncedText = text
         state.syncedMarks = marks
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Text.UpdateText(
-                    context = context,
-                    target = target,
-                    text = text,
-                    marks = marks
-                )
-            )
-        }
+        flushBufferedTextDivergence(target = target, text = text, marks = marks)
     }
 
     /**
@@ -3654,6 +3665,20 @@ class EditorViewModel(
         if (!orchestrator.stores.focus.current().isTarget(VIRTUAL_TRAILING_BLOCK_ID)) return false
         state.onMaterialized += { action() }
         materializeTrailingPlaceholder()
+        return true
+    }
+
+    /**
+     * Defers [action] while the focused block's identity is unsettled — either
+     * the trailing placeholder hasn't materialized yet, or an identity-fork
+     * replace is in flight. The action is re-dispatched once the real block
+     * holds focus. Returns true when deferred.
+     */
+    private fun deferUntilBlockIdentitySettled(action: () -> Unit): Boolean {
+        if (deferUntilTrailingPlaceholderMaterialized(action)) return true
+        val fork = identityFork ?: return false
+        if (!orchestrator.stores.focus.current().isTarget(fork.oldId)) return false
+        fork.onForked += { action() }
         return true
     }
 
@@ -3694,7 +3719,17 @@ class EditorViewModel(
         trailingPlaceholder = null
         var result = models
         var effectiveFocus = focus
-        if (focus.isTarget(VIRTUAL_TRAILING_BLOCK_ID) || focus.isTarget(materialized)) {
+        val userFocus = state.userFocus
+        if (userFocus != null) {
+            // The user moved the caret elsewhere while the create was in flight —
+            // don't steal it back into the created block.
+            effectiveFocus = Editor.Focus(
+                target = Editor.Focus.Target.Block(userFocus),
+                cursor = null,
+                isPending = false
+            )
+            orchestrator.stores.focus.update(effectiveFocus)
+        } else if (focus.isTarget(VIRTUAL_TRAILING_BLOCK_ID) || focus.isTarget(materialized)) {
             val selection = orchestrator.stores.textSelection.current()
                 .takeIf { it.id == VIRTUAL_TRAILING_BLOCK_ID }
                 ?.selection?.last
@@ -3884,9 +3919,27 @@ class EditorViewModel(
         /** Text/marks last known to be synced to the middleware for the new block. */
         var syncedText: String = text,
         var syncedMarks: List<Content.Text.Mark> = marks,
+        /** Block the user moved focus to while the replace was in flight. */
+        var userFocus: Id? = null,
         /** Actions deferred until the replacement block is swapped in. */
         val onForked: MutableList<(Id) -> Unit> = mutableListOf()
     )
+
+    /**
+     * Resolves the forked id for an event dispatched against the pre-fork id
+     * after the swap. Returns null — clearing the stale mapping — when the old
+     * block has reappeared in the document (undo of the BlockReplace): events
+     * must then target the restored block again, not the removed forked one.
+     */
+    private fun forkRedirectOrNull(id: Id): Id? {
+        val redirect = lastForkedBlock ?: return null
+        if (id != redirect.first) return null
+        if (blocks.any { it.id == redirect.first }) {
+            lastForkedBlock = null
+            return null
+        }
+        return redirect.second
+    }
 
     /**
      * True when first content into [target] must fork the block identity instead
@@ -3952,8 +4005,11 @@ class EditorViewModel(
                     },
                     onFailure = {
                         // The old block still exists — fall back to the regular
-                        // set-text flow so no typed text is lost.
+                        // set-text flow so no typed text is lost, and replay any
+                        // deferred actions (enter, backspace, toolbar) against it.
                         identityFork = null
+                        val pending = state.onForked.toList()
+                        state.onForked.clear()
                         viewModelScope.launch {
                             orchestrator.proxies.changes.send(
                                 TextUpdate.Pattern(
@@ -3962,6 +4018,12 @@ class EditorViewModel(
                                     markup = state.marks
                                 )
                             )
+                        }
+                        if (pending.isNotEmpty()) {
+                            viewModelScope.launch {
+                                yield()
+                                pending.forEach { action -> action(state.oldId) }
+                            }
                         }
                     }
                 )
@@ -3980,15 +4042,38 @@ class EditorViewModel(
         val marks = state.marks
         state.syncedText = text
         state.syncedMarks = marks
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Text.UpdateText(
-                    context = context,
-                    target = target,
-                    text = text,
-                    marks = marks
+        flushBufferedTextDivergence(target = target, text = text, marks = marks)
+    }
+
+    /**
+     * A markdown shortcut completed while the request was in flight must still
+     * convert: route it through the pattern pipeline (whose match ends in a
+     * style Replace, not a save). Anything else is synced with a direct
+     * set-text — the saves pipeline would drop it as a no-op once the local
+     * document has been patched with the buffered text.
+     */
+    private fun flushBufferedTextDivergence(
+        target: Id,
+        text: String,
+        marks: List<Content.Text.Mark>
+    ) {
+        if (forkPatternMatcher.match(text).isNotEmpty()) {
+            viewModelScope.launch {
+                orchestrator.proxies.changes.send(
+                    TextUpdate.Pattern(target = target, text = text, markup = marks)
                 )
-            )
+            }
+        } else {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Text.UpdateText(
+                        context = context,
+                        target = target,
+                        text = text,
+                        marks = marks
+                    )
+                )
+            }
         }
     }
 
@@ -4020,7 +4105,21 @@ class EditorViewModel(
         identityFork = null
         var result = models
         var effectiveFocus = focus
-        if (focus.isTarget(state.oldId) || focus.isTarget(forked)) {
+        // Preserve the expansion state of an (empty) toggle across the id swap.
+        if (renderer.isToggled(state.oldId) && !renderer.isToggled(forked)) {
+            renderer.onToggleChanged(forked)
+        }
+        val userFocus = state.userFocus
+        if (userFocus != null) {
+            // The user moved the caret elsewhere while the replace was in flight —
+            // don't steal it back into the forked block.
+            effectiveFocus = Editor.Focus(
+                target = Editor.Focus.Target.Block(userFocus),
+                cursor = null,
+                isPending = false
+            )
+            orchestrator.stores.focus.update(effectiveFocus)
+        } else if (focus.isTarget(state.oldId) || focus.isTarget(forked)) {
             val selection = orchestrator.stores.textSelection.current()
                 .takeIf { it.id == state.oldId || it.id == forked }
                 ?.selection?.last
@@ -4077,6 +4176,7 @@ class EditorViewModel(
         id: Id,
         text: String,
         marks: List<Content.Text.Mark>,
+        viewMarks: List<Markup.Mark>? = null,
         syncViewsStore: () -> Unit
     ): Boolean {
         val state = identityFork
@@ -4087,17 +4187,18 @@ class EditorViewModel(
             syncViewsStore()
             return true
         }
-        val redirect = lastForkedBlock
-        if (redirect != null && id == redirect.first) {
+        val redirected = forkRedirectOrNull(id)
+        if (redirected != null) {
             // Dispatched against the pre-fork id after the swap — retarget.
-            val update = TextUpdate.Pattern(target = redirect.second, text = text, markup = marks)
+            val update = TextUpdate.Pattern(target = redirected, text = text, markup = marks)
             viewModelScope.launch {
                 val store = orchestrator.stores.views
                 store.update(
                     store.current().map { current ->
-                        if (current.id == redirect.second && current is BlockView.Text) {
+                        if (current.id == redirected && current is BlockView.Text) {
                             current.apply {
                                 this.text = text
+                                if (viewMarks != null) this.marks = viewMarks
                             }
                         } else {
                             current
@@ -4324,7 +4425,7 @@ class EditorViewModel(
         objectTypeView: ObjectTypeView,
         fromSlashMenu: Boolean = false
     ) {
-        if (deferUntilTrailingPlaceholderMaterialized {
+        if (deferUntilBlockIdentitySettled {
                 onAddNewObjectClicked(objectTypeView, fromSlashMenu)
             }
         ) return
@@ -4477,7 +4578,7 @@ class EditorViewModel(
     fun onAddBookmarkBlockClicked() {
         Timber.d("onAddBookmarkBlockClicked, ")
 
-        if (deferUntilTrailingPlaceholderMaterialized { onAddBookmarkBlockClicked() }) return
+        if (deferUntilBlockIdentitySettled { onAddBookmarkBlockClicked() }) return
 
         val focus = orchestrator.stores.focus.current().targetOrNull() ?: return
         val focused = blocks.find { it.id == focus } ?: return
@@ -6024,7 +6125,7 @@ class EditorViewModel(
 
     fun onSlashItemClicked(item: SlashItem) {
         Timber.v("onSlashItemClicked, item:[$item]")
-        if (deferUntilTrailingPlaceholderMaterialized { onSlashItemClicked(item) }) return
+        if (deferUntilBlockIdentitySettled { onSlashItemClicked(item) }) return
         val target = orchestrator.stores.focus.current()
         if (!target.isEmpty) {
             proceedWithSlashItem(item, target.requireTarget())

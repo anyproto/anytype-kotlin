@@ -105,7 +105,9 @@ class EditorMergeTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(2)) {
+        // The pre-merge save flush is skipped when text is unchanged, so only
+        // the actual edit produces a set-text write.
+        verifyBlocking(updateText, times(1)) {
             invoke(
                 params = eq(
                     UpdateText.Params(

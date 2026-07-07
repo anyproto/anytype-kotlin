@@ -119,9 +119,12 @@ class Orchestrator(
                     ).suspendFold(
                         onSuccess = { (id, payload) ->
                             val middlewareTime = System.currentTimeMillis()
+                            memory.sessionCreatedBlockIds.add(id)
                             stores.focus.update(Focus.id(id = id))
-                            proxies.payloads.send(payload)
+                            // Invoked before dispatching the payload, so that callers can
+                            // record the new id before the payload-triggered re-render.
                             intent.onSuccess?.invoke(id)
+                            proxies.payloads.send(payload)
                             analytics.sendAnalyticsCreateBlockEvent(
                                 prototype = intent.prototype,
                                 startTime = startTime,
@@ -131,7 +134,10 @@ class Orchestrator(
                                 route = intent.route
                             )
                         },
-                        onFailure = defaultOnError
+                        onFailure = {
+                            intent.onFailure?.invoke()
+                            defaultOnError(it)
+                        }
                     )
                 }
                 is Intent.CRUD.Replace -> {
@@ -143,12 +149,18 @@ class Orchestrator(
                             prototype = intent.prototype
                         )
                     ).proceed(
-                        failure = defaultOnError,
+                        failure = {
+                            intent.onFailure?.invoke()
+                            defaultOnError(it)
+                        },
                         success = { (id, payload) ->
                             val middlewareTime = System.currentTimeMillis()
+                            memory.sessionCreatedBlockIds.add(id)
                             stores.focus.update(Focus.id(id = id))
-                            proxies.payloads.send(payload)
+                            // Invoked before dispatching the payload, so that callers can
+                            // record the new id before the payload-triggered re-render.
                             intent.onSuccess?.invoke(id)
+                            proxies.payloads.send(payload)
                             analytics.sendAnalyticsCreateBlockEvent(
                                 prototype = intent.prototype,
                                 startTime = startTime,
@@ -169,6 +181,7 @@ class Orchestrator(
                     ).proceed(
                         failure = defaultOnError,
                         success = { (ids, payload) ->
+                            memory.sessionCreatedBlockIds.addAll(ids)
                             stores.focus.update(
                                 Focus(
                                     target = Focus.Target.Block(ids.last()),
@@ -230,6 +243,7 @@ class Orchestrator(
                         failure = defaultOnError,
                         success = { (id, payload) ->
                             val middlewareTime = System.currentTimeMillis()
+                            memory.sessionCreatedBlockIds.add(id)
                             stores.focus.update(
                                 Focus(
                                     target = Focus.Target.Block(id),

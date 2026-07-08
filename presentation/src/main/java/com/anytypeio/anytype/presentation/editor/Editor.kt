@@ -116,7 +116,15 @@ interface Editor {
 
     class Memory(
         val selections: SelectionStateHolder
-    )
+    ) {
+        /**
+         * Ids of blocks created by this editor session (create, replace, split, duplicate).
+         * Used to decide whether an empty trailing block can be safely focus-reused
+         * on outside click: reusing a block created by another client can lead to
+         * concurrent typing into the same block and last-writer-wins data loss.
+         */
+        val sessionCreatedBlockIds: MutableSet<Id> = mutableSetOf()
+    }
 
     sealed class Restore {
         data class Selection(

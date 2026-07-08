@@ -433,10 +433,27 @@ data class Block(
         /**
          * Prototype of the textual block.
          * @param style style for a block to create
+         * @param text optional initial text for a block to create
+         * @param marks optional initial marks for a block to create
+         * @param checked optional initial checked state (checkbox style)
+         * @param color optional initial text color
+         * @param iconEmoji optional initial icon emoji (callout style)
+         * @param iconImage optional initial icon image (callout style)
+         * @param align optional initial block alignment
+         * @param backgroundColor optional initial block background color
+         * @param fields optional initial block fields
          */
         data class Text(
             val style: Style,
-            val text: String? = null
+            val text: String? = null,
+            val marks: List<Content.Text.Mark> = emptyList(),
+            val checked: Boolean? = null,
+            val color: String? = null,
+            val iconEmoji: String? = null,
+            val iconImage: String? = null,
+            val align: Align? = null,
+            val backgroundColor: String? = null,
+            val fields: Fields? = null
         ) : Prototype()
 
         data class File(

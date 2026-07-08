@@ -300,7 +300,9 @@ import java.util.LinkedList
 import java.util.Queue
 import java.util.regex.Pattern
 import kotlinx.coroutines.Job
+import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.yield
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -876,11 +878,13 @@ class EditorViewModel(
                 footers.value = getFooterState(root, currentObj)
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
                 Timber.d("Rendering starting...")
-                val doc = models.asMap().render(
+                val (placeholderModels, placeholderFocus) = resolveTrailingPlaceholder(models, focus)
+                val (renderModels, renderFocus) = resolveIdentityFork(placeholderModels, placeholderFocus)
+                val doc = renderModels.asMap().render(
                     context = context,
                     mode = mode,
-                    root = root,
-                    focus = focus,
+                    root = renderModels.first { it.id == context },
+                    focus = renderFocus,
                     anchor = context,
                     indent = INITIAL_INDENT,
                     details = objectViewDetails,
@@ -1100,6 +1104,19 @@ class EditorViewModel(
             .saves
             .stream()
             .filterNotNull()
+            .filter { update ->
+                // No text write on mere cursor placement: focus/blur and
+                // shortcut-triggered save flushes re-emit the block's unchanged
+                // text, and each such set-text is a last-writer-wins write that
+                // can stomp a concurrent peer edit on merge. Only proceed when
+                // the text or marks actually differ from the locally known
+                // synced state.
+                !isTextSameAsSynced(
+                    target = update.target,
+                    text = update.text,
+                    marks = update.markup.filter { it.range.first != it.range.last }
+                )
+            }
             .onEach { update ->
                 val updated = blocks.map { block ->
                     if (block.id == update.target) {
@@ -1123,6 +1140,20 @@ class EditorViewModel(
             .launchIn(viewModelScope)
     }
 
+    /**
+     * True when [text] and [marks] are identical to the locally known synced
+     * state of [target] — in which case sending a set-text write is a no-op
+     * that only risks overwriting a concurrent peer edit.
+     */
+    private fun isTextSameAsSynced(
+        target: Id,
+        text: String,
+        marks: List<Content.Text.Mark>
+    ): Boolean {
+        val content = blocks.find { it.id == target }?.content as? Content.Text ?: return false
+        return content.text == text && content.marks == marks
+    }
+
     private fun proceedWithUpdatingText(intent: Intent.Text.UpdateText) {
         viewModelScope.launch {
             orchestrator.proxies.intents.send(intent)
@@ -1133,6 +1164,11 @@ class EditorViewModel(
         Timber.d("onStart, id:[$id]")
 
         this.context = id
+
+        trailingPlaceholder = null
+        lastMaterializedTrailingBlock = null
+        identityFork = null
+        lastForkedBlock = null
 
         stateData.postValue(ViewState.Loading)
 
@@ -1427,6 +1463,9 @@ class EditorViewModel(
         marks: List<Content.Text.Mark>
     ) {
         Timber.d("onTextChanged, id:[$id], text:[$text], marks:[$marks]")
+        if (proceedWithIdentityForkTextChange(id = id, text = text, marks = marks, syncViewsStore = {})) {
+            return
+        }
         val update = TextUpdate.Default(target = id, text = text, markup = marks)
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
     }
@@ -1468,6 +1507,25 @@ class EditorViewModel(
 
     fun onTextBlockTextChanged(view: BlockView.Text) {
         Timber.d("onTextBlockTextChanged, view:[$view]")
+
+        if (view.id == VIRTUAL_TRAILING_BLOCK_ID) {
+            proceedWithTrailingPlaceholderTextChange(view)
+            return
+        }
+
+        val consumedByFork = proceedWithIdentityForkTextChange(
+            id = view.id,
+            text = view.text,
+            marks = view.marks.map { it.mark() },
+            viewMarks = view.marks,
+            syncViewsStore = {
+                viewModelScope.launch {
+                    val store = orchestrator.stores.views
+                    store.update(store.current().map { if (it.id == view.id) view else it })
+                }
+            }
+        )
+        if (consumedByFork) return
 
         val update = TextUpdate.Pattern(
             target = view.id,
@@ -1538,12 +1596,27 @@ class EditorViewModel(
         Timber.d("onBlockFocusChanged, id:[$id] hasFocus:[$hasFocus]")
         if (hasFocus) {
             isUndoRedoToolbarIsVisible.value = false
+            // Remember where the user moved the caret while a block-identity
+            // request is in flight, so the swap doesn't steal focus back.
+            identityFork?.let { fork ->
+                fork.userFocus = id.takeIf { it != fork.oldId && it != fork.forked }
+            }
+            trailingPlaceholder?.let { state ->
+                if (state.isMaterializing) {
+                    state.userFocus = id.takeIf {
+                        it != VIRTUAL_TRAILING_BLOCK_ID && it != state.materialized
+                    }
+                }
+            }
             viewModelScope.launch {
                 orchestrator.stores.focus.update(
                     Editor.Focus.id(id = id, isPending = false)
                 )
             }
         } else {
+            if (id == VIRTUAL_TRAILING_BLOCK_ID) {
+                proceedWithTrailingPlaceholderFocusLost()
+            }
             sendHideTypesWidgetEvent()
         }
     }
@@ -1577,6 +1650,25 @@ class EditorViewModel(
         range: IntRange
     ) {
         Timber.d("onEnterKeyClicked, target:[$target] text:[$text] marks:[$marks] range:[$range]")
+
+        if (target == VIRTUAL_TRAILING_BLOCK_ID) {
+            proceedWithTrailingPlaceholderEnter(text, marks, range)
+            return
+        }
+
+        val fork = identityFork
+        if (fork != null && target == fork.oldId) {
+            // Replace in flight — replay the enter against the forked block.
+            fork.text = text
+            fork.marks = marks
+            fork.onForked += { id -> proceedWithEnterEvent(id, range, text, marks) }
+            return
+        }
+        forkRedirectOrNull(target)?.let { redirected ->
+            proceedWithEnterEvent(redirected, range, text, marks)
+            return
+        }
+
         val focus = orchestrator.stores.focus.current()
         if (!focus.isEmpty && focus.isTarget(target)) {
             proceedWithEnterEvent(focus.requireTarget(), range, text, marks)
@@ -1623,6 +1715,11 @@ class EditorViewModel(
         val block = blocks.first { it.id == target }
         val content = block.content<Content.Text>()
 
+        // Skip the pre-split save flush when nothing actually changed —
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        val isFlushRedundant = isTextSameAsSynced(target, text, marks)
+
         val update = blocks.updateTextContent(target, text, marks)
         orchestrator.stores.document.update(update)
 
@@ -1631,15 +1728,17 @@ class EditorViewModel(
             orchestrator.proxies.changes.send(null)
         }
 
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Text.UpdateText(
-                    context = context,
-                    target = target,
-                    marks = marks,
-                    text = text
+        if (!isFlushRedundant) {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Text.UpdateText(
+                        context = context,
+                        target = target,
+                        marks = marks,
+                        text = text
+                    )
                 )
-            )
+            }
         }
 
         viewModelScope.launch {
@@ -1741,6 +1840,19 @@ class EditorViewModel(
 
     fun onEmptyBlockBackspaceClicked(id: String) {
         Timber.d("onEmptyBlockBackspaceClicked, id:[$id]")
+        if (id == VIRTUAL_TRAILING_BLOCK_ID) {
+            proceedWithTrailingPlaceholderBackspace()
+            return
+        }
+        val fork = identityFork
+        if (fork != null && id == fork.oldId) {
+            fork.onForked += { newId -> onEmptyBlockBackspaceClicked(newId) }
+            return
+        }
+        forkRedirectOrNull(id)?.let { redirected ->
+            onEmptyBlockBackspaceClicked(redirected)
+            return
+        }
         val position = views.indexOfFirst { it.id == id }
         if (position > 0) {
             val current = views[position]
@@ -1786,6 +1898,45 @@ class EditorViewModel(
     ) {
         Timber.d("onNonEmptyBlockBackspaceClicked, id:[$id] text:[$text] marks:[$marks]")
 
+        if (id == VIRTUAL_TRAILING_BLOCK_ID) {
+            val state = trailingPlaceholder
+            if (state != null) {
+                // The block is being created — replay the merge-backspace against it.
+                state.text = text
+                state.marks = marks
+                state.onMaterialized += { newId ->
+                    onNonEmptyBlockBackspaceClicked(id = newId, text = text, marks = marks)
+                }
+                materializeTrailingPlaceholder()
+            } else {
+                // The placeholder was already swapped — retarget to the created block.
+                lastMaterializedTrailingBlock?.let { target ->
+                    onNonEmptyBlockBackspaceClicked(id = target, text = text, marks = marks)
+                }
+            }
+            return
+        }
+
+        val fork = identityFork
+        if (fork != null && id == fork.oldId) {
+            // Replace in flight — replay the merge-backspace against the forked block.
+            fork.text = text
+            fork.marks = marks
+            fork.onForked += { newId ->
+                onNonEmptyBlockBackspaceClicked(id = newId, text = text, marks = marks)
+            }
+            return
+        }
+        forkRedirectOrNull(id)?.let { redirected ->
+            onNonEmptyBlockBackspaceClicked(id = redirected, text = text, marks = marks)
+            return
+        }
+
+        // Skip the pre-merge save flush when nothing actually changed —
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        val isFlushRedundant = isTextSameAsSynced(id, text, marks)
+
         val update = blocks.map { block ->
             if (block.id == id) {
                 block.copy(
@@ -1806,15 +1957,17 @@ class EditorViewModel(
             orchestrator.proxies.changes.send(null)
         }
 
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Text.UpdateText(
-                    context = context,
-                    target = id,
-                    marks = marks,
-                    text = text
+        if (!isFlushRedundant) {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Text.UpdateText(
+                        context = context,
+                        target = id,
+                        marks = marks,
+                        text = text
+                    )
                 )
-            )
+            }
         }
 
         val index = views.indexOfFirst { it.id == id }
@@ -1900,6 +2053,7 @@ class EditorViewModel(
     }
 
     private fun proceedWithEnteringActionMode(target: Id, scrollTarget: Boolean = true) {
+        if (target == VIRTUAL_TRAILING_BLOCK_ID) return
         val views = orchestrator.stores.views.current()
         val view = views.find { it.id == target }
 
@@ -2481,6 +2635,28 @@ class EditorViewModel(
 
         val focused = orchestrator.stores.focus.current().targetOrNull()
 
+        val placeholder = trailingPlaceholder
+        if (focused == VIRTUAL_TRAILING_BLOCK_ID && placeholder != null) {
+            // Mirrors the empty-block behavior below (replace with the chosen style):
+            // the placeholder materializes directly with that style, or — when a
+            // create is already in flight — the style is applied after the swap.
+            if (placeholder.isMaterializing) {
+                placeholder.onMaterialized += { onAddTextBlockClicked(style) }
+            } else {
+                materializeTrailingPlaceholder(style = style)
+            }
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
+            return
+        }
+
+        val fork = identityFork
+        if (focused != null && focused == fork?.oldId) {
+            // Identity-fork replace in flight — apply the chosen style after the swap.
+            fork.onForked += { onAddTextBlockClicked(style) }
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
+            return
+        }
+
         val target = if (focused != null)
             blocks.find { it.id == focused }
         else
@@ -2552,6 +2728,7 @@ class EditorViewModel(
 
     fun onAddFileBlockClicked(type: Content.File.Type) {
         Timber.d("onAddFileBlockClicked, type:[$type]")
+        if (deferUntilBlockIdentitySettled { onAddFileBlockClicked(type) }) return
         val focused = orchestrator.stores.focus.current().targetOrNull()
         val target = if (focused != null)
             blocks.find { it.id == focused }
@@ -2739,6 +2916,7 @@ class EditorViewModel(
 
     fun onBlockToolbarStyleClicked() {
         Timber.d("onBlockToolbarStyleClicked, ")
+        if (deferUntilBlockIdentitySettled { onBlockToolbarStyleClicked() }) return
         val focus = orchestrator.stores.focus.current().targetOrNull()
         val targetId = focus.orEmpty()
         if (targetId.isNotEmpty()) {
@@ -2924,6 +3102,7 @@ class EditorViewModel(
 
     fun onBlockToolbarBlockActionsClicked() {
         Timber.d("onBlockToolbarBlockActionsClicked, ")
+        if (deferUntilBlockIdentitySettled { onBlockToolbarBlockActionsClicked() }) return
         val target = orchestrator.stores.focus.current().targetOrNull()
         val view = if (target != null) views.find { it.id == target } else null
         if (view == null) {
@@ -3262,6 +3441,7 @@ class EditorViewModel(
 
     fun onAddDividerBlockClicked(style: Content.Divider.Style) {
         Timber.d("onAddDividerBlockClicked, style:[$style]")
+        if (deferUntilBlockIdentitySettled { onAddDividerBlockClicked(style) }) return
         addDividerBlock(style)
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
     }
@@ -3276,6 +3456,11 @@ class EditorViewModel(
             return
         }
 
+        if (mode !is EditorMode.Edit) {
+            Timber.d("Outside click is ignored in mode: $mode")
+            return
+        }
+
         val restrictions = orchestrator.stores.objectRestrictions.current()
         if (restrictions.contains(ObjectRestriction.BLOCKS)) {
             Timber.d("Object contains restriction BLOCKS, can't create blocks")
@@ -3285,54 +3470,62 @@ class EditorViewModel(
         val root = blocks.find { it.id == context } ?: return
 
         if (root.children.isEmpty()) {
-            addNewBlockAtTheEnd()
+            proceedWithShowingTrailingPlaceholder()
         } else {
             val last = blocks.find { it.id == root.children.last() }
             when (val content = last?.content) {
                 is Content.Text -> {
                     when {
-                        content.style == Content.Text.Style.TITLE -> addNewBlockAtTheEnd()
-                        content.style == Content.Text.Style.CODE_SNIPPET -> addNewBlockAtTheEnd()
-                        content.text.isNotEmpty() -> addNewBlockAtTheEnd()
+                        content.style == Content.Text.Style.TITLE -> proceedWithShowingTrailingPlaceholder()
+                        content.style == Content.Text.Style.CODE_SNIPPET -> proceedWithShowingTrailingPlaceholder()
+                        content.text.isNotEmpty() -> proceedWithShowingTrailingPlaceholder()
                         content.text.isEmpty() -> {
-                            val stores = orchestrator.stores
-                            if (stores.focus.current().isEmpty) {
-                                val focus = Editor.Focus(
-                                    target = Editor.Focus.Target.Block(last.id),
-                                    cursor = null
-                                )
-                                viewModelScope.launch { orchestrator.stores.focus.update(focus) }
-                                viewModelScope.launch { refresh() }
+                            if (orchestrator.memory.sessionCreatedBlockIds.contains(last.id)) {
+                                // Focus-reuse is safe only for blocks created by this session.
+                                // An empty trailing block from another client may be typed into
+                                // concurrently, and block text is last-writer-wins — so a foreign
+                                // empty block gets the virtual placeholder below it instead.
+                                val stores = orchestrator.stores
+                                if (stores.focus.current().isEmpty) {
+                                    val focus = Editor.Focus(
+                                        target = Editor.Focus.Target.Block(last.id),
+                                        cursor = null
+                                    )
+                                    viewModelScope.launch { orchestrator.stores.focus.update(focus) }
+                                    viewModelScope.launch { refresh() }
+                                } else {
+                                    Timber.d("Outside click is ignored because focus is not empty")
+                                }
                             } else {
-                                Timber.d("Outside click is ignored because focus is not empty")
+                                proceedWithShowingTrailingPlaceholder()
                             }
                         }
                         else -> Timber.d("Outside-click has been ignored.")
                     }
                 }
                 is Content.Link -> {
-                    addNewBlockAtTheEnd()
+                    proceedWithShowingTrailingPlaceholder()
                 }
                 is Content.Bookmark -> {
-                    addNewBlockAtTheEnd()
+                    proceedWithShowingTrailingPlaceholder()
                 }
                 is Content.File -> {
-                    addNewBlockAtTheEnd()
+                    proceedWithShowingTrailingPlaceholder()
                 }
                 is Content.Divider -> {
-                    addNewBlockAtTheEnd()
+                    proceedWithShowingTrailingPlaceholder()
                 }
                 is Content.Layout -> {
-                    addNewBlockAtTheEnd()
+                    proceedWithShowingTrailingPlaceholder()
                 }
                 is Content.RelationBlock -> {
-                    addNewBlockAtTheEnd()
+                    proceedWithShowingTrailingPlaceholder()
                 }
                 is Content.Table -> {
-                    addNewBlockAtTheEnd()
+                    proceedWithShowingTrailingPlaceholder()
                 }
                 is Content.TableOfContents -> {
-                    addNewBlockAtTheEnd()
+                    proceedWithShowingTrailingPlaceholder()
                 }
                 else -> {
                     Timber.d("Outside-click has been ignored.")
@@ -3341,12 +3534,698 @@ class EditorViewModel(
         }
     }
 
+    //region TRAILING PLACEHOLDER
+
+    /**
+     * State of the virtual trailing block ("click-to-type" placeholder).
+     *
+     * Clicking the empty area below the document content must not create a block:
+     * an empty block synced to peers makes every client's "click below content"
+     * logic focus-reuse the same block id, and concurrent typing into it is
+     * silently destroyed by last-writer-wins text sync. Instead, a purely
+     * presentational paragraph is appended to the rendered document. The real
+     * block is created only on first input — already carrying that input — and
+     * the placeholder is then swapped for the created block, preserving the caret.
+     */
+    private var trailingPlaceholder: TrailingPlaceholderState? = null
+
+    /**
+     * Id of the block most recently created from the placeholder. Events the UI
+     * dispatches against [VIRTUAL_TRAILING_BLOCK_ID] after the swap are redirected here.
+     */
+    private var lastMaterializedTrailingBlock: Id? = null
+
+    private class TrailingPlaceholderState(
+        var text: String = EMPTY_TEXT,
+        var marks: List<Content.Text.Mark> = emptyList(),
+        var isMaterializing: Boolean = false,
+        var materialized: Id? = null,
+        /** Text/marks last known to be synced to the middleware for the created block. */
+        var syncedText: String = EMPTY_TEXT,
+        var syncedMarks: List<Content.Text.Mark> = emptyList(),
+        /** Block the user moved focus to while the create was in flight. */
+        var userFocus: Id? = null,
+        /**
+         * Actions deferred until the created block is swapped in, replayed in
+         * the order the user performed them.
+         */
+        val onMaterialized: MutableList<(Id) -> Unit> = mutableListOf()
+    )
+
+    private fun proceedWithShowingTrailingPlaceholder() {
+        val state = trailingPlaceholder
+        if (state != null && orchestrator.stores.focus.current().isTarget(VIRTUAL_TRAILING_BLOCK_ID)) {
+            // Already shown and focused. In particular, repeated taps must never
+            // produce more than one placeholder — or any block at all.
+            return
+        }
+        if (state == null) {
+            trailingPlaceholder = TrailingPlaceholderState()
+        }
+        viewModelScope.launch {
+            orchestrator.stores.focus.update(
+                Editor.Focus(
+                    target = Editor.Focus.Target.Block(VIRTUAL_TRAILING_BLOCK_ID),
+                    cursor = null
+                )
+            )
+            refresh()
+        }
+    }
+
+    /**
+     * Creates the real block for the placeholder, carrying its current content.
+     * No-op if a create request is already in flight.
+     */
+    private fun materializeTrailingPlaceholder(style: Content.Text.Style = Content.Text.Style.P) {
+        val state = trailingPlaceholder ?: return
+        if (state.isMaterializing) return
+        state.isMaterializing = true
+        viewModelScope.launch {
+            val text = state.text
+            val marks = state.marks
+            state.syncedText = text
+            state.syncedMarks = marks
+            orchestrator.proxies.intents.send(
+                Intent.CRUD.Create(
+                    context = context,
+                    target = EMPTY_TEXT,
+                    position = Position.INNER,
+                    prototype = Prototype.Text(
+                        style = style,
+                        text = text,
+                        marks = marks
+                    ),
+                    onSuccess = { id ->
+                        // Invoked before the payload is dispatched, so the swap
+                        // render below is guaranteed to see the materialized id.
+                        state.materialized = id
+                        lastMaterializedTrailingBlock = id
+                        // Input that arrived while the create was in flight must
+                        // not wait for the swap render — the editor may be closed
+                        // before it happens. Sync it to the middleware now.
+                        flushTrailingPlaceholderDivergence(state, id)
+                    },
+                    onFailure = {
+                        // Keep the typed text in the placeholder; the next input
+                        // (keystroke, enter, paste) retries the create. Deferred
+                        // actions are dropped: replaying them against a later,
+                        // unrelated materialization would act on the wrong block.
+                        state.isMaterializing = false
+                        state.onMaterialized.clear()
+                        sendToast("Error while creating a new block")
+                    }
+                )
+            )
+        }
+    }
+
+    /**
+     * Syncs input buffered while the create was in flight straight to the
+     * middleware, bypassing the render pipeline: waiting for the swap render
+     * would lose the tail when the editor is closed before it happens.
+     */
+    private fun flushTrailingPlaceholderDivergence(state: TrailingPlaceholderState, target: Id) {
+        if (state.text == state.syncedText && state.marks == state.syncedMarks) return
+        val text = state.text
+        val marks = state.marks
+        state.syncedText = text
+        state.syncedMarks = marks
+        flushBufferedTextDivergence(target = target, text = text, marks = marks)
+    }
+
+    /**
+     * When the focused block is the trailing placeholder, creates the real block
+     * (carrying the current placeholder content) and re-dispatches [action] after
+     * the swap, when the created block holds focus. Returns true when deferred —
+     * callers must not proceed with the virtual id.
+     */
+    private fun deferUntilTrailingPlaceholderMaterialized(action: () -> Unit): Boolean {
+        val state = trailingPlaceholder ?: return false
+        if (!orchestrator.stores.focus.current().isTarget(VIRTUAL_TRAILING_BLOCK_ID)) return false
+        state.onMaterialized += { action() }
+        materializeTrailingPlaceholder()
+        return true
+    }
+
+    /**
+     * Defers [action] while the focused block's identity is unsettled — either
+     * the trailing placeholder hasn't materialized yet, or an identity-fork
+     * replace is in flight. The action is re-dispatched once the real block
+     * holds focus. Returns true when deferred.
+     */
+    private fun deferUntilBlockIdentitySettled(action: () -> Unit): Boolean {
+        if (deferUntilTrailingPlaceholderMaterialized(action)) return true
+        val fork = identityFork ?: return false
+        if (!orchestrator.stores.focus.current().isTarget(fork.oldId)) return false
+        fork.onForked += { action() }
+        return true
+    }
+
+    /**
+     * Called from the render pipeline: appends the virtual paragraph while the
+     * placeholder is active, and performs the swap once the created block has
+     * arrived in the document.
+     */
+    private suspend fun resolveTrailingPlaceholder(
+        models: List<Block>,
+        focus: Editor.Focus
+    ): Pair<List<Block>, Editor.Focus> {
+        val state = trailingPlaceholder ?: return models to focus
+        val materialized = state.materialized
+        if (materialized == null || models.none { it.id == materialized }) {
+            // Placeholder is visible: render it as a regular trailing paragraph.
+            // It exists only in the render input, never in the document store.
+            val virtual = Block(
+                id = VIRTUAL_TRAILING_BLOCK_ID,
+                children = emptyList(),
+                content = Content.Text(
+                    text = state.text,
+                    style = Content.Text.Style.P,
+                    marks = state.marks
+                ),
+                fields = Block.Fields.empty()
+            )
+            val appended = models.map { block ->
+                if (block.id == context) {
+                    block.copy(children = block.children + VIRTUAL_TRAILING_BLOCK_ID)
+                } else {
+                    block
+                }
+            } + virtual
+            return appended to focus
+        }
+        // The created block has arrived — swap the placeholder for it.
+        trailingPlaceholder = null
+        var result = models
+        var effectiveFocus = focus
+        val userFocus = state.userFocus
+        if (userFocus != null) {
+            // The user moved the caret elsewhere while the create was in flight —
+            // don't steal it back into the created block.
+            effectiveFocus = Editor.Focus(
+                target = Editor.Focus.Target.Block(userFocus),
+                cursor = null,
+                isPending = false
+            )
+            orchestrator.stores.focus.update(effectiveFocus)
+        } else if (focus.isTarget(VIRTUAL_TRAILING_BLOCK_ID) || focus.isTarget(materialized)) {
+            val selection = orchestrator.stores.textSelection.current()
+                .takeIf { it.id == VIRTUAL_TRAILING_BLOCK_ID }
+                ?.selection?.last
+                ?.coerceIn(0, state.text.length)
+                ?: state.text.length
+            effectiveFocus = Editor.Focus(
+                target = Editor.Focus.Target.Block(materialized),
+                cursor = Editor.Cursor.Range(selection..selection)
+            )
+            orchestrator.stores.focus.update(effectiveFocus)
+        }
+        val content = models.first { it.id == materialized }.content
+        if (content is Content.Text && content.text != state.text) {
+            // Text typed while the create request was in flight: patch this render's
+            // input and the local document.
+            result = models.map { block ->
+                if (block.id == materialized) {
+                    block.copy(content = content.copy(text = state.text, marks = state.marks))
+                } else {
+                    block
+                }
+            }
+            // Patch the live store rather than writing the render snapshot back:
+            // the snapshot may predate events applied while this render was queued.
+            orchestrator.stores.document.update(
+                blocks.map { block ->
+                    val current = block.content
+                    if (block.id == materialized && current is Content.Text) {
+                        block.copy(content = current.copy(text = state.text, marks = state.marks))
+                    } else {
+                        block
+                    }
+                }
+            )
+            flushTrailingPlaceholderDivergence(state, materialized)
+            // Re-render from the live store so any stale render queued with a
+            // pre-patch snapshot is superseded.
+            viewModelScope.launch { refresh() }
+        }
+        if (state.onMaterialized.isNotEmpty()) {
+            val actions = state.onMaterialized.toList()
+            viewModelScope.launch {
+                // This mapping runs on Main.immediate, so an immediate launch would
+                // execute before the pipeline stores this render's views. Yield past
+                // it: replays must observe the post-swap views store.
+                yield()
+                actions.forEach { action -> action(materialized) }
+            }
+        }
+        return result to effectiveFocus
+    }
+
+    private fun proceedWithTrailingPlaceholderTextChange(view: BlockView.Text) {
+        val state = trailingPlaceholder
+        if (state == null) {
+            // The placeholder has already been swapped for a real block, but this
+            // change was dispatched against the old id — redirect to the created block.
+            val target = lastMaterializedTrailingBlock ?: return
+            val update = TextUpdate.Pattern(
+                target = target,
+                text = view.text,
+                markup = view.marks.map { it.mark() }
+            )
+            viewModelScope.launch {
+                val store = orchestrator.stores.views
+                store.update(
+                    store.current().map { current ->
+                        if (current.id == target && current is BlockView.Text) {
+                            current.apply {
+                                text = view.text
+                                marks = view.marks
+                            }
+                        } else {
+                            current
+                        }
+                    }
+                )
+            }
+            viewModelScope.launch { orchestrator.proxies.changes.send(update) }
+            return
+        }
+        state.text = view.text
+        state.marks = view.marks.map { it.mark() }
+        viewModelScope.launch {
+            val store = orchestrator.stores.views
+            store.update(store.current().map { if (it.id == view.id) view else it })
+        }
+        if (!state.isMaterializing && view.text.isNotEmpty()) {
+            // First real input: create the block already carrying it.
+            materializeTrailingPlaceholder()
+        }
+    }
+
+    private fun proceedWithTrailingPlaceholderEnter(
+        text: String,
+        marks: List<Content.Text.Mark>,
+        range: IntRange
+    ) {
+        val state = trailingPlaceholder
+        if (state == null) {
+            val target = lastMaterializedTrailingBlock ?: return
+            proceedWithEnterEvent(target, range, text, marks)
+            return
+        }
+        state.text = text
+        state.marks = marks
+        // Replay the enter against the created block, mirroring enter behavior
+        // on a real empty trailing block.
+        state.onMaterialized += { id -> proceedWithEnterEvent(id, range, text, marks) }
+        materializeTrailingPlaceholder()
+    }
+
+    private fun proceedWithTrailingPlaceholderBackspace() {
+        val state = trailingPlaceholder
+        if (state == null) {
+            // Already swapped: give the created block the standard empty-backspace
+            // treatment (unlink + focus previous).
+            lastMaterializedTrailingBlock?.let { onEmptyBlockBackspaceClicked(it) }
+            return
+        }
+        if (state.isMaterializing) {
+            // The block is being created — replay the backspace against it after the swap.
+            state.onMaterialized += { id -> onEmptyBlockBackspaceClicked(id) }
+            return
+        }
+        // Nothing was created — just dismiss the placeholder and move the caret
+        // to the last focusable text block above it.
+        trailingPlaceholder = null
+        val previous = views.lastOrNull { view ->
+            view.id != VIRTUAL_TRAILING_BLOCK_ID
+                    && (view is BlockView.Text || view is BlockView.Title || view is BlockView.Description)
+        }
+        viewModelScope.launch {
+            if (previous != null) {
+                orchestrator.stores.focus.update(
+                    Editor.Focus(
+                        target = Editor.Focus.Target.Block(previous.id),
+                        cursor = Editor.Cursor.End
+                    )
+                )
+            } else {
+                orchestrator.stores.focus.update(Editor.Focus.empty())
+            }
+            refresh()
+        }
+    }
+
+    private fun proceedWithTrailingPlaceholderFocusLost() {
+        val state = trailingPlaceholder ?: return
+        if (state.isMaterializing || state.text.isNotEmpty()) return
+        // Focus left the placeholder with nothing typed: it simply goes away.
+        // Nothing was created, nothing to clean up, nothing synced.
+        trailingPlaceholder = null
+        viewModelScope.launch { refresh() }
+    }
+
+    //endregion
+
+    //region IDENTITY FORK
+
+    /**
+     * First content into an existing EMPTY text block forks the block identity.
+     *
+     * Block text is whole-value last-writer-wins keyed by block id, so any empty
+     * block is a shared register: two users filling the same empty block
+     * concurrently lose one text on merge. Instead of BlockTextSetText, the first
+     * real input replaces the block via BlockReplace with a model carrying the
+     * new content plus everything the empty block already had (style, checked,
+     * colors, align, fields). Replace is remove+create in one atomic change, so
+     * two concurrent fills produce two blocks — both texts survive.
+     */
+    private var identityFork: IdentityForkState? = null
+
+    /**
+     * Old id → new id of the most recent fork. Events the UI dispatches against
+     * the old id after the swap are redirected to the created block.
+     */
+    private var lastForkedBlock: Pair<Id, Id>? = null
+
+    private val forkPatternMatcher = DefaultPatternMatcher()
+
+    private class IdentityForkState(
+        val oldId: Id,
+        var text: String,
+        var marks: List<Content.Text.Mark>,
+        var forked: Id? = null,
+        /** Text/marks last known to be synced to the middleware for the new block. */
+        var syncedText: String = text,
+        var syncedMarks: List<Content.Text.Mark> = marks,
+        /** Block the user moved focus to while the replace was in flight. */
+        var userFocus: Id? = null,
+        /** Actions deferred until the replacement block is swapped in. */
+        val onForked: MutableList<(Id) -> Unit> = mutableListOf()
+    )
+
+    /**
+     * Resolves the forked id for an event dispatched against the pre-fork id
+     * after the swap. Returns null — clearing the stale mapping — when the old
+     * block has reappeared in the document (undo of the BlockReplace): events
+     * must then target the restored block again, not the removed forked one.
+     */
+    private fun forkRedirectOrNull(id: Id): Id? {
+        val redirect = lastForkedBlock ?: return null
+        if (id != redirect.first) return null
+        if (blocks.any { it.id == redirect.first }) {
+            lastForkedBlock = null
+            return null
+        }
+        return redirect.second
+    }
+
+    /**
+     * True when first content into [target] must fork the block identity instead
+     * of writing text into the existing (empty) block.
+     */
+    private fun shouldForkBlockIdentity(target: Block, newText: String): Boolean {
+        if (newText.isEmpty()) return false
+        if (identityFork != null) return false
+        val content = target.content
+        if (content !is Content.Text) return false
+        if (content.text.isNotEmpty()) return false
+        // Replacing a block with children would orphan them (e.g. toggle header).
+        if (target.children.isNotEmpty()) return false
+        // Detail-backed blocks — the middleware rejects replacing them.
+        if (content.style == Content.Text.Style.TITLE) return false
+        if (content.style == Content.Text.Style.DESCRIPTION) return false
+        // Table cell ids are structural (row-column composites) — never replace.
+        val parent = blocks.find { it.children.contains(target.id) }
+        if (parent?.content is Content.TableRow) return false
+        // Markdown shortcuts are handled by the pattern matcher, whose Replace
+        // already allocates a new id — let that flow proceed unchanged.
+        if (forkPatternMatcher.match(newText).isNotEmpty()) return false
+        // Slash-menu input is a command, not content: the chosen slash action
+        // itself replaces or restyles the empty block — keep that flow unchanged.
+        if (newText.first() == SLASH_CHAR) return false
+        return true
+    }
+
+    private fun proceedWithForkingBlockIdentity(
+        target: Block,
+        text: String,
+        marks: List<Content.Text.Mark>
+    ) {
+        val content = target.content<Content.Text>()
+        val state = IdentityForkState(oldId = target.id, text = text, marks = marks)
+        identityFork = state
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.CRUD.Replace(
+                    context = context,
+                    target = target.id,
+                    prototype = Prototype.Text(
+                        style = content.style,
+                        text = text,
+                        marks = marks,
+                        checked = content.isChecked,
+                        color = content.color,
+                        iconEmoji = content.iconEmoji,
+                        iconImage = content.iconImage,
+                        align = content.align,
+                        backgroundColor = target.backgroundColor,
+                        fields = target.fields
+                    ),
+                    onSuccess = { id ->
+                        // Invoked before the payload is dispatched, so the swap
+                        // render below is guaranteed to see the forked id.
+                        state.forked = id
+                        lastForkedBlock = target.id to id
+                        // Input that arrived while the replace was in flight must
+                        // not wait for the swap render — the editor may be closed
+                        // before it happens. Sync it to the middleware now.
+                        flushIdentityForkDivergence(state, id)
+                    },
+                    onFailure = {
+                        // The old block still exists — fall back to the regular
+                        // set-text flow so no typed text is lost, and replay any
+                        // deferred actions (enter, backspace, toolbar) against it.
+                        identityFork = null
+                        val pending = state.onForked.toList()
+                        state.onForked.clear()
+                        viewModelScope.launch {
+                            orchestrator.proxies.changes.send(
+                                TextUpdate.Pattern(
+                                    target = state.oldId,
+                                    text = state.text,
+                                    markup = state.marks
+                                )
+                            )
+                        }
+                        if (pending.isNotEmpty()) {
+                            viewModelScope.launch {
+                                yield()
+                                pending.forEach { action -> action(state.oldId) }
+                            }
+                        }
+                    }
+                )
+            )
+        }
+    }
+
+    /**
+     * Syncs input buffered while a block-identity request was in flight straight
+     * to the middleware, bypassing the render pipeline: waiting for the swap
+     * render would lose the tail when the editor is closed before it happens.
+     */
+    private fun flushIdentityForkDivergence(state: IdentityForkState, target: Id) {
+        if (state.text == state.syncedText && state.marks == state.syncedMarks) return
+        val text = state.text
+        val marks = state.marks
+        state.syncedText = text
+        state.syncedMarks = marks
+        flushBufferedTextDivergence(target = target, text = text, marks = marks)
+    }
+
+    /**
+     * A markdown shortcut completed while the request was in flight must still
+     * convert: route it through the pattern pipeline (whose match ends in a
+     * style Replace, not a save). Anything else is synced with a direct
+     * set-text — the saves pipeline would drop it as a no-op once the local
+     * document has been patched with the buffered text.
+     */
+    private fun flushBufferedTextDivergence(
+        target: Id,
+        text: String,
+        marks: List<Content.Text.Mark>
+    ) {
+        if (forkPatternMatcher.match(text).isNotEmpty()) {
+            viewModelScope.launch {
+                orchestrator.proxies.changes.send(
+                    TextUpdate.Pattern(target = target, text = text, markup = marks)
+                )
+            }
+        } else {
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Text.UpdateText(
+                        context = context,
+                        target = target,
+                        text = text,
+                        marks = marks
+                    )
+                )
+            }
+        }
+    }
+
+    /**
+     * Called from the render pipeline: keeps the old block rendered with the
+     * buffered text while the replace is in flight, and swaps all local
+     * references to the new id once the replacement block has arrived.
+     */
+    private suspend fun resolveIdentityFork(
+        models: List<Block>,
+        focus: Editor.Focus
+    ): Pair<List<Block>, Editor.Focus> {
+        val state = identityFork ?: return models to focus
+        val forked = state.forked
+        if (forked == null || models.none { it.id == forked }) {
+            // Replace still in flight: render the old block with the buffered
+            // input so a concurrent re-render doesn't clobber what the user typed.
+            val patched = models.map { block ->
+                val content = block.content
+                if (block.id == state.oldId && content is Content.Text) {
+                    block.copy(content = content.copy(text = state.text, marks = state.marks))
+                } else {
+                    block
+                }
+            }
+            return patched to focus
+        }
+        // The replacement block has arrived — swap local references to it.
+        identityFork = null
+        var result = models
+        var effectiveFocus = focus
+        // Preserve the expansion state of an (empty) toggle across the id swap.
+        if (renderer.isToggled(state.oldId) && !renderer.isToggled(forked)) {
+            renderer.onToggleChanged(forked)
+        }
+        val userFocus = state.userFocus
+        if (userFocus != null) {
+            // The user moved the caret elsewhere while the replace was in flight —
+            // don't steal it back into the forked block.
+            effectiveFocus = Editor.Focus(
+                target = Editor.Focus.Target.Block(userFocus),
+                cursor = null,
+                isPending = false
+            )
+            orchestrator.stores.focus.update(effectiveFocus)
+        } else if (focus.isTarget(state.oldId) || focus.isTarget(forked)) {
+            val selection = orchestrator.stores.textSelection.current()
+                .takeIf { it.id == state.oldId || it.id == forked }
+                ?.selection?.last
+                ?.coerceIn(0, state.text.length)
+                ?: state.text.length
+            effectiveFocus = Editor.Focus(
+                target = Editor.Focus.Target.Block(forked),
+                cursor = Editor.Cursor.Range(selection..selection)
+            )
+            orchestrator.stores.focus.update(effectiveFocus)
+        }
+        val content = models.first { it.id == forked }.content
+        if (content is Content.Text && (content.text != state.text || content.marks != state.marks)) {
+            // Input arrived while the replace was in flight: patch this render's
+            // input and the local document.
+            result = models.map { block ->
+                if (block.id == forked) {
+                    block.copy(content = content.copy(text = state.text, marks = state.marks))
+                } else {
+                    block
+                }
+            }
+            // Patch the live store rather than writing the render snapshot back.
+            orchestrator.stores.document.update(
+                blocks.map { block ->
+                    val current = block.content
+                    if (block.id == forked && current is Content.Text) {
+                        block.copy(content = current.copy(text = state.text, marks = state.marks))
+                    } else {
+                        block
+                    }
+                }
+            )
+            flushIdentityForkDivergence(state, forked)
+            viewModelScope.launch { refresh() }
+        }
+        if (state.onForked.isNotEmpty()) {
+            val actions = state.onForked.toList()
+            viewModelScope.launch {
+                // Replays must observe the post-swap views store — yield past the
+                // pipeline's views.update (this mapping runs on Main.immediate).
+                yield()
+                actions.forEach { action -> action(forked) }
+            }
+        }
+        return result to effectiveFocus
+    }
+
+    /**
+     * Routes a text change for a block involved in an identity fork.
+     * Returns true when the change was consumed.
+     */
+    private fun proceedWithIdentityForkTextChange(
+        id: Id,
+        text: String,
+        marks: List<Content.Text.Mark>,
+        viewMarks: List<Markup.Mark>? = null,
+        syncViewsStore: () -> Unit
+    ): Boolean {
+        val state = identityFork
+        if (state != null && id == state.oldId) {
+            // Replace in flight: buffer the input; it is synced at the swap.
+            state.text = text
+            state.marks = marks
+            syncViewsStore()
+            return true
+        }
+        val redirected = forkRedirectOrNull(id)
+        if (redirected != null) {
+            // Dispatched against the pre-fork id after the swap — retarget.
+            val update = TextUpdate.Pattern(target = redirected, text = text, markup = marks)
+            viewModelScope.launch {
+                val store = orchestrator.stores.views
+                store.update(
+                    store.current().map { current ->
+                        if (current.id == redirected && current is BlockView.Text) {
+                            current.apply {
+                                this.text = text
+                                if (viewMarks != null) this.marks = viewMarks
+                            }
+                        } else {
+                            current
+                        }
+                    }
+                )
+            }
+            viewModelScope.launch { orchestrator.proxies.changes.send(update) }
+            return true
+        }
+        // Not part of a fork: check whether this change must start one.
+        val target = blocks.find { it.id == id } ?: return false
+        if (!shouldForkBlockIdentity(target, text)) return false
+        syncViewsStore()
+        proceedWithForkingBlockIdentity(target, text, marks)
+        return true
+    }
+
+    //endregion
+
     //Todo this method need refactoring
     fun onHideKeyboardClicked() {
         Timber.d("onHideKeyboardClicked, ")
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnClearFocusClicked)
         viewModelScope.launch { orchestrator.stores.focus.update(Editor.Focus.empty()) }
         views.onEach { if (it is Focusable) it.isFocused = false }
+        proceedWithTrailingPlaceholderFocusLost()
         viewModelScope.launch { renderCommand.send(Unit) }
         viewModelScope.launch { analytics.sendHideKeyboardEvent() }
     }
@@ -3546,6 +4425,11 @@ class EditorViewModel(
         objectTypeView: ObjectTypeView,
         fromSlashMenu: Boolean = false
     ) {
+        if (deferUntilBlockIdentitySettled {
+                onAddNewObjectClicked(objectTypeView, fromSlashMenu)
+            }
+        ) return
+
         val position: Position
 
         val focused = blocks.find { it.id == orchestrator.stores.focus.current().targetOrNull() }
@@ -3694,6 +4578,8 @@ class EditorViewModel(
     fun onAddBookmarkBlockClicked() {
         Timber.d("onAddBookmarkBlockClicked, ")
 
+        if (deferUntilBlockIdentitySettled { onAddBookmarkBlockClicked() }) return
+
         val focus = orchestrator.stores.focus.current().targetOrNull() ?: return
         val focused = blocks.find { it.id == focus } ?: return
 
@@ -3803,6 +4689,7 @@ class EditorViewModel(
     }
 
     private fun onBlockMultiSelectClicked(target: Id) {
+        if (target == VIRTUAL_TRAILING_BLOCK_ID) return
         proceedWithTogglingSelection(target)
         proceedWithUpdatingActionsForCurrentSelection()
     }
@@ -3852,11 +4739,23 @@ class EditorViewModel(
         range: IntRange
     ) {
         Timber.d("onPaste, range:[$range]")
+        var focused = orchestrator.stores.focus.current().targetOrNull()
+        if (focused == VIRTUAL_TRAILING_BLOCK_ID) {
+            val state = trailingPlaceholder
+            if (state != null) {
+                // Paste is the first real input: create the block first, then
+                // replay the paste against the created block.
+                state.onMaterialized += { onPaste(range) }
+                materializeTrailingPlaceholder()
+                return
+            }
+            focused = lastMaterializedTrailingBlock ?: return
+        }
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Clipboard.Paste(
                     context = context,
-                    focus = orchestrator.stores.focus.current().targetOrNull().orEmpty(),
+                    focus = focused.orEmpty(),
                     range = range,
                     selected = emptyList()
                 )
@@ -3870,6 +4769,15 @@ class EditorViewModel(
     ) {
 
         Timber.d("onApplyScrollAndMove, target:[$target] ratio:[$ratio]")
+
+        if (target == VIRTUAL_TRAILING_BLOCK_ID) {
+            // Dropping on the placeholder row means "move to the end of the document".
+            val lastReal = blocks.find { it.id == context }?.children?.lastOrNull()
+            if (lastReal != null) {
+                onApplyScrollAndMove(target = lastReal, ratio = 2f)
+            }
+            return
+        }
 
         val ordering = views.mapIndexed { index, view -> view.id to index }.toMap()
 
@@ -4199,6 +5107,7 @@ class EditorViewModel(
                 dispatch(Command.OpenDocumentImagePicker(Mimetype.MIME_IMAGE_ALL))
             }
             is ListenerType.LongClick -> {
+                if (clicked.target == VIRTUAL_TRAILING_BLOCK_ID) return
                 when (mode) {
                     EditorMode.Edit -> proceedWithEnteringActionMode(clicked.target)
                     EditorMode.Select -> onBlockMultiSelectClicked(target = clicked.target)
@@ -4765,14 +5674,6 @@ class EditorViewModel(
         )
     }
 
-    private fun addNewBlockAtTheEnd() {
-        proceedWithCreatingNewTextBlock(
-            target = "",
-            position = Position.INNER,
-            style = Content.Text.Style.P
-        )
-    }
-
     fun proceedWithOpeningObject(target: Id) {
         viewModelScope.launch {
             closePage.async(
@@ -5149,6 +6050,12 @@ class EditorViewModel(
         const val EMPTY_TEXT = ""
         const val EMPTY_CONTEXT = ""
         const val EMPTY_FOCUS_ID = ""
+
+        /**
+         * Id of the client-side virtual trailing block ("click-to-type" placeholder).
+         * Never sent to the middleware: the real block is created on first input.
+         */
+        const val VIRTUAL_TRAILING_BLOCK_ID = "virtual-trailing-block"
         const val TEXT_CHANGES_DEBOUNCE_DURATION = 500L
         const val DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE = 150L
         const val DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE = 300L
@@ -5218,6 +6125,7 @@ class EditorViewModel(
 
     fun onSlashItemClicked(item: SlashItem) {
         Timber.v("onSlashItemClicked, item:[$item]")
+        if (deferUntilBlockIdentitySettled { onSlashItemClicked(item) }) return
         val target = orchestrator.stores.focus.current()
         if (!target.isEmpty) {
             proceedWithSlashItem(item, target.requireTarget())
@@ -6796,6 +7704,18 @@ class EditorViewModel(
         target: Id,
         position: Position
     ) {
+        if (dragged == VIRTUAL_TRAILING_BLOCK_ID) {
+            // The placeholder is not a real block and cannot be moved.
+            return
+        }
+        if (target == VIRTUAL_TRAILING_BLOCK_ID) {
+            // Dropping onto the placeholder row means "move to the end of the document".
+            val lastReal = blocks.find { it.id == context }?.children?.lastOrNull()
+            if (lastReal != null && lastReal != dragged) {
+                onDragAndDrop(dragged = dragged, target = lastReal, position = Position.BOTTOM)
+            }
+            return
+        }
         val descendants = blocks.asMap().descendants(parent = dragged)
 
         if (descendants.contains(target)) {

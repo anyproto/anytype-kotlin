@@ -51,6 +51,7 @@ sealed class Intent {
             val target: Id,
             val prototype: Block.Prototype,
             val onSuccess: ((Id) -> Unit)? = null,
+            val onFailure: (() -> Unit)? = null,
             val route: String? = null
         ) : CRUD()
 
@@ -60,6 +61,7 @@ sealed class Intent {
             val position: Position,
             val prototype: Block.Prototype,
             val onSuccess: ((Id) -> Unit)? = null,
+            val onFailure: (() -> Unit)? = null,
             val isDate: Boolean = false,
             val route: String? = null
         ) : CRUD()

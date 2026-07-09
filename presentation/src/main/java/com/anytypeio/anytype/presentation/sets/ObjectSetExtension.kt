@@ -340,7 +340,9 @@ fun Viewer.isEmpty(): Boolean =
         is Viewer.GalleryView -> this.items.isEmpty()
         is Viewer.GridView -> this.rows.isEmpty()
         is Viewer.ListView -> this.items.isEmpty()
-        is Viewer.Board -> this.columns.all { it.cards.isEmpty() }
+        // A board with columns is never "empty" — empty columns still render (with their
+        // per-column create affordance); only a board with no columns at all has nothing to show.
+        is Viewer.Board -> this.columns.isEmpty()
         is Viewer.Unsupported -> false
     }
 

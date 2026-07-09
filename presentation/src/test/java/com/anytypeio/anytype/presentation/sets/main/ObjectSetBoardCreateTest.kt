@@ -74,9 +74,6 @@ class ObjectSetBoardCreateTest : ObjectSetViewModelTestSetup() {
                 mapOf(root to mapOf(Relations.LAYOUT to ObjectType.Layout.COLLECTION.code.toDouble()))
             )
         )
-        getOptions.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(emptyList<ObjectWrapper.Option>())
-        }
 
         // The board viewer has no explicit type → the create flow falls back to the space
         // default type; make that resolvable.

@@ -12,9 +12,15 @@ import com.anytypeio.anytype.core_models.StubDataView
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
+import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ViewEditAction
+import com.anytypeio.anytype.presentation.sets.model.Viewer
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -30,6 +36,7 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoInteractions
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -69,9 +76,6 @@ class ObjectSetBoardSubscriptionTest : ObjectSetViewModelTestSetup() {
                 mapOf(root to mapOf(Relations.LAYOUT to ObjectType.Layout.COLLECTION.code.toDouble()))
             )
         )
-        getOptions.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(emptyList<ObjectWrapper.Option>())
-        }
     }
 
     @Test
@@ -180,6 +184,178 @@ class ObjectSetBoardSubscriptionTest : ObjectSetViewModelTestSetup() {
         // No board group/record subscriptions are started for a BOARD view while the flag is off.
         verify(boardGroupSubscriptionContainer, never()).observe(any())
         verify(boardRecordsSubscriptionContainer, never()).observe(any())
+    }
+
+    @Test
+    fun `cancels the removed column's backend subscription when the group set shrinks`() = runTest {
+        stubBoardCollection()
+        val groupsFlow = MutableStateFlow(
+            listOf(
+                DataViewGroup(id = "g1", value = DataViewGroup.Value.Status("opt1")),
+                DataViewGroup(id = "g2", value = DataViewGroup.Value.Status("opt2"))
+            )
+        )
+        boardGroupSubscriptionContainer.stub {
+            on { observe(any()) } doReturn groupsFlow
+        }
+        boardRecordsSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flowOf(emptyMap())
+        }
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        // The g2 group disappears (e.g. its option was deleted) while the board stays open.
+        groupsFlow.value = listOf(DataViewGroup(id = "g1", value = DataViewGroup.Value.Status("opt1")))
+        advanceUntilIdle()
+
+        // The stale column's backend subscription must be cancelled, not left streaming on the
+        // middleware until the session ends.
+        verifyBlocking(boardRecordsSubscriptionContainer) {
+            unsubscribe(listOf("$root-board-records-g2"))
+        }
+    }
+
+    @Test
+    fun `an all-empty board renders its columns instead of the generic no-items state`() = runTest {
+        stubBoardCollection()
+        boardGroupSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flowOf(
+                listOf(DataViewGroup(id = "g1", value = DataViewGroup.Value.Status("opt1")))
+            )
+        }
+        boardRecordsSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flowOf(emptyMap())
+        }
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        // Groups are loaded but every column has zero cards: the board must render its columns
+        // (with the per-column "New" affordance), not collapse to the generic NoItems screen.
+        val state = vm.currentViewer.value
+        assertTrue(
+            state is DataViewViewState.Collection.Default,
+            "Expected Default board state but was $state"
+        )
+        val viewer = (state as DataViewViewState.Collection.Default).viewer
+        assertTrue(viewer is Viewer.Board)
+        assertTrue((viewer as Viewer.Board).columns.isNotEmpty())
+    }
+
+    @Test
+    fun `a board renders the loading state until its groups arrive`() = runTest {
+        stubBoardCollection()
+        // The group subscription never emits: columns are unknown, not known-empty.
+        boardGroupSubscriptionContainer.stub {
+            on { observe(any()) } doReturn emptyFlow()
+        }
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        assertTrue(
+            vm.currentViewer.value is DataViewViewState.Init,
+            "Expected Init while groups load but was ${vm.currentViewer.value}"
+        )
+    }
+
+    @Test
+    fun `column headers follow live option changes`() = runTest {
+        stubBoardCollection()
+        boardGroupSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flowOf(
+                listOf(DataViewGroup(id = "g1", value = DataViewGroup.Value.Status("opt1")))
+            )
+        }
+        boardRecordsSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flowOf(emptyMap())
+        }
+        val optionsFlow = MutableStateFlow(
+            listOf(
+                ObjectWrapper.Basic(
+                    mapOf(
+                        Relations.ID to "opt1",
+                        Relations.NAME to "Backlog",
+                        Relations.RELATION_OPTION_COLOR to "red"
+                    )
+                )
+            )
+        )
+        storelessSubscriptionContainer.stub {
+            on { subscribe(any<StoreSearchParams>()) } doReturn optionsFlow
+        }
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        fun columnLabel(): String? {
+            val state = vm.currentViewer.value as? DataViewViewState.Collection.Default
+            val board = state?.viewer as? Viewer.Board
+            return board?.columns?.firstOrNull { it.id == "g1" }?.label
+        }
+
+        assertEquals("Backlog", columnLabel())
+
+        // The option is renamed while the board is open (e.g. from another device or the
+        // relation editor); the column header must follow without reopening the board.
+        optionsFlow.value = listOf(
+            ObjectWrapper.Basic(
+                mapOf(
+                    Relations.ID to "opt1",
+                    Relations.NAME to "Done",
+                    Relations.RELATION_OPTION_COLOR to "blue"
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        assertEquals("Done", columnLabel())
+    }
+
+    @Test
+    fun `a failing group subscription surfaces the error state`() = runTest {
+        stubBoardCollection()
+        boardGroupSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flow { throw IllegalStateException("backend down") }
+        }
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        // A dead group subscription means the board can never populate: show an explicit
+        // error instead of an eternal loading/empty board.
+        assertTrue(
+            vm.currentViewer.value is DataViewViewState.Error,
+            "Expected Error state but was ${vm.currentViewer.value}"
+        )
+    }
+
+    @Test
+    fun `a failing record subscription surfaces the error state`() = runTest {
+        stubBoardCollection()
+        boardGroupSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flowOf(
+                listOf(DataViewGroup(id = "g1", value = DataViewGroup.Value.Status("opt1")))
+            )
+        }
+        boardRecordsSubscriptionContainer.stub {
+            on { observe(any()) } doReturn flow { throw IllegalStateException("backend down") }
+        }
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        assertTrue(
+            vm.currentViewer.value is DataViewViewState.Error,
+            "Expected Error state but was ${vm.currentViewer.value}"
+        )
     }
 
     @Test

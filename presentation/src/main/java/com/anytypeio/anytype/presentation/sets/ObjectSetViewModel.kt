@@ -24,6 +24,8 @@ import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.RelationFormat
@@ -52,8 +54,9 @@ import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
-import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.BoardGroupSubscriptionContainer
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.search.BoardRecordsSubscriptionContainer
 import com.anytypeio.anytype.presentation.extension.removeUnsupportedFilters
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDataViewFilters
@@ -231,9 +234,9 @@ class ObjectSetViewModel(
     private val deepLinkResolver: DeepLinkResolver,
     private val setDataViewProperties: SetDataViewProperties,
     private val setDataViewObjectOrder: SetDataViewObjectOrder,
-    private val getOptions: GetOptions,
     private val boardGroupSubscriptionContainer: BoardGroupSubscriptionContainer,
     private val boardRecordsSubscriptionContainer: BoardRecordsSubscriptionContainer,
+    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val emojiProvider: EmojiProvider,
     private val emojiSuggester: EmojiSuggester,
     private val stringResourceProvider: StringResourceProvider,
@@ -291,8 +294,12 @@ class ObjectSetViewModel(
      */
     private val boardGroupOptions = MutableStateFlow<Map<Id, ObjectWrapper.Option>>(emptyMap())
 
-    /** Live groups (columns) of the active board view, from the backend group subscription. */
-    private val boardGroups = MutableStateFlow<List<DataViewGroup>>(emptyList())
+    /**
+     * Live groups (columns) of the active board view, from the backend group subscription.
+     * `null` means the subscription hasn't delivered yet (board still loading), as opposed
+     * to an empty list (loaded, no groups) — the render layer shows Init for the former.
+     */
+    private val boardGroups = MutableStateFlow<List<DataViewGroup>?>(null)
 
     /** Per-column record pages (ids + backend total), one paged subscription per column. */
     private val boardRecords = MutableStateFlow<Map<Id, BoardRecordsSubscriptionContainer.GroupPage>>(emptyMap())
@@ -300,17 +307,28 @@ class ObjectSetViewModel(
     /** Subscription ids of the currently active per-column record subscriptions, for cleanup. */
     private var boardRecordSubscriptionIds: List<Id> = emptyList()
 
+    /** Subscription id of the live options (column headers) of the board's group relation. */
+    private val boardOptionsSubscriptionId = "${vmParams.ctx}$SUBSCRIPTION_BOARD_OPTIONS_POSTFIX"
+
     /** Whether the experimental Kanban (Board) view is enabled; when off, BOARD views are unsupported. */
     private val isKanbanEnabled = userSettingsRepository.observeKanbanEnabled()
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    /**
+     * Terminal failure of the board group/record subscription. Once set, the board can never
+     * populate (a failed flow stays dead until the screen restarts), so the render layer shows
+     * an explicit error instead of an eternal loading/empty board. Cleared in [onStop].
+     */
+    private val boardSubscriptionError = MutableStateFlow<Throwable?>(null)
 
     /** Fires a board re-render whenever any board-specific flow changes. */
     private val boardRenderTrigger = combine(
         boardGroupOptions,
         boardGroups,
         boardRecords,
-        isKanbanEnabled
-    ) { _, _, _, _ -> Unit }
+        isKanbanEnabled,
+        boardSubscriptionError
+    ) { _, _, _, _, _ -> Unit }
 
     private val _dvViews = MutableStateFlow<List<ViewerView>>(emptyList())
 
@@ -862,16 +880,18 @@ class ObjectSetViewModel(
                         boardGroupSubscriptionContainer.observe(params)
                     } else {
                         // Left the board view: drop the backend group subscription instead of
-                        // leaving it streaming until onStop.
+                        // leaving it streaming until onStop. Reset to "not loaded" so a return
+                        // to the board shows the loading state until groups arrive again.
                         boardGroupSubscriptionContainer.unsubscribe(
                             vmParams.ctx + BoardGroupSubscriptionContainer.SUBSCRIPTION_POSTFIX
                         )
-                        flowOf(emptyList())
+                        flowOf(null)
                     }
                 }
                 .catch { e ->
                     Timber.e(e, "Error in board groups subscription")
-                    emit(emptyList())
+                    boardSubscriptionError.value = e
+                    emit(null)
                 }
                 .collect { groups ->
                     boardGroups.value = groups
@@ -925,7 +945,7 @@ class ObjectSetViewModel(
             combine(stateReducer.state, session.currentViewerId, boardGroups, isKanbanEnabled) { state, currentViewId, groups, kanbanEnabled ->
                 val dataView = state.dataViewState()
                 val viewer = dataView?.viewerByIdOrFirst(currentViewId)
-                if (kanbanEnabled && dataView != null && viewer != null && viewer.type == DVViewerType.BOARD && groups.isNotEmpty()) {
+                if (kanbanEnabled && dataView != null && viewer != null && viewer.type == DVViewerType.BOARD && !groups.isNullOrEmpty()) {
                     buildBoardRecordsParams(dataView, viewer, groups)
                 } else {
                     null
@@ -933,16 +953,24 @@ class ObjectSetViewModel(
             }
                 .distinctUntilChanged()
                 .flatMapLatest { params ->
+                    // flatMapLatest only cancels the client flow; each column's backend
+                    // subscription is an external resource that must be cancelled explicitly.
+                    // Unchanged columns keep their subscription id (re-subscribing on the same
+                    // id replaces server-side); columns absent from the new params are stale
+                    // and would otherwise stream on the middleware until the session ends.
+                    val newIds = params?.columns?.map { it.subscription }.orEmpty()
+                    val stale = boardRecordSubscriptionIds.filterNot { it in newIds }
+                    if (stale.isNotEmpty()) boardRecordsSubscriptionContainer.unsubscribe(stale)
+                    boardRecordSubscriptionIds = newIds
                     if (params != null) {
                         boardRecordsSubscriptionContainer.observe(params)
                     } else {
-                        boardRecordsSubscriptionContainer.unsubscribe(boardRecordSubscriptionIds)
-                        boardRecordSubscriptionIds = emptyList()
                         flowOf(emptyMap())
                     }
                 }
                 .catch { e ->
                     Timber.e(e, "Error in board records subscription")
+                    boardSubscriptionError.value = e
                     emit(emptyMap())
                 }
                 .collect { records ->
@@ -997,7 +1025,6 @@ class ObjectSetViewModel(
                 filter = query.filter
             )
         }
-        boardRecordSubscriptionIds = columns.map { it.subscription }
         // Keys the board card actually displays (visible viewer relations); mirrors
         // BoardViewMapper.filteredRelations. Used to keep amend re-render suppression fail-safe.
         val displayedKeys = viewer.viewerRelations
@@ -1018,9 +1045,9 @@ class ObjectSetViewModel(
     }
 
     /**
-     * Loads the relation options (labels + colors) for the active board view's
-     * group relation, so columns can show readable headers. Reloads when the
-     * active view's group relation changes.
+     * Live options (labels + colors) for the active board view's group relation, so column
+     * headers follow option renames/recolors/additions while the board is open. Replaced when
+     * the group relation changes; dropped when leaving the board.
      */
     private fun subscribeToBoardGroupOptions() {
         jobs += viewModelScope.launch {
@@ -1031,23 +1058,62 @@ class ObjectSetViewModel(
                 } else {
                     null
                 }
-            }.distinctUntilChanged().collect { groupRelationKey ->
-                if (groupRelationKey == null) {
-                    boardGroupOptions.value = emptyMap()
-                } else {
-                    getOptions(
-                        GetOptions.Params(
-                            relation = groupRelationKey,
-                            space = vmParams.space.id
-                        )
-                    ).process(
-                        success = { options -> boardGroupOptions.value = options.associateBy { it.id } },
-                        failure = { Timber.e(it, "Error while loading board group options") }
-                    )
-                }
             }
+                .distinctUntilChanged()
+                .flatMapLatest { groupRelationKey ->
+                    if (groupRelationKey == null) {
+                        storelessSubscriptionContainer.unsubscribe(listOf(boardOptionsSubscriptionId))
+                        flowOf(emptyMap())
+                    } else {
+                        storelessSubscriptionContainer.subscribe(
+                            StoreSearchParams(
+                                space = vmParams.space,
+                                subscription = boardOptionsSubscriptionId,
+                                filters = boardGroupOptionsFilters(groupRelationKey),
+                                keys = listOf(
+                                    Relations.ID,
+                                    Relations.NAME,
+                                    Relations.RELATION_OPTION_COLOR
+                                )
+                            )
+                        ).map { options ->
+                            options.associate { option -> option.id to ObjectWrapper.Option(option.map) }
+                        }
+                    }
+                }
+                .catch { e ->
+                    Timber.e(e, "Error in board group options subscription")
+                    emit(emptyMap())
+                }
+                .collect { options ->
+                    boardGroupOptions.value = options
+                }
         }
     }
+
+    /** The non-deleted options of the given relation (same query as the GetOptions use case). */
+    private fun boardGroupOptionsFilters(relationKey: Key): List<DVFilter> = listOf(
+        DVFilter(
+            relation = Relations.LAYOUT,
+            condition = DVFilterCondition.EQUAL,
+            value = ObjectType.Layout.RELATION_OPTION.code.toDouble()
+        ),
+        DVFilter(
+            relation = Relations.IS_DELETED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.RELATION_KEY,
+            condition = DVFilterCondition.EQUAL,
+            value = relationKey
+        )
+    )
 
     private fun subscribeToDataViewViewer() {
         Timber.d("subscribeToDataViewViewer, START SUBSCRIPTION by ctx:[${vmParams.ctx}]")
@@ -1101,6 +1167,19 @@ class ObjectSetViewModel(
         }
     }
 
+    /**
+     * A board viewer renders empty (no columns) both while its group subscription is still
+     * loading and when there are genuinely no groups; only the former should show Init.
+     */
+    private fun isBoardAwaitingGroups(viewer: Viewer): Boolean =
+        viewer is Viewer.Board && boardGroups.value == null
+
+    /** An active board whose group/record subscription died renders an explicit error. */
+    private fun hasBoardSubscriptionFailed(viewer: DVViewer?): Boolean =
+        boardSubscriptionError.value != null
+                && viewer?.type == DVViewerType.BOARD
+                && isKanbanEnabled.value
+
     private suspend fun processCollectionState(
         dataViewState: DataViewState,
         objectState: ObjectState.DataView.Collection,
@@ -1141,7 +1220,11 @@ class ObjectSetViewModel(
                         isCreateObjectAllowed = permission?.isOwnerOrEditor() == true,
                         isEditingViewAllowed = permission?.isOwnerOrEditor() == true
                     )
+                    hasBoardSubscriptionFailed(dvViewer) -> DataViewViewState.Error(
+                        msg = BOARD_SUBSCRIPTION_ERROR_MSG
+                    )
                     viewer.isEmpty() -> {
+                        if (isBoardAwaitingGroups(viewer)) return DataViewViewState.Init
                         val isCreateObjectAllowed = objectState.isCreateObjectAllowed() && permission?.isOwnerOrEditor() == true
                         DataViewViewState.Collection.NoItems(
                             title = viewer.title,
@@ -1213,7 +1296,7 @@ class ObjectSetViewModel(
                     stringResourceProvider = stringResourceProvider,
                     boardGroupOptions = boardGroupOptions.value,
                     boardGroupOrder = groupOrderForView(objectState, viewer?.id),
-                    boardGroups = boardGroups.value,
+                    boardGroups = boardGroups.value.orEmpty(),
                     boardRecordsByColumn = boardRecords.value.mapValues { it.value.ids },
                     boardCountsByColumn = boardRecords.value.mapValues { it.value.total },
                     kanbanEnabled = isKanbanEnabled.value
@@ -1228,7 +1311,11 @@ class ObjectSetViewModel(
                         isCreateObjectAllowed = permission?.isOwnerOrEditor() == true,
                         isEditingViewAllowed = permission?.isOwnerOrEditor() == true
                     )
+                    hasBoardSubscriptionFailed(viewer) -> DataViewViewState.Error(
+                        msg = BOARD_SUBSCRIPTION_ERROR_MSG
+                    )
                     render.isEmpty() -> {
+                        if (isBoardAwaitingGroups(render)) return DataViewViewState.Init
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
                             vmParams.ctx, viewer, storeOfObjectTypes
                         )
@@ -1298,7 +1385,7 @@ class ObjectSetViewModel(
                     stringResourceProvider = stringResourceProvider,
                     boardGroupOptions = boardGroupOptions.value,
                     boardGroupOrder = groupOrderForView(objectState, viewer?.id),
-                    boardGroups = boardGroups.value,
+                    boardGroups = boardGroups.value.orEmpty(),
                     boardRecordsByColumn = boardRecords.value.mapValues { it.value.ids },
                     boardCountsByColumn = boardRecords.value.mapValues { it.value.total },
                     kanbanEnabled = isKanbanEnabled.value
@@ -1308,7 +1395,11 @@ class ObjectSetViewModel(
                     render == null || query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.TypeSet.Error(
                         msg = "Error while rendering viewer",
                     )
+                    hasBoardSubscriptionFailed(viewer) -> DataViewViewState.TypeSet.Error(
+                        msg = BOARD_SUBSCRIPTION_ERROR_MSG
+                    )
                     render.isEmpty() -> {
+                        if (isBoardAwaitingGroups(render)) return DataViewViewState.Init
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
                             vmParams.ctx, viewer, storeOfObjectTypes
                         )
@@ -1355,7 +1446,7 @@ class ObjectSetViewModel(
                 stringResourceProvider = stringResourceProvider,
                 boardGroupOptions = boardGroupOptions.value,
                 boardGroupOrder = groupOrderForView(objectState, it.id),
-                boardGroups = boardGroups.value,
+                boardGroups = boardGroups.value.orEmpty(),
                 boardRecordsByColumn = boardRecords.value.mapValues { entry -> entry.value.ids },
                 boardCountsByColumn = boardRecords.value.mapValues { entry -> entry.value.total },
                 kanbanEnabled = isKanbanEnabled.value
@@ -1385,9 +1476,10 @@ class ObjectSetViewModel(
         // The board group/record collectors live in `jobs` (cancelled above) and are restarted
         // in onStart; clear their state so a reopen re-subscribes from scratch instead of
         // rendering stale columns.
-        boardGroups.value = emptyList()
+        boardGroups.value = null
         boardGroupOptions.value = emptyMap()
         boardRecords.value = emptyMap()
+        boardSubscriptionError.value = null
     }
 
     fun onCloseObject() {
@@ -1425,6 +1517,7 @@ class ObjectSetViewModel(
             boardGroupSubscriptionContainer.unsubscribe(
                 vmParams.ctx + BoardGroupSubscriptionContainer.SUBSCRIPTION_POSTFIX
             )
+            storelessSubscriptionContainer.unsubscribe(listOf(boardOptionsSubscriptionId))
             if (boardRecordSubscriptionIds.isNotEmpty()) {
                 boardRecordsSubscriptionContainer.unsubscribe(boardRecordSubscriptionIds)
                 boardRecordSubscriptionIds = emptyList()
@@ -1892,7 +1985,7 @@ class ObjectSetViewModel(
             Timber.e("onBoardCardDropped: active viewer has no group relation key")
             return
         }
-        val groups = boardGroups.value
+        val groups = boardGroups.value.orEmpty()
         if (groups.isEmpty()) {
             // Columns aren't backed by the authoritative backend group set yet (client-side
             // fallback render). A column id may be an option id there but a group hash once
@@ -1970,7 +2063,7 @@ class ObjectSetViewModel(
             return
         }
         val groupRelationKey = viewer.groupRelationKey
-        val groups = boardGroups.value
+        val groups = boardGroups.value.orEmpty()
         viewModelScope.launch {
             try {
                 val extraPrefilled: Map<Key, Any?> = if (!groupRelationKey.isNullOrEmpty() && groups.isNotEmpty()) {
@@ -2035,7 +2128,7 @@ class ObjectSetViewModel(
             toast(NOT_ALLOWED)
             return
         }
-        if (boardGroups.value.isEmpty()) {
+        if (boardGroups.value.isNullOrEmpty()) {
             // Mirror onBoardCardDropped: only persist order keyed by the authoritative
             // backend group id, never the client-fallback column (option) id.
             Timber.w("onBoardCardReordered: board groups not loaded; ignoring reorder")
@@ -4717,6 +4810,8 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
         const val TOAST_SET_NOT_EXIST = "This object doesn't exist"
         const val DELAY_BEFORE_CREATING_TEMPLATE = 200L
         private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
+        private const val SUBSCRIPTION_BOARD_OPTIONS_POSTFIX = "-board-options"
+        const val BOARD_SUBSCRIPTION_ERROR_MSG = "Couldn't load the board. Please reopen the object."
     }
 
     data class Params(

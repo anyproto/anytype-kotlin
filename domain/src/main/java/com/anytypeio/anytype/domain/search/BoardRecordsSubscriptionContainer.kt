@@ -84,7 +84,12 @@ class BoardRecordsSubscriptionContainer(
                 .flatMapLatest { limit -> observeColumn(params, column, limit) }
         }
         return combine(flows) { pages -> pages.toMap() }
-            .catch { logger.logException(it, "Error in board records subscription container") }
+            .catch {
+                // Log here (with domain context), but let the caller own the failure —
+                // swallowing it would silently render an empty board.
+                logger.logException(it, "Error in board records subscription container")
+                throw it
+            }
             .flowOn(dispatchers.io)
     }
 

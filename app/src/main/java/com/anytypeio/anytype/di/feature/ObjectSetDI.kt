@@ -61,6 +61,7 @@ import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.search.BoardGroupSubscriptionContainer
 import com.anytypeio.anytype.domain.search.BoardRecordsSubscriptionContainer
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
@@ -264,9 +265,9 @@ object ObjectSetModule {
         deepLinkResolver: DeepLinkResolver,
         setDataViewProperties: SetDataViewProperties,
         setDataViewObjectOrder: SetDataViewObjectOrder,
-        getOptions: GetOptions,
         boardGroupSubscriptionContainer: BoardGroupSubscriptionContainer,
         boardRecordsSubscriptionContainer: BoardRecordsSubscriptionContainer,
+        storelessSubscriptionContainer: StorelessSubscriptionContainer,
         emojiProvider: EmojiProvider,
         emojiSuggester: EmojiSuggester,
         stringResourceProvider: StringResourceProvider,
@@ -320,9 +321,9 @@ object ObjectSetModule {
         removeObjectFromCollection = removeObjectFromCollection,
         setDataViewProperties = setDataViewProperties,
         setDataViewObjectOrder = setDataViewObjectOrder,
-        getOptions = getOptions,
         boardGroupSubscriptionContainer = boardGroupSubscriptionContainer,
         boardRecordsSubscriptionContainer = boardRecordsSubscriptionContainer,
+        storelessSubscriptionContainer = storelessSubscriptionContainer,
         emojiProvider = emojiProvider,
         emojiSuggester = emojiSuggester,
         stringResourceProvider = stringResourceProvider,
@@ -571,11 +572,6 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun getOptions(repo: BlockRepository) = GetOptions(repo)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun objectSearchSubscriptionContainer(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
@@ -602,6 +598,11 @@ object ObjectSetModule {
         dispatchers = dispatchers,
         logger = logger
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun getOptions(repo: BlockRepository) = GetOptions(repo)
 
     @JvmStatic
     @Provides

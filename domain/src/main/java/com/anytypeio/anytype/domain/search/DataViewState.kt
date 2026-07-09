@@ -9,7 +9,11 @@ sealed class DataViewState {
     /**
      * @property [objects] data for this subscription
      * @property [dependencies] its dependencies
-     * @property [lastModified] timestamp for data modification
+     * @property [lastModified] monotonically increasing revision, bumped whenever the data —
+     * including backing [com.anytypeio.anytype.domain.objects.ObjectStore] content — changes.
+     * Not a wall-clock timestamp: it exists so that states whose id lists are identical but
+     * whose store content differs never compare equal (downstream relies on StateFlow equality
+     * dedup to skip no-op re-renders).
      */
     data class Loaded(
         val objects: List<Id> = emptyList(),

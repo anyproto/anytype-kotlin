@@ -52,7 +52,7 @@ fun VaultDataSpaceChatCard(
     spaceNotificationState: NotificationState,
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.DataSpaceWithChat,
-    expandedSpaceId: String? = null,
+    isMenuExpanded: Boolean = false,
     isLastMessageOutgoing: Boolean = false,
     isLastMessageSynced: Boolean = true,
     isCompactMode: Boolean = false,
@@ -129,7 +129,7 @@ fun VaultDataSpaceChatCard(
 
         // Include dropdown menu inside the card
         SpaceActionsDropdownMenu(
-            expanded = expandedSpaceId == spaceView.space.id,
+            expanded = isMenuExpanded,
             onDismiss = onDismissMenu,
             menuShape = spaceView.space.spaceType.notificationMenuShape(),
             currentNotificationMode = spaceView.spaceNotificationState,

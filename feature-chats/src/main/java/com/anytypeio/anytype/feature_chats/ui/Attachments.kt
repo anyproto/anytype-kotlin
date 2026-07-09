@@ -58,7 +58,6 @@ fun BubbleAttachments(
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit,
     isUserAuthor: Boolean = false
 ) {
-    var isVideoPreviewLoaded by remember { mutableStateOf(false) }
     val context = LocalContext.current
     attachments.forEachIndexed { idx, attachment ->
         if (idx > 0) {
@@ -82,6 +81,7 @@ fun BubbleAttachments(
                 }
             }
             is ChatView.Message.Attachment.Video -> {
+                var isVideoPreviewLoaded by remember(attachment.obj) { mutableStateOf(false) }
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 4.dp)

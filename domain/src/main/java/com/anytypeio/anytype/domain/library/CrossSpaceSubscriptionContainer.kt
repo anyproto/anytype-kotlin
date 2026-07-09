@@ -15,13 +15,21 @@ import com.anytypeio.anytype.domain.library.processors.EventSetProcessor
 import com.anytypeio.anytype.domain.library.processors.EventUnsetProcessor
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.launch
 
 /**
  * Storeless subscription container for cross-space searches.
@@ -90,32 +98,64 @@ interface CrossSpaceSubscriptionContainer {
 
         private fun subscribe(subscriptions: List<Id>) =
             channel.subscribe(subscriptions).map { payload ->
-                payload.sortedBy { event ->
-                    when (event) {
-                        is SubscriptionEvent.Add -> 1
-                        is SubscriptionEvent.Remove -> 2
-                        is SubscriptionEvent.Set -> 3
-                        is SubscriptionEvent.Amend -> 4
-                        is SubscriptionEvent.Unset -> 5
-                        is SubscriptionEvent.Position -> 6
-                        is SubscriptionEvent.Counter -> 7
-                        is SubscriptionEvent.Group -> 8
+                if (payload.size <= 1) {
+                    payload
+                } else {
+                    payload.sortedBy { event ->
+                        when (event) {
+                            is SubscriptionEvent.Add -> 1
+                            is SubscriptionEvent.Remove -> 2
+                            is SubscriptionEvent.Set -> 3
+                            is SubscriptionEvent.Amend -> 4
+                            is SubscriptionEvent.Unset -> 5
+                            is SubscriptionEvent.Position -> 6
+                            is SubscriptionEvent.Counter -> 7
+                            is SubscriptionEvent.Group -> 8
+                        }
                     }
                 }
             }
 
+        /**
+         * Attaches to the subscription event stream and buffers payloads into an unlimited inbox.
+         * Must be called BEFORE the initial search request is sent, so events emitted by the
+         * middleware while that request is in flight are replayed on top of the initial results
+         * instead of being dropped (the shared event stream has no replay).
+         *
+         * The inbox is deliberately UNBOUNDED: a stalled downstream collector grows heap
+         * instead of back-pressuring the shared event emitter — consistent with the
+         * per-subscriber buffer in MiddlewareSubscriptionEventChannel. There is no backlog
+         * telemetry at this layer; the pipeline's earlier stages warn on high backlog.
+         */
+        private fun CoroutineScope.subscribeToEvents(
+            subscription: Id
+        ): ReceiveChannel<List<SubscriptionEvent>> {
+            val inbox = Channel<List<SubscriptionEvent>>(capacity = Channel.UNLIMITED)
+            launch(start = CoroutineStart.UNDISPATCHED) {
+                try {
+                    subscribe(listOf(subscription)).collect { inbox.send(it) }
+                } finally {
+                    inbox.close()
+                }
+            }
+            return inbox
+        }
+
         override fun subscribe(searchParams: CrossSpaceSearchParams): Flow<List<ObjectWrapper.Basic>> =
             flow {
-                with(searchParams) {
-                    val command = Command.CrossSpaceSearchSubscribe(
-                        subscription = subscription,
-                        filters = filters,
-                        sorts = sorts,
-                        keys = keys,
-                        source = source,
-                        noDepSubscription = true,
-                        collectionId = collection
-                    )
+                coroutineScope {
+                    val events = subscribeToEvents(subscription = searchParams.subscription)
+                    val command = with(searchParams) {
+                        Command.CrossSpaceSearchSubscribe(
+                            subscription = subscription,
+                            filters = filters,
+                            sorts = sorts,
+                            keys = keys,
+                            source = source,
+                            noDepSubscription = true,
+                            collectionId = collection
+                        )
+                    }
                     val initial = repo.crossSpaceSearchSubscribe(command).results.map {
                         SubscriptionObject(
                             id = it.id, objectWrapper = it
@@ -124,7 +164,8 @@ interface CrossSpaceSubscriptionContainer {
                     emitAll(
                         buildObjectsFlow(
                             subscription = searchParams.subscription,
-                            initial = initial
+                            initial = initial,
+                            events = events.consumeAsFlow()
                         )
                     )
                 }
@@ -137,43 +178,51 @@ interface CrossSpaceSubscriptionContainer {
 
         private fun buildObjectsFlow(
             subscription: Id,
-            initial: MutableList<SubscriptionObject>
+            initial: MutableList<SubscriptionObject>,
+            events: Flow<List<SubscriptionEvent>>
         ): Flow<List<ObjectWrapper.Basic>> {
-            val objectsFlow = subscribe(listOf(subscription)).scan(initial) { dataItems, payload ->
-                var result = dataItems
+            val objectsFlow = events.scan(SubscriptionFold(dataItems = initial)) { fold, payload ->
+                var result = fold.dataItems
+                var changed = false
                 payload.forEach { event ->
                     when (event) {
                         is SubscriptionEvent.Add -> {
                             if (event.subscription == subscription) {
                                 result = addEventProcessor.process(event, result)
+                                changed = true
                             }
                         }
 
                         is SubscriptionEvent.Amend -> {
                             if (event.subscriptions.contains(subscription)) {
                                 result = amendEventProcessor.process(event, result)
+                                changed = true
                             }
                         }
 
                         is SubscriptionEvent.Position -> {
                             result = positionEventProcessor.process(event, result)
+                            changed = true
                         }
 
                         is SubscriptionEvent.Remove -> {
                             if (event.subscription == subscription) {
                                 result = removeEventProcessor.process(event, result)
+                                changed = true
                             }
                         }
 
                         is SubscriptionEvent.Set -> {
                             if (event.subscriptions.contains(subscription)) {
                                 result = setEventProcessor.process(event, result)
+                                changed = true
                             }
                         }
 
                         is SubscriptionEvent.Unset -> {
                             if (event.subscriptions.contains(subscription)) {
                                 result = unsetEventProcessor.process(event, result)
+                                changed = true
                             }
                         }
 
@@ -182,9 +231,13 @@ interface CrossSpaceSubscriptionContainer {
                         }
                     }
                 }
-                result
-            }.map { result ->
-                result.mapNotNull { item ->
+                SubscriptionFold(dataItems = result, changed = changed)
+            }.filter { fold ->
+                // Payloads that did not modify the data set (e.g. counter-only payloads)
+                // are skipped before the O(n) rebuild below — no duplicate emission downstream.
+                fold.changed
+            }.map { fold ->
+                fold.dataItems.mapNotNull { item ->
                     if (item.objectWrapper?.isValid == true) {
                         item.objectWrapper
                     } else {

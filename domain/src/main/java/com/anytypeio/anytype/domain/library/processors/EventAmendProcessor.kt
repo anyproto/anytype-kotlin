@@ -13,29 +13,30 @@ class EventAmendProcessor(private val logger: Logger) : SubscriptionEventProcess
         dataItems: MutableList<SubscriptionObject>
     ): MutableList<SubscriptionObject> = with(dataItems) {
 
-        val item = find { it.id == event.target }
-        val index = indexOf(item)
+        val index = indexOfFirst { it.id == event.target }
 
         if (index != -1) {
-            if (item?.objectWrapper != null) {
+            val item = get(index)
+            val objectWrapper = item.objectWrapper
+            if (objectWrapper != null) {
                 set(
                     index,
                     SubscriptionObject(
                         id = item.id,
-                        objectWrapper = item.objectWrapper.amend(event.diff)
+                        objectWrapper = objectWrapper.amend(event.diff)
                     )
                 )
             } else {
                 set(
                     index,
                     SubscriptionObject(
-                        id = item?.id ?: event.target,
+                        id = item.id,
                         objectWrapper = ObjectWrapper.Basic(event.diff)
                     )
                 )
             }
         } else {
-            logger.logWarning("EventAmendProcessor warning. Item with id:${item?.id} is not found in ArrayList:{${this.map { it.id }}}")
+            logger.logWarning("EventAmendProcessor warning. Item with id:${event.target} is not found")
         }
         return this
     }

@@ -21,24 +21,30 @@ suspend fun List<ObjectWrapper.Basic>.toViews(
     urlBuilder: UrlBuilder,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes
-): List<DefaultObjectView> = map { obj ->
-    obj.toView(
-        urlBuilder = urlBuilder,
-        fieldParser = fieldParser,
-        storeOfObjectTypes = storeOfObjectTypes
-    )
+): List<DefaultObjectView> {
+    // Snapshot the type store once instead of copying it for every object.
+    val types = storeOfObjectTypes.getAll()
+    return map { obj ->
+        obj.toView(
+            urlBuilder = urlBuilder,
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes,
+            types = types
+        )
+    }
 }
 
 suspend fun ObjectWrapper.Basic.toView(
     urlBuilder: UrlBuilder,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes,
-    usePluralNames: Boolean = true
+    usePluralNames: Boolean = true,
+    types: List<ObjectWrapper.Type>? = null
 ): DefaultObjectView {
     val obj = this
     val (objTypeId, objTypeName) = fieldParser.getObjectTypeIdAndName(
         objectWrapper = obj,
-        types =  storeOfObjectTypes.getAll()
+        types = types ?: storeOfObjectTypes.getAll()
     )
     val layout = obj.getProperLayout()
     return DefaultObjectView(

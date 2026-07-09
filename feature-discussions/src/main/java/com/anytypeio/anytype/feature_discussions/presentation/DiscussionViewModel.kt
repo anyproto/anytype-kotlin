@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.feature_discussions.presentation
 
+import android.content.ContentResolver
+import android.net.Uri
+import android.provider.OpenableColumns
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
@@ -37,9 +40,14 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_discussions.ui.DiscussionLinkDetector
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
+import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -80,7 +88,8 @@ class DiscussionViewModel @Inject constructor(
     private val subscription: StorelessSubscriptionContainer,
     private val uploadFile: UploadFile,
     private val preloadFile: PreloadFile,
-    private val copyFileToCacheDirectory: CopyFileToCacheDirectory
+    private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
+    private val contentResolver: ContentResolver
 ) : BaseViewModel() {
 
     private val _header = MutableStateFlow(DiscussionHeader())
@@ -106,15 +115,34 @@ class DiscussionViewModel @Inject constructor(
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
 
     private val blockLinkTargets = MutableStateFlow<Set<Id>>(emptySet())
+    // Written from the io mapping coroutine, read from Main (click handlers).
+    @Volatile
     private var latestDependencies: Map<Id, ObjectWrapper.Basic> = emptyMap()
+
+    private val blockLinkSubscription = "${vmParams.ctx}/discussion-block-links"
 
     private var account: Id = ""
 
     val commentAttachments = MutableStateFlow<List<CommentAttachment>>(emptyList())
     private val preloadingJobs = mutableListOf<Job>()
 
+    private val cleanupScope = CoroutineScope(SupervisorJob() + dispatchers.io)
+
+    // Only touched from the single combine-transform coroutine in
+    // [proceedWithObservingMessages] — no synchronization needed.
+    private val formattedDateCache = HashMap<Long, String>()
+    private var formattedDateCacheLocale: Locale? = null
+    private var viewCache: Map<String, DiscussionView> = emptyMap()
+
     init {
+        // Register this instance as a live watcher of the chat (see [onCleared]).
+        activeWatchers.merge(vmParams.ctx, 1, Int::plus)
         viewModelScope.launch {
+            // Serialize against a previous instance's detached cleanup for the same
+            // chat: await its unsubscribe before issuing our own subscribe RPCs, so a
+            // late unsubscribe cannot kill the fresh subscriptions (close→reopen race).
+            pendingCleanups[vmParams.ctx]?.join()
+
             getAccount
                 .async(Unit)
                 .onSuccess { acc ->
@@ -142,7 +170,9 @@ class DiscussionViewModel @Inject constructor(
                         }
                     }
                 }
-                blockLinkTargets.value = linkIds
+                // Grow-only target set: avoids tearing down and recreating
+                // the dependency subscription when messages leave the window.
+                blockLinkTargets.value = blockLinkTargets.value + linkIds
             }
 
         val dependenciesFlow = blockLinkTargets
@@ -152,7 +182,7 @@ class DiscussionViewModel @Inject constructor(
                 } else {
                     subscription.subscribe(
                         searchParams = StoreSearchByIdsParams(
-                            subscription = "${vmParams.ctx}/discussion-block-links",
+                            subscription = blockLinkSubscription,
                             space = SpaceId(vmParams.space.id),
                             targets = ids.toList(),
                             keys = BLOCK_LINK_KEYS
@@ -168,192 +198,230 @@ class DiscussionViewModel @Inject constructor(
             }
 
         combine(chatFlow, dependenciesFlow) { result, dependencies ->
-            result to dependencies
+            latestDependencies = dependencies
+            try {
+                val views = buildDiscussionViews(
+                    messages = result.messages,
+                    dependencies = dependencies
+                )
+                views to result.messages.size
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                // Keep the stream alive: a mapping bug must not complete the flow
+                // silently (frozen screen). Re-emit the current views instead.
+                Timber.e(e, "Error building discussion views")
+                _messages.value to result.messages.size
+            }
         }
             .flowOn(dispatchers.io)
             .catch { e ->
                 Timber.e(e, "Error observing discussion messages")
             }
-            .collect { (result, dependencies) ->
-                latestDependencies = dependencies
-                val commentViews = buildList {
-                    result.messages.forEach { msg ->
-                        val formattedMsgDate = dateProvider.formatToDateString(
-                            timestamp = msg.createdAt * 1000,
-                            pattern = datePattern
-                        )
-
-                        val allMembers = members.get()
-                        val member = allMembers.let { type ->
-                            when (type) {
-                                is Store.Data -> type.members.find { member ->
-                                    member.identity == msg.creator
-                                }
-                                is Store.Empty -> null
-                            }
-                        }
-
-                        val content = msg.content
-
-                        val avatar = member?.iconImage?.let { iconImage ->
-                            if (iconImage.isNotEmpty()) {
-                                DiscussionView.Avatar.Image(
-                                    hash = urlBuilder.thumbnail(iconImage),
-                                    fallbackInitial = member.name?.firstOrNull()?.uppercase().orEmpty()
-                                )
-                            } else {
-                                DiscussionView.Avatar.Initials(
-                                    initial = member.name?.firstOrNull()?.uppercase().orEmpty()
-                                )
-                            }
-                        } ?: DiscussionView.Avatar.Initials()
-
-                        val isReply = !msg.replyToMessageId.isNullOrEmpty()
-
-                        val mappedContent = if (msg.blocks.isNotEmpty()) {
-                            flattenBlocksToContent(msg.blocks)
-                        } else {
-                            DiscussionView.Content(
-                                msg = content?.text.orEmpty(),
-                                parts = content?.text
-                                    .orEmpty()
-                                    .let { text ->
-                                        text.splitByMarks(marks = content?.marks.orEmpty())
-                                    }
-                                    .map { (part, styles) ->
-                                        DiscussionView.Content.Part(
-                                            part = part,
-                                            styles = styles
-                                        )
-                                    }
-                            )
-                        }
-
-                        val contentBlocks = if (msg.blocks.isNotEmpty()) {
-                            mapBlocksToContentBlocks(msg.blocks, dependencies)
-                        } else {
-                            emptyList()
-                        }
-
-                        val reactions = msg.reactions
-                            .toList()
-                            .sortedByDescending { (_, ids) -> ids.size }
-                            .map { (emoji, ids) ->
-                                DiscussionView.Reaction(
-                                    emoji = emoji,
-                                    count = ids.size,
-                                    isSelected = ids.contains(account)
-                                )
-                            }
-
-                        if (isReply) {
-                            add(
-                                DiscussionView.Reply(
-                                    id = msg.id,
-                                    content = mappedContent,
-                                    contentBlocks = contentBlocks,
-                                    author = member?.name.orEmpty(),
-                                    creator = member?.id,
-                                    timestamp = msg.createdAt * 1000,
-                                    formattedDate = formattedMsgDate,
-                                    reactions = reactions,
-                                    avatar = avatar,
-                                    isOwn = msg.creator == account
-                                )
-                            )
-                        } else {
-                            add(
-                                DiscussionView.Comment(
-                                    id = msg.id,
-                                    content = mappedContent,
-                                    contentBlocks = contentBlocks,
-                                    author = member?.name.orEmpty(),
-                                    creator = member?.id,
-                                    timestamp = msg.createdAt * 1000,
-                                    formattedDate = formattedMsgDate,
-                                    reactions = reactions,
-                                    replyCount = 0,
-                                    avatar = avatar,
-                                    isOwn = msg.creator == account
-                                )
-                            )
-                        }
-                    }
-                }
-
-                // Thread-reordering: group replies under their parent comment
-
-                val replyToMap: Map<Id, Id?> = result.messages.associate {
-                    it.id to it.replyToMessageId
-                }
-
-
-                fun depthOf(messageId: Id): Int {
-                    var current = messageId
-                    var depth = 0
-                    val visited = mutableSetOf<Id>()
-                    while (true) {
-                        val parentId = replyToMap[current]
-                        if (parentId.isNullOrEmpty() || !visited.add(current)) return depth
-                        depth++
-                        current = parentId
-                    }
-                }
-
-                val topLevelComments = mutableListOf<DiscussionView.Comment>()
-
-                for (view in commentViews) {
-                    when (view) {
-                        is DiscussionView.Comment -> topLevelComments.add(view)
-                        else -> { /* Reply — handled below */ }
-                    }
-                }
-
-                // Build children lookup: parentId -> list of reply views sorted by timestamp
-                val childrenMap = mutableMapOf<Id, MutableList<DiscussionView.Reply>>()
-                for (view in commentViews) {
-                    if (view is DiscussionView.Reply) {
-                        val parentId = replyToMap[view.id]
-                        if (!parentId.isNullOrEmpty()) {
-                            childrenMap.getOrPut(parentId) { mutableListOf() }.add(view)
-                        }
-                    }
-                }
-                childrenMap.values.forEach { list -> list.sortBy { it.timestamp } }
-
-                // DFS traversal to produce tree-ordered replies with depth
-                fun collectReplies(parentId: Id): List<DiscussionView.Reply> = buildList {
-                    for (child in childrenMap[parentId].orEmpty()) {
-                        add(child.copy(depth = depthOf(child.id)))
-                        addAll(collectReplies(child.id))
-                    }
-                }
-
-                val reordered = buildList<DiscussionView> {
-                    topLevelComments.forEachIndexed { commentIndex, comment ->
-                        val replies = collectReplies(comment.id)
-                        add(comment.copy(replyCount = replies.size))
-                        replies.forEachIndexed { index, reply ->
-                            if (index > 0) {
-                                add(DiscussionView.ReplyDivider(
-                                    replyId = reply.id,
-                                    depth = reply.depth
-                                ))
-                            }
-                            add(reply)
-                        }
-                        if (commentIndex < topLevelComments.lastIndex) {
-                            add(DiscussionView.ThreadDivider(threadId = comment.id))
-                        }
-                    }
-                }
-
-                _messages.value = reordered
+            .collect { (views, commentCount) ->
+                _messages.value = views
                 _header.value = DiscussionHeader(
-                    commentCount = commentViews.size
+                    commentCount = commentCount
                 )
                 _isLoading.value = false
             }
+    }
+
+    private suspend fun buildDiscussionViews(
+        messages: List<Chat.Message>,
+        dependencies: Map<Id, ObjectWrapper.Basic>
+    ): List<DiscussionView> {
+        // Formatted dates depend on the current locale; drop the cache when it changes
+        // (the ViewModel survives configuration changes).
+        val locale = Locale.getDefault()
+        if (locale != formattedDateCacheLocale) {
+            formattedDateCache.clear()
+            formattedDateCacheLocale = locale
+        }
+        val membersById = when (val store = members.get()) {
+            is Store.Data -> store.members.associateBy { it.identity }
+            is Store.Empty -> emptyMap()
+        }
+        val commentViews = buildList {
+            messages.forEach { msg ->
+                val formattedMsgDate = formattedDateCache.getOrPut(msg.createdAt) {
+                    dateProvider.formatToDateString(
+                        timestamp = msg.createdAt * 1000,
+                        pattern = datePattern
+                    )
+                }
+
+                val member = membersById[msg.creator]
+
+                val content = msg.content
+
+                val avatar = member?.iconImage?.let { iconImage ->
+                    if (iconImage.isNotEmpty()) {
+                        DiscussionView.Avatar.Image(
+                            hash = urlBuilder.thumbnail(iconImage),
+                            fallbackInitial = member.name?.firstOrNull()?.uppercase().orEmpty()
+                        )
+                    } else {
+                        DiscussionView.Avatar.Initials(
+                            initial = member.name?.firstOrNull()?.uppercase().orEmpty()
+                        )
+                    }
+                } ?: DiscussionView.Avatar.Initials()
+
+                val isReply = !msg.replyToMessageId.isNullOrEmpty()
+
+                val mappedContent = if (msg.blocks.isNotEmpty()) {
+                    flattenBlocksToContent(msg.blocks)
+                } else {
+                    DiscussionView.Content(
+                        msg = content?.text.orEmpty(),
+                        parts = content?.text
+                            .orEmpty()
+                            .let { text ->
+                                text.splitByMarks(marks = content?.marks.orEmpty())
+                            }
+                            .map { (part, styles) ->
+                                DiscussionView.Content.Part(
+                                    part = part,
+                                    styles = styles
+                                )
+                            }
+                    )
+                }
+
+                val contentBlocks = if (msg.blocks.isNotEmpty()) {
+                    mapBlocksToContentBlocks(msg.blocks, dependencies)
+                } else {
+                    emptyList()
+                }
+
+                val reactions = msg.reactions
+                    .toList()
+                    .sortedByDescending { (_, ids) -> ids.size }
+                    .map { (emoji, ids) ->
+                        DiscussionView.Reaction(
+                            emoji = emoji,
+                            count = ids.size,
+                            isSelected = ids.contains(account)
+                        )
+                    }
+
+                if (isReply) {
+                    add(
+                        DiscussionView.Reply(
+                            id = msg.id,
+                            content = mappedContent,
+                            contentBlocks = contentBlocks,
+                            author = member?.name.orEmpty(),
+                            creator = member?.id,
+                            timestamp = msg.createdAt * 1000,
+                            formattedDate = formattedMsgDate,
+                            reactions = reactions,
+                            avatar = avatar,
+                            isOwn = msg.creator == account
+                        )
+                    )
+                } else {
+                    add(
+                        DiscussionView.Comment(
+                            id = msg.id,
+                            content = mappedContent,
+                            contentBlocks = contentBlocks,
+                            author = member?.name.orEmpty(),
+                            creator = member?.id,
+                            timestamp = msg.createdAt * 1000,
+                            formattedDate = formattedMsgDate,
+                            reactions = reactions,
+                            replyCount = 0,
+                            avatar = avatar,
+                            isOwn = msg.creator == account
+                        )
+                    )
+                }
+            }
+        }
+
+        // Thread-reordering: group replies under their parent comment
+
+        val replyToMap: Map<Id, Id?> = messages.associate {
+            it.id to it.replyToMessageId
+        }
+
+
+        fun depthOf(messageId: Id): Int {
+            var current = messageId
+            var depth = 0
+            val visited = mutableSetOf<Id>()
+            while (true) {
+                val parentId = replyToMap[current]
+                if (parentId.isNullOrEmpty() || !visited.add(current)) return depth
+                depth++
+                current = parentId
+            }
+        }
+
+        val topLevelComments = mutableListOf<DiscussionView.Comment>()
+
+        for (view in commentViews) {
+            when (view) {
+                is DiscussionView.Comment -> topLevelComments.add(view)
+                else -> { /* Reply — handled below */ }
+            }
+        }
+
+        // Build children lookup: parentId -> list of reply views sorted by timestamp
+        val childrenMap = mutableMapOf<Id, MutableList<DiscussionView.Reply>>()
+        for (view in commentViews) {
+            if (view is DiscussionView.Reply) {
+                val parentId = replyToMap[view.id]
+                if (!parentId.isNullOrEmpty()) {
+                    childrenMap.getOrPut(parentId) { mutableListOf() }.add(view)
+                }
+            }
+        }
+        childrenMap.values.forEach { list -> list.sortBy { it.timestamp } }
+
+        // DFS traversal to produce tree-ordered replies with depth
+        fun collectReplies(parentId: Id): List<DiscussionView.Reply> = buildList {
+            for (child in childrenMap[parentId].orEmpty()) {
+                add(child.copy(depth = depthOf(child.id)))
+                addAll(collectReplies(child.id))
+            }
+        }
+
+        val reordered = buildList<DiscussionView> {
+            topLevelComments.forEachIndexed { commentIndex, comment ->
+                val replies = collectReplies(comment.id)
+                add(comment.copy(replyCount = replies.size))
+                replies.forEachIndexed { index, reply ->
+                    if (index > 0) {
+                        add(DiscussionView.ReplyDivider(
+                            replyId = reply.id,
+                            depth = reply.depth
+                        ))
+                    }
+                    add(reply)
+                }
+                if (commentIndex < topLevelComments.lastIndex) {
+                    add(DiscussionView.ThreadDivider(threadId = comment.id))
+                }
+            }
+        }
+
+        // Reuse previous instances for unchanged rows so Compose can skip them.
+        val stabilized = reordered.map { view ->
+            val cached = viewCache[view.cacheKey()]
+            if (cached != null && cached == view) cached else view
+        }
+        viewCache = stabilized.associateBy { it.cacheKey() }
+        return stabilized
+    }
+
+    private fun DiscussionView.cacheKey(): String = when (this) {
+        is DiscussionView.Comment -> id
+        is DiscussionView.Reply -> id
+        is DiscussionView.ReplyDivider -> "reply-divider-$replyId"
+        is DiscussionView.ThreadDivider -> "thread-divider-$threadId"
     }
 
     // region Mention panel
@@ -733,6 +801,38 @@ class DiscussionViewModel @Inject constructor(
         }
     }
 
+    fun onCommentFilesPicked(uris: List<String>) {
+        viewModelScope.launch {
+            val infos = withContext(dispatchers.io) {
+                uris.mapNotNull { uri ->
+                    val info = runCatching {
+                        contentResolver.query(
+                            Uri.parse(uri), null, null, null, null
+                        )?.use { cursor ->
+                            val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                            val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+                            cursor.moveToFirst()
+                            DefaultFileInfo(
+                                uri = uri,
+                                name = cursor.getString(nameIndex),
+                                size = cursor.getLong(sizeIndex).toInt()
+                            )
+                        }
+                    }.onFailure { e ->
+                        Timber.e(e, "Failed to resolve picked file info")
+                    }.getOrNull()
+                    if (info == null) {
+                        Timber.w("Skipping picked file — could not resolve file info for uri: $uri")
+                    }
+                    info
+                }
+            }
+            if (infos.isNotEmpty()) {
+                onCommentFilePicked(infos)
+            }
+        }
+    }
+
     fun onCommentFilePicked(infos: List<DefaultFileInfo>) {
         commentAttachments.value += infos.map { info ->
             CommentAttachment.File(
@@ -858,7 +958,7 @@ class DiscussionViewModel @Inject constructor(
         ) {
             return DiscussionView.ContentBlock.Image(
                 targetObjectId = block.targetObjectId,
-                url = urlBuilder.original(block.targetObjectId)
+                url = urlBuilder.large(block.targetObjectId)
             )
         }
 
@@ -1057,7 +1157,41 @@ class DiscussionViewModel @Inject constructor(
         data class MediaPreview(val obj: Id) : DiscussionCommand()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        val ctx = vmParams.ctx
+        // Refcount guards the same-chat-twice-in-backstack case: only the last live
+        // instance unsubscribes, so popping a duplicate screen cannot kill the MW
+        // subscription a lower instance still relies on.
+        val remaining = activeWatchers.merge(ctx, -1, Int::plus) ?: 0
+        if (remaining > 0) return
+        activeWatchers.remove(ctx)
+        // The cleanup runs on a detached scope (viewModelScope is already cancelled
+        // when onCleared is called). It is registered in [pendingCleanups] so that a
+        // new instance for the same chat awaits it before subscribing (see init).
+        val cleanup = cleanupScope.launch {
+            runCatching {
+                chatContainer.stop(chat = ctx)
+                subscription.unsubscribe(listOf(blockLinkSubscription))
+            }.onFailure { e ->
+                Timber.e(e, "Error while stopping discussion subscriptions")
+            }
+        }
+        pendingCleanups[ctx] = cleanup
+        cleanup.invokeOnCompletion { pendingCleanups.remove(ctx, cleanup) }
+    }
+
     companion object {
+        // Guards the chat + block-links middleware subscriptions across ViewModel
+        // instances watching the same chat id (both registration and cleanup run on
+        // the main thread, so ordering between instances is well-defined):
+        // - [activeWatchers]: live-instance refcount per chat id — only the last
+        //   instance actually unsubscribes (same-chat-twice-in-backstack case);
+        // - [pendingCleanups]: in-flight detached cleanup jobs a new instance must
+        //   await before subscribing (close→reopen race).
+        private val activeWatchers = ConcurrentHashMap<Id, Int>()
+        private val pendingCleanups = ConcurrentHashMap<Id, Job>()
+
         private val BLOCK_LINK_KEYS = listOf(
             Relations.ID,
             Relations.SPACE_ID,

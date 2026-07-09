@@ -98,6 +98,7 @@ import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuIt
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.PinObjectAsWidgetDelegate
 import java.text.SimpleDateFormat
+import java.util.TimeZone
 import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
@@ -195,7 +196,15 @@ class ChatViewModel @Inject constructor(
     private val _currentSpaceUxType = MutableStateFlow<SpaceUxType?>(null)
     private val _chatObjectWrapper = MutableStateFlow<ObjectWrapper.Basic?>(null)
     val currentSpaceUxType = _currentSpaceUxType
-    private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
+    private val dateFormatter = SimpleDateFormat("d MMMM yyyy")
+    // Formatted date per local epoch-day: date formatting is expensive and identical for
+    // every message sent on the same day.
+    private val formattedDateCache = HashMap<Long, String>()
+    // Per-message caches so that unchanged messages are not rebuilt (regex link detection,
+    // mark splitting, view allocation) on every emission of the chat pipeline. Only accessed
+    // from the sequential message-mapping flow.
+    private val messagePartsCache = HashMap<Id, PartsCacheEntry>()
+    private val messageViewCache = HashMap<Id, Pair<MessageViewInputs, ChatView.Message>>()
     private val messageRateLimiter = MessageRateLimiter()
 
     val isSyncing = syncStatus.map { status ->
@@ -455,13 +464,28 @@ class ChatViewModel @Inject constructor(
             chatContainer.subscribeToAttachments(vmParams.ctx, vmParams.space)
                 .distinctUntilChanged(),
             chatContainer.fetchReplies(chat = chat).distinctUntilChanged(),
-            currentPermission
-        ) { result, dependencies, replies, permission ->
+            combine(
+                currentPermission,
+                members.observe(vmParams.space).distinctUntilChanged()
+            ) { permission, memberStore -> permission to memberStore },
+            // Observed — not snapshotted — so that late-loading or renamed object types
+            // trigger a re-emission and invalidate memoized message views built with
+            // stale type data (attachment type names and icons).
+            storeOfObjectTypes.observe().distinctUntilChanged()
+        ) { result, dependencies, replies, (permission, memberStore), allTypes ->
             // Owners and Admins may moderate (delete any message); see DROID-4250.
             val canModerateMessages = permission?.isOwnerOrAdmin() == true
             Timber.d("DROID-2966 Chat counter state from container: ${result.state}, unread section: ${result.initialUnreadSectionMessageId}")
             Timber.d("DROID-2966 Intent from container: ${result.intent}")
             Timber.d("DROID-2966 Message results size from container: ${result.messages.size}")
+
+            // Per-emission snapshots — hoisted out of the per-message loop.
+            val membersByIdentity = when (memberStore) {
+                is Store.Data -> memberStore.members.associateBy { it.identity }
+                is Store.Empty -> emptyMap()
+            }
+            val typesById = allTypes.associateBy { it.id }
+
             var previousDate: ChatView.DateSection? = null
             val messageViews = buildList {
 
@@ -470,7 +494,7 @@ class ChatViewModel @Inject constructor(
 
                 result.messages.forEach { msg ->
 
-                    val formattedMsgDate = dateFormatter.format(msg.createdAt * 1000)
+                    val formattedMsgDate = formatMessageDate(msg.createdAt)
 
                     val isPrevTimeIntervalBig = if (prevDateInterval > 0) {
                         (msg.createdAt - prevDateInterval) > ChatConfig.GROUPING_DATE_INTERVAL_IN_SECONDS
@@ -480,18 +504,7 @@ class ChatViewModel @Inject constructor(
 
                     val shouldHideUsername = prevCreator == msg.creator && !isPrevTimeIntervalBig
 
-                    val allMembers = members.get()
-                    val member = allMembers.let { type ->
-                        when (type) {
-                            is Store.Data -> type.members.find { member ->
-                                member.identity == msg.creator
-                            }
-
-                            is Store.Empty -> null
-                        }
-                    }
-
-                    val content = msg.content
+                    val member = membersByIdentity[msg.creator]
 
                     val replyToId = msg.replyToMessageId
 
@@ -518,166 +531,50 @@ class ChatViewModel @Inject constructor(
                                         ""
                                     }
                                 },
-                                author = allMembers.let { type ->
-                                    when (type) {
-                                        is Store.Data -> type.members.find { member ->
-                                            member.identity == replyMessage.creator
-                                        }?.name.orEmpty()
-
-                                        is Store.Empty -> ""
-                                    }
-                                }
+                                author = membersByIdentity[replyMessage.creator]?.name.orEmpty()
                             )
                         } else {
                             null
                         }
                     }
 
-                    val view = ChatView.Message(
-                        id = msg.id,
-                        order = msg.order,
-                        timestamp = msg.createdAt * 1000,
-                        content = ChatView.Message.Content(
-                            msg = content?.text.orEmpty(),
-                            parts = content?.text
-                                .orEmpty()
-                                .let { text ->
-                                    // Add detected links (URLs, emails, phones) to existing marks
-                                    val enhancedMarks = LinkDetector.addLinkMarksToText(
-                                        text = text,
-                                        existingMarks = content?.marks.orEmpty()
-                                    )
-                                    text.splitByMarks(marks = enhancedMarks)
-                                }
-                                .map { (part, styles) ->
-                                    ChatView.Message.Content.Part(
-                                        part = part,
-                                        styles = styles
-                                    )
-                                }
-                        ),
+                    val startOfUnreadMessageSection = result.initialUnreadSectionMessageId == msg.id
+
+                    // Reuse the previously built view when none of its inputs changed:
+                    // building a message view is expensive (link detection, mark splitting,
+                    // allocations), and most messages are unaffected by any single event.
+                    val inputs = MessageViewInputs(
+                        msg = msg,
+                        member = member,
                         reply = reply,
-                        author = member?.name.orEmpty(),
-                        creator = member?.id,
-                        isUserAuthor = msg.creator == account,
-                        canDelete = msg.creator == account || canModerateMessages,
+                        attachmentDependencies = msg.attachments.map { dependencies[it.target] },
+                        attachmentTypes = msg.attachments.map { attachment ->
+                            dependencies[attachment.target]?.type?.firstOrNull()
+                                ?.let { typeId -> typesById[typeId] }
+                        },
+                        canModerate = canModerateMessages,
                         shouldHideUsername = shouldHideUsername,
-                        isEdited = msg.modifiedAt > msg.createdAt,
-                        isSynced = msg.synced,
-                        reactions = msg.reactions
-                            .toList()
-                            .sortedByDescending { (emoji, ids) -> ids.size }
-                            .map { (emoji, ids) ->
-                                ChatView.Message.Reaction(
-                                    emoji = emoji,
-                                    count = ids.size,
-                                    isSelected = ids.contains(account)
-                                )
-                            }
-                            .take(ChatConfig.MAX_REACTION_COUNT),
-                        attachments = msg.attachments.mapNotNull { attachment ->
-
-                            val wrapper = dependencies[attachment.target]
-                            if (wrapper == null || !wrapper.isValid) return@mapNotNull null
-
-                            when (attachment.type) {
-                                Chat.Message.Attachment.Type.Image -> {
-                                    ChatView.Message.Attachment.Image(
-                                        obj = attachment.target,
-                                        url = urlBuilder.large(path = attachment.target),
-                                        name = wrapper.name.orEmpty(),
-                                        ext = wrapper.fileExt.orEmpty(),
-                                        status = wrapper.syncStatus()
-                                    )
-                                }
-
-                                else -> {
-                                    when (wrapper.layout) {
-                                        ObjectType.Layout.IMAGE -> {
-                                            ChatView.Message.Attachment.Image(
-                                                obj = attachment.target,
-                                                url = urlBuilder.large(path = attachment.target),
-                                                name = wrapper.name.orEmpty(),
-                                                ext = wrapper.fileExt.orEmpty(),
-                                                status = wrapper.syncStatus()
-                                            )
-                                        }
-
-                                        ObjectType.Layout.VIDEO -> {
-                                            ChatView.Message.Attachment.Video(
-                                                obj = attachment.target,
-                                                url = urlBuilder.large(path = attachment.target),
-                                                name = wrapper.name.orEmpty(),
-                                                ext = wrapper.fileExt.orEmpty(),
-                                                status = wrapper.syncStatus()
-                                            )
-                                        }
-
-                                        ObjectType.Layout.BOOKMARK -> {
-                                            ChatView.Message.Attachment.Bookmark(
-                                                id = wrapper.id,
-                                                url = wrapper.getSingleValue<String>(Relations.SOURCE)
-                                                    .orEmpty(),
-                                                title = wrapper.name.orEmpty(),
-                                                description = wrapper.description.orEmpty(),
-                                                imageUrl = wrapper.getSingleValue<String?>(Relations.PICTURE)
-                                                    .let { hash ->
-                                                        if (!hash.isNullOrEmpty())
-                                                            urlBuilder.large(hash)
-                                                        else
-                                                            null
-                                                    }
-                                            )
-                                        }
-
-                                        else -> {
-                                            val (_, typeName) = fieldParser.getObjectTypeIdAndName(
-                                                wrapper,
-                                                storeOfObjectTypes.getAll()
-                                            )
-                                            ChatView.Message.Attachment.Link(
-                                                obj = attachment.target,
-                                                wrapper = wrapper,
-                                                icon = wrapper.objectIcon(
-                                                    builder = urlBuilder,
-                                                    objType = storeOfObjectTypes.getTypeOfObject(
-                                                        wrapper
-                                                    )
-                                                ),
-                                                typeName = typeName,
-                                                isDeleted = wrapper.isDeleted == true
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }.let { results ->
-                            if (results.size >= 2) {
-                                val images =
-                                    results.filterIsInstance<ChatView.Message.Attachment.Image>()
-                                if (images.size == results.size) {
-                                    listOf(
-                                        ChatView.Message.Attachment.Gallery(
-                                            images = images
-                                        )
-                                    )
-                                } else {
-                                    results
-                                }
-                            } else {
-                                results
-                            }
-                        },
-                        avatar = if (member != null && !member.iconImage.isNullOrEmpty()) {
-                            ChatView.Message.Avatar.Image(
-                                urlBuilder.thumbnail(member.iconImage!!)
-                            )
-                        } else {
-                            ChatView.Message.Avatar.Initials(member?.name.orEmpty())
-                        },
-                        startOfUnreadMessageSection = result.initialUnreadSectionMessageId == msg.id,
-                        formattedDate = formattedMsgDate
+                        startOfUnreadMessageSection = startOfUnreadMessageSection
                     )
+                    val cached = messageViewCache[msg.id]
+                    val view = if (cached != null && cached.first == inputs) {
+                        cached.second
+                    } else {
+                        buildMessageView(
+                            msg = msg,
+                            member = member,
+                            reply = reply,
+                            dependencies = dependencies,
+                            allTypes = allTypes,
+                            typesById = typesById,
+                            canModerateMessages = canModerateMessages,
+                            shouldHideUsername = shouldHideUsername,
+                            startOfUnreadMessageSection = startOfUnreadMessageSection,
+                            formattedMsgDate = formattedMsgDate
+                        ).also { built ->
+                            messageViewCache[msg.id] = inputs to built
+                        }
+                    }
                     val currDate = ChatView.DateSection(
                         formattedDate = formattedMsgDate,
                         timeInMillis = msg.createdAt * 1000L
@@ -692,6 +589,12 @@ class ChatViewModel @Inject constructor(
                     prevDateInterval = msg.createdAt
                 }
             }.reversed()
+
+            // Prune caches for messages which left the window.
+            val currentIds = result.messages.mapTo(HashSet()) { it.id }
+            messageViewCache.keys.retainAll(currentIds)
+            messagePartsCache.keys.retainAll(currentIds)
+
             ChatViewState(
                 messages = messageViews,
                 intent = result.intent,
@@ -707,6 +610,205 @@ class ChatViewModel @Inject constructor(
                 uiState.value = it
             }
     }
+
+    private fun buildMessageView(
+        msg: Chat.Message,
+        member: ObjectWrapper.SpaceMember?,
+        reply: ChatView.Message.Reply?,
+        dependencies: Map<Id, ObjectWrapper.Basic>,
+        allTypes: List<ObjectWrapper.Type>,
+        typesById: Map<Id, ObjectWrapper.Type>,
+        canModerateMessages: Boolean,
+        shouldHideUsername: Boolean,
+        startOfUnreadMessageSection: Boolean,
+        formattedMsgDate: String
+    ): ChatView.Message = ChatView.Message(
+        id = msg.id,
+        order = msg.order,
+        timestamp = msg.createdAt * 1000,
+        content = ChatView.Message.Content(
+            msg = msg.content?.text.orEmpty(),
+            parts = buildMessageParts(msg)
+        ),
+        reply = reply,
+        author = member?.name.orEmpty(),
+        creator = member?.id,
+        isUserAuthor = msg.creator == account,
+        canDelete = msg.creator == account || canModerateMessages,
+        shouldHideUsername = shouldHideUsername,
+        isEdited = msg.modifiedAt > msg.createdAt,
+        isSynced = msg.synced,
+        reactions = msg.reactions
+            .toList()
+            .sortedByDescending { (emoji, ids) -> ids.size }
+            .map { (emoji, ids) ->
+                ChatView.Message.Reaction(
+                    emoji = emoji,
+                    count = ids.size,
+                    isSelected = ids.contains(account)
+                )
+            }
+            .take(ChatConfig.MAX_REACTION_COUNT),
+        attachments = msg.attachments.mapNotNull { attachment ->
+
+            val wrapper = dependencies[attachment.target]
+            if (wrapper == null || !wrapper.isValid) return@mapNotNull null
+
+            when (attachment.type) {
+                Chat.Message.Attachment.Type.Image -> {
+                    ChatView.Message.Attachment.Image(
+                        obj = attachment.target,
+                        url = urlBuilder.large(path = attachment.target),
+                        name = wrapper.name.orEmpty(),
+                        ext = wrapper.fileExt.orEmpty(),
+                        status = wrapper.syncStatus()
+                    )
+                }
+
+                else -> {
+                    when (wrapper.layout) {
+                        ObjectType.Layout.IMAGE -> {
+                            ChatView.Message.Attachment.Image(
+                                obj = attachment.target,
+                                url = urlBuilder.large(path = attachment.target),
+                                name = wrapper.name.orEmpty(),
+                                ext = wrapper.fileExt.orEmpty(),
+                                status = wrapper.syncStatus()
+                            )
+                        }
+
+                        ObjectType.Layout.VIDEO -> {
+                            ChatView.Message.Attachment.Video(
+                                obj = attachment.target,
+                                url = urlBuilder.large(path = attachment.target),
+                                name = wrapper.name.orEmpty(),
+                                ext = wrapper.fileExt.orEmpty(),
+                                status = wrapper.syncStatus()
+                            )
+                        }
+
+                        ObjectType.Layout.BOOKMARK -> {
+                            ChatView.Message.Attachment.Bookmark(
+                                id = wrapper.id,
+                                url = wrapper.getSingleValue<String>(Relations.SOURCE)
+                                    .orEmpty(),
+                                title = wrapper.name.orEmpty(),
+                                description = wrapper.description.orEmpty(),
+                                imageUrl = wrapper.getSingleValue<String?>(Relations.PICTURE)
+                                    .let { hash ->
+                                        if (!hash.isNullOrEmpty())
+                                            urlBuilder.large(hash)
+                                        else
+                                            null
+                                    }
+                            )
+                        }
+
+                        else -> {
+                            val (_, typeName) = fieldParser.getObjectTypeIdAndName(
+                                wrapper,
+                                allTypes
+                            )
+                            ChatView.Message.Attachment.Link(
+                                obj = attachment.target,
+                                wrapper = wrapper,
+                                icon = wrapper.objectIcon(
+                                    builder = urlBuilder,
+                                    objType = typesById[wrapper.type.firstOrNull()]
+                                ),
+                                typeName = typeName,
+                                isDeleted = wrapper.isDeleted == true
+                            )
+                        }
+                    }
+                }
+            }
+        }.let { results ->
+            if (results.size >= 2) {
+                val images =
+                    results.filterIsInstance<ChatView.Message.Attachment.Image>()
+                if (images.size == results.size) {
+                    listOf(
+                        ChatView.Message.Attachment.Gallery(
+                            images = images
+                        )
+                    )
+                } else {
+                    results
+                }
+            } else {
+                results
+            }
+        },
+        avatar = if (member != null && !member.iconImage.isNullOrEmpty()) {
+            ChatView.Message.Avatar.Image(
+                urlBuilder.thumbnail(member.iconImage!!)
+            )
+        } else {
+            ChatView.Message.Avatar.Initials(member?.name.orEmpty())
+        },
+        startOfUnreadMessageSection = startOfUnreadMessageSection,
+        formattedDate = formattedMsgDate
+    )
+
+    /**
+     * Splits message text into styled parts, memoized per message id: link detection runs
+     * regex passes over the text, so it is only recomputed when the content actually changed.
+     */
+    private fun buildMessageParts(msg: Chat.Message): List<ChatView.Message.Content.Part> {
+        val text = msg.content?.text.orEmpty()
+        val marks = msg.content?.marks.orEmpty()
+        val cached = messagePartsCache[msg.id]
+        if (cached != null && cached.text == text && cached.marks == marks) {
+            return cached.parts
+        }
+        // Add detected links (URLs, emails, phones) to existing marks
+        val enhancedMarks = LinkDetector.addLinkMarksToText(
+            text = text,
+            existingMarks = marks
+        )
+        val parts = text.splitByMarks(marks = enhancedMarks).map { (part, styles) ->
+            ChatView.Message.Content.Part(
+                part = part,
+                styles = styles
+            )
+        }
+        messagePartsCache[msg.id] = PartsCacheEntry(text = text, marks = marks, parts = parts)
+        return parts
+    }
+
+    private fun formatMessageDate(createdAtInSeconds: Long): String {
+        val millis = createdAtInSeconds * 1000
+        val localDay = (millis + TimeZone.getDefault().getOffset(millis)) / DAY_IN_MILLIS
+        return formattedDateCache.getOrPut(localDay) { dateFormatter.format(millis) }
+    }
+
+    /**
+     * Snapshot of everything a [ChatView.Message] is built from — used as a memoization key:
+     * when equal to the previous snapshot for the same message id, the previously built view
+     * instance is reused instead of being rebuilt.
+     */
+    private data class MessageViewInputs(
+        val msg: Chat.Message,
+        val member: ObjectWrapper.SpaceMember?,
+        val reply: ChatView.Message.Reply?,
+        val attachmentDependencies: List<ObjectWrapper.Basic?>,
+        /**
+         * Resolved object-type wrappers of the attachment dependencies: attachment views
+         * embed the type name and icon, so a type loaded or renamed after the view was
+         * memoized must invalidate the cached view.
+         */
+        val attachmentTypes: List<ObjectWrapper.Type?>,
+        val canModerate: Boolean,
+        val shouldHideUsername: Boolean,
+        val startOfUnreadMessageSection: Boolean
+    )
+
+    private data class PartsCacheEntry(
+        val text: String,
+        val marks: List<Block.Content.Text.Mark>,
+        val parts: List<ChatView.Message.Content.Part>
+    )
 
     private suspend fun proceedWithObservingSyncStatus() {
         chatContainer.subscribeToChatObject(
@@ -2788,5 +2890,7 @@ class ChatViewModel @Inject constructor(
          * Delay before jump-to-bottom after adding new message to the chat.
          */
         const val JUMP_TO_BOTTOM_DELAY = 50L
+
+        private const val DAY_IN_MILLIS = 86_400_000L
     }
 }

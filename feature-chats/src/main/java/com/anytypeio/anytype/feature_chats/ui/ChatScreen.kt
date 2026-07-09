@@ -32,7 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -84,7 +84,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -132,17 +131,19 @@ fun ChatScreenWrapper(
         val clipboard = LocalClipboardManager.current
         val lazyListState = rememberLazyListState()
 
-        val messages by vm.uiState
-            .map { it.messages }
+        val messages by remember(vm) { vm.uiState.map { it.messages } }
             .collectAsStateWithLifecycle(emptyList())
 
-        val counter by vm.uiState
-            .map { it.counter }
+        val counter by remember(vm) { vm.uiState.map { it.counter } }
             .collectAsStateWithLifecycle(ChatViewState.Counter())
 
-        val intent by vm.uiState
-            .map { it.intent }
+        val intent by remember(vm) { vm.uiState.map { it.intent } }
             .collectAsStateWithLifecycle(ChatContainer.Intent.None)
+
+        val isLoading by remember(vm) { vm.uiState.map { it.isLoading } }
+            .collectAsStateWithLifecycle(vm.uiState.value.isLoading)
+
+        val chatBoxMode by vm.chatBoxMode.collectAsStateWithLifecycle()
 
         val mentionPanelState by vm.mentionPanelState.collectAsStateWithLifecycle()
 
@@ -151,9 +152,9 @@ fun ChatScreenWrapper(
         val spaceUxType by vm.currentSpaceUxType.collectAsStateWithLifecycle()
 
         ChatScreen(
-            isLoading = vm.uiState.collectAsStateWithLifecycle().value.isLoading,
+            isLoading = isLoading,
             isSyncing = vm.isSyncing.collectAsStateWithLifecycle().value,
-            chatBoxMode = vm.chatBoxMode.collectAsState().value,
+            chatBoxMode = chatBoxMode,
             messages = messages,
             counter = counter,
             intent = intent,
@@ -273,9 +274,7 @@ fun ChatScreenWrapper(
             onGoToMentionClicked = vm::onGoToMentionClicked,
             onAddMembersClick = vm::onEmptyStateAction,
             onShowQRCodeClick = vm::onShowQRCode,
-            isReadOnly = vm.chatBoxMode
-                .collectAsStateWithLifecycle()
-                .value is ChatBoxMode.ReadOnly,
+            isReadOnly = chatBoxMode is ChatBoxMode.ReadOnly,
             spaceUxType = spaceUxType,
             onImageCaptured = {
                 vm.onChatBoxMediaPicked(
@@ -468,13 +467,9 @@ fun ChatScreen(
     onSearchPreviousResult: () -> Unit = {}
 ) {
 
-    Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
-
     val scope = rememberCoroutineScope()
 
-    var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue())
-    }
+    val chatBoxInputState = rememberChatBoxInputState()
 
     var highlightedMessageId by remember { mutableStateOf<Id?>(null) }
 
@@ -511,8 +506,6 @@ fun ChatScreen(
                 }
             }
     }
-
-    var spans by remember { mutableStateOf<List<ChatBoxSpan>>(emptyList()) }
 
     val chatBoxFocusRequester = remember { FocusRequester() }
 
@@ -569,29 +562,44 @@ fun ChatScreen(
     }
 
     // Tracking visible range
-    LaunchedEffect(lazyListState, messages, isPerformingScrollIntent.value) {
-        snapshotFlow { lazyListState.layoutInfo }
-            .mapNotNull { layoutInfo ->
-                if (layoutInfo.totalItemsCount == 0) return@mapNotNull null
-
+    val currentMessages by rememberUpdatedState(messages)
+    LaunchedEffect(lazyListState) {
+        snapshotFlow {
+            val layoutInfo = lazyListState.layoutInfo
+            var from: ChatView.Message? = null
+            var to: ChatView.Message? = null
+            if (layoutInfo.totalItemsCount > 0 && !isPerformingScrollIntent.value) {
                 val viewportHeight = layoutInfo.viewportSize.height
-                val visibleMessages = layoutInfo.visibleItemsInfo
-                    .filter { item ->
-                        val itemBottom = item.offset + item.size
-                        val isFullyVisible = item.offset >= 0 && itemBottom <= viewportHeight
-                        isFullyVisible
+                val msgs = currentMessages
+                var fromIndex = Int.MAX_VALUE
+                var toIndex = Int.MIN_VALUE
+                layoutInfo.visibleItemsInfo.forEach { item ->
+                    val itemBottom = item.offset + item.size
+                    val isFullyVisible = item.offset >= 0 && itemBottom <= viewportHeight
+                    if (isFullyVisible) {
+                        val msg = msgs.getOrNull(item.index)
+                        if (msg is ChatView.Message) {
+                            if (item.index < fromIndex) {
+                                fromIndex = item.index
+                                from = msg
+                            }
+                            if (item.index > toIndex) {
+                                toIndex = item.index
+                                to = msg
+                            }
+                        }
                     }
-                    .sortedBy { it.index } // still necessary
-                    .mapNotNull { item -> messages.getOrNull(item.index) }
-                    .filterIsInstance<ChatView.Message>()
-
-                if (visibleMessages.isNotEmpty() && !isPerformingScrollIntent.value) {
-                    visibleMessages.first().id to visibleMessages.last().id
-                } else null
+                }
             }
+            val first = from
+            val last = to
+            if (first != null && last != null) first.id to last.id else null
+        }
             .distinctUntilChanged()
-            .collect { (from, to) ->
-                onVisibleRangeChanged(from, to)
+            .collect { range ->
+                if (range != null) {
+                    onVisibleRangeChanged(range.first, range.second)
+                }
             }
     }
 
@@ -674,7 +682,7 @@ fun ChatScreen(
                 onAttachmentClicked = onAttachmentClicked,
                 onEditMessage = { msg ->
                     onEditMessage(msg).also {
-                        text = TextFieldValue(
+                        chatBoxInputState.text = TextFieldValue(
                             msg.content.msg,
                             selection = TextRange(msg.content.msg.length)
                         )
@@ -839,7 +847,7 @@ fun ChatScreen(
                                     .noRippleClickable {
 
                                         val query = mentionPanelState.query
-                                        val input = text.text
+                                        val input = chatBoxInputState.text.text
 
                                         val replacementText = member.name + " "
 
@@ -853,7 +861,7 @@ fun ChatScreen(
 
                                         // After inserting a mention, all existing spans after the insertion point are shifted based on the text length difference.
 
-                                        val updatedSpans = spans.map { span ->
+                                        val updatedSpans = chatBoxInputState.spans.map { span ->
                                             if (span.start > query.range.last) {
                                                 when (span) {
                                                     is ChatBoxSpan.Mention -> {
@@ -875,7 +883,7 @@ fun ChatScreen(
                                             }
                                         }
 
-                                        text = text.copy(
+                                        chatBoxInputState.text = chatBoxInputState.text.copy(
                                             text = updatedText,
                                             selection = TextRange(
                                                 index = (query.range.start + replacementText.length)
@@ -891,9 +899,9 @@ fun ChatScreen(
                                             param = member.id
                                         )
 
-                                        spans = updatedSpans + mentionSpan
+                                        chatBoxInputState.spans = updatedSpans + mentionSpan
 
-                                        onTextChanged(text)
+                                        onTextChanged(chatBoxInputState.text)
                                     }
                             )
                             Divider()
@@ -973,8 +981,8 @@ fun ChatScreen(
                 },
                 attachments = attachments,
                 clearText = {
-                    text = TextFieldValue()
-                    spans = emptyList()
+                    chatBoxInputState.text = TextFieldValue()
+                    chatBoxInputState.spans = emptyList()
                 },
                 quickCreateTypes = quickCreateTypes,
                 onAttachmentAction = onAttachmentAction,
@@ -985,17 +993,16 @@ fun ChatScreen(
                 onChatBoxFilePicked = onChatBoxFilePicked,
                 onExitEditMessageMode = {
                     onExitEditMessageMode().also {
-                        text = TextFieldValue()
-                        spans = emptyList()
+                        chatBoxInputState.text = TextFieldValue()
+                        chatBoxInputState.spans = emptyList()
                     }
                 },
                 onValueChange = { t, s ->
-                    text = t
-                    spans = s
+                    chatBoxInputState.text = t
+                    chatBoxInputState.spans = s
                     onTextChanged(t)
                 },
-                text = text,
-                spans = spans,
+                inputState = chatBoxInputState,
                 onUrlInserted = onUrlInserted,
                 onImageCaptured = onImageCaptured,
                 onVideoCaptured = onVideoCaptured,

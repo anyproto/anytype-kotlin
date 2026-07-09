@@ -11,7 +11,9 @@ class CellViewDiffUtil(
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val oldItem = old[oldItemPosition]
         val newItem = new[newItemPosition]
-        return (oldItem.id == newItem.id)
+        // All cells of a row share the same id (the object id), so the relation key
+        // is needed to tell columns apart.
+        return (oldItem.id == newItem.id && oldItem.relationKey == newItem.relationKey)
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

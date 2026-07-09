@@ -59,6 +59,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.ChangeBounds
@@ -81,7 +82,9 @@ import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.features.editor.AttachToChatToolbar
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
+import com.anytypeio.anytype.core_ui.features.editor.diffSnapshot
 import com.anytypeio.anytype.core_ui.features.editor.EditorDatePicker
 import com.anytypeio.anytype.core_ui.features.editor.modal.SelectLanguageBottomSheet
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScrollAndMoveTargetDescriptor
@@ -199,17 +202,21 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
 import kotlin.math.abs
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.fragment_editor),
@@ -340,6 +347,23 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     private val actionToolbarFooter by lazy { StyleToolbarItemDecorator(screen) }
 
     protected val vm by viewModels<EditorViewModel> { factory }
+
+    /**
+     * Pending block list updates: diffs are calculated off the main thread,
+     * one at a time, and stale intermediate lists are conflated. Each update is
+     * paired with a monotonic epoch so position-based commands can wait until
+     * the list they were computed against has been applied to the adapter.
+     */
+    private val pendingBlockListUpdates =
+        Channel<Pair<Long, List<BlockView>>>(capacity = Channel.CONFLATED)
+
+    /**
+     * Epoch of the last list submitted to [pendingBlockListUpdates] (main thread only)
+     * and of the last list actually applied to the adapter.
+     * @see runAfterBlockListUpdates
+     */
+    private var submittedBlockListEpoch = 0L
+    private val appliedBlockListEpoch = MutableStateFlow(0L)
 
     private val blockAdapter by lazy {
         BlockAdapter(
@@ -624,6 +648,28 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             itemAnimator = null
             adapter = blockAdapter
             addItemDecoration(defaultBottomOffsetDecorator)
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            for ((epoch, update) in pendingBlockListUpdates) {
+                // Snapshot both lists on the main thread before diffing off it:
+                // text/focus/cursor of text-bearing blocks are mutated in place on
+                // the main thread (TextWatchers, focus clearing) while DiffUtil
+                // would otherwise read the live instances concurrently.
+                val old = blockAdapter.views.diffSnapshot()
+                val new = update.diffSnapshot()
+                val result = withContext(Dispatchers.Default) {
+                    DiffUtil.calculateDiff(
+                        BlockViewDiffUtil(old = old, new = new),
+                        false
+                    )
+                }
+                // The adapter keeps the original (store-shared) instances: the typing
+                // path relies on their identity (see EditorViewModel.onTextBlockTextChanged).
+                blockAdapter.applyDiffResult(items = update, result = result)
+                appliedBlockListEpoch.value = epoch
+                binding.recycler.invalidateItemDecorations()
+            }
         }
 
         binding.toolbar.apply {
@@ -1068,10 +1114,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.commands.observe(viewLifecycleOwner) { execute(it) }
         vm.searchResultScrollPosition
             .filter { it != EditorViewModel.NO_SEARCH_RESULT_POSITION }
-            .onEach {
+            .onEach { pos ->
                 if (hasBinding) {
-                    (binding.recycler.layoutManager as? LinearLayoutManager)
-                        ?.scrollToPositionWithOffset(it, dimen(R.dimen.default_toolbar_height))
+                    runAfterBlockListUpdates {
+                        if (hasBinding) {
+                            val count = blockAdapter.itemCount
+                            if (count > 0) {
+                                (binding.recycler.layoutManager as? LinearLayoutManager)
+                                    ?.scrollToPositionWithOffset(
+                                        pos.coerceIn(0, count - 1),
+                                        dimen(R.dimen.default_toolbar_height)
+                                    )
+                            }
+                        }
+                    }
                 }
             }
             .launchIn(lifecycleScope)
@@ -1514,10 +1570,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.ScrollToPosition -> {
                     if (hasBinding) {
-                        val lm = binding.recycler.layoutManager as LinearLayoutManager
-                        val margin =
-                            resources.getDimensionPixelSize(R.dimen.default_editor_item_offset)
-                        lm.scrollToPositionWithOffset(command.pos, margin)
+                        runAfterBlockListUpdates {
+                            if (hasBinding) {
+                                val lm = binding.recycler.layoutManager as LinearLayoutManager
+                                val margin =
+                                    resources.getDimensionPixelSize(R.dimen.default_editor_item_offset)
+                                val count = blockAdapter.itemCount
+                                if (count > 0) {
+                                    lm.scrollToPositionWithOffset(
+                                        command.pos.coerceIn(0, count - 1),
+                                        margin
+                                    )
+                                }
+                            }
+                        }
                     } else {
                         Timber.w("Missing binding for command")
                     }
@@ -1654,12 +1720,33 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
+    /**
+     * Runs [action] once every block list update submitted so far has been applied
+     * to the adapter; runs immediately when nothing is pending. Position-based
+     * commands (scrolls) must go through this: the adapter list is updated
+     * asynchronously (diff calculated off the main thread), so a position computed
+     * against the view model's views may not be valid for the adapter yet.
+     * Note: a position that arrives before the corresponding list is submitted
+     * cannot be detected here and is only clamped at execution time.
+     */
+    private fun runAfterBlockListUpdates(action: () -> Unit) {
+        val target = submittedBlockListEpoch
+        if (appliedBlockListEpoch.value >= target) {
+            action()
+        } else {
+            viewLifecycleOwner.lifecycleScope.launch {
+                appliedBlockListEpoch.first { it >= target }
+                action()
+            }
+        }
+    }
+
     private fun render(state: ViewState) {
         when (state) {
             is ViewState.Success -> {
-                blockAdapter.updateWithDiffUtil(state.blocks)
+                submittedBlockListEpoch += 1
+                pendingBlockListUpdates.trySend(submittedBlockListEpoch to state.blocks)
                 binding.recycler.visible()
-                binding.recycler.invalidateItemDecorations()
                 val isLocked = vm.mode is Editor.Mode.Locked
                 binding.topToolbar.setIsLocked(isLocked)
                 resetDocumentTitle(state)

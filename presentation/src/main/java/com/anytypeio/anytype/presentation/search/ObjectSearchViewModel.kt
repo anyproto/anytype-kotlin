@@ -26,14 +26,17 @@ import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.toViews
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
@@ -65,14 +68,25 @@ open class ObjectSearchViewModel(
     protected val objects =
         MutableStateFlow<Resultat<List<ObjectWrapper.Basic>>>(Resultat.Loading())
 
+    /**
+     * The query the current [objects] were requested for. Carried through the
+     * mapping pipeline so the distinct-key below compares against the query the
+     * results actually belong to, instead of re-reading the live user input.
+     */
+    private val appliedQuery = MutableStateFlow(EMPTY_QUERY)
+
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
     private var eventRoute = ""
 
     init {
         viewModelScope.launch {
-            combine(objects, storeOfObjectTypes.trackChanges()) { listOfObjects, _ ->
-                if (listOfObjects.isLoading) {
+            combine(
+                objects,
+                storeOfObjectTypes.trackChanges(),
+                appliedQuery
+            ) { listOfObjects, _, query ->
+                val result: Resultat<List<DefaultObjectView>> = if (listOfObjects.isLoading) {
                     Resultat.Loading()
                 } else {
                     Resultat.success(
@@ -83,9 +97,15 @@ open class ObjectSearchViewModel(
                         )
                     )
                 }
-            }.collectLatest { result ->
-                resolveViews(result)
+                result to query
             }
+                // Suppress redundant re-emissions caused by type-store churn, but never
+                // suppress query changes: resolveViews depends on the current query too.
+                .distinctUntilChangedBy { (result, query) -> result.getOrNull() to query }
+                .flowOn(Dispatchers.Default)
+                .collectLatest { (result, _) ->
+                    resolveViews(result)
+                }
         }
     }
 
@@ -122,14 +142,28 @@ open class ObjectSearchViewModel(
     protected fun startProcessingSearchQuery(ignore: Id?) {
         jobs += viewModelScope.launch {
             searchQuery.collectLatest { query ->
-                objects.emit(Resultat.Loading())
+                appliedQuery.value = query
+                // Keep previous results visible while a new search is in flight,
+                // so lists are diffed in place instead of being replaced by a spinner.
+                if (objects.value !is Resultat.Success) {
+                    objects.emit(Resultat.Loading())
+                }
                 val params = getSearchObjectsParams(ignore).copy(fulltext = query)
                 searchObjects(params = params).process(
                     success = { objects ->
                         Timber.d("SearchObjects success with ${objects.size} items")
                         setObjects(objects)
                     },
-                    failure = { Timber.e(it, "Error while searching for objects") }
+                    failure = {
+                        Timber.e(it, "Error while searching for objects")
+                        // Don't fail silently: without this, results for the previous
+                        // query would stay on screen with no indication of failure.
+                        stateData.postValue(
+                            ObjectSearchView.Error(
+                                error = "Error while searching: ${it.message ?: "unknown error"}"
+                            )
+                        )
+                    }
                 )
             }
         }

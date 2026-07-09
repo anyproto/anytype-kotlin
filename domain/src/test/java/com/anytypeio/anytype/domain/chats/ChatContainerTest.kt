@@ -993,10 +993,146 @@ class ChatContainerTest {
             val initial = awaitItem()
             assertEquals(1L, initial.state.order)
 
-            // When null state is received and current state order is 1L, 
+            // When null state is received and current state order is 1L,
             // the new default state (order = -1L) is not applied because -1L < 1L
             // So we should not get a new emission
             expectNoEvents()
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should not append incoming message when window is detached from the chat tail`() = runTest {
+
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val older = StubChatMessage(order = "A")
+        val anchor = StubChatMessage(order = "B")
+        val middle = StubChatMessage(order = "C")
+        val tail = StubChatMessage(order = "T")
+        val incoming = StubChatMessage(order = "Z")
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = listOf(tail),
+                messageCountBefore = 0
+            )
+
+            // Jump-to-message target fetch
+            onBlocking {
+                getChatMessagesByIds(
+                    Command.ChatCommand.GetMessagesByIds(
+                        chat = givenChatID,
+                        messages = listOf(anchor.id)
+                    )
+                )
+            } doReturn listOf(anchor)
+
+            // Messages before the jump target
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        beforeOrderId = anchor.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = listOf(older)
+            )
+
+            // Messages after the jump target — the target is far from the chat tail
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        afterOrderId = anchor.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = emptyList()
+            )
+
+            // The next contiguous page after the detached window
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        afterOrderId = anchor.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = listOf(middle)
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn emptyFlow()
+        }
+
+        container.watch(givenChatID).test {
+            val initial = awaitItem()
+            assertEquals(
+                expected = listOf(tail),
+                actual = initial.messages
+            )
+
+            // Jump to a message far away from the tail — the window no longer contains the tail.
+            container.onLoadToReply(anchor.id)
+            advanceUntilIdle()
+
+            val jumped = awaitItem()
+            assertEquals(
+                expected = listOf(older, anchor),
+                actual = jumped.messages
+            )
+
+            // A new message arrives while the window is detached from the chat tail:
+            // it must not be appended right after much older history, which would
+            // silently hide the not-yet-loaded range between them.
+            container.onPayload(
+                listOf(
+                    Event.Command.Chats.Add(
+                        context = givenChatID,
+                        message = incoming,
+                        id = incoming.id,
+                        order = incoming.order,
+                        spaceId = SpaceId(MockDataFactory.randomUuid())
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            val afterIncoming = awaitItem()
+            assertEquals(
+                expected = listOf(older, anchor),
+                actual = afterIncoming.messages
+            )
+
+            // Paging down continues from the last contiguous message, so the range
+            // between the window and the chat tail is fetched instead of skipped.
+            container.onLoadNext()
+            advanceUntilIdle()
+
+            val paged = awaitItem()
+            assertEquals(
+                expected = listOf(older, anchor, middle),
+                actual = paged.messages
+            )
         }
     }
 }

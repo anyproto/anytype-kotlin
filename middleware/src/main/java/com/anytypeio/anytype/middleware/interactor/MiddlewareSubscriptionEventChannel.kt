@@ -9,8 +9,10 @@ import com.anytypeio.anytype.middleware.EventGroup
 import com.anytypeio.anytype.middleware.mappers.parse
 import com.anytypeio.anytype.middleware.mappers.toCoreModelsGroup
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
@@ -31,7 +33,11 @@ class MiddlewareSubscriptionEventChannel(
         .filter { it.isNotEmpty() }
         .shareIn(
             scope = scope,
-            started = SharingStarted.WhileSubscribed(),
+            // Eagerly: the upstream collector stays registered on the event fan-out for the whole
+            // app lifetime, so no event is lost while sharing (re)starts between subscribers —
+            // part of closing the subscribe-request/collector-attach race. With replay = 0,
+            // payloads parsed while nobody is subscribed are simply discarded.
+            started = SharingStarted.Eagerly,
             replay = 0
         )
 
@@ -55,6 +61,10 @@ class MiddlewareSubscriptionEventChannel(
                 }
             }
             .filter { it.isNotEmpty() }
+            // Per-subscriber unlimited buffer: a slow collector queues payloads into its own
+            // inbox instead of suspending the shared emitter — one stalled subscriber can no
+            // longer delay event delivery to every other subscription collector.
+            .buffer(capacity = Channel.UNLIMITED)
     }
 
     private fun parseMessage(message: Event.Message): ParsedSubEvent? = when {

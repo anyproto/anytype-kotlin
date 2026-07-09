@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.RelationFormat
@@ -153,6 +154,8 @@ import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
 import com.anytypeio.anytype.presentation.widgets.showMoreMenu
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -178,6 +181,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -241,7 +245,8 @@ class ObjectSetViewModel(
     private val addDiscussion: AddDiscussion,
     private val userSettingsRepository: UserSettingsRepository,
     private val backHistoryDelegate: BackHistoryDelegate,
-    private val exitToVaultDelegate: ExitToVaultDelegate
+    private val exitToVaultDelegate: ExitToVaultDelegate,
+    private val viewStateDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     BackHistoryDelegate by backHistoryDelegate,
@@ -276,6 +281,15 @@ class ObjectSetViewModel(
     val pagination get() = paginator.pagination
 
     private val jobs = mutableListOf<Job>()
+
+    /**
+     * Teardown launched by [onStop] ([unsubscribeFromAllSubscriptions]). The record
+     * subscription restarted by the next [onStart] must wait for it: both the cancel and the
+     * new subscribe target the same backend subscription id, and if the new subscribe RPC
+     * overtook the still-in-flight cancel, the freshly created subscription would be killed,
+     * freezing the grid on its initial results.
+     */
+    private var unsubscribeJob: Job? = null
 
     private val _commands = MutableSharedFlow<ObjectSetCommand>(replay = 0)
     val commands: SharedFlow<ObjectSetCommand> = _commands
@@ -395,7 +409,6 @@ class ObjectSetViewModel(
                 }
         }
 
-        subscribeToObjectState()
         subscribeToDataViewViewer()
 
         viewModelScope.launch {
@@ -404,7 +417,7 @@ class ObjectSetViewModel(
 
         viewModelScope.launch {
             dataViewSubscriptionContainer.counter.collect { counter ->
-                Timber.d("SET-DB: counter —>\n$counter")
+                Timber.d("SET-DB: counter —> %s", counter)
                 paginator.total.value = counter.total
             }
         }
@@ -681,10 +694,12 @@ class ObjectSetViewModel(
             session.currentViewerId.value = view
         }
         subscribeToEvents(ctx = vmParams.ctx)
-        // Board group subscriptions are tied to the start/stop lifecycle (registered in
-        // `jobs`, cancelled in onStop) so each reopen gets a fresh collector that
-        // re-subscribes — otherwise the backend group sub, cancelled in onStop, would never
-        // be re-established after the first background/foreground cycle.
+        // The record subscription and board group subscriptions are tied to the
+        // start/stop lifecycle (registered in `jobs`, cancelled in onStop) so each reopen
+        // gets a fresh collector that re-subscribes — otherwise the backend subs,
+        // cancelled in onStop, would never be re-established after the first
+        // background/foreground cycle.
+        subscribeToObjectState()
         subscribeToBoardGroupOptions()
         subscribeToBoardGroups()
         subscribeToBoardRecords()
@@ -703,18 +718,37 @@ class ObjectSetViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun subscribeToObjectState() {
         Timber.d("subscribeToObjectState, ctx:[${vmParams.ctx}]")
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
+            // Wait for the previous stop's backend unsubscribe (same subscription id) before
+            // issuing any new subscribe request — see [unsubscribeJob].
+            unsubscribeJob?.join()
             combine(
                 stateReducer.state,
                 paginator.offset,
                 session.currentViewerId,
-            ) { state, offset, view ->
+                // Subscription params resolve relation formats against storeOfRelations
+                // (updateFormatForSubscription / updateWithRelationFormat). A tick on store
+                // changes lets the fingerprint below pick up formats that arrive after the
+                // first subscription (e.g. set opened before the relations subscription has
+                // populated the store) — otherwise the subscription would keep the LONG_TEXT
+                // fallback formats for the whole session.
+                storeOfRelations.trackChanges()
+            ) { state, offset, view, _ ->
                 Query(
                     state = state,
                     offset = offset,
                     currentViewerId = view
                 )
-            }.flatMapLatest { query  ->
+            }
+                // Restart the backend record subscription only when the parts of the state
+                // that actually feed its params (filters, sorts, sources, keys, offset,
+                // active view, resolved relation formats) change — not on every unrelated
+                // object-state emission (e.g. a detail amend on the set object itself).
+                .map { query -> query to query.subscriptionFingerprint() }
+                .distinctUntilChanged { old, new ->
+                    old.second == new.second
+                }
+                .flatMapLatest { (query, _) ->
                 val activeViewer = query.state.dataViewState()?.viewerByIdOrFirst(query.currentViewerId)
                 if (activeViewer?.type == DVViewerType.BOARD && isKanbanEnabled.value) {
                     // An enabled board is driven entirely by per-column record subscriptions
@@ -1060,8 +1094,14 @@ class ObjectSetViewModel(
                 boardRenderTrigger
             ) { dataViewState, objectState, currentViewId, permission, _ ->
                 processViewState(dataViewState, objectState, currentViewId, permission)
-            }.distinctUntilChanged().collect { viewState ->
-                Timber.d("subscribeToDataViewViewer, newViewerState:[$viewState]")
+            }
+                .distinctUntilChanged()
+                // Building the view state maps every row × column of the current page —
+                // keep that work off the main thread; only the state assignment below
+                // runs on Main.
+                .flowOn(viewStateDispatcher)
+                .collect { viewState ->
+                Timber.d("subscribeToDataViewViewer, newViewerState:[%s]", viewState::class.simpleName)
                 _currentViewer.value = viewState
                 pendingScrollToObject.value?.let { objectId ->
                     pendingScrollToObject.value = null
@@ -1415,7 +1455,7 @@ class ObjectSetViewModel(
     }
 
     private fun unsubscribeFromAllSubscriptions() {
-        viewModelScope.launch {
+        unsubscribeJob = viewModelScope.launch {
             val ids = listOf(
                 getDataViewSubscriptionId(vmParams.ctx),
                 HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
@@ -4729,4 +4769,95 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
         val offset: Long,
         val currentViewerId: Id?
     )
+
+    /**
+     * Snapshot of the [Query] parts that determine the backend record subscription
+     * params built by [DataViewSubscription] (plus the active view's type, which
+     * selects the subscription strategy in [subscribeToObjectState]). Two queries
+     * with equal fingerprints produce an identical subscription, so cancelling and
+     * re-creating it would only waste a middleware round-trip.
+     */
+    private data class SubscriptionFingerprint(
+        val kind: String,
+        val isInitialized: Boolean,
+        val viewerId: Id?,
+        val viewerType: DVViewerType?,
+        val filters: List<DVFilter>,
+        val sorts: List<DVSort>,
+        val relationKeys: List<Key>,
+        val sources: List<Id>,
+        val offset: Long,
+        /**
+         * Relation formats the subscription params embed for the viewer's filter/sort keys,
+         * as currently resolvable from storeOfRelations ([DataViewSubscription] resolves them
+         * via updateFormatForSubscription / updateWithRelationFormat, falling back to
+         * LONG_TEXT for relations not yet in the store). Including them ensures a
+         * re-subscription once the store catches up.
+         */
+        val resolvedFormats: List<RelationFormat?>
+    )
+
+    private suspend fun Query.subscriptionFingerprint(): SubscriptionFingerprint {
+        val dataView = state as? ObjectState.DataView
+        val isInitialized = dataView?.isInitialized == true
+        val viewer = if (isInitialized) dataView?.viewerByIdOrFirst(currentViewerId) else null
+        val sources = if (isInitialized) {
+            when (dataView) {
+                is ObjectState.DataView.Set -> dataView.filterOutDeletedAndMissingObjects(
+                    dataView.getSetOfValue(vmParams.ctx)
+                )
+                is ObjectState.DataView.TypeSet -> dataView.filterOutDeletedAndMissingObjects(
+                    dataView.getSetOfValue(vmParams.ctx)
+                )
+                else -> emptyList()
+            }
+        } else {
+            emptyList()
+        }
+        // Mirrors the keys whose formats DataViewSubscription resolves when building params:
+        // every (leaf) filter's relation — advanced filters resolve their nested filters, like
+        // updateFormatForSubscription — plus every sort's relation, or the default createdDate
+        // sort substituted when the viewer has none (getSortsWithDefaultCreatedDate).
+        val formatKeys = buildList {
+            fun collectFilterKeys(filters: List<DVFilter>) {
+                filters.forEach { filter ->
+                    if (filter.isAdvanced()) {
+                        collectFilterKeys(filter.nestedFilters)
+                    } else {
+                        add(filter.relation)
+                    }
+                }
+            }
+            collectFilterKeys(viewer?.filters.orEmpty())
+            if (viewer != null) {
+                if (viewer.sorts.isEmpty()) {
+                    add(Relations.CREATED_DATE)
+                } else {
+                    viewer.sorts.forEach { add(it.relationKey) }
+                }
+            }
+        }
+        val resolvedFormats = formatKeys.map { key -> storeOfRelations.getByKey(key)?.format }
+        return SubscriptionFingerprint(
+            kind = when (dataView) {
+                is ObjectState.DataView.Collection -> "collection"
+                is ObjectState.DataView.Set -> "set"
+                is ObjectState.DataView.TypeSet -> "typeSet"
+                null -> "none"
+            },
+            isInitialized = isInitialized,
+            viewerId = viewer?.id,
+            viewerType = viewer?.type,
+            filters = viewer?.filters.orEmpty(),
+            sorts = viewer?.sorts.orEmpty(),
+            relationKeys = if (isInitialized) {
+                dataView?.dataViewContent?.relationLinks?.map { it.key }.orEmpty()
+            } else {
+                emptyList()
+            },
+            sources = sources,
+            offset = offset,
+            resolvedFormats = resolvedFormats
+        )
+    }
 }

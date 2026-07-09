@@ -34,7 +34,6 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @Composable
 fun Messages(
@@ -68,7 +67,6 @@ fun Messages(
     spaceUxType: SpaceUxType? = null
 ) {
     val isOneToOneSpace = spaceUxType == SpaceUxType.ONE_TO_ONE
-    Timber.d("DROID-2966 Messages composition")
     val scope = rememberCoroutineScope()
 
     val topClearance = WindowInsets.statusBars.asPaddingValues().calculateTopPadding() +
@@ -86,6 +84,12 @@ fun Messages(
                 when(msg) {
                     is ChatView.DateSection -> "$DATE_KEY_PREFIX${msg.timeInMillis}"
                     is ChatView.Message -> msg.id
+                }
+            },
+            contentType = { _, msg ->
+                when(msg) {
+                    is ChatView.DateSection -> "date-section"
+                    is ChatView.Message -> "message"
                 }
             }
         ) { idx, msg ->

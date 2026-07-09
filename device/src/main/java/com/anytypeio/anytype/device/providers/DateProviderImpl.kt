@@ -18,6 +18,9 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.temporal.ChronoUnit
 import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import timber.log.Timber
@@ -30,6 +33,23 @@ class DateProviderImpl @Inject constructor(
 ) : DateProvider {
 
     private val defaultDateFormat get() = appDefaultDateFormatProvider.provide()
+
+    // SimpleDateFormat is not thread-safe: cache instances per thread,
+    // keyed by pattern + locale (the time zone is fixed per provider instance).
+    private val formatterCache = object : ThreadLocal<MutableMap<String, SimpleDateFormat>>() {
+        override fun initialValue(): MutableMap<String, SimpleDateFormat> = mutableMapOf()
+    }
+
+    private val timePatternCache = ConcurrentHashMap<String, String>()
+
+    private fun cachedFormatter(pattern: String, locale: Locale): SimpleDateFormat {
+        val cache = requireNotNull(formatterCache.get())
+        return cache.getOrPut("$pattern|$locale") {
+            SimpleDateFormat(pattern, locale).apply {
+                timeZone = TimeZone.getTimeZone(defaultZoneId)
+            }
+        }
+    }
 
     override fun calculateDateType(date: TimeInSeconds): DateType {
         val dateInstant = Instant.ofEpochSecond(date)
@@ -166,9 +186,7 @@ class DateProviderImpl @Inject constructor(
 
     override fun formatToDateString(timestamp: Long, pattern: String): String {
         try {
-            val locale = localeProvider.locale()
-            val formatter = SimpleDateFormat(pattern, locale)
-            formatter.timeZone = java.util.TimeZone.getTimeZone(defaultZoneId)
+            val formatter = cachedFormatter(pattern, localeProvider.locale())
             return formatter.format(Date(timestamp))
         } catch (e: Exception) {
             Timber.e(e, "Error formatting timestamp to date string")
@@ -289,11 +307,13 @@ class DateProviderImpl @Inject constructor(
             DateType.TODAY -> {
                 // Show time for today's messages (e.g., "18:32")
                 val locale = localeProvider.locale()
-                val df = DateFormat.getTimeInstance(DateFormat.SHORT, locale)
-                val timePattern = if (df is SimpleDateFormat) {
-                    df.toPattern()
-                } else {
-                    "HH:mm"
+                val timePattern = timePatternCache.getOrPut("${DateFormat.SHORT}|$locale") {
+                    val df = DateFormat.getTimeInstance(DateFormat.SHORT, locale)
+                    if (df is SimpleDateFormat) {
+                        df.toPattern()
+                    } else {
+                        "HH:mm"
+                    }
                 }
                 formatToDateString(timestamp, timePattern)
             }

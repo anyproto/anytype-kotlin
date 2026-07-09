@@ -77,7 +77,7 @@ fun VaultScreen(
         topBar = {
             VaultScreenTopToolbar(
                 profile = profile,
-                uiState = uiState,
+                isLoading = uiState is VaultUiState.Loading,
                 searchQuery = searchQuery,
                 showNotificationBadge = showNotificationBadge,
                 showCreateSpaceBadge = showCreateSpaceBadge,
@@ -232,18 +232,16 @@ fun VaultScreenContent(
                         key = item.space.id
                     ) { isItemDragging ->
 
-                        val alpha = animateFloatAsState(if (isItemDragging) 0.8f else 1.0f)
+                        val draggedAlpha = animateFloatAsState(if (isItemDragging) 0.8f else 1.0f)
 
                         val spaceBackground = item.wallpaper.toSpaceBackground()
-
-                        val spaceBackgroundValue = remember { mutableStateOf(spaceBackground) }
 
                         when (item) {
                             is VaultSpaceView.DataSpace -> {
                                 DataSpaceCard(
                                     modifier = Modifier
                                         .animateItem()
-                                        .graphicsLayer(alpha = alpha.value)
+                                        .graphicsLayer { alpha = draggedAlpha.value }
                                         .combinedClickable(
                                             onClick = {
                                                 onSpaceClicked(item)
@@ -268,13 +266,13 @@ fun VaultScreenContent(
                                     icon = item.icon,
                                     isPinned = item.isPinned,
                                     spaceView = item,
-                                    expandedSpaceId = expandedSpaceId,
+                                    isMenuExpanded = expandedSpaceId == item.space.id,
                                     isCompactMode = isCompactMode,
                                     onDismissMenu = { expandedSpaceId = null },
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
                                     onSpaceSettings = onSpaceSettings,
-                                    spaceBackground = spaceBackgroundValue.value,
+                                    spaceBackground = spaceBackground,
                                     onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
                                 )
                             }
@@ -290,7 +288,7 @@ fun VaultScreenContent(
                                                 expandedSpaceId = item.space.id
                                             }
                                         )
-                                        .graphicsLayer(alpha = alpha.value)
+                                        .graphicsLayer { alpha = draggedAlpha.value }
                                         .animateItem()
                                         .longPressDraggableHandle(
                                             onDragStarted = {
@@ -306,7 +304,7 @@ fun VaultScreenContent(
                                         ),
                                     title = item.space.name.orEmpty(),
                                     icon = item.icon,
-                                    spaceBackground = spaceBackgroundValue.value,
+                                    spaceBackground = spaceBackground,
                                     creatorName = item.creatorName,
                                     messageText = item.messageText,
                                     messageTime = item.messageTime,
@@ -317,7 +315,7 @@ fun VaultScreenContent(
                                     spaceNotificationState = item.spaceNotificationState,
                                     isPinned = item.isPinned,
                                     spaceView = item,
-                                    expandedSpaceId = expandedSpaceId,
+                                    isMenuExpanded = expandedSpaceId == item.space.id,
                                     isLastMessageOutgoing = item.isLastMessageOutgoing,
                                     isLastMessageSynced = item.isLastMessageSynced,
                                     isCompactMode = isCompactMode,
@@ -343,7 +341,7 @@ fun VaultScreenContent(
                                                 expandedSpaceId = item.space.id
                                             }
                                         )
-                                        .graphicsLayer(alpha = alpha.value)
+                                        .graphicsLayer { alpha = draggedAlpha.value }
                                         .animateItem()
                                         .longPressDraggableHandle(
                                             onDragStarted = {
@@ -359,7 +357,7 @@ fun VaultScreenContent(
                                         ),
                                     title = item.space.name.orEmpty(),
                                     icon = item.icon,
-                                    spaceBackground = spaceBackgroundValue.value,
+                                    spaceBackground = spaceBackground,
                                     messageText = item.messageText,
                                     messageTime = item.messageTime,
                                     chatPreview = item.chatPreview,
@@ -368,7 +366,7 @@ fun VaultScreenContent(
                                     attachmentPreviews = item.attachmentPreviews,
                                     isPinned = item.isPinned,
                                     spaceView = item,
-                                    expandedSpaceId = expandedSpaceId,
+                                    isMenuExpanded = expandedSpaceId == item.space.id,
                                     isLastMessageOutgoing = item.isLastMessageOutgoing,
                                     isLastMessageSynced = item.isLastMessageSynced,
                                     isCompactMode = isCompactMode,
@@ -403,8 +401,6 @@ fun VaultScreenContent(
 
                     val spaceBackground = item.wallpaper.toSpaceBackground()
 
-                    val spaceBackgroundValue = remember { mutableStateOf(spaceBackground) }
-
                     when (item) {
                         is VaultSpaceView.DataSpaceWithChat -> {
                             VaultDataSpaceChatCard(
@@ -419,7 +415,7 @@ fun VaultScreenContent(
                                         )),
                                 title = item.space.name.orEmpty(),
                                 icon = item.icon,
-                                spaceBackground = spaceBackgroundValue.value,
+                                spaceBackground = spaceBackground,
                                 creatorName = item.creatorName,
                                 messageText = item.messageText,
                                 messageTime = item.messageTime,
@@ -430,7 +426,7 @@ fun VaultScreenContent(
                                 spaceNotificationState = item.spaceNotificationState,
                                 isPinned = item.isPinned,
                                 spaceView = item,
-                                expandedSpaceId = expandedSpaceId,
+                                isMenuExpanded = expandedSpaceId == item.space.id,
                                 isLastMessageOutgoing = item.isLastMessageOutgoing,
                                 isLastMessageSynced = item.isLastMessageSynced,
                                 isCompactMode = isCompactMode,
@@ -460,8 +456,8 @@ fun VaultScreenContent(
                                 isPinned = item.isPinned,
                                 icon = item.icon,
                                 spaceView = item,
-                                spaceBackground = spaceBackgroundValue.value,
-                                expandedSpaceId = expandedSpaceId,
+                                spaceBackground = spaceBackground,
+                                isMenuExpanded = expandedSpaceId == item.space.id,
                                 isCompactMode = isCompactMode,
                                 onDismissMenu = { expandedSpaceId = null },
                                 onPinSpace = onPinSpace,
@@ -484,7 +480,7 @@ fun VaultScreenContent(
                                         )),
                                 title = item.space.name.orEmpty(),
                                 icon = item.icon,
-                                spaceBackground = spaceBackgroundValue.value,
+                                spaceBackground = spaceBackground,
                                 messageText = item.messageText,
                                 messageTime = item.messageTime,
                                 chatPreview = item.chatPreview,
@@ -493,7 +489,7 @@ fun VaultScreenContent(
                                 attachmentPreviews = item.attachmentPreviews,
                                 isPinned = item.isPinned,
                                 spaceView = item,
-                                expandedSpaceId = expandedSpaceId,
+                                isMenuExpanded = expandedSpaceId == item.space.id,
                                 isLastMessageOutgoing = item.isLastMessageOutgoing,
                                 isLastMessageSynced = item.isLastMessageSynced,
                                 isCompactMode = isCompactMode,

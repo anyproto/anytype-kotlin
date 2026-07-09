@@ -557,7 +557,7 @@ private fun CommentUserInput(
                 )
             )
         },
-        visualTransformation = AnnotatedTextTransformation(spans),
+        visualTransformation = remember(spans) { AnnotatedTextTransformation(spans) },
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Sentences
         )

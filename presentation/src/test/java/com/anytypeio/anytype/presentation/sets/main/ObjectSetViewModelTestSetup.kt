@@ -404,7 +404,8 @@ open class ObjectSetViewModelTestSetup {
             addDiscussion = addDiscussion,
             userSettingsRepository = userSettingsRepository,
             backHistoryDelegate = mock(),
-            exitToVaultDelegate = mock()
+            exitToVaultDelegate = mock(),
+            viewStateDispatcher = rule.dispatcher
         )
     }
 

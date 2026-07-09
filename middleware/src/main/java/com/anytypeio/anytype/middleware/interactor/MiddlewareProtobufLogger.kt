@@ -45,8 +45,8 @@ interface MiddlewareProtobufLogger {
 
         override fun logEvent(any: Any) {
             if (featureToggles.isLogMiddlewareInteraction) {
-                val event = any as? Event
-                if (event?.messages[0]?.p2pStatusUpdate != null || event?.messages[0]?.spaceSyncStatusUpdate != null) return
+                val first = (any as? Event)?.messages?.firstOrNull()
+                if (first?.p2pStatusUpdate != null || first?.spaceSyncStatusUpdate != null) return
                 Timber.d("event -> ${any.toLogMessage(isConciseLogging)}")
             }
         }

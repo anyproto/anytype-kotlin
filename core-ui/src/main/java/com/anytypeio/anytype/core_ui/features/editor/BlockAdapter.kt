@@ -1885,6 +1885,19 @@ class BlockAdapter(
         result.dispatchUpdatesTo(this)
     }
 
+    /**
+     * Applies a diff result calculated in advance (e.g. on a background thread).
+     * Must be called on the main thread with a [result] calculated
+     * for old = current [views] and new = [items].
+     */
+    fun applyDiffResult(items: List<BlockView>, result: DiffUtil.DiffResult) {
+        if (BuildConfig.DEBUG) {
+            Timber.d("----------Blocks dispatched to adapter---------------------")
+        }
+        blocks = items
+        result.dispatchUpdatesTo(this)
+    }
+
     private fun checkIfDecorationChanged(
         holder: BlockViewHolder,
         payloads: List<Payload>,

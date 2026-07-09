@@ -54,6 +54,15 @@ suspend fun DVViewer.buildGalleryViews(
 
     val hasCover = !coverRelationKey.isNullOrEmpty()
 
+    // Cover lookup for non-page-cover relations resolves file objects against the
+    // store — snapshot it once per render instead of copying the whole store for
+    // every single card.
+    val dependedObjects = if (hasCover && coverRelationKey != Relations.PAGE_COVER) {
+        objectStore.getAll()
+    } else {
+        emptyList()
+    }
+
     val orderMap = objectOrderIds.mapIndexed { index, id -> id to index }.toMap()
 
     return objectIds
@@ -66,6 +75,7 @@ suspend fun DVViewer.buildGalleryViews(
                     coverImageHashProvider = coverImageHashProvider,
                     urlBuilder = urlBuilder,
                     store = objectStore,
+                    dependedObjects = dependedObjects,
                     filteredRelations = filteredRelations,
                     isLargeSize = true,
                     storeOfRelations = storeOfRelations,
@@ -158,6 +168,7 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
     coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
     store: ObjectStore,
+    dependedObjects: List<ObjectWrapper.Basic>,
     filteredRelations: List<ObjectWrapper.Relation>,
     isLargeSize: Boolean,
     storeOfRelations: StoreOfRelations,
@@ -172,7 +183,7 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
         dvViewer = dvViewer,
         coverImageHashProvider = coverImageHashProvider,
         urlBuilder = urlBuilder,
-        store = store,
+        dependedObjects = dependedObjects,
         storeOfRelations = storeOfRelations,
         isLargeSize = isLargeSize
     )
@@ -206,7 +217,7 @@ private suspend fun getCoverContainer(
     dvViewer: DVViewer,
     coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
-    store: ObjectStore,
+    dependedObjects: List<ObjectWrapper.Basic>,
     storeOfRelations: StoreOfRelations,
     isLargeSize: Boolean
 ): CoverContainer {
@@ -227,7 +238,7 @@ private suspend fun getCoverContainer(
                 obj = obj,
                 dvViewer = dvViewer,
                 urlBuilder = urlBuilder,
-                dependedObjects = store.getAll(),
+                dependedObjects = dependedObjects,
                 storeOfRelations = storeOfRelations,
                 isLargeSize = isLargeSize
             )

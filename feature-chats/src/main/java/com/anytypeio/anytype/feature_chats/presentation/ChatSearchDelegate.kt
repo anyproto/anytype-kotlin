@@ -13,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 interface ChatSearchDelegate {
@@ -94,13 +95,15 @@ interface ChatSearchDelegate {
             searchJob = scope.launch {
                 delay(SEARCH_DEBOUNCE_MS)
                 try {
-                    val response = searchChatMessages.run(
-                        Command.ChatCommand.SearchMessages(
-                            space = space,
-                            chat = chat,
-                            query = query
+                    val response = withContext(dispatchers.io) {
+                        searchChatMessages.run(
+                            Command.ChatCommand.SearchMessages(
+                                space = space,
+                                chat = chat,
+                                query = query
+                            )
                         )
-                    )
+                    }
                     val state = _chatSearchState.value
                     if (state is ChatSearchState.Active && state.query == query) {
                         _chatSearchState.value = state.copy(

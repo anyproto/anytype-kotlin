@@ -17,7 +17,10 @@ sealed class DataViewViewState {
         data class NoItems(
             val title: String,
             override val isCreateObjectAllowed: Boolean = true,
-            override val isEditingViewAllowed: Boolean = true
+            override val isEditingViewAllowed: Boolean = true,
+            // Board view with no grouping property set: show a "choose a grouping property" hint
+            // instead of the "no objects" message (and instead of an endless loading spinner).
+            val isBoardGroupByRequired: Boolean = false
         ) : Collection()
 
         data class Default(
@@ -45,7 +48,10 @@ sealed class DataViewViewState {
         data class NoItems(
             val title: String,
             override val isCreateObjectAllowed: Boolean = true,
-            override val isEditingViewAllowed: Boolean = true
+            override val isEditingViewAllowed: Boolean = true,
+            // Board view with no grouping property set: show a "choose a grouping property" hint
+            // instead of the "no objects" message (and instead of an endless loading spinner).
+            val isBoardGroupByRequired: Boolean = false
         ) : Set()
 
         data class Default(
@@ -63,7 +69,10 @@ sealed class DataViewViewState {
         data class NoItems(
             val title: String,
             override val isCreateObjectAllowed: Boolean = true,
-            override val isEditingViewAllowed: Boolean = false
+            override val isEditingViewAllowed: Boolean = false,
+            // Board view with no grouping property set: show a "choose a grouping property" hint
+            // instead of the "no objects" message (and instead of an endless loading spinner).
+            val isBoardGroupByRequired: Boolean = false
         ) : TypeSet()
 
         data class Default(

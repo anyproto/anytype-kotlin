@@ -595,6 +595,8 @@
     <string name="dataview_board_checked">Geselecteerd</string>
     <string name="dataview_board_unchecked">Niet geselecteerd</string>
     <string name="dataview_board_new_object">Nieuw</string>
+    <string name="dataview_board_no_group_title">No grouping property</string>
+    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
     <string name="page_cover">Paginaomslag</string>
     <string name="object_action_pin">Zet vast</string>
     <string name="object_action_unpin">Losmaken</string>
@@ -2114,9 +2116,11 @@
     <string name="share_space_error_space_deleted">Het lijkt erop dat de ruimte is verwijderd. Zorg er alsjeblieft voor dat je apparaten worden gesynchroniseerd.</string>
     <string name="share_space_error_generic">Er is een onverwachte fout opgetreden: %1$s. Probeer het later opnieuw.</string>
     <string name="share_space_error_incorrect_permissions">Je hebt niet de benodigde machtigingen. Neem contact op met de eigenaar van de ruimte voor ondersteuning.</string>
-    <string name="share_space_error_no_such_space">        De ruimte die je probeert te delen bestaat niet. Controleer alsjeblieft het ruimte-ID en probeer het opnieuw.
+    <string name="share_space_error_no_such_space">
+        De ruimte die je probeert te delen bestaat niet. Controleer alsjeblieft het ruimte-ID en probeer het opnieuw.
     </string>
-    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    <string name="share_space_error_make_private_failed">
+        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">versleuteld, lokaal, voor altijd van jou</string>
     <string name="private_channel">Direct channel</string>

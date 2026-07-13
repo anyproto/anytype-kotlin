@@ -33,8 +33,8 @@ class ListViewRelationTagValueView @JvmOverloads constructor(
         val color = ThemeColor.values().find { it.code == tagColor }
         val defaultTextColor = resources.getColor(R.color.text_primary, null)
         val defaultBackground = resources.getColor(R.color.shape_primary, null)
-        // Treat DEFAULT (no color) like the neutral fallback: on a light surface the DEFAULT
-        // palette background is white, which would be invisible for a colorless chip.
+        // DEFAULT falls through to the neutral chip colors, matching the setTextColor
+        // convention in PaletteExtension.
         if (color != null && color != ThemeColor.DEFAULT) {
             tvName.setTextColor(resources.dark(color, defaultTextColor))
             tvName.background.setDrawableColor(resources.light(color, defaultBackground))

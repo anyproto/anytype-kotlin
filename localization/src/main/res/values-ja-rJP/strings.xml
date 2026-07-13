@@ -138,7 +138,8 @@
     <string name="background_color">背景色</string>
     <string name="content_description_bookmark_logo">ブックマークアイコン</string>
     <string name="content_description_file_icon">ファイルアイコン</string>
-    <string name="content_description_modal_icon">モーダルアイコン</string>
+    <string name="content_description_modal_icon">モーダルアイコン
+</string>
     <string name="alert_icon_description">アラートアイコン</string>
     <string name="modal_tap_to_type">タップして入力</string>
     <string name="modal_gallery">ギャラリー</string>
@@ -594,6 +595,8 @@
     <string name="dataview_board_checked">チェック済み</string>
     <string name="dataview_board_unchecked">未チェック</string>
     <string name="dataview_board_new_object">新規</string>
+    <string name="dataview_board_no_group_title">No grouping property</string>
+    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
     <string name="page_cover">カバー画像</string>
     <string name="object_action_pin">ピン留め</string>
     <string name="object_action_unpin">ピン留め解除</string>
@@ -1525,7 +1528,8 @@
     <string name="payments_email_title">最新情報や無料特典を受け取りましょう！</string>
     <string name="payments_email_subtitle">あなたの保管庫と結びつけられることは一切ありません。</string>
     <string name="payments_email_checkbox_text">最新情報や無料特典を受け取る！</string>
-    <string name="payments_email_hint">メールアドレス</string>
+    <string name="payments_email_hint">メールアドレス
+</string>
     <string name="payments_tier_current_title">加入状況：</string>
     <string name="payments_tier_current_valid">有効期限</string>
     <string name="payments_tier_current_paid_by">支払方法</string>
@@ -1566,7 +1570,8 @@
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
     <string name="membership_support_subject">メンバーシップ画面エラーレポート - %1$s</string>
-    <string name="membership_support_body">        Anytypeチーム担当者の方へ\n\n
+    <string name="membership_support_body">
+        Anytypeチーム担当者の方へ\n\n
 
         アプリ使用中に、メンバーシップ画面にて、エラーが表示されました。詳しくは以下の通りです。\n
 
@@ -1893,7 +1898,8 @@
     <string name="field_date_empty">値</string>
     <string name="field_url_title">URL</string>
     <string name="field_url_empty">追加</string>
-    <string name="field_email_title">メールアドレス</string>
+    <string name="field_email_title">メールアドレス
+</string>
     <string name="field_email_empty">入力</string>
     <string name="field_phone_title">電話番号</string>
     <string name="field_phone_empty">入力</string>
@@ -2050,7 +2056,8 @@
     <string name="notification_option_disabled">無効</string>
     <string name="space_notify_unmute">ミュート解除</string>
     <string name="space_notify_mute">ミュート</string>
-    <string name="vault_pinned_limit_message">スペースのピン留めは最大%1$d個です。新しくピン留めするには、どれか一つ解除してください。</string>
+    <string name="vault_pinned_limit_message">スペースのピン留めは最大%1$d個です。新しくピン留めするには、どれか一つ解除してください。
+</string>
     <string name="vault_space_settings">スペース設定</string>
     <string name="notification_settings_title">通知</string>
     <string name="notification_settings_disabled">通知が無効です</string>
@@ -2101,9 +2108,11 @@
     <string name="share_space_error_space_deleted">スペースが削除されたようです。デバイスの同期状況をご確認ください。</string>
     <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
-    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    <string name="share_space_error_no_such_space">
+        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
-    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    <string name="share_space_error_make_private_failed">
+        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="private_channel">Direct channel</string>

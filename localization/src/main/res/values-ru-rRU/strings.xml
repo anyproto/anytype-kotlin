@@ -597,6 +597,8 @@
     <string name="dataview_board_checked">Отмечено</string>
     <string name="dataview_board_unchecked">Не отмечено</string>
     <string name="dataview_board_new_object">Новый</string>
+    <string name="dataview_board_no_group_title">No grouping property</string>
+    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
     <string name="page_cover">Обложка страницы</string>
     <string name="object_action_pin">Закрепить</string>
     <string name="object_action_unpin">Открепить</string>

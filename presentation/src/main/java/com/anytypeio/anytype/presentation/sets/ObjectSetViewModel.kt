@@ -1088,7 +1088,7 @@ class ObjectSetViewModel(
                             StoreSearchParams(
                                 space = vmParams.space,
                                 subscription = boardOptionsSubscriptionId,
-                                filters = boardGroupOptionsFilters(groupRelationKey),
+                                filters = relationOptionsFilters(listOf(groupRelationKey)),
                                 keys = listOf(
                                     Relations.ID,
                                     Relations.NAME,
@@ -1120,7 +1120,12 @@ class ObjectSetViewModel(
      */
     private fun subscribeToDataViewRelationOptions() {
         jobs += viewModelScope.launch {
-            stateReducer.state
+            // Also re-evaluate on relation-store changes: resolving a link's format below needs the
+            // relation object, which may arrive only after the last state emission on cold start.
+            combine(
+                stateReducer.state,
+                storeOfRelations.trackChanges()
+            ) { state, _ -> state }
                 .map { state ->
                     state.dataViewState()?.dataViewContent?.relationLinks
                         ?.mapNotNull { link ->
@@ -1144,13 +1149,16 @@ class ObjectSetViewModel(
                             StoreSearchParams(
                                 space = vmParams.space,
                                 subscription = dataViewOptionsSubscriptionId,
-                                filters = dataViewOptionsFilters(tagStatusKeys),
+                                filters = relationOptionsFilters(tagStatusKeys),
                                 keys = listOf(
                                     Relations.ID,
                                     Relations.SPACE_ID,
                                     Relations.NAME,
                                     Relations.RELATION_OPTION_COLOR,
-                                    Relations.RELATION_KEY
+                                    Relations.RELATION_KEY,
+                                    // The grid render checks isDeleted before showing a chip; fetch
+                                    // it so a deletion amend can be honoured at render time.
+                                    Relations.IS_DELETED
                                 )
                             )
                         )
@@ -1173,8 +1181,8 @@ class ObjectSetViewModel(
         }
     }
 
-    /** The non-deleted options of the given Tag/Status relations (same query as [boardGroupOptionsFilters] / GetOptions). */
-    private fun dataViewOptionsFilters(relationKeys: List<Key>): List<DVFilter> = listOf(
+    /** The non-deleted options of the given Tag/Status relations (same query as the GetOptions use case). */
+    private fun relationOptionsFilters(relationKeys: List<Key>): List<DVFilter> = listOf(
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
@@ -1194,30 +1202,6 @@ class ObjectSetViewModel(
             relation = Relations.RELATION_KEY,
             condition = DVFilterCondition.IN,
             value = relationKeys
-        )
-    )
-
-    /** The non-deleted options of the given relation (same query as the GetOptions use case). */
-    private fun boardGroupOptionsFilters(relationKey: Key): List<DVFilter> = listOf(
-        DVFilter(
-            relation = Relations.LAYOUT,
-            condition = DVFilterCondition.EQUAL,
-            value = ObjectType.Layout.RELATION_OPTION.code.toDouble()
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.RELATION_KEY,
-            condition = DVFilterCondition.EQUAL,
-            value = relationKey
         )
     )
 

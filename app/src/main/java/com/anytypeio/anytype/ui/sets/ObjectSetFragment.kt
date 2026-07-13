@@ -745,7 +745,13 @@ open class ObjectSetFragment :
                     } else {
                         DataViewInfo.TYPE.COLLECTION_NO_ITEMS
                     },
-                    isReadOnlyAccess = !state.isCreateObjectAllowed
+                    // The group-by hint points at view settings, so it is gated by view-edit
+                    // permission; the "no items" hint is gated by object creation.
+                    isReadOnlyAccess = if (state.isBoardGroupByRequired) {
+                        !state.isEditingViewAllowed
+                    } else {
+                        !state.isCreateObjectAllowed
+                    }
                 )
                 setViewer(viewer = null)
             }
@@ -810,7 +816,13 @@ open class ObjectSetFragment :
                     } else {
                         DataViewInfo.TYPE.SET_NO_ITEMS
                     },
-                    isReadOnlyAccess = !state.isCreateObjectAllowed
+                    // The group-by hint points at view settings, so it is gated by view-edit
+                    // permission; the "no items" hint is gated by object creation.
+                    isReadOnlyAccess = if (state.isBoardGroupByRequired) {
+                        !state.isEditingViewAllowed
+                    } else {
+                        !state.isCreateObjectAllowed
+                    }
                 )
                 setViewer(viewer = null)
             }
@@ -896,7 +908,13 @@ open class ObjectSetFragment :
                     } else {
                         DataViewInfo.TYPE.SET_NO_ITEMS
                     },
-                    isReadOnlyAccess = !state.isCreateObjectAllowed
+                    // The group-by hint points at view settings, so it is gated by view-edit
+                    // permission; the "no items" hint is gated by object creation.
+                    isReadOnlyAccess = if (state.isBoardGroupByRequired) {
+                        !state.isEditingViewAllowed
+                    } else {
+                        !state.isCreateObjectAllowed
+                    }
                 )
                 setViewer(viewer = null)
             }

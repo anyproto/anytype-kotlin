@@ -75,11 +75,16 @@ class DataViewInfo @JvmOverloads constructor(
             }
             TYPE.BOARD_NO_GROUP_BY -> {
                 // The board has no grouping property set, so it can never build columns. Show an
-                // explicit hint (instead of an endless spinner) pointing to the view settings.
+                // explicit hint (instead of an endless spinner) pointing to the view settings —
+                // but only for users who can actually edit the view.
                 binding.title.text = resources.getString(R.string.dataview_board_no_group_title)
-                binding.description.text =
-                    resources.getString(R.string.dataview_board_no_group_description)
-                binding.description.visible()
+                if (isReadOnlyAccess) {
+                    binding.description.invisible()
+                } else {
+                    binding.description.text =
+                        resources.getString(R.string.dataview_board_no_group_description)
+                    binding.description.visible()
+                }
                 binding.button.invisible()
             }
         }

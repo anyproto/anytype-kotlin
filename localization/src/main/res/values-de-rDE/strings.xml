@@ -595,6 +595,8 @@
     <string name="dataview_board_checked">Ausgewählt</string>
     <string name="dataview_board_unchecked">Nicht ausgewählt</string>
     <string name="dataview_board_new_object">Neu</string>
+    <string name="dataview_board_no_group_title">No grouping property</string>
+    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
     <string name="page_cover">Seitencover</string>
     <string name="object_action_pin">Anheften</string>
     <string name="object_action_unpin">Loslösen</string>
@@ -2030,7 +2032,8 @@
     <string name="notifications_modal_cancel_button">Nicht jetzt</string>
     <string name="vault_create_chat">Neuer Chat</string>
     <string name="vault_create_chat_description">Für Echtzeit-Unterhaltungen</string>
-    <string name="vault_create_space">Neuer Space</string>
+    <string name="vault_create_space">Neuer Space
+</string>
     <string name="vault_create_space_description">Für organisierte Inhalte und Daten</string>
     <string name="vault_create_personal">Persönlich</string>
     <string name="vault_create_group">Gruppe</string>
@@ -2114,9 +2117,11 @@
     <string name="share_space_error_space_deleted">Es sieht so aus, als sei der Speicherplatz gelöscht worden. Bitte stelle sicher, dass deine Geräte synchronisiert sind.</string>
     <string name="share_space_error_generic">Ein unerwarteter Fehler ist aufgetreten: %1$s. Bitte versuche es später erneut.</string>
     <string name="share_space_error_incorrect_permissions">Dir fehlen die erforderlichen Berechtigungen. Bitte kontaktiere den Space-Besitzer für Unterstützung. </string>
-    <string name="share_space_error_no_such_space">        Der Bereich, den Sie freigeben möchten, existiert nicht. Bitte überprüfen Sie die Space-ID und versuchen Sie es erneut.
+    <string name="share_space_error_no_such_space">
+        Der Bereich, den Sie freigeben möchten, existiert nicht. Bitte überprüfen Sie die Space-ID und versuchen Sie es erneut.
     </string>
-    <string name="share_space_error_make_private_failed">        Konnte den Raum nicht privat machen. Bitte versuchen Sie es später erneut.
+    <string name="share_space_error_make_private_failed">
+        Konnte den Raum nicht privat machen. Bitte versuchen Sie es später erneut.
     </string>
     <string name="private_local_yours_forever">verschlüsselt, lokal, für immer deins</string>
     <string name="private_channel">Direkter Kanal</string>

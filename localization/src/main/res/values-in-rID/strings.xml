@@ -594,6 +594,8 @@
     <string name="dataview_board_checked">Telah diperiksa</string>
     <string name="dataview_board_unchecked">Belum diperiksa</string>
     <string name="dataview_board_new_object">Baru</string>
+    <string name="dataview_board_no_group_title">No grouping property</string>
+    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
     <string name="page_cover">Page cover</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Lepas sematan</string>

@@ -53,6 +53,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -353,7 +354,6 @@ abstract class TestObjectSetSetup {
             removeObjectFromCollection = removeObjectFromCollection,
             setDataViewProperties = mock(),
             setDataViewObjectOrder = mock(),
-            storelessSubscriptionContainer = mock(),
             boardGroupSubscriptionContainer = mock(),
             createBlock = mock(),
             emojiProvider = mock(),
@@ -364,7 +364,8 @@ abstract class TestObjectSetSetup {
             backHistoryDelegate = org.mockito.kotlin.mock(),
             exitToVaultDelegate = org.mockito.kotlin.mock(),
             boardRecordsSubscriptionContainer = org.mockito.kotlin.mock(),
-            userSettingsRepository = userSettingsRepository
+            userSettingsRepository = userSettingsRepository,
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
         )
 
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())

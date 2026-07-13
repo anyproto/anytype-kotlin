@@ -319,6 +319,7 @@ open class ObjectSetFragment :
                     DataViewInfo.TYPE.COLLECTION_NO_ITEMS -> vm.proceedWithDataViewObjectCreate()
                     DataViewInfo.TYPE.SET_NO_QUERY -> vm.onSelectQueryButtonClicked()
                     DataViewInfo.TYPE.SET_NO_ITEMS -> vm.proceedWithDataViewObjectCreate()
+                    DataViewInfo.TYPE.BOARD_NO_GROUP_BY -> {}
                     DataViewInfo.TYPE.INIT -> {}
                 }
             }
@@ -739,8 +740,18 @@ open class ObjectSetFragment :
                 setupNewButtons(state.isCreateObjectAllowed)
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(
-                    type = DataViewInfo.TYPE.COLLECTION_NO_ITEMS,
-                    isReadOnlyAccess = !state.isCreateObjectAllowed
+                    type = if (state.isBoardGroupByRequired) {
+                        DataViewInfo.TYPE.BOARD_NO_GROUP_BY
+                    } else {
+                        DataViewInfo.TYPE.COLLECTION_NO_ITEMS
+                    },
+                    // The group-by hint points at view settings, so it is gated by view-edit
+                    // permission; the "no items" hint is gated by object creation.
+                    isReadOnlyAccess = if (state.isBoardGroupByRequired) {
+                        !state.isEditingViewAllowed
+                    } else {
+                        !state.isCreateObjectAllowed
+                    }
                 )
                 setViewer(viewer = null)
             }
@@ -800,8 +811,18 @@ open class ObjectSetFragment :
                 }
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(
-                    type = DataViewInfo.TYPE.SET_NO_ITEMS,
-                    isReadOnlyAccess = !state.isCreateObjectAllowed
+                    type = if (state.isBoardGroupByRequired) {
+                        DataViewInfo.TYPE.BOARD_NO_GROUP_BY
+                    } else {
+                        DataViewInfo.TYPE.SET_NO_ITEMS
+                    },
+                    // The group-by hint points at view settings, so it is gated by view-edit
+                    // permission; the "no items" hint is gated by object creation.
+                    isReadOnlyAccess = if (state.isBoardGroupByRequired) {
+                        !state.isEditingViewAllowed
+                    } else {
+                        !state.isCreateObjectAllowed
+                    }
                 )
                 setViewer(viewer = null)
             }
@@ -882,8 +903,18 @@ open class ObjectSetFragment :
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(
-                    type = DataViewInfo.TYPE.SET_NO_ITEMS,
-                    isReadOnlyAccess = !state.isCreateObjectAllowed
+                    type = if (state.isBoardGroupByRequired) {
+                        DataViewInfo.TYPE.BOARD_NO_GROUP_BY
+                    } else {
+                        DataViewInfo.TYPE.SET_NO_ITEMS
+                    },
+                    // The group-by hint points at view settings, so it is gated by view-edit
+                    // permission; the "no items" hint is gated by object creation.
+                    isReadOnlyAccess = if (state.isBoardGroupByRequired) {
+                        !state.isEditingViewAllowed
+                    } else {
+                        !state.isCreateObjectAllowed
+                    }
                 )
                 setViewer(viewer = null)
             }

@@ -595,8 +595,8 @@
     <string name="dataview_board_checked">Marcado</string>
     <string name="dataview_board_unchecked">Sin marcar</string>
     <string name="dataview_board_new_object">Nuevo</string>
-    <string name="dataview_board_no_group_title">No grouping property</string>
-    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
+    <string name="dataview_board_no_group_title">No hay una propiedad por la que agrupar</string>
+    <string name="dataview_board_no_group_description">En los ajustes de la vista, elige la propiedad por la que agruparás las tarjetas.</string>
     <string name="page_cover">Portada de página</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Desanclar</string>

@@ -310,6 +310,18 @@ class ObjectSetViewModel(
     /** Subscription id of the live options (column headers) of the board's group relation. */
     private val boardOptionsSubscriptionId = "${vmParams.ctx}$SUBSCRIPTION_BOARD_OPTIONS_POSTFIX"
 
+    /**
+     * Subscription id of the live options of the active data view's Tag/Status relations. Their
+     * objects are merged into the shared [objectStore] so grid/gallery/list cells can resolve their
+     * option chips. Needed for TypeSets, where the type's relations are added to the data view only
+     * after the record subscription has started, so option objects never arrive via that
+     * subscription's dependency snapshot (DROID-4542).
+     */
+    private val dataViewOptionsSubscriptionId = "${vmParams.ctx}$SUBSCRIPTION_DATA_VIEW_OPTIONS_POSTFIX"
+
+    /** Bumped whenever the data view's Tag/Status options are (re)merged into the store, to trigger a re-render. */
+    private val dataViewOptionsVersion = MutableStateFlow(0)
+
     /** Whether the experimental Kanban (Board) view is enabled; when off, BOARD views are unsupported. */
     private val isKanbanEnabled = userSettingsRepository.observeKanbanEnabled()
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
@@ -329,6 +341,12 @@ class ObjectSetViewModel(
         isKanbanEnabled,
         boardSubscriptionError
     ) { _, _, _, _, _ -> Unit }
+
+    /** Fires a re-render whenever the board flows OR the data view's Tag/Status options change. */
+    private val renderTrigger = combine(
+        boardRenderTrigger,
+        dataViewOptionsVersion
+    ) { _, _ -> Unit }
 
     private val _dvViews = MutableStateFlow<List<ViewerView>>(emptyList())
 
@@ -704,6 +722,7 @@ class ObjectSetViewModel(
         // re-subscribes — otherwise the backend group sub, cancelled in onStop, would never
         // be re-established after the first background/foreground cycle.
         subscribeToBoardGroupOptions()
+        subscribeToDataViewRelationOptions()
         subscribeToBoardGroups()
         subscribeToBoardRecords()
         proceedWithOpeningCurrentObject(ctx = vmParams.ctx)
@@ -1091,6 +1110,93 @@ class ObjectSetViewModel(
         }
     }
 
+    /**
+     * Live Tag/Status options (name + color) for the active data view's relations, merged into the
+     * shared [objectStore] so grid/gallery/list cells resolve their option chips. Needed for
+     * TypeSets, where the type's relations are added to the data view only after the record
+     * subscription has started, so the option objects never arrive via that subscription's
+     * dependency snapshot. Harmless for Sets/Collections: the same options are simply re-merged
+     * idempotently (DROID-4542).
+     */
+    private fun subscribeToDataViewRelationOptions() {
+        jobs += viewModelScope.launch {
+            stateReducer.state
+                .map { state ->
+                    state.dataViewState()?.dataViewContent?.relationLinks
+                        ?.mapNotNull { link ->
+                            val format = storeOfRelations.getByKey(link.key)?.format
+                            if (format == RelationFormat.TAG || format == RelationFormat.STATUS) {
+                                link.key
+                            } else {
+                                null
+                            }
+                        }
+                        ?.distinct()
+                        .orEmpty()
+                }
+                .distinctUntilChanged()
+                .flatMapLatest { tagStatusKeys ->
+                    if (tagStatusKeys.isEmpty()) {
+                        storelessSubscriptionContainer.unsubscribe(listOf(dataViewOptionsSubscriptionId))
+                        flowOf(emptyList())
+                    } else {
+                        storelessSubscriptionContainer.subscribe(
+                            StoreSearchParams(
+                                space = vmParams.space,
+                                subscription = dataViewOptionsSubscriptionId,
+                                filters = dataViewOptionsFilters(tagStatusKeys),
+                                keys = listOf(
+                                    Relations.ID,
+                                    Relations.SPACE_ID,
+                                    Relations.NAME,
+                                    Relations.RELATION_OPTION_COLOR,
+                                    Relations.RELATION_KEY
+                                )
+                            )
+                        )
+                    }
+                }
+                .catch { e ->
+                    Timber.e(e, "Error in data view relation options subscription")
+                    emit(emptyList())
+                }
+                .collect { options ->
+                    // Merge into the shared store (grid/gallery/list read options via store.get),
+                    // then bump the version so the render pipeline re-reads the store.
+                    objectStore.merge(
+                        objects = options,
+                        dependencies = emptyList(),
+                        subscriptions = listOf(dataViewOptionsSubscriptionId)
+                    )
+                    dataViewOptionsVersion.update { it + 1 }
+                }
+        }
+    }
+
+    /** The non-deleted options of the given Tag/Status relations (same query as [boardGroupOptionsFilters] / GetOptions). */
+    private fun dataViewOptionsFilters(relationKeys: List<Key>): List<DVFilter> = listOf(
+        DVFilter(
+            relation = Relations.LAYOUT,
+            condition = DVFilterCondition.EQUAL,
+            value = ObjectType.Layout.RELATION_OPTION.code.toDouble()
+        ),
+        DVFilter(
+            relation = Relations.IS_DELETED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.RELATION_KEY,
+            condition = DVFilterCondition.IN,
+            value = relationKeys
+        )
+    )
+
     /** The non-deleted options of the given relation (same query as the GetOptions use case). */
     private fun boardGroupOptionsFilters(relationKey: Key): List<DVFilter> = listOf(
         DVFilter(
@@ -1123,7 +1229,7 @@ class ObjectSetViewModel(
                 stateReducer.state,
                 session.currentViewerId,
                 permission,
-                boardRenderTrigger
+                renderTrigger
             ) { dataViewState, objectState, currentViewId, permission, _ ->
                 processViewState(dataViewState, objectState, currentViewId, permission)
             }.distinctUntilChanged().collect { viewState ->
@@ -1173,6 +1279,16 @@ class ObjectSetViewModel(
      */
     private fun isBoardAwaitingGroups(viewer: Viewer): Boolean =
         viewer is Viewer.Board && boardGroups.value == null
+
+    /**
+     * An enabled Board view with no grouping property can never build columns (it has nothing to
+     * group by), so it would otherwise sit in the loading state forever. Detect it so the render
+     * shows an explicit "choose a grouping property" hint instead of an endless spinner.
+     */
+    private fun isBoardMissingGroupRelation(viewer: DVViewer?): Boolean =
+        isKanbanEnabled.value
+                && viewer?.type == DVViewerType.BOARD
+                && viewer.groupRelationKey.isNullOrEmpty()
 
     /** An active board whose group/record subscription died renders an explicit error. */
     private fun hasBoardSubscriptionFailed(viewer: DVViewer?): Boolean =
@@ -1224,12 +1340,14 @@ class ObjectSetViewModel(
                         msg = BOARD_SUBSCRIPTION_ERROR_MSG
                     )
                     viewer.isEmpty() -> {
-                        if (isBoardAwaitingGroups(viewer)) return DataViewViewState.Init
+                        val missingGroupBy = isBoardMissingGroupRelation(dvViewer)
+                        if (!missingGroupBy && isBoardAwaitingGroups(viewer)) return DataViewViewState.Init
                         val isCreateObjectAllowed = objectState.isCreateObjectAllowed() && permission?.isOwnerOrEditor() == true
                         DataViewViewState.Collection.NoItems(
                             title = viewer.title,
                             isCreateObjectAllowed = isCreateObjectAllowed,
-                            isEditingViewAllowed = permission?.isOwnerOrEditor() == true
+                            isEditingViewAllowed = permission?.isOwnerOrEditor() == true,
+                            isBoardGroupByRequired = missingGroupBy
                         )
                     }
                     else -> {
@@ -1315,14 +1433,16 @@ class ObjectSetViewModel(
                         msg = BOARD_SUBSCRIPTION_ERROR_MSG
                     )
                     render.isEmpty() -> {
-                        if (isBoardAwaitingGroups(render)) return DataViewViewState.Init
+                        val missingGroupBy = isBoardMissingGroupRelation(viewer)
+                        if (!missingGroupBy && isBoardAwaitingGroups(render)) return DataViewViewState.Init
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
                             vmParams.ctx, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.Set.NoItems(
                             title = render.title,
                             isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType) && (permission?.isOwnerOrEditor() == true),
-                            isEditingViewAllowed = permission?.isOwnerOrEditor() == true
+                            isEditingViewAllowed = permission?.isOwnerOrEditor() == true,
+                            isBoardGroupByRequired = missingGroupBy
                         )
                     }
                     else -> {
@@ -1399,14 +1519,16 @@ class ObjectSetViewModel(
                         msg = BOARD_SUBSCRIPTION_ERROR_MSG
                     )
                     render.isEmpty() -> {
-                        if (isBoardAwaitingGroups(render)) return DataViewViewState.Init
+                        val missingGroupBy = isBoardMissingGroupRelation(viewer)
+                        if (!missingGroupBy && isBoardAwaitingGroups(render)) return DataViewViewState.Init
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
                             vmParams.ctx, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.TypeSet.NoItems(
                             title = render.title,
                             isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType) && (permission?.isOwnerOrEditor() == true),
-                            isEditingViewAllowed = permission?.isOwnerOrEditor() == true
+                            isEditingViewAllowed = permission?.isOwnerOrEditor() == true,
+                            isBoardGroupByRequired = missingGroupBy
                         )
                     }
                     else -> {
@@ -1480,6 +1602,7 @@ class ObjectSetViewModel(
         boardGroupOptions.value = emptyMap()
         boardRecords.value = emptyMap()
         boardSubscriptionError.value = null
+        dataViewOptionsVersion.value = 0
     }
 
     fun onCloseObject() {
@@ -1518,6 +1641,10 @@ class ObjectSetViewModel(
                 vmParams.ctx + BoardGroupSubscriptionContainer.SUBSCRIPTION_POSTFIX
             )
             storelessSubscriptionContainer.unsubscribe(listOf(boardOptionsSubscriptionId))
+            storelessSubscriptionContainer.unsubscribe(listOf(dataViewOptionsSubscriptionId))
+            // Evict Tag/Status option objects this VM merged into the shared store; options still
+            // referenced by the record subscription survive (unsubscribe only drops this sub id).
+            objectStore.unsubscribe(listOf(dataViewOptionsSubscriptionId))
             if (boardRecordSubscriptionIds.isNotEmpty()) {
                 boardRecordsSubscriptionContainer.unsubscribe(boardRecordSubscriptionIds)
                 boardRecordSubscriptionIds = emptyList()
@@ -4811,6 +4938,7 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
         const val DELAY_BEFORE_CREATING_TEMPLATE = 200L
         private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
         private const val SUBSCRIPTION_BOARD_OPTIONS_POSTFIX = "-board-options"
+        private const val SUBSCRIPTION_DATA_VIEW_OPTIONS_POSTFIX = "-dataview-options"
         const val BOARD_SUBSCRIPTION_ERROR_MSG = "Couldn't load the board. Please reopen the object."
     }
 

@@ -595,8 +595,8 @@
     <string name="dataview_board_checked">İşaretli</string>
     <string name="dataview_board_unchecked">İşaretsiz</string>
     <string name="dataview_board_new_object">Yeni</string>
-    <string name="dataview_board_no_group_title">No grouping property</string>
-    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
+    <string name="dataview_board_no_group_title">Gruplama özelliği yok</string>
+    <string name="dataview_board_no_group_description">Görünüm ayarlarında kartları gruplandırmak için bir özellik seç</string>
     <string name="page_cover">Sayfa kapağı</string>
     <string name="object_action_pin">Sabitle</string>
     <string name="object_action_unpin">Sabitlemeyi kaldır</string>

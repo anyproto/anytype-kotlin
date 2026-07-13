@@ -595,6 +595,8 @@
     <string name="dataview_board_checked">İşaretli</string>
     <string name="dataview_board_unchecked">İşaretsiz</string>
     <string name="dataview_board_new_object">Yeni</string>
+    <string name="dataview_board_no_group_title">No grouping property</string>
+    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
     <string name="page_cover">Sayfa kapağı</string>
     <string name="object_action_pin">Sabitle</string>
     <string name="object_action_unpin">Sabitlemeyi kaldır</string>
@@ -1309,7 +1311,8 @@
     <string name="multiplayer_viewer_access">Görüntüleyici erişimi</string>
     <string name="multiplayer_viewer">Görüntüleyen</string>
     <string name="multiplayer_viewer_access_desc">Bağlantıya sahip kişiler sohbeti görüntüleyebilir ve okuyabilir</string>
-    <string name="multiplayer_request_access">Erişim talebi</string>
+    <string name="multiplayer_request_access">
+Erişim talebi</string>
     <string name="multiplayer_request_access_desc">Sohbet sahibinin her bir katılım talebini onaylaması gerekir.</string>
     <string name="channel_members_subtitle">%1$d/%2$d düzenleyici, %3$d/%4$d görüntüleyici</string>
     <string name="multiplayer_qr_code">Karekod</string>
@@ -2207,7 +2210,8 @@
     <!-- OS Widgets -->
     <string name="os_widget_spaces_title">Alanlar</string>
     <string name="os_widget_spaces_description">Sabitlenmiş alanlarına hızlı erişim</string>
-    <string name="os_widget_create_object_title">Yeni Nesne</string>
+    <string name="os_widget_create_object_title">Yeni Nesne
+</string>
     <string name="os_widget_create_object_description">Seçilen türde nesne oluştur</string>
     <string name="os_widget_space_shortcut_title">Alan Kısayolu</string>
     <string name="os_widget_space_shortcut_description">Doğrudan bir alanı aç</string>

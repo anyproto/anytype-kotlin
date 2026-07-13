@@ -595,6 +595,8 @@
     <string name="dataview_board_checked">Spuntato</string>
     <string name="dataview_board_unchecked">Non spuntato</string>
     <string name="dataview_board_new_object">Nuovo</string>
+    <string name="dataview_board_no_group_title">No grouping property</string>
+    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
     <string name="page_cover">Copertina della pagina</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Togli</string>
@@ -1399,7 +1401,8 @@
     <string name="multiplayer_how_to_share_space_step_3">Dopo aver approvato la richiesta, puoi scegliere i diritti di accesso per quella persona.</string>
     <string name="multiplayer_how_share_one">1.</string>
     <string name="multiplayer_how_share_two">2.</string>
-    <string name="multiplayer_how_share_three">3.</string>
+    <string name="multiplayer_how_share_three">3.
+</string>
     <string name="multiplayer_delete_space_sharing_link">Elimina link di condivisione</string>
     <string name="multiplayer_delete_link">Elimina link</string>
     <string name="multiplayer_delete_link_description">I nuovi membri non saranno in grado di unirsi allo spazio. È possibile generare un nuovo link in qualsiasi momento.</string>
@@ -1479,7 +1482,8 @@
     <string name="payments_tier_explorer">Explorer</string>
     <string name="payments_tier_explorer_description">Immergiti nella rete e goditi l\'emozione della collaborazione uno-a-uno</string>
     <string name="payments_tier_builder">Builder</string>
-    <string name="payments_tier_builder_description">Sblocca la magia della collaborazione multi-parte e goditi un supporto di prim\'ordine</string>
+    <string name="payments_tier_builder_description">Sblocca la magia della collaborazione multi-parte e goditi un supporto di prim\'ordine
+</string>
     <string name="payments_tier_cocreator">Co-Creatore</string>
     <string name="payments_tier_cocreator_description">Supporta la nostra avventura e sblocca accessi esclusivi e vantaggi</string>
     <string name="payments_tier_custom">Personalizzato</string>
@@ -1511,7 +1515,8 @@
         <item>10 spazi uno-a-uno</item>
         <item>Fino a 10 spazi condivisi in modalità sola lettura</item>
     </string-array>
-    <string name="payments_tier_details_info_builder">Sblocca la magia della collaborazione multi-parte e goditi un supporto di prim\'ordine</string>
+    <string name="payments_tier_details_info_builder">Sblocca la magia della collaborazione multi-parte e goditi un supporto di prim\'ordine
+</string>
     <string-array name="payments_benefits_builder">
         <item>Nome unico (da 7 caratteri)</item>
         <item>128 GB di spazio nella rete</item>

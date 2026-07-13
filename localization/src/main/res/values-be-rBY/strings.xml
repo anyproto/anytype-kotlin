@@ -597,6 +597,8 @@
     <string name="dataview_board_checked">Пазначаны</string>
     <string name="dataview_board_unchecked">Не пазначаны</string>
     <string name="dataview_board_new_object">Новы</string>
+    <string name="dataview_board_no_group_title">No grouping property</string>
+    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
     <string name="page_cover">Вокладка старонкі</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Адмацаваць</string>
@@ -892,7 +894,8 @@
     <string name="homepage_picker_continue">Працягнуць</string>
     <string name="homepage_picker_not_now">Не зараз</string>
     <!-- Space Settings / Home -->
-    <string name="space_home_row_title">Галоўная</string>
+    <string name="space_home_row_title">Галоўная
+</string>
     <string name="space_home_no_home_title">No home</string>
     <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
     <string name="widget_menu_change_home">Change Home</string>
@@ -2140,9 +2143,11 @@
     <string name="share_space_error_space_deleted">Здаецца, Прастора была выдалена. Калі ласка, пераканайцеся, што вашы прылады сінхранізаваны.</string>
     <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
-    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    <string name="share_space_error_no_such_space">
+        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
-    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    <string name="share_space_error_make_private_failed">
+        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="private_channel">Direct channel</string>

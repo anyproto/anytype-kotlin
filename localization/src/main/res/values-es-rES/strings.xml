@@ -595,6 +595,8 @@
     <string name="dataview_board_checked">Marcado</string>
     <string name="dataview_board_unchecked">Sin marcar</string>
     <string name="dataview_board_new_object">Nuevo</string>
+    <string name="dataview_board_no_group_title">No grouping property</string>
+    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
     <string name="page_cover">Portada de página</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Desanclar</string>
@@ -1572,7 +1574,8 @@
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
     <string name="membership_support_subject">Informe de fallos de suscripción - %1$s</string>
-    <string name="membership_support_body">        Hola, equipo de soporte de Anytype,\n\n
+    <string name="membership_support_body">
+        Hola, equipo de soporte de Anytype,\n\n
 
         He encontrado un fallo en la pantalla de suscripción de la aplicación. Estos son los detalles:\n
 
@@ -2114,7 +2117,8 @@
     <string name="share_space_error_space_deleted">Parece que este espacio se ha eliminado. Asegúrate de que tus dispositivos están sincronizados.</string>
     <string name="share_space_error_generic">Se ha producido un error inesperado: %1$s. Inténtalo de nuevo más tarde.</string>
     <string name="share_space_error_incorrect_permissions">No tienes los permisos necesarios. Ponte en contacto con el propietario del espacio.</string>
-    <string name="share_space_error_no_such_space">        El espacio que intentas compartir no existe. Comprueba el ID del espacio e inténtalo de nuevo.
+    <string name="share_space_error_no_such_space">
+        El espacio que intentas compartir no existe. Comprueba el ID del espacio e inténtalo de nuevo.
     </string>
     <string name="share_space_error_make_private_failed">No se ha podido hacer privado el espacio. Inténtalo de nuevo más tarde.</string>
     <string name="private_local_yours_forever">cifrado, local, tuyo para siempre</string>

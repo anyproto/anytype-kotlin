@@ -353,7 +353,7 @@ abstract class TestObjectSetSetup {
             removeObjectFromCollection = removeObjectFromCollection,
             setDataViewProperties = mock(),
             setDataViewObjectOrder = mock(),
-            getOptions = mock(),
+            storelessSubscriptionContainer = mock(),
             boardGroupSubscriptionContainer = mock(),
             createBlock = mock(),
             emojiProvider = mock(),

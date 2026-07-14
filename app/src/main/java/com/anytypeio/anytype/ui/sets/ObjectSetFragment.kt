@@ -7,11 +7,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
 import android.view.ContextThemeWrapper
-import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_GO
 import android.widget.FrameLayout
@@ -39,7 +37,6 @@ import androidx.core.os.bundleOf
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
 import androidx.core.view.children
 import androidx.core.view.isVisible
-import androidx.core.view.marginBottom
 import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.activityViewModels
@@ -72,7 +69,6 @@ import com.anytypeio.anytype.core_ui.menu.ObjectSetTypePopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_ui.reactive.longClicks
-import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
@@ -85,7 +81,6 @@ import com.anytypeio.anytype.core_ui.widgets.dv.ViewerLayoutWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewersWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
-import com.anytypeio.anytype.core_utils.OnSwipeListener
 import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -244,22 +239,8 @@ open class ObjectSetFragment :
     private val rvHeaders: RecyclerView get() = binding.root.findViewById(R.id.rvHeader)
     private val rvRows: RecyclerView get() = binding.root.findViewById(R.id.rvRows)
 
-    private val bottomPanelTranslationDelta: Float
-        get() = (binding.bottomPanel.root.height + binding.bottomPanel.root.marginBottom).toFloat()
-
     private val actionHandler: (Int) -> Boolean = { action ->
         action == IME_ACTION_GO || action == IME_ACTION_DONE
-    }
-
-    private val swipeListener = object : OnSwipeListener() {
-        override fun onSwipe(direction: Direction?): Boolean {
-            if (direction == Direction.DOWN) vm.onHideViewerCustomizeSwiped()
-            return true
-        }
-    }
-
-    private val swipeDetector by lazy {
-        GestureDetector(context, swipeListener)
     }
 
     private val viewerGridHeaderAdapter by lazy { ViewerGridHeaderAdapter() }
@@ -371,28 +352,6 @@ open class ObjectSetFragment :
             subscribe(customizeViewButton.clicks().throttleFirst()) { vm.onViewerCustomizeButtonClicked() }
             subscribe(viewerTitle.clicks().throttleFirst()) { vm.onExpandViewerMenuClicked() }
             subscribe(binding.unsupportedViewError.clicks().throttleFirst()) { vm.onUnsupportedViewErrorClicked() }
-
-            subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnFilter).clicks().throttleFirst()) {
-                vm.onViewerFiltersClicked()
-            }
-            subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSettings).clicks()
-                    .throttleFirst()
-            ) {
-            }
-            subscribe(
-                binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSort).clicks()
-                    .throttleFirst()
-            ) {
-                vm.onViewerSortsClicked()
-            }
-            subscribe(
-                binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnView).clicks()
-                    .throttleFirst()
-            ) {
-                vm.onViewerEditClicked()
-            }
-
-            subscribe(binding.bottomPanel.root.touches()) { swipeDetector.onTouchEvent(it) }
 
             // DROID-4508: Two Compose bottom-bar buttons — Search (left) +
             // Create (right) — mirror the editor's look (CircularFabButton,
@@ -652,29 +611,9 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun showBottomPanel() {
-        val animation =
-            binding.bottomPanel.root.animate().translationY(-bottomPanelTranslationDelta).apply {
-                duration = BOTTOM_PANEL_ANIM_DURATION
-                interpolator = AccelerateDecelerateInterpolator()
-            }
-        animation.start()
-    }
-
-    private fun hideBottomPanel() {
-        val animation = binding.bottomPanel.root.animate().translationY(0f).apply {
-            duration = BOTTOM_PANEL_ANIM_DURATION
-            interpolator = AccelerateDecelerateInterpolator()
-        }
-        animation.start()
-    }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
-        lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
-            if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
-        }
     }
 
     private fun setStatus(status: SpaceSyncAndP2PStatusState?) {
@@ -1698,7 +1637,6 @@ open class ObjectSetFragment :
         requireActivity().onBackPressedDispatcher.addCallback(this) {
             when {
                 childFragmentManager.backStackEntryCount > 0 -> childFragmentManager.popBackStack()
-                vm.isCustomizeViewPanelVisible.value -> vm.onHideViewerCustomizeSwiped()
                 vm.typeTemplatesWidgetState.value.showWidget -> vm.onDismissTemplatesWidget()
                 vm.viewersWidgetState.value.showWidget -> handleViewersWidgetState()
                 vm.viewerEditWidgetState.value.isVisible() -> handleViewerEditWidgetState()
@@ -1918,7 +1856,6 @@ open class ObjectSetFragment :
         const val SPACE_ID_KEY = "arg.object_set.space-id"
         private const val INITIAL_VIEW_ID_KEY = "arg.object_set.initial-view"
         val EMPTY_TAG = null
-        const val BOTTOM_PANEL_ANIM_DURATION = 150L
         const val DEFAULT_ANIM_DURATION = 300L
         const val DRAWABLE_ALPHA_FULL = 255
         const val DRAWABLE_ALPHA_ZERO = 0

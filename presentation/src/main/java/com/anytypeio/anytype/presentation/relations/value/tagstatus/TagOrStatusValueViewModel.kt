@@ -22,7 +22,6 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
@@ -95,10 +94,15 @@ class TagOrStatusValueViewModel(
     // overwriting our optimistic update before middleware confirms the change
     private var optionEventLockTimestamp: Long? = null
 
+    // Cached after init so click handlers can rebuild viewState optimistically without
+    // re-reading the (possibly orphaned / never re-emitting) value store. See proceedWithOptimisticUpdate.
+    private var currentRelation: ObjectWrapper.Relation? = null
+
     init {
         viewModelScope.launch {
             val relation = storeOfRelations.getByKey(key = viewModelParams.relationKey) ?: return@launch
             setupIsRelationNotEditable(relation)
+            currentRelation = relation
             combine(
                 values.subscribe(
                     ctx = viewModelParams.ctx,
@@ -364,106 +368,118 @@ class TagOrStatusValueViewModel(
         }
     }
 
+    /**
+     * Reconstructs the current ordered list of selected option ids from the *UI* state
+     * ([viewState]) rather than from [values], whose backing store may never re-emit for
+     * some hosts (see [proceedWithOptimisticUpdate]). For tags the selection order is carried
+     * by [RelationsListItem.Item.Tag.number] (1-based index among selected); status has at
+     * most one selected item.
+     */
+    private fun currentSelectedIds(content: TagStatusViewState.Content): List<Id> =
+        content.items
+            .filter { it.isSelected }
+            .sortedBy { (it as? RelationsListItem.Item.Tag)?.number ?: 0 }
+            .map { it.optionId }
+
     private fun addTag(tag: Id) {
-        viewModelScope.launch {
-            val obj = values.get(ctx = viewModelParams.ctx, target = viewModelParams.objectId)
-            val result = mutableListOf<Id>()
-            val value = obj[viewModelParams.relationKey]
-            if (value is List<*>) {
-                result.addAll(value.typeOf())
-            } else if (value is Id) {
-                result.add(value)
-            }
-            result.add(tag)
-            setObjectDetails(
-                UpdateDetail.Params(
-                    target = viewModelParams.objectId,
-                    key = viewModelParams.relationKey,
-                    value = result
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while adding tag") },
-                success = {
-                    dispatcher.send(it)
-                    analytics.sendAnalyticsRelationEvent(
-                        eventName = if (result.isEmpty()) EventsDictionary.relationDeleteValue
-                        else EventsDictionary.relationChangeValue,
-                        storeOfRelations = storeOfRelations,
-                        relationKey = viewModelParams.relationKey,
-                        spaceParams = provideParams(viewModelParams.space.id)
-                    )
-                }
-            )
-        }
+        val content = viewState.value as? TagStatusViewState.Content ?: return
+        val newIds = currentSelectedIds(content) + tag
+        proceedWithOptimisticUpdate(
+            newIds = newIds,
+            persistedValue = newIds,
+            analyticsEvent = EventsDictionary.relationChangeValue,
+            dismissOnSuccess = false
+        )
     }
 
     private fun removeTag(tag: Id) {
-        viewModelScope.launch {
-            val obj = values.get(ctx = viewModelParams.ctx, target = viewModelParams.objectId)
-            val remaining = obj[viewModelParams.relationKey].filterIdsById(tag)
-            setObjectDetails(
-                UpdateDetail.Params(
-                    target = viewModelParams.objectId,
-                    key = viewModelParams.relationKey,
-                    value = remaining
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while adding tag") },
-                success = {
-                    dispatcher.send(it)
-                    analytics.sendAnalyticsRelationEvent(
-                        eventName = if (remaining.isEmpty()) EventsDictionary.relationDeleteValue
-                        else EventsDictionary.relationChangeValue,
-                        storeOfRelations = storeOfRelations,
-                        relationKey = viewModelParams.relationKey,
-                        spaceParams = provideParams(viewModelParams.space.id)
-                    )
-                })
-        }
+        val content = viewState.value as? TagStatusViewState.Content ?: return
+        val newIds = currentSelectedIds(content) - tag
+        proceedWithOptimisticUpdate(
+            newIds = newIds,
+            persistedValue = newIds,
+            analyticsEvent = if (newIds.isEmpty()) EventsDictionary.relationDeleteValue
+            else EventsDictionary.relationChangeValue,
+            dismissOnSuccess = false
+        )
     }
 
     private fun addStatus(status: Id) {
-        viewModelScope.launch {
-            setObjectDetails(
-                UpdateDetail.Params(
-                    target = viewModelParams.objectId,
-                    key = viewModelParams.relationKey,
-                    value = listOf(status)
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while adding tag") },
-                success = {
-                    dispatcher.send(it)
-                    analytics.sendAnalyticsRelationEvent(
-                        eventName = EventsDictionary.relationChangeValue,
-                        storeOfRelations = storeOfRelations,
-                        relationKey = viewModelParams.relationKey,
-                        spaceParams = provideParams(viewModelParams.space.id)
-                    )
-                    emitCommand(command = Command.Dismiss, delay = DELAY_UNTIL_CLOSE)
-                }
-            )
-        }
+        val newIds = listOf(status)
+        proceedWithOptimisticUpdate(
+            newIds = newIds,
+            persistedValue = newIds,
+            analyticsEvent = EventsDictionary.relationChangeValue,
+            dismissOnSuccess = true
+        )
     }
 
     private fun clearTagsOrStatus() {
+        proceedWithOptimisticUpdate(
+            newIds = emptyList(),
+            persistedValue = null,
+            analyticsEvent = EventsDictionary.relationDeleteValue,
+            dismissOnSuccess = false
+        )
+    }
+
+    /**
+     * Single entry point for value edits. The sheet's list is normally rebuilt only when
+     * [values].subscribe re-emits, but some hosts have no live writer for the backing store,
+     * so a click would never be reflected. To fix that we update [viewState] optimistically:
+     * 1. lock event processing so a stale [values] re-emission can't clobber the UI,
+     * 2. rebuild [viewState] from [newIds] via [initViewState] (reuses filterOptions +
+     *    option mapping / number recompute + create-item logic),
+     * 3. persist via [setObjectDetails],
+     * 4. on failure revert to the pre-click snapshot and toast,
+     * 5. on success dispatch the payload, send analytics, optionally dismiss.
+     */
+    private fun proceedWithOptimisticUpdate(
+        newIds: List<Id>,
+        persistedValue: Any?,
+        analyticsEvent: String,
+        dismissOnSuccess: Boolean
+    ) {
+        val relation = currentRelation ?: return
+        val previousState = viewState.value
         viewModelScope.launch {
+            // Lock BEFORE the optimistic write so any concurrent combine emission is skipped.
+            activateOptionEventLock()
+            val options = storeOfRelationOptions
+                .getByRelationKey(viewModelParams.relationKey)
+                .sortedBy { it.orderId }
+            val query = input.value
+            initViewState(
+                relation = relation,
+                options = filterOptions(query, options, newIds),
+                query = query,
+                ids = newIds
+            )
             setObjectDetails(
                 UpdateDetail.Params(
                     target = viewModelParams.objectId,
                     key = viewModelParams.relationKey,
-                    value = null
+                    value = persistedValue
                 )
             ).process(
-                failure = { Timber.e(it, "Error while clearing tags or select") },
+                failure = { e ->
+                    Timber.e(e, "Error while updating tag/status value")
+                    // Revert optimistic update and release the lock so real events are honored again.
+                    optionEventLockTimestamp = null
+                    viewState.value = previousState
+                    sendToast("Error while updating value")
+                },
                 success = {
                     dispatcher.send(it)
                     analytics.sendAnalyticsRelationEvent(
-                        eventName = EventsDictionary.relationDeleteValue,
+                        eventName = analyticsEvent,
                         storeOfRelations = storeOfRelations,
                         relationKey = viewModelParams.relationKey,
                         spaceParams = provideParams(viewModelParams.space.id)
                     )
+                    if (dismissOnSuccess) {
+                        emitCommand(command = Command.Dismiss, delay = DELAY_UNTIL_CLOSE)
+                    }
                 }
             )
         }

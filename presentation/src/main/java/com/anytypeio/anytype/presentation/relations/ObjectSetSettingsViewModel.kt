@@ -84,8 +84,9 @@ class ObjectSetSettingsViewModel(
 
                 // Display list: viewerRelations + relationLinks-only relations (e.g. a TypeSet's
                 // recommended properties) surfaced as OFF toggles. Ports iOS sortedRelations.
+                // Reuses the already-computed completeRelations to avoid recomputing it.
                 val relations = buildDisplayRelations(
-                    viewerRelations = viewer.viewerRelations,
+                    completeRelations = completeRelations,
                     inStore = inStore
                 )
                     .filterVisible()
@@ -101,8 +102,9 @@ class ObjectSetSettingsViewModel(
     /**
      * Builds the display list of relations for the Properties screen — ports iOS
      * SetContentViewDataBuilder.sortedRelations. Union of:
-     *  1) relations present in [viewerRelations] (view order, real visibility), and
-     *  2) relations in [inStore] (from dataview.relationLinks) but NOT in [viewerRelations] —
+     *  1) relations already present in [completeRelations] (the viewerRelations-derived list, in
+     *     view order with real visibility), and
+     *  2) relations in [inStore] (from dataview.relationLinks) but NOT in [completeRelations] —
      *     appended as OFF toggles (isVisible = false), in relationLinks order.
      *
      * (2) fixes DROID-4543: a TypeSet's recommended properties land in relationLinks but are not
@@ -111,22 +113,26 @@ class ObjectSetSettingsViewModel(
      * reports links.isHidden = false, also by [Relations.systemRelationKeys] so internal system
      * relations (e.g. "links") never leak in.
      *
+     * [completeRelations] is passed in already computed (see onStart) so the viewerRelations →
+     * SimpleRelationView mapping is done once. Relations in the appended group are, by construction,
+     * absent from viewerRelations, so their visibility is always false — hence the empty
+     * viewerRelations argument to [mapToSimpleRelationView].
+     *
      * Made internal for testing purposes.
      */
     internal fun buildDisplayRelations(
-        viewerRelations: List<DVViewerRelation>,
+        completeRelations: List<SimpleRelationView>,
         inStore: List<ObjectWrapper.Relation>
     ): List<SimpleRelationView> {
-        val present = viewerRelations.toSimpleRelationView(inStore)
-        val presentKeys = present.mapTo(HashSet()) { it.key }
+        val presentKeys = completeRelations.mapTo(HashSet()) { it.key }
         val notPresent = inStore
             .filter { relation ->
                 relation.key !in presentKeys &&
                     relation.isValidToUse &&
                     !Relations.systemRelationKeys.contains(relation.key)
             }
-            .mapToSimpleRelationView(viewerRelations)
-        return present + notPresent
+            .mapToSimpleRelationView(emptyList())
+        return completeRelations + notPresent
     }
 
     fun onEditButtonClicked() {

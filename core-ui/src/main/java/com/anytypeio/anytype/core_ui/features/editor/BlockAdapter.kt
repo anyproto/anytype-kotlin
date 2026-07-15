@@ -266,6 +266,26 @@ class BlockAdapter(
         isInDragAndDropMode = false
     }
 
+    /**
+     * While a block-list update is being applied, RecyclerView can transiently hand
+     * focus to a neighboring row when the focused row is removed or rebound (e.g. the
+     * trailing-placeholder/identity-fork swaps replace the focused row wholesale).
+     * That is a system focus transfer, not a user caret move — reporting it to the
+     * ViewModel would be recorded as deliberate user focus (see userFocus in
+     * EditorViewModel) and hijack the caret, e.g. into the end of the previous block.
+     * Set to true before dispatching a list update and back to false after the
+     * resulting layout pass.
+     */
+    var suppressFocusCallbacks: Boolean = false
+
+    private fun dispatchFocusChanged(id: Id, hasFocus: Boolean) {
+        if (suppressFocusCallbacks) {
+            Timber.d("Focus change for $id suppressed while a list update is being applied")
+        } else {
+            onFocusChanged(id, hasFocus)
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
 
         val inflater = LayoutInflater.from(parent.context)
@@ -599,7 +619,7 @@ class BlockAdapter(
                         setOnFocusChangeListener { _, hasFocus ->
                             val pos = bindingAdapterPosition
                             if (pos != RecyclerView.NO_POSITION) {
-                                onFocusChanged(blocks[pos].id, hasFocus)
+                                dispatchFocusChanged(blocks[pos].id, hasFocus)
                             }
                         }
                         setOnEditorActionListener(
@@ -933,7 +953,7 @@ class BlockAdapter(
                 onTextBlockTextChanged = onTextBlockTextChanged,
                 onMentionEvent = onMentionEvent,
                 onCellSelectionChanged = onCellSelectionChanged,
-                onFocusChanged = onFocusChanged,
+                onFocusChanged = ::dispatchFocusChanged,
                 clipboardInterceptor = clipboardInterceptor,
                 onDragAndDropTrigger = onDragAndDropTrigger
             )
@@ -1035,7 +1055,7 @@ class BlockAdapter(
                         holder.setupViewHolder(
                             onTextChanged = onTextChanged,
                             onSelectionChanged = onSelectionChanged,
-                            onFocusChanged = onFocusChanged
+                            onFocusChanged = ::dispatchFocusChanged
                         )
                     }
                     is Title -> {}
@@ -1066,13 +1086,18 @@ class BlockAdapter(
         if (holder is TextHolder) {
             holder.content.onFocusChangeListener = LockableFocusChangeListener { hasFocus ->
                 holder.content.isCursorVisible = hasFocus
-                val pos = holder.bindingAdapterPosition
-                if (pos != RecyclerView.NO_POSITION) {
-                    val item = views[pos]
-                    if (item is Focusable) {
-                        item.isFocused = hasFocus
+                // Suppressed focus changes must not touch the view model either:
+                // a transient system focus transfer during a list update would
+                // otherwise stamp isFocused onto the wrong block.
+                if (!suppressFocusCallbacks) {
+                    val pos = holder.bindingAdapterPosition
+                    if (pos != RecyclerView.NO_POSITION) {
+                        val item = views[pos]
+                        if (item is Focusable) {
+                            item.isFocused = hasFocus
+                        }
+                        onFocusChanged(item.id, hasFocus)
                     }
-                    onFocusChanged(item.id, hasFocus)
                 }
             }
         }

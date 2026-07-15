@@ -48,6 +48,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnPreDraw
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -664,11 +665,24 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         false
                     )
                 }
+                // Suppress focus-change callbacks while the update is applied (through
+                // the layout pass): removing or rebinding the focused row makes the
+                // system transiently hand focus to a neighboring row, which the
+                // ViewModel would otherwise record as a deliberate user caret move —
+                // hijacking focus during trailing-placeholder/identity-fork swaps.
+                blockAdapter.suppressFocusCallbacks = true
                 // The adapter keeps the original (store-shared) instances: the typing
                 // path relies on their identity (see EditorViewModel.onTextBlockTextChanged).
                 blockAdapter.applyDiffResult(items = update, result = result)
                 appliedBlockListEpoch.value = epoch
                 binding.recycler.invalidateItemDecorations()
+                if (binding.recycler.isLayoutRequested) {
+                    binding.recycler.doOnPreDraw { blockAdapter.suppressFocusCallbacks = false }
+                } else {
+                    // Nothing to lay out (e.g. an empty diff): release immediately so
+                    // real focus changes are not swallowed.
+                    blockAdapter.suppressFocusCallbacks = false
+                }
             }
         }
 

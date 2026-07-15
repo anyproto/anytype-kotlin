@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TABLE_CELLS_SELECTION_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
+import com.anytypeio.anytype.core_ui.features.editor.diffSnapshot
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
@@ -1830,5 +1831,28 @@ class BlockViewDiffUtilTest {
             actual = payload,
             expected = expectedPayloads
         )
+    }
+
+    @Test
+    fun `diff snapshot should not alias table cell paragraphs mutated in place on the main thread`() {
+
+        val tableId = MockDataFactory.randomUuid()
+
+        val table = StubTwoRowsThreeColumnsSimpleTable(tableId = tableId)
+
+        val originalCellBlock = table.cells.first().block!!
+        val originalText = originalCellBlock.text
+
+        val snapshot = listOf<BlockView>(table).diffSnapshot()
+
+        // Simulate the main-thread TextWatcher mutating the live cell instance
+        // (TableEditableCellsAdapter sets text/marks/isFocused in place).
+        originalCellBlock.text = originalText + "typed"
+        originalCellBlock.isFocused = true
+
+        val snapshotCellBlock = (snapshot.first() as BlockView.Table).cells.first().block!!
+
+        assertEquals(expected = originalText, actual = snapshotCellBlock.text)
+        assertEquals(expected = false, actual = snapshotCellBlock.isFocused)
     }
 }

@@ -28,6 +28,10 @@ class ViewerGridAdapter(
 
     var recordNamePositionX = 0f
 
+    // Shared across all row cell recyclers, so cell view holders scrolled out with
+    // one row can be reused by any other row instead of being re-inflated.
+    private val sharedCellViewPool = RecyclerView.RecycledViewPool()
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -50,6 +54,7 @@ class ViewerGridAdapter(
 
         binding.rowCellRecycler.apply {
             itemAnimator = null // Disable animations to prevent "view is not a child" crash during recycling
+            setRecycledViewPool(sharedCellViewPool)
             adapter = ViewerGridCellsAdapter(
                 onCellClicked = onCellClicked
             )
@@ -102,7 +107,9 @@ class ViewerGridAdapter(
                 if (payload.contains(GridDiffUtil.OBJECT_HEADER_CHANGED)) {
                     holder.bindObjectHeader(item)
                 }
-                holder.bindObjectCells(item)
+                if (payload.contains(GridDiffUtil.CELLS_CHANGED)) {
+                    holder.bindObjectCells(item)
+                }
             }
         }
     }
@@ -163,6 +170,7 @@ class ViewerGridAdapter(
         ): List<Int>? {
             val payload = mutableListOf<Int>()
             if (isHeaderChanged(oldItem, newItem)) payload.add(OBJECT_HEADER_CHANGED)
+            if (oldItem.cells != newItem.cells) payload.add(CELLS_CHANGED)
             return if (payload.isEmpty()) {
                 null
             } else payload
@@ -176,8 +184,10 @@ class ViewerGridAdapter(
                 || oldItem.name != newItem.name
                 || oldItem.isChecked != newItem.isChecked
                 || oldItem.layout != newItem.layout
-                || oldItem.showIcon != newItem.showIcon)
+                || oldItem.showIcon != newItem.showIcon
+                || oldItem.objectIcon != newItem.objectIcon)
 
         const val OBJECT_HEADER_CHANGED = 0
+        const val CELLS_CHANGED = 1
     }
 }

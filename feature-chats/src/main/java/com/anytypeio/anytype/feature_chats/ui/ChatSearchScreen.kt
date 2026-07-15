@@ -81,13 +81,26 @@ fun ChatSearchScreen(
                 .fillMaxWidth()
         ) {
             when {
-                state.isSearching -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                        color = colorResource(R.color.palette_system_blue)
-                    )
+                state.results.isNotEmpty() -> {
+                    // Keep the list composed while a new search is in flight,
+                    // so items are diffed in place and scroll position is preserved.
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        itemsIndexed(
+                            items = state.results,
+                            key = { _, result -> result.messageId }
+                        ) { index, result ->
+                            ChatSearchResultItem(
+                                result = result,
+                                memberName = resolveMemberName(result.message.creator),
+                                avatar = resolveMemberAvatar(result.message.creator),
+                                onClick = { onResultSelected(index) }
+                            )
+                        }
+                    }
                 }
-                state.query.isNotEmpty() && state.results.isEmpty() -> {
+                state.query.isNotEmpty() && !state.isSearching -> {
                     // Empty state
                     Column(
                         modifier = Modifier.align(Alignment.Center),
@@ -110,23 +123,12 @@ fun ChatSearchScreen(
                         )
                     }
                 }
-                state.results.isNotEmpty() -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        itemsIndexed(
-                            items = state.results,
-                            key = { _, result -> result.messageId }
-                        ) { index, result ->
-                            ChatSearchResultItem(
-                                result = result,
-                                memberName = resolveMemberName(result.message.creator),
-                                avatar = resolveMemberAvatar(result.message.creator),
-                                onClick = { onResultSelected(index) }
-                            )
-                        }
-                    }
-                }
+            }
+            if (state.isSearching) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = colorResource(R.color.palette_system_blue)
+                )
             }
         }
 

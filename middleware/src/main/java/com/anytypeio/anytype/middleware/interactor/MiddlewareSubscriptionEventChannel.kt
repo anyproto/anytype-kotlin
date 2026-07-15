@@ -9,11 +9,16 @@ import com.anytypeio.anytype.middleware.EventGroup
 import com.anytypeio.anytype.middleware.mappers.parse
 import com.anytypeio.anytype.middleware.mappers.toCoreModelsGroup
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.launch
 
 class MiddlewareSubscriptionEventChannel(
     private val events: EventProxy,
@@ -31,7 +36,11 @@ class MiddlewareSubscriptionEventChannel(
         .filter { it.isNotEmpty() }
         .shareIn(
             scope = scope,
-            started = SharingStarted.WhileSubscribed(),
+            // Eagerly: the upstream collector stays registered on the event fan-out for the whole
+            // app lifetime, so no event is lost while sharing (re)starts between subscribers —
+            // part of closing the subscribe-request/collector-attach race. With replay = 0,
+            // payloads parsed while nobody is subscribed are simply discarded.
+            started = SharingStarted.Eagerly,
             replay = 0
         )
 
@@ -55,6 +64,36 @@ class MiddlewareSubscriptionEventChannel(
                 }
             }
             .filter { it.isNotEmpty() }
+            // Per-subscriber unlimited buffer: a slow collector queues payloads into its own
+            // inbox instead of suspending the shared emitter — one stalled subscriber can no
+            // longer delay event delivery to every other subscription collector.
+            .bufferWithSynchronousSubscription()
+    }
+
+    /**
+     * Equivalent to `buffer(Channel.UNLIMITED)` with one crucial difference: the upstream
+     * subscription is established synchronously when the returned flow is collected with
+     * [CoroutineStart.UNDISPATCHED]. The stock `buffer` operator launches its producer
+     * coroutine with [CoroutineStart.ATOMIC] (a normal dispatch), so an UNDISPATCHED
+     * collector would return before the shared-flow slot is registered — reopening the
+     * subscribe-request/collector-attach race the containers rely on this channel to close
+     * (they attach a collector BEFORE firing the subscribe RPC, expecting no event gap).
+     */
+    private fun <T> Flow<T>.bufferWithSynchronousSubscription(): Flow<T> = flow {
+        val upstream = this@bufferWithSynchronousSubscription
+        val inbox = Channel<T>(capacity = Channel.UNLIMITED)
+        coroutineScope {
+            launch(start = CoroutineStart.UNDISPATCHED) {
+                try {
+                    upstream.collect { inbox.send(it) }
+                } finally {
+                    inbox.close()
+                }
+            }
+            for (item in inbox) {
+                emit(item)
+            }
+        }
     }
 
     private fun parseMessage(message: Event.Message): ParsedSubEvent? = when {

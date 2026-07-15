@@ -22,6 +22,6 @@ class ObjectSetDatabase(
     }
 
     fun observe(target: Id) : Flow<ObjectWrapper.Basic> = index
-        .onEach { Timber.d("SET-DB: Index changed —>\n$it") }
+        .onEach { Timber.d("SET-DB: Index changed") }
         .mapNotNull { store.get(target) }
 }

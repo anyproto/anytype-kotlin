@@ -24,6 +24,26 @@ class ViewerGridCellsAdapter(
         diff.dispatchUpdatesTo(this)
     }
 
+    /**
+     * Resolves the clicked cell through the holder's CURRENT binding adapter, not the adapter
+     * that created it: all row cell recyclers share one RecycledViewPool, so a holder created
+     * by one row's adapter is routinely rebound by another row's adapter. Reading the creating
+     * adapter's [cells] here would dispatch the click against a different row's cell.
+     * [onCellClicked] itself is safe to capture — every row adapter is constructed with the
+     * same callback instance.
+     */
+    private fun RecyclerView.ViewHolder.setCellClickListener() {
+        itemView.setOnClickListener {
+            val pos = bindingAdapterPosition
+            if (pos != RecyclerView.NO_POSITION) {
+                (bindingAdapter as? ViewerGridCellsAdapter)
+                    ?.cells
+                    ?.getOrNull(pos)
+                    ?.let(onCellClicked)
+            }
+        }
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
@@ -35,12 +55,7 @@ class ViewerGridCellsAdapter(
                         false
                     )
                 ).apply {
-                    itemView.setOnClickListener {
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            onCellClicked(cells[pos])
-                        }
-                    }
+                    setCellClickListener()
                 }
             }
             HOLDER_DATE -> {
@@ -51,12 +66,7 @@ class ViewerGridCellsAdapter(
                         false
                     )
                 ).apply {
-                    itemView.setOnClickListener {
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            onCellClicked(cells[pos])
-                        }
-                    }
+                    setCellClickListener()
                 }
             }
             HOLDER_NUMBER -> {
@@ -67,12 +77,7 @@ class ViewerGridCellsAdapter(
                         false
                     )
                 ).apply {
-                    itemView.setOnClickListener {
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            onCellClicked(cells[pos])
-                        }
-                    }
+                    setCellClickListener()
                 }
             }
             HOLDER_EMAIL -> {
@@ -83,12 +88,7 @@ class ViewerGridCellsAdapter(
                         false
                     )
                 ).apply {
-                    itemView.setOnClickListener {
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            onCellClicked(cells[pos])
-                        }
-                    }
+                    setCellClickListener()
                 }
             }
             HOLDER_URL -> {
@@ -99,12 +99,7 @@ class ViewerGridCellsAdapter(
                         false
                     )
                 ).apply {
-                    itemView.setOnClickListener {
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            onCellClicked(cells[pos])
-                        }
-                    }
+                    setCellClickListener()
                 }
             }
             HOLDER_PHONE -> {
@@ -115,12 +110,7 @@ class ViewerGridCellsAdapter(
                         false
                     )
                 ).apply {
-                    itemView.setOnClickListener {
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            onCellClicked(cells[pos])
-                        }
-                    }
+                    setCellClickListener()
                 }
             }
             HOLDER_CHECKBOX -> {
@@ -131,12 +121,7 @@ class ViewerGridCellsAdapter(
                         false
                     )
                 ).apply {
-                    itemView.setOnClickListener {
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            onCellClicked(cells[pos])
-                        }
-                    }
+                    setCellClickListener()
                 }
             }
             HOLDER_TAG -> {
@@ -145,12 +130,7 @@ class ViewerGridCellsAdapter(
                         inflater, parent, false
                     )
                 ).apply {
-                    itemView.setOnClickListener {
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            onCellClicked(cells[pos])
-                        }
-                    }
+                    setCellClickListener()
                 }
             }
             HOLDER_STATUS -> {
@@ -159,12 +139,7 @@ class ViewerGridCellsAdapter(
                         inflater, parent, false
                     )
                 ).apply {
-                    itemView.setOnClickListener {
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            onCellClicked(cells[pos])
-                        }
-                    }
+                    setCellClickListener()
                 }
             }
             HOLDER_OBJECT -> {
@@ -173,12 +148,7 @@ class ViewerGridCellsAdapter(
                         inflater, parent, false
                     )
                 ).apply {
-                    itemView.setOnClickListener {
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            onCellClicked(cells[pos])
-                        }
-                    }
+                    setCellClickListener()
                 }
             }
             HOLDER_FILE -> {
@@ -187,12 +157,7 @@ class ViewerGridCellsAdapter(
                         inflater, parent, false
                     )
                 ).apply {
-                    itemView.setOnClickListener {
-                        val pos = bindingAdapterPosition
-                        if (pos != RecyclerView.NO_POSITION) {
-                            onCellClicked(cells[pos])
-                        }
-                    }
+                    setCellClickListener()
                 }
             }
             else -> throw IllegalStateException("Unexpected view type: $viewType")

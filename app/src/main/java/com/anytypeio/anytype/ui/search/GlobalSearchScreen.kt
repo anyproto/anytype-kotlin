@@ -140,18 +140,24 @@ fun GlobalSearchScreen(
 
     var query by remember { mutableStateOf(TextFieldValue()) }
 
-    if (state is GlobalSearchViewModel.ViewState.Init) {
-        query = TextFieldValue(
-            text = state.query,
-            selection = TextRange(start = 0, end = state.query.length)
-        )
-    }
-
-    if (state is GlobalSearchViewModel.ViewState.RelatedInit) {
-        query = TextFieldValue(
-            text = state.query,
-            selection = TextRange(start = 0, end = state.query.length)
-        )
+    LaunchedEffect(state) {
+        when (state) {
+            is GlobalSearchViewModel.ViewState.Init -> {
+                query = TextFieldValue(
+                    text = state.query,
+                    selection = TextRange(start = 0, end = state.query.length)
+                )
+            }
+            is GlobalSearchViewModel.ViewState.RelatedInit -> {
+                query = TextFieldValue(
+                    text = state.query,
+                    selection = TextRange(start = 0, end = state.query.length)
+                )
+            }
+            else -> {
+                // Do nothing: query is user-driven outside of restoration states.
+            }
+        }
     }
 
     Column(
@@ -162,7 +168,7 @@ fun GlobalSearchScreen(
 
         val interactionSource = remember { MutableInteractionSource() }
         val focus = LocalFocusManager.current
-        val focusRequester = FocusRequester()
+        val focusRequester = remember { FocusRequester() }
 
         Dragger(
             modifier = Modifier

@@ -75,6 +75,7 @@ import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
@@ -86,14 +87,17 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -285,26 +289,50 @@ class VaultViewModel(
                 participantsFlow,
                 accountIdentityFlow
             ) { _, chatDetails, participants, accountIdentity -> Triple(chatDetails, participants, accountIdentity) }
-        ) { (previews, spaces, perms), (chatDetails, participants, accountIdentity) ->
-            transformToVaultSpaceViews(spaces, previews.items, perms, chatDetails, participants, accountIdentity)
-        }.onEach { sections ->
-            val previousState = _uiState.value
-
-            // Check if we should preserve drag order during backend transactions
-            val isDuringBackendTransaction = pendingPinnedSpacesOrder != null
-            val isBackendRemovingSpaces = isDuringBackendTransaction &&
-                previousState is VaultUiState.Sections &&
-                sections.pinnedSpaces.size < previousState.pinnedSpaces.size
-            val shouldPreserveDragOrder = isDuringBackendTransaction && isBackendRemovingSpaces
-
-            if (shouldPreserveDragOrder) {
-                Timber.d("VaultViewModel - ⚡ Preserving drag order during backend UNSET transaction (preventing space removal)")
-                // Don't update the UI state - keep the current drag order visible
-            } else {
-                Timber.d("VaultViewModel - 🎨 Updating UI state with new sections, pinned spaces: ${sections.pinnedSpaces.size}")
-                _uiState.value = sections
+        ) { first, second -> first to second }
+            // Throttle-latest: the very first vault state passes through without delay;
+            // afterwards, bursts of upstream events (chat previews, space views,
+            // permissions) are coalesced into at most one rebuild per
+            // VAULT_STATE_THROTTLE_MS window, always using the latest values. Unlike
+            // debounce, a sustained burst cannot starve UI updates — an emission is
+            // guaranteed at least once per window.
+            .conflate()
+            .transform { value ->
+                emit(value)
+                delay(VAULT_STATE_THROTTLE_MS)
             }
-        }
+            .map { (first, second) ->
+                val (previews, spaces, perms) = first
+                val (chatDetails, participants, accountIdentity) = second
+                val sections = transformToVaultSpaceViews(
+                    spaces,
+                    previews.items,
+                    perms,
+                    chatDetails,
+                    participants,
+                    accountIdentity
+                )
+                reuseUnchangedSpaceViews(sections)
+            }
+            .flowOn(Dispatchers.Default)
+            .onEach { sections ->
+                val previousState = _uiState.value
+
+                // Check if we should preserve drag order during backend transactions
+                val isDuringBackendTransaction = pendingPinnedSpacesOrder != null
+                val isBackendRemovingSpaces = isDuringBackendTransaction &&
+                    previousState is VaultUiState.Sections &&
+                    sections.pinnedSpaces.size < previousState.pinnedSpaces.size
+                val shouldPreserveDragOrder = isDuringBackendTransaction && isBackendRemovingSpaces
+
+                if (shouldPreserveDragOrder) {
+                    Timber.d("VaultViewModel - ⚡ Preserving drag order during backend UNSET transaction (preventing space removal)")
+                    // Don't update the UI state - keep the current drag order visible
+                } else {
+                    Timber.d("VaultViewModel - 🎨 Updating UI state with new sections, pinned spaces: ${sections.pinnedSpaces.size}")
+                    _uiState.value = sections
+                }
+            }
             .launchIn(viewModelScope)
 
         // Track notification permission status for profile icon badge
@@ -516,6 +544,26 @@ class VaultViewModel(
     }
 
     /**
+     * Reuses previous [VaultSpaceView] instances when their content is unchanged,
+     * so unchanged cards keep referential identity and Compose can skip them.
+     */
+    private fun reuseUnchangedSpaceViews(sections: VaultUiState.Sections): VaultUiState.Sections {
+        val previous = _uiState.value as? VaultUiState.Sections ?: return sections
+        val previousById = (previous.pinnedSpaces + previous.mainSpaces).associateBy { it.space.id }
+        if (previousById.isEmpty()) return sections
+        val reuse: (List<VaultSpaceView>) -> List<VaultSpaceView> = { items ->
+            items.map { item ->
+                val old = previousById[item.space.id]
+                if (old != null && old == item) old else item
+            }
+        }
+        return VaultUiState.Sections(
+            pinnedSpaces = reuse(sections.pinnedSpaces),
+            mainSpaces = reuse(sections.mainSpaces)
+        )
+    }
+
+    /**
      * Calculates the effective date for a space by taking the maximum of lastMessageDate and spaceJoinDate.
      * - If both lastMessageDate and spaceJoinDate are available, return the maximum
      * - If only one is available, return that one
@@ -609,9 +657,7 @@ class VaultViewModel(
         val attachmentPreviews = if (chatPreview != null && message != null) {
             message.attachments?.map { attachment ->
                 val dependency = chatPreview.dependencies.find { it.id == attachment.target }
-                val preview = mapToAttachmentPreview(attachment, dependency, urlBuilder, fieldParser, storeOfObjectTypes)
-                Timber.d("Created attachment preview: $preview for attachment: $attachment")
-                preview
+                mapToAttachmentPreview(attachment, dependency, urlBuilder, fieldParser, storeOfObjectTypes)
             } ?: emptyList()
         } else {
             emptyList()
@@ -1722,6 +1768,7 @@ class VaultViewModel(
     //endregion
 
     companion object {
+        private const val VAULT_STATE_THROTTLE_MS = 100L
         private const val OS_WIDGET_SYNC_DEBOUNCE_MS = 2000L
         private const val ONE_TO_ONE_HOMEPAGE_POLL_DELAY_MS = 100L
         private const val ONE_TO_ONE_HOMEPAGE_MAX_ATTEMPTS = 30

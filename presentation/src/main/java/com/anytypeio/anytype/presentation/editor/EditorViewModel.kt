@@ -302,6 +302,7 @@ import java.util.regex.Pattern
 import kotlinx.coroutines.Job
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -310,11 +311,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -407,6 +410,13 @@ class EditorViewModel(
 
     private val jobs = mutableListOf<Job>()
 
+    /**
+     * Owned (written) by the main thread. Reconciliation against document lock state
+     * and permissions is computed on the rendering (computation) dispatcher, but the
+     * write is applied downstream on the main thread (see [processRendering]).
+     * Volatile so the rendering pipeline reads a fresh value.
+     */
+    @Volatile
     var mode: EditorMode = EditorMode.Edit
 
     val footers = MutableStateFlow<EditorFooter>(EditorFooter.None)
@@ -478,11 +488,53 @@ class EditorViewModel(
     private val _discussionButtonState = MutableStateFlow<DiscussionButtonState>(DiscussionButtonState.Hidden)
     val discussionButtonState: StateFlow<DiscussionButtonState> = _discussionButtonState
 
+    /**
+     * Last discussion id for which the message count was successfully fetched,
+     * to avoid re-fetching on every document render. Set on success only, so a
+     * failed fetch is retried on a subsequent render.
+     */
+    @Volatile
+    private var lastFetchedDiscussionId: Id? = null
+
+    /**
+     * Discussion id for which a message-count fetch is currently in flight,
+     * to avoid firing duplicate requests while renders keep coming.
+     */
+    @Volatile
+    private var fetchingDiscussionCountId: Id? = null
+
     sealed class DiscussionButtonState {
         data object Hidden : DiscussionButtonState()
         data object Empty : DiscussionButtonState()
         data class Comments(val discussionId: Id, val count: Int) : DiscussionButtonState()
     }
+
+    /**
+     * Result of one pass of the rendering pipeline. Mode reconciliation is computed
+     * on the main thread during the render pass but must be applied to [mode] on the
+     * main thread only, after the render completes. [deferred] carries placeholder/fork
+     * replay actions that must run only after this render's views are published.
+     */
+    private data class DocumentRenderResult(
+        val views: List<BlockView>,
+        val previousMode: EditorMode,
+        val reconciledMode: EditorMode,
+        val deferred: List<() -> Unit> = emptyList()
+    )
+
+    /**
+     * Main-thread-owned inputs of a render pass: reconciled mode plus the block list
+     * and focus after trailing-placeholder and identity-fork resolution. Computed in a
+     * main-dispatcher hop because the underlying state machines are mutated by typing
+     * paths on the main thread.
+     */
+    private data class RenderPrep(
+        val previousMode: EditorMode,
+        val reconciledMode: EditorMode,
+        val models: List<Block>,
+        val focus: Editor.Focus,
+        val deferred: List<() -> Unit>
+    )
 
     init {
         Timber.i("EditorViewModel, init")
@@ -653,6 +705,7 @@ class EditorViewModel(
             Timber.d("Blocks before handling events: ${blocks.toPrettyString()}")
             Timber.d("Events: ${events.toPrettyString()}")
         }
+        var document = blocks
         events.forEach { event ->
             when (event) {
                 is Event.Command.ShowObject -> {
@@ -672,8 +725,9 @@ class EditorViewModel(
                     // do nothing
                 }
             }
-            orchestrator.stores.document.update(reduce(blocks, event))
+            document = reduce(document, event)
         }
+        orchestrator.stores.document.update(document)
         if (featureToggles.isLogEditorViewModelEvents) {
             Timber.d("Blocks after handling events: ${blocks.toPrettyString()}")
         }
@@ -813,6 +867,8 @@ class EditorViewModel(
 
         pipeline
             .filter { it.isNotEmpty() }
+            // Drop stale documents if rendering does not keep up with incoming updates.
+            .conflate()
             .onEach { document -> refreshStyleToolbar(document) }
             .withLatestFrom(
                 orchestrator.stores.focus.stream(),
@@ -821,38 +877,32 @@ class EditorViewModel(
                 val currentObj = objectViewDetails.getObject(vmParams.ctx)
                 val permission = permission.value
                 val root = models.first { it.id == context }
-                if (mode == EditorMode.Locked) {
-                    if (root.fields.isLocked != true) {
-                        mode = EditorMode.Edit
-                        sendToast("Your object is unlocked")
-                    }
-                } else {
-                    if (root.fields.isLocked == true) {
-                        mode = EditorMode.Locked
-                        sendToast("Your object is locked")
-                    }
-                }
-                if (permission?.isOwnerOrEditor() == true) {
-                    if (mode == EditorMode.Read) {
-                        mode = EditorMode.Edit
-                    }
-                } else {
-                    if (mode == EditorMode.Edit) {
-                        mode = EditorMode.Read
-                    }
-                }
 
                 val existingDiscussionId = currentObj?.getSingleValue<String>(Relations.DISCUSSION_ID)
                     ?.takeIf { it.isNotEmpty() }
+                if (existingDiscussionId == null) {
+                    lastFetchedDiscussionId = null
+                    fetchingDiscussionCountId = null
+                }
                 _discussionButtonState.value = if (existingDiscussionId != null) {
-                    DiscussionButtonState.Comments(
-                        discussionId = existingDiscussionId,
-                        count = 0
-                    )
+                    val current = _discussionButtonState.value
+                    if (current is DiscussionButtonState.Comments && current.discussionId == existingDiscussionId) {
+                        // Keep the already fetched count instead of resetting it on every render.
+                        current
+                    } else {
+                        DiscussionButtonState.Comments(
+                            discussionId = existingDiscussionId,
+                            count = 0
+                        )
+                    }
                 } else {
                     DiscussionButtonState.Empty
                 }
-                if (existingDiscussionId != null) {
+                if (existingDiscussionId != null
+                    && existingDiscussionId != lastFetchedDiscussionId
+                    && existingDiscussionId != fetchingDiscussionCountId
+                ) {
+                    fetchingDiscussionCountId = existingDiscussionId
                     viewModelScope.launch {
                         getChatMessages.async(
                             com.anytypeio.anytype.core_models.Command.ChatCommand.GetMessages(
@@ -863,28 +913,77 @@ class EditorViewModel(
                             )
                         ).fold(
                             onSuccess = { response ->
-                                _discussionButtonState.value =
-                                    DiscussionButtonState.Comments(
-                                        discussionId = existingDiscussionId,
-                                        count = response.messageCount
-                                    )
+                                lastFetchedDiscussionId = existingDiscussionId
+                                val current = _discussionButtonState.value
+                                // Guard against the discussion id having changed while the
+                                // fetch was in flight: never clobber another discussion's state.
+                                if (current is DiscussionButtonState.Comments
+                                    && current.discussionId == existingDiscussionId
+                                ) {
+                                    _discussionButtonState.value =
+                                        DiscussionButtonState.Comments(
+                                            discussionId = existingDiscussionId,
+                                            count = response.messageCount
+                                        )
+                                }
                             },
                             onFailure = {
+                                // lastFetchedDiscussionId is intentionally not set:
+                                // the next render retries the fetch.
                                 Timber.e(it, "Failed to fetch discussion message count")
                             }
                         )
+                        if (fetchingDiscussionCountId == existingDiscussionId) {
+                            fetchingDiscussionCountId = null
+                        }
                     }
                 }
                 footers.value = getFooterState(root, currentObj)
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
                 Timber.d("Rendering starting...")
-                val (placeholderModels, placeholderFocus) = resolveTrailingPlaceholder(models, focus)
-                val (renderModels, renderFocus) = resolveIdentityFork(placeholderModels, placeholderFocus)
-                val doc = renderModels.asMap().render(
+                // [mode] and the trailing-placeholder / identity-fork state machines are
+                // owned by the main thread (typing paths mutate them there), so mode
+                // reconciliation and placeholder/fork resolution hop to the main
+                // dispatcher; only the CPU-heavy render below stays on computation.
+                val prep = withContext(dispatchers.main) {
+                    val previousMode = mode
+                    var reconciledMode = previousMode
+                    if (previousMode == EditorMode.Locked) {
+                        if (root.fields.isLocked != true) {
+                            reconciledMode = EditorMode.Edit
+                        }
+                    } else {
+                        if (root.fields.isLocked == true) {
+                            reconciledMode = EditorMode.Locked
+                        }
+                    }
+                    if (permission?.isOwnerOrEditor() == true) {
+                        if (reconciledMode == EditorMode.Read) {
+                            reconciledMode = EditorMode.Edit
+                        }
+                    } else {
+                        if (reconciledMode == EditorMode.Edit) {
+                            reconciledMode = EditorMode.Read
+                        }
+                    }
+                    val deferred = mutableListOf<() -> Unit>()
+                    val (placeholderModels, placeholderFocus) =
+                        resolveTrailingPlaceholder(models, focus, deferred)
+                    val (renderModels, renderFocus) =
+                        resolveIdentityFork(placeholderModels, placeholderFocus, deferred)
+                    RenderPrep(
+                        previousMode = previousMode,
+                        reconciledMode = reconciledMode,
+                        models = renderModels,
+                        focus = renderFocus,
+                        deferred = deferred
+                    )
+                }
+                val doc = prep.models.asMap().render(
                     context = context,
-                    mode = mode,
-                    root = renderModels.first { it.id == context },
-                    focus = renderFocus,
+                    mode = prep.reconciledMode,
+                    root = prep.models.first { it.id == context },
+                    focus = prep.focus,
                     anchor = context,
                     indent = INITIAL_INDENT,
                     details = objectViewDetails,
@@ -893,19 +992,48 @@ class EditorViewModel(
                     selection = currentSelection()
                 ) { onRenderFlagFound -> flags.add(onRenderFlagFound) }
                 updateLayoutConflictState(currentObj, doc)
-                if (flags.isNotEmpty()) {
+                val rendered = if (flags.isNotEmpty()) {
                     doc.fillTableOfContents()
                 } else {
                     doc
                 }
+                DocumentRenderResult(
+                    views = rendered,
+                    previousMode = prep.previousMode,
+                    reconciledMode = prep.reconciledMode,
+                    deferred = prep.deferred
+                )
             }
+            // Rendering is CPU-heavy: run everything above off the main thread.
+            .flowOn(dispatchers.computation)
             .catch { error ->
                 Timber.e(error, "Get error in renderizePipeline")
-                emit(emptyList())
+                emit(DocumentRenderResult(emptyList(), mode, mode))
             }
-            .onEach { views ->
-                orchestrator.stores.views.update(views)
+            .onEach { result ->
+                // Apply the reconciled mode on the main thread only, and only if the
+                // user has not changed the mode while this render was in flight.
+                if (result.reconciledMode != result.previousMode) {
+                    if (mode == result.previousMode) {
+                        mode = result.reconciledMode
+                        if (result.reconciledMode == EditorMode.Locked) {
+                            sendToast("Your object is locked")
+                        } else if (result.previousMode == EditorMode.Locked) {
+                            sendToast("Your object is unlocked")
+                        }
+                    } else {
+                        // The mode changed while this render was in flight, so the views
+                        // below were rendered under a stale reconciliation. Re-render so
+                        // the reconciliation is recomputed against the current mode
+                        // instead of leaving [mode] and the rendered document divergent.
+                        viewModelScope.launch { refresh() }
+                    }
+                }
+                orchestrator.stores.views.update(result.views)
                 renderCommand.send(Unit)
+                // Placeholder/fork replays must observe the post-swap views store:
+                // run them only after this render's views have been published.
+                result.deferred.forEach { action -> action.invoke() }
             }
             .onEach {
                 refreshTableToolbar()
@@ -1118,11 +1246,14 @@ class EditorViewModel(
                 )
             }
             .onEach { update ->
-                val updated = blocks.map { block ->
-                    if (block.id == update.target) {
-                        block.updateText(update)
-                    } else
-                        block
+                val current = blocks
+                val index = current.indexOfFirst { it.id == update.target }
+                val updated = if (index == -1) {
+                    current
+                } else {
+                    current.toMutableList().apply {
+                        set(index, current[index].updateText(update))
+                    }
                 }
                 orchestrator.stores.document.update(updated)
             }
@@ -1169,6 +1300,11 @@ class EditorViewModel(
         lastMaterializedTrailingBlock = null
         identityFork = null
         lastForkedBlock = null
+
+        // Re-fetch the discussion comment count once per screen entry: the count can
+        // change while the editor is stopped (e.g. comments posted in the discussion
+        // screen), and the render pipeline only fetches when this id changes.
+        lastFetchedDiscussionId = null
 
         stateData.postValue(ViewState.Loading)
 
@@ -1535,7 +1671,12 @@ class EditorViewModel(
 
         val store = orchestrator.stores.views
         val old = store.current()
-        val new = old.map { if (it.id == view.id) view else it }
+        val index = old.indexOfFirst { it.id == view.id }
+        val new = when {
+            index == -1 -> old
+            old[index] === view -> old
+            else -> old.toMutableList().apply { set(index, view) }
+        }
 
         viewModelScope.launch {
             if (view is BlockView.Text.Header && new.any { it is BlockView.TableOfContents }) {
@@ -3689,7 +3830,8 @@ class EditorViewModel(
      */
     private suspend fun resolveTrailingPlaceholder(
         models: List<Block>,
-        focus: Editor.Focus
+        focus: Editor.Focus,
+        deferred: MutableList<() -> Unit>
     ): Pair<List<Block>, Editor.Focus> {
         val state = trailingPlaceholder ?: return models to focus
         val materialized = state.materialized
@@ -3771,13 +3913,9 @@ class EditorViewModel(
         }
         if (state.onMaterialized.isNotEmpty()) {
             val actions = state.onMaterialized.toList()
-            viewModelScope.launch {
-                // This mapping runs on Main.immediate, so an immediate launch would
-                // execute before the pipeline stores this render's views. Yield past
-                // it: replays must observe the post-swap views store.
-                yield()
-                actions.forEach { action -> action(materialized) }
-            }
+            // Replays must observe the post-swap views store: the pipeline runs them
+            // in its main-thread apply phase, after views.update for this render.
+            deferred += { actions.forEach { action -> action(materialized) } }
         }
         return result to effectiveFocus
     }
@@ -4084,7 +4222,8 @@ class EditorViewModel(
      */
     private suspend fun resolveIdentityFork(
         models: List<Block>,
-        focus: Editor.Focus
+        focus: Editor.Focus,
+        deferred: MutableList<() -> Unit>
     ): Pair<List<Block>, Editor.Focus> {
         val state = identityFork ?: return models to focus
         val forked = state.forked
@@ -4158,12 +4297,9 @@ class EditorViewModel(
         }
         if (state.onForked.isNotEmpty()) {
             val actions = state.onForked.toList()
-            viewModelScope.launch {
-                // Replays must observe the post-swap views store — yield past the
-                // pipeline's views.update (this mapping runs on Main.immediate).
-                yield()
-                actions.forEach { action -> action(forked) }
-            }
+            // Replays must observe the post-swap views store: the pipeline runs them
+            // in its main-thread apply phase, after views.update for this render.
+            deferred += { actions.forEach { action -> action(forked) } }
         }
         return result to effectiveFocus
     }

@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -118,6 +119,9 @@ fun Bubble(
     val haptic = LocalHapticFeedback.current
     var showDropdownMenu by remember { mutableStateOf(false) }
     var showDeleteMessageWarning by remember { mutableStateOf(false) }
+
+    val currentOnMarkupLinkClicked by rememberUpdatedState(onMarkupLinkClicked)
+    val currentOnMentionClicked by rememberUpdatedState(onMentionClicked)
 
     if (showDeleteMessageWarning) {
         ModalBottomSheet(
@@ -231,10 +235,16 @@ fun Bubble(
                             if (attachments.isNotEmpty()) Modifier.fillMaxWidth() else Modifier
                         )
                 ) {
-                    // Rendering text body message
-                    Text(
-                        modifier = Modifier,
-                        text = buildAnnotatedString {
+                    val formattedTime = remember(timestamp) {
+                        timestamp.formatTimeInMillis(TIME_H24)
+                    }
+                    val editedLabel = if (isEdited) {
+                        stringResource(R.string.chats_message_edited)
+                    } else {
+                        null
+                    }
+                    val messageText = remember(content, formattedTime, editedLabel) {
+                        buildAnnotatedString {
                             content.parts.forEach { part ->
                                 if (part.link?.param != null) {
                                     withLink(
@@ -248,7 +258,7 @@ fun Bubble(
                                                 )
                                             )
                                         ) {
-                                            onMarkupLinkClicked(part.link.param.orEmpty())
+                                            currentOnMarkupLinkClicked(part.link.param.orEmpty())
                                         }
                                     ) {
                                         append(part.part)
@@ -265,7 +275,7 @@ fun Bubble(
                                                 )
                                             )
                                         ) {
-                                            onMentionClicked(part.mention.param.orEmpty())
+                                            currentOnMentionClicked(part.mention.param.orEmpty())
                                         }
                                     ) {
                                         append(part.part)
@@ -300,16 +310,17 @@ fun Bubble(
                             ) {
                                 append(
                                     buildTimestampPlaceholder(
-                                        formattedTime = timestamp.formatTimeInMillis(TIME_H24),
-                                        editedLabel = if (isEdited) {
-                                            stringResource(R.string.chats_message_edited)
-                                        } else {
-                                            null
-                                        }
+                                        formattedTime = formattedTime,
+                                        editedLabel = editedLabel
                                     )
                                 )
                             }
-                        },
+                        }
+                    }
+                    // Rendering text body message
+                    Text(
+                        modifier = Modifier,
+                        text = messageText,
                         style = ContentMiscChat,
                         color = colorResource(id = R.color.text_primary),
                     )
@@ -327,12 +338,10 @@ fun Bubble(
                             Spacer(modifier = Modifier.width(2.dp))
                         }
                         Text(
-                            text = timestamp.formatTimeInMillis(TIME_H24).let {
-                                if (isEdited) {
-                                    "${stringResource(R.string.chats_message_edited)} $it"
-                                } else {
-                                    it
-                                }
+                            text = if (editedLabel != null) {
+                                "$editedLabel $formattedTime"
+                            } else {
+                                formattedTime
                             },
                             style = Caption2Regular,
                             color = colorResource(id = R.color.transparent_active),
@@ -685,8 +694,8 @@ fun ChatUserAvatar(
                     .crossfade(true)
                     .build(),
                 contentDescription = "Space member profile icon",
-                modifier = modifier
-                    .size(32.dp)
+                modifier = Modifier
+                    .matchParentSize()
                     .clip(CircleShape),
                 contentScale = ContentScale.Crop
             )

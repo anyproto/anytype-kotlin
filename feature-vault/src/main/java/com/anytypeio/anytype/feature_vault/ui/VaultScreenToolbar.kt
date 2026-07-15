@@ -39,13 +39,12 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_vault.R
-import com.anytypeio.anytype.feature_vault.presentation.VaultUiState
 
 @Composable
 fun VaultScreenTopToolbar(
     searchQuery: String,
     profile: AccountProfile,
-    uiState: VaultUiState,
+    isLoading: Boolean,
     showNotificationBadge: Boolean = false,
     showCreateSpaceBadge: Boolean = false,
     showCreateChannelMenu: Boolean = false,
@@ -58,63 +57,39 @@ fun VaultScreenTopToolbar(
     onCreateChannelMenuDismissed: () -> Unit,
     onSettingsClicked: () -> Unit,
 ) {
-    when (uiState) {
-        VaultUiState.Loading -> {
-            Column(
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+    ) {
+        VaultScreenToolbar(
+            profile = profile,
+            showNotificationBadge = showNotificationBadge,
+            showCreateSpaceBadge = showCreateSpaceBadge,
+            showCreateChannelMenu = showCreateChannelMenu,
+            isLocalOnly = isLocalOnly,
+            onPlusClicked = onCreateChannelMenuClicked,
+            onPersonalClicked = onPersonalClicked,
+            onGroupClicked = onGroupClicked,
+            onJoinViaQrClicked = onJoinViaQrClicked,
+            onCreateChannelMenuDismissed = onCreateChannelMenuDismissed,
+            onSettingsClicked = onSettingsClicked,
+            isLoading = isLoading
+        )
+        if (isLoading) {
+            Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .statusBarsPadding()
-            ) {
-                VaultScreenToolbar(
-                    profile = profile,
-                    showNotificationBadge = showNotificationBadge,
-                    showCreateSpaceBadge = showCreateSpaceBadge,
-                    showCreateChannelMenu = showCreateChannelMenu,
-                    isLocalOnly = isLocalOnly,
-                    onPlusClicked = onCreateChannelMenuClicked,
-                    onPersonalClicked = onPersonalClicked,
-                    onGroupClicked = onGroupClicked,
-                    onJoinViaQrClicked = onJoinViaQrClicked,
-                    onCreateChannelMenuDismissed = onCreateChannelMenuDismissed,
-                    onSettingsClicked = onSettingsClicked,
-                    isLoading = true
-                )
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp)
-                )
-            }
-        }
-
-        is VaultUiState.Sections -> {
-            Column(
+                    .height(60.dp)
+            )
+        } else {
+            DefaultSearchBar(
+                value = searchQuery,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .statusBarsPadding()
-            ) {
-                VaultScreenToolbar(
-                    profile = profile,
-                    showNotificationBadge = showNotificationBadge,
-                    showCreateSpaceBadge = showCreateSpaceBadge,
-                    showCreateChannelMenu = showCreateChannelMenu,
-                    isLocalOnly = isLocalOnly,
-                    onPlusClicked = onCreateChannelMenuClicked,
-                    onPersonalClicked = onPersonalClicked,
-                    onGroupClicked = onGroupClicked,
-                    onJoinViaQrClicked = onJoinViaQrClicked,
-                    onCreateChannelMenuDismissed = onCreateChannelMenuDismissed,
-                    onSettingsClicked = onSettingsClicked,
-                    isLoading = false
-                )
-                DefaultSearchBar(
-                    value = searchQuery,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
-                    onQueryChanged = onUpdateSearchQuery
-                )
-            }
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                onQueryChanged = onUpdateSearchQuery
+            )
         }
     }
 }

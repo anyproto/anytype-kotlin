@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -47,6 +48,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -126,7 +128,6 @@ fun DiscussionScreenWrapper(
     val mentionPanelState = vm.mentionPanelState.collectAsStateWithLifecycle().value
     val attachments = vm.commentAttachments.collectAsStateWithLifecycle().value
     val clipboard = LocalClipboardManager.current
-    val context = LocalContext.current
 
     var inputText by remember { mutableStateOf(TextFieldValue("")) }
     var spans by remember { mutableStateOf<List<InputSpan>>(emptyList()) }
@@ -191,30 +192,7 @@ fun DiscussionScreenWrapper(
         onToggleReaction = { msg, emoji -> vm.onToggleReaction(msg, emoji) },
         onMediaPicked = { vm.onCommentMediaPicked(it) },
         onFilePicked = { uris ->
-            val infos = uris.mapNotNull { uri ->
-                val cursor = context.contentResolver.query(
-                    uri, null, null, null, null
-                )
-                if (cursor != null) {
-                    cursor.use { c ->
-                        val nameIndex = c.getColumnIndex(
-                            android.provider.OpenableColumns.DISPLAY_NAME
-                        )
-                        val sizeIndex = c.getColumnIndex(
-                            android.provider.OpenableColumns.SIZE
-                        )
-                        c.moveToFirst()
-                        com.anytypeio.anytype.core_utils.common.DefaultFileInfo(
-                            uri = uri.toString(),
-                            name = c.getString(nameIndex),
-                            size = c.getLong(sizeIndex).toInt()
-                        )
-                    }
-                } else {
-                    null
-                }
-            }
-            vm.onCommentFilePicked(infos)
+            vm.onCommentFilesPicked(uris.map { uri -> uri.toString() })
         },
         onClearAttachment = { vm.onClearAttachment(it) },
         onMentionClicked = { id -> vm.onMentionClicked(id) },
@@ -482,6 +460,14 @@ fun DiscussionCommentList(
                     is DiscussionView.Reply -> item.id
                     is DiscussionView.ReplyDivider -> "reply-divider-${item.replyId}"
                     is DiscussionView.ThreadDivider -> "thread-divider-${item.threadId}"
+                }
+            },
+            contentType = { item ->
+                when (item) {
+                    is DiscussionView.Comment -> "comment"
+                    is DiscussionView.Reply -> "reply"
+                    is DiscussionView.ReplyDivider -> "reply-divider"
+                    is DiscussionView.ThreadDivider -> "thread-divider"
                 }
             }
         ) { item ->
@@ -1173,11 +1159,16 @@ fun ContentBlocksList(
                             .crossfade(true)
                             .build()
                     }
+                    // Provisional product call: render the image at its intrinsic
+                    // aspect ratio, clamped to a max height — layout jumps are bounded
+                    // and no content is cropped away (the previous fixed 4:3 center-crop
+                    // hid most of tall screenshots).
                     AsyncImage(
                         model = model,
                         contentDescription = null,
                         modifier = Modifier
                             .fillMaxWidth()
+                            .heightIn(max = 320.dp)
                             .clip(RoundedCornerShape(12.dp))
                             .border(
                                 width = 1.dp,
@@ -1185,7 +1176,7 @@ fun ContentBlocksList(
                                 shape = RoundedCornerShape(12.dp)
                             )
                             .clickable { onContentBlockClicked(block) },
-                        contentScale = ContentScale.Crop
+                        contentScale = ContentScale.Fit
                     )
                 }
                 is DiscussionView.ContentBlock.Link -> {
@@ -1355,65 +1346,69 @@ fun RichTextContent(
         Block.Content.Text.Style.CODE_SNIPPET -> CodeBlock
         else -> null
     }
-    val annotatedString = buildAnnotatedString {
-        parts.forEach { part ->
-            val textColor = part.resolveTextColor(resources)
-            val bgColor = part.resolveBackgroundColor(resources)
-            if (part.mention?.param != null) {
-                withLink(
-                    LinkAnnotation.Clickable(
-                        tag = MENTION_SPAN_TAG,
-                        styles = TextLinkStyles(
-                            style = SpanStyle(
-                                color = textColor ?: Color.Unspecified,
-                                background = bgColor ?: Color.Unspecified,
-                                fontWeight = if (part.isBold) FontWeight.Bold else null,
-                                fontStyle = if (part.isItalic) FontStyle.Italic else null,
-                                textDecoration = TextDecoration.Underline
+    val currentOnMentionClicked by rememberUpdatedState(onMentionClicked)
+    val currentOnLinkClicked by rememberUpdatedState(onLinkClicked)
+    val annotatedString = remember(parts, resources) {
+        buildAnnotatedString {
+            parts.forEach { part ->
+                val textColor = part.resolveTextColor(resources)
+                val bgColor = part.resolveBackgroundColor(resources)
+                if (part.mention?.param != null) {
+                    withLink(
+                        LinkAnnotation.Clickable(
+                            tag = MENTION_SPAN_TAG,
+                            styles = TextLinkStyles(
+                                style = SpanStyle(
+                                    color = textColor ?: Color.Unspecified,
+                                    background = bgColor ?: Color.Unspecified,
+                                    fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                    fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                    textDecoration = TextDecoration.Underline
+                                )
                             )
-                        )
+                        ) {
+                            currentOnMentionClicked(part.mention.param.orEmpty())
+                        }
                     ) {
-                        onMentionClicked(part.mention.param.orEmpty())
+                        append(part.part)
                     }
-                ) {
-                    append(part.part)
-                }
-            } else if (part.link?.param != null) {
-                withLink(
-                    LinkAnnotation.Clickable(
-                        tag = MENTION_LINK_TAG,
-                        styles = TextLinkStyles(
-                            style = SpanStyle(
-                                color = textColor ?: Color.Unspecified,
-                                background = bgColor ?: Color.Unspecified,
-                                fontWeight = if (part.isBold) FontWeight.Bold else null,
-                                fontStyle = if (part.isItalic) FontStyle.Italic else null,
-                                textDecoration = TextDecoration.Underline
+                } else if (part.link?.param != null) {
+                    withLink(
+                        LinkAnnotation.Clickable(
+                            tag = MENTION_LINK_TAG,
+                            styles = TextLinkStyles(
+                                style = SpanStyle(
+                                    color = textColor ?: Color.Unspecified,
+                                    background = bgColor ?: Color.Unspecified,
+                                    fontWeight = if (part.isBold) FontWeight.Bold else null,
+                                    fontStyle = if (part.isItalic) FontStyle.Italic else null,
+                                    textDecoration = TextDecoration.Underline
+                                )
                             )
-                        )
+                        ) {
+                            currentOnLinkClicked(part.link.param.orEmpty())
+                        }
                     ) {
-                        onLinkClicked(part.link.param.orEmpty())
+                        append(part.part)
                     }
-                ) {
-                    append(part.part)
-                }
-            } else {
-                val spanStyle = SpanStyle(
-                    color = textColor ?: Color.Unspecified,
-                    background = bgColor ?: Color.Unspecified,
-                    fontWeight = if (part.isBold) FontWeight.Bold else FontWeight.Normal,
-                    fontStyle = if (part.isItalic) FontStyle.Italic else FontStyle.Normal,
-                    textDecoration = when {
-                        part.isStrike && part.underline -> TextDecoration.combine(
-                            listOf(TextDecoration.LineThrough, TextDecoration.Underline)
-                        )
-                        part.isStrike -> TextDecoration.LineThrough
-                        part.underline -> TextDecoration.Underline
-                        else -> TextDecoration.None
+                } else {
+                    val spanStyle = SpanStyle(
+                        color = textColor ?: Color.Unspecified,
+                        background = bgColor ?: Color.Unspecified,
+                        fontWeight = if (part.isBold) FontWeight.Bold else FontWeight.Normal,
+                        fontStyle = if (part.isItalic) FontStyle.Italic else FontStyle.Normal,
+                        textDecoration = when {
+                            part.isStrike && part.underline -> TextDecoration.combine(
+                                listOf(TextDecoration.LineThrough, TextDecoration.Underline)
+                            )
+                            part.isStrike -> TextDecoration.LineThrough
+                            part.underline -> TextDecoration.Underline
+                            else -> TextDecoration.None
+                        }
+                    )
+                    withStyle(spanStyle) {
+                        append(part.part)
                     }
-                )
-                withStyle(spanStyle) {
-                    append(part.part)
                 }
             }
         }

@@ -5,6 +5,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.text.Editable
 import android.text.InputType
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -2503,6 +2504,55 @@ class BlockAdapterTest {
         size = MockDataFactory.randomLong(),
         decorations = emptyList()
     )
+
+    @Test
+    fun `should not dispatch focus changes while a block list update is being applied`() {
+
+        val paragraph = BlockView.Text.Paragraph(
+            text = MockDataFactory.randomString(),
+            id = MockDataFactory.randomUuid()
+        )
+
+        val focusEvents = mutableListOf<Pair<String, Boolean>>()
+
+        val adapter = givenAdapter(
+            views = listOf(paragraph),
+            onFocusChanged = { id, hasFocus -> focusEvents.add(id to hasFocus) }
+        )
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+            this.adapter = adapter
+        }
+        recycler.measure(
+            View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(1920, View.MeasureSpec.EXACTLY)
+        )
+        recycler.layout(0, 0, 1080, 1920)
+
+        val holder = recycler.findViewHolderForAdapterPosition(0)
+        check(holder is Paragraph)
+
+        // While a list update is being applied, RecyclerView can transiently hand
+        // focus to a neighboring row (a system transfer, not a user caret move):
+        // such events must not reach the ViewModel.
+        adapter.suppressFocusCallbacks = true
+        holder.content.onFocusChangeListener?.onFocusChange(holder.content, true)
+
+        assertEquals(
+            expected = emptyList(),
+            actual = focusEvents.toList()
+        )
+
+        // Once the update is applied, focus changes flow again.
+        adapter.suppressFocusCallbacks = false
+        holder.content.onFocusChangeListener?.onFocusChange(holder.content, true)
+
+        assertEquals(
+            expected = listOf<Pair<String, Boolean>>(paragraph.id to true),
+            actual = focusEvents.toList()
+        )
+    }
 
     private fun givenAdapter(
         views: List<BlockView>,

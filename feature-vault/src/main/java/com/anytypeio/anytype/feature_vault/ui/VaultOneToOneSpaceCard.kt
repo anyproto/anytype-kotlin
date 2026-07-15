@@ -50,7 +50,7 @@ fun VaultOneToOneSpaceCard(
     attachmentPreviews: List<AttachmentPreview> = emptyList(),
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.OneToOneSpace,
-    expandedSpaceId: String? = null,
+    isMenuExpanded: Boolean = false,
     isLastMessageOutgoing: Boolean = false,
     isLastMessageSynced: Boolean = true,
     isCompactMode: Boolean = false,
@@ -125,7 +125,7 @@ fun VaultOneToOneSpaceCard(
 
         // Include dropdown menu inside the card
         SpaceActionsDropdownMenu(
-            expanded = expandedSpaceId == spaceView.space.id,
+            expanded = isMenuExpanded,
             onDismiss = onDismissMenu,
             menuShape = SpaceNotificationMenuShape.DmToggle,
             currentNotificationMode = spaceView.spaceNotificationState,

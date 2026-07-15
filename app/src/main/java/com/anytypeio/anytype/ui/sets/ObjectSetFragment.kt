@@ -606,7 +606,12 @@ open class ObjectSetFragment :
             val translationX = scrollX.toFloat()
             viewerGridAdapter.recordNamePositionX = translationX
             rvRows.children.forEach { child ->
-                child.findViewById<View>(R.id.headerContainer).translationX = translationX
+                // Use the holder's cached binding instead of findViewById — this runs
+                // for every visible row on every scroll frame.
+                val holder = rvRows.getChildViewHolder(child)
+                if (holder is ViewerGridAdapter.RecordHolder) {
+                    holder.binding.headerContainer.translationX = translationX
+                }
             }
         }
     }

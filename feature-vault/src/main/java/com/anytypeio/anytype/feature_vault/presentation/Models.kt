@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_vault.presentation
 
+import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.NotificationState
@@ -11,6 +12,7 @@ import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 import com.anytypeio.anytype.core_models.ui.WallpaperResult
 
+@Immutable
 sealed class VaultSpaceView {
 
     abstract val space: ObjectWrapper.SpaceView
@@ -26,6 +28,7 @@ sealed class VaultSpaceView {
             else -> null
         }
 
+    @Immutable
     data class DataSpace(
         override val space: ObjectWrapper.SpaceView,
         override val icon: SpaceIconView,
@@ -34,6 +37,7 @@ sealed class VaultSpaceView {
         override val wallpaper: WallpaperResult = WallpaperResult.None
     ) : VaultSpaceView()
 
+    @Immutable
     data class DataSpaceWithChat(
         override val space: ObjectWrapper.SpaceView,
         override val icon: SpaceIconView,
@@ -53,6 +57,7 @@ sealed class VaultSpaceView {
         val isLastMessageSynced: Boolean = true
     ) : VaultSpaceView()
 
+    @Immutable
     data class OneToOneSpace(
         override val space: ObjectWrapper.SpaceView,
         override val icon: SpaceIconView,
@@ -70,8 +75,10 @@ sealed class VaultSpaceView {
     ) : VaultSpaceView()
 }
 
+@Immutable
 sealed class VaultUiState {
     data object Loading : VaultUiState()
+    @Immutable
     data class Sections(
         val pinnedSpaces: List<VaultSpaceView> = emptyList(),
         val mainSpaces: List<VaultSpaceView> = emptyList()

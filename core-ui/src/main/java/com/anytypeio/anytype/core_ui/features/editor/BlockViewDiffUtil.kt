@@ -401,3 +401,46 @@ class BlockViewDiffUtil(
         const val CODE_LANGUAGE_CHANGED = 360
     }
 }
+
+/**
+ * Returns a list where every view with fields that are mutated in place on the main
+ * thread (text / focus / cursor of text-bearing blocks — see the TextWatchers in
+ * [BlockAdapter] and the focus-clearing paths in EditorViewModel) is replaced with a
+ * shallow copy. A [BlockViewDiffUtil] calculation running off the main thread must
+ * operate on such a snapshot: reading the live instances would race with those
+ * in-place mutations. All other view types are immutable value objects and are
+ * shared as-is, so the snapshot stays O(N) and shallow.
+ */
+fun List<BlockView>.diffSnapshot(): List<BlockView> = map { view -> view.diffSnapshot() }
+
+private fun BlockView.diffSnapshot(): BlockView = when (this) {
+    is BlockView.Text.Paragraph -> copy()
+    is BlockView.Text.Header.One -> copy()
+    is BlockView.Text.Header.Two -> copy()
+    is BlockView.Text.Header.Three -> copy()
+    is BlockView.Text.Highlight -> copy()
+    is BlockView.Text.Callout -> copy()
+    is BlockView.Text.Checkbox -> copy()
+    is BlockView.Text.Bulleted -> copy()
+    is BlockView.Text.Numbered -> copy()
+    is BlockView.Text.Toggle -> copy()
+    is BlockView.Title.Basic -> copy()
+    is BlockView.Title.File -> copy()
+    is BlockView.Title.Video -> copy()
+    is BlockView.Title.Image -> copy()
+    is BlockView.Title.Profile -> copy()
+    is BlockView.Title.Todo -> copy()
+    is BlockView.Title.Archive -> copy()
+    is BlockView.Description -> copy()
+    is BlockView.Code -> copy()
+    // Table cells embed Text.Paragraph instances that TableEditableCellsAdapter mutates
+    // in place on the main thread, so the nested paragraphs must be copied too.
+    is BlockView.Table -> copy(
+        cells = cells.map { cell ->
+            val block = cell.block
+            if (block != null) cell.copy(block = block.copy()) else cell
+        }
+    )
+    // Remaining view types have no in-place-mutable fields: safe to share across threads.
+    else -> this
+}

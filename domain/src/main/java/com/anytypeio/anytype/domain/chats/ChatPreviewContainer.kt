@@ -80,24 +80,55 @@ interface ChatPreviewContainer {
         // Buffer of last N preview messages per chat for fallback on deletion (thread-safe)
         private val messageHistory = ConcurrentHashMap<Id, ConcurrentLinkedDeque<Chat.Message>>()
 
-        // Hot shared state for UI collectors
+        private val attachmentFlows =
+            ConcurrentHashMap<SpaceId, StateFlow<Map<Id, ObjectWrapper.Basic>>>()
+
+        // Attachment maps per space. Keyed on the *set* of spaces with previews, so the
+        // combine below is only rebuilt when a space appears or disappears — not on every
+        // preview change. The list is sorted so that preview reordering (which happens on
+        // every new message) does not change the key and needlessly restart the combine.
         @OptIn(ExperimentalCoroutinesApi::class)
-        private val previewsState: StateFlow<PreviewState> = previews
-            .map { list ->
-                if (list == null) PreviewState.Loading else PreviewState.Ready(list)
-            }
-            .flatMapLatest { state ->
-                when (state) {
-                    PreviewState.Loading -> flowOf(state)
-                    is PreviewState.Ready -> enrichWithAttachments(state)
+        private val attachmentsBySpace: Flow<Map<SpaceId, Map<Id, ObjectWrapper.Basic>>> =
+            previews
+                .map { list -> list.orEmpty().map { it.space }.distinct().sortedBy { it.id } }
+                .distinctUntilChanged()
+                .flatMapLatest { spaces ->
+                    if (spaces.isEmpty()) {
+                        flowOf(emptyMap())
+                    } else {
+                        combine(spaces.map { attachmentFlow(it) }) { arrays ->
+                            spaces.withIndex().associate { (idx, space) -> space to arrays[idx] }
+                        }
+                    }
+                }
+
+        // Hot shared state for UI collectors
+        private val previewsState: StateFlow<PreviewState> =
+            combine(previews, attachmentsBySpace) { list, attachments ->
+                if (list == null) {
+                    PreviewState.Loading
+                } else {
+                    PreviewState.Ready(
+                        items = list.map { preview ->
+                            val deps = buildUpdatedDependencies(
+                                preview = preview,
+                                attachments = attachments[preview.space].orEmpty()
+                            )
+                            // Most previews are unchanged when a single space's attachments
+                            // update. Reuse the existing instance when deps didn't change so
+                            // the downstream distinctUntilChanged() can drop the redundant
+                            // emission instead of forcing a full vault re-render.
+                            if (deps == preview.dependencies) preview else preview.copy(dependencies = deps)
+                        }
+                    )
                 }
             }
-            .distinctUntilChanged()
-            .catch { e ->
-                logger.logException(e, "Exception in preview flow")
-                emit(PreviewState.Loading)
-            }
-            .stateIn(scope, SharingStarted.Eagerly, PreviewState.Loading)
+                .distinctUntilChanged()
+                .catch { e ->
+                    logger.logException(e, "Exception in preview flow")
+                    emit(PreviewState.Loading)
+                }
+                .stateIn(scope, SharingStarted.Eagerly, PreviewState.Loading)
 
         init {
             // Auto start/stop together with account lifecycle
@@ -170,7 +201,7 @@ interface ChatPreviewContainer {
                 list?.filter { preview ->
                     preview.space == spaceId
                 } ?: emptyList()
-            }
+            }.distinctUntilChanged()
         }
 
         private suspend fun collectEvents(initial: List<Chat.Preview>) {
@@ -317,38 +348,6 @@ interface ChatPreviewContainer {
             }
         }
 
-        private fun enrichWithAttachments(ready: PreviewState.Ready): Flow<PreviewState> {
-            val spaces = ready.items.map { it.space }.distinct()
-            val sharedFlows = spaces.map { attachmentFlow(it) }
-
-            return if (sharedFlows.isEmpty()) {
-                flowOf(ready)
-            } else {
-                combine(sharedFlows) { arrays ->
-                    val attachmentsBySpace = arrays
-                        .mapIndexed { idx, map -> spaces[idx] to map }
-                        .toMap()
-
-                    val enriched = ready.items.map { preview ->
-                        val deps = buildUpdatedDependencies(
-                            preview = preview,
-                            attachments = attachmentsBySpace[preview.space].orEmpty()
-                        )
-                        // combine() re-fires for every space whenever any single space's
-                        // attachment flow emits, so most previews are unchanged. Reuse the
-                        // existing instance when deps didn't change so the downstream
-                        // distinctUntilChanged() can drop the redundant emission instead of
-                        // forcing a full vault re-render.
-                        if (deps == preview.dependencies) preview else preview.copy(dependencies = deps)
-                    }
-                    PreviewState.Ready(enriched)
-                }
-            }
-        }
-
-        private val attachmentFlows =
-            ConcurrentHashMap<SpaceId, StateFlow<Map<Id, ObjectWrapper.Basic>>>()
-
         @OptIn(ExperimentalCoroutinesApi::class)
         private fun attachmentFlow(space: SpaceId): StateFlow<Map<Id, ObjectWrapper.Basic>> =
             attachmentFlows.getOrPut(space) {
@@ -378,15 +377,10 @@ interface ChatPreviewContainer {
             preview: Chat.Preview,
             attachments: Map<Id, ObjectWrapper.Basic>
         ): List<ObjectWrapper.Basic> {
+            if (attachments.isEmpty()) return preview.dependencies
             val all = (preview.dependencies + attachments.values)
                 .associateBy { it.id }
             return all.values.toList()
-                .also { deps ->
-                    logger.logInfo(
-                        "DROID-3309: buildUpdatedDependencies for space ${preview.space.id}, " +
-                                "found ${deps.size} dependencies for ${preview.message?.attachments?.size ?: 0} attachments"
-                    )
-                }
         }
 
         private suspend fun unsubscribeAll() {

@@ -328,18 +328,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
-            invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = title.content<Block.Content.Text>().text,
-                        marks = emptyList(),
-                        target = title.id
-                    )
-                )
-            )
-        }
+        // The pre-split save flush is skipped when text is unchanged:
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        verifyNoInteractions(updateText)
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -389,18 +381,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
-            invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = title.content<Block.Content.Text>().text,
-                        marks = emptyList(),
-                        target = title.id
-                    )
-                )
-            )
-        }
+        // The pre-split save flush is skipped when text is unchanged:
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        verifyNoInteractions(updateText)
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -500,18 +484,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
-            invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = title.content<Block.Content.Text>().text,
-                        marks = emptyList(),
-                        target = title.id
-                    )
-                )
-            )
-        }
+        // The pre-split save flush is skipped when text is unchanged:
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        verifyNoInteractions(updateText)
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -560,18 +536,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
-            invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = title.content<Block.Content.Text>().text,
-                        marks = emptyList(),
-                        target = title.id
-                    )
-                )
-            )
-        }
+        // The pre-split save flush is skipped when text is unchanged:
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        verifyNoInteractions(updateText)
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -689,18 +657,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
-            invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = title.content<Block.Content.Text>().text,
-                        marks = emptyList(),
-                        target = title.id
-                    )
-                )
-            )
-        }
+        // The pre-split save flush is skipped when text is unchanged:
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        verifyNoInteractions(updateText)
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -852,18 +812,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
-            invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = title.content<Block.Content.Text>().text,
-                        marks = emptyList(),
-                        target = title.id
-                    )
-                )
-            )
-        }
+        // The pre-split save flush is skipped when text is unchanged:
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        verifyNoInteractions(updateText)
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -1094,18 +1046,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
-            invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = title.content<Block.Content.Text>().text,
-                        marks = emptyList(),
-                        target = title.id
-                    )
-                )
-            )
-        }
+        // The pre-split save flush is skipped when text is unchanged:
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        verifyNoInteractions(updateText)
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -1275,18 +1219,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
-            invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = title.content<Block.Content.Text>().text,
-                        marks = emptyList(),
-                        target = title.id
-                    )
-                )
-            )
-        }
+        // The pre-split save flush is skipped when text is unchanged:
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        verifyNoInteractions(updateText)
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -1401,18 +1337,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
-            invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = description.content<Block.Content.Text>().text,
-                        marks = emptyList(),
-                        target = description.id
-                    )
-                )
-            )
-        }
+        // The pre-split save flush is skipped when text is unchanged:
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        verifyNoInteractions(updateText)
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -1475,18 +1403,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
-            invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = description.content<Block.Content.Text>().text,
-                        marks = emptyList(),
-                        target = description.id
-                    )
-                )
-            )
-        }
+        // The pre-split save flush is skipped when text is unchanged:
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        verifyNoInteractions(updateText)
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -1549,18 +1469,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
-            invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = description.content<Block.Content.Text>().text,
-                        marks = emptyList(),
-                        target = description.id
-                    )
-                )
-            )
-        }
+        // The pre-split save flush is skipped when text is unchanged:
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        verifyNoInteractions(updateText)
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -1625,18 +1537,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
-            invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = description.content<Block.Content.Text>().text,
-                        marks = emptyList(),
-                        target = description.id
-                    )
-                )
-            )
-        }
+        // The pre-split save flush is skipped when text is unchanged:
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        verifyNoInteractions(updateText)
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -1698,18 +1602,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
-            invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = description.content<Block.Content.Text>().text,
-                        marks = emptyList(),
-                        target = description.id
-                    )
-                )
-            )
-        }
+        // The pre-split save flush is skipped when text is unchanged:
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        verifyNoInteractions(updateText)
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(
@@ -1771,18 +1667,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
-        verifyBlocking(updateText, times(1)) {
-            invoke(
-                params = eq(
-                    UpdateText.Params(
-                        context = root,
-                        text = description.content<Block.Content.Text>().text,
-                        marks = emptyList(),
-                        target = description.id
-                    )
-                )
-            )
-        }
+        // The pre-split save flush is skipped when text is unchanged:
+        // a redundant set-text is a last-writer-wins write that can stomp
+        // a concurrent peer edit.
+        verifyNoInteractions(updateText)
 
         verifyBlocking(splitBlock, times(1)) {
             invoke(

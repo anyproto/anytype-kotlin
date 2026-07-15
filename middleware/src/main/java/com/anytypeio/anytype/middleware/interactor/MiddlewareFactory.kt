@@ -6,6 +6,7 @@ import com.anytypeio.anytype.middleware.mappers.MBDiv
 import com.anytypeio.anytype.middleware.mappers.MBDivStyle
 import com.anytypeio.anytype.middleware.mappers.MBFile
 import com.anytypeio.anytype.middleware.mappers.MBLink
+import com.anytypeio.anytype.middleware.mappers.MBMarks
 import com.anytypeio.anytype.middleware.mappers.MBRelation
 import com.anytypeio.anytype.middleware.mappers.MBTableOfContents
 import com.anytypeio.anytype.middleware.mappers.MBText
@@ -31,9 +32,25 @@ class MiddlewareFactory {
             is Block.Prototype.Text -> {
                 val text = MBText(
                     style = prototype.style.toMiddlewareModel(),
-                    text = prototype.text.orEmpty()
+                    text = prototype.text.orEmpty(),
+                    marks = if (prototype.marks.isEmpty()) {
+                        null
+                    } else {
+                        MBMarks(marks = prototype.marks.map { it.toMiddlewareModel() })
+                    },
+                    checked = prototype.checked ?: false,
+                    color = prototype.color.orEmpty(),
+                    iconEmoji = prototype.iconEmoji.orEmpty(),
+                    iconImage = prototype.iconImage.orEmpty()
                 )
-                MBlock(text = text)
+                MBlock(
+                    text = text,
+                    backgroundColor = prototype.backgroundColor.orEmpty(),
+                    align = prototype.align.toMiddlewareModel(),
+                    fields = prototype.fields
+                        ?.takeIf { it.map.isNotEmpty() }
+                        ?.toMiddlewareModel()
+                )
             }
             is Block.Prototype.DividerLine -> {
                 val divider = MBDiv(style = MBDivStyle.Line)

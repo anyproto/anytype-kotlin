@@ -1385,7 +1385,7 @@ open class EditorViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
-        val initialText = ""
+        val initialText = MockDataFactory.randomString()
 
         val initialContent = Block.Content.Text(
             text = initialText,
@@ -1467,7 +1467,7 @@ open class EditorViewModelTest {
 
         val root = MockDataFactory.randomUuid()
         val child = MockDataFactory.randomUuid()
-        val initialText = ""
+        val initialText = MockDataFactory.randomString()
 
         val initialContent = Block.Content.Text(
             text = initialText,
@@ -2315,7 +2315,7 @@ open class EditorViewModelTest {
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
         runBlockingTest {
-            verify(updateText, times(2)).invoke(
+            verify(updateText, times(1)).invoke(
                 params = eq(
                     UpdateText.Params(
                         context = root,
@@ -2409,7 +2409,7 @@ open class EditorViewModelTest {
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
 
         runBlockingTest {
-            verify(updateText, times(2)).invoke(
+            verify(updateText, times(1)).invoke(
                 params = eq(
                     UpdateText.Params(
                         context = root,

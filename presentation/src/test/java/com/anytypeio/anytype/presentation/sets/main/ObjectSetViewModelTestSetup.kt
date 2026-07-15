@@ -40,7 +40,8 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
-import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.library.StoreSearchParams
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.search.BoardGroupSubscriptionContainer
 import com.anytypeio.anytype.domain.search.BoardRecordsSubscriptionContainer
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -249,13 +250,13 @@ open class ObjectSetViewModelTestSetup {
     lateinit var setDataViewObjectOrder: SetDataViewObjectOrder
 
     @Mock
-    lateinit var getOptions: GetOptions
-
-    @Mock
     lateinit var boardGroupSubscriptionContainer: BoardGroupSubscriptionContainer
 
     @Mock
     lateinit var boardRecordsSubscriptionContainer: BoardRecordsSubscriptionContainer
+
+    @Mock
+    lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
 
     @Mock
     lateinit var userSettingsRepository: UserSettingsRepository
@@ -343,6 +344,11 @@ open class ObjectSetViewModelTestSetup {
         userSettingsRepository.stub {
             on { observeKanbanEnabled() } doReturn flowOf(true)
         }
+        // Board option headers subscribe through the storeless container; default to no
+        // options so board tests render (tests exercising labels override this).
+        storelessSubscriptionContainer.stub {
+            on { subscribe(any<StoreSearchParams>()) } doReturn flowOf(emptyList())
+        }
     }
 
     fun givenViewModel(): ObjectSetViewModel {
@@ -393,9 +399,9 @@ open class ObjectSetViewModelTestSetup {
             removeObjectFromCollection = removeObjectFromCollection,
             setDataViewProperties = setDataViewProperties,
             setDataViewObjectOrder = setDataViewObjectOrder,
-            getOptions = getOptions,
             boardGroupSubscriptionContainer = boardGroupSubscriptionContainer,
             boardRecordsSubscriptionContainer = boardRecordsSubscriptionContainer,
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
             createBlock = createBlock,

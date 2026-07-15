@@ -81,9 +81,6 @@ class ObjectSetBoardLayoutMenuTest : ObjectSetViewModelTestSetup() {
                 mapOf(root to mapOf(Relations.LAYOUT to ObjectType.Layout.COLLECTION.code.toDouble()))
             )
         )
-        getOptions.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(emptyList<ObjectWrapper.Option>())
-        }
         boardGroupSubscriptionContainer.stub {
             on { observe(any()) } doReturn flowOf(emptyList())
         }

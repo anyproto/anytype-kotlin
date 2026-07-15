@@ -62,7 +62,10 @@ class BoardGroupSubscriptionContainer(
                 }
             )
         }.catch {
+            // Log here (with domain context), but let the caller own the failure — swallowing
+            // it would render the board as eternally loading with no user-visible error.
             logger.logException(it, "Error in board group subscription container")
+            throw it
         }.flowOn(dispatchers.io)
     }
 

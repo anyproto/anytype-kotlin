@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.presentation.objects.files
 import com.anytypeio.anytype.presentation.objects.statuses
 import com.anytypeio.anytype.presentation.objects.tags
 import com.anytypeio.anytype.presentation.objects.toViews
@@ -301,6 +302,43 @@ class ObjectWrapperExtensionsKtTest {
         assertEquals(optionId, result.first().id)
         assertEquals("Drama", result.first().tag)
         assertEquals("blue", result.first().color)
+    }
+
+    @Test
+    fun `files resolves a single-Id value to the file object and not the host object`() = runTest {
+        val fileKey = "attachment"
+        val fileId = "file-1"
+        val hostId = "host-3"
+
+        val file = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to fileId,
+                Relations.NAME to "cover",
+                Relations.FILE_MIME_TYPE to "image/png",
+                Relations.FILE_EXT to "png"
+            )
+        )
+        val host = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to hostId,
+                Relations.NAME to "Behind the Supermarket",
+                fileKey to fileId // single Id, NOT a list
+            )
+        )
+
+        val store = mock<ObjectStore>()
+        store.stub {
+            onBlocking { get(fileId) } doReturn file
+            onBlocking { get(hostId) } doReturn host
+        }
+
+        val result = host.files(relation = fileKey, storeOfObjects = store)
+
+        assertEquals(1, result.size)
+        assertEquals(fileId, result.first().id)
+        assertEquals("cover", result.first().name)
+        assertEquals("image/png", result.first().mime)
+        assertEquals("png", result.first().ext)
     }
 
     // endregion

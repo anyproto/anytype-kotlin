@@ -143,10 +143,14 @@ fun ObjectState.DataView.Collection.getObjectOrderIds(currentViewerId: String): 
  *
  * For DATE formats: adds the relationFormat to the filter.
  * For OBJECT formats: adds the relationFormat and normalizes EQUAL condition to IN.
+ * For STATUS/TAG formats: adds the relationFormat so the option-id value is matched as a
+ * select value instead of falling back to `longtext` (which matches nothing) when the
+ * filter arrives without a format set (e.g. created on Desktop). SELECT conditions
+ * (In/AllIn/NotIn/Empty/NotEmpty) never use EQUAL, so no condition normalization is needed.
  *
  * @param filter the filter to transform.
  * @param format the relation format to apply (null means no transformation).
- * @return the transformed filter, or the original if format is null or not DATE/OBJECT.
+ * @return the transformed filter, or the original if format is null or not DATE/OBJECT/STATUS/TAG.
  */
 private fun transformFilterWithFormat(filter: DVFilter, format: RelationFormat?): DVFilter {
     return when (format) {
@@ -163,6 +167,9 @@ private fun transformFilterWithFormat(filter: DVFilter, format: RelationFormat?)
                     filter.condition
                 }
             )
+        }
+        RelationFormat.STATUS, RelationFormat.TAG -> {
+            filter.copy(relationFormat = format)
         }
         else -> filter
     }

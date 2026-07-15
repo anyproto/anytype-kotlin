@@ -19,6 +19,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -27,6 +28,8 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
@@ -1134,5 +1137,92 @@ class ChatContainerTest {
                 actual = paged.messages
             )
         }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should not refetch a reply target the middleware never returns`() = runTest {
+
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val deletedTarget = "deleted-quoted-message-id"
+        val otherTarget = "other-quoted-message-id"
+
+        // A message quoting a target the middleware can never return (already deleted).
+        val quotingDeleted = StubChatMessage(
+            order = "A",
+            content = StubChatMessageContent(text = "replying to a deleted message")
+        ).copy(replyToMessageId = deletedTarget)
+
+        // A later message quoting a different (also unresolvable) target, whose arrival
+        // changes the tracked reply set and re-runs the fetch step.
+        val quotingOther = StubChatMessage(
+            order = "B",
+            content = StubChatMessageContent(text = "replying to another message")
+        ).copy(replyToMessageId = otherTarget)
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = listOf(quotingDeleted),
+                messageCountBefore = 0
+            )
+            onBlocking {
+                getChatMessagesByIds(any())
+            } doReturn emptyList()
+        }
+
+        channel.stub {
+            on {
+                observe(chat = givenChatID)
+            } doReturn flow {
+                delay(300)
+                emit(
+                    listOf(
+                        Event.Command.Chats.Add(
+                            context = givenChatID,
+                            message = quotingOther,
+                            id = quotingOther.id,
+                            order = quotingOther.order,
+                            spaceId = SpaceId(MockDataFactory.randomUuid())
+                        )
+                    )
+                )
+            }
+        }
+
+        val watchJob = launch {
+            container.watchWhileTrackingAttachments(givenChatID).collect { }
+        }
+        val repliesJob = launch {
+            container.fetchReplies(givenChatID).collect { }
+        }
+        advanceUntilIdle()
+
+        val captor = argumentCaptor<Command.ChatCommand.GetMessagesByIds>()
+        verify(repo, atLeastOnce()).getChatMessagesByIds(captor.capture())
+        val fetchesOfDeletedTarget = captor.allValues.count { command ->
+            command.messages.contains(deletedTarget)
+        }
+        assertEquals(
+            expected = 1,
+            actual = fetchesOfDeletedTarget,
+            message = "A reply target the middleware never returns must be fetched at most once, " +
+                "not on every emission (fetched $fetchesOfDeletedTarget times)"
+        )
+
+        watchJob.cancel()
+        repliesJob.cancel()
     }
 }

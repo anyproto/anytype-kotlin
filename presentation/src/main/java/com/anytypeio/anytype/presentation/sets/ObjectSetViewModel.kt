@@ -915,6 +915,9 @@ class ObjectSetViewModel(
      */
     private fun subscribeToBoardGroups() {
         jobs += viewModelScope.launch {
+            // Wait for the previous stop's backend unsubscribe (same subscription id) before
+            // issuing any new subscribe request — see [unsubscribeJob].
+            unsubscribeJob?.join()
             combine(stateReducer.state, session.currentViewerId, isKanbanEnabled) { state, currentViewId, kanbanEnabled ->
                 val dataView = state.dataViewState()
                 val viewer = dataView?.viewerByIdOrFirst(currentViewId)
@@ -994,6 +997,9 @@ class ObjectSetViewModel(
      */
     private fun subscribeToBoardRecords() {
         jobs += viewModelScope.launch {
+            // Wait for the previous stop's backend unsubscribe (same subscription ids) before
+            // issuing any new subscribe request — see [unsubscribeJob].
+            unsubscribeJob?.join()
             combine(stateReducer.state, session.currentViewerId, boardGroups, isKanbanEnabled) { state, currentViewId, groups, kanbanEnabled ->
                 val dataView = state.dataViewState()
                 val viewer = dataView?.viewerByIdOrFirst(currentViewId)
@@ -1103,6 +1109,9 @@ class ObjectSetViewModel(
      */
     private fun subscribeToBoardGroupOptions() {
         jobs += viewModelScope.launch {
+            // Wait for the previous stop's backend unsubscribe (same subscription id) before
+            // issuing any new subscribe request — see [unsubscribeJob].
+            unsubscribeJob?.join()
             combine(stateReducer.state, session.currentViewerId, isKanbanEnabled) { state, currentViewId, kanbanEnabled ->
                 val viewer = state.dataViewState()?.viewerByIdOrFirst(currentViewId)
                 if (kanbanEnabled && viewer?.type == DVViewerType.BOARD) {
@@ -1153,6 +1162,9 @@ class ObjectSetViewModel(
      */
     private fun subscribeToDataViewRelationOptions() {
         jobs += viewModelScope.launch {
+            // Wait for the previous stop's backend unsubscribe (same subscription id) before
+            // issuing any new subscribe request — see [unsubscribeJob].
+            unsubscribeJob?.join()
             // Also re-evaluate on relation-store changes: resolving a link's format below needs the
             // relation object, which may arrive only after the last state emission on cold start.
             combine(

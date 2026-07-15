@@ -143,9 +143,12 @@ open class ObjectSearchViewModel(
         jobs += viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 appliedQuery.value = query
-                // Keep previous results visible while a new search is in flight,
-                // so lists are diffed in place instead of being replaced by a spinner.
-                if (objects.value !is Resultat.Success) {
+                // Keep previous results visible while a new search is in flight, so
+                // lists are diffed in place instead of being replaced by a spinner —
+                // but only when there is something to keep visible: a retained EMPTY
+                // success would re-resolve as a false "no results" for the new query.
+                val current = objects.value
+                if (current !is Resultat.Success || current.value.isEmpty()) {
                     objects.emit(Resultat.Loading())
                 }
                 val params = getSearchObjectsParams(ignore).copy(fulltext = query)

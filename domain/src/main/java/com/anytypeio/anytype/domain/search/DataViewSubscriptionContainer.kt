@@ -63,10 +63,9 @@ class DataViewSubscriptionContainer(
                 // the rest of the event pipeline (see MiddlewareSubscriptionEventChannel).
                 val pending = Channel<List<SubscriptionEvent>>(capacity = Channel.UNLIMITED)
                 // UNDISPATCHED: register the collector before this coroutine proceeds to the
-                // search RPC. Note the guarantee is still probabilistic, not strict: the
-                // channel's per-subscriber buffer (MiddlewareSubscriptionEventChannel) adds one
-                // dispatch hop before the shared-flow slot is registered — a window of one
-                // dispatch vs. a full middleware round-trip.
+                // search RPC. MiddlewareSubscriptionEventChannel's per-subscriber buffer
+                // also subscribes undispatched, so the shared-flow slot is registered
+                // synchronously here and no event emitted after this launch is missed.
                 launch(start = CoroutineStart.UNDISPATCHED) {
                     try {
                         subscribe(listOf(params.subscription)).collect { pending.send(it) }

@@ -20,7 +20,6 @@ import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import timber.log.Timber
@@ -39,8 +38,6 @@ class DateProviderImpl @Inject constructor(
     private val formatterCache = object : ThreadLocal<MutableMap<String, SimpleDateFormat>>() {
         override fun initialValue(): MutableMap<String, SimpleDateFormat> = mutableMapOf()
     }
-
-    private val timePatternCache = ConcurrentHashMap<String, String>()
 
     private fun cachedFormatter(pattern: String, locale: Locale): SimpleDateFormat {
         val cache = requireNotNull(formatterCache.get())
@@ -305,15 +302,18 @@ class DateProviderImpl @Inject constructor(
 
         return when (dateType) {
             DateType.TODAY -> {
-                // Show time for today's messages (e.g., "18:32")
+                // Show time for today's messages (e.g., "18:32"). The pattern is
+                // deliberately re-resolved per call, NOT cached: on Android,
+                // getTimeInstance reflects the system 12/24-hour preference, which the
+                // user can toggle at runtime without a locale change. The expensive
+                // part (SimpleDateFormat construction) is still cached per pattern in
+                // [cachedFormatter].
                 val locale = localeProvider.locale()
-                val timePattern = timePatternCache.getOrPut("${DateFormat.SHORT}|$locale") {
-                    val df = DateFormat.getTimeInstance(DateFormat.SHORT, locale)
-                    if (df is SimpleDateFormat) {
-                        df.toPattern()
-                    } else {
-                        "HH:mm"
-                    }
+                val df = DateFormat.getTimeInstance(DateFormat.SHORT, locale)
+                val timePattern = if (df is SimpleDateFormat) {
+                    df.toPattern()
+                } else {
+                    "HH:mm"
                 }
                 formatToDateString(timestamp, timePattern)
             }

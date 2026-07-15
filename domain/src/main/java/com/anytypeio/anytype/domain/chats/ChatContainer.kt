@@ -57,6 +57,15 @@ class ChatContainer @Inject constructor(
     private val replyMessageCache = ConcurrentHashMap<Id, Chat.Message>()
     private val replyCacheInvalidations = MutableStateFlow(0L)
 
+    /**
+     * Reply-target ids the middleware is known not to return (e.g. quoted messages
+     * deleted before they were cached). Without this negative cache, such ids would
+     * stay "missing" forever and [fetchReplies] would re-issue a GetMessagesByIds
+     * round-trip for them on every emission. Pruned alongside [replyMessageCache]
+     * to the currently tracked ids.
+     */
+    private val knownMissingReplyTargets = ConcurrentHashMap.newKeySet<Id>()
+
     @OptIn(ExperimentalCoroutinesApi::class)
     fun subscribeToAttachments(chat: Id, space: Space) : Flow<Map<Id, ObjectWrapper.Basic>> {
         return attachments
@@ -108,19 +117,29 @@ class ChatContainer @Inject constructor(
         // bumps [replyCacheInvalidations] to trigger a re-emission of the map.
         return combine(replies, replyCacheInvalidations) { ids, _ -> ids }
             .map { ids ->
-                val missing = ids.filter { id -> !replyMessageCache.containsKey(id) }
+                val missing = ids.filter { id ->
+                    !replyMessageCache.containsKey(id) && id !in knownMissingReplyTargets
+                }
                 if (missing.isNotEmpty()) {
-                    repo.getChatMessagesByIds(
+                    val fetched = repo.getChatMessagesByIds(
                         command = Command.ChatCommand.GetMessagesByIds(
                             chat = chat,
                             messages = missing
                         )
-                    ).forEach { msg ->
+                    )
+                    fetched.forEach { msg ->
                         replyMessageCache[msg.id] = msg
+                    }
+                    // Ids the middleware did not return can never resolve: tombstone
+                    // them so they are not re-requested on every subsequent emission.
+                    val returned = fetched.mapTo(mutableSetOf()) { it.id }
+                    missing.forEach { id ->
+                        if (id !in returned) knownMissingReplyTargets.add(id)
                     }
                 }
                 // Drop replies which are no longer tracked by the current window.
                 replyMessageCache.keys.retainAll(ids)
+                knownMissingReplyTargets.retainAll(ids)
                 replyMessageCache.toMap()
             }
             .distinctUntilChanged()
@@ -182,6 +201,21 @@ class ChatContainer @Inject constructor(
             scope.launch(start = CoroutineStart.UNDISPATCHED) {
                 channel.observe(chat).collect { events ->
                     bufferedEvents.send(events)
+                }
+            }
+
+            // Read receipts are side effects that must not block the event fold, but
+            // firing one coroutine per visible-range change floods the middleware with
+            // overlapping round-trips while the user scrolls. A CONFLATED channel
+            // drained by a single worker keeps only the newest range and at most one
+            // in-flight round-trip.
+            val visibleRangeReads = Channel<Pair<Chat.State, Chat.Message>>(capacity = Channel.CONFLATED)
+            scope.launch {
+                for ((counterState, bottomVisibleMessage) in visibleRangeReads) {
+                    // Reading messages older than bottomVisibleMessage
+                    readMessagesWithinVisibleRange(counterState, bottomVisibleMessage, chat)
+                    // Reading mentions older than bottomVisibleMessage
+                    readMentionsWithinVisibleRange(counterState, bottomVisibleMessage, chat)
                 }
             }
 
@@ -438,14 +472,10 @@ class ChatContainer @Inject constructor(
                             val counterState = state.state
                             val bottomVisibleMessage = state.messages.find { it.id == transform.from }
                             if (bottomVisibleMessage != null) {
-                                // Fire-and-forget: read receipts are side effects and must not
-                                // block the event fold while the round-trip is in flight.
-                                scope.launch {
-                                    // Reading messages older than bottomVisibleMessage
-                                    readMessagesWithinVisibleRange(counterState, bottomVisibleMessage, chat)
-                                    // Reading mentions older than bottomVisibleMessage
-                                    readMentionsWithinVisibleRange(counterState, bottomVisibleMessage, chat)
-                                }
+                                // Conflated hand-off: never blocks the fold, and rapid
+                                // scroll bursts collapse to the newest range instead of
+                                // one read-receipt round-trip per emission.
+                                visibleRangeReads.trySend(counterState to bottomVisibleMessage)
                             }
                             state
                         }
@@ -733,6 +763,9 @@ class ChatContainer @Inject constructor(
                         // still tracked in [lastMessages] and will enter the window through
                         // contiguous LoadNext paging or a LoadEnd reload of the tail.
                     }
+                    // A (re)added message is fetchable again: clear any tombstone so
+                    // fetchReplies may resolve it as a reply target.
+                    knownMissingReplyTargets.remove(event.message.id)
                     // Tracking the last message in the chat tail
                     cacheLastMessage(event.message)
                 }
@@ -755,7 +788,10 @@ class ChatContainer @Inject constructor(
                     if (index != -1) {
                         messageList.removeAt(index)
                     }
-                    // Drop the reply-preview cache entry when a quoted message is deleted.
+                    // Drop the reply-preview cache entry when a quoted message is deleted,
+                    // and tombstone the id: the middleware can never return it again, so
+                    // fetchReplies must not keep re-requesting it.
+                    knownMissingReplyTargets.add(event.message)
                     if (replyMessageCache.remove(event.message) != null) {
                         replyCacheInvalidations.value++
                     }

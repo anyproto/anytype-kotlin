@@ -433,6 +433,14 @@ private fun BlockView.diffSnapshot(): BlockView = when (this) {
     is BlockView.Title.Archive -> copy()
     is BlockView.Description -> copy()
     is BlockView.Code -> copy()
+    // Table cells embed Text.Paragraph instances that TableEditableCellsAdapter mutates
+    // in place on the main thread, so the nested paragraphs must be copied too.
+    is BlockView.Table -> copy(
+        cells = cells.map { cell ->
+            val block = cell.block
+            if (block != null) cell.copy(block = block.copy()) else cell
+        }
+    )
     // Remaining view types have no in-place-mutable fields: safe to share across threads.
     else -> this
 }

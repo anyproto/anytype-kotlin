@@ -302,6 +302,7 @@ import java.util.regex.Pattern
 import kotlinx.coroutines.Job
 import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMatcher
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.yield
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -510,12 +511,29 @@ class EditorViewModel(
 
     /**
      * Result of one pass of the rendering pipeline. Mode reconciliation is computed
-     * off the main thread but must be applied to [mode] on the main thread only.
+     * on the main thread during the render pass but must be applied to [mode] on the
+     * main thread only, after the render completes. [deferred] carries placeholder/fork
+     * replay actions that must run only after this render's views are published.
      */
     private data class DocumentRenderResult(
         val views: List<BlockView>,
         val previousMode: EditorMode,
-        val reconciledMode: EditorMode
+        val reconciledMode: EditorMode,
+        val deferred: List<() -> Unit> = emptyList()
+    )
+
+    /**
+     * Main-thread-owned inputs of a render pass: reconciled mode plus the block list
+     * and focus after trailing-placeholder and identity-fork resolution. Computed in a
+     * main-dispatcher hop because the underlying state machines are mutated by typing
+     * paths on the main thread.
+     */
+    private data class RenderPrep(
+        val previousMode: EditorMode,
+        val reconciledMode: EditorMode,
+        val models: List<Block>,
+        val focus: Editor.Focus,
+        val deferred: List<() -> Unit>
     )
 
     init {
@@ -859,30 +877,6 @@ class EditorViewModel(
                 val currentObj = objectViewDetails.getObject(vmParams.ctx)
                 val permission = permission.value
                 val root = models.first { it.id == context }
-                // Reconcile the editor mode against lock state and permissions without
-                // mutating [mode] here: this lambda runs on the computation dispatcher,
-                // while [mode] is owned by the main thread. The reconciled value is
-                // applied downstream of flowOn, on the main thread.
-                val previousMode = mode
-                var reconciledMode = previousMode
-                if (previousMode == EditorMode.Locked) {
-                    if (root.fields.isLocked != true) {
-                        reconciledMode = EditorMode.Edit
-                    }
-                } else {
-                    if (root.fields.isLocked == true) {
-                        reconciledMode = EditorMode.Locked
-                    }
-                }
-                if (permission?.isOwnerOrEditor() == true) {
-                    if (reconciledMode == EditorMode.Read) {
-                        reconciledMode = EditorMode.Edit
-                    }
-                } else {
-                    if (reconciledMode == EditorMode.Edit) {
-                        reconciledMode = EditorMode.Read
-                    }
-                }
 
                 val existingDiscussionId = currentObj?.getSingleValue<String>(Relations.DISCUSSION_ID)
                     ?.takeIf { it.isNotEmpty() }
@@ -947,13 +941,49 @@ class EditorViewModel(
                 footers.value = getFooterState(root, currentObj)
                 val flags = mutableListOf<BlockViewRenderer.RenderFlag>()
                 Timber.d("Rendering starting...")
-                val (placeholderModels, placeholderFocus) = resolveTrailingPlaceholder(models, focus)
-                val (renderModels, renderFocus) = resolveIdentityFork(placeholderModels, placeholderFocus)
-                val doc = renderModels.asMap().render(
+                // [mode] and the trailing-placeholder / identity-fork state machines are
+                // owned by the main thread (typing paths mutate them there), so mode
+                // reconciliation and placeholder/fork resolution hop to the main
+                // dispatcher; only the CPU-heavy render below stays on computation.
+                val prep = withContext(dispatchers.main) {
+                    val previousMode = mode
+                    var reconciledMode = previousMode
+                    if (previousMode == EditorMode.Locked) {
+                        if (root.fields.isLocked != true) {
+                            reconciledMode = EditorMode.Edit
+                        }
+                    } else {
+                        if (root.fields.isLocked == true) {
+                            reconciledMode = EditorMode.Locked
+                        }
+                    }
+                    if (permission?.isOwnerOrEditor() == true) {
+                        if (reconciledMode == EditorMode.Read) {
+                            reconciledMode = EditorMode.Edit
+                        }
+                    } else {
+                        if (reconciledMode == EditorMode.Edit) {
+                            reconciledMode = EditorMode.Read
+                        }
+                    }
+                    val deferred = mutableListOf<() -> Unit>()
+                    val (placeholderModels, placeholderFocus) =
+                        resolveTrailingPlaceholder(models, focus, deferred)
+                    val (renderModels, renderFocus) =
+                        resolveIdentityFork(placeholderModels, placeholderFocus, deferred)
+                    RenderPrep(
+                        previousMode = previousMode,
+                        reconciledMode = reconciledMode,
+                        models = renderModels,
+                        focus = renderFocus,
+                        deferred = deferred
+                    )
+                }
+                val doc = prep.models.asMap().render(
                     context = context,
-                    mode = reconciledMode,
-                    root = renderModels.first { it.id == context },
-                    focus = renderFocus,
+                    mode = prep.reconciledMode,
+                    root = prep.models.first { it.id == context },
+                    focus = prep.focus,
                     anchor = context,
                     indent = INITIAL_INDENT,
                     details = objectViewDetails,
@@ -969,8 +999,9 @@ class EditorViewModel(
                 }
                 DocumentRenderResult(
                     views = rendered,
-                    previousMode = previousMode,
-                    reconciledMode = reconciledMode
+                    previousMode = prep.previousMode,
+                    reconciledMode = prep.reconciledMode,
+                    deferred = prep.deferred
                 )
             }
             // Rendering is CPU-heavy: run everything above off the main thread.
@@ -982,16 +1013,27 @@ class EditorViewModel(
             .onEach { result ->
                 // Apply the reconciled mode on the main thread only, and only if the
                 // user has not changed the mode while this render was in flight.
-                if (result.reconciledMode != result.previousMode && mode == result.previousMode) {
-                    mode = result.reconciledMode
-                    if (result.reconciledMode == EditorMode.Locked) {
-                        sendToast("Your object is locked")
-                    } else if (result.previousMode == EditorMode.Locked) {
-                        sendToast("Your object is unlocked")
+                if (result.reconciledMode != result.previousMode) {
+                    if (mode == result.previousMode) {
+                        mode = result.reconciledMode
+                        if (result.reconciledMode == EditorMode.Locked) {
+                            sendToast("Your object is locked")
+                        } else if (result.previousMode == EditorMode.Locked) {
+                            sendToast("Your object is unlocked")
+                        }
+                    } else {
+                        // The mode changed while this render was in flight, so the views
+                        // below were rendered under a stale reconciliation. Re-render so
+                        // the reconciliation is recomputed against the current mode
+                        // instead of leaving [mode] and the rendered document divergent.
+                        viewModelScope.launch { refresh() }
                     }
                 }
                 orchestrator.stores.views.update(result.views)
                 renderCommand.send(Unit)
+                // Placeholder/fork replays must observe the post-swap views store:
+                // run them only after this render's views have been published.
+                result.deferred.forEach { action -> action.invoke() }
             }
             .onEach {
                 refreshTableToolbar()
@@ -1258,6 +1300,11 @@ class EditorViewModel(
         lastMaterializedTrailingBlock = null
         identityFork = null
         lastForkedBlock = null
+
+        // Re-fetch the discussion comment count once per screen entry: the count can
+        // change while the editor is stopped (e.g. comments posted in the discussion
+        // screen), and the render pipeline only fetches when this id changes.
+        lastFetchedDiscussionId = null
 
         stateData.postValue(ViewState.Loading)
 
@@ -3783,7 +3830,8 @@ class EditorViewModel(
      */
     private suspend fun resolveTrailingPlaceholder(
         models: List<Block>,
-        focus: Editor.Focus
+        focus: Editor.Focus,
+        deferred: MutableList<() -> Unit>
     ): Pair<List<Block>, Editor.Focus> {
         val state = trailingPlaceholder ?: return models to focus
         val materialized = state.materialized
@@ -3865,13 +3913,9 @@ class EditorViewModel(
         }
         if (state.onMaterialized.isNotEmpty()) {
             val actions = state.onMaterialized.toList()
-            viewModelScope.launch {
-                // This mapping runs on Main.immediate, so an immediate launch would
-                // execute before the pipeline stores this render's views. Yield past
-                // it: replays must observe the post-swap views store.
-                yield()
-                actions.forEach { action -> action(materialized) }
-            }
+            // Replays must observe the post-swap views store: the pipeline runs them
+            // in its main-thread apply phase, after views.update for this render.
+            deferred += { actions.forEach { action -> action(materialized) } }
         }
         return result to effectiveFocus
     }
@@ -4178,7 +4222,8 @@ class EditorViewModel(
      */
     private suspend fun resolveIdentityFork(
         models: List<Block>,
-        focus: Editor.Focus
+        focus: Editor.Focus,
+        deferred: MutableList<() -> Unit>
     ): Pair<List<Block>, Editor.Focus> {
         val state = identityFork ?: return models to focus
         val forked = state.forked
@@ -4252,12 +4297,9 @@ class EditorViewModel(
         }
         if (state.onForked.isNotEmpty()) {
             val actions = state.onForked.toList()
-            viewModelScope.launch {
-                // Replays must observe the post-swap views store — yield past the
-                // pipeline's views.update (this mapping runs on Main.immediate).
-                yield()
-                actions.forEach { action -> action(forked) }
-            }
+            // Replays must observe the post-swap views store: the pipeline runs them
+            // in its main-thread apply phase, after views.update for this render.
+            deferred += { actions.forEach { action -> action(forked) } }
         }
         return result to effectiveFocus
     }

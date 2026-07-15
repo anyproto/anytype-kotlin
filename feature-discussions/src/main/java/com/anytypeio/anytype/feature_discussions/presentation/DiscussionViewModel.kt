@@ -45,6 +45,7 @@ import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -141,7 +142,16 @@ class DiscussionViewModel @Inject constructor(
             // Serialize against a previous instance's detached cleanup for the same
             // chat: await its unsubscribe before issuing our own subscribe RPCs, so a
             // late unsubscribe cannot kill the fresh subscriptions (close→reopen race).
-            pendingCleanups[vmParams.ctx]?.join()
+            // The wait is bounded: the cleanup's unsubscribe is a blocking JNI call with
+            // no timeout of its own, and a wedged middleware must degrade to the plain
+            // close→reopen race instead of freezing this screen on an eternal loader.
+            val cleanupFinished = withTimeoutOrNull(CLEANUP_JOIN_TIMEOUT_MS) {
+                pendingCleanups[vmParams.ctx]?.join()
+                true
+            } ?: false
+            if (!cleanupFinished) {
+                Timber.w("Previous cleanup for chat ${vmParams.ctx} did not finish in time; proceeding")
+            }
 
             getAccount
                 .async(Unit)
@@ -1191,6 +1201,11 @@ class DiscussionViewModel @Inject constructor(
         //   await before subscribing (close→reopen race).
         private val activeWatchers = ConcurrentHashMap<Id, Int>()
         private val pendingCleanups = ConcurrentHashMap<Id, Job>()
+
+        // Upper bound on waiting for a previous instance's cleanup: its unsubscribe is
+        // a blocking JNI call with no timeout, and a wedged middleware must not freeze
+        // a reopened discussion on an eternal loader.
+        private const val CLEANUP_JOIN_TIMEOUT_MS = 5_000L
 
         private val BLOCK_LINK_KEYS = listOf(
             Relations.ID,

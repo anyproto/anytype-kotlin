@@ -8,10 +8,14 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
+import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.presentation.objects.files
+import com.anytypeio.anytype.presentation.objects.statuses
+import com.anytypeio.anytype.presentation.objects.tags
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
@@ -22,6 +26,7 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
 class ObjectWrapperExtensionsKtTest {
@@ -226,6 +231,117 @@ class ObjectWrapperExtensionsKtTest {
         assertNull(result.layout)
         assertNull(resultType.layout)
     }
+
+    // region DROID-4545 — Gallery/List single-value Status/Tag must resolve the option, not the host
+
+    @Test
+    fun `statuses resolves a single-Id value to the option and not the host object`() = runTest {
+        val statusKey = "status"
+        val optionId = "opt-in-progress"
+        val hostId = "host-1"
+
+        val option = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to optionId,
+                Relations.NAME to "In progress",
+                Relations.RELATION_OPTION_COLOR to "red"
+            )
+        )
+        val host = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to hostId,
+                Relations.NAME to "Ao Ashi",
+                statusKey to optionId // single Id, NOT a list
+            )
+        )
+
+        val store = mock<ObjectStore>()
+        store.stub {
+            onBlocking { get(optionId) } doReturn option
+            onBlocking { get(hostId) } doReturn host
+        }
+
+        val result = host.statuses(relation = statusKey, storeOfObjects = store)
+
+        assertEquals(1, result.size)
+        assertEquals(optionId, result.first().id)
+        assertEquals("In progress", result.first().status)
+        assertEquals("red", result.first().color)
+    }
+
+    @Test
+    fun `tags resolves a single-Id value to the option and not the host object`() = runTest {
+        val tagKey = "tag"
+        val optionId = "opt-drama"
+        val hostId = "host-2"
+
+        val option = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to optionId,
+                Relations.NAME to "Drama",
+                Relations.RELATION_OPTION_COLOR to "blue"
+            )
+        )
+        val host = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to hostId,
+                Relations.NAME to "Firefly Wedding",
+                tagKey to optionId // single Id, NOT a list
+            )
+        )
+
+        val store = mock<ObjectStore>()
+        store.stub {
+            onBlocking { get(optionId) } doReturn option
+            onBlocking { get(hostId) } doReturn host
+        }
+
+        val result = host.tags(relation = tagKey, storeOfObjects = store)
+
+        assertEquals(1, result.size)
+        assertEquals(optionId, result.first().id)
+        assertEquals("Drama", result.first().tag)
+        assertEquals("blue", result.first().color)
+    }
+
+    @Test
+    fun `files resolves a single-Id value to the file object and not the host object`() = runTest {
+        val fileKey = "attachment"
+        val fileId = "file-1"
+        val hostId = "host-3"
+
+        val file = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to fileId,
+                Relations.NAME to "cover",
+                Relations.FILE_MIME_TYPE to "image/png",
+                Relations.FILE_EXT to "png"
+            )
+        )
+        val host = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to hostId,
+                Relations.NAME to "Behind the Supermarket",
+                fileKey to fileId // single Id, NOT a list
+            )
+        )
+
+        val store = mock<ObjectStore>()
+        store.stub {
+            onBlocking { get(fileId) } doReturn file
+            onBlocking { get(hostId) } doReturn host
+        }
+
+        val result = host.files(relation = fileKey, storeOfObjects = store)
+
+        assertEquals(1, result.size)
+        assertEquals(fileId, result.first().id)
+        assertEquals("cover", result.first().name)
+        assertEquals("image/png", result.first().mime)
+        assertEquals("png", result.first().ext)
+    }
+
+    // endregion
 
     fun stubUrlBuilder(targetObjectId: String) {
         urlBuilder.stub {

@@ -364,6 +364,113 @@ class ObjectSetTypeSetTagOptionsTest : ObjectSetViewModelTestSetup() {
             )
         }
 
+    @Test
+    fun `collection should merge status relation options into the store via a dedicated subscription`() =
+        runTest {
+            // SETUP — a Collection (DROID-4545). A Status property is visible and lives in the
+            // data view's relationLinks, but its option object is NOT delivered as a record
+            // subscription dependency, so the Status cell would render empty ("takes up space"
+            // but blank) without the dedicated options subscription. The store-merge under test
+            // is viewer-agnostic (it feeds Grid, Gallery and List alike), so we assert it on the
+            // default Grid viewer like the sibling Set/TypeSet cases.
+            val statusRelation = StubRelationObject(
+                key = "status-${RandomString.make()}",
+                isReadOnlyValue = false,
+                format = Relation.Format.STATUS
+            )
+            val statusRelationLink = StubRelationLink(statusRelation.key, Relation.Format.STATUS)
+            val statusOption = StubRelationOptionObject(
+                id = "opt-${RandomString.make()}",
+                space = defaultSpace,
+                text = "In progress",
+                color = "red"
+            )
+
+            val title = StubTitle(id = "title-${RandomString.make()}")
+            val header = StubHeader(id = "header-${RandomString.make()}", children = listOf(title.id))
+
+            val viewer = StubDataViewView(
+                id = "viewer-${RandomString.make()}",
+                viewerRelations = listOf(
+                    StubDataViewViewRelation(key = nameRelation.key, isVisible = true),
+                    StubDataViewViewRelation(key = statusRelation.key, isVisible = true)
+                )
+            )
+
+            val dataView = StubDataView(
+                id = "dv-${RandomString.make()}",
+                views = listOf(viewer),
+                relationLinks = listOf(nameRelationLink, createdDateRelationLink, statusRelationLink),
+                isCollection = true
+            )
+
+            val details = ObjectViewDetails(
+                details = mapOf(
+                    root to mapOf(
+                        Relations.ID to root,
+                        Relations.SPACE_ID to defaultSpace,
+                        Relations.LAYOUT to ObjectType.Layout.COLLECTION.code.toDouble()
+                    )
+                )
+            )
+
+            storeOfRelations.merge(listOf(statusRelation, nameRelation, createdDateRelation))
+
+            val record = ObjectWrapper.Basic(
+                mapOf(
+                    Relations.ID to "record-${RandomString.make()}",
+                    Relations.SPACE_ID to defaultSpace,
+                    statusRelation.key to listOf(statusOption.id)
+                )
+            )
+
+            stubSpaceManager(defaultSpace)
+            stubInterceptEvents()
+            stubInterceptThreadStatus()
+            stubOpenObject(doc = listOf(header, title, dataView), details = details)
+            // Collection subscription (collection = ctx, no sources); the option is NOT a dependency.
+            stubSubscriptionResults(
+                subscription = subscriptionId,
+                spaceId = defaultSpace,
+                collection = root,
+                objects = listOf(record),
+                dependencies = emptyList(),
+                keys = listOf(statusRelation.key),
+                sources = emptyList(),
+                dvSorts = listOf(
+                    DVSort(
+                        relationKey = Relations.CREATED_DATE,
+                        type = Block.Content.DataView.Sort.Type.DESC,
+                        relationFormat = RelationFormat.DATE,
+                        includeTime = true
+                    )
+                ),
+                dvRelationLinks = listOf(nameRelationLink, createdDateRelationLink, statusRelationLink)
+            )
+            stubTemplatesForTemplatesContainer()
+            stubSetDataViewProperties()
+
+            // The dedicated options subscription returns the status option.
+            storelessSubscriptionContainer.stub {
+                on {
+                    subscribe(argThat<StoreSearchParams> { subscription == optionsSubscriptionId })
+                } doReturn flowOf(listOf(ObjectWrapper.Basic(statusOption.map)))
+            }
+
+            viewModel = givenViewModel()
+
+            // TESTING
+            viewModel.onStart()
+            advanceUntilIdle()
+
+            // VERIFY — the option object reaches the shared store so a Collection's Status cell
+            // can resolve the chip's name + color. Fails if the options merge is skipped for Collections.
+            val stored = objectStore.get(statusOption.id)
+            assertNotNull(stored, "Status option should be present in the object store for a Collection")
+            assertEquals("In progress", stored.name)
+            assertEquals("red", ObjectWrapper.Option(stored.map).color)
+        }
+
     private fun stubSetDataViewProperties() {
         setDataViewProperties.stub {
             onBlocking { async(any()) }.thenReturn(Resultat.success(Payload("", emptyList())))

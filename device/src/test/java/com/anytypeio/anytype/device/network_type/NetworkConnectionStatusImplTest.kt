@@ -8,9 +8,12 @@ import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -24,6 +27,7 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.any
 import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
@@ -358,6 +362,44 @@ class NetworkConnectionStatusImplTest {
         }
 
     @Test
+    fun `an in-flight RPC from a stopped session completes before the next session's reports`() =
+        runTest(dispatcher.scheduler) {
+            // Cancellation is cooperative and the real RPC is a blocking JNI call
+            // with no suspension points: a consumer stopped mid-call keeps running
+            // until the call returns. Its stale report must not complete after the
+            // next session's baseline -- heart trusts the last value it hears.
+            val gate = CompletableDeferred<Unit>()
+            val completions = mutableListOf<DeviceNetworkType>()
+            repo.stub {
+                onBlocking { setDeviceNetworkState(any(), any()) } doSuspendableAnswer { invocation ->
+                    val type = invocation.getArgument<DeviceNetworkType>(0)
+                    if (type == DeviceNetworkType.WIFI) {
+                        // Simulates the wedged JNI call: survives cancellation.
+                        withContext(NonCancellable) { gate.await() }
+                    }
+                    completions += type
+                    Unit
+                }
+            }
+
+            val callback = startDisconnected()
+            advanceUntilIdle() // baseline NOT_CONNECTED delivered
+            callback.onCapabilitiesChanged(network(120), caps(NetworkCapabilities.TRANSPORT_WIFI))
+            advanceUntilIdle() // consumer now wedged inside the WIFI RPC
+
+            subject.stop()
+            disconnectDefaultNetwork()
+            subject.start()
+            advanceUntilIdle() // next session's baseline queued (or wrongly delivered)
+
+            gate.complete(Unit) // the wedged call finally returns
+            advanceUntilIdle()
+
+            // The stale WIFI report must not be heart's final word for the new session.
+            assertEquals(DeviceNetworkType.NOT_CONNECTED, completions.last())
+        }
+
+    @Test
     fun `getCurrentNetworkType reflects the last callback synchronously`() =
         runTest(dispatcher.scheduler) {
             val callback = startDisconnected()
@@ -373,8 +415,13 @@ class NetworkConnectionStatusImplTest {
 
     @Test
     fun `getCurrentNetworkType queries on demand when not monitoring`() {
-        disconnectDefaultNetwork()
-        assertEquals(DeviceNetworkType.NOT_CONNECTED, subject.getCurrentNetworkType())
+        // WIFI differs from the field's initial NOT_CONNECTED, so this fails if
+        // the not-monitoring branch ever returns the stale cached value.
+        shadowOf(connectivityManager).setNetworkCapabilities(
+            connectivityManager.activeNetwork,
+            caps(NetworkCapabilities.TRANSPORT_WIFI)
+        )
+        assertEquals(DeviceNetworkType.WIFI, subject.getCurrentNetworkType())
     }
 
     @Test

@@ -74,7 +74,20 @@ class NetworkConnectionStatusImpl(
         while (reports.tryReceive().isSuccess) {
             // drop
         }
+        try {
+            connectivityManager?.registerDefaultNetworkCallback(networkCallback)
+            isMonitoring = true
+        } catch (e: RuntimeException) {
+            Timber.w(e, "Failed to register network callback")
+            return
+        }
+        val previous = consumer
         consumer = coroutineScope.launch(dispatchers.io) {
+            // Cancellation is cooperative and the RPC below is a blocking JNI call
+            // with no suspension points: a consumer stopped mid-call keeps running
+            // until the call returns. Wait it out so its report cannot complete
+            // after (and thereby override) this session's.
+            previous?.join()
             for (report in reports) {
                 try {
                     blockRepository.setDeviceNetworkState(report.type, report.networkId)
@@ -84,15 +97,6 @@ class NetworkConnectionStatusImpl(
                     Timber.w(e, "Failed to update network state")
                 }
             }
-        }
-        try {
-            connectivityManager?.registerDefaultNetworkCallback(networkCallback)
-            isMonitoring = true
-        } catch (e: RuntimeException) {
-            Timber.w(e, "Failed to register network callback")
-            consumer?.cancel()
-            consumer = null
-            return
         }
         // No callback fires when there is no default network at launch, so prime
         // heart's baseline explicitly; with a default up this is a cheap duplicate
@@ -108,8 +112,10 @@ class NetworkConnectionStatusImpl(
             Timber.w(e, "Failed to unregister network callback")
         } finally {
             isMonitoring = false
+            // Cancel but keep the reference: the next start()'s consumer joins it,
+            // so an RPC in flight right now cannot complete after -- and thereby
+            // override -- the next session's reports.
             consumer?.cancel()
-            consumer = null
         }
     }
 

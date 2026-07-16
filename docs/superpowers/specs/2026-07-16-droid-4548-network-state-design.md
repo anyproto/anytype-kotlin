@@ -194,7 +194,16 @@ override fun start() {
     // Discard anything a late callback pushed after the previous session's
     // stop() -- a stale value must not become heart's baseline for this one.
     while (reports.tryReceive().isSuccess) { /* drop */ }
+    try {
+        connectivityManager?.registerDefaultNetworkCallback(networkCallback)
+        isMonitoring = true
+    } catch (e: RuntimeException) {
+        Timber.w(e, "Failed to register network callback")
+        return   // consumer chain untouched -- nothing was launched
+    }
+    val previous = consumer
     consumer = coroutineScope.launch(dispatchers.io) {
+        previous?.join()   // see the join bullet below
         for (r in reports) {
             try {
                 blockRepository.setDeviceNetworkState(r.type, r.networkId)
@@ -202,14 +211,6 @@ override fun start() {
                 Timber.w(e, "Failed to update network state")   // per-report; must not kill the loop
             }
         }
-    }
-    try {
-        connectivityManager?.registerDefaultNetworkCallback(networkCallback)
-        isMonitoring = true
-    } catch (e: RuntimeException) {
-        Timber.w(e, "Failed to register network callback")
-        consumer?.cancel(); consumer = null
-        return
     }
     reportCurrent()
 }
@@ -222,7 +223,8 @@ override fun stop() {
         Timber.w(e, "Failed to unregister network callback")
     } finally {
         isMonitoring = false
-        consumer?.cancel(); consumer = null
+        // Cancel but KEEP the reference: the next start()'s consumer joins it.
+        consumer?.cancel()
     }
 }
 ```
@@ -236,7 +238,8 @@ Properties:
 - **Never closed**, so `start()`/`stop()` can cycle across login→logout→login. Nothing accumulates while stopped, because the callback is unregistered and `reportCurrent()` only runs from `start()`.
 - **Callbacks never block.** `trySend` on an `UNLIMITED` channel never suspends and never fails-on-full, so ConnectivityManager's thread is never held.
 - **No conflation** — contract-compliant.
-- The drain in `stop()` discards reports from the ended session so a stale value cannot become heart's *baseline* (`first`) after the next login.
+- The drain at the top of `start()` discards reports from the ended session so a stale value cannot become heart's *baseline* (`first`) after the next login.
+- The consumer `join()`s its predecessor before processing: cancellation is cooperative and the RPC chain has no suspension points, so a consumer stopped mid-JNI-call keeps running until the call returns — without the join, its stale report could complete *after* the next session's baseline and become heart's final word.
 
 ## 4. Data flow
 
@@ -255,7 +258,7 @@ onCapabilitiesChanged(net, caps)        [CM thread, serialized]
 
 - **Per-report `try/catch` inside the loop.** This is load-bearing: a throw inside `for (r in reports)` terminates the loop and silently disables network reporting for the rest of the session. The current code's catch is per-`launch`, so this hazard is introduced by the channel refactor and must not be missed.
 - `trySend` failure is impossible for `UNLIMITED`/open; the return is ignored deliberately.
-- Registration failure leaves `isMonitoring = false` and cancels the consumer, matching current behaviour.
+- Registration happens *before* the consumer is launched: a registration failure returns early with `isMonitoring = false` and the consumer chain untouched, so a predecessor still draining is unaffected.
 - `getNetworkCapabilities` throwing is caught in `activeNetworkAndCaps()` → treated as no network.
 
 ## 6. Testing

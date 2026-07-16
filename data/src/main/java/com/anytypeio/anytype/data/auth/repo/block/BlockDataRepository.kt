@@ -1254,8 +1254,8 @@ class BlockDataRepository(
         return remote.objectDateByTimestamp(command)
     }
 
-    override suspend fun setDeviceNetworkState(type: DeviceNetworkType) {
-        remote.setDeviceNetworkState(type)
+    override suspend fun setDeviceNetworkState(type: DeviceNetworkType, networkId: String) {
+        remote.setDeviceNetworkState(type, networkId)
     }
 
     override suspend fun setAppState(state: AppState) {

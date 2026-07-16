@@ -8922,6 +8922,12 @@ message Rpc {
             message Set {
                 message Request {
                     anytype.model.DeviceNetworkType deviceNetworkType = 1;
+                    // opaque identity of the current network path as reported by the OS
+                    // (iOS: NWPath interfaces/gateway digest; Android: Network#getNetworkHandle()).
+                    // When it changes while the type stays the same (Wi-Fi to Wi-Fi switch,
+                    // cellular re-attach) the middleware still resets connections and re-syncs.
+                    // Optional: empty means unknown, only type transitions are used then.
+                    string networkId = 2;
                 }
                 message Response {
                     Error error = 2;

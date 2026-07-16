@@ -494,7 +494,8 @@ interface BlockRepository {
     suspend fun generateSpaceInviteLink(
         space: SpaceId,
         inviteType: InviteType?,
-        permissions: SpaceMemberPermissions?
+        permissions: SpaceMemberPermissions?,
+        shareWithinSpace: Boolean = false
     ): SpaceInviteLink
     suspend fun revokeSpaceInviteLink(space: SpaceId)
     suspend fun approveSpaceRequest(

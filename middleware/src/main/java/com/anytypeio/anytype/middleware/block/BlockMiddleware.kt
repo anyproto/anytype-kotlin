@@ -966,12 +966,14 @@ class BlockMiddleware(
     override suspend fun generateSpaceInviteLink(
         space: SpaceId,
         inviteType: InviteType?,
-        permissions: SpaceMemberPermissions?
+        permissions: SpaceMemberPermissions?,
+        shareWithinSpace: Boolean
     ): SpaceInviteLink {
         return middleware.generateSpaceInviteLink(
             space = space,
             inviteType = inviteType,
-            permissions = permissions
+            permissions = permissions,
+            shareWithinSpace = shareWithinSpace
         )
     }
 

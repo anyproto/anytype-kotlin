@@ -18,13 +18,15 @@ class GenerateSpaceInviteLink @Inject constructor(
         return repo.generateSpaceInviteLink(
             space = params.space,
             inviteType = params.inviteType,
-            permissions = params.permissions
+            permissions = params.permissions,
+            shareWithinSpace = params.shareWithinSpace
         )
     }
 
     data class Params(
         val space: SpaceId,
         val inviteType: InviteType?,
-        val permissions: SpaceMemberPermissions?
+        val permissions: SpaceMemberPermissions?,
+        val shareWithinSpace: Boolean = false
     )
 }

@@ -97,6 +97,12 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
                     is MultiplayerError.Generic.NoSuchSpace -> {
                         toast(resources.getString(R.string.share_space_error_no_such_space))
                     }
+                    is MultiplayerError.Generic.InviteAlreadyShared -> {
+                        toast(resources.getString(R.string.share_space_error_invite_already_shared))
+                    }
+                    is MultiplayerError.Generic.InviteNotShareable -> {
+                        toast(resources.getString(R.string.share_space_error_invite_not_shareable))
+                    }
                 }
             }
         }

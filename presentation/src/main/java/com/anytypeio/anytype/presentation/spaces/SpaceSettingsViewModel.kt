@@ -533,7 +533,10 @@ class SpaceSettingsViewModel(
                                 )
                             }
 
-                            is SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                            is SpaceInviteLinkAccessLevel.LinkDisabled,
+                            is SpaceInviteLinkAccessLevel.HeldByOwner -> {
+                                // Held-by-owner: the invite exists, but this member's
+                                // device has no link to show — same as no link here.
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
                                     Members(

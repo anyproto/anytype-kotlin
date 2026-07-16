@@ -2427,7 +2427,8 @@ class ChatViewModel @Inject constructor(
             is SpaceInviteLinkAccessLevel.EditorAccess -> proceedWithShowingQRCode(inviteLinkState.link)
             is SpaceInviteLinkAccessLevel.RequestAccess -> proceedWithShowingQRCode(inviteLinkState.link)
             is SpaceInviteLinkAccessLevel.ViewerAccess -> proceedWithShowingQRCode(inviteLinkState.link)
-            is SpaceInviteLinkAccessLevel.LinkDisabled -> {
+            is SpaceInviteLinkAccessLevel.LinkDisabled,
+            is SpaceInviteLinkAccessLevel.HeldByOwner -> {
                 Timber.w("Invite link is not ready yet")
                 sendToast("Invite link is not available")
                 return

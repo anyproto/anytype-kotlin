@@ -191,6 +191,9 @@ One `Channel<Report>(UNLIMITED)` lives for the object's lifetime, drained by a c
 ```kotlin
 override fun start() {
     if (isMonitoring) return
+    // Discard anything a late callback pushed after the previous session's
+    // stop() -- a stale value must not become heart's baseline for this one.
+    while (reports.tryReceive().isSuccess) { /* drop */ }
     consumer = coroutineScope.launch(dispatchers.io) {
         for (r in reports) {
             try {
@@ -220,10 +223,13 @@ override fun stop() {
     } finally {
         isMonitoring = false
         consumer?.cancel(); consumer = null
-        while (reports.tryReceive().isSuccess) { /* drop reports from the ended session */ }
     }
 }
 ```
+
+Both `isMonitoring` and `currentNetworkType` are `@Volatile`: written on the caller/callback threads, read by `getCurrentNetworkType()` from arbitrary threads. (The un-synchronized `isMonitoring` was a pre-existing hazard; this change touches the line anyway.)
+
+The stale-report drain lives at the top of `start()`, not in `stop()`: ConnectivityManager delivers callbacks asynchronously, so one can land *after* anything `stop()` does — draining on the next `start()` is the only placement that cannot be raced.
 
 Properties:
 - **FIFO is guaranteed** by the `Channel` contract, not inferred from a dispatcher's implementation.

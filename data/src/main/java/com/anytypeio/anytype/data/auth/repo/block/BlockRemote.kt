@@ -529,7 +529,7 @@ interface BlockRemote {
 
     suspend fun debugAccountSelectTrace(dir: String): String
 
-    suspend fun setDeviceNetworkState(type: DeviceNetworkType)
+    suspend fun setDeviceNetworkState(type: DeviceNetworkType, networkId: String)
     suspend fun setAppState(state: AppState)
 
     suspend fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id>

@@ -3317,9 +3317,10 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun setDeviceNetworkState(type: DeviceNetworkType) {
+    fun setDeviceNetworkState(type: DeviceNetworkType, networkId: String) {
         val request = Rpc.Device.NetworkState.Set.Request(
-            deviceNetworkType = type.mw()
+            deviceNetworkType = type.mw(),
+            networkId = networkId
         )
         //logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.deviceNetworkStateSet(request) }

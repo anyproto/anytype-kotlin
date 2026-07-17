@@ -576,7 +576,7 @@ interface BlockRepository {
 
     suspend fun objectDateByTimestamp(command: Command.ObjectDateByTimestamp): Struct?
 
-    suspend fun setDeviceNetworkState(type: DeviceNetworkType)
+    suspend fun setDeviceNetworkState(type: DeviceNetworkType, networkId: String)
 
     suspend fun setAppState(state: AppState)
 

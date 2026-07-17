@@ -1231,8 +1231,8 @@ class BlockMiddleware(
         return middleware.objectDateByTimestamp(command)
     }
 
-    override suspend fun setDeviceNetworkState(type: DeviceNetworkType) {
-        middleware.setDeviceNetworkState(type)
+    override suspend fun setDeviceNetworkState(type: DeviceNetworkType, networkId: String) {
+        middleware.setDeviceNetworkState(type, networkId)
     }
 
     override suspend fun setAppState(state: AppState) {

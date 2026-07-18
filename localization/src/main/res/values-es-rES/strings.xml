@@ -1329,14 +1329,14 @@
     <string name="multiplayer_change_to_request_confirmation">Quien tenga el enlace tendrá que solicitar acceso para acceder al espacio.</string>
     <string name="multiplayer_invite_link_copied">Enlace de invitación copiado al portapapeles</string>
     <!-- Invite sharing (GO-7222): owner-held invites, share-within-space toggle, link reset -->
-    <string name="multiplayer_invite_share_toggle_title">Everyone in the space can share this invite</string>
-    <string name="multiplayer_invite_share_toggle_locked_hint">To make this invite private again, reset the link.</string>
-    <string name="multiplayer_invite_share_disabled_reason">Anyone with this link joins as an editor, without approval. Only you can share it.</string>
-    <string name="multiplayer_invite_share_confirm_title">Share invite with all members?</string>
-    <string name="multiplayer_invite_share_confirm_description">All space members will be able to see this invite link and share it with anyone. To make it private again, you\'ll need to reset the link.</string>
-    <string name="multiplayer_invite_auto_approval_warning">Anyone who gains access to this invitation link will be able to join this space at any time, until you reset the link.</string>
-    <string name="multiplayer_invite_editor_upgrade_note">Any existing Viewer who gains access to this invitation link can use it to upgrade themselves to Editor.</string>
-    <string name="multiplayer_invite_legacy_unsafe_warning">Every member of this space can see and share this invite link, and anyone who has it joins as an editor without approval. Any existing Viewer can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_share_toggle_title">Cualquier miembro del espacio puede compartir este enlace</string>
+    <string name="multiplayer_invite_share_toggle_locked_hint">Para que la invitación vuelva a ser privada, restablece el enlace.</string>
+    <string name="multiplayer_invite_share_disabled_reason">Quien tenga este enlace accederá como editor sin necesitar tu aprobación. Solo tú puedes compartirlo.</string>
+    <string name="multiplayer_invite_share_confirm_title">¿Compartir invitación con todos los miembros?</string>
+    <string name="multiplayer_invite_share_confirm_description">Cualquier miembro del espacio podrá ver el enlace de esta invitación y enviárselo a otras personas. Para que vuelva a ser privada, tendrás que restablecer el enlace.</string>
+    <string name="multiplayer_invite_auto_approval_warning">Cualquiera que consiga este enlace de invitación podrá acceder a este espacio cuando quiera mientras no restablezcas el enlace.</string>
+    <string name="multiplayer_invite_editor_upgrade_note">Cualquier visitante actual que consiga este enlace de invitación podrá convertirse en editor.</string>
+    <string name="multiplayer_invite_legacy_unsafe_warning">Todos los miembros de este espacio pueden ver este enlace de invitación y compartirlo, y quien lo tenga accederá como editor sin necesitar tu aprobación. Cualquier visitante podría usarlo para convertirse en editor.</string>
     <string name="multiplayer_invite_held_by_owner">The invite link is held by the space owner. Ask them to share it.</string>
     <string name="multiplayer_invite_reset_link">Reset link</string>
     <string name="multiplayer_invite_reset_confirm_title">Reset invite link?</string>

@@ -17,6 +17,8 @@
     <string name="experimental_features">Fitur Percobaan</string>
     <string name="experimental_features_compact_vault">Mode brankas ringkas</string>
     <string name="experimental_features_compact_vault_description">Sembunyikan pratinjau pesan untuk kanal yang sudah dibaca</string>
+    <string name="experimental_features_kanban">Papan Kanban</string>
+    <string name="experimental_features_kanban_description">Aktifkan tata letak Kanban untuk set dan koleksi</string>
     <string name="account">Brankas</string>
     <string name="reset_account">Setel ulang brankas</string>
     <string name="delete_account">Hapus brankas</string>
@@ -24,6 +26,8 @@
     <string name="data">Data</string>
     <string name="mode">Mode</string>
     <string name="log_out">Keluar log</string>
+    <string name="resume_account_failed_title">Tidak bisa mengembalikan sesi</string>
+    <string name="resume_account_failed_message">Your session can\'t be resumed. Logging out will clear local app state; you\'ll need your recovery phrase to sign back in. Do you want to log out?</string>
     <string name="pin_code">Kode PIN</string>
     <string name="access">Akses</string>
     <string name="wallpaper">Latar belakang</string>
@@ -77,11 +81,12 @@
     <string name="space_settings_error_icon">Gagal memperbarui ikon ruang. Silakan coba lagi.</string>
     <string name="manage_sections_title">Manage sections</string>
     <string name="section_unread">Belum dibaca</string>
+    <string name="section_my_favorites">Favoritku</string>
     <string name="section_pinned">Tersemat</string>
     <string name="section_objects">Objek</string>
     <string name="section_recently_edited">Baru disunting</string>
     <string name="section_bin">Bak Sampah</string>
-    <string name="error_loading_sections">Error loading sections</string>
+    <string name="error_loading_sections">Galat memuat bagian</string>
     <string name="data_management">Manajemen data</string>
     <string name="deleted_account_danger_zone_msg">Begitu kamu meminta brankasmu dihapus, kamu punya waktu 30 hari untuk membatalkan permintaan ini. Setelah 30 hari, data brankas terenkripsimu akan dihapus secara permanen dari simpul cadangan, dan kamu tidak akan bisa masuk ke Anytype di perangkat baru.</string>
     <string name="danger_zone">Hapus akun (Hati-hati!)</string>
@@ -197,6 +202,7 @@
     <string name="hint_paste_link">Tempelkan tautan</string>
     <string name="empty_tap_to_create_new_block">Kosong. Sentuh untuk membuat blok baru.</string>
     <string name="untitled">Nirjudul</string>
+    <string name="back_history_channels">Saluran-saluran</string>
     <string name="untitled_set">Kueri tak berjudul</string>
     <string name="untitled_collection">Koleksi tidak berjudul</string>
     <string name="archived">Diarsipkan</string>
@@ -563,6 +569,9 @@
     <string name="type_templates_widget_title">Buat objek</string>
     <string name="view_layout_widget_title">Tata letak</string>
     <string name="view_layout_cover_widget_title">Sampul</string>
+    <string name="view_layout_group_by_widget_title">Kelompokkan berdasarkan</string>
+    <string name="group_by">Kelompokkan berdasarkan</string>
+    <string name="color_columns">Warna kolom</string>
     <string name="blank">Kosong</string>
     <string name="templates_menu_default_for_view">Default for this view</string>
     <string name="templates_menu_edit">Sunting templat</string>
@@ -580,6 +589,13 @@
     <string name="view_grid">Tabel</string>
     <string name="view_gallery">Galeri</string>
     <string name="view_kanban">Kanban</string>
+    <string name="dataview_board_no_objects">Tidak ada objek</string>
+    <string name="dataview_board_no_value">Tak bernilai</string>
+    <string name="dataview_board_checked">Telah diperiksa</string>
+    <string name="dataview_board_unchecked">Belum diperiksa</string>
+    <string name="dataview_board_new_object">Baru</string>
+    <string name="dataview_board_no_group_title">No grouping property</string>
+    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
     <string name="page_cover">Page cover</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Lepas sematan</string>
@@ -865,12 +881,17 @@
     <string name="create_space_space_name">Nama Ruang</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Create Home</string>
-    <string name="homepage_picker_description">Pilih hal yang dilihat anggota ruang ketika mereka membuka kanal. Ini bisa diubah lagi di setelan.</string>
+    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
     <string name="homepage_picker_chat">Obrolan</string>
     <string name="homepage_picker_page">Halaman</string>
     <string name="homepage_picker_collection">Koleksi</string>
-    <string name="homepage_picker_empty">Kosong</string>
-    <string name="homepage_picker_later">Nanti</string>
+    <string name="homepage_picker_continue">Lanjutkan</string>
+    <string name="homepage_picker_not_now">Tidak dulu</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Beranda</string>
+    <string name="space_home_no_home_title">No home</string>
+    <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
+    <string name="widget_menu_change_home">Change Home</string>
     <string name="invite_members_widget_title">Undang Anggota</string>
     <string name="invite_members_widget_description">Undang orang ke kanal ini untuk mulai berkolaborasi.</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
@@ -1084,7 +1105,7 @@
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Ini Kuncimu</string>
-    <string name="onboarding_key_description">Ini pengganti nama pengguna dan kata sandi. Jaga keamanannya — Anda bertanggung jawab penuh atas data Anda. Anda dapat menemukan Kunci ini di pengaturan aplikasi.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Tampilkan Kunciku</string>
     <string name="onboarding_tap_to_reveal">Tunjukkan dan Salin</string>
     <string name="onboarding_key_skip">Lewati</string>
@@ -1105,7 +1126,7 @@
     <string name="onboarding_recovery_phrase_description">Kuncimu berupa frasa pemulihan yang terdiri dari 12 kata acak yang menghasilkan brankasmu dalam perangkat ini.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Siapa punya kunci, dia punya akses</string>
     <string name="onboarding_recovery_phrase_description_2">Siapa pun yang mengetahui kata-kata ini dapat mengakses brankasmu. Saat ini, kamulah satu-satunya orang di dunia yang mengetahuinya.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Tanggung jawab ada padamu</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
     <string name="onboarding_recovery_phrase_description_3">Seluruh kemampuan komputasi di Bumi tidak akan cukup untuk membobol masuk. Jika kamu kehilangan kuncimu, kami tidak bisa mengembalikannya. Simpanlah kunci di tempat aman, seperti manajer kata sandi atau tulislah di kertas.</string>
     <string name="onboarding_recovery_phrase_description_4">Semua sumber daya komputasi di Bumi tidak cukup untuk membobolnya. Jika Anda kehilangannya, maka tidak dapat dipulihkan. Jadi, sembunyikan di tempat yang aman!</string>
     <string name="onboarding_how_to_save_my_phrase">Bagaimana cara menyimpan kunciku?</string>
@@ -1303,6 +1324,20 @@
     <string name="multiplayer_change_to_viewer_confirmation">Siapa pun dengan tautan ini hanya akan dapat melihat konten ruang.</string>
     <string name="multiplayer_change_to_request_confirmation">Siapa pun dengan tautan ini akan perlu meminta akses bergabung ke ruang.</string>
     <string name="multiplayer_invite_link_copied">Tautan undangan disalin ke papan kerani</string>
+    <!-- Invite sharing (GO-7222): owner-held invites, share-within-space toggle, link reset -->
+    <string name="multiplayer_invite_share_toggle_title">Semua orang di ruang ini dapat membagikan undangan ini</string>
+    <string name="multiplayer_invite_share_toggle_locked_hint">Untuk membuat undangan ini pribadi kembali, setel ulang tautan.</string>
+    <string name="multiplayer_invite_share_disabled_reason">Semua orang yang bergabung dengan tautan ini akan langsung menjadi penyunting. Hanya kamu yang bisa membagikannya.</string>
+    <string name="multiplayer_invite_share_confirm_title">Bagikan undangan ke seluruh anggota?</string>
+    <string name="multiplayer_invite_share_confirm_description">Semua anggota ruang akan dapat melihat dan membagikan tautan undangan ini. Untuk menjadikannya pribadi lagi, kamu akan perlu menyetel ulang tautan ini.</string>
+    <string name="multiplayer_invite_auto_approval_warning">Siapa pun dengan akses ke tautan undangan ini dapat bergabung ke ruang ini kapan pun hingga tautan disetel ulang.</string>
+    <string name="multiplayer_invite_editor_upgrade_note">Any existing Viewer who gains access to this invitation link can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_legacy_unsafe_warning">Every member of this space can see and share this invite link, and anyone who has it joins as an editor without approval. Any existing Viewer can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_held_by_owner">The invite link is held by the space owner. Ask them to share it.</string>
+    <string name="multiplayer_invite_reset_link">Reset link</string>
+    <string name="multiplayer_invite_reset_confirm_title">Reset invite link?</string>
+    <string name="multiplayer_invite_reset_confirm_description">The current link stops working for everyone who has it, including the people you meant to invite. A new link is created in its place.</string>
+    <string name="multiplayer_editor_access_disabled_shared">Unavailable while everyone in the space can share this invite. Reset the link first.</string>
     <string name="link_copied">Tautan disalin ke papan kerani</string>
     <string name="remove_from_collection">Lepas taut dari Koleksi</string>
     <string name="multiplayer_copy_link">Salin tautan</string>
@@ -1335,6 +1370,10 @@
     <string name="multiplayer_approve_request">Atur akses</string>
     <string name="multiplayer_view_request">Lihat permintaan</string>
     <string name="multiplayer_owner">Pemilik</string>
+    <string name="multiplayer_admin">Admin</string>
+    <string name="multiplayer_make_admin_title">Jadikan anggota ini admin?</string>
+    <string name="multiplayer_make_admin_description">Admin bisa menghapus pesan, anggota, dan juga objek. Objek dapat dihapus secara permanen dari Bak Sampah oleh admin.</string>
+    <string name="multiplayer_make_admin_button">Jadikan Admin</string>
     <string name="multiplayer_no_permissions">Tidak ada izin</string>
     <string name="multiplayer_pending">Menunggu</string>
     <string name="multiplayer_can_edit">Can edit</string>
@@ -1347,6 +1386,9 @@
     <string name="multiplayer_space_join_request_header">%1$s meminta bergabung ke ruang %2$s</string>
     <string name="multiplayer_remove_member">Hapus anggota</string>
     <string name="multiplayer_remove_member_warning_text">%1$s akan dihapus dari ruang</string>
+    <string name="multiplayer_remove_member_title">Hapus anggota ini dari kanal?</string>
+    <string name="multiplayer_remove_member_description">%@ akan dihapus dari ruang.</string>
+    <string name="multiplayer_remove_member_button">Hapus Anggota</string>
     <string name="multiplayer_request_sent_toast">Permintaan terkirim</string>
     <string name="multiplayer_space_stop_sharing">Berhenti berbagi</string>
     <string name="multiplayer_space_stop_sharing_space">Berhenti membagikan ruang</string>
@@ -1516,6 +1558,23 @@
     <string name="payments_code_title">Masukkan kode yang dikirim ke surelmu</string>
     <string name="payments_code_resend">Kirim ulang</string>
     <string name="payments_code_resend_in">Kirim ulang dalam %1$d detik</string>
+    <!-- Membership Activate Code -->
+    <string name="payments_activate_code_entry">Punya kode?</string>
+    <string name="payments_activate_code_title">Aktifkan Kodemu</string>
+    <string name="payments_activate_code_subtitle">Masukan kode yang diterima setelah pembelian atau dari undangan. Keanggotaanmu akan diaktifkan secara langsung.</string>
+    <string name="payments_activate_code_hint">Tempel kode aktivasi …</string>
+    <string name="payments_activate_code_button">Aktifkan</string>
+    <!-- Membership Activate Code — success -->
+    <string name="payments_activate_code_success_title">Sudah siap</string>
+    <string name="payments_activate_code_success_subtitle">Keanggotaan %1$s Anda sudah aktif</string>
+    <string name="payments_activate_code_success_subtitle_generic">Kenggotaan Anda sudah aktif</string>
+    <!-- Membership Activate Code — errors (CodeGetInfo) -->
+    <string name="membership_code_error_unknown">Terjadi galat tak diketahui</string>
+    <string name="membership_code_error_bad_input">Input salah</string>
+    <string name="membership_code_error_not_logged_in">Belum masuk</string>
+    <string name="membership_code_error_payment_node">Tidak terhubung ke simpul pembayaran. Silakan coba lagi.</string>
+    <string name="membership_code_error_code_invalid">Kode tidak valid. Silakan periksa dan coba lagi.</string>
+    <string name="membership_code_error_already_member">Membership already exists for the current identity</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Selamat datang di jaringan,\n%1$s</string>
     <string name="payments_welcome_subtitle">Tepuk tangan yang meriah untuk rasa ingin tahu Anda!</string>
@@ -1759,6 +1818,11 @@
     <string name="chat_attachment_media">Unggah media</string>
     <string name="chat_attachment_upload">Unggah</string>
     <string name="chat_attach">Lampirkan</string>
+    <string name="upload_success_snackbar_image">Gambar baru ditambahkan</string>
+    <string name="upload_success_snackbar_video">Video baru ditambahkan</string>
+    <string name="upload_success_snackbar_file">Berkas baru ditambahkan</string>
+    <string name="upload_success_snackbar_mixed">Berkas baru ditambahkan</string>
+    <string name="upload_success_snackbar_action_open">Open %1$s</string>
     <string name="chats_reply">Balas</string>
     <string name="chats_add_reaction">Tambahkan Reaksi</string>
     <string name="chat_send_message_rate_limit_title">Bentar-bentar, banter banget!</string>
@@ -1997,6 +2061,9 @@
     <string name="notifications_all_short">Semua</string>
     <string name="notifications_mentions_short">Sebutan</string>
     <string name="notifications_disable_short">Nonaktifkan</string>
+    <string name="notification_option_enable">Nyalakan</string>
+    <string name="notification_option_mute_and_hide">Senyapkan dan sembunyikan</string>
+    <string name="notification_option_disabled">Nonaktif</string>
     <string name="space_notify_unmute">Lepas senyap</string>
     <string name="space_notify_mute">Senyapkan</string>
     <string name="vault_pinned_limit_message">%1$d ruang yang disematkan adalah batas saat ini. Lepaskan salah satunya untuk menambahkan yang baru.</string>
@@ -2053,10 +2120,12 @@
     <string name="share_space_error_no_such_space">Ruang yang ingin kamu akses tidak ada. Silakan cek ID ruang lalu coba lagi.</string>
     <string name="share_space_error_make_private_failed">        Gagal menjadikan ruang ini privat. Silakan coba lagi nanti.
     </string>
+    <string name="share_space_error_invite_already_shared">This invite is already shared with all space members and cannot be made private. Reset the link to create a new private invite.</string>
+    <string name="share_space_error_invite_not_shareable">Anyone with this link joins as an editor, without approval. Switch the link to Viewer access before sharing it.</string>
     <string name="private_local_yours_forever">terenkripsi, lokal, milikmu selamanya</string>
     <string name="private_channel">Saluran langsung</string>
     <string name="space_header_private_channel">Private channel</string>
-    <string name="space_header_group_channel">Group channel</string>
+    <string name="space_header_group_channel">Kanal grup</string>
     <string name="wallpaper_item_space_icon_color">Warna Bawaan</string>
     <string name="publish_to_web">Publikasi ke Web</string>
     <string name="preferences">Preferensi</string>
@@ -2073,7 +2142,8 @@
     <string name="web_publishing_copy_web_link">Salin Tautan Web</string>
     <string name="widgets_section_pinned">Tersemat</string>
     <string name="widgets_section_unread">Belum dibaca</string>
-    <string name="widgets_section_object_types">Objek</string>
+    <string name="widgets_section_my_favorites">Favoritku</string>
+    <string name="widgets_section_object_types">Tipe</string>
     <string name="widgets_section_recently_edited">Baru Disunting</string>
     <string name="widgets_menu_new_object_type">Baru</string>
     <string name="widgets_menu_delete_object_type">Hapus Tipe Objek</string>

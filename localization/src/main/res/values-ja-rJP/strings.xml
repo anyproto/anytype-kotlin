@@ -17,6 +17,8 @@
     <string name="experimental_features">Experimental Features</string>
     <string name="experimental_features_compact_vault">Compact vault mode</string>
     <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
+    <string name="experimental_features_kanban">Kanban board</string>
+    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
     <string name="account">保管庫</string>
     <string name="reset_account">保管庫をリセット</string>
     <string name="delete_account">保管庫を削除</string>
@@ -24,6 +26,8 @@
     <string name="data">データ</string>
     <string name="mode">モード</string>
     <string name="log_out">ログアウト</string>
+    <string name="resume_account_failed_title">Couldn\'t restore session</string>
+    <string name="resume_account_failed_message">Your session can\'t be resumed. Logging out will clear local app state; you\'ll need your recovery phrase to sign back in. Do you want to log out?</string>
     <string name="pin_code">PINコード</string>
     <string name="access">アクセス権</string>
     <string name="wallpaper">壁紙</string>
@@ -77,6 +81,7 @@
     <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="manage_sections_title">Manage sections</string>
     <string name="section_unread">未読</string>
+    <string name="section_my_favorites">My Favorites</string>
     <string name="section_pinned">ピン留め</string>
     <string name="section_objects">オブジェクト</string>
     <string name="section_recently_edited">最近編集された</string>
@@ -133,7 +138,8 @@
     <string name="background_color">背景色</string>
     <string name="content_description_bookmark_logo">ブックマークアイコン</string>
     <string name="content_description_file_icon">ファイルアイコン</string>
-    <string name="content_description_modal_icon">モーダルアイコン</string>
+    <string name="content_description_modal_icon">モーダルアイコン
+</string>
     <string name="alert_icon_description">アラートアイコン</string>
     <string name="modal_tap_to_type">タップして入力</string>
     <string name="modal_gallery">ギャラリー</string>
@@ -197,6 +203,7 @@
     <string name="hint_paste_link">リンクを貼り付け</string>
     <string name="empty_tap_to_create_new_block">何もありません。タップして作成</string>
     <string name="untitled">無題</string>
+    <string name="back_history_channels">スペース</string>
     <string name="untitled_set">無題のクエリ</string>
     <string name="untitled_collection">無題のコレクション</string>
     <string name="archived">アーカイブ済み</string>
@@ -563,6 +570,9 @@
     <string name="type_templates_widget_title">オブジェクトを作成</string>
     <string name="view_layout_widget_title">レイアウト</string>
     <string name="view_layout_cover_widget_title">カバー画像</string>
+    <string name="view_layout_group_by_widget_title">グループ</string>
+    <string name="group_by">グループ</string>
+    <string name="color_columns">列の背景色</string>
     <string name="blank">なし</string>
     <string name="templates_menu_default_for_view">このビューのデフォルト</string>
     <string name="templates_menu_edit">テンプレートを編集</string>
@@ -580,6 +590,13 @@
     <string name="view_grid">テーブル</string>
     <string name="view_gallery">ギャラリー</string>
     <string name="view_kanban">ボード</string>
+    <string name="dataview_board_no_objects">オブジェクトがありません</string>
+    <string name="dataview_board_no_value">値なし</string>
+    <string name="dataview_board_checked">チェック済み</string>
+    <string name="dataview_board_unchecked">未チェック</string>
+    <string name="dataview_board_new_object">新規</string>
+    <string name="dataview_board_no_group_title">No grouping property</string>
+    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
     <string name="page_cover">カバー画像</string>
     <string name="object_action_pin">ピン留め</string>
     <string name="object_action_unpin">ピン留め解除</string>
@@ -865,12 +882,17 @@
     <string name="create_space_space_name">スペース名</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Create Home</string>
-    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
     <string name="homepage_picker_chat">チャット</string>
     <string name="homepage_picker_page">ページ</string>
     <string name="homepage_picker_collection">コレクション</string>
-    <string name="homepage_picker_empty">未入力</string>
-    <string name="homepage_picker_later">あとで</string>
+    <string name="homepage_picker_continue">続行</string>
+    <string name="homepage_picker_not_now">あとで</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">ホーム</string>
+    <string name="space_home_no_home_title">No home</string>
+    <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
+    <string name="widget_menu_change_home">Change Home</string>
     <string name="invite_members_widget_title">Invite Members</string>
     <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
     <string name="generic_error">問題が発生しました。もう一度お試しください。</string>
@@ -1084,7 +1106,7 @@
     <string name="onboarding_void_title">これは保管庫です。</string>
     <string name="onboarding_void_description">作成したデータはすべて暗号化され、安全に保管されます。データはお使いのデバイス内に保存され、分散ネットワークにバックアップされます。</string>
     <string name="onboarding_this_is_your_key_title">これがあなたの鍵です</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you responsible for your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">鍵を表示</string>
     <string name="onboarding_tap_to_reveal">Reveal and Copy</string>
     <string name="onboarding_key_skip">あとで</string>
@@ -1105,7 +1127,7 @@
     <string name="onboarding_recovery_phrase_description">Your key is represented by a recovery phrase — 12 random words that generate your vault on this device.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Whoever has the key, has access</string>
     <string name="onboarding_recovery_phrase_description_2">Anyone who knows these words can access your vault. Right now, you are the only person in the world who knows them.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Only you responsible for it</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
     <string name="onboarding_recovery_phrase_description_3">All computational resources on Earth are not enough to break in. If you lose your key, it cannot be recovered. Store it somewhere safe — in a password manager or written down on paper.</string>
     <string name="onboarding_recovery_phrase_description_4">たとえ地球上のすべての計算リソースを使ったとしてもアクセスできません。もし鍵を紛失した場合、二度と復元することはできません。そのため、絶対に紛失しないようにしてください！</string>
     <string name="onboarding_how_to_save_my_phrase">おすすめの保管方法は？</string>
@@ -1303,6 +1325,20 @@
     <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
     <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <!-- Invite sharing (GO-7222): owner-held invites, share-within-space toggle, link reset -->
+    <string name="multiplayer_invite_share_toggle_title">Everyone in the space can share this invite</string>
+    <string name="multiplayer_invite_share_toggle_locked_hint">To make this invite private again, reset the link.</string>
+    <string name="multiplayer_invite_share_disabled_reason">Anyone with this link joins as an editor, without approval. Only you can share it.</string>
+    <string name="multiplayer_invite_share_confirm_title">Share invite with all members?</string>
+    <string name="multiplayer_invite_share_confirm_description">All space members will be able to see this invite link and share it with anyone. To make it private again, you\'ll need to reset the link.</string>
+    <string name="multiplayer_invite_auto_approval_warning">Anyone who gains access to this invitation link will be able to join this space at any time, until you reset the link.</string>
+    <string name="multiplayer_invite_editor_upgrade_note">Any existing Viewer who gains access to this invitation link can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_legacy_unsafe_warning">Every member of this space can see and share this invite link, and anyone who has it joins as an editor without approval. Any existing Viewer can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_held_by_owner">The invite link is held by the space owner. Ask them to share it.</string>
+    <string name="multiplayer_invite_reset_link">Reset link</string>
+    <string name="multiplayer_invite_reset_confirm_title">Reset invite link?</string>
+    <string name="multiplayer_invite_reset_confirm_description">The current link stops working for everyone who has it, including the people you meant to invite. A new link is created in its place.</string>
+    <string name="multiplayer_editor_access_disabled_shared">Unavailable while everyone in the space can share this invite. Reset the link first.</string>
     <string name="link_copied">Link copied to clipboard</string>
     <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">リンクをコピー</string>
@@ -1335,6 +1371,10 @@
     <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">リクエストを確認</string>
     <string name="multiplayer_owner">所有者</string>
+    <string name="multiplayer_admin">Admin</string>
+    <string name="multiplayer_make_admin_title">Make the member an admin?</string>
+    <string name="multiplayer_make_admin_description">Admins can delete messages, remove members, and permanently delete objects from Bin.</string>
+    <string name="multiplayer_make_admin_button">Make Admin</string>
     <string name="multiplayer_no_permissions">No permissions</string>
     <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">編集可能</string>
@@ -1347,6 +1387,9 @@
     <string name="multiplayer_space_join_request_header">%1$sさんからスペース「%2$s」への参加リクエストが届きました</string>
     <string name="multiplayer_remove_member">メンバーを削除</string>
     <string name="multiplayer_remove_member_warning_text">%1$sさんがこのスペースにアクセスできなくなります</string>
+    <string name="multiplayer_remove_member_title">Remove the member from this channel?</string>
+    <string name="multiplayer_remove_member_description">%@ will be removed from the space.</string>
+    <string name="multiplayer_remove_member_button">Remove Member</string>
     <string name="multiplayer_request_sent_toast">リクエストを送信しました</string>
     <string name="multiplayer_space_stop_sharing">共有を停止</string>
     <string name="multiplayer_space_stop_sharing_space">スペース共有の停止</string>
@@ -1499,7 +1542,8 @@
     <string name="payments_email_title">最新情報や無料特典を受け取りましょう！</string>
     <string name="payments_email_subtitle">あなたの保管庫と結びつけられることは一切ありません。</string>
     <string name="payments_email_checkbox_text">最新情報や無料特典を受け取る！</string>
-    <string name="payments_email_hint">メールアドレス</string>
+    <string name="payments_email_hint">メールアドレス
+</string>
     <string name="payments_tier_current_title">加入状況：</string>
     <string name="payments_tier_current_valid">有効期限</string>
     <string name="payments_tier_current_paid_by">支払方法</string>
@@ -1516,6 +1560,23 @@
     <string name="payments_code_title">メールアドレスに送信されたコードを入力</string>
     <string name="payments_code_resend">再送信</string>
     <string name="payments_code_resend_in">%1$d秒後に再送信</string>
+    <!-- Membership Activate Code -->
+    <string name="payments_activate_code_entry">Have a code?</string>
+    <string name="payments_activate_code_title">Activate Your Code</string>
+    <string name="payments_activate_code_subtitle">Enter the code you received after purchase or from an invitation. Your membership will be activated instantly.</string>
+    <string name="payments_activate_code_hint">Paste activation code…</string>
+    <string name="payments_activate_code_button">Activate</string>
+    <!-- Membership Activate Code — success -->
+    <string name="payments_activate_code_success_title">You\'re all set</string>
+    <string name="payments_activate_code_success_subtitle">Your %1$s membership is now active</string>
+    <string name="payments_activate_code_success_subtitle_generic">Your membership is now active</string>
+    <!-- Membership Activate Code — errors (CodeGetInfo) -->
+    <string name="membership_code_error_unknown">Unknown error occured</string>
+    <string name="membership_code_error_bad_input">Bad input</string>
+    <string name="membership_code_error_not_logged_in">Not logged in</string>
+    <string name="membership_code_error_payment_node">No connection to payment node. Please try again.</string>
+    <string name="membership_code_error_code_invalid">The code is not valid. Please check and try again.</string>
+    <string name="membership_code_error_already_member">Membership already exists for the current identity</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">ネットワーク %1$sへようこそ</string>
     <string name="payments_welcome_subtitle">ご興味をお持ちいただき、ありがとうございます！</string>
@@ -1523,7 +1584,8 @@
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
     <string name="membership_support_subject">メンバーシップ画面エラーレポート - %1$s</string>
-    <string name="membership_support_body">        Anytypeチーム担当者の方へ\n\n
+    <string name="membership_support_body">
+        Anytypeチーム担当者の方へ\n\n
 
         アプリ使用中に、メンバーシップ画面にて、エラーが表示されました。詳しくは以下の通りです。\n
 
@@ -1759,6 +1821,11 @@
     <string name="chat_attachment_media">メディアをアップロード</string>
     <string name="chat_attachment_upload">アップロード</string>
     <string name="chat_attach">添付</string>
+    <string name="upload_success_snackbar_image">New image added</string>
+    <string name="upload_success_snackbar_video">New video added</string>
+    <string name="upload_success_snackbar_file">New file added</string>
+    <string name="upload_success_snackbar_mixed">New files added</string>
+    <string name="upload_success_snackbar_action_open">Open %1$s</string>
     <string name="chats_reply">返信</string>
     <string name="chats_add_reaction">リアクションを追加</string>
     <string name="chat_send_message_rate_limit_title">お待ちください！ 異常なタイピングが検出されました！</string>
@@ -1845,7 +1912,8 @@
     <string name="field_date_empty">値</string>
     <string name="field_url_title">URL</string>
     <string name="field_url_empty">追加</string>
-    <string name="field_email_title">メールアドレス</string>
+    <string name="field_email_title">メールアドレス
+</string>
     <string name="field_email_empty">入力</string>
     <string name="field_phone_title">電話番号</string>
     <string name="field_phone_empty">入力</string>
@@ -1997,9 +2065,13 @@
     <string name="notifications_all_short">すべて</string>
     <string name="notifications_mentions_short">メンション</string>
     <string name="notifications_disable_short">無効</string>
+    <string name="notification_option_enable">有効化</string>
+    <string name="notification_option_mute_and_hide">Mute and hide</string>
+    <string name="notification_option_disabled">無効</string>
     <string name="space_notify_unmute">ミュート解除</string>
     <string name="space_notify_mute">ミュート</string>
-    <string name="vault_pinned_limit_message">スペースのピン留めは最大%1$d個です。新しくピン留めするには、どれか一つ解除してください。</string>
+    <string name="vault_pinned_limit_message">スペースのピン留めは最大%1$d個です。新しくピン留めするには、どれか一つ解除してください。
+</string>
     <string name="vault_space_settings">スペース設定</string>
     <string name="notification_settings_title">通知</string>
     <string name="notification_settings_disabled">通知が無効です</string>
@@ -2050,10 +2122,14 @@
     <string name="share_space_error_space_deleted">スペースが削除されたようです。デバイスの同期状況をご確認ください。</string>
     <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
-    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    <string name="share_space_error_no_such_space">
+        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
-    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    <string name="share_space_error_make_private_failed">
+        Failed to make the space private. Please try again later.
     </string>
+    <string name="share_space_error_invite_already_shared">This invite is already shared with all space members and cannot be made private. Reset the link to create a new private invite.</string>
+    <string name="share_space_error_invite_not_shareable">Anyone with this link joins as an editor, without approval. Switch the link to Viewer access before sharing it.</string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="private_channel">Direct channel</string>
     <string name="space_header_private_channel">Private channel</string>
@@ -2074,7 +2150,8 @@
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
     <string name="widgets_section_pinned">ピン留め</string>
     <string name="widgets_section_unread">未読</string>
-    <string name="widgets_section_object_types">オブジェクト</string>
+    <string name="widgets_section_my_favorites">My Favorites</string>
+    <string name="widgets_section_object_types">タイプ</string>
     <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">新規</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>

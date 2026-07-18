@@ -17,6 +17,8 @@
     <string name="experimental_features">Experimental Features</string>
     <string name="experimental_features_compact_vault">Compact vault mode</string>
     <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
+    <string name="experimental_features_kanban">Kanban board</string>
+    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
     <string name="account">Vault</string>
     <string name="reset_account">Reset vault</string>
     <string name="delete_account">Delete vault</string>
@@ -24,6 +26,8 @@
     <string name="data">Data</string>
     <string name="mode">Режим</string>
     <string name="log_out">Вийти</string>
+    <string name="resume_account_failed_title">Couldn\'t restore session</string>
+    <string name="resume_account_failed_message">Your session can\'t be resumed. Logging out will clear local app state; you\'ll need your recovery phrase to sign back in. Do you want to log out?</string>
     <string name="pin_code">Pin code</string>
     <string name="access">Доступ</string>
     <string name="wallpaper">Шпалери</string>
@@ -77,6 +81,7 @@
     <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="manage_sections_title">Manage sections</string>
     <string name="section_unread">Unread</string>
+    <string name="section_my_favorites">My Favorites</string>
     <string name="section_pinned">Pinned</string>
     <string name="section_objects">Об\'єкти</string>
     <string name="section_recently_edited">Нещодавно відредаговані</string>
@@ -197,6 +202,7 @@
     <string name="hint_paste_link">Вставити посилання</string>
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
     <string name="untitled">Untitled</string>
+    <string name="back_history_channels">Spaces</string>
     <string name="untitled_set">Untitled query</string>
     <string name="untitled_collection">Безіменна колекція</string>
     <string name="archived">Archived</string>
@@ -566,6 +572,9 @@
     <string name="type_templates_widget_title">Створити об\'єкт</string>
     <string name="view_layout_widget_title">Макет</string>
     <string name="view_layout_cover_widget_title">Обкладинка</string>
+    <string name="view_layout_group_by_widget_title">Згрупувати за</string>
+    <string name="group_by">Згрупувати за</string>
+    <string name="color_columns">Колір стовпців</string>
     <string name="blank">Порожньо</string>
     <string name="templates_menu_default_for_view">Default for this view</string>
     <string name="templates_menu_edit">Редагувати шаблон</string>
@@ -583,6 +592,13 @@
     <string name="view_grid">Сітка</string>
     <string name="view_gallery">Галерея</string>
     <string name="view_kanban">Канбан</string>
+    <string name="dataview_board_no_objects">Немає об\'єктів</string>
+    <string name="dataview_board_no_value">No value</string>
+    <string name="dataview_board_checked">Позначено</string>
+    <string name="dataview_board_unchecked">Не позначено</string>
+    <string name="dataview_board_new_object">Новий</string>
+    <string name="dataview_board_no_group_title">No grouping property</string>
+    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
     <string name="page_cover">Page cover</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Unpin</string>
@@ -871,12 +887,17 @@
     <string name="create_space_space_name">Назва простору</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Create Home</string>
-    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
     <string name="homepage_picker_chat">Chat</string>
     <string name="homepage_picker_page">Page</string>
     <string name="homepage_picker_collection">Колекція</string>
-    <string name="homepage_picker_empty">Пусто</string>
-    <string name="homepage_picker_later">Later</string>
+    <string name="homepage_picker_continue">Continue</string>
+    <string name="homepage_picker_not_now">Not now</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Головна</string>
+    <string name="space_home_no_home_title">No home</string>
+    <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
+    <string name="widget_menu_change_home">Change Home</string>
     <string name="invite_members_widget_title">Invite Members</string>
     <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
@@ -1090,7 +1111,7 @@
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">This is your Key</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you responsible for your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Show my Key</string>
     <string name="onboarding_tap_to_reveal">Reveal and Copy</string>
     <string name="onboarding_key_skip">Пропустити</string>
@@ -1111,7 +1132,7 @@
     <string name="onboarding_recovery_phrase_description">Your key is represented by a recovery phrase — 12 random words that generate your vault on this device.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Whoever has the key, has access</string>
     <string name="onboarding_recovery_phrase_description_2">Anyone who knows these words can access your vault. Right now, you are the only person in the world who knows them.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Only you responsible for it</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
     <string name="onboarding_recovery_phrase_description_3">All computational resources on Earth are not enough to break in. If you lose your key, it cannot be recovered. Store it somewhere safe — in a password manager or written down on paper.</string>
     <string name="onboarding_recovery_phrase_description_4">All computational resources on Earth are not enough to break in. If you lose it, it cannot be recovered. So, store it somewhere safe!</string>
     <string name="onboarding_how_to_save_my_phrase">How to save my Key?</string>
@@ -1315,6 +1336,20 @@
     <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
     <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <!-- Invite sharing (GO-7222): owner-held invites, share-within-space toggle, link reset -->
+    <string name="multiplayer_invite_share_toggle_title">Everyone in the space can share this invite</string>
+    <string name="multiplayer_invite_share_toggle_locked_hint">To make this invite private again, reset the link.</string>
+    <string name="multiplayer_invite_share_disabled_reason">Anyone with this link joins as an editor, without approval. Only you can share it.</string>
+    <string name="multiplayer_invite_share_confirm_title">Share invite with all members?</string>
+    <string name="multiplayer_invite_share_confirm_description">All space members will be able to see this invite link and share it with anyone. To make it private again, you\'ll need to reset the link.</string>
+    <string name="multiplayer_invite_auto_approval_warning">Anyone who gains access to this invitation link will be able to join this space at any time, until you reset the link.</string>
+    <string name="multiplayer_invite_editor_upgrade_note">Any existing Viewer who gains access to this invitation link can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_legacy_unsafe_warning">Every member of this space can see and share this invite link, and anyone who has it joins as an editor without approval. Any existing Viewer can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_held_by_owner">The invite link is held by the space owner. Ask them to share it.</string>
+    <string name="multiplayer_invite_reset_link">Reset link</string>
+    <string name="multiplayer_invite_reset_confirm_title">Reset invite link?</string>
+    <string name="multiplayer_invite_reset_confirm_description">The current link stops working for everyone who has it, including the people you meant to invite. A new link is created in its place.</string>
+    <string name="multiplayer_editor_access_disabled_shared">Unavailable while everyone in the space can share this invite. Reset the link first.</string>
     <string name="link_copied">Link copied to clipboard</string>
     <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Копіювати посилання</string>
@@ -1347,6 +1382,10 @@
     <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">View request</string>
     <string name="multiplayer_owner">Owner</string>
+    <string name="multiplayer_admin">Admin</string>
+    <string name="multiplayer_make_admin_title">Make the member an admin?</string>
+    <string name="multiplayer_make_admin_description">Admins can delete messages, remove members, and permanently delete objects from Bin.</string>
+    <string name="multiplayer_make_admin_button">Make Admin</string>
     <string name="multiplayer_no_permissions">No permissions</string>
     <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">Can edit</string>
@@ -1359,6 +1398,9 @@
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_remove_member_warning_text">%1$s will be removed from space</string>
+    <string name="multiplayer_remove_member_title">Remove the member from this channel?</string>
+    <string name="multiplayer_remove_member_description">%@ will be removed from the space.</string>
+    <string name="multiplayer_remove_member_button">Remove Member</string>
     <string name="multiplayer_request_sent_toast">Request sent</string>
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
     <string name="multiplayer_space_stop_sharing_space">Stop sharing the space</string>
@@ -1534,6 +1576,23 @@
     <string name="payments_code_title">Enter the code sent to your email</string>
     <string name="payments_code_resend">Resend</string>
     <string name="payments_code_resend_in">Resend in %1$d sec</string>
+    <!-- Membership Activate Code -->
+    <string name="payments_activate_code_entry">Have a code?</string>
+    <string name="payments_activate_code_title">Activate Your Code</string>
+    <string name="payments_activate_code_subtitle">Enter the code you received after purchase or from an invitation. Your membership will be activated instantly.</string>
+    <string name="payments_activate_code_hint">Paste activation code…</string>
+    <string name="payments_activate_code_button">Activate</string>
+    <!-- Membership Activate Code — success -->
+    <string name="payments_activate_code_success_title">You\'re all set</string>
+    <string name="payments_activate_code_success_subtitle">Your %1$s membership is now active</string>
+    <string name="payments_activate_code_success_subtitle_generic">Your membership is now active</string>
+    <!-- Membership Activate Code — errors (CodeGetInfo) -->
+    <string name="membership_code_error_unknown">Unknown error occured</string>
+    <string name="membership_code_error_bad_input">Bad input</string>
+    <string name="membership_code_error_not_logged_in">Not logged in</string>
+    <string name="membership_code_error_payment_node">No connection to payment node. Please try again.</string>
+    <string name="membership_code_error_code_invalid">The code is not valid. Please check and try again.</string>
+    <string name="membership_code_error_already_member">Membership already exists for the current identity</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
     <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
@@ -1798,6 +1857,11 @@
     <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Завантажити</string>
     <string name="chat_attach">Attach</string>
+    <string name="upload_success_snackbar_image">New image added</string>
+    <string name="upload_success_snackbar_video">New video added</string>
+    <string name="upload_success_snackbar_file">New file added</string>
+    <string name="upload_success_snackbar_mixed">New files added</string>
+    <string name="upload_success_snackbar_action_open">Open %1$s</string>
     <string name="chats_reply">Reply</string>
     <string name="chats_add_reaction">Add Reaction</string>
     <string name="chat_send_message_rate_limit_title">Hold up! Turbo typing detected!</string>
@@ -2036,6 +2100,9 @@
     <string name="notifications_all_short">Все</string>
     <string name="notifications_mentions_short">Mentions</string>
     <string name="notifications_disable_short">Disable</string>
+    <string name="notification_option_enable">Enable</string>
+    <string name="notification_option_mute_and_hide">Mute and hide</string>
+    <string name="notification_option_disabled">Disabled</string>
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
     <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
@@ -2089,10 +2156,14 @@
     <string name="share_space_error_space_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
     <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
-    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    <string name="share_space_error_no_such_space">
+        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
-    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    <string name="share_space_error_make_private_failed">
+        Failed to make the space private. Please try again later.
     </string>
+    <string name="share_space_error_invite_already_shared">This invite is already shared with all space members and cannot be made private. Reset the link to create a new private invite.</string>
+    <string name="share_space_error_invite_not_shareable">Anyone with this link joins as an editor, without approval. Switch the link to Viewer access before sharing it.</string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="private_channel">Direct channel</string>
     <string name="space_header_private_channel">Private channel</string>
@@ -2113,7 +2184,8 @@
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
     <string name="widgets_section_pinned">Pinned</string>
     <string name="widgets_section_unread">Unread</string>
-    <string name="widgets_section_object_types">Об\'єкти</string>
+    <string name="widgets_section_my_favorites">My Favorites</string>
+    <string name="widgets_section_object_types">Types</string>
     <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">Новий</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>

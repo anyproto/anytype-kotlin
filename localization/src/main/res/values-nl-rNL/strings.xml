@@ -17,6 +17,8 @@
     <string name="experimental_features">Experimentele functies</string>
     <string name="experimental_features_compact_vault">Compact vault mode</string>
     <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
+    <string name="experimental_features_kanban">Kanban board</string>
+    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
     <string name="account">Kluis</string>
     <string name="reset_account">Reset kluis</string>
     <string name="delete_account">Verwijder kluis</string>
@@ -24,6 +26,8 @@
     <string name="data">Gegevens</string>
     <string name="mode">Instelling</string>
     <string name="log_out">Meld af</string>
+    <string name="resume_account_failed_title">Couldn\'t restore session</string>
+    <string name="resume_account_failed_message">Your session can\'t be resumed. Logging out will clear local app state; you\'ll need your recovery phrase to sign back in. Do you want to log out?</string>
     <string name="pin_code">Pincode</string>
     <string name="access">Toegang</string>
     <string name="wallpaper">Achtergrond</string>
@@ -77,6 +81,7 @@
     <string name="space_settings_error_icon">Bijwerken van ruimtepictogram is mislukt. Probeer het alsjeblieft opnieuw.</string>
     <string name="manage_sections_title">Manage sections</string>
     <string name="section_unread">Ongelezen</string>
+    <string name="section_my_favorites">My Favorites</string>
     <string name="section_pinned">Vastgezet</string>
     <string name="section_objects">Objecten</string>
     <string name="section_recently_edited">Onlangs bewerkt</string>
@@ -197,6 +202,7 @@
     <string name="hint_paste_link">Plak koppeling</string>
     <string name="empty_tap_to_create_new_block">Leeg. Tik om een nieuw blok aan te maken</string>
     <string name="untitled">Naamloos</string>
+    <string name="back_history_channels">Ruimtes</string>
     <string name="untitled_set">Naamloze opdracht</string>
     <string name="untitled_collection">Naamloze collectie</string>
     <string name="archived">Gearchiveerd</string>
@@ -564,6 +570,9 @@
     <string name="type_templates_widget_title">Maak object</string>
     <string name="view_layout_widget_title">Opmaak</string>
     <string name="view_layout_cover_widget_title">Omslag</string>
+    <string name="view_layout_group_by_widget_title">Groepeer op</string>
+    <string name="group_by">Groepeer op</string>
+    <string name="color_columns">Kleur kolommen</string>
     <string name="blank">Leeg</string>
     <string name="templates_menu_default_for_view">Standaard voor deze weergave</string>
     <string name="templates_menu_edit">Sjabloon bewerken</string>
@@ -581,6 +590,13 @@
     <string name="view_grid">Raster</string>
     <string name="view_gallery">Galerij</string>
     <string name="view_kanban">Kanban</string>
+    <string name="dataview_board_no_objects">Geen objecten</string>
+    <string name="dataview_board_no_value">Geen waarde</string>
+    <string name="dataview_board_checked">Geselecteerd</string>
+    <string name="dataview_board_unchecked">Niet geselecteerd</string>
+    <string name="dataview_board_new_object">Nieuw</string>
+    <string name="dataview_board_no_group_title">No grouping property</string>
+    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
     <string name="page_cover">Paginaomslag</string>
     <string name="object_action_pin">Zet vast</string>
     <string name="object_action_unpin">Losmaken</string>
@@ -867,12 +883,17 @@
     <string name="create_space_space_name">Naam ruimte</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Create Home</string>
-    <string name="homepage_picker_description">Select what you and channel members see when they open the channel. You can always change it in settings.</string>
+    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
     <string name="homepage_picker_chat">Chat</string>
     <string name="homepage_picker_page">Pagina</string>
     <string name="homepage_picker_collection">Verzameling</string>
-    <string name="homepage_picker_empty">Leeg</string>
-    <string name="homepage_picker_later">Later</string>
+    <string name="homepage_picker_continue">Volgende</string>
+    <string name="homepage_picker_not_now">Niet nu</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Home</string>
+    <string name="space_home_no_home_title">No home</string>
+    <string name="space_home_no_home_subtitle">Opens to navigation on entry</string>
+    <string name="widget_menu_change_home">Change Home</string>
     <string name="invite_members_widget_title">Invite Members</string>
     <string name="invite_members_widget_description">Invite people to this channel to start collaborating.</string>
     <string name="generic_error">Er is iets misgegaan. Probeer het alsjeblieft opnieuw.</string>
@@ -1086,7 +1107,7 @@
     <string name="onboarding_void_title">Dit is jouw ruimte</string>
     <string name="onboarding_void_description">Het is een versleutelde locatie voor alles wat je aanmaakt. Alles wordt opgeslagen op jouw apparaat en opgeslagen op het gedistribueerde netwerk.</string>
     <string name="onboarding_this_is_your_key_title">Dit is je herstelsleutel</string>
-    <string name="onboarding_key_description">Het vervangt login en wachtwoord. Houd het veilig - alleen jij bent verantwoordelijk voor jouw gegevens. Je kunt deze sleutel later vinden in de app instellingen.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you are responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Toon mijn herstelsleutel</string>
     <string name="onboarding_tap_to_reveal">Onthul en kopieer</string>
     <string name="onboarding_key_skip">Overslaan</string>
@@ -1107,7 +1128,7 @@
     <string name="onboarding_recovery_phrase_description">Jouw sleutel wordt vertegenwoordigd door een herstelzin — 12 willekeurige woorden die jouw kluis genereren op dit apparaat.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Degene die de sleutel heeft, heeft toegang</string>
     <string name="onboarding_recovery_phrase_description_2">Iedereen die deze woorden kent, kan jouw kluis binnen gaan. Op dit moment ben jij de enige ter wereld die ze kent.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Alleen jij bent er verantwoordelijk voor</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you are responsible for it</string>
     <string name="onboarding_recovery_phrase_description_3">Alle rekenkracht op aarde is niet genoeg om in te breken. Als je jouw sleutel verliest, kan deze niet worden hersteld. Sla het ergens veilig op — in een wachtwoordbeheerder of opgeschreven op papier.</string>
     <string name="onboarding_recovery_phrase_description_4">Alle computercapaciteit op aarde is niet genoeg om in te breken. Als je het verliest, kan het niet worden hersteld. Bewaar het dus op een veilige plek!</string>
     <string name="onboarding_how_to_save_my_phrase">Hoe bewaar ik mijn herstelsleutel?</string>
@@ -1307,6 +1328,20 @@
     <string name="multiplayer_change_to_viewer_confirmation">Iedereen met de link kan alleen de inhoud van de ruimte bekijken.</string>
     <string name="multiplayer_change_to_request_confirmation">Iedereen met de link moet toegang vragen om deel te nemen aan de ruimte.</string>
     <string name="multiplayer_invite_link_copied">Uitnodigingslink gekopieerd naar klembord</string>
+    <!-- Invite sharing (GO-7222): owner-held invites, share-within-space toggle, link reset -->
+    <string name="multiplayer_invite_share_toggle_title">Everyone in the space can share this invite</string>
+    <string name="multiplayer_invite_share_toggle_locked_hint">To make this invite private again, reset the link.</string>
+    <string name="multiplayer_invite_share_disabled_reason">Anyone with this link joins as an editor, without approval. Only you can share it.</string>
+    <string name="multiplayer_invite_share_confirm_title">Share invite with all members?</string>
+    <string name="multiplayer_invite_share_confirm_description">All space members will be able to see this invite link and share it with anyone. To make it private again, you\'ll need to reset the link.</string>
+    <string name="multiplayer_invite_auto_approval_warning">Anyone who gains access to this invitation link will be able to join this space at any time, until you reset the link.</string>
+    <string name="multiplayer_invite_editor_upgrade_note">Any existing Viewer who gains access to this invitation link can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_legacy_unsafe_warning">Every member of this space can see and share this invite link, and anyone who has it joins as an editor without approval. Any existing Viewer can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_held_by_owner">The invite link is held by the space owner. Ask them to share it.</string>
+    <string name="multiplayer_invite_reset_link">Reset link</string>
+    <string name="multiplayer_invite_reset_confirm_title">Reset invite link?</string>
+    <string name="multiplayer_invite_reset_confirm_description">The current link stops working for everyone who has it, including the people you meant to invite. A new link is created in its place.</string>
+    <string name="multiplayer_editor_access_disabled_shared">Unavailable while everyone in the space can share this invite. Reset the link first.</string>
     <string name="link_copied">Link copied to clipboard</string>
     <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Kopieer link</string>
@@ -1339,6 +1374,10 @@
     <string name="multiplayer_approve_request">Stel toegang in</string>
     <string name="multiplayer_view_request">Bekijk verzoek</string>
     <string name="multiplayer_owner">Eigenaar</string>
+    <string name="multiplayer_admin">Admin</string>
+    <string name="multiplayer_make_admin_title">Make the member an admin?</string>
+    <string name="multiplayer_make_admin_description">Admins can delete messages, remove members, and permanently delete objects from Bin.</string>
+    <string name="multiplayer_make_admin_button">Make Admin</string>
     <string name="multiplayer_no_permissions">Geen machtigingen</string>
     <string name="multiplayer_pending">In behandeling</string>
     <string name="multiplayer_can_edit">Kan bewerken</string>
@@ -1351,6 +1390,9 @@
     <string name="multiplayer_space_join_request_header">%1$s heeft verzocht om deel te nemen aan de ruimte %2$s</string>
     <string name="multiplayer_remove_member">Verwijder lid</string>
     <string name="multiplayer_remove_member_warning_text">%1$s wordt uit de ruimte verwijderd</string>
+    <string name="multiplayer_remove_member_title">Remove the member from this channel?</string>
+    <string name="multiplayer_remove_member_description">%@ will be removed from the space.</string>
+    <string name="multiplayer_remove_member_button">Remove Member</string>
     <string name="multiplayer_request_sent_toast">Verzoek verzonden</string>
     <string name="multiplayer_space_stop_sharing">Delen stoppen</string>
     <string name="multiplayer_space_stop_sharing_space">Stop met delen van de ruimte</string>
@@ -1522,6 +1564,23 @@
     <string name="payments_code_title">Voer de code in die naar jouw e-mailadres is verstuurd</string>
     <string name="payments_code_resend">Verstuur opnieuw</string>
     <string name="payments_code_resend_in">Verstuur opnieuw over %1$d seconden</string>
+    <!-- Membership Activate Code -->
+    <string name="payments_activate_code_entry">Have a code?</string>
+    <string name="payments_activate_code_title">Activate Your Code</string>
+    <string name="payments_activate_code_subtitle">Enter the code you received after purchase or from an invitation. Your membership will be activated instantly.</string>
+    <string name="payments_activate_code_hint">Paste activation code…</string>
+    <string name="payments_activate_code_button">Activate</string>
+    <!-- Membership Activate Code — success -->
+    <string name="payments_activate_code_success_title">You\'re all set</string>
+    <string name="payments_activate_code_success_subtitle">Your %1$s membership is now active</string>
+    <string name="payments_activate_code_success_subtitle_generic">Your membership is now active</string>
+    <!-- Membership Activate Code — errors (CodeGetInfo) -->
+    <string name="membership_code_error_unknown">Unknown error occured</string>
+    <string name="membership_code_error_bad_input">Bad input</string>
+    <string name="membership_code_error_not_logged_in">Not logged in</string>
+    <string name="membership_code_error_payment_node">No connection to payment node. Please try again.</string>
+    <string name="membership_code_error_code_invalid">The code is not valid. Please check and try again.</string>
+    <string name="membership_code_error_already_member">Membership already exists for the current identity</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Welkom bij het netwerk, \n%1$s</string>
     <string name="payments_welcome_subtitle">Hulde voor jouw nieuwsgierigheid!</string>
@@ -1772,6 +1831,11 @@
     <string name="chat_attachment_media">Upload media</string>
     <string name="chat_attachment_upload">Upload</string>
     <string name="chat_attach">Voeg bij</string>
+    <string name="upload_success_snackbar_image">New image added</string>
+    <string name="upload_success_snackbar_video">New video added</string>
+    <string name="upload_success_snackbar_file">New file added</string>
+    <string name="upload_success_snackbar_mixed">New files added</string>
+    <string name="upload_success_snackbar_action_open">Open %1$s</string>
     <string name="chats_reply">Antwoord</string>
     <string name="chats_add_reaction">Voeg reactie toe</string>
     <string name="chat_send_message_rate_limit_title">Wacht even! Turbo typen gedetecteerd!</string>
@@ -2010,6 +2074,9 @@
     <string name="notifications_all_short">Alles</string>
     <string name="notifications_mentions_short">Vermeldingen</string>
     <string name="notifications_disable_short">Schakel uit</string>
+    <string name="notification_option_enable">Activeren</string>
+    <string name="notification_option_mute_and_hide">Mute and hide</string>
+    <string name="notification_option_disabled">Uitgeschakeld</string>
     <string name="space_notify_unmute">Demp niet meer</string>
     <string name="space_notify_mute">Demp</string>
     <string name="vault_pinned_limit_message">%1$d vastgezette ruimten is jouw huidige limiet. Maak er een los om een nieuwe favoriet toe te voegen.</string>
@@ -2063,10 +2130,14 @@
     <string name="share_space_error_space_deleted">Het lijkt erop dat de ruimte is verwijderd. Zorg er alsjeblieft voor dat je apparaten worden gesynchroniseerd.</string>
     <string name="share_space_error_generic">Er is een onverwachte fout opgetreden: %1$s. Probeer het later opnieuw.</string>
     <string name="share_space_error_incorrect_permissions">Je hebt niet de benodigde machtigingen. Neem contact op met de eigenaar van de ruimte voor ondersteuning.</string>
-    <string name="share_space_error_no_such_space">        De ruimte die je probeert te delen bestaat niet. Controleer alsjeblieft het ruimte-ID en probeer het opnieuw.
+    <string name="share_space_error_no_such_space">
+        De ruimte die je probeert te delen bestaat niet. Controleer alsjeblieft het ruimte-ID en probeer het opnieuw.
     </string>
-    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    <string name="share_space_error_make_private_failed">
+        Failed to make the space private. Please try again later.
     </string>
+    <string name="share_space_error_invite_already_shared">This invite is already shared with all space members and cannot be made private. Reset the link to create a new private invite.</string>
+    <string name="share_space_error_invite_not_shareable">Anyone with this link joins as an editor, without approval. Switch the link to Viewer access before sharing it.</string>
     <string name="private_local_yours_forever">versleuteld, lokaal, voor altijd van jou</string>
     <string name="private_channel">Direct channel</string>
     <string name="space_header_private_channel">Private channel</string>
@@ -2087,7 +2158,8 @@
     <string name="web_publishing_copy_web_link">Kopieer webkoppeling</string>
     <string name="widgets_section_pinned">Vastgezet</string>
     <string name="widgets_section_unread">Ongelezen</string>
-    <string name="widgets_section_object_types">Objecten</string>
+    <string name="widgets_section_my_favorites">My Favorites</string>
+    <string name="widgets_section_object_types">Types</string>
     <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">Nieuw</string>
     <string name="widgets_menu_delete_object_type">Verwijder objecttype</string>

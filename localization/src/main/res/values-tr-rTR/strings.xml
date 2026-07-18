@@ -17,6 +17,8 @@
     <string name="experimental_features">Deneysel Özellikler</string>
     <string name="experimental_features_compact_vault">Kompakt kasa modu</string>
     <string name="experimental_features_compact_vault_description">Kasa içindeki okunmuş kanalların mesaj önizlemelerini gizler</string>
+    <string name="experimental_features_kanban">Kanban panosu</string>
+    <string name="experimental_features_kanban_description">Setler ve koleksiyonlar için Kanban (pano) düzenini etkinleştirir</string>
     <string name="account">Kasa</string>
     <string name="reset_account">Kasayı sıfırla</string>
     <string name="delete_account">Kasayı sil</string>
@@ -24,6 +26,8 @@
     <string name="data">Veri</string>
     <string name="mode">Mod</string>
     <string name="log_out">Çıkış yap</string>
+    <string name="resume_account_failed_title">Oturum geri yüklenemedi</string>
+    <string name="resume_account_failed_message">Oturum devam ettirilemiyor. Oturumu kapatmak uygulamanın yerel durumunu siler. Tekrar oturum açmak için kurtarma ifadesine ihtiyacın olacak. Oturumu kapatmak istiyor musun?</string>
     <string name="pin_code">Pin kodu</string>
     <string name="access">Erişim</string>
     <string name="wallpaper">Duvar kağıdı</string>
@@ -77,6 +81,7 @@
     <string name="space_settings_error_icon">Alan simgesi değiştirilemedi. Lütfen tekrar deneyin.</string>
     <string name="manage_sections_title">Bölümleri yönet</string>
     <string name="section_unread">Okunmamış</string>
+    <string name="section_my_favorites">Favorilerim</string>
     <string name="section_pinned">Sabitlendi</string>
     <string name="section_objects">Nesneler</string>
     <string name="section_recently_edited">Yakın zamanda düzenlenen</string>
@@ -197,6 +202,7 @@
     <string name="hint_paste_link">Bağlantıyı yapıştır</string>
     <string name="empty_tap_to_create_new_block">Boş. Yeni bir blok oluşturmak için dokunun.</string>
     <string name="untitled">Başlıksız</string>
+    <string name="back_history_channels">Alanlar</string>
     <string name="untitled_set">Başlıksız sorgu</string>
     <string name="untitled_collection">Başlıksız koleksiyon</string>
     <string name="archived">Arşivlenmiş</string>
@@ -564,6 +570,9 @@
     <string name="type_templates_widget_title">Nesne oluştur</string>
     <string name="view_layout_widget_title">Düzen</string>
     <string name="view_layout_cover_widget_title">Kapak</string>
+    <string name="view_layout_group_by_widget_title">Grupla</string>
+    <string name="group_by">Grupla</string>
+    <string name="color_columns">Sütunları renklendir</string>
     <string name="blank">Boş</string>
     <string name="templates_menu_default_for_view">Bu görünüm için varsayılan</string>
     <string name="templates_menu_edit">Şablonu düzenle</string>
@@ -581,6 +590,13 @@
     <string name="view_grid">Izgara</string>
     <string name="view_gallery">Galeri</string>
     <string name="view_kanban">Kanban</string>
+    <string name="dataview_board_no_objects">Nesne yok</string>
+    <string name="dataview_board_no_value">Değer yok</string>
+    <string name="dataview_board_checked">İşaretli</string>
+    <string name="dataview_board_unchecked">İşaretsiz</string>
+    <string name="dataview_board_new_object">Yeni</string>
+    <string name="dataview_board_no_group_title">Gruplama özelliği yok</string>
+    <string name="dataview_board_no_group_description">Görünüm ayarlarında kartları gruplandırmak için bir özellik seç</string>
     <string name="page_cover">Sayfa kapağı</string>
     <string name="object_action_pin">Sabitle</string>
     <string name="object_action_unpin">Sabitlemeyi kaldır</string>
@@ -867,12 +883,17 @@
     <string name="create_space_space_name">Alan ismi</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Ana Sayfa Oluştur</string>
-    <string name="homepage_picker_description">Sen ve kanal üyelerinin kanalı açtıklarında görecekleri içeriği seç. Bunu istediğin zaman ayarlardan değiştirebilirsin.</string>
+    <string name="homepage_picker_description">Üyeler gezinme menüsünü kullanmak yerine doğrudan buraya yönlendirilecek.</string>
     <string name="homepage_picker_chat">Sohbet</string>
     <string name="homepage_picker_page">Sayfa</string>
     <string name="homepage_picker_collection">Koleksiyon</string>
-    <string name="homepage_picker_empty">Boş</string>
-    <string name="homepage_picker_later">Daha sonra</string>
+    <string name="homepage_picker_continue">Devam et</string>
+    <string name="homepage_picker_not_now">Şimdi değil</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Ana sayfa</string>
+    <string name="space_home_no_home_title">Ana sayfa yok</string>
+    <string name="space_home_no_home_subtitle">Giriş yapıldığında gezinme menüsü açılır</string>
+    <string name="widget_menu_change_home">Ana Sayfayı Değiştir</string>
     <string name="invite_members_widget_title">Üyeleri Davet Et</string>
     <string name="invite_members_widget_description">İşbirliğine başlamak için insanları bu kanala davet et.</string>
     <string name="generic_error">Bir şeyler yanlış gitti. Lütfen tekrar deneyin.</string>
@@ -1086,7 +1107,7 @@
     <string name="onboarding_void_title">Bu senin boşluğun</string>
     <string name="onboarding_void_description">Oluşturduğunuz her şey için şifrelenmiş bir konumdur. Her şey cihazınızda saklanır ve dağıtılmış ağda yedeklenir.</string>
     <string name="onboarding_this_is_your_key_title">Bu senin anahtarın</string>
-    <string name="onboarding_key_description">Kullanıcı adı ve şifrenin yerini alır. Güvenli bir yerde sakla. Verilerinden yalnızca sen sorumlusun. Bu Anahtarı daha sonra uygulama ayarlarında bulabilirsin.</string>
+    <string name="onboarding_key_description">Kullanıcı adı ve şifrenin yerini alır. Güvenli bir yerde sakla — verilerinden yalnızca sen sorumlusun. Bu Anahtarı daha sonra uygulama ayarlarında bulabilirsin.</string>
     <string name="onboarding_show_my_key">Anahtarımı Göster</string>
     <string name="onboarding_tap_to_reveal">Göster ve Kopyala</string>
     <string name="onboarding_key_skip">Atla</string>
@@ -1107,7 +1128,7 @@
     <string name="onboarding_recovery_phrase_description">Anahtarınız, bu cihazda kasayı oluşturan 12 rastgele kelimeden oluşan bir kurtarma cümlesi ile temsil edilir.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Anahtara kim sahip olursa erişim hakkı elde eder</string>
     <string name="onboarding_recovery_phrase_description_2">Bu kelimelere sahip olan herkes kasana erişebilir. Şu anda bunları bilen tek kişi sensin.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Bundan sadece siz sorumlusunuz</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Bunun sorumluluğu tamamen sana aittir</string>
     <string name="onboarding_recovery_phrase_description_3">Dünyadaki tüm hesaplama kaynakları bile bu anahtarı kırmaya yetmez. Anahtarını kaybedersen verilerine erişemezsin. Anahtarını güvenli bir yerde sakla. Bir şifre yöneticisinde veya kağıda yazarak saklayabilirsin.</string>
     <string name="onboarding_recovery_phrase_description_4">Dünya üzerindeki tüm hesaplama kaynakları içeri girmek için yeterli değildir. Kaybederseniz, kurtarılamaz. Bu yüzden güvenli bir yerde saklayın!</string>
     <string name="onboarding_how_to_save_my_phrase">Anahtarımı nasıl kaydedebilirim?</string>
@@ -1290,7 +1311,8 @@
     <string name="multiplayer_viewer_access">Görüntüleyici erişimi</string>
     <string name="multiplayer_viewer">Görüntüleyen</string>
     <string name="multiplayer_viewer_access_desc">Bağlantıya sahip kişiler sohbeti görüntüleyebilir ve okuyabilir</string>
-    <string name="multiplayer_request_access">Erişim talebi</string>
+    <string name="multiplayer_request_access">
+Erişim talebi</string>
     <string name="multiplayer_request_access_desc">Sohbet sahibinin her bir katılım talebini onaylaması gerekir.</string>
     <string name="channel_members_subtitle">%1$d/%2$d düzenleyici, %3$d/%4$d görüntüleyici</string>
     <string name="multiplayer_qr_code">Karekod</string>
@@ -1307,6 +1329,20 @@
     <string name="multiplayer_change_to_viewer_confirmation">Bağlantıya sahip olan herkes alan içeriğini yalnızca görüntüleyebilir.</string>
     <string name="multiplayer_change_to_request_confirmation">Bağlantıya sahip olan herkesin alana katılmak için erişim istemesi gerekecektir.</string>
     <string name="multiplayer_invite_link_copied">Davet bağlantısı panoya kopyalandı</string>
+    <!-- Invite sharing (GO-7222): owner-held invites, share-within-space toggle, link reset -->
+    <string name="multiplayer_invite_share_toggle_title">Everyone in the space can share this invite</string>
+    <string name="multiplayer_invite_share_toggle_locked_hint">To make this invite private again, reset the link.</string>
+    <string name="multiplayer_invite_share_disabled_reason">Anyone with this link joins as an editor, without approval. Only you can share it.</string>
+    <string name="multiplayer_invite_share_confirm_title">Share invite with all members?</string>
+    <string name="multiplayer_invite_share_confirm_description">All space members will be able to see this invite link and share it with anyone. To make it private again, you\'ll need to reset the link.</string>
+    <string name="multiplayer_invite_auto_approval_warning">Anyone who gains access to this invitation link will be able to join this space at any time, until you reset the link.</string>
+    <string name="multiplayer_invite_editor_upgrade_note">Any existing Viewer who gains access to this invitation link can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_legacy_unsafe_warning">Every member of this space can see and share this invite link, and anyone who has it joins as an editor without approval. Any existing Viewer can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_held_by_owner">The invite link is held by the space owner. Ask them to share it.</string>
+    <string name="multiplayer_invite_reset_link">Reset link</string>
+    <string name="multiplayer_invite_reset_confirm_title">Reset invite link?</string>
+    <string name="multiplayer_invite_reset_confirm_description">The current link stops working for everyone who has it, including the people you meant to invite. A new link is created in its place.</string>
+    <string name="multiplayer_editor_access_disabled_shared">Unavailable while everyone in the space can share this invite. Reset the link first.</string>
     <string name="link_copied">Bağlantı panoya kopyalandı</string>
     <string name="remove_from_collection">Koleksiyondan bağlantıyı kaldır</string>
     <string name="multiplayer_copy_link">Bağlantıyı kopyala</string>
@@ -1339,6 +1375,10 @@
     <string name="multiplayer_approve_request">Erişimi ayarla</string>
     <string name="multiplayer_view_request">İsteği görüntüle</string>
     <string name="multiplayer_owner">Sahip</string>
+    <string name="multiplayer_admin">Yönetici</string>
+    <string name="multiplayer_make_admin_title">Üye yönetici yapılsın mı?</string>
+    <string name="multiplayer_make_admin_description">Yöneticiler mesajları silebilir, üyeleri kaldırabilir ve Çöp Kutusundaki nesneleri kalıcı olarak silebilir.</string>
+    <string name="multiplayer_make_admin_button">Yönetici Yap</string>
     <string name="multiplayer_no_permissions">İzin yok</string>
     <string name="multiplayer_pending">Beklemede</string>
     <string name="multiplayer_can_edit">Düzenleyebilir</string>
@@ -1351,6 +1391,9 @@
     <string name="multiplayer_space_join_request_header">%1$s, %2$s alanına katılmak için talepte bulundu.</string>
     <string name="multiplayer_remove_member">Üyeyi kaldır</string>
     <string name="multiplayer_remove_member_warning_text">%1$s alandan kaldırılacak</string>
+    <string name="multiplayer_remove_member_title">Üye bu kanaldan çıkarılsın mı?</string>
+    <string name="multiplayer_remove_member_description">%@ alandan kaldırılacak</string>
+    <string name="multiplayer_remove_member_button">Üyeyi Kaldır</string>
     <string name="multiplayer_request_sent_toast">İstek gönderildi</string>
     <string name="multiplayer_space_stop_sharing">Paylaşımı durdur</string>
     <string name="multiplayer_space_stop_sharing_space">Alan paylaşımını durdur</string>
@@ -1522,6 +1565,23 @@
     <string name="payments_code_title">E-posta adresine gönderilen kodu gir</string>
     <string name="payments_code_resend">Tekrar Gönder</string>
     <string name="payments_code_resend_in">%1$d saniye içinde yeniden gönderebilirsin</string>
+    <!-- Membership Activate Code -->
+    <string name="payments_activate_code_entry">Kodun var mı?</string>
+    <string name="payments_activate_code_title">Kodunu Etkinleştir</string>
+    <string name="payments_activate_code_subtitle">Satın alma işleminden sonra veya bir davet yoluyla aldığın kodu gir. Üyeliğin anında etkinleştirilecektir.</string>
+    <string name="payments_activate_code_hint">Aktivasyon kodunu yapıştır…</string>
+    <string name="payments_activate_code_button">Etkinleştir</string>
+    <!-- Membership Activate Code — success -->
+    <string name="payments_activate_code_success_title">Artık hazırsın</string>
+    <string name="payments_activate_code_success_subtitle">%1$s üyeliğin artık aktif</string>
+    <string name="payments_activate_code_success_subtitle_generic">Üyeliğin artık aktif</string>
+    <!-- Membership Activate Code — errors (CodeGetInfo) -->
+    <string name="membership_code_error_unknown">Bilinmeyen bir hata oluştu</string>
+    <string name="membership_code_error_bad_input">Hatalı giriş</string>
+    <string name="membership_code_error_not_logged_in">Giriş yapılmadı</string>
+    <string name="membership_code_error_payment_node">Ödeme düğümüne bağlantı kurulamadı. Lütfen tekrar dene.</string>
+    <string name="membership_code_error_code_invalid">Kod geçerli değil. Lütfen kontrol et ve tekrar dene.</string>
+    <string name="membership_code_error_already_member">Mevcut kimlik için üyelik zaten mevcut</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">%1$s\nAğa hoş geldiniz</string>
     <string name="payments_welcome_subtitle">Merakınız için kocaman bir alkış!</string>
@@ -1772,6 +1832,11 @@
     <string name="chat_attachment_media">Ortam yükle</string>
     <string name="chat_attachment_upload">Yükle</string>
     <string name="chat_attach">Ekle</string>
+    <string name="upload_success_snackbar_image">Yeni resim eklendi</string>
+    <string name="upload_success_snackbar_video">Yeni video eklendi</string>
+    <string name="upload_success_snackbar_file">Yeni dosya eklendi</string>
+    <string name="upload_success_snackbar_mixed">Yeni dosyalar eklendi</string>
+    <string name="upload_success_snackbar_action_open">%1$s aç</string>
     <string name="chats_reply">Yanıtla</string>
     <string name="chats_add_reaction">Tepki Ekle</string>
     <string name="chat_send_message_rate_limit_title">Durun! Turbo yazım algılandı!</string>
@@ -2010,6 +2075,9 @@
     <string name="notifications_all_short">Hepsi</string>
     <string name="notifications_mentions_short">Bahsetmeler</string>
     <string name="notifications_disable_short">Devre dışı bırak</string>
+    <string name="notification_option_enable">Etkinleştir</string>
+    <string name="notification_option_mute_and_hide">Sessize al ve gizle</string>
+    <string name="notification_option_disabled">Devre dışı</string>
     <string name="space_notify_unmute">Sesi aç</string>
     <string name="space_notify_mute">Sessize al</string>
     <string name="vault_pinned_limit_message">%1$d sabitlenmiş alan mevcut sınırınızdır. Yeni bir favori eklemek için birini sabitlemekten kaldırın.</string>
@@ -2067,6 +2135,8 @@
     </string>
     <string name="share_space_error_make_private_failed">        Alan özel hale getirilemedi. Lütfen daha sonra tekrar dene.
     </string>
+    <string name="share_space_error_invite_already_shared">This invite is already shared with all space members and cannot be made private. Reset the link to create a new private invite.</string>
+    <string name="share_space_error_invite_not_shareable">Anyone with this link joins as an editor, without approval. Switch the link to Viewer access before sharing it.</string>
     <string name="private_local_yours_forever">şifreli, yerel, sonsuza kadar sizin</string>
     <string name="private_channel">Doğrudan kanal</string>
     <string name="space_header_private_channel">Özel kanal</string>
@@ -2087,7 +2157,8 @@
     <string name="web_publishing_copy_web_link">Web Bağlantısını Kopyala</string>
     <string name="widgets_section_pinned">Sabitlendi</string>
     <string name="widgets_section_unread">Okunmamış</string>
-    <string name="widgets_section_object_types">Nesneler</string>
+    <string name="widgets_section_my_favorites">Favorilerim</string>
+    <string name="widgets_section_object_types">Türler</string>
     <string name="widgets_section_recently_edited">Yakın Zamanda Düzenlenen</string>
     <string name="widgets_menu_new_object_type">Yeni</string>
     <string name="widgets_menu_delete_object_type">Nesne Türünü Sil</string>
@@ -2135,7 +2206,7 @@
     <string name="toast_moved_to_bin">Nesne çöp kutusuna taşındı.</string>
     <string name="media_object_in_bin">Bu nesne çöp kutusunda. Geri yüklemek ister misin?</string>
     <string name="toast_restored">Nesne geri yüklendi.</string>
-    <string name="participant_btn_connect">Bağlan</string>
+    <string name="participant_btn_connect">Bağlantı kur</string>
     <!-- Sharing Extension Redesign -->
     <string name="sharing_select_destination">Hedef seçin</string>
     <string name="sharing_send_to_chat">Sohbete gönder</string>
@@ -2155,7 +2226,8 @@
     <!-- OS Widgets -->
     <string name="os_widget_spaces_title">Alanlar</string>
     <string name="os_widget_spaces_description">Sabitlenmiş alanlarına hızlı erişim</string>
-    <string name="os_widget_create_object_title">Yeni Nesne</string>
+    <string name="os_widget_create_object_title">Yeni Nesne
+</string>
     <string name="os_widget_create_object_description">Seçilen türde nesne oluştur</string>
     <string name="os_widget_space_shortcut_title">Alan Kısayolu</string>
     <string name="os_widget_space_shortcut_description">Doğrudan bir alanı aç</string>

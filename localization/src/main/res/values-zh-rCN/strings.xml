@@ -17,6 +17,8 @@
     <string name="experimental_features">实验性功能</string>
     <string name="experimental_features_compact_vault">紧凑库模式</string>
     <string name="experimental_features_compact_vault_description">隐藏库中已读频道的消息预览</string>
+    <string name="experimental_features_kanban">看板面板</string>
+    <string name="experimental_features_kanban_description">为集合和合集启用看板布局</string>
     <string name="account">库</string>
     <string name="reset_account">重置库</string>
     <string name="delete_account">删除库</string>
@@ -24,6 +26,8 @@
     <string name="data">数据</string>
     <string name="mode">模式</string>
     <string name="log_out">退出登录</string>
+    <string name="resume_account_failed_title">无法恢复会话</string>
+    <string name="resume_account_failed_message">您的会话无法恢复。注销将清除本地应用状态；您需要使用恢复短语才能重新登录。是否要注销？</string>
     <string name="pin_code">PIN 码</string>
     <string name="access">访问</string>
     <string name="wallpaper">壁纸</string>
@@ -60,7 +64,7 @@
     <string name="remove_image">移除图像</string>
     <string name="delete_space">删除空间</string>
     <string name="you_can_store">您可以在我们的节点上免费加密备份存储多达 %1$s 的文件。如果达到限制，文件将仅存储在本地。</string>
-    <string name="in_order_to_save">Free up space by offloading files to encrypted backup. They’ll load when you open them.</string>
+    <string name="in_order_to_save">通过将文件卸载到加密备份来释放空间。打开文件时它们会重新加载。</string>
     <string name="manage_files">管理文件</string>
     <string name="local_storage">本地存储</string>
     <string name="offload_files">卸载文件</string>
@@ -77,13 +81,14 @@
     <string name="space_settings_error_icon">更改空间图标失败。请重试。</string>
     <string name="manage_sections_title">管理分区</string>
     <string name="section_unread">未读</string>
+    <string name="section_my_favorites">我的收藏夹</string>
     <string name="section_pinned">置顶</string>
     <string name="section_objects">对象</string>
     <string name="section_recently_edited">最近编辑的文档</string>
     <string name="section_bin">回收站</string>
     <string name="error_loading_sections">加载分区时出错</string>
     <string name="data_management">数据管理</string>
-    <string name="deleted_account_danger_zone_msg">一旦将删除此库的请求发出，您将有 30 天的时间取消此请求。在 30 天后，您的加密库数据将会被永久性地从备份节点移除，您将无法在新设备上登录 Anytype。</string>
+    <string name="deleted_account_danger_zone_msg">提交删除库请求后，您可在 30 天内撤销该请求。30 天后，备份节点中的加密库数据将被永久删除，届时您将无法在新设备上登录 Anytype。</string>
     <string name="danger_zone">危险操作区域</string>
     <string name="snackbar_template_add">新模板已添加到类型</string>
     <string name="template_name_prefill_title">预填名称</string>
@@ -197,6 +202,7 @@
     <string name="hint_paste_link">粘贴链接</string>
     <string name="empty_tap_to_create_new_block">空的。点击创建一个新块</string>
     <string name="untitled">无标题</string>
+    <string name="back_history_channels">空间</string>
     <string name="untitled_set">未命名查询</string>
     <string name="untitled_collection">未命名合集</string>
     <string name="archived">已归档</string>
@@ -469,7 +475,7 @@
     <string name="paste_link">链接</string>
     <string name="next">下一步</string>
     <string name="limit_object_types">限制对象类型</string>
-    <string name="deleted_account_msg">很抱歉看到您离开。在您申请删除库后，您有 30 天的时间可以撤回该请求。30 天后，您加密的库数据将从备份节点中永久移除。</string>
+    <string name="deleted_account_msg">很遗憾您即将离开。提交删除库请求后，您可在 30 天内撤销该请求。30 天后，备份节点中的加密资料库数据将被永久删除。</string>
     <string name="swipe_down_to_skip">向下滑动以跳过</string>
     <string name="show">显示</string>
     <string name="this_type_has_templates">此类型有 %1$d 个模板</string>
@@ -563,6 +569,9 @@
     <string name="type_templates_widget_title">创建对象</string>
     <string name="view_layout_widget_title">布局</string>
     <string name="view_layout_cover_widget_title">封面</string>
+    <string name="view_layout_group_by_widget_title">分组</string>
+    <string name="group_by">分组</string>
+    <string name="color_columns">颜色列表</string>
     <string name="blank">空白</string>
     <string name="templates_menu_default_for_view">此视图的默认</string>
     <string name="templates_menu_edit">编辑模板</string>
@@ -580,6 +589,13 @@
     <string name="view_grid">网格</string>
     <string name="view_gallery">相册</string>
     <string name="view_kanban">看板</string>
+    <string name="dataview_board_no_objects">无对象</string>
+    <string name="dataview_board_no_value">输入为空</string>
+    <string name="dataview_board_checked">选中</string>
+    <string name="dataview_board_unchecked">未选中</string>
+    <string name="dataview_board_new_object">新建</string>
+    <string name="dataview_board_no_group_title">无分组属性</string>
+    <string name="dataview_board_no_group_description">在视图设置中选择要分组卡片的属性</string>
     <string name="page_cover">页面封面</string>
     <string name="object_action_pin">置顶</string>
     <string name="object_action_unpin">取消置顶</string>
@@ -865,12 +881,17 @@
     <string name="create_space_space_name">空间名称</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">创建主页</string>
-    <string name="homepage_picker_description">选择您和频道成员在打开频道时看到的内容。您可以随时在设置中进行更改。</string>
+    <string name="homepage_picker_description">成员将直接进入此页面，而非浏览导航。</string>
     <string name="homepage_picker_chat">聊天</string>
     <string name="homepage_picker_page">页面</string>
     <string name="homepage_picker_collection">合集</string>
-    <string name="homepage_picker_empty">空的</string>
-    <string name="homepage_picker_later">稍后</string>
+    <string name="homepage_picker_continue">继续</string>
+    <string name="homepage_picker_not_now">暂不</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">主页</string>
+    <string name="space_home_no_home_title">无主页</string>
+    <string name="space_home_no_home_subtitle">进入时自动打开导航栏</string>
+    <string name="widget_menu_change_home">更改主页</string>
     <string name="invite_members_widget_title">邀请成员</string>
     <string name="invite_members_widget_description">邀请成员加入此频道，开始协作。</string>
     <string name="generic_error">出错了，请再试一次。</string>
@@ -1084,7 +1105,7 @@
     <string name="onboarding_void_title">这是您的 Void</string>
     <string name="onboarding_void_description">这是您创建的所有内容的加密位置。所有内容都存储在您的设备上，并备份到分布式网络。</string>
     <string name="onboarding_this_is_your_key_title">这是您的密钥</string>
-    <string name="onboarding_key_description">您的密钥代表着用户名和密码。记得妥善保管——您的数据只由您掌握。之后，您可以在应用程序的设置中找到它。</string>
+    <string name="onboarding_key_description">它替代了登录名和密码。请妥善保管——只有您对自己的数据负责。您可以在应用设置中找到此密钥。</string>
     <string name="onboarding_show_my_key">显示我的密钥</string>
     <string name="onboarding_tap_to_reveal">显示并复制密钥</string>
     <string name="onboarding_key_skip">跳过</string>
@@ -1303,6 +1324,20 @@
     <string name="multiplayer_change_to_viewer_confirmation">任何拥有此链接的人只能查看空间内容。</string>
     <string name="multiplayer_change_to_request_confirmation">任何拥有链接的人都需要请求访问权限才能加入空间。</string>
     <string name="multiplayer_invite_link_copied">邀请链接已复制到剪贴板</string>
+    <!-- Invite sharing (GO-7222): owner-held invites, share-within-space toggle, link reset -->
+    <string name="multiplayer_invite_share_toggle_title">Everyone in the space can share this invite</string>
+    <string name="multiplayer_invite_share_toggle_locked_hint">To make this invite private again, reset the link.</string>
+    <string name="multiplayer_invite_share_disabled_reason">Anyone with this link joins as an editor, without approval. Only you can share it.</string>
+    <string name="multiplayer_invite_share_confirm_title">Share invite with all members?</string>
+    <string name="multiplayer_invite_share_confirm_description">All space members will be able to see this invite link and share it with anyone. To make it private again, you\'ll need to reset the link.</string>
+    <string name="multiplayer_invite_auto_approval_warning">Anyone who gains access to this invitation link will be able to join this space at any time, until you reset the link.</string>
+    <string name="multiplayer_invite_editor_upgrade_note">Any existing Viewer who gains access to this invitation link can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_legacy_unsafe_warning">Every member of this space can see and share this invite link, and anyone who has it joins as an editor without approval. Any existing Viewer can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_held_by_owner">The invite link is held by the space owner. Ask them to share it.</string>
+    <string name="multiplayer_invite_reset_link">Reset link</string>
+    <string name="multiplayer_invite_reset_confirm_title">Reset invite link?</string>
+    <string name="multiplayer_invite_reset_confirm_description">The current link stops working for everyone who has it, including the people you meant to invite. A new link is created in its place.</string>
+    <string name="multiplayer_editor_access_disabled_shared">Unavailable while everyone in the space can share this invite. Reset the link first.</string>
     <string name="link_copied">链接已复制到剪贴板</string>
     <string name="remove_from_collection">与合集解除链接</string>
     <string name="multiplayer_copy_link">拷贝链接</string>
@@ -1335,6 +1370,10 @@
     <string name="multiplayer_approve_request">设置访问权限</string>
     <string name="multiplayer_view_request">查看请求</string>
     <string name="multiplayer_owner">所有者</string>
+    <string name="multiplayer_admin">管理员</string>
+    <string name="multiplayer_make_admin_title">要将该成员设为管理员吗？</string>
+    <string name="multiplayer_make_admin_description">管理员可以删除消息、移除成员，以及永久删除回收站中的对象。</string>
+    <string name="multiplayer_make_admin_button">设为管理员</string>
     <string name="multiplayer_no_permissions">没有权限</string>
     <string name="multiplayer_pending">等待处理</string>
     <string name="multiplayer_can_edit">可编辑</string>
@@ -1347,6 +1386,9 @@
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_remove_member_warning_text">%1$s 将从空间中移除。</string>
+    <string name="multiplayer_remove_member_title">要将该成员移出此频道吗？</string>
+    <string name="multiplayer_remove_member_description">%@ 将从空间中移除。</string>
+    <string name="multiplayer_remove_member_button">移除成员</string>
     <string name="multiplayer_request_sent_toast">已发送申请</string>
     <string name="multiplayer_space_stop_sharing">停止共享</string>
     <string name="multiplayer_space_stop_sharing_space">停止共享此空间</string>
@@ -1516,6 +1558,23 @@
     <string name="payments_code_title">输入发送到您邮箱的代码</string>
     <string name="payments_code_resend">重新发送</string>
     <string name="payments_code_resend_in">在 %1$d 秒内重新发送</string>
+    <!-- Membership Activate Code -->
+    <string name="payments_activate_code_entry">有兑换码？</string>
+    <string name="payments_activate_code_title">激活您的代码</string>
+    <string name="payments_activate_code_subtitle">输入购买后或通过邀请获得的兑换码，即可立即激活会员。</string>
+    <string name="payments_activate_code_hint">粘贴激活码…</string>
+    <string name="payments_activate_code_button">激活</string>
+    <!-- Membership Activate Code — success -->
+    <string name="payments_activate_code_success_title">一切就绪</string>
+    <string name="payments_activate_code_success_subtitle">您的%1$s会员资格现已激活</string>
+    <string name="payments_activate_code_success_subtitle_generic">您的会员资格现已激活</string>
+    <!-- Membership Activate Code — errors (CodeGetInfo) -->
+    <string name="membership_code_error_unknown">发生未知错误</string>
+    <string name="membership_code_error_bad_input">非法输入</string>
+    <string name="membership_code_error_not_logged_in">未登录</string>
+    <string name="membership_code_error_payment_node">连接不到支付节点。请重试。</string>
+    <string name="membership_code_error_code_invalid">代码无效。请检查并重试。</string>
+    <string name="membership_code_error_already_member">当前身份已拥有会员资格</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">欢迎来到网络，\n%1$s</string>
     <string name="payments_welcome_subtitle">为你的好奇心干一杯大的！</string>
@@ -1758,6 +1817,11 @@
     <string name="chat_attachment_media">上传媒体文件</string>
     <string name="chat_attachment_upload">上传</string>
     <string name="chat_attach">附加</string>
+    <string name="upload_success_snackbar_image">已添加新图片</string>
+    <string name="upload_success_snackbar_video">已添加新视频</string>
+    <string name="upload_success_snackbar_file">已添加新文件</string>
+    <string name="upload_success_snackbar_mixed">已添加新文件</string>
+    <string name="upload_success_snackbar_action_open">打开 %1$s</string>
     <string name="chats_reply">回复</string>
     <string name="chats_add_reaction">添加回应</string>
     <string name="chat_send_message_rate_limit_title">等等！输入得太快了！</string>
@@ -1996,6 +2060,9 @@
     <string name="notifications_all_short">所有</string>
     <string name="notifications_mentions_short">提及</string>
     <string name="notifications_disable_short">禁用</string>
+    <string name="notification_option_enable">启用</string>
+    <string name="notification_option_mute_and_hide">静音并隐藏</string>
+    <string name="notification_option_disabled">已禁用</string>
     <string name="space_notify_unmute">取消静音</string>
     <string name="space_notify_mute">静音</string>
     <string name="vault_pinned_limit_message">最多只能固定 %1$d 个空间。请取消固定一个后再添加新收藏。</string>
@@ -2051,10 +2118,12 @@
     <string name="share_space_error_incorrect_permissions">您没有必要的权限。请联系空间所有者以获取帮助。</string>
     <string name="share_space_error_no_such_space">        您尝试分享的空间不存在。请检查空间 ID 后重试。    </string>
     <string name="share_space_error_make_private_failed">        无法将空间设为私有。请稍后重试。    </string>
+    <string name="share_space_error_invite_already_shared">This invite is already shared with all space members and cannot be made private. Reset the link to create a new private invite.</string>
+    <string name="share_space_error_invite_not_shareable">Anyone with this link joins as an editor, without approval. Switch the link to Viewer access before sharing it.</string>
     <string name="private_local_yours_forever">加密 · 本地 · 永久归你</string>
     <string name="private_channel">私聊频道</string>
-    <string name="space_header_private_channel">Private channel</string>
-    <string name="space_header_group_channel">Group channel</string>
+    <string name="space_header_private_channel">私人频道</string>
+    <string name="space_header_group_channel">群组频道</string>
     <string name="wallpaper_item_space_icon_color">默认颜色</string>
     <string name="publish_to_web">发布至网络</string>
     <string name="preferences">首选项</string>
@@ -2071,7 +2140,8 @@
     <string name="web_publishing_copy_web_link">复制网页链接</string>
     <string name="widgets_section_pinned">置顶</string>
     <string name="widgets_section_unread">未读</string>
-    <string name="widgets_section_object_types">对象</string>
+    <string name="widgets_section_my_favorites">我的收藏夹</string>
+    <string name="widgets_section_object_types">类型</string>
     <string name="widgets_section_recently_edited">最近编辑</string>
     <string name="widgets_menu_new_object_type">新建</string>
     <string name="widgets_menu_delete_object_type">删除对象类型</string>
@@ -2164,5 +2234,5 @@
     <string name="offline_downloads_value_250mb">250 MB</string>
     <string name="offline_downloads_value_1gb">1 GB</string>
     <string name="offline_downloads_value_unlimited">无限的</string>
-    <string name="device_storage_used">Device storage used</string>
+    <string name="device_storage_used">设备存储用量</string>
 </resources>

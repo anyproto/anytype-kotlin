@@ -12,11 +12,13 @@
     <string name="key">Clave</string>
     <string name="login_key">Clave de acceso</string>
     <string name="clear_file_cache">Limpiar caché de archivos</string>
-    <string name="debug_sync_report">Informe de sincronización de depuración</string>
+    <string name="debug_sync_report">Informe de depuración de sincronización</string>
     <string name="debug">Depurar</string>
     <string name="experimental_features">Funciones experimentales</string>
     <string name="experimental_features_compact_vault">Modo de arca compacto</string>
     <string name="experimental_features_compact_vault_description">No muestra en el arca la vista previa de mensajes de canales leídos</string>
+    <string name="experimental_features_kanban">Tablero kanban</string>
+    <string name="experimental_features_kanban_description">Habilita el diseño de Kanban (tablero) para conjuntos y colecciones.</string>
     <string name="account">Arca</string>
     <string name="reset_account">Restablecer arca</string>
     <string name="delete_account">Eliminar arca</string>
@@ -24,6 +26,8 @@
     <string name="data">Datos</string>
     <string name="mode">Modo</string>
     <string name="log_out">Cerrar sesión</string>
+    <string name="resume_account_failed_title">No se ha restaurado la sesión</string>
+    <string name="resume_account_failed_message">No ha sido posible reanudar tu sesión. Si cierras la sesión ahora, se borrará el estado de la aplicación en este dispositivo y necesitarás tu frase de recuperación para volver a entrar. ¿Quieres cerrar la sesión? </string>
     <string name="pin_code">Código PIN</string>
     <string name="access">Acceso</string>
     <string name="wallpaper">Fondo de pantalla</string>
@@ -77,6 +81,7 @@
     <string name="space_settings_error_icon">No se ha podido actualizar el icono del espacio. Inténtalo de nuevo.</string>
     <string name="manage_sections_title">Gestionar secciones</string>
     <string name="section_unread">No leído</string>
+    <string name="section_my_favorites">Mis favoritos</string>
     <string name="section_pinned">Anclado</string>
     <string name="section_objects">Objetos</string>
     <string name="section_recently_edited">Editado recientemente</string>
@@ -197,6 +202,7 @@
     <string name="hint_paste_link">Pegar enlace</string>
     <string name="empty_tap_to_create_new_block">Vacío. Toca para crear un bloque.</string>
     <string name="untitled">Sin título</string>
+    <string name="back_history_channels">Canales</string>
     <string name="untitled_set">Consulta sin título</string>
     <string name="untitled_collection">Colección sin título</string>
     <string name="archived">Archivado</string>
@@ -564,6 +570,9 @@
     <string name="type_templates_widget_title">Crear objeto</string>
     <string name="view_layout_widget_title">Diseño</string>
     <string name="view_layout_cover_widget_title">Portada</string>
+    <string name="view_layout_group_by_widget_title">Agrupar por</string>
+    <string name="group_by">Agrupar por</string>
+    <string name="color_columns">Colorear columnas</string>
     <string name="blank">En blanco</string>
     <string name="templates_menu_default_for_view">Por defecto para esta vista</string>
     <string name="templates_menu_edit">Editar plantilla</string>
@@ -581,6 +590,13 @@
     <string name="view_grid">Cuadrícula</string>
     <string name="view_gallery">Galería</string>
     <string name="view_kanban">Kanban</string>
+    <string name="dataview_board_no_objects">No hay objetos</string>
+    <string name="dataview_board_no_value">Sin valor</string>
+    <string name="dataview_board_checked">Marcado</string>
+    <string name="dataview_board_unchecked">Sin marcar</string>
+    <string name="dataview_board_new_object">Nuevo</string>
+    <string name="dataview_board_no_group_title">No hay una propiedad por la que agrupar</string>
+    <string name="dataview_board_no_group_description">En los ajustes de la vista, elige la propiedad por la que agruparás las tarjetas.</string>
     <string name="page_cover">Portada de página</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Desanclar</string>
@@ -867,12 +883,17 @@
     <string name="create_space_space_name">Nombre del espacio</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Crear Inicio</string>
-    <string name="homepage_picker_description">Elige lo que veréis tú y otros miembros del canal al abrirlo. Puedes cambiarlo en los ajustes en cualquier momento.</string>
+    <string name="homepage_picker_description">Los miembros llegarán directamente aquí en lugar de explorar la navegación.</string>
     <string name="homepage_picker_chat">Chat</string>
     <string name="homepage_picker_page">Página</string>
     <string name="homepage_picker_collection">Colección</string>
-    <string name="homepage_picker_empty">Vacío</string>
-    <string name="homepage_picker_later">Más tarde</string>
+    <string name="homepage_picker_continue">Continuar</string>
+    <string name="homepage_picker_not_now">Ahora no</string>
+    <!-- Space Settings / Home -->
+    <string name="space_home_row_title">Inicio</string>
+    <string name="space_home_no_home_title">Sin Inicio </string>
+    <string name="space_home_no_home_subtitle">Al entrar, se abre la navegación </string>
+    <string name="widget_menu_change_home">Cambiar Inicio</string>
     <string name="invite_members_widget_title">Invitar a otras personas</string>
     <string name="invite_members_widget_description">Invita a otras personas a este canal para empezar a colaborar. </string>
     <string name="generic_error">Algo ha salido mal. Inténtalo de nuevo.</string>
@@ -1307,6 +1328,20 @@
     <string name="multiplayer_change_to_viewer_confirmation">Quien tenga el enlace solo podra ver el contenido del espacio.</string>
     <string name="multiplayer_change_to_request_confirmation">Quien tenga el enlace tendrá que solicitar acceso para acceder al espacio.</string>
     <string name="multiplayer_invite_link_copied">Enlace de invitación copiado al portapapeles</string>
+    <!-- Invite sharing (GO-7222): owner-held invites, share-within-space toggle, link reset -->
+    <string name="multiplayer_invite_share_toggle_title">Cualquier miembro del espacio puede compartir este enlace</string>
+    <string name="multiplayer_invite_share_toggle_locked_hint">Para que la invitación vuelva a ser privada, restablece el enlace.</string>
+    <string name="multiplayer_invite_share_disabled_reason">Quien tenga este enlace accederá como editor sin necesitar tu aprobación. Solo tú puedes compartirlo.</string>
+    <string name="multiplayer_invite_share_confirm_title">¿Compartir invitación con todos los miembros?</string>
+    <string name="multiplayer_invite_share_confirm_description">Cualquier miembro del espacio podrá ver el enlace de esta invitación y enviárselo a otras personas. Para que vuelva a ser privada, tendrás que restablecer el enlace.</string>
+    <string name="multiplayer_invite_auto_approval_warning">Cualquiera que consiga este enlace de invitación podrá acceder a este espacio cuando quiera mientras no restablezcas el enlace.</string>
+    <string name="multiplayer_invite_editor_upgrade_note">Cualquier visitante actual que consiga este enlace de invitación podrá convertirse en editor.</string>
+    <string name="multiplayer_invite_legacy_unsafe_warning">Todos los miembros de este espacio pueden ver este enlace de invitación y compartirlo, y quien lo tenga accederá como editor sin necesitar tu aprobación. Cualquier visitante podría usarlo para convertirse en editor.</string>
+    <string name="multiplayer_invite_held_by_owner">The invite link is held by the space owner. Ask them to share it.</string>
+    <string name="multiplayer_invite_reset_link">Reset link</string>
+    <string name="multiplayer_invite_reset_confirm_title">Reset invite link?</string>
+    <string name="multiplayer_invite_reset_confirm_description">The current link stops working for everyone who has it, including the people you meant to invite. A new link is created in its place.</string>
+    <string name="multiplayer_editor_access_disabled_shared">Unavailable while everyone in the space can share this invite. Reset the link first.</string>
     <string name="link_copied">Enlace copiado al portapapeles</string>
     <string name="remove_from_collection">Desconectar de la colección</string>
     <string name="multiplayer_copy_link">Copiar enlace</string>
@@ -1339,6 +1374,10 @@
     <string name="multiplayer_approve_request">Establecer acceso</string>
     <string name="multiplayer_view_request">Ver solicitud</string>
     <string name="multiplayer_owner">Propietario</string>
+    <string name="multiplayer_admin">Administrador</string>
+    <string name="multiplayer_make_admin_title">¿Quieres convertir a este miembro en administrador?</string>
+    <string name="multiplayer_make_admin_description">Los administradores pueden borrar mensajes, eliminar miembros y borrar definitivamente los objetos de la papelera.</string>
+    <string name="multiplayer_make_admin_button">Hacer administrador</string>
     <string name="multiplayer_no_permissions">Sin permisos</string>
     <string name="multiplayer_pending">Pendiente</string>
     <string name="multiplayer_can_edit">Puede editar</string>
@@ -1351,6 +1390,9 @@
     <string name="multiplayer_space_join_request_header">%1$s solicita acceder al espacio %2$s</string>
     <string name="multiplayer_remove_member">Eliminar miembro</string>
     <string name="multiplayer_remove_member_warning_text">%1$s se eliminará del espacio.</string>
+    <string name="multiplayer_remove_member_title">¿Quieres eliminar este miembro del canal?</string>
+    <string name="multiplayer_remove_member_description">Perderá el acceso al canal inmediatamente. Según la configuración de tu invitación, es posible que vuelva a unirse o a solicitar la admisión.</string>
+    <string name="multiplayer_remove_member_button">Eliminar miembro</string>
     <string name="multiplayer_request_sent_toast">Solicitud enviada</string>
     <string name="multiplayer_space_stop_sharing">Dejar de compartir</string>
     <string name="multiplayer_space_stop_sharing_space">Dejar de compartir el espacio</string>
@@ -1522,6 +1564,23 @@
     <string name="payments_code_title">Introduce el código enviado a tu buzón de correo electrónico</string>
     <string name="payments_code_resend">Reenviar</string>
     <string name="payments_code_resend_in">Reenviar dentro de %1$d s</string>
+    <!-- Membership Activate Code -->
+    <string name="payments_activate_code_entry">¿Tienes un código?</string>
+    <string name="payments_activate_code_title">Activa tu código</string>
+    <string name="payments_activate_code_subtitle">Introduce el código que recibiste tras la compra o con la invitación. Tu suscripción se activará al momento.</string>
+    <string name="payments_activate_code_hint">Pegar código de activación…</string>
+    <string name="payments_activate_code_button">Activar</string>
+    <!-- Membership Activate Code — success -->
+    <string name="payments_activate_code_success_title">Todo listo</string>
+    <string name="payments_activate_code_success_subtitle">Tu suscripción a %1$s ya está activa</string>
+    <string name="payments_activate_code_success_subtitle_generic">Tu suscripción ya está activa</string>
+    <!-- Membership Activate Code — errors (CodeGetInfo) -->
+    <string name="membership_code_error_unknown">Error desconocido.</string>
+    <string name="membership_code_error_bad_input">Error de entrada</string>
+    <string name="membership_code_error_not_logged_in">No has iniciado sesión</string>
+    <string name="membership_code_error_payment_node">No hay conexión con el nodo de pago. Inténtalo de nuevo, por favor.</string>
+    <string name="membership_code_error_code_invalid">El código no es válido. Compruébalo e inténtalo de nuevo, por favor.</string>
+    <string name="membership_code_error_already_member">Ya existe una suscripción para la identidad actual.</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Te damos la bienvenida a la red,\n%1$s</string>
     <string name="payments_welcome_subtitle">¡Enhorabuena por tu curiosidad!</string>
@@ -1529,7 +1588,8 @@
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
     <string name="membership_support_subject">Informe de fallos de suscripción - %1$s</string>
-    <string name="membership_support_body">        Hola, equipo de soporte de Anytype,\n\n
+    <string name="membership_support_body">
+        Hola, equipo de soporte de Anytype,\n\n
 
         He encontrado un fallo en la pantalla de suscripción de la aplicación. Estos son los detalles:\n
 
@@ -1772,6 +1832,11 @@
     <string name="chat_attachment_media">Subir medios</string>
     <string name="chat_attachment_upload">Cargar</string>
     <string name="chat_attach">Adjuntar</string>
+    <string name="upload_success_snackbar_image">Imagen nueva añadida</string>
+    <string name="upload_success_snackbar_video">Vídeo nuevo añadido</string>
+    <string name="upload_success_snackbar_file">Archivo nuevo añadido</string>
+    <string name="upload_success_snackbar_mixed">Archivos nuevos añadidos</string>
+    <string name="upload_success_snackbar_action_open">Abrir %1$s</string>
     <string name="chats_reply">Responder</string>
     <string name="chats_add_reaction">Añadir reacción</string>
     <string name="chat_send_message_rate_limit_title">¡Calma! ¡Estás escribiendo muy deprisa!</string>
@@ -1929,7 +1994,7 @@
     <string name="migration_screen_what_to_expect">Qué ocurrirá</string>
     <string name="migration_screen_your_data_remains_safe">Tus datos están a salvo</string>
     <string name="migration_screen_your_data_description">Durante esta actualización, tus datos están protegidos por completo. La actualización se realiza en tu dispositivo y no afecta a los datos sincronizados. Lo que hacemos es copiarlos con un formato nuevo y crear en tu dispositivo una copia de respaldo que contiene todos los datos en el formato anterior.</string>
-    <string name="migration_screen_your_data_description_2">Esta copia de respaldo nos sirve para depurar errores y ofrecerte ayuda si se presenta algún imprevisto.</string>
+    <string name="migration_screen_your_data_description_2">Esta copia de respaldo nos sirve para detectar errores y ofrecerte ayuda si se presenta algún imprevisto.</string>
     <string name="migration_screen_what_to_expect_description">Verás una pantalla de carga durante la actualización. Cuando termine, podrás seguir usando la aplicación como siempre.</string>
     <string name="object_type_icon_change_title">Cambiar icono</string>
     <string name="object_type_icon_remove">Borrar</string>
@@ -2010,6 +2075,9 @@
     <string name="notifications_all_short">Todo</string>
     <string name="notifications_mentions_short">Menciones</string>
     <string name="notifications_disable_short">Desactivar</string>
+    <string name="notification_option_enable">Habilitar</string>
+    <string name="notification_option_mute_and_hide">Silenciar y ocultar</string>
+    <string name="notification_option_disabled">Deshabilitado</string>
     <string name="space_notify_unmute">No silenciar</string>
     <string name="space_notify_mute">Silenciar</string>
     <string name="vault_pinned_limit_message">Tu límite actual es de %1$d espacios anclados. Desancla alguno si quieres añadir otro nuevo.</string>
@@ -2063,13 +2131,16 @@
     <string name="share_space_error_space_deleted">Parece que este espacio se ha eliminado. Asegúrate de que tus dispositivos están sincronizados.</string>
     <string name="share_space_error_generic">Se ha producido un error inesperado: %1$s. Inténtalo de nuevo más tarde.</string>
     <string name="share_space_error_incorrect_permissions">No tienes los permisos necesarios. Ponte en contacto con el propietario del espacio.</string>
-    <string name="share_space_error_no_such_space">        El espacio que intentas compartir no existe. Comprueba el ID del espacio e inténtalo de nuevo.
+    <string name="share_space_error_no_such_space">
+        El espacio que intentas compartir no existe. Comprueba el ID del espacio e inténtalo de nuevo.
     </string>
     <string name="share_space_error_make_private_failed">No se ha podido hacer privado el espacio. Inténtalo de nuevo más tarde.</string>
+    <string name="share_space_error_invite_already_shared">This invite is already shared with all space members and cannot be made private. Reset the link to create a new private invite.</string>
+    <string name="share_space_error_invite_not_shareable">Anyone with this link joins as an editor, without approval. Switch the link to Viewer access before sharing it.</string>
     <string name="private_local_yours_forever">cifrado, local, tuyo para siempre</string>
     <string name="private_channel">Canal directo</string>
-    <string name="space_header_private_channel">Private channel</string>
-    <string name="space_header_group_channel">Group channel</string>
+    <string name="space_header_private_channel">Canal privado</string>
+    <string name="space_header_group_channel">Canal de grupo</string>
     <string name="wallpaper_item_space_icon_color">Color por defecto</string>
     <string name="publish_to_web">Publicar en la web</string>
     <string name="preferences">Preferencias</string>
@@ -2086,7 +2157,8 @@
     <string name="web_publishing_copy_web_link">Copiar enlace web</string>
     <string name="widgets_section_pinned">Anclado</string>
     <string name="widgets_section_unread">No leído</string>
-    <string name="widgets_section_object_types">Objetos</string>
+    <string name="widgets_section_my_favorites">Mis favoritos</string>
+    <string name="widgets_section_object_types">Tipos</string>
     <string name="widgets_section_recently_edited">Editado recientemente</string>
     <string name="widgets_menu_new_object_type">Nuevo</string>
     <string name="widgets_menu_delete_object_type">Eliminar tipo de objeto</string>

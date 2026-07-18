@@ -128,6 +128,7 @@ message Event {
       Chat.UpdateReactionReadStatus chatUpdateReactionReadStatus = 141;
       Object.AutoArchive objectAutoArchive = 142;
       Object.AutoRestore objectAutoRestore = 143;
+      Object.CleanupSuggestion objectCleanupSuggestion = 146;
       Debug.ProfileCreated debugProfileCreated = 145;
       Chat.UpdateMessageCount chatUpdateMessageCount =
           144; // received whenever the total number of non-deleted messages in
@@ -353,6 +354,19 @@ message Event {
 
     message AutoRestore {
       repeated string objectIds = 1;
+    }
+
+    message CleanupSuggestion {
+      // orphan ids (objects at any level + files at level >= 2) created within contextId
+      repeated string objectIds = 1;
+      // the object that was archived / deleted / had a link removed
+      string contextId = 2;
+      Trigger trigger = 3;
+      enum Trigger {
+        archive = 0;
+        delete = 1;
+        linkRemoval = 2;
+      }
     }
   }
   message Block {

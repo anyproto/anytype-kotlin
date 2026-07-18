@@ -214,7 +214,7 @@
     <string name="block_with_a_picture">Bloque con imagen</string>
     <string name="tap_here_to_insert_a_bookmark_url">Toca aquí para insertar la URL de un marcador</string>
     <string name="archive">Archivo</string>
-    <string name="add_block_option_icon">Añadir icono de opción de bloque</string>
+    <string name="add_block_option_icon">Icono de añadir bloque</string>
     <string name="bookmark_error_menu_button">Botón de menú de error de marcador</string>
     <string name="bookmark_error">Se ha producido un error. Inténtalo de nuevo.</string>
     <string name="deleted_type">Tipo eliminado</string>
@@ -1147,7 +1147,7 @@
     <!--region CONTENT DESCRIPTIONS FOR ACCESSIBILITY -->
     <string name="content_description_delete_button">Botón Eliminar</string>
     <string name="content_description_duplicate_button">Botón Duplicar</string>
-    <string name="content_description_edit_view_button">Botón Editar-ver</string>
+    <string name="content_description_edit_view_button">Botón Editar-vista</string>
     <string name="content_description_open_to_edit_view_button">Botón Abrir para editar propiedad</string>
     <string name="content_description_remove_from_set_button">Quitar propiedad de esta consulta</string>
     <string name="content_desc_page_toolbar_search">Buscar páginas</string>
@@ -1391,7 +1391,7 @@
     <string name="multiplayer_remove_member">Eliminar miembro</string>
     <string name="multiplayer_remove_member_warning_text">%1$s se eliminará del espacio.</string>
     <string name="multiplayer_remove_member_title">¿Quieres eliminar este miembro del canal?</string>
-    <string name="multiplayer_remove_member_description">%@ se eliminará del espacio.</string>
+    <string name="multiplayer_remove_member_description">Perderá el acceso inmediatamente. Dependiendo de la configuración de tu invitación, podría volver a unirse o a solicitar la admisión.</string>
     <string name="multiplayer_remove_member_button">Eliminar miembro</string>
     <string name="multiplayer_request_sent_toast">Solicitud enviada</string>
     <string name="multiplayer_space_stop_sharing">Dejar de compartir</string>

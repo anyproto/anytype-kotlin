@@ -766,8 +766,16 @@ class EditorViewModel(
     private fun applyLinkMarkup(
         blockId: String, link: String, range: IntRange
     ) {
-        val targetBlock = blocks.first { it.id == blockId }
-        val targetContent = targetBlock.content as Content.Text
+        val targetBlock = blocks.find { it.id == blockId }
+        if (targetBlock == null) {
+            Timber.w("Can't find target block to apply link markup: $blockId")
+            return
+        }
+        val targetContent = targetBlock.content as? Content.Text
+        if (targetContent == null) {
+            Timber.w("Can't apply link markup to a non-text block: $blockId")
+            return
+        }
         val linkMark = Content.Text.Mark(
             type = Content.Text.Mark.Type.LINK,
             range = IntRange(start = range.first, endInclusive = range.last.inc()),
@@ -4887,6 +4895,17 @@ class EditorViewModel(
             }
             focused = lastMaterializedTrailingBlock ?: return
         }
+        val fork = identityFork
+        if (fork != null && focused == fork.oldId) {
+            // Replace in flight — replay the paste against the forked block.
+            fork.onForked += { onPaste(range) }
+            return
+        }
+        val redirected = focused?.let { forkRedirectOrNull(it) }
+        if (redirected != null) {
+            // Dispatched against the pre-fork id after the swap — retarget.
+            focused = redirected
+        }
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
                 Intent.Clipboard.Paste(
@@ -5056,13 +5075,23 @@ class EditorViewModel(
 
     fun onBookmarkPasted(url: Url) {
         Timber.d("onBookmarkPasted $url")
+        // The virtual placeholder and a block whose identity fork is in flight
+        // are unknown to the middleware — settle the identity first, then
+        // create the bookmark against the real block id.
+        if (deferUntilBlockIdentitySettled { onBookmarkPasted(url) }) return
         val focus = orchestrator.stores.focus.current()
         if (!focus.isEmpty) {
+            val focused = focus.requireTarget()
+            val target = if (focused == VIRTUAL_TRAILING_BLOCK_ID) {
+                lastMaterializedTrailingBlock ?: return
+            } else {
+                forkRedirectOrNull(focused) ?: focused
+            }
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
                     Intent.Bookmark.CreateBookmark(
                         context = context,
-                        target = focus.requireTarget(),
+                        target = target,
                         position = Position.TOP,
                         url = url
                     )
@@ -8169,9 +8198,20 @@ class EditorViewModel(
 
     fun proceedToAddUriToTextAsLink(uri: String) {
         Timber.d("proceedToAddUriToTextAsLink, uri:[$uri]")
+        // "Paste link" first inserts the uri into the block, which starts the
+        // placeholder materialization (or the identity fork) for an empty
+        // block. The link mark must then be applied to the real block once the
+        // identity settles — the old id write would race the in-flight
+        // create/replace and lose the mark.
+        if (deferUntilBlockIdentitySettled { proceedToAddUriToTextAsLink(uri) }) return
         val range = orchestrator.stores.textSelection.current().selection
         if (range != null) {
-            val target = orchestrator.stores.focus.current().targetOrNull()
+            val focused = orchestrator.stores.focus.current().targetOrNull()
+            val target = when {
+                focused == null -> null
+                focused == VIRTUAL_TRAILING_BLOCK_ID -> lastMaterializedTrailingBlock
+                else -> forkRedirectOrNull(focused) ?: focused
+            }
             if (target != null) {
                 applyLinkMarkup(
                     blockId = target,

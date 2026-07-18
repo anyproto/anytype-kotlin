@@ -1330,7 +1330,7 @@ Erişim talebi</string>
     <string name="multiplayer_change_to_request_confirmation">Bağlantıya sahip olan herkesin alana katılmak için erişim istemesi gerekecektir.</string>
     <string name="multiplayer_invite_link_copied">Davet bağlantısı panoya kopyalandı</string>
     <!-- Invite sharing (GO-7222): owner-held invites, share-within-space toggle, link reset -->
-    <string name="multiplayer_invite_share_toggle_title">Everyone in the space can share this invite</string>
+    <string name="multiplayer_invite_share_toggle_title">Bu kanaldaki herkes bu daveti paylaşabilir</string>
     <string name="multiplayer_invite_share_toggle_locked_hint">To make this invite private again, reset the link.</string>
     <string name="multiplayer_invite_share_disabled_reason">Anyone with this link joins as an editor, without approval. Only you can share it.</string>
     <string name="multiplayer_invite_share_confirm_title">Share invite with all members?</string>

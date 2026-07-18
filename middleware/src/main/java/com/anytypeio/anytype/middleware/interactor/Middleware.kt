@@ -2628,29 +2628,17 @@ class Middleware @Inject constructor(
     fun generateSpaceInviteLink(
         space: SpaceId,
         inviteType: InviteType?,
-        permissions: SpaceMemberPermissions?
+        permissions: SpaceMemberPermissions?,
+        shareWithinSpace: Boolean
     ): SpaceInviteLink {
-        val request = if (inviteType != null && permissions != null) {
-            Rpc.Space.InviteGenerate.Request(
-                spaceId = space.id,
-                inviteType = inviteType.toMiddleware(),
-                permissions = permissions.toMw()
-            )
-        } else if (inviteType != null) {
-            Rpc.Space.InviteGenerate.Request(
-                spaceId = space.id,
-                inviteType = inviteType.toMiddleware()
-            )
-        } else if (permissions != null) {
-            Rpc.Space.InviteGenerate.Request(
-                spaceId = space.id,
-                permissions = permissions.toMw()
-            )
-        } else {
-            Rpc.Space.InviteGenerate.Request(
-                spaceId = space.id
-            )
-        }
+        // Proto3 omits fields set to their default value, so passing the defaults
+        // for null inviteType/permissions is equivalent to not setting them.
+        val request = Rpc.Space.InviteGenerate.Request(
+            spaceId = space.id,
+            inviteType = inviteType?.toMiddleware() ?: anytype.model.InviteType.Member,
+            permissions = permissions?.toMw() ?: anytype.model.ParticipantPermissions.Reader,
+            shareWithinSpace = shareWithinSpace
+        )
 
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.spaceInviteGenerate(request) }
@@ -2816,7 +2804,8 @@ class Middleware @Inject constructor(
             fileKey = response.inviteFileKey,
             contentId = response.inviteCid,
             permissions = response.permissions.toCore(),
-            inviteType = response.inviteType.toCoreModel()
+            inviteType = response.inviteType.toCoreModel(),
+            heldByOwner = response.heldByOwner
         )
     }
 

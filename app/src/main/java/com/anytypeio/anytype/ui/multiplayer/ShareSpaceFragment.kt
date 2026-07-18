@@ -73,6 +73,14 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     onInviteLinkAccessLevelSelected = vm::onInviteLinkAccessLevelSelected,
                     onInviteLinkAccessChangeConfirmed = vm::onInviteLinkAccessChangeConfirmed,
                     onInviteLinkAccessChangeCancel = vm::onInviteLinkAccessChangeCancel,
+                    shareInviteConfirmationDialog = vm.shareInviteConfirmationDialog.collectAsStateWithLifecycle().value,
+                    onShareWithinSpaceClicked = vm::onShareWithinSpaceClicked,
+                    onShareWithinSpaceConfirmed = vm::onShareWithinSpaceConfirmed,
+                    onShareWithinSpaceCancelled = vm::onShareWithinSpaceCancelled,
+                    resetLinkConfirmationDialog = vm.resetLinkConfirmationDialog.collectAsStateWithLifecycle().value,
+                    onResetLinkClicked = vm::onResetLinkClicked,
+                    onResetLinkConfirmed = vm::onResetLinkConfirmed,
+                    onResetLinkCancelled = vm::onResetLinkCancelled,
                     onCopyInviteLinkClicked = vm::onCopyInviteLinkClicked,
                     isCurrentUserOwner = vm.isCurrentUserOwner.collectAsStateWithLifecycle().value,
                     onMakePrivateClicked = vm::onMakePrivateClicked,
@@ -169,6 +177,22 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                             onDismissRequest = { vm.dismissShareSpaceErrors() }
                         )
                     }
+                    ShareSpaceErrors.InviteAlreadyShared -> {
+                        BaseAlertDialog(
+                            dialogText = stringResource(R.string.share_space_error_invite_already_shared),
+                            buttonText = stringResource(R.string.button_ok),
+                            onButtonClick = { vm.dismissShareSpaceErrors() },
+                            onDismissRequest = { vm.dismissShareSpaceErrors() }
+                        )
+                    }
+                    ShareSpaceErrors.InviteNotShareable -> {
+                        BaseAlertDialog(
+                            dialogText = stringResource(R.string.share_space_error_invite_not_shareable),
+                            buttonText = stringResource(R.string.button_ok),
+                            onButtonClick = { vm.dismissShareSpaceErrors() },
+                            onDismissRequest = { vm.dismissShareSpaceErrors() }
+                        )
+                    }
                 }
             }
         }
@@ -260,6 +284,12 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     }
                     is MultiplayerError.Generic.NoSuchSpace -> {
                         toast(resources.getString(R.string.share_space_error_no_such_space))
+                    }
+                    is MultiplayerError.Generic.InviteAlreadyShared -> {
+                        toast(resources.getString(R.string.share_space_error_invite_already_shared))
+                    }
+                    is MultiplayerError.Generic.InviteNotShareable -> {
+                        toast(resources.getString(R.string.share_space_error_invite_not_shareable))
                     }
                 }
             }

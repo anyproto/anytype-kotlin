@@ -2031,6 +2031,12 @@ class MiddlewareServiceImplementation @Inject constructor(
                 Rpc.Space.InviteGenerate.Response.Error.Code.REQUEST_FAILED -> {
                     throw MultiplayerError.Generic.RequestFailed()
                 }
+                Rpc.Space.InviteGenerate.Response.Error.Code.INVITE_ALREADY_SHARED -> {
+                    throw MultiplayerError.Generic.InviteAlreadyShared()
+                }
+                Rpc.Space.InviteGenerate.Response.Error.Code.INVITE_NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.InviteNotShareable()
+                }
                 else -> throw Exception(error.description)
             }
         } else {
@@ -3017,6 +3023,9 @@ class MiddlewareServiceImplementation @Inject constructor(
                 }
                 Rpc.Space.InviteChange.Response.Error.Code.REQUEST_FAILED -> {
                     throw MultiplayerError.Generic.RequestFailed()
+                }
+                Rpc.Space.InviteChange.Response.Error.Code.INVITE_NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.InviteNotShareable()
                 }
                 else -> throw Exception(error.description)
             }

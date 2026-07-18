@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,6 +31,8 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -121,6 +124,16 @@ fun ShareSpaceScreen(
     onInviteLinkAccessChangeConfirmed: () -> Unit,
     onInviteLinkAccessChangeCancel: () -> Unit,
 
+    shareInviteConfirmationDialog: Boolean = false,
+    onShareWithinSpaceClicked: () -> Unit = {},
+    onShareWithinSpaceConfirmed: () -> Unit = {},
+    onShareWithinSpaceCancelled: () -> Unit = {},
+
+    resetLinkConfirmationDialog: Boolean = false,
+    onResetLinkClicked: () -> Unit = {},
+    onResetLinkConfirmed: () -> Unit = {},
+    onResetLinkCancelled: () -> Unit = {},
+
     onShareInviteLinkClicked: (String) -> Unit,
     onCopyInviteLinkClicked: (String, String) -> Unit,
     onShareQrCodeClicked: (String, String) -> Unit,
@@ -184,50 +197,53 @@ fun ShareSpaceScreen(
                     Section(
                         title = stringResource(R.string.multiplayer_members_invite_links_section)
                     )
-                    val item = inviteLinkAccessLevel.getInviteLinkItemParams()
-                    val isAccessLevelDisabled =
-                        (inviteLinkAccessLevel as? SpaceInviteLinkAccessLevel.LinkDisabled)?.possibleToUpdate == false
-                    AccessLevelOption(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 12.dp)
-                            .noRippleThrottledClickable {
-                                // Only owners can modify invite link access settings
-                                if (isCurrentUserOwner && !isAccessLevelDisabled) {
-                                    showInviteLinkAccessSelector = !showInviteLinkAccessSelector
-                                }
-                            },
-                        uiItemUI = item,
-                        isCurrentUserOwner = isCurrentUserOwner,
-                        isDisabled = isAccessLevelDisabled
-                    )
+                    if (inviteLinkAccessLevel is SpaceInviteLinkAccessLevel.HeldByOwner) {
+                        // The invite exists but its link syncs only to the owner's
+                        // devices — nothing to render or manage here.
+                        InviteHeldByOwnerMessage()
+                    } else {
+                        val item = inviteLinkAccessLevel.getInviteLinkItemParams()
+                        val isAccessLevelDisabled =
+                            (inviteLinkAccessLevel as? SpaceInviteLinkAccessLevel.LinkDisabled)?.possibleToUpdate == false
+                        AccessLevelOption(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(end = 12.dp)
+                                .noRippleThrottledClickable {
+                                    // Only owners can modify invite link access settings
+                                    if (isCurrentUserOwner && !isAccessLevelDisabled) {
+                                        showInviteLinkAccessSelector = !showInviteLinkAccessSelector
+                                    }
+                                },
+                            uiItemUI = item,
+                            isCurrentUserOwner = isCurrentUserOwner,
+                            isDisabled = isAccessLevelDisabled
+                        )
+                    }
                 }
 
                 item {
-                    // Show invite link and copy button when not LINK_DISABLED
-                    when (inviteLinkAccessLevel) {
-                        is SpaceInviteLinkAccessLevel.EditorAccess -> InviteLinkDisplay(
-                            link = inviteLinkAccessLevel.link,
+                    // Show invite link and copy button when there is a link to render
+                    val link = inviteLinkAccessLevel.linkOrNull
+                    if (link != null) {
+                        InviteLinkDisplay(
+                            link = link,
                             onCopyClicked = onCopyInviteLinkClicked,
                             onShareClicked = onShareInviteLinkClicked,
                             onQrCodeClicked = onShareQrCodeClicked
                         )
+                    }
+                }
 
-                        is SpaceInviteLinkAccessLevel.RequestAccess -> InviteLinkDisplay(
-                            link = inviteLinkAccessLevel.link,
-                            onCopyClicked = onCopyInviteLinkClicked,
-                            onShareClicked = onShareInviteLinkClicked,
-                            onQrCodeClicked = onShareQrCodeClicked
+                item {
+                    // Owner-only invite controls: share-within-space toggle,
+                    // safety warnings and link reset
+                    if (isCurrentUserOwner && inviteLinkAccessLevel.linkOrNull != null) {
+                        InviteOwnerControls(
+                            inviteLinkAccessLevel = inviteLinkAccessLevel,
+                            onShareWithinSpaceClicked = onShareWithinSpaceClicked,
+                            onResetLinkClicked = onResetLinkClicked
                         )
-
-                        is SpaceInviteLinkAccessLevel.ViewerAccess -> InviteLinkDisplay(
-                            link = inviteLinkAccessLevel.link,
-                            onCopyClicked = onCopyInviteLinkClicked,
-                            onShareClicked = onShareInviteLinkClicked,
-                            onQrCodeClicked = onShareQrCodeClicked
-                        )
-
-                        is SpaceInviteLinkAccessLevel.LinkDisabled -> {}
                     }
                 }
                 item {
@@ -290,7 +306,9 @@ fun ShareSpaceScreen(
                     onAccessLevelChanged = {
                         showInviteLinkAccessSelector = false
                         onInviteLinkAccessLevelSelected(it)
-                    }
+                    },
+                    // A shared invite must not grant editor access without approval
+                    isEditorOptionEnabled = !inviteLinkAccessLevel.isSharedWithinSpace
                 )
             }
         }
@@ -325,6 +343,28 @@ fun ShareSpaceScreen(
                 onConfirmed = { onMakeAdminConfirmed(makeAdminConfirmation) },
                 onCancelled = onMakeAdminCancelled,
                 onDismissRequest = onMakeAdminCancelled
+            )
+        }
+
+        // Confirmation dialog for sharing the invite within the space (one-way)
+        if (shareInviteConfirmationDialog) {
+            InviteActionConfirmationSheet(
+                title = stringResource(id = R.string.multiplayer_invite_share_confirm_title),
+                description = stringResource(id = R.string.multiplayer_invite_share_confirm_description),
+                isLoading = inviteLinkAccessLoading,
+                onConfirmed = onShareWithinSpaceConfirmed,
+                onCancelled = onShareWithinSpaceCancelled
+            )
+        }
+
+        // Confirmation dialog for resetting the invite link
+        if (resetLinkConfirmationDialog) {
+            InviteActionConfirmationSheet(
+                title = stringResource(id = R.string.multiplayer_invite_reset_confirm_title),
+                description = stringResource(id = R.string.multiplayer_invite_reset_confirm_description),
+                isLoading = inviteLinkAccessLoading,
+                onConfirmed = onResetLinkConfirmed,
+                onCancelled = onResetLinkCancelled
             )
         }
     }
@@ -391,6 +431,154 @@ private fun showConfirmScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun InviteActionConfirmationSheet(
+    title: String,
+    description: String,
+    isLoading: Boolean,
+    onConfirmed: () -> Unit,
+    onCancelled: () -> Unit
+) {
+    ModalBottomSheet(
+        onDismissRequest = onCancelled,
+        containerColor = colorResource(id = R.color.background_secondary),
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+        dragHandle = null
+    ) {
+        GenericAlert(
+            onFirstButtonClicked = onCancelled,
+            onSecondButtonClicked = onConfirmed,
+            config = AlertConfig.WithTwoButtons(
+                title = title,
+                description = description,
+                firstButtonText = stringResource(R.string.cancel),
+                secondButtonText = stringResource(R.string.confirm),
+                firstButtonType = BUTTON_SECONDARY,
+                secondButtonType = BUTTON_PRIMARY,
+                icon = R.drawable.ic_popup_alert_56,
+                isSecondButtonLoading = isLoading,
+            )
+        )
+    }
+}
+
+/**
+ * A member's view of an invite held by the space owner: there is no link, copy
+ * button or QR code on this device, and nothing to generate.
+ */
+@Composable
+private fun InviteHeldByOwnerMessage() {
+    Text(
+        text = stringResource(id = R.string.multiplayer_invite_held_by_owner),
+        style = BodyCalloutRegular,
+        color = colorResource(id = R.color.text_secondary),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+    )
+}
+
+/**
+ * Owner-only controls under the invite link:
+ * - "Everyone in the space can share this invite" toggle — off by default, one-way
+ *   (once shared it can only be undone by resetting the link) and unavailable for
+ *   a no-approval editor invite;
+ * - safety tips and the legacy-unsafe-invite warning;
+ * - the "Reset link" action.
+ */
+@Composable
+private fun InviteOwnerControls(
+    inviteLinkAccessLevel: SpaceInviteLinkAccessLevel,
+    onShareWithinSpaceClicked: () -> Unit,
+    onResetLinkClicked: () -> Unit
+) {
+    val isShared = inviteLinkAccessLevel.isSharedWithinSpace
+    val isEditor = inviteLinkAccessLevel is SpaceInviteLinkAccessLevel.EditorAccess
+    val isAutoApproval = isEditor || inviteLinkAccessLevel is SpaceInviteLinkAccessLevel.ViewerAccess
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        // Share-within-space toggle
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 52.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.multiplayer_invite_share_toggle_title),
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_primary),
+                modifier = Modifier.weight(1f)
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Switch(
+                checked = isShared,
+                // One-way: a shared invite cannot be made private again, and a
+                // no-approval editor invite cannot be shared at all.
+                enabled = !isShared && !isEditor,
+                onCheckedChange = { onShareWithinSpaceClicked() },
+                colors = SwitchDefaults.colors(
+                    checkedTrackColor = colorResource(R.color.color_accent_80)
+                )
+            )
+        }
+        val toggleHint = when {
+            isShared -> stringResource(id = R.string.multiplayer_invite_share_toggle_locked_hint)
+            isEditor -> stringResource(id = R.string.multiplayer_invite_share_disabled_reason)
+            else -> null
+        }
+        if (toggleHint != null) {
+            Text(
+                text = toggleHint,
+                style = Caption1Regular,
+                color = colorResource(id = R.color.text_secondary),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        // Tips and warnings
+        val warning = when {
+            isEditor && isShared ->
+                // Legacy unsafe invite: shared + anyone-can-join + editor
+                stringResource(id = R.string.multiplayer_invite_legacy_unsafe_warning)
+            isEditor ->
+                stringResource(id = R.string.multiplayer_invite_auto_approval_warning) +
+                        "\n\n" +
+                        stringResource(id = R.string.multiplayer_invite_editor_upgrade_note)
+            isAutoApproval ->
+                stringResource(id = R.string.multiplayer_invite_auto_approval_warning)
+            else -> null
+        }
+        if (warning != null) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = warning,
+                style = Caption1Regular,
+                color = colorResource(
+                    id = if (isEditor && isShared) R.color.palette_system_red else R.color.text_secondary
+                ),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        // Reset link — the only way out of a shared invite
+        Text(
+            text = stringResource(id = R.string.multiplayer_invite_reset_link),
+            style = BodyRegular,
+            color = colorResource(id = R.color.palette_system_red),
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 44.dp)
+                .noRippleThrottledClickable { onResetLinkClicked() }
+                .padding(vertical = 12.dp)
+        )
+    }
+}
+
 @Composable
 private fun ShareSpaceHeader(
     title: String,
@@ -431,15 +619,11 @@ private fun ShareSpaceHeader(
                 contentScale = ContentScale.Inside
             )
 
-            // Dropdown menu
-            val link = when (inviteLinkAccessLevel) {
-                is SpaceInviteLinkAccessLevel.EditorAccess -> inviteLinkAccessLevel.link
-                is SpaceInviteLinkAccessLevel.RequestAccess -> inviteLinkAccessLevel.link
-                is SpaceInviteLinkAccessLevel.ViewerAccess -> inviteLinkAccessLevel.link
-                is SpaceInviteLinkAccessLevel.LinkDisabled -> ""
-            }
+            // Dropdown menu. An owner-held invite has no link on a member's
+            // device — the link actions are disabled just like with no invite.
+            val link = inviteLinkAccessLevel.linkOrNull.orEmpty()
 
-            val isLinkDisabled = inviteLinkAccessLevel is SpaceInviteLinkAccessLevel.LinkDisabled
+            val isLinkDisabled = inviteLinkAccessLevel.linkOrNull == null
 
             DropdownMenu(
                 modifier = Modifier.widthIn(min = 252.dp),

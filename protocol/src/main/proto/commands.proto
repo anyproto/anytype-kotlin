@@ -164,6 +164,7 @@ message Rpc {
                         SPACE_IS_DELETED = 102;
                         REQUEST_FAILED = 103;
                         INCORRECT_PERMISSIONS = 105;
+                        INVITE_NOT_SHAREABLE = 107;
                     }
                 }
             }
@@ -174,6 +175,7 @@ message Rpc {
                 string spaceId = 1;
                 model.InviteType inviteType = 2;
                 model.ParticipantPermissions permissions = 3;
+                bool shareWithinSpace = 4;
             }
 
             message Response {
@@ -197,6 +199,8 @@ message Rpc {
                         REQUEST_FAILED = 103;
                         LIMIT_REACHED = 104;
                         NOT_SHAREABLE = 105;
+                        INVITE_ALREADY_SHARED = 106;
+                        INVITE_NOT_SHAREABLE = 107;
                     }
                 }
             }
@@ -239,6 +243,7 @@ message Rpc {
                 string inviteFileKey = 3;
                 model.InviteType inviteType = 4;
                 model.ParticipantPermissions permissions = 5;
+                bool heldByOwner = 6;
 
                 message Error {
                     Code code = 1;

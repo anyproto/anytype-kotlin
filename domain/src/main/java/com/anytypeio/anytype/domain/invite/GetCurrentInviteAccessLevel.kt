@@ -63,10 +63,22 @@ class GetCurrentInviteAccessLevel @Inject constructor(
     private fun mapInviteToAccessLevel(
         spaceInviteLink: SpaceInviteLink
     ): SpaceInviteLinkAccessLevel {
+        // A member's device gets a successful response with empty cid + key when the
+        // invite is held by the owner. There is no link to render — only the fact that
+        // an invite exists and the owner is the one to ask.
+        if (!spaceInviteLink.isLinkVisible) {
+            return if (spaceInviteLink.heldByOwner) {
+                SpaceInviteLinkAccessLevel.HeldByOwner
+            } else {
+                SpaceInviteLinkAccessLevel.LinkDisabled()
+            }
+        }
+        // The invite is shared within the space when it is not held by the owner.
+        val isShared = !spaceInviteLink.heldByOwner
         return when (spaceInviteLink.inviteType) {
             InviteType.MEMBER -> {
                 // MEMBER type = request access (manual approval)
-                SpaceInviteLinkAccessLevel.RequestAccess(spaceInviteLink.scheme)
+                SpaceInviteLinkAccessLevel.RequestAccess(spaceInviteLink.scheme, isShared)
             }
 
             InviteType.GUEST -> {
@@ -80,11 +92,13 @@ class GetCurrentInviteAccessLevel @Inject constructor(
                     SpaceMemberPermissions.OWNER,
                     SpaceMemberPermissions.WRITER,
                     SpaceMemberPermissions.ADMIN -> SpaceInviteLinkAccessLevel.EditorAccess(
-                        spaceInviteLink.scheme
+                        spaceInviteLink.scheme,
+                        isShared
                     )
 
                     SpaceMemberPermissions.READER -> SpaceInviteLinkAccessLevel.ViewerAccess(
-                        spaceInviteLink.scheme
+                        spaceInviteLink.scheme,
+                        isShared
                     )
 
                     SpaceMemberPermissions.NO_PERMISSIONS -> SpaceInviteLinkAccessLevel.LinkDisabled()

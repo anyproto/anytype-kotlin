@@ -7,9 +7,16 @@ data class SpaceInviteLink(
     val fileKey: String,
     val contentId: String,
     val inviteType: InviteType,
-    val permissions: SpaceMemberPermissions
+    val permissions: SpaceMemberPermissions,
+    val heldByOwner: Boolean = false
 ) {
     val scheme = "https://invite.any.coop/$contentId#$fileKey"
+
+    /**
+     * A member's device receives a successful InviteGetCurrent response with empty
+     * cid + key when the invite is held by the owner. Such a link must never be rendered.
+     */
+    val isLinkVisible: Boolean = contentId.isNotEmpty() && fileKey.isNotEmpty()
 }
 
 data class SpaceInviteView(
@@ -99,6 +106,18 @@ sealed class MultiplayerError : Exception() {
         class RequestFailed : Generic()
         class NoSuchSpace : Generic()
         class IncorrectPermissions : Generic()
+
+        /**
+         * Requested shareWithinSpace = false while the current invite is already shared
+         * within the space. A shared invite cannot be taken back — offer link reset.
+         */
+        class InviteAlreadyShared : Generic()
+
+        /**
+         * The invite cannot be shared within the space: it lets anyone join
+         * with above-Reader permissions without approval.
+         */
+        class InviteNotShareable : Generic()
     }
 }
 

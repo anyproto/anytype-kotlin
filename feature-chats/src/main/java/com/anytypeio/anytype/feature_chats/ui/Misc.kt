@@ -89,7 +89,7 @@ internal fun EmptyState(
                         modifier = Modifier
                     )
                 }
-                if (inviteLinkAccessLevel !is SpaceInviteLinkAccessLevel.LinkDisabled) {
+                if (inviteLinkAccessLevel.linkOrNull != null) {
                     ButtonPrimary(
                         text = stringResource(R.string.chat_empty_state_show_qr_button),
                         onClick = onShowQRCodeClick,

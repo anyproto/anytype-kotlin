@@ -67,12 +67,17 @@ val DEFAULT_OPTIONS = listOf(
 
 /**
  * Component for selecting space invite link access level
+ *
+ * @param isEditorOptionEnabled false when the invite is shared within the space —
+ * a shared invite must not grant editor access without approval, so only Viewer
+ * and Request access are offered (mirrors middleware INVITE_NOT_SHAREABLE).
  */
 @Composable
 fun InviteLinkAccessSelector(
     modifier: Modifier = Modifier,
     currentAccessLevel: SpaceInviteLinkAccessLevel,
     onAccessLevelChanged: (SpaceInviteLinkAccessLevel) -> Unit,
+    isEditorOptionEnabled: Boolean = true
 ) {
     Column(
         modifier = modifier
@@ -92,9 +97,10 @@ fun InviteLinkAccessSelector(
 
         DEFAULT_OPTIONS.forEachIndexed { index, item ->
             val isSelected = currentAccessLevel.getInviteLinkItemParams() == item
+            val isOptionDisabled = item == UiInviteLinkAccess.EDITOR && !isEditorOptionEnabled
             AccessLevelOption(
                 modifier = Modifier.noRippleThrottledClickable {
-                    if (!isSelected) {
+                    if (!isSelected && !isOptionDisabled) {
                         onAccessLevelChanged(
                             when (item) {
                                 UiInviteLinkAccess.EDITOR -> SpaceInviteLinkAccessLevel.EditorAccess.EMPTY
@@ -106,7 +112,13 @@ fun InviteLinkAccessSelector(
                     }
                 },
                 uiItemUI = item,
-                isSelected = isSelected
+                isSelected = isSelected,
+                isDisabled = isOptionDisabled,
+                descriptionOverride = if (isOptionDisabled) {
+                    stringResource(id = R.string.multiplayer_editor_access_disabled_shared)
+                } else {
+                    null
+                }
             )
             if (index < DEFAULT_OPTIONS.lastIndex) {
                 Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
@@ -121,7 +133,8 @@ fun AccessLevelOption(
     uiItemUI: UiInviteLinkAccess,
     isSelected: Boolean = false,
     isCurrentUserOwner: Boolean = false,
-    isDisabled: Boolean = false
+    isDisabled: Boolean = false,
+    descriptionOverride: String? = null
 ) {
     Row(
         modifier = modifier
@@ -153,7 +166,7 @@ fun AccessLevelOption(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = stringResource(id = uiItemUI.descRes),
+                text = descriptionOverride ?: stringResource(id = uiItemUI.descRes),
                 style = Relations2,
                 color = colorResource(id = R.color.text_secondary)
             )
@@ -188,6 +201,8 @@ fun SpaceInviteLinkAccessLevel.getInviteLinkItemParams(): UiInviteLinkAccess = w
     is SpaceInviteLinkAccessLevel.ViewerAccess -> UiInviteLinkAccess.VIEWER
     is SpaceInviteLinkAccessLevel.RequestAccess -> UiInviteLinkAccess.REQUEST
     is SpaceInviteLinkAccessLevel.LinkDisabled -> UiInviteLinkAccess.DISABLED
+    // Members with an owner-held invite never open the selector; render as disabled.
+    is SpaceInviteLinkAccessLevel.HeldByOwner -> UiInviteLinkAccess.DISABLED
 }
 
 @DefaultPreviews

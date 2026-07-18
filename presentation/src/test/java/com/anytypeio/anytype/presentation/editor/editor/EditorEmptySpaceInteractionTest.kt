@@ -13,8 +13,12 @@ import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubTable
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
+import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.VIRTUAL_TRAILING_BLOCK_ID
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -30,6 +34,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
@@ -652,6 +657,195 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
                         prototype = Block.Prototype.Text(
                             style = Block.Content.Text.Style.P,
                             text = ""
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should materialize the placeholder before creating a bookmark from a pasted url`() = runTest {
+
+        // SETUP
+
+        val block = StubParagraph(text = MockDataFactory.randomString())
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart,
+            children = listOf(header.id, block.id)
+        )
+
+        val doc = listOf(page, header, title, block)
+
+        val created = StubParagraph(text = "")
+
+        val url = "https://anytype.io"
+
+        stubInterceptEvents()
+        stubOpenDocument(doc)
+
+        createBlock.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(
+                Pair(
+                    created.id,
+                    Payload(
+                        context = root,
+                        events = listOf(
+                            Event.Command.AddBlock(
+                                context = root,
+                                blocks = listOf(created)
+                            ),
+                            Event.Command.UpdateStructure(
+                                context = root,
+                                id = root,
+                                children = listOf(header.id, block.id, created.id)
+                            )
+                        )
+                    )
+                )
+            )
+        }
+
+        createBookmarkBlock.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Payload(context = root, events = emptyList())
+            )
+        }
+
+        val vm = buildViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
+        // TESTING
+
+        vm.onOutsideClicked()
+
+        advanceUntilIdle()
+
+        vm.onBookmarkPasted(url)
+
+        advanceUntilIdle()
+
+        // The bookmark is created against the materialized block — never the
+        // virtual id, which the middleware knows nothing about.
+        verifyBlocking(createBookmarkBlock, times(1)) {
+            invoke(
+                params = eq(
+                    CreateBookmarkBlock.Params(
+                        context = root,
+                        target = created.id,
+                        url = url,
+                        position = Position.TOP
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should defer link paste until the placeholder materializes and apply the mark to the created block`() = runTest {
+
+        // SETUP
+
+        val block = StubParagraph(text = MockDataFactory.randomString())
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart,
+            children = listOf(header.id, block.id)
+        )
+
+        val doc = listOf(page, header, title, block)
+
+        val url = "https://anytype.io"
+
+        val created = StubParagraph(text = url)
+
+        stubInterceptEvents()
+        stubOpenDocument(doc)
+        stubUpdateText()
+
+        createBlock.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(
+                Pair(
+                    created.id,
+                    Payload(
+                        context = root,
+                        events = listOf(
+                            Event.Command.AddBlock(
+                                context = root,
+                                blocks = listOf(created)
+                            ),
+                            Event.Command.UpdateStructure(
+                                context = root,
+                                id = root,
+                                children = listOf(header.id, block.id, created.id)
+                            )
+                        )
+                    )
+                )
+            )
+        }
+
+        updateLinkMark.stub {
+            on { invoke(any(), any(), any()) } doAnswer { invocation ->
+                val params = invocation.getArgument<UpdateLinkMarks.Params>(1)
+                val onResult = invocation
+                    .getArgument<(Either<Throwable, List<Block.Content.Text.Mark>>) -> Unit>(2)
+                onResult(Either.Right(params.marks + params.newMark))
+            }
+        }
+
+        val vm = buildViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
+        // TESTING
+
+        vm.onOutsideClicked()
+
+        advanceUntilIdle()
+
+        // The UI reports the selection covering the pasted url.
+        vm.onSelectionChanged(
+            id = VIRTUAL_TRAILING_BLOCK_ID,
+            selection = 0..url.length
+        )
+
+        advanceUntilIdle()
+
+        val placeholder = trailingPlaceholderOrNull(vm)!!
+
+        // "Paste link" inserts the url into the block (materialization starts)...
+        vm.onTextBlockTextChanged(placeholder.copy(text = url))
+
+        // ...and applies the link mark while the create request is still in flight.
+        vm.proceedToAddUriToTextAsLink(url)
+
+        advanceUntilIdle()
+
+        // The mark is applied to the created block — never the virtual id.
+        verifyBlocking(updateText, times(1)) {
+            invoke(
+                params = eq(
+                    UpdateText.Params(
+                        context = root,
+                        target = created.id,
+                        text = url,
+                        marks = listOf(
+                            Block.Content.Text.Mark(
+                                range = 0..url.length,
+                                type = Block.Content.Text.Mark.Type.LINK,
+                                param = url
+                            )
                         )
                     )
                 )

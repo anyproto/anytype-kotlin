@@ -9,6 +9,9 @@ import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
+import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -22,6 +25,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
@@ -377,5 +381,159 @@ class EditorIdentityForkTest : EditorPresentationTestSetup() {
         // No change — no last-writer-wins write that could stomp a peer edit.
         verifyNoInteractions(updateText)
         verifyNoInteractions(replaceBlock)
+    }
+
+    private fun stubReplaceBlockWithSwap(empty: Block, forked: Block) {
+        replaceBlock.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Pair(
+                    forked.id,
+                    Payload(
+                        context = root,
+                        events = listOf(
+                            Event.Command.UpdateStructure(
+                                context = root,
+                                id = root,
+                                children = listOf(header.id, forked.id)
+                            ),
+                            Event.Command.AddBlock(
+                                context = root,
+                                blocks = listOf(forked)
+                            ),
+                            Event.Command.DeleteBlock(
+                                context = root,
+                                targets = listOf(empty.id)
+                            )
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should defer link paste while the fork is in flight and apply the mark to the forked block`() = runTest {
+
+        // SETUP
+
+        val empty = StubParagraph(text = "")
+        val url = "https://anytype.io"
+        val forked = StubParagraph(text = url)
+
+        stubInterceptEvents()
+        stubOpenDocument(givenDocument(empty))
+        stubUpdateText()
+        stubReplaceBlockWithSwap(empty, forked)
+
+        updateLinkMark.stub {
+            on { invoke(any(), any(), any()) } doAnswer { invocation ->
+                val params = invocation.getArgument<UpdateLinkMarks.Params>(1)
+                val onResult = invocation
+                    .getArgument<(Either<Throwable, List<Block.Content.Text.Mark>>) -> Unit>(2)
+                onResult(Either.Right(params.marks + params.newMark))
+            }
+        }
+
+        val vm = buildViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
+        // TESTING
+
+        vm.onBlockFocusChanged(id = empty.id, hasFocus = true)
+        vm.onSelectionChanged(id = empty.id, selection = 0..url.length)
+
+        advanceUntilIdle()
+
+        // "Paste link" inserts the url into the block (the identity fork starts)...
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Paragraph(
+                id = empty.id,
+                text = url
+            )
+        )
+
+        // ...and applies the link mark while the replace is still in flight.
+        vm.proceedToAddUriToTextAsLink(url)
+
+        advanceUntilIdle()
+
+        // The mark reaches the middleware against the forked id carrying the url
+        // text — never as an empty-text write racing the in-flight replace.
+        verifyBlocking(updateText, times(1)) {
+            invoke(
+                params = eq(
+                    UpdateText.Params(
+                        context = root,
+                        target = forked.id,
+                        text = url,
+                        marks = listOf(
+                            Block.Content.Text.Mark(
+                                range = 0..url.length,
+                                type = Block.Content.Text.Mark.Type.LINK,
+                                param = url
+                            )
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should defer paste while the fork is in flight and replay it against the forked block`() = runTest {
+
+        // SETUP
+
+        val empty = StubParagraph(text = "")
+        val forked = StubParagraph(text = "h")
+
+        stubInterceptEvents()
+        stubOpenDocument(givenDocument(empty))
+        stubPaste()
+        stubReplaceBlockWithSwap(empty, forked)
+
+        val vm = buildViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
+        // TESTING
+
+        vm.onBlockFocusChanged(id = empty.id, hasFocus = true)
+
+        advanceUntilIdle()
+
+        // Typing starts the fork...
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Paragraph(
+                id = empty.id,
+                text = "h"
+            )
+        )
+
+        // ...and the paste arrives while the replace is still in flight.
+        vm.onPaste(range = 1..1)
+
+        advanceUntilIdle()
+
+        // The paste is replayed against the forked block — never the old id,
+        // which the replace removes.
+        verifyBlocking(paste, times(1)) {
+            invoke(
+                params = eq(
+                    Paste.Params(
+                        context = root,
+                        focus = forked.id,
+                        range = 1..1,
+                        selected = emptyList(),
+                        isPartOfBlock = null
+                    )
+                )
+            )
+        }
     }
 }

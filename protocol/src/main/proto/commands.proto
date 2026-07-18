@@ -164,6 +164,8 @@ message Rpc {
                         SPACE_IS_DELETED = 102;
                         REQUEST_FAILED = 103;
                         INCORRECT_PERMISSIONS = 105;
+                        // the invite is shared within the space and these permissions are above read access:
+                        // whoever holds such a link is in the space, and every member holds it
                         INVITE_NOT_SHAREABLE = 107;
                     }
                 }
@@ -175,6 +177,8 @@ message Rpc {
                 string spaceId = 1;
                 model.InviteType inviteType = 2;
                 model.ParticipantPermissions permissions = 3;
+                // shareWithinSpace stores the invite in the space itself, so that every member can share it.
+                // Otherwise the invite is kept in the owner's account and only the owner can share it.
                 bool shareWithinSpace = 4;
             }
 
@@ -199,7 +203,11 @@ message Rpc {
                         REQUEST_FAILED = 103;
                         LIMIT_REACHED = 104;
                         NOT_SHAREABLE = 105;
+                        // the current invite is already shared within the space and cannot be taken back into the
+                        // owner's account: revoke it and generate a new one
                         INVITE_ALREADY_SHARED = 106;
+                        // an invite anyone can join with cannot be shared within the space: whoever holds such a
+                        // link is in, so it stays in the owner's account and is theirs alone to hand out
                         INVITE_NOT_SHAREABLE = 107;
                     }
                 }
@@ -243,6 +251,8 @@ message Rpc {
                 string inviteFileKey = 3;
                 model.InviteType inviteType = 4;
                 model.ParticipantPermissions permissions = 5;
+                // heldByOwner is set when the invite is kept in the owner's account. Members get it with an
+                // empty inviteCid and inviteFileKey: only the owner can share the link.
                 bool heldByOwner = 6;
 
                 message Error {
@@ -2675,6 +2685,10 @@ message Rpc {
             message Request {
                 string contextId = 1;
                 bool isArchived = 2;
+                // when true, skip the orphan cascade entirely (no file auto-archive, no
+                // CleanupSuggestion event). Used by the client when archiving objects the user
+                // confirmed in the popup, to avoid re-prompting.
+                bool skipCascade = 3;
             }
 
             message Response {
@@ -2941,6 +2955,8 @@ message Rpc {
             message Request {
                 repeated string objectIds = 1;
                 bool isArchived = 2;
+                // when true, skip the orphan cascade entirely (see SetIsArchived.Request).
+                bool skipCascade = 3;
             }
             message Response {
                 Error error = 1;
@@ -2955,6 +2971,68 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         // ...
+                    }
+                }
+            }
+        }
+
+        message CleanupSuggestions {
+            message Request {
+                string spaceId = 1;
+                // relation keys to return; empty => a default set.
+                // id, createdInContext and resolvedLayout are always included.
+                repeated string keys = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated Item items = 2;
+
+                message Item {
+                    google.protobuf.Struct details = 1;
+                    // true for forest roots (createdInContext parent is outside the orphan set)
+                    bool isRoot = 2;
+                    // set on roots only; none for descendants
+                    Reason reason = 3;
+
+                    enum Reason {
+                        none = 0;
+                        contextArchived = 1;
+                        contextDeleted = 2;
+                        contextUnlinked = 3;
+                    }
+                }
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
+        message CleanupSuggestionIgnore {
+            message Request {
+                repeated string objectIds = 1;
+                bool ignored = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
                     }
                 }
             }
@@ -7579,11 +7657,13 @@ message Rpc {
 
         message RunProfiler {
             message Request {
-                // 0 = save heap snapshot only; >0 = run full profiler (CPU, heap, trace, goroutines) for this many seconds
+                // 0 = save heap snapshot only; >0 = run timed profiler (CPU, heap, goroutines) for this many seconds. Set includeTrace to also capture the runtime execution trace.
                 int32 durationInSeconds = 1;
                 Reason reason = 2;
                 // Optional free-form description to attach to the profile
                 string reasonDesc = 3;
+                // Also capture the runtime execution trace (runtime/trace). Off by default: it is the heaviest artifact in both archive size and runtime overhead. Only applies when durationInSeconds > 0.
+                bool includeTrace = 4;
 
                 enum Reason {
                     UNKNOWN = 0;

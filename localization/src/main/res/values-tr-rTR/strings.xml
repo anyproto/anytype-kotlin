@@ -1340,9 +1340,9 @@ Erişim talebi</string>
     <string name="multiplayer_invite_legacy_unsafe_warning">Bu alanın tüm üyeleri bu davet bağlantısını görebilir ve paylaşabilir. Bağlantıya sahip olan herkes onay gerekmeksizin düzenleyici olarak katılabilir. Mevcut tüm Görüntüleyiciler bu bağlantıyı kullanarak Düzenleyici statüsüne yükseltebilir.</string>
     <string name="multiplayer_invite_held_by_owner">Davet bağlantısı alan sahibinde bulunmaktadır. Ondan bu bağlantıyı paylaşmasını isteyin.</string>
     <string name="multiplayer_invite_reset_link">Bağlantıyı sıfırla</string>
-    <string name="multiplayer_invite_reset_confirm_title">Reset invite link?</string>
-    <string name="multiplayer_invite_reset_confirm_description">The current link stops working for everyone who has it, including the people you meant to invite. A new link is created in its place.</string>
-    <string name="multiplayer_editor_access_disabled_shared">Unavailable while everyone in the space can share this invite. Reset the link first.</string>
+    <string name="multiplayer_invite_reset_confirm_title">Davet bağlantısı sıfırlansın mı?</string>
+    <string name="multiplayer_invite_reset_confirm_description">Mevcut bağlantı davet etmek istediğin kişiler de dahil olmak üzere bu bağlantıya sahip olan herkes için artık çalışmaz durumdadır. Onun yerine yeni bir bağlantı oluşturulur.</string>
+    <string name="multiplayer_editor_access_disabled_shared">Bu davetiyeyi herkes paylaşabilirken bu özellik kullanılamaz. Öncelikle bağlantıyı sıfırlamalısın.</string>
     <string name="link_copied">Bağlantı panoya kopyalandı</string>
     <string name="remove_from_collection">Koleksiyondan bağlantıyı kaldır</string>
     <string name="multiplayer_copy_link">Bağlantıyı kopyala</string>
@@ -2135,8 +2135,8 @@ Erişim talebi</string>
     </string>
     <string name="share_space_error_make_private_failed">        Alan özel hale getirilemedi. Lütfen daha sonra tekrar dene.
     </string>
-    <string name="share_space_error_invite_already_shared">This invite is already shared with all space members and cannot be made private. Reset the link to create a new private invite.</string>
-    <string name="share_space_error_invite_not_shareable">Anyone with this link joins as an editor, without approval. Switch the link to Viewer access before sharing it.</string>
+    <string name="share_space_error_invite_already_shared">Bu davetiye tüm alan üyeleriyle zaten paylaşılmış. Bu yüzden özel hale getirilemez. Yeni bir özel davetiye oluşturmak için bağlantıyı sıfırlamalısın.</string>
+    <string name="share_space_error_invite_not_shareable">Bu bağlantıya sahip olan herkes onay gerekmeksizin düzenleyici olarak katılır. Bağlantıyı paylaşmadan önce erişim türünü Görüntüleyici olarak değiştir.</string>
     <string name="private_local_yours_forever">şifreli, yerel, sonsuza kadar sizin</string>
     <string name="private_channel">Doğrudan kanal</string>
     <string name="space_header_private_channel">Özel kanal</string>

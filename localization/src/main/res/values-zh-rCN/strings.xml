@@ -1325,11 +1325,11 @@
     <string name="multiplayer_change_to_request_confirmation">任何拥有链接的人都需要请求访问权限才能加入空间。</string>
     <string name="multiplayer_invite_link_copied">邀请链接已复制到剪贴板</string>
     <!-- Invite sharing (GO-7222): owner-held invites, share-within-space toggle, link reset -->
-    <string name="multiplayer_invite_share_toggle_title">Everyone in the space can share this invite</string>
-    <string name="multiplayer_invite_share_toggle_locked_hint">To make this invite private again, reset the link.</string>
-    <string name="multiplayer_invite_share_disabled_reason">Anyone with this link joins as an editor, without approval. Only you can share it.</string>
-    <string name="multiplayer_invite_share_confirm_title">Share invite with all members?</string>
-    <string name="multiplayer_invite_share_confirm_description">All space members will be able to see this invite link and share it with anyone. To make it private again, you\'ll need to reset the link.</string>
+    <string name="multiplayer_invite_share_toggle_title">频道内的所有成员都可以分享此邀请</string>
+    <string name="multiplayer_invite_share_toggle_locked_hint">要再次将此邀请变为私密，请重置链接。</string>
+    <string name="multiplayer_invite_share_disabled_reason">任何拥有此链接的人都将以编辑者身份加入，无需批准。只有您可以分享它。</string>
+    <string name="multiplayer_invite_share_confirm_title">要与所有成员共享邀请吗？</string>
+    <string name="multiplayer_invite_share_confirm_description">所有频道成员都将能看到此邀请链接并分享给任何人。要重新将其设为私密，您需要重置链接。</string>
     <string name="multiplayer_invite_auto_approval_warning">Anyone who gains access to this invitation link will be able to join this space at any time, until you reset the link.</string>
     <string name="multiplayer_invite_editor_upgrade_note">Any existing Viewer who gains access to this invitation link can use it to upgrade themselves to Editor.</string>
     <string name="multiplayer_invite_legacy_unsafe_warning">Every member of this space can see and share this invite link, and anyone who has it joins as an editor without approval. Any existing Viewer can use it to upgrade themselves to Editor.</string>

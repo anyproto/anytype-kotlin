@@ -1,13 +1,13 @@
 package com.anytypeio.anytype.core_ui.widgets
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.FrameLayout
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetDvGridObjectBinding
+import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
@@ -23,7 +23,7 @@ class GridCellObjectItem @JvmOverloads constructor(
     fun setup(name: String, icon: ObjectIcon) = with(binding) {
         tvName.visible()
         tvName.text = name
-        tvName.setTextColor(context.getColor(R.color.black))
+        tvName.setTextColor(context.color(R.color.text_primary))
         when (icon) {
             ObjectIcon.None -> {
                 objectIcon.gone()
@@ -44,7 +44,7 @@ class GridCellObjectItem @JvmOverloads constructor(
     fun setupAsNonExistent() = with(binding) {
         tvName.visible()
         tvName.setText(R.string.non_existent_object)
-        tvName.setTextColor(Color.parseColor("#CBC9BD"))
+        tvName.setTextColor(context.color(R.color.text_tertiary))
         objectIcon.setNonExistentIcon()
     }
 }

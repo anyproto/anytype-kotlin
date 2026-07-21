@@ -833,6 +833,53 @@ class MainViewModel(
         }
     }
 
+    /**
+     * Opens an object (or chat) that was just created/modified via the "Share to Anytype"
+     * flow, when the user taps "Open" on the success banner. Reuses the same machinery as
+     * the OS-widget / deep-link paths: fetches the object, switches space if needed, and
+     * emits an existing navigation command handled by MainActivity.
+     */
+    fun onOpenSharedObject(objectId: Id, spaceId: Id, isChat: Boolean) {
+        Timber.d("onOpenSharedObject: obj=$objectId, space=$spaceId, isChat=$isChat")
+        if (isChat) {
+            onOpenChatTriggeredByPush(chatId = objectId, spaceId = spaceId)
+            return
+        }
+        viewModelScope.launch {
+            val result = deepLinkToObjectDelegate.onDeepLinkToObject(
+                obj = objectId,
+                space = SpaceId(spaceId),
+                switchSpaceIfObjectFound = true
+            )
+            when (result) {
+                is DeepLinkToObjectDelegate.Result.Success -> {
+                    val navigation = result.obj.navigation()
+                    Timber.d("Shared object navigation determined: $navigation")
+                    commandsChannel.send(
+                        Command.Deeplink.DeepLinkToObjectFromWidget(
+                            space = spaceId,
+                            obj = objectId,
+                            navigation = navigation,
+                            openTargetDirectly = hasExplicitObjectHomepage(SpaceId(spaceId))
+                        )
+                    )
+                }
+                is DeepLinkToObjectDelegate.Result.Error.ObjectNotFound -> {
+                    Timber.w("Shared object open: object not found: $objectId")
+                    toastsChannel.send("Object not found")
+                }
+                is DeepLinkToObjectDelegate.Result.Error.PermissionNeeded -> {
+                    Timber.w("Shared object open: permission needed to access object: $objectId")
+                    toastsChannel.send("Permission needed")
+                }
+                is DeepLinkToObjectDelegate.Result.Error.CouldNotOpenSpace -> {
+                    Timber.w("Shared object open: could not open space: $spaceId")
+                    toastsChannel.send("Could not open space")
+                }
+            }
+        }
+    }
+
     private suspend fun proceedWithSpaceSwitchDueToDeepLinkToObject(
         targetSpace: Id,
         deeplink: DeepLinkResolver.Action.DeepLinkToObject,

@@ -1001,8 +1001,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                         findViewById<android.view.View>(android.R.id.content)?.showSnackbar(
                             msg = message,
                             length = Snackbar.LENGTH_INDEFINITE,
-                            actionMessage = getString(R.string.button_ok),
+                            actionMessage = getString(R.string.sharing_menu_btn_open),
                             action = {
+                                vm.onOpenSharedObject(
+                                    objectId = command.objectId,
+                                    spaceId = command.spaceId,
+                                    isChat = command.isChat
+                                )
                                 onDismiss()
                             }
                         )

@@ -374,11 +374,29 @@ fun Any?.filterIdsById(filter: Id): List<Id> {
     return remaining.toList()
 }
 
+/**
+ * The data view state, or null while the object is still opening.
+ *
+ * Silent by design, for reactive collectors: they subscribe to the state reducer before the object
+ * is opened, so they are guaranteed to observe [ObjectState.Init] first. That is an ordinary step
+ * of opening a set, not a fault to report (DROID-4555).
+ */
+fun ObjectState.dataViewStateOrNull(): ObjectState.DataView? =
+    (this as? ObjectState.DataView)?.takeIf { it.isInitialized }
+
+/**
+ * As [dataViewStateOrNull], but logs when the state isn't ready. For one-shot handlers, where an
+ * uninitialized state means the user acted before the object finished opening.
+ *
+ * Deliberately WARN, not ERROR: `Timber.e` is forwarded to crash reporting as an issue
+ * (`SentryTimberIntegration(minEventLevel = ERROR)`), and this message carries no context — no
+ * object id, no call site — to act on. WARN still clears the breadcrumb threshold, so the trail
+ * survives for any real crash that follows.
+ */
 fun ObjectState.dataViewState(): ObjectState.DataView? {
-    val state = this as? ObjectState.DataView
-    if (state == null || !state.isInitialized) {
-        Timber.e("State was not initialized or null")
-        return null
+    val state = dataViewStateOrNull()
+    if (state == null) {
+        Timber.w("State was not initialized or null")
     }
     return state
 }

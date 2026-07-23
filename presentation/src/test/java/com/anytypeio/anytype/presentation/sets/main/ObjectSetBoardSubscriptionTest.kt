@@ -7,8 +7,10 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubDataView
+import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Resultat
@@ -389,4 +391,74 @@ class ObjectSetBoardSubscriptionTest : ObjectSetViewModelTestSetup() {
         // Relation move + an order write that places the card at the drop position.
         verifyBlocking(setDataViewObjectOrder) { async(any()) }
     }
+
+    //region DROID-4555: grouping properties the backend cannot group by
+
+    /** Merges the board's grouping property into the relation store with [format]. */
+    private suspend fun givenGroupRelationFormat(format: RelationFormat) {
+        storeOfRelations.merge(
+            listOf(StubRelationObject(key = groupRelationKey, format = format))
+        )
+    }
+
+    @Test
+    fun `does not ask the backend to group by a property it cannot group by`() = runTest {
+        stubBoardCollection()
+        // A board configured on another client can carry any relation as its grouping property,
+        // but the backend grouper only handles Status/Tag/Checkbox and rejects the rest with
+        // "get grouper: unsupported relation format".
+        givenGroupRelationFormat(RelationFormat.NUMBER)
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        verify(boardGroupSubscriptionContainer, never()).observe(any())
+    }
+
+    @Test
+    fun `board grouped by an ungroupable property asks for a grouping property`() = runTest {
+        stubBoardCollection()
+        givenGroupRelationFormat(RelationFormat.NUMBER)
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        // The actionable hint, not the opaque subscription error the refused request would leave.
+        val state = vm.currentViewer.value
+        assertTrue(
+            state is DataViewViewState.Collection.NoItems && state.isBoardGroupByRequired,
+            "Expected Collection.NoItems(isBoardGroupByRequired=true) but was $state"
+        )
+    }
+
+    @Test
+    fun `still groups by a supported property`() = runTest {
+        stubBoardCollection()
+        givenGroupRelationFormat(RelationFormat.TAG)
+        boardGroupSubscriptionContainer.stub { on { observe(any()) } doReturn flowOf(emptyList()) }
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        verify(boardGroupSubscriptionContainer, atLeastOnce()).observe(any())
+    }
+
+    @Test
+    fun `groups optimistically while the property's format is still unknown`() = runTest {
+        stubBoardCollection()
+        // storeOfRelations deliberately left empty: the format resolves asynchronously, and
+        // refusing on an unresolved one would strand a perfectly valid board on the first verdict.
+        boardGroupSubscriptionContainer.stub { on { observe(any()) } doReturn flowOf(emptyList()) }
+
+        val vm = givenViewModel()
+        vm.onStart(view = boardViewerId)
+        advanceUntilIdle()
+
+        verify(boardGroupSubscriptionContainer, atLeastOnce()).observe(any())
+    }
+
+    //endregion
 }

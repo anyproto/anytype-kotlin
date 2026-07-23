@@ -152,19 +152,13 @@ suspend fun ViewerLayoutWidgetUi.updateState(
     )
 }
 
-private val GROUP_BY_FORMATS = setOf(
-    RelationFormat.STATUS,
-    RelationFormat.TAG,
-    RelationFormat.CHECKBOX
-)
-
 private suspend fun DVViewer.getGroupByItems(
     storeOfRelations: StoreOfRelations,
     relationLinks: List<RelationLink>
 ): List<ViewerLayoutWidgetUi.State.GroupBy> {
     val selectedGroupKey = groupRelationKey
     return relationLinks
-        .filter { it.format in GROUP_BY_FORMATS }
+        .filter { it.format in BOARD_GROUP_BY_FORMATS }
         .mapNotNull { storeOfRelations.getByKey(it.key) }
         .filter { relation ->
             relation.isValid && relation.isHidden != true && relation.isArchived != true &&

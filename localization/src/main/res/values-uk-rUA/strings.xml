@@ -852,7 +852,7 @@
     <string name="relation_editing_title">Property settings</string>
     <string name="type_editing_uninstall">Вилучити</string>
     <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
-    <string name="empty_list_widget_no_objects">There are no objects here</string>
+    <string name="empty_list_widget_no_objects">Тут немає об\'єктів</string>
     <string name="empty_list_widget_no_view">This data view has no objects.\nTry to create a new one.</string>
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
     <string name="emoji">Емоджі</string>
@@ -1722,7 +1722,7 @@
     <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
     <string name="global_search_related_to">"Related to: "</string>
     <string name="global_search_no_related_objects_found">No related objects found</string>
-    <string name="global_search_show_related_objects">Show related objects</string>
+    <string name="global_search_show_related_objects">Показати пов\'язані об\'єкти</string>
     <string name="sort_empty_values_desc">Show empty values</string>
     <string name="sort_empty_values_bottom">On bottom</string>
     <string name="sort_empty_values_top">On top</string>
@@ -2085,7 +2085,7 @@
     <string name="spaces_introduction_page3_description">Share ideas, drop docs, edit together — everything flows in real time.</string>
     <string name="spaces_introduction_page4_title">Everything in Its Right Place</string>
     <string name="spaces_introduction_page4_description">Your pages, lists, and files — structured, surfaced, and always within reach.</string>
-    <string name="spaces_introduction_try_it">Let\'s try it</string>
+    <string name="spaces_introduction_try_it">Спробуймо</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
     <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">New messages</string>
@@ -2138,11 +2138,11 @@
     <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
     <string name="vault_manage_channels">Manage Channels</string>
     <!-- Attachment Menu (DROID-4201) -->
-    <string name="attachment_menu_photos">Photos</string>
+    <string name="attachment_menu_photos">Фото</string>
     <string name="attachment_menu_camera">Camera</string>
     <string name="attachment_menu_files">Files</string>
     <string name="attachment_menu_attach_object">Attach object</string>
-    <string name="attachment_menu_see_all">See all</string>
+    <string name="attachment_menu_see_all">Переглянути все</string>
     <string name="attachment_menu_search_placeholder">Пошук</string>
     <string name="create_object_empty_state">No object types available</string>
     <string name="create_object_no_results">No types found</string>
@@ -2192,7 +2192,7 @@
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Unpin</string>
-    <string name="widgets_see_all">See all</string>
+    <string name="widgets_see_all">Переглянути все</string>
     <string name="my_sites">My Sites</string>
     <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
@@ -2228,7 +2228,7 @@
     <string name="chat_edit_info_upload_image">Upload Image</string>
     <string name="select_space">Select Channel</string>
     <string name="add_a_comment">Add a comment...</string>
-    <string name="send">Send</string>
+    <string name="send">Надіслати</string>
     <string name="chat_specific_notifications">Chat specific notifications</string>
     <string name="notify_me_about">Notify me about</string>
     <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
@@ -2255,7 +2255,7 @@
     <!-- OS Widgets -->
     <string name="os_widget_spaces_title">Spaces</string>
     <string name="os_widget_spaces_description">Quick access to your pinned spaces</string>
-    <string name="os_widget_create_object_title">New Object</string>
+    <string name="os_widget_create_object_title">Новий об\'єкт</string>
     <string name="os_widget_create_object_description">Create object of chosen type</string>
     <string name="os_widget_space_shortcut_title">Space Shortcut</string>
     <string name="os_widget_space_shortcut_description">Open a space directly</string>
@@ -2271,15 +2271,15 @@
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
     <string name="chats_search_close_content_description">Close search</string>
     <!-- DROID-4358 Offline Downloads settings -->
-    <string name="offline_downloads_section_title">Offline access</string>
-    <string name="offline_downloads_title">Offline Downloads</string>
-    <string name="offline_downloads_subtitle">Auto sync files up to a selected size</string>
-    <string name="offline_downloads_use_cellular">Use Cellular Data</string>
-    <string name="offline_downloads_value_off">Off</string>
-    <string name="offline_downloads_value_20mb">20 MB</string>
-    <string name="offline_downloads_value_100mb">100 MB</string>
-    <string name="offline_downloads_value_250mb">250 MB</string>
-    <string name="offline_downloads_value_1gb">1 GB</string>
-    <string name="offline_downloads_value_unlimited">Unlimited</string>
+    <string name="offline_downloads_section_title">Офлайн-доступ</string>
+    <string name="offline_downloads_title">Офлайн-завантаження</string>
+    <string name="offline_downloads_subtitle">Автоматично синхронізувати файли до вибраного розміру</string>
+    <string name="offline_downloads_use_cellular">Використовувати мобільний інтернет</string>
+    <string name="offline_downloads_value_off">Вимкнено</string>
+    <string name="offline_downloads_value_20mb">20 МБ</string>
+    <string name="offline_downloads_value_100mb">100 МБ</string>
+    <string name="offline_downloads_value_250mb">250 МБ</string>
+    <string name="offline_downloads_value_1gb">1 ГБ</string>
+    <string name="offline_downloads_value_unlimited">Безліміт</string>
     <string name="device_storage_used">Device storage used</string>
 </resources>

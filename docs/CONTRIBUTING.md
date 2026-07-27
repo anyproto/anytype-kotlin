@@ -118,7 +118,7 @@ Help us make Anytype speak your language! Translations are handled by the commun
 
 - The Android app is translated in the [Anytype Mobile project on Crowdin](https://crowdin.com/project/anytype-mobile).
 - Sign in to Crowdin, pick your language, and translate or fix strings directly in the online editor.
-- Approved translations are synced back into this repository **automatically** by a bot pull request titled `l10n | Enhancement`. You don't need to create a branch or open a PR yourself, and translations submitted via Crowdin don't require signing the CLA.
+- Approved translations are synced back into this repository **automatically** by a bot pull request (its title and target files are configured in [`crowdin.yml`](../crowdin.yml) — at the time of writing, `l10n | Enhancement`). You don't need to create a branch or open a PR yourself, and translations submitted via Crowdin don't require signing the CLA.
 - Existing languages are shipped automatically with the next build. To request a **new** language that isn't listed yet, reach out via the [Contributors Community](https://github.com/orgs/anyproto/discussions) so the team can enable it.
 
 #### Translation guidelines

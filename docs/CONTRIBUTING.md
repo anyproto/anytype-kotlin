@@ -20,6 +20,7 @@ All types of contributions are encouraged and valued. See the [Table of Contents
   - [Requesting Features](#requesting-features)
   - [Reporting Security Issues](#reporting-security-issues)
   - [Contributing Code](#contributing-code)
+  - [Translating Anytype](#translating-anytype)
 - [Contributors Recognition](#contributors-recognition)
 
 ## Code of Conduct
@@ -108,6 +109,29 @@ Basic rules for pull requests:
 - When neccesary, changes are documented in [`README.md`](../README.md) or suggestions are also made to [`tech-docs`](https://github.com/anyproto/tech-docs)
 
 All pull requests will be reviewed by the team.
+
+### Translating Anytype
+
+Help us make Anytype speak your language! Translations are handled by the community through **Crowdin**, so in most cases you don't need to touch the code or open a pull request.
+
+#### How to translate
+
+- The Android app is translated in the [Anytype Mobile project on Crowdin](https://crowdin.com/project/anytype-mobile).
+- Sign in to Crowdin, pick your language, and translate or fix strings directly in the online editor.
+- Approved translations are synced back into this repository **automatically** by a bot pull request (its title and target files are configured in [`crowdin.yml`](../crowdin.yml) — at the time of writing, `l10n | Enhancement`). You don't need to create a branch or open a PR yourself, and translations submitted via Crowdin don't require signing the CLA.
+- Existing languages are shipped automatically with the next build. To request a **new** language that isn't listed yet, reach out via the [Contributors Community](https://github.com/orgs/anyproto/discussions) so the team can enable it.
+
+#### Translation guidelines
+
+To keep the app working correctly, please:
+
+- Keep placeholders such as `%1$s` and `%2$d` unchanged (you may reposition them to fit your language's grammar, but don't remove or renumber them).
+- Fill in **all** plural forms your language requires. Android supports `zero`, `one`, `two`, `few`, `many`, and `other` — for example, Ukrainian and Russian need `one`, `few`, `many`, and `other`.
+- Preserve any markup, HTML tags, or CDATA that appears in the source string.
+
+#### Fixing the English source text
+
+The English source strings live in [`localization/src/main/res/values/strings.xml`](../localization/src/main/res/values/strings.xml). If you spot a mistake in the **English source itself** (a typo or unclear wording), don't fix it in Crowdin — open an issue or a pull request against that file instead. This counts as a code contribution, so the [CLA](https://github.com/anyproto/open/blob/main/templates/CLA.md) applies.
 
 ## Contributors Recognition
 

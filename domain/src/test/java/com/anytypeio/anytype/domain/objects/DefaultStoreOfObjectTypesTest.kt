@@ -3,6 +3,8 @@ package com.anytypeio.anytype.domain.objects
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes.TrackedEvent
@@ -171,4 +173,69 @@ class DefaultStoreOfObjectTypesTest {
              cancelAndIgnoreRemainingEvents()
          }
      }
+
+    // --- MAP LIMIT OBJECT TYPES (DROID-4554) ---
+    //
+    // This helper is the single point where a property's configured type ids are reconciled with
+    // the types that actually exist in the space. Both the property-editing UI and the object
+    // value picker depend on it agreeing with itself, so the picker can never enforce a
+    // restriction the settings screen reports as absent.
+
+    private fun objectProperty(limitTypes: List<Id>) = ObjectWrapper.Relation(
+        mapOf(
+            Relations.ID to "rel-connexes",
+            Relations.RELATION_KEY to "connexes",
+            Relations.RELATION_FORMAT to RelationFormat.OBJECT.code.toDouble(),
+            Relations.RELATION_FORMAT_OBJECT_TYPES to limitTypes
+        )
+    )
+
+    @Test
+    fun `mapLimitObjectTypes drops ids with no matching type in the store`() = runTest {
+        val store = newStore()
+        store.set("live", structOfId("live"))
+
+        val result = store.mapLimitObjectTypes(objectProperty(listOf("live", "deleted")))
+
+        assertEquals(listOf("live"), result)
+    }
+
+    @Test
+    fun `mapLimitObjectTypes drops types that are present but invalid`() = runTest {
+        val store = newStore()
+        // No uniqueKey -> ObjectWrapper.Type.isValid == false
+        store.set("half", mapOf(Relations.ID to "half"))
+
+        val result = store.mapLimitObjectTypes(objectProperty(listOf("half")))
+
+        assertEquals(emptyList<Id>(), result)
+    }
+
+    @Test
+    fun `mapLimitObjectTypes returns empty when nothing resolves, signalling no restriction`() =
+        runTest {
+            val store = newStore()
+            store.set("live", structOfId("live"))
+
+            val result = store.mapLimitObjectTypes(objectProperty(listOf("gone-a", "gone-b")))
+
+            assertEquals(emptyList<Id>(), result)
+        }
+
+    @Test
+    fun `mapLimitObjectTypes ignores non-object properties`() = runTest {
+        val store = newStore()
+        store.set("live", structOfId("live"))
+
+        val textProperty = ObjectWrapper.Relation(
+            mapOf(
+                Relations.ID to "rel-text",
+                Relations.RELATION_KEY to "text",
+                Relations.RELATION_FORMAT to RelationFormat.LONG_TEXT.code.toDouble(),
+                Relations.RELATION_FORMAT_OBJECT_TYPES to listOf("live")
+            )
+        )
+
+        assertEquals(emptyList<Id>(), store.mapLimitObjectTypes(textProperty))
+    }
 }

@@ -31,6 +31,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Companion.TEXT_COLOR_CHANGED
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
+import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.features.editor.EditorDragAndDropListener
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.FileError
 import com.anytypeio.anytype.core_ui.features.editor.holders.error.PictureError
@@ -60,6 +61,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.upload.VideoUpload
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.hexColorCode
+import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
@@ -2553,6 +2555,142 @@ class BlockAdapterTest {
             actual = focusEvents.toList()
         )
     }
+
+    //region IME composition safety (DROID-4557)
+
+    @Test
+    fun `should not replace the editable when a text payload carries unchanged text`() {
+
+        // Setup
+
+        val paragraph = BlockView.Text.Paragraph(
+            id = MockDataFactory.randomUuid(),
+            text = "한"
+        )
+
+        val adapter = givenAdapter(listOf(paragraph))
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is Paragraph)
+
+        val before = holder.content.text
+
+        // Testing
+
+        holder.processChangePayload(
+            item = paragraph,
+            payloads = listOf(BlockViewDiffUtil.Payload(changes = listOf(TEXT_CHANGED))),
+            clicked = {},
+        )
+
+        // setText swaps in a brand-new Editable, dropping the composing spans the IME
+        // keeps on the old one. An echo of what the user just typed must not do that.
+        assertTrue(
+            before === holder.content.text,
+            "Editable must be left untouched when the incoming text is unchanged"
+        )
+    }
+
+    @Test
+    fun `should still replace the editable when a text payload clears existing markup`() {
+
+        // Setup
+
+        val id = MockDataFactory.randomUuid()
+
+        val marked = BlockView.Text.Paragraph(
+            id = id,
+            text = "한글",
+            marks = listOf(Markup.Mark.Bold(from = 0, to = 2))
+        )
+
+        val cleared = marked.copy(marks = emptyList())
+
+        val adapter = givenAdapter(listOf(marked))
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is Paragraph)
+
+        assertTrue(holder.content.editableText.marks().isNotEmpty())
+
+        // Testing
+
+        holder.processChangePayload(
+            item = cleared,
+            payloads = listOf(BlockViewDiffUtil.Payload(changes = listOf(TEXT_CHANGED))),
+            clicked = {},
+        )
+
+        // The text is identical but the markup is not: the guard must not strand the span.
+        assertEquals(
+            expected = emptyList(),
+            actual = holder.content.editableText.marks()
+        )
+    }
+
+    @Test
+    fun `should not toggle isEnabled on attach when the widget is focused`() {
+
+        // Setup
+
+        val paragraph = BlockView.Text.Paragraph(
+            id = MockDataFactory.randomUuid(),
+            text = "한"
+        )
+
+        val adapter = givenAdapter(listOf(paragraph))
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is Paragraph)
+
+        // Testing: an unfocused widget still gets the AOSP-208169 workaround, so a
+        // disabled one is re-enabled by the toggle.
+        holder.content.clearFocus()
+        holder.content.isEnabled = false
+
+        adapter.onViewAttachedToWindow(holder)
+
+        assertTrue(
+            holder.content.isEnabled,
+            "The attach workaround must still run for an unfocused widget"
+        )
+
+        // A focused widget must be left alone: setEnabled(true) calls
+        // InputMethodManager.restartInput(), which ends any in-progress IME composition,
+        // and setEnabled(false) clears focus on the way there.
+        holder.content.isFocusableInTouchMode = true
+        assertTrue(holder.content.requestFocus(), "Widget must be focusable for this test")
+
+        adapter.onViewAttachedToWindow(holder)
+
+        assertTrue(
+            holder.content.isFocused,
+            "The attach workaround must not disturb a focused widget"
+        )
+    }
+
+    //endregion
 
     private fun givenAdapter(
         views: List<BlockView>,

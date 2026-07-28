@@ -1888,7 +1888,12 @@ class BlockAdapter(
     // https://code.google.com/p/android/issues/detail?id=208169
     override fun onViewAttachedToWindow(holder: BlockViewHolder) {
         super.onViewAttachedToWindow(holder)
-        if (holder is TextHolder) {
+        // Never toggle a focused widget: setEnabled(false) hides the soft input while it
+        // is active, and setEnabled(true) calls InputMethodManager.restartInput(), which
+        // terminates any in-progress IME composition. A holder coming back from the
+        // recycled-view pool has already had its focus cleared, so the workaround still
+        // applies wherever it was actually needed.
+        if (holder is TextHolder && !holder.content.hasFocus()) {
             holder.content.isEnabled = false
             holder.content.isEnabled = true
         }

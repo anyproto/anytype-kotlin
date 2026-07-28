@@ -347,6 +347,50 @@ class EditorIdentityForkTest : EditorPresentationTestSetup() {
 
         // The block was replaced already carrying the text — no set-text needed.
         verifyNoInteractions(updateText)
+
+        // The view layer needs the old -> new mapping to diff the swap as a change of the
+        // same row: removing the focused row would clear its focus and kill the IME
+        // composition (DROID-4557).
+        assertEquals(
+            expected = mapOf(empty.id to forked.id),
+            actual = vm.blockIdAliases
+        )
+    }
+
+    @Test
+    fun `should not expose any block id alias when typing into a non-empty block`() = runTest {
+
+        // SETUP
+
+        val block = StubParagraph(text = "한")
+
+        stubInterceptEvents()
+        stubOpenDocument(givenDocument(block))
+        stubUpdateText()
+
+        val vm = buildViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
+        // TESTING
+
+        vm.onBlockFocusChanged(id = block.id, hasFocus = true)
+
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Paragraph(
+                id = block.id,
+                text = "한글"
+            )
+        )
+
+        advanceUntilIdle()
+
+        // A non-empty block never forks, so its id is stable and the view layer has
+        // nothing to re-map. A leaked alias here would make DiffUtil match unrelated rows.
+        assertTrue(vm.blockIdAliases.isEmpty())
+        verifyNoInteractions(replaceBlock)
     }
 
     @Test

@@ -475,6 +475,14 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
 
         // The block was created already carrying the text — no follow-up set-text needed.
         verifyNoInteractions(updateText)
+
+        // The view layer needs the virtual -> created mapping to diff the swap as a change
+        // of the same row: removing the focused row would clear its focus and kill the IME
+        // composition (DROID-4557).
+        assertEquals(
+            expected = mapOf(VIRTUAL_TRAILING_BLOCK_ID to created.id),
+            actual = vm.blockIdAliases
+        )
     }
 
     @Test

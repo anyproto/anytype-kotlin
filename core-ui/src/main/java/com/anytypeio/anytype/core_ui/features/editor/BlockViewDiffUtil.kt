@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.editor
 
 import androidx.recyclerview.widget.DiffUtil
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Indentable
@@ -8,10 +9,61 @@ import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import timber.log.Timber
 
+/**
+ * @param aliases old id -> new id for blocks whose identity changed between [old] and
+ * [new] while staying the same row on screen (see EditorViewModel.blockIdAliases). Without
+ * them an id swap diffs as remove + insert, and removing the focused row detaches its
+ * View, clears focus and terminates any in-progress IME composition (DROID-4557).
+ */
 class BlockViewDiffUtil(
     private val old: List<BlockView>,
-    private val new: List<BlockView>
+    private val new: List<BlockView>,
+    private val aliases: Map<Id, Id> = emptyMap()
 ) : DiffUtil.Callback() {
+
+    /**
+     * [aliases] narrowed to the entries that actually describe a swap in *this* diff, and
+     * proven injective. DiffUtil requires that each old row match at most one new row and
+     * vice versa; an alias that violated that could corrupt the dispatched updates.
+     *
+     * Aliases outlive the render that swapped the id (the ViewModel also uses them to
+     * redirect events still targeting the pre-swap id), so a stale one must stay inert.
+     */
+    private val resolvedAliases: Map<Id, Id> by lazy(LazyThreadSafetyMode.NONE) {
+        if (aliases.isEmpty()) return@lazy emptyMap()
+        val oldIds = old.mapTo(HashSet(old.size)) { it.id }
+        val newIds = new.mapTo(HashSet(new.size)) { it.id }
+        val resolved = mutableMapOf<Id, Id>()
+        val claimed = mutableSetOf<Id>()
+        val ambiguous = mutableSetOf<Id>()
+        aliases.keys.forEach { source ->
+            // Only rows actually present in the old list can be matched. Intermediate
+            // links of a chain (placeholder -> materialized -> forked) are not sources.
+            if (source !in oldIds) return@forEach
+            // The row still exists under its own id — it matches itself. (The virtual
+            // trailing-placeholder id is reused across placeholder sessions.)
+            if (source in newIds) return@forEach
+            val target = follow(source)
+            // The swap has not reached this list yet, or the target row matches itself.
+            if (target == source || target !in newIds || target in oldIds) return@forEach
+            if (!claimed.add(target)) ambiguous += target
+            resolved[source] = target
+        }
+        // Two old rows resolving onto the same new row: drop them rather than pick one
+        // arbitrarily. Falling back to remove+insert costs an IME composition, never
+        // correctness.
+        if (ambiguous.isEmpty()) resolved else resolved.filterValues { it !in ambiguous }
+    }
+
+    /**
+     * Follows the alias chain — a placeholder can materialize and the materialized block
+     * can later fork — bounded so a cyclic map can never hang the diff.
+     */
+    private fun follow(id: Id): Id {
+        var current = id
+        repeat(MAX_ALIAS_HOPS) { current = aliases[current] ?: return current }
+        return current
+    }
 
     override fun getOldListSize() = old.size
     override fun getNewListSize() = new.size
@@ -19,7 +71,11 @@ class BlockViewDiffUtil(
     override fun areItemsTheSame(
         oldItemPosition: Int,
         newItemPosition: Int
-    ) = new[newItemPosition].id == old[oldItemPosition].id
+    ): Boolean {
+        val oldId = old[oldItemPosition].id
+        val newId = new[newItemPosition].id
+        return oldId == newId || resolvedAliases[oldId] == newId
+    }
 
     override fun areContentsTheSame(
         oldItemPosition: Int,
@@ -294,10 +350,16 @@ class BlockViewDiffUtil(
             }
         }
 
-        return if (changes.isNotEmpty())
-            Payload(changes).also { Timber.d("Returning payload: $it") }
-        else
-            super.getChangePayload(oldItemPosition, newItemPosition)
+        return when {
+            changes.isNotEmpty() -> Payload(changes).also { Timber.d("Returning payload: $it") }
+            // An aliased pair: the only difference is the id, which every holder resolves
+            // by position at call time. Return an empty — but non-null — payload so
+            // RecyclerView rebinds with a payload (a no-op here) instead of taking the
+            // null-payload full-rebind path, which would re-run setText/setSelection on
+            // the focused widget and reset the IME's composing region.
+            resolvedAliases[oldBlock.id] == newBlock.id -> Payload(emptyList())
+            else -> super.getChangePayload(oldItemPosition, newItemPosition)
+        }
     }
 
     /**
@@ -358,6 +420,9 @@ class BlockViewDiffUtil(
     }
 
     companion object {
+        /** Upper bound on alias-chain hops — a safety net against a cyclic alias map. */
+        private const val MAX_ALIAS_HOPS = 8
+
         const val TEXT_CHANGED = 0
         const val MARKUP_CHANGED = 1
         const val FOCUS_CHANGED = 3

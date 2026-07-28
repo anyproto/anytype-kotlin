@@ -659,9 +659,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 // would otherwise read the live instances concurrently.
                 val old = blockAdapter.views.diffSnapshot()
                 val new = update.diffSnapshot()
+                // Read on the main thread, like the snapshots above: a block whose id
+                // changed under the caret (trailing placeholder, identity fork) must diff
+                // as a change of the same row, not remove + insert — removing the focused
+                // row clears its focus and kills IME composition (DROID-4557).
+                val aliases = vm.blockIdAliases
                 val result = withContext(Dispatchers.Default) {
                     DiffUtil.calculateDiff(
-                        BlockViewDiffUtil(old = old, new = new),
+                        BlockViewDiffUtil(old = old, new = new, aliases = aliases),
                         false
                     )
                 }

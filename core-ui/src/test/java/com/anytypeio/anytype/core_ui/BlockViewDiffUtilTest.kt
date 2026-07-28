@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.core_ui
 
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListUpdateCallback
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -1855,4 +1857,260 @@ class BlockViewDiffUtilTest {
         assertEquals(expected = originalText, actual = snapshotCellBlock.text)
         assertEquals(expected = false, actual = snapshotCellBlock.isFocused)
     }
+
+    //region Block-identity aliases (DROID-4557)
+
+    @Test
+    fun `aliased id swap should be treated as the same item`() {
+
+        val oldId = MockDataFactory.randomUuid()
+        val newId = MockDataFactory.randomUuid()
+
+        val oldBlock = BlockView.Text.Paragraph(id = oldId, text = "ㅎ", isFocused = true)
+        val newBlock = oldBlock.copy(id = newId)
+
+        val diff = BlockViewDiffUtil(
+            old = listOf(oldBlock),
+            new = listOf(newBlock),
+            aliases = mapOf(oldId to newId)
+        )
+
+        assertEquals(expected = true, actual = diff.areItemsTheSame(0, 0))
+    }
+
+    @Test
+    fun `aliased pair with no other delta should yield an empty but non-null payload`() {
+
+        val oldId = MockDataFactory.randomUuid()
+        val newId = MockDataFactory.randomUuid()
+
+        val oldBlock = BlockView.Text.Paragraph(id = oldId, text = "ㅎ", isFocused = true)
+        val newBlock = oldBlock.copy(id = newId)
+
+        val diff = BlockViewDiffUtil(
+            old = listOf(oldBlock),
+            new = listOf(newBlock),
+            aliases = mapOf(oldId to newId)
+        )
+
+        // A null payload makes RecyclerView do a full rebind, which re-runs
+        // setText/setSelection on the focused widget and resets the IME composing region.
+        assertEquals(expected = Payload(emptyList()), actual = diff.getChangePayload(0, 0))
+    }
+
+    @Test
+    fun `aliased pair with a text delta should still yield TEXT_CHANGED`() {
+
+        val oldId = MockDataFactory.randomUuid()
+        val newId = MockDataFactory.randomUuid()
+
+        val oldBlock = BlockView.Text.Paragraph(id = oldId, text = "ㅎ")
+        val newBlock = oldBlock.copy(id = newId, text = "한")
+
+        val diff = BlockViewDiffUtil(
+            old = listOf(oldBlock),
+            new = listOf(newBlock),
+            aliases = mapOf(oldId to newId)
+        )
+
+        assertEquals(
+            expected = Payload(listOf(TEXT_CHANGED)),
+            actual = diff.getChangePayload(0, 0)
+        )
+    }
+
+    @Test
+    fun `alias should be inert when the old id is still present in the new list`() {
+
+        // The trailing-placeholder id is reused across placeholder sessions, so its alias
+        // outlives the swap it described.
+        val virtual = "virtual-trailing-block"
+        val materialized = MockDataFactory.randomUuid()
+
+        val existing = BlockView.Text.Paragraph(id = materialized, text = "한글")
+        val placeholder = BlockView.Text.Paragraph(id = virtual, text = "")
+
+        val diff = BlockViewDiffUtil(
+            old = listOf(existing, placeholder),
+            new = listOf(existing, placeholder),
+            aliases = mapOf(virtual to materialized)
+        )
+
+        // Old placeholder must NOT be matched to the pre-existing materialized row.
+        assertEquals(expected = false, actual = diff.areItemsTheSame(1, 0))
+        assertEquals(expected = true, actual = diff.areItemsTheSame(1, 1))
+    }
+
+    @Test
+    fun `alias should resolve transitively across a chain`() {
+
+        val virtual = "virtual-trailing-block"
+        val materialized = MockDataFactory.randomUuid()
+        val forked = MockDataFactory.randomUuid()
+
+        val oldBlock = BlockView.Text.Paragraph(id = virtual, text = "ㅎ")
+        val newBlock = oldBlock.copy(id = forked)
+
+        val diff = BlockViewDiffUtil(
+            old = listOf(oldBlock),
+            new = listOf(newBlock),
+            aliases = mapOf(virtual to materialized, materialized to forked)
+        )
+
+        assertEquals(expected = true, actual = diff.areItemsTheSame(0, 0))
+    }
+
+    @Test
+    fun `alias should be dropped when two old rows resolve onto the same new row`() {
+
+        // A chain plus a live placeholder can make both the virtual id and the
+        // materialized id resolve to the same forked id. Matching both to one new row
+        // would break DiffUtil's contract, so neither alias may apply.
+        val virtual = "virtual-trailing-block"
+        val materialized = MockDataFactory.randomUuid()
+        val forked = MockDataFactory.randomUuid()
+
+        val oldPlaceholder = BlockView.Text.Paragraph(id = virtual, text = "")
+        val oldMaterialized = BlockView.Text.Paragraph(id = materialized, text = "ㅎ")
+        val newForked = BlockView.Text.Paragraph(id = forked, text = "ㅎ")
+
+        val diff = BlockViewDiffUtil(
+            old = listOf(oldMaterialized, oldPlaceholder),
+            new = listOf(newForked),
+            aliases = mapOf(virtual to materialized, materialized to forked)
+        )
+
+        assertEquals(expected = false, actual = diff.areItemsTheSame(0, 0))
+        assertEquals(expected = false, actual = diff.areItemsTheSame(1, 0))
+    }
+
+    @Test
+    fun `alias should be inert when the target has not arrived in the new list`() {
+
+        val oldId = MockDataFactory.randomUuid()
+        val newId = MockDataFactory.randomUuid()
+        val unrelated = MockDataFactory.randomUuid()
+
+        val oldBlock = BlockView.Text.Paragraph(id = oldId, text = "ㅎ")
+        val newBlock = BlockView.Text.Paragraph(id = unrelated, text = "ㅎ")
+
+        val diff = BlockViewDiffUtil(
+            old = listOf(oldBlock),
+            new = listOf(newBlock),
+            aliases = mapOf(oldId to newId)
+        )
+
+        assertEquals(expected = false, actual = diff.areItemsTheSame(0, 0))
+    }
+
+    @Test
+    fun `aliased swap should dispatch a change and never a remove plus insert`() {
+
+        // This is the mechanism behind DROID-4557: a remove makes RecyclerView detach the
+        // focused row's View, and ViewGroup.removeDetachedView clears its focus, which
+        // ends the IME composition mid-syllable.
+        val oldId = MockDataFactory.randomUuid()
+        val newId = MockDataFactory.randomUuid()
+        val untouched = BlockView.Text.Paragraph(id = MockDataFactory.randomUuid(), text = "a")
+
+        val oldBlock = BlockView.Text.Paragraph(id = oldId, text = "ㅎ", isFocused = true)
+        val newBlock = oldBlock.copy(id = newId)
+
+        val recorded = mutableListOf<String>()
+        val callback = object : ListUpdateCallback {
+            override fun onInserted(position: Int, count: Int) {
+                recorded += "inserted($position,$count)"
+            }
+
+            override fun onRemoved(position: Int, count: Int) {
+                recorded += "removed($position,$count)"
+            }
+
+            override fun onMoved(fromPosition: Int, toPosition: Int) {
+                recorded += "moved($fromPosition,$toPosition)"
+            }
+
+            override fun onChanged(position: Int, count: Int, payload: Any?) {
+                recorded += "changed($position,$count,$payload)"
+            }
+        }
+
+        DiffUtil
+            .calculateDiff(
+                BlockViewDiffUtil(
+                    old = listOf(untouched, oldBlock),
+                    new = listOf(untouched, newBlock),
+                    aliases = mapOf(oldId to newId)
+                )
+            )
+            .dispatchUpdatesTo(callback)
+
+        assertEquals(
+            expected = listOf("changed(1,1,${Payload(emptyList())})"),
+            actual = recorded
+        )
+    }
+
+    @Test
+    fun `an unaliased swap should dispatch a remove plus insert`() {
+
+        // Baseline: without the alias the same swap tears the focused row down. Guards
+        // against the alias silently becoming a no-op.
+        val untouched = BlockView.Text.Paragraph(id = MockDataFactory.randomUuid(), text = "a")
+        val oldBlock = BlockView.Text.Paragraph(
+            id = MockDataFactory.randomUuid(),
+            text = "ㅎ",
+            isFocused = true
+        )
+        val newBlock = oldBlock.copy(id = MockDataFactory.randomUuid())
+
+        val recorded = mutableListOf<String>()
+        val callback = object : ListUpdateCallback {
+            override fun onInserted(position: Int, count: Int) {
+                recorded += "inserted"
+            }
+
+            override fun onRemoved(position: Int, count: Int) {
+                recorded += "removed"
+            }
+
+            override fun onMoved(fromPosition: Int, toPosition: Int) {
+                recorded += "moved"
+            }
+
+            override fun onChanged(position: Int, count: Int, payload: Any?) {
+                recorded += "changed"
+            }
+        }
+
+        DiffUtil
+            .calculateDiff(
+                BlockViewDiffUtil(
+                    old = listOf(untouched, oldBlock),
+                    new = listOf(untouched, newBlock)
+                )
+            )
+            .dispatchUpdatesTo(callback)
+
+        assertEquals(expected = listOf("removed", "inserted"), actual = recorded)
+    }
+
+    @Test
+    fun `an empty alias map should preserve the default id-only behaviour`() {
+
+        val oldBlock = BlockView.Text.Paragraph(
+            id = MockDataFactory.randomUuid(),
+            text = MockDataFactory.randomString()
+        )
+
+        val newBlock = oldBlock.copy(id = MockDataFactory.randomUuid())
+
+        val diff = BlockViewDiffUtil(old = listOf(oldBlock), new = listOf(newBlock))
+
+        assertEquals(expected = false, actual = diff.areItemsTheSame(0, 0))
+        // Non-aliased pairs must keep the null-payload full-rebind safety net.
+        assertNull(diff.getChangePayload(0, 0))
+    }
+
+    //endregion
 }

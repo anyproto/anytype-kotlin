@@ -87,7 +87,12 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             if (!item.hint.isNullOrBlank()) {
                 content.hint = item.hint
             }
-            content.setText(item.text, TextView.BufferType.EDITABLE)
+            // Skip when the widget already shows this text: re-setting it would tear down
+            // the composing region and break IME composition mid-syllable. Same guard as
+            // the TEXT_CHANGED payload path below.
+            if (content.text.toString() != item.text) {
+                content.setText(item.text, TextView.BufferType.EDITABLE)
+            }
         }
         cover?.setOnClickListener { onCoverClicked() }
     }
@@ -641,7 +646,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     // Click event intentionally ignored
                 }
             )
-            content.setText(item.text)
+            if (content.text.toString() != item.text) {
+                content.setText(item.text)
+            }
 
             image.setOnClickListener {
                 clicked(ListenerType.Header.Image)
@@ -735,7 +742,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 onCoverClicked = {},
                 click = {}
             )
-            content.setText(item.text)
+            if (content.text.toString() != item.text) {
+                content.setText(item.text)
+            }
             setupPreview(onPlayClicked, item.videoUrl)
         }
 

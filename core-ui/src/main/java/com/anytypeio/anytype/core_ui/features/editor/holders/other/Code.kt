@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_ui.features.editor.provide
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.CodeTextInputWidget
 import com.anytypeio.anytype.core_utils.ext.imm
+import com.anytypeio.anytype.core_utils.ext.isCaretAt
 import com.anytypeio.anytype.library_syntax_highlighter.Syntaxes
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -103,7 +104,12 @@ class Code(
 
             content.pauseSelectionWatcher {
                 content.pauseTextWatchers {
-                    content.setText(item.text)
+                    // Skip when the widget already shows this text: re-setting it would
+                    // tear down the composing region and break IME composition
+                    // (Hangul/Kana/Pinyin) mid-syllable.
+                    if (content.text.toString() != item.text) {
+                        content.setText(item.text)
+                    }
                 }
             }
 
@@ -139,9 +145,14 @@ class Code(
         if (payload.textChanged()) {
             content.pauseSelectionWatcher {
                 content.pauseTextWatchers {
-                    content.setText(item.text)
-                    content.clearHighlights()
-                    content.highlight()
+                    // An echo of what the user just typed carries no new text: re-setting
+                    // it would end the IME composition mid-syllable, and the highlights
+                    // already match this text.
+                    if (content.text.toString() != item.text) {
+                        content.setText(item.text)
+                        content.clearHighlights()
+                        content.highlight()
+                    }
                 }
             }
         }
@@ -234,7 +245,7 @@ class Code(
             Timber.d("Setting cursor: $item")
             item.cursor?.let {
                 val length = content.text?.length ?: 0
-                if (it in 0..length) {
+                if (it in 0..length && !content.isCaretAt(it)) {
                     content.setSelection(it)
                 }
             }

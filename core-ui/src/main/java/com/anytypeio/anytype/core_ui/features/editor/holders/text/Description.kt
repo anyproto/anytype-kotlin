@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.isCaretAt
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import timber.log.Timber
@@ -71,7 +72,9 @@ class Description(val binding: ItemBlockDescriptionBinding) : BlockViewHolder(bi
             try {
                 if (payload.isCursorChanged) {
                     item.cursor?.let {
-                        content.setSelection(it)
+                        if (!content.isCaretAt(it)) {
+                            content.setSelection(it)
+                        }
                     }
                 }
             } catch (e: Throwable) {
@@ -85,7 +88,7 @@ class Description(val binding: ItemBlockDescriptionBinding) : BlockViewHolder(bi
             Timber.d("Setting cursor: $item")
             item.cursor?.let {
                 val length = content.text?.length ?: 0
-                if (it in 0..length) {
+                if (it in 0..length && !content.isCaretAt(it)) {
                     content.setSelection(it)
                 }
             }
@@ -101,7 +104,11 @@ class Description(val binding: ItemBlockDescriptionBinding) : BlockViewHolder(bi
     }
 
     fun setContent(item: BlockView.Description) {
-        content.setText(item.text, TextView.BufferType.EDITABLE)
+        // Skip when the widget already shows this text: re-setting it would tear down the
+        // composing region and break IME composition (Hangul/Kana/Pinyin) mid-syllable.
+        if (content.text.toString() != item.text) {
+            content.setText(item.text, TextView.BufferType.EDITABLE)
+        }
     }
 
     fun enableReadMode() {

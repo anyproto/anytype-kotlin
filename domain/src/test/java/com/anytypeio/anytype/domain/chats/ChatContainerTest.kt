@@ -1003,9 +1003,14 @@ class ChatContainerTest {
         }
     }
 
+    /**
+     * While no visible range has been reported the container does not know where the user is
+     * looking, so it must not extend the window forward on its own (see DROID-4556) — the
+     * stranded message is only reachable through explicit paging.
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `should not append incoming message when window is detached from the chat tail`() = runTest {
+    fun `should not append incoming message when window is detached and no visible range was reported`() = runTest {
 
         val container = ChatContainer(
             repo = repo,
@@ -1135,6 +1140,689 @@ class ChatContainerTest {
             assertEquals(
                 expected = listOf(older, anchor, middle),
                 actual = paged.messages
+            )
+        }
+    }
+
+    /**
+     * DROID-4556. A message arriving while the window is detached from the chat tail is
+     * dropped from the window (see the test above). When the user is parked at the newest
+     * edge of that window, there is nothing below them to scroll into and the window size
+     * never changes — so the UI's bottom-reach detector never re-arms and no LoadNext is
+     * ever dispatched. The chat looks frozen until the user scrolls up and back down.
+     *
+     * The container must therefore extend the window forward itself, through the same
+     * contiguous paging path LoadNext uses.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should load the next page when a message arrives while the user is parked at the tail of a detached window`() = runTest {
+
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val older = StubChatMessage(order = "A")
+        val anchor = StubChatMessage(order = "B")
+        val middle = StubChatMessage(order = "C")
+        val tail = StubChatMessage(order = "T")
+        val incoming = StubChatMessage(order = "Z")
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = listOf(tail),
+                messageCountBefore = 0
+            )
+
+            onBlocking {
+                getChatMessagesByIds(
+                    Command.ChatCommand.GetMessagesByIds(
+                        chat = givenChatID,
+                        messages = listOf(anchor.id)
+                    )
+                )
+            } doReturn listOf(anchor)
+
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        beforeOrderId = anchor.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = listOf(older)
+            )
+
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        afterOrderId = anchor.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = emptyList()
+            )
+
+            // The next contiguous page after the detached window: it carries both the
+            // not-yet-loaded range and the message that was just dropped.
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        afterOrderId = anchor.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = listOf(middle, incoming)
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn emptyFlow()
+        }
+
+        container.watch(givenChatID).test {
+            val initial = awaitItem()
+            assertEquals(
+                expected = listOf(tail),
+                actual = initial.messages
+            )
+
+            // Jump to a message far away from the tail — the window no longer contains the tail.
+            container.onLoadToReply(anchor.id)
+            advanceUntilIdle()
+
+            val jumped = awaitItem()
+            assertEquals(
+                expected = listOf(older, anchor),
+                actual = jumped.messages
+            )
+
+            // The user is parked at the newest edge of the window: the newest visible
+            // message is the newest message the window holds.
+            container.onVisibleRangeChanged(from = anchor.id, to = older.id)
+            advanceUntilIdle()
+
+            container.onPayload(
+                listOf(
+                    Event.Command.Chats.Add(
+                        context = givenChatID,
+                        message = incoming,
+                        id = incoming.id,
+                        order = incoming.order,
+                        spaceId = SpaceId(MockDataFactory.randomUuid())
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            // [middle] proves the intervening range was fetched rather than skipped, and
+            // [incoming] proves the stranded message became reachable — had it simply been
+            // appended, [middle] would be missing and the gap would be hidden.
+            val healed = awaitItem()
+            assertEquals(
+                expected = listOf(older, anchor, middle, incoming),
+                actual = healed.messages
+            )
+        }
+    }
+
+    /**
+     * DROID-4556. The forward extension must be gated on the user actually sitting at the
+     * newest edge of the window. A user reading old history is far from it, and extending
+     * forward on every incoming message would let [trimKeepingNewest] evict the history
+     * under their scroll anchor.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should not extend the window forward when the user is parked away from the window tail`() = runTest {
+
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val older = StubChatMessage(order = "A")
+        val anchor = StubChatMessage(order = "B")
+        val tail = StubChatMessage(order = "T")
+        val incoming = StubChatMessage(order = "Z")
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = listOf(tail),
+                messageCountBefore = 0
+            )
+
+            onBlocking {
+                getChatMessagesByIds(
+                    Command.ChatCommand.GetMessagesByIds(
+                        chat = givenChatID,
+                        messages = listOf(anchor.id)
+                    )
+                )
+            } doReturn listOf(anchor)
+
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        beforeOrderId = anchor.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = listOf(older)
+            )
+
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        afterOrderId = anchor.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = emptyList()
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn emptyFlow()
+        }
+
+        container.watch(givenChatID).test {
+            awaitItem()
+
+            container.onLoadToReply(anchor.id)
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = listOf(older, anchor),
+                actual = awaitItem().messages
+            )
+
+            // The user is reading old history: the newest visible message is the OLDEST
+            // message of the window, not its tail.
+            container.onVisibleRangeChanged(from = older.id, to = older.id)
+            advanceUntilIdle()
+
+            container.onPayload(
+                listOf(
+                    Event.Command.Chats.Add(
+                        context = givenChatID,
+                        message = incoming,
+                        id = incoming.id,
+                        order = incoming.order,
+                        spaceId = SpaceId(MockDataFactory.randomUuid())
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = listOf(older, anchor),
+                actual = awaitItem().messages
+            )
+        }
+
+        // Explicit verification is required: an unstubbed getChatMessages returns null,
+        // which loadTheNextPage swallows in its catch block — the window would look
+        // unchanged even if the gate were broken.
+        verify(repo, never()).getChatMessages(
+            Command.ChatCommand.GetMessages(
+                chat = givenChatID,
+                afterOrderId = anchor.order,
+                limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+            )
+        )
+    }
+
+    /**
+     * DROID-4556. When the window still holds the chat tail, an incoming message is appended
+     * normally and no forward page must be fetched.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should not fetch a forward page when the window is attached to the chat tail`() = runTest {
+
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val tail = StubChatMessage(order = "T")
+        val incoming = StubChatMessage(order = "Z")
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = listOf(tail),
+                messageCountBefore = 0
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn emptyFlow()
+        }
+
+        container.watch(givenChatID).test {
+            assertEquals(
+                expected = listOf(tail),
+                actual = awaitItem().messages
+            )
+
+            container.onVisibleRangeChanged(from = tail.id, to = tail.id)
+            advanceUntilIdle()
+
+            container.onPayload(
+                listOf(
+                    Event.Command.Chats.Add(
+                        context = givenChatID,
+                        message = incoming,
+                        id = incoming.id,
+                        order = incoming.order,
+                        spaceId = SpaceId(MockDataFactory.randomUuid())
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = listOf(tail, incoming),
+                actual = awaitItem().messages
+            )
+        }
+
+        verify(repo, never()).getChatMessages(any())
+    }
+
+    /**
+     * DROID-4556. The forward extension is self-limiting: one successful extension moves the
+     * window tail past the message the user is looking at, so a burst of stranded messages
+     * cannot cascade into a round-trip per event. Paging is handed back to the user, whose
+     * next scroll reports a new visible range.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should load at most one forward page while the reported visible range is unchanged`() = runTest {
+
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val older = StubChatMessage(order = "A")
+        val anchor = StubChatMessage(order = "B")
+        val middle = StubChatMessage(order = "C")
+        val tail = StubChatMessage(order = "T")
+        val incoming = StubChatMessage(order = "Y")
+        val incomingAgain = StubChatMessage(order = "Z")
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = listOf(tail),
+                messageCountBefore = 0
+            )
+
+            onBlocking {
+                getChatMessagesByIds(
+                    Command.ChatCommand.GetMessagesByIds(
+                        chat = givenChatID,
+                        messages = listOf(anchor.id)
+                    )
+                )
+            } doReturn listOf(anchor)
+
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        beforeOrderId = anchor.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = listOf(older)
+            )
+
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        afterOrderId = anchor.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE / 2
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = emptyList()
+            )
+
+            // Leaves the window still detached from the chat tail.
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        afterOrderId = anchor.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = listOf(middle)
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn emptyFlow()
+        }
+
+        container.watch(givenChatID).test {
+            awaitItem()
+
+            container.onLoadToReply(anchor.id)
+            advanceUntilIdle()
+            awaitItem()
+
+            container.onVisibleRangeChanged(from = anchor.id, to = older.id)
+            advanceUntilIdle()
+
+            container.onPayload(
+                listOf(
+                    Event.Command.Chats.Add(
+                        context = givenChatID,
+                        message = incoming,
+                        id = incoming.id,
+                        order = incoming.order,
+                        spaceId = SpaceId(MockDataFactory.randomUuid())
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = listOf(older, anchor, middle),
+                actual = awaitItem().messages
+            )
+
+            // The window tail has moved past the message the user reported: a second
+            // stranded message must not trigger another round-trip.
+            container.onPayload(
+                listOf(
+                    Event.Command.Chats.Add(
+                        context = givenChatID,
+                        message = incomingAgain,
+                        id = incomingAgain.id,
+                        order = incomingAgain.order,
+                        spaceId = SpaceId(MockDataFactory.randomUuid())
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            expectNoEvents()
+        }
+
+        verify(repo, times(1)).getChatMessages(
+            Command.ChatCommand.GetMessages(
+                chat = givenChatID,
+                afterOrderId = anchor.order,
+                limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+            )
+        )
+        verify(repo, never()).getChatMessages(
+            Command.ChatCommand.GetMessages(
+                chat = givenChatID,
+                afterOrderId = middle.order,
+                limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+            )
+        )
+    }
+
+    /**
+     * The message window feeds a LazyColumn keyed on message id, and duplicate keys throw.
+     * A page that overlaps the window — e.g. a middleware echoing the boundary message —
+     * must therefore never introduce a duplicate.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should not duplicate messages already present in the window when loading the next page`() = runTest {
+
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val first = StubChatMessage(order = "A")
+        val second = StubChatMessage(order = "B")
+        val third = StubChatMessage(order = "C")
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = listOf(first, second),
+                messageCountBefore = 0
+            )
+
+            // The boundary message comes back with the page.
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        afterOrderId = second.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = listOf(second, third)
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn emptyFlow()
+        }
+
+        container.watch(givenChatID).test {
+            assertEquals(
+                expected = listOf(first, second),
+                actual = awaitItem().messages
+            )
+
+            container.onLoadNext()
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = listOf(first, second, third),
+                actual = awaitItem().messages
+            )
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should not duplicate messages already present in the window when loading the previous page`() = runTest {
+
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val first = StubChatMessage(order = "A")
+        val second = StubChatMessage(order = "B")
+        val third = StubChatMessage(order = "C")
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = listOf(second, third),
+                messageCountBefore = 0
+            )
+
+            // The boundary message comes back with the page.
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        beforeOrderId = second.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = listOf(first, second)
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn emptyFlow()
+        }
+
+        container.watch(givenChatID).test {
+            assertEquals(
+                expected = listOf(second, third),
+                actual = awaitItem().messages
+            )
+
+            container.onLoadPrevious()
+            advanceUntilIdle()
+
+            assertEquals(
+                expected = listOf(first, second, third),
+                actual = awaitItem().messages
+            )
+        }
+    }
+
+    /**
+     * The "New messages" divider is anchored on [ChatStreamState.initialUnreadSectionMessageId].
+     * LoadPrevious and the event fold both preserve it; LoadNext must too, since the first
+     * forward page is precisely where the unread messages are. Note LoadNext also fires when
+     * the user merely bounces off the bottom of an already-complete window, which would
+     * otherwise destroy the divider without any forward navigation having happened.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    @Test
+    fun `should keep the new-messages divider when loading the next page`() = runTest {
+
+        val container = ChatContainer(
+            repo = repo,
+            channel = channel,
+            logger = logger,
+            subscription = storelessSubscriptionContainer
+        )
+
+        val read = StubChatMessage(order = "A")
+        val oldestUnread = StubChatMessage(order = "B")
+        val next = StubChatMessage(order = "C")
+
+        repo.stub {
+            onBlocking {
+                subscribeLastChatMessages(
+                    Command.ChatCommand.SubscribeLastMessages(
+                        chat = givenChatID,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.SubscribeLastMessages.Response(
+                messages = listOf(read, oldestUnread),
+                messageCountBefore = 0,
+                chatState = Chat.State(
+                    unreadMessages = Chat.State.UnreadState(
+                        counter = 1,
+                        olderOrderId = oldestUnread.order
+                    )
+                )
+            )
+
+            onBlocking {
+                getChatMessages(
+                    Command.ChatCommand.GetMessages(
+                        chat = givenChatID,
+                        afterOrderId = oldestUnread.order,
+                        limit = ChatContainer.DEFAULT_CHAT_PAGING_SIZE
+                    )
+                )
+            } doReturn Command.ChatCommand.GetMessages.Response(
+                messages = listOf(next)
+            )
+        }
+
+        channel.stub {
+            on { observe(chat = givenChatID) } doReturn emptyFlow()
+        }
+
+        container.watch(givenChatID).test {
+            assertEquals(
+                expected = oldestUnread.id,
+                actual = awaitItem().initialUnreadSectionMessageId
+            )
+
+            container.onLoadNext()
+            advanceUntilIdle()
+
+            val paged = awaitItem()
+            assertEquals(
+                expected = listOf(read, oldestUnread, next),
+                actual = paged.messages
+            )
+            assertEquals(
+                expected = oldestUnread.id,
+                actual = paged.initialUnreadSectionMessageId
             )
         }
     }

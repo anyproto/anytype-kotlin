@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.mapLimitObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -114,20 +115,26 @@ class ObjectValueViewModel(
                         emitCommand(Command.Expand)
                     }
                 }
-                Pair(
-                    ids, getSearchParams(
+                // Resolved once per emission and reused for both the search filter and the
+                // header/empty-state labels, so the query and the UI can never disagree about
+                // which types this property actually accepts.
+                val limitObjectTypes = storeOfObjectTypes.mapLimitObjectTypes(relation)
+                Triple(
+                    ids, limitObjectTypes, getSearchParams(
                         relation = relation,
                         query = query,
-                        ids = ids
+                        ids = ids,
+                        limitObjectTypes = limitObjectTypes
                     )
                 )
-            }.onEach { (ids, searchParams) ->
+            }.onEach { (ids, limitObjectTypes, searchParams) ->
                 objectSearch(params = searchParams).proceed(
                     success = { objects ->
                         initViewState(
                             relation = relation,
                             ids = ids,
                             objects = objects,
+                            limitObjectTypes = limitObjectTypes
                         )
                     },
                     failure = { Timber.e(it, "Error while searching objects") }
@@ -139,7 +146,8 @@ class ObjectValueViewModel(
     private fun getSearchParams(
         relation: ObjectWrapper.Relation,
         query: String,
-        ids: List<Id>
+        ids: List<Id>,
+        limitObjectTypes: List<Id>
     ): SearchObjects.Params {
         val isFileRelation = relation.format == FILE
         val searchKeys =
@@ -158,9 +166,14 @@ class ObjectValueViewModel(
             else -> {
                 if (isEditableRelation) {
                     val isOneToOneSpace = spaceViews.get(viewModelParams.space)?.isOneToOneSpace == true
+                    // Deliberately the resolved list, not relation.relationFormatObjectTypes:
+                    // ids that no longer exist as types in this space (deleted/recreated types,
+                    // ids carried in from another space) would otherwise produce
+                    // `type IN [<dead ids>]`, which matches nothing while every other screen
+                    // reports the property as unrestricted (DROID-4554).
                     ObjectSearchConstants.filterAddObjectToRelation(
                         space = viewModelParams.space.id,
-                        targetTypes = relation.relationFormatObjectTypes,
+                        targetTypes = limitObjectTypes,
                         isOneToOneSpace = isOneToOneSpace
                     )
                 } else {
@@ -205,15 +218,16 @@ class ObjectValueViewModel(
         relation: ObjectWrapper.Relation,
         ids: List<Id>,
         objects: List<ObjectWrapper.Basic>,
+        limitObjectTypes: List<Id>,
         query: String = ""
     ) {
         val views = mapObjects(ids, objects, query, fieldParser, storeOfObjectTypes)
+        val objectTypeNames = getFormatObjectTypeNames(relation, limitObjectTypes)
         viewState.value = if (views.isNotEmpty()) {
             ObjectValueViewState.Content(
                 isEditableRelation = isEditableRelation,
                 title = relation.name.orEmpty(),
                 items = buildList {
-                    val objectTypeNames = getFormatObjectTypeNames(relation)
                     if (isEditableRelation) add(ObjectValueItem.ObjectType(name = objectTypeNames))
                     addAll(views)
                 }
@@ -222,18 +236,25 @@ class ObjectValueViewModel(
             ObjectValueViewState.Empty(
                 isEditableRelation = isEditableRelation,
                 title = relation.name.orEmpty(),
+                // Non-null only when the property genuinely restricts to types that still
+                // exist, so the empty screen can say why nothing is listed instead of the
+                // bare "Objects not found".
+                limitedToTypeNames = objectTypeNames.takeIf { it.isNotBlank() }
             )
         }
     }
 
-    private suspend fun getFormatObjectTypeNames(relation: ObjectWrapper.Relation): String {
+    private suspend fun getFormatObjectTypeNames(
+        relation: ObjectWrapper.Relation,
+        limitObjectTypes: List<Id>
+    ): String {
         val objectTypeKeys =
             if (relation.format == FILE) {
                 ObjectTypeIds.getFileTypes().mapNotNull { key ->
                     storeOfObjectTypes.getByKey(key)?.name?.takeIf { it.isNotBlank() }
                 }
             } else {
-                relation.relationFormatObjectTypes.mapNotNull { id ->
+                limitObjectTypes.mapNotNull { id ->
                     storeOfObjectTypes.get(id)?.name?.takeIf { it.isNotBlank() }
                 }
             }
@@ -477,7 +498,12 @@ sealed class ObjectValueViewState {
 
     data class Empty(
         val title: String,
-        override val isEditableRelation: Boolean
+        override val isEditableRelation: Boolean,
+        /**
+         * Comma-separated names of the object types this property is limited to, or null when
+         * the property accepts anything. Drives the explanatory empty state (DROID-4554).
+         */
+        val limitedToTypeNames: String? = null
     ) : ObjectValueViewState()
 
     data class Content(

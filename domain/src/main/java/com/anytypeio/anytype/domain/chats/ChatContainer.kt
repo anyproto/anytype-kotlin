@@ -238,6 +238,11 @@ class ChatContainer @Inject constructor(
             // empty round-trips when the user keeps bouncing off the top of the chat.
             var noMoreMessagesBeforeOrder: Id? = null
 
+            // The newest message the UI last reported as visible, or null while no visible
+            // range has been reported yet. Scoped to this collection so it resets on
+            // re-subscription and can never leak between chats.
+            var newestVisibleMessageId: Id? = null
+
             val initial = buildList {
                 if (initialState.hasUnReadMessages && !initialState.oldestMessageOrderId.isNullOrEmpty()) {
                     val lastUnreadMessage = response.messages.find { it.order == initialState.oldestMessageOrderId }
@@ -301,8 +306,13 @@ class ChatContainer @Inject constructor(
                                 if (previousPage != null && previousPage.isEmpty() && first != null) {
                                     noMoreMessagesBeforeOrder = first.order
                                 }
+                                // See loadTheNextPage: overlapping pages must not produce
+                                // duplicate ids in the window.
+                                val known = state.messages.mapTo(HashSet()) { it.id }
                                 ChatStreamState(
-                                    messages = (previousPage.orEmpty() + state.messages).trimKeepingOldest(),
+                                    messages = (
+                                            previousPage.orEmpty().filter { known.add(it.id) } + state.messages
+                                            ).trimKeepingOldest(),
                                     intent = Intent.None,
                                     state = state.state,
                                     initialUnreadSectionMessageId = state.initialUnreadSectionMessageId
@@ -314,7 +324,11 @@ class ChatContainer @Inject constructor(
                                 messages = loadTheNextPage(state.messages, chat).trimKeepingNewest(),
                                 intent = Intent.None,
                                 state = state.state,
-                                initialUnreadSectionMessageId = null
+                                // Preserved, mirroring LoadPrevious: the first forward page is
+                                // precisely where the unread messages are. The divider clears
+                                // itself once its anchor leaves the window, since the view model
+                                // only renders it for a message the window still holds.
+                                initialUnreadSectionMessageId = state.initialUnreadSectionMessageId
                             )
                         }
                         is Transformation.Commands.LoadAround -> {
@@ -469,6 +483,9 @@ class ChatContainer @Inject constructor(
                             )
                         }
                         is Transformation.Commands.UpdateVisibleRange -> {
+                            // [from] is the NEWEST visible message: the UI list is reversed,
+                            // so the lowest visible index is the most recent message.
+                            newestVisibleMessageId = transform.from
                             val counterState = state.state
                             val bottomVisibleMessage = state.messages.find { it.id == transform.from }
                             if (bottomVisibleMessage != null) {
@@ -480,7 +497,42 @@ class ChatContainer @Inject constructor(
                             state
                         }
                         is Transformation.Events.Payload -> {
-                            state.reduce(transform.events)
+                            var strandedTailMessage = false
+                            val reduced = state.reduce(transform.events) {
+                                strandedTailMessage = true
+                            }
+                            if (strandedTailMessage &&
+                                isParkedAtWindowTail(reduced.messages, newestVisibleMessageId)
+                            ) {
+                                // DROID-4556: the user is parked at the newest edge of a window
+                                // detached from the chat tail. Nothing is below them to scroll
+                                // into and the window size never changes, so the UI's
+                                // bottom-reach detector never re-arms and the stranded message
+                                // can never enter the window through user-driven LoadNext
+                                // paging — the chat looks frozen until the user scrolls up and
+                                // back down.
+                                //
+                                // Extend the window forward here, through the same contiguous
+                                // paging path LoadNext uses, so no range is skipped.
+                                //
+                                // Exactly ONE page: a successful extension moves the window
+                                // tail past [newestVisibleMessageId], so a burst of stranded
+                                // messages cannot cascade into a round-trip per event, and the
+                                // size change re-arms the UI detector — handing paging back to
+                                // the user. Looping until attached would instead block the fold
+                                // on N round-trips and let trimKeepingNewest evict the history
+                                // under the user's scroll anchor.
+                                val extended = loadTheNextPage(reduced.messages, chat)
+                                if (extended.size != reduced.messages.size) {
+                                    reduced.copy(messages = extended.trimKeepingNewest())
+                                } else {
+                                    // Empty page or a failed round-trip: the window tail has not
+                                    // moved, so the next incoming message retries.
+                                    reduced
+                                }
+                            } else {
+                                reduced
+                            }
                         }
                     }
                 }.onEach {
@@ -657,7 +709,11 @@ class ChatContainer @Inject constructor(
                     limit = DEFAULT_CHAT_PAGING_SIZE
                 )
             )
-            state + next.messages
+            // The window is rendered by a LazyColumn keyed on message id, and duplicate
+            // keys throw — so a page overlapping the window (e.g. one echoing the boundary
+            // message) must never introduce a duplicate.
+            val known = state.mapTo(HashSet()) { it.id }
+            state + next.messages.filter { known.add(it.id) }
         } else {
             state.also {
                 logger.logWarning("DROID-2966 The last message not found in chat")
@@ -723,6 +779,23 @@ class ChatContainer @Inject constructor(
         return window.any { it.id == newestKnown.id }
     }
 
+    /**
+     * Whether the user is parked at the newest edge of [window] — with nothing below them
+     * left to scroll into.
+     *
+     * Conservative by design: while no visible range has been reported (the chat has just
+     * opened, or an initial scroll intent is still being applied) [newestVisibleMessageId]
+     * is null and the window is never auto-extended. A user reading old history is therefore
+     * never yanked by [trimKeepingNewest] evicting the messages under their scroll anchor.
+     */
+    private fun isParkedAtWindowTail(
+        window: List<Chat.Message>,
+        newestVisibleMessageId: Id?
+    ): Boolean {
+        if (newestVisibleMessageId == null || window.isEmpty()) return false
+        return window.last().id == newestVisibleMessageId
+    }
+
     @Throws
     private suspend fun loadToEnd(chat: Id): List<Chat.Message> {
         return repo.getChatMessages(
@@ -739,8 +812,14 @@ class ChatContainer @Inject constructor(
         payloads.emit(events)
     }
 
+    /**
+     * @param onTailMessageStranded invoked when a newly added message could not enter the
+     * window because the window is detached from the chat tail. The caller decides how to
+     * recover — see DROID-4556.
+     */
     fun ChatStreamState.reduce(
-        events: List<Event.Command.Chats>
+        events: List<Event.Command.Chats>,
+        onTailMessageStranded: () -> Unit = {}
     ): ChatStreamState {
         val messageList = this.messages.toMutableList()
         var countersState = this.state
@@ -753,15 +832,20 @@ class ChatContainer @Inject constructor(
                             messageList.add(insertIndex, event.message)
                         } else if (isWindowAttachedToChatTail(messageList)) {
                             messageList.add(event.message)
+                        } else {
+                            // The window is detached from the chat tail (older history is
+                            // being browsed after the newest edge was trimmed or the window was
+                            // replaced by a jump-to-message). Appending here would render the new
+                            // message right after a much older one, hiding the not-yet-loaded
+                            // range between them — and LoadNext would then paginate from the
+                            // appended message, permanently skipping that range. The message is
+                            // still tracked in [lastMessages] and will enter the window through
+                            // contiguous LoadNext paging or a LoadEnd reload of the tail.
+                            //
+                            // Neither of those is dispatched while the user sits at the window's
+                            // newest edge, so the caller is told the tail was stranded.
+                            onTailMessageStranded()
                         }
-                        // else: the window is detached from the chat tail (older history is
-                        // being browsed after the newest edge was trimmed or the window was
-                        // replaced by a jump-to-message). Appending here would render the new
-                        // message right after a much older one, hiding the not-yet-loaded
-                        // range between them — and LoadNext would then paginate from the
-                        // appended message, permanently skipping that range. The message is
-                        // still tracked in [lastMessages] and will enter the window through
-                        // contiguous LoadNext paging or a LoadEnd reload of the tail.
                     }
                     // A (re)added message is fetchable again: clear any tombstone so
                     // fetchReplies may resolve it as a reply target.

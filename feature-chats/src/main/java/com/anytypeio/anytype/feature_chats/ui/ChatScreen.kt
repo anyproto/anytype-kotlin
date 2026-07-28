@@ -29,6 +29,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -403,6 +404,38 @@ private fun LazyListState.OnBottomReachedSafely(
 }
 
 /**
+ * Whether the chat should follow its tail — scroll to the newest message — after the item
+ * count changed.
+ *
+ * [wasAtBottom] is deliberately the value captured before the layout pass: the effect that
+ * consumes this runs in the frame callback, before measure, and once an item has been added
+ * at index 0 the live "is at bottom" reading is already false. Following the tail therefore
+ * has to be decided from the pre-change position.
+ *
+ * The item count alone cannot tell an arriving message from a page load: the list is
+ * reversed, so both land at index 0. It is the *size of the change* that distinguishes them
+ * — if fewer items arrived than fit on screen, following the tail keeps the user's context;
+ * if more arrived, following it would teleport the user past everything that just loaded.
+ * That is DROID-4556: a forward page fetched because the user scrolled down to read new
+ * messages must not immediately scroll them past those messages.
+ */
+internal fun shouldFollowChatTail(
+    wasAtBottom: Boolean,
+    isPerformingScrollIntent: Boolean,
+    previousItemCount: Int,
+    newItemCount: Int,
+    viewportItemCount: Int
+): Boolean {
+    if (!wasAtBottom || isPerformingScrollIntent) return false
+    // First population of the list.
+    if (previousItemCount == 0) return true
+    val appended = newItemCount - previousItemCount
+    // Deletion, or a window trim: not a new-message arrival.
+    if (appended <= 0) return true
+    return appended <= maxOf(viewportItemCount, 1)
+}
+
+/**
  * TODO: do date formating before rendering?
  */
 @Composable
@@ -640,12 +673,25 @@ fun ChatScreen(
             }
     }
 
+    // Item count of the previous emission — used to tell a live tail append (follow it)
+    // from a page that landed below the viewport (stay put — DROID-4556).
+    var previousItemCount by remember { mutableIntStateOf(0) }
+
     // Scrolling to bottom when list size changes and we are at the bottom of the list
     LaunchedEffect(messages.size) {
-        if (wasAtBottom && !isPerformingScrollIntent.value) {
+        val previous = previousItemCount
+        previousItemCount = messages.size
+        val shouldFollow = shouldFollowChatTail(
+            wasAtBottom = wasAtBottom,
+            isPerformingScrollIntent = isPerformingScrollIntent.value,
+            previousItemCount = previous,
+            newItemCount = messages.size,
+            viewportItemCount = lazyListState.layoutInfo.visibleItemsInfo.size
+        )
+        if (shouldFollow) {
             lazyListState.animateScrollToItem(0)
         } else {
-            Timber.d("DROID-2966 Skipping auto-scroll")
+            Timber.d("DROID-2966 Skipping auto-scroll: $previous -> ${messages.size}")
         }
     }
 

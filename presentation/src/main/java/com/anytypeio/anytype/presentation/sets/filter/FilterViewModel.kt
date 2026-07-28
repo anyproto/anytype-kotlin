@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.mapLimitObjectTypes
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -313,11 +314,10 @@ open class FilterViewModel(
         }
         Relation.Format.OBJECT -> {
             val ids = filter?.value as? List<*>
-            val limitObjectTypes = buildList {
-                if (relation.relationFormatObjectTypes.isNotEmpty()) {
-                    addAll(relation.relationFormatObjectTypes)
-                }
-            }
+            // Resolved against the type store rather than used raw: ids for types that no
+            // longer exist in this space would otherwise filter every candidate out
+            // (DROID-4554).
+            val limitObjectTypes = storeOfObjectTypes.mapLimitObjectTypes(relation)
             proceedWithSearchObjects(
                 ids = ids,
                 objectTypes = storeOfObjectTypes.getAll(),

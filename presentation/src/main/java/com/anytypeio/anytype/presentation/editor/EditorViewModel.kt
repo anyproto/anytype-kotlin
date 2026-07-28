@@ -9052,7 +9052,9 @@ class EditorViewModel(
                         target = context,
                         relationKey = relation.key,
                         isReadOnlyValue = isReadOnlyValue(restrictions),
-                        space = requireNotNull(relation.spaceId)
+                        // See the TagOrStatus branch below: the edited object's space, not the
+                        // relation object's (DROID-4554).
+                        space = vmParams.space.id
                     )
                 )
             }
@@ -9087,7 +9089,11 @@ class EditorViewModel(
                         target = context,
                         relationKey = relation.key,
                         isReadOnlyValue = isReadOnlyValue(restrictions),
-                        space = requireNotNull(relation.spaceId)
+                        // The edited object's space, not the relation object's. The value
+                        // screen scopes its search by this twice (RPC + spaceId filter), so
+                        // any drift silently returns zero candidates (DROID-4554). Matches
+                        // ObjectFieldsFragment and ObjectSetFragment, which pass their own space.
+                        space = vmParams.space.id
                     )
                 )
             }
@@ -9098,7 +9104,9 @@ class EditorViewModel(
                         target = context,
                         relationKey = relation.key,
                         isReadOnlyValue = isReadOnlyValue(restrictions),
-                        space = requireNotNull(relation.spaceId)
+                        // See the TagOrStatus branch above: the edited object's space, so the
+                        // candidate search is scoped where the objects actually live.
+                        space = vmParams.space.id
                     )
                 )
             }

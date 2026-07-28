@@ -9029,7 +9029,9 @@ class EditorViewModel(
                         target = context,
                         relationKey = relation.key,
                         isReadOnlyValue = isReadOnlyValue(restrictions),
-                        space = requireNotNull(relation.spaceId)
+                        // See the TagOrStatus branch below: the edited object's space, not the
+                        // relation object's (DROID-4554).
+                        space = vmParams.space.id
                     )
                 )
             }

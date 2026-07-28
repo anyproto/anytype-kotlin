@@ -5,6 +5,21 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.RelationFormat
+
+/**
+ * The relation formats the backend can build board columns from — the same three [groupValueFilter]
+ * below knows how to turn back into record filters.
+ *
+ * Grouping by anything else fails `ObjectGroupsSubscribe` outright ("get grouper: unsupported
+ * relation format"), so a view carrying such a key — a board configured on another client, or one
+ * whose relation later changed format — has to be caught before the request is issued (DROID-4555).
+ */
+val BOARD_GROUP_BY_FORMATS = setOf(
+    RelationFormat.STATUS,
+    RelationFormat.TAG,
+    RelationFormat.CHECKBOX
+)
 
 /**
  * A single Kanban column's record query: its [columnId] (the backend group id, or the

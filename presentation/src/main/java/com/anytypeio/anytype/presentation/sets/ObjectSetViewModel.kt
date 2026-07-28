@@ -535,7 +535,7 @@ class ObjectSetViewModel(
                 stateReducer.state,
             ) { viewId, state ->
                 if (viewId != null) {
-                    val dataView = state.dataViewState()
+                    val dataView = state.dataViewStateOrNull()
                     val pair = dataView?.viewerAndIndexById(viewId)
                     if (dataView != null && pair != null) {
                         viewerEditWidgetState.value = pair.first.toViewerEditWidgetState(
@@ -785,7 +785,7 @@ class ObjectSetViewModel(
                     old.second == new.second
                 }
                 .flatMapLatest { (query, _) ->
-                val activeViewer = query.state.dataViewState()?.viewerByIdOrFirst(query.currentViewerId)
+                val activeViewer = query.state.dataViewStateOrNull()?.viewerByIdOrFirst(query.currentViewerId)
                 if (activeViewer?.type == DVViewerType.BOARD && isKanbanEnabled.value) {
                     // An enabled board is driven entirely by per-column record subscriptions
                     // (subscribeToBoardRecords), not the single flat 50-record window. When the
@@ -918,8 +918,16 @@ class ObjectSetViewModel(
             // Wait for the previous stop's backend unsubscribe (same subscription id) before
             // issuing any new subscribe request — see [unsubscribeJob].
             unsubscribeJob?.join()
-            combine(stateReducer.state, session.currentViewerId, isKanbanEnabled) { state, currentViewId, kanbanEnabled ->
-                val dataView = state.dataViewState()
+            combine(
+                stateReducer.state,
+                session.currentViewerId,
+                isKanbanEnabled,
+                // The group relation's format is resolved against storeOfRelations below. A tick on
+                // store changes re-evaluates the params once a format arrives, so a board opened
+                // before the store populated isn't stranded on the first (format-less) verdict.
+                storeOfRelations.trackChanges()
+            ) { state, currentViewId, kanbanEnabled, _ ->
+                val dataView = state.dataViewStateOrNull()
                 val viewer = dataView?.viewerByIdOrFirst(currentViewId)
                 if (kanbanEnabled && dataView != null && viewer != null && viewer.type == DVViewerType.BOARD) {
                     buildBoardGroupParams(dataView, viewer)
@@ -959,6 +967,10 @@ class ObjectSetViewModel(
         viewer: DVViewer
     ): BoardGroupSubscriptionContainer.Params? {
         val relationKey = viewer.groupRelationKey?.takeIf { it.isNotEmpty() } ?: return null
+        // Refuse the request the backend grouper would reject anyway — the failure surfaces as an
+        // opaque subscription error the user can't act on. The render shows the "choose a grouping
+        // property" hint instead (see [isBoardMissingUsableGroupRelation]).
+        if (isGroupRelationUnsupported(relationKey)) return null
         val filters = buildList {
             addAll(viewer.filters.updateFormatForSubscription(storeOfRelations).removeUnsupportedFilters())
             addAll(defaultDataViewFilters())
@@ -1001,7 +1013,7 @@ class ObjectSetViewModel(
             // issuing any new subscribe request — see [unsubscribeJob].
             unsubscribeJob?.join()
             combine(stateReducer.state, session.currentViewerId, boardGroups, isKanbanEnabled) { state, currentViewId, groups, kanbanEnabled ->
-                val dataView = state.dataViewState()
+                val dataView = state.dataViewStateOrNull()
                 val viewer = dataView?.viewerByIdOrFirst(currentViewId)
                 if (kanbanEnabled && dataView != null && viewer != null && viewer.type == DVViewerType.BOARD && !groups.isNullOrEmpty()) {
                     buildBoardRecordsParams(dataView, viewer, groups)
@@ -1113,7 +1125,7 @@ class ObjectSetViewModel(
             // issuing any new subscribe request — see [unsubscribeJob].
             unsubscribeJob?.join()
             combine(stateReducer.state, session.currentViewerId, isKanbanEnabled) { state, currentViewId, kanbanEnabled ->
-                val viewer = state.dataViewState()?.viewerByIdOrFirst(currentViewId)
+                val viewer = state.dataViewStateOrNull()?.viewerByIdOrFirst(currentViewId)
                 if (kanbanEnabled && viewer?.type == DVViewerType.BOARD) {
                     viewer.groupRelationKey?.takeIf { it.isNotEmpty() }
                 } else {
@@ -1172,7 +1184,7 @@ class ObjectSetViewModel(
                 storeOfRelations.trackChanges()
             ) { state, _ -> state }
                 .map { state ->
-                    state.dataViewState()?.dataViewContent?.relationLinks
+                    state.dataViewStateOrNull()?.dataViewContent?.relationLinks
                         ?.mapNotNull { link ->
                             val format = storeOfRelations.getByKey(link.key)?.format
                             if (format == RelationFormat.TAG || format == RelationFormat.STATUS) {
@@ -1316,14 +1328,31 @@ class ObjectSetViewModel(
         viewer is Viewer.Board && boardGroups.value == null
 
     /**
-     * An enabled Board view with no grouping property can never build columns (it has nothing to
-     * group by), so it would otherwise sit in the loading state forever. Detect it so the render
-     * shows an explicit "choose a grouping property" hint instead of an endless spinner.
+     * Whether [key] is known to be ungroupable, i.e. outside [BOARD_GROUP_BY_FORMATS].
+     *
+     * An unresolved format — the relation hasn't reached [storeOfRelations] yet — counts as usable.
+     * This mirrors how the rest of the data view resolves formats optimistically (see
+     * `updateFormatForSubscription`), and refusing on a not-yet-loaded relation would strand a
+     * perfectly valid board. The collectors re-evaluate on store changes, so a genuinely
+     * unsupported relation is caught as soon as its format is known.
      */
-    private fun isBoardMissingGroupRelation(viewer: DVViewer?): Boolean =
-        isKanbanEnabled.value
-                && viewer?.type == DVViewerType.BOARD
-                && viewer.groupRelationKey.isNullOrEmpty()
+    private suspend fun isGroupRelationUnsupported(key: Key?): Boolean {
+        if (key.isNullOrEmpty()) return false
+        val format = storeOfRelations.getByKey(key)?.format ?: return false
+        return format !in BOARD_GROUP_BY_FORMATS
+    }
+
+    /**
+     * An enabled Board view that can never build columns: it has no grouping property, or one the
+     * backend can't group by. Either way it would otherwise sit in the loading state forever (no
+     * grouping property) or fail its group subscription (unsupported format), so the render shows
+     * an explicit "choose a grouping property" hint instead.
+     */
+    private suspend fun isBoardMissingUsableGroupRelation(viewer: DVViewer?): Boolean {
+        if (!isKanbanEnabled.value || viewer?.type != DVViewerType.BOARD) return false
+        return viewer.groupRelationKey.isNullOrEmpty()
+                || isGroupRelationUnsupported(viewer.groupRelationKey)
+    }
 
     /** An active board whose group/record subscription died renders an explicit error. */
     private fun hasBoardSubscriptionFailed(viewer: DVViewer?): Boolean =
@@ -1365,17 +1394,19 @@ class ObjectSetViewModel(
                     storeOfRelations.getByKey(it.key)
                 }
                 val viewer = renderViewer(objectState, dataViewState, dvViewer, relations)
+                val missingGroupBy = isBoardMissingUsableGroupRelation(dvViewer)
 
                 when {
                     viewer == null -> DataViewViewState.Collection.NoView(
                         isCreateObjectAllowed = permission?.isOwnerOrEditor() == true,
                         isEditingViewAllowed = permission?.isOwnerOrEditor() == true
                     )
-                    hasBoardSubscriptionFailed(dvViewer) -> DataViewViewState.Error(
+                    // A board with no usable grouping property never had a working subscription, so
+                    // prefer the actionable hint over an error it may have produced on the way here.
+                    !missingGroupBy && hasBoardSubscriptionFailed(dvViewer) -> DataViewViewState.Error(
                         msg = BOARD_SUBSCRIPTION_ERROR_MSG
                     )
                     viewer.isEmpty() -> {
-                        val missingGroupBy = isBoardMissingGroupRelation(dvViewer)
                         if (!missingGroupBy && isBoardAwaitingGroups(viewer)) return DataViewViewState.Init
                         val isCreateObjectAllowed = objectState.isCreateObjectAllowed() && permission?.isOwnerOrEditor() == true
                         DataViewViewState.Collection.NoItems(
@@ -1455,6 +1486,8 @@ class ObjectSetViewModel(
                     kanbanEnabled = isKanbanEnabled.value
                 )
 
+                val missingGroupBy = isBoardMissingUsableGroupRelation(viewer)
+
                 when {
                     query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.Set.NoQuery(
                         isCreateObjectAllowed = permission?.isOwnerOrEditor() == true,
@@ -1464,11 +1497,12 @@ class ObjectSetViewModel(
                         isCreateObjectAllowed = permission?.isOwnerOrEditor() == true,
                         isEditingViewAllowed = permission?.isOwnerOrEditor() == true
                     )
-                    hasBoardSubscriptionFailed(viewer) -> DataViewViewState.Error(
+                    // A board with no usable grouping property never had a working subscription, so
+                    // prefer the actionable hint over an error it may have produced on the way here.
+                    !missingGroupBy && hasBoardSubscriptionFailed(viewer) -> DataViewViewState.Error(
                         msg = BOARD_SUBSCRIPTION_ERROR_MSG
                     )
                     render.isEmpty() -> {
-                        val missingGroupBy = isBoardMissingGroupRelation(viewer)
                         if (!missingGroupBy && isBoardAwaitingGroups(render)) return DataViewViewState.Init
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
                             vmParams.ctx, viewer, storeOfObjectTypes
@@ -1546,15 +1580,18 @@ class ObjectSetViewModel(
                     kanbanEnabled = isKanbanEnabled.value
                 )
 
+                val missingGroupBy = isBoardMissingUsableGroupRelation(viewer)
+
                 when {
                     render == null || query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.TypeSet.Error(
                         msg = "Error while rendering viewer",
                     )
-                    hasBoardSubscriptionFailed(viewer) -> DataViewViewState.TypeSet.Error(
+                    // A board with no usable grouping property never had a working subscription, so
+                    // prefer the actionable hint over an error it may have produced on the way here.
+                    !missingGroupBy && hasBoardSubscriptionFailed(viewer) -> DataViewViewState.TypeSet.Error(
                         msg = BOARD_SUBSCRIPTION_ERROR_MSG
                     )
                     render.isEmpty() -> {
-                        val missingGroupBy = isBoardMissingGroupRelation(viewer)
                         if (!missingGroupBy && isBoardAwaitingGroups(render)) return DataViewViewState.Init
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
                             vmParams.ctx, viewer, storeOfObjectTypes

@@ -83,9 +83,8 @@ class BillingClientLifecycle(
             .setListener(this)
             // GPBL 8.0.0 removed the no-argument overload: pending purchases are now opted into
             // per product kind. The old call covered one-time products only, so this preserves
-            // the previous behaviour. It deliberately leaves prepaid plans out -- those are the
-            // only subscriptions that can report PENDING, and enabling them would change which
-            // purchases we surface.
+            // the previous behaviour. We sell subscriptions exclusively, so the call is inert
+            // today and kept only so a future one-time product does not have to rediscover it.
             .enablePendingPurchases(
                 PendingPurchasesParams.newBuilder()
                     .enableOneTimeProducts()

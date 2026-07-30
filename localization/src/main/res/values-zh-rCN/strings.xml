@@ -1268,7 +1268,7 @@
     <string name="options_delete_title">是否确定?</string>
     <string name="options_delete_description">此选项将从您的空间永久删除。</string>
     <string name="object_values_empty_description">未找到对象</string>
-    <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
+    <string name="object_values_empty_description_limited">未找到符合要求的对象。此属性仅接受以下类型：%1$s</string>
     <string name="object_values_empty_title">输入为空</string>
     <string name="object_values_empty_not_editable">该属性为空</string>
     <string name="object_values_delete_title">是否确定?</string>
@@ -1583,22 +1583,24 @@
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
     <string name="membership_support_subject">会员界面错误报告 - %1$s</string>
-    <string name="membership_support_body">您好，Anytype团队，\n\n
+    <string name="membership_support_body">
+        Anytype 支持团队，您好！\n\n
 
-我在应用程序的成员资格屏幕上遇到错误。以下是详细信息：\n
+        我在应用的会员页面遇到了一个错误。以下是详细信息：\n
 
--错误消息：%1$s\n
--说明：\n
--日期和时间：%2$s\n
--设备型号：%3$s\n
--操作系统：%4$s\n
--应用程序版本：%5$s\n
+        - 错误信息：%1$s\n
+        - 问题描述：      \n
+        - 发生时间：%2$s\n
+        - 设备型号：%3$s\n
+        - 操作系统：%4$s\n
+        - 应用版本：%5$s\n
 
-其他评论：\n\n
+        补充说明：\n\n
 
-感谢您协助解决此问题。\n\n
+        感谢您协助解决此问题！\n\n
 
-致以最诚挚的问候，\n</string>
+        此致，       \n
+    </string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">输入出错，请重试</string>
     <string name="membership_name_cache_error">我们这边出错了，请稍后再试</string>

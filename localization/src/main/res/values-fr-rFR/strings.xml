@@ -1272,6 +1272,7 @@
     <string name="options_delete_title">Êtes-vous sûr ?</string>
     <string name="options_delete_description">L\'option sera définitivement retirée de votre espace</string>
     <string name="object_values_empty_description">Objet introuvable</string>
+    <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
     <string name="object_values_empty_title">Aucune valeur</string>
     <string name="object_values_empty_not_editable">La propriété est vide</string>
     <string name="object_values_delete_title">Êtes-vous sûr ?</string>

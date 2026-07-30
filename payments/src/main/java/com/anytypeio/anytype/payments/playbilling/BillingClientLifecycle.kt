@@ -10,12 +10,14 @@ import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.ProductDetailsResponseListener
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesResponseListener
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryProductDetailsResult
 import com.android.billingclient.api.QueryPurchasesParams
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.payments.models.MembershipPurchase
@@ -79,7 +81,15 @@ class BillingClientLifecycle(
         // after ending the previous connection to the Google Play Store in onDestroy().
         billingClient = BillingClient.newBuilder(applicationContext)
             .setListener(this)
-            .enablePendingPurchases() // Not used for subscriptions.
+            // GPBL 8.0.0 removed the no-argument overload: pending purchases are now opted into
+            // per product kind. The old call covered one-time products only, so this preserves
+            // the previous behaviour. We sell subscriptions exclusively, so the call is inert
+            // today and kept only so a future one-time product does not have to rediscover it.
+            .enablePendingPurchases(
+                PendingPurchasesParams.newBuilder()
+                    .enableOneTimeProducts()
+                    .build()
+            )
             .build()
         if (!billingClient.isReady) {
             Timber.d("BillingClient: Start connection...")
@@ -172,21 +182,27 @@ class BillingClientLifecycle(
     /**
      * Receives the result from [querySubscriptionProductDetails].
      *
-     * Store the ProductDetails and post them in the [explorerSubProductWithProductDetails] and
-     * [builderSubProductWithProductDetails]. This allows other parts of the app to use the
-     *  [ProductDetails] to show product information and make purchases.
+     * Store the ProductDetails and post them in the [builderSubProductWithProductDetails].
+     * This allows other parts of the app to use the [ProductDetails] to show product information
+     * and make purchases.
      *
-     * onProductDetailsResponse() uses method calls from GPBL 5.0.0. PBL5, released in May 2022,
-     * is backwards compatible with previous versions.
-     * To learn more about this you can read:
-     * https://developer.android.com/google/play/billing/compatibility
+     * Since GPBL 8.0.0 the callback delivers a [QueryProductDetailsResult], which also carries the
+     * products Google Play could not resolve, so a partial answer is no longer indistinguishable
+     * from an empty one.
      */
     override fun onProductDetailsResponse(
         billingResult: BillingResult,
-        productDetailsList: MutableList<ProductDetails>
+        result: QueryProductDetailsResult
     ) {
         if (billingResult.responseCode == BillingClient.BillingResponseCode.OK) {
+            val productDetailsList = result.productDetailsList
             Timber.d("onProductDetailsResponse: ${productDetailsList.size} product(s)")
+            result.unfetchedProductList.forEach { unfetched ->
+                Timber.w(
+                    "onProductDetailsResponse: unfetched product ${unfetched.productId}, " +
+                            "status code ${unfetched.statusCode}"
+                )
+            }
             processProductDetails(productDetailsList)
         } else {
             Timber.w("onProductDetailsResponse: ${billingResult.responseCode}")
@@ -203,7 +219,7 @@ class BillingClientLifecycle(
      * @param productDetailsList The list of product details.
      *
      */
-    private fun processProductDetails(productDetailsList: MutableList<ProductDetails>) {
+    private fun processProductDetails(productDetailsList: List<ProductDetails>) {
         val expectedProductDetailsCount = subscriptionIds.size
         if (productDetailsList.isEmpty()) {
             Timber.e("Expected ${expectedProductDetailsCount}, Found null ProductDetails.")

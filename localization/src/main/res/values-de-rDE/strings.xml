@@ -1272,6 +1272,7 @@
     <string name="options_delete_title">Sind Sie sicher?</string>
     <string name="options_delete_description">Die Option wird dauerhaft aus Ihrem Bereich entfernt.</string>
     <string name="object_values_empty_description">Objekte nicht gefunden</string>
+    <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
     <string name="object_values_empty_title">Keine Werte</string>
     <string name="object_values_empty_not_editable">Die Eigenschaft ist leer</string>
     <string name="object_values_delete_title">Sind Sie sicher?</string>

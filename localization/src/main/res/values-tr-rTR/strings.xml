@@ -1272,6 +1272,7 @@
     <string name="options_delete_title">Emin misin?</string>
     <string name="options_delete_description">Seçenek alanınızdan kalıcı olarak kaldırılacaktır.</string>
     <string name="object_values_empty_description">Nesneler bulunamadı.</string>
+    <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
     <string name="object_values_empty_title">Değer yok</string>
     <string name="object_values_empty_not_editable">Bu özellik boş</string>
     <string name="object_values_delete_title">Emin misin?</string>

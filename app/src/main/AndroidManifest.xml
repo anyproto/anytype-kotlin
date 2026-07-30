@@ -29,6 +29,18 @@
         android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!--
+            Android 16 (API 36) ignores android:screenOrientation on displays with a smallest
+            width of 600dp or more, which would drop our portrait-only activities into landscape
+            and free-form windows they were never laid out for. This property keeps the manifest
+            restrictions in effect until we ship adaptive layouts. It is a temporary escape hatch:
+            the platform stops honouring it once we target API 37.
+        -->
+        <property
+            android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY"
+            android:value="true" />
+
         <activity
             android:name="com.anytypeio.anytype.ui.main.MainActivity"
             android:exported="true"

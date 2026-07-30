@@ -164,7 +164,7 @@ sentry = { module = "io.sentry:sentry-android", version.ref = "sentryVersion" }
 sentryTimber = { module = "io.sentry:sentry-android-timber", version.ref = "sentryVersion" }
 navigationCompose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 composeQrCode = { module = "com.lightspark:compose-qr-code", version.ref = "composeQrCodeVersion" }
-playBilling = { module = "com.android.billingclient:billing", version = "7.1.1" }
+playBilling = { module = "com.android.billingclient:billing", version = "9.1.0" }
 fragmentCompose = { group = "androidx.fragment", name = "fragment-compose", version.ref = "fragmentComposeVersion" }
 firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
 firebaseMessaging = { module = "com.google.firebase:firebase-messaging"}

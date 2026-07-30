@@ -1273,6 +1273,7 @@
     <string name="options_delete_title">Sei sicuro/a?</string>
     <string name="options_delete_description">L\'opzione verrà rimossa definitivamente dal tuo spazio</string>
     <string name="object_values_empty_description">Oggetti non trovati</string>
+    <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
     <string name="object_values_empty_title">Nessun valore</string>
     <string name="object_values_empty_not_editable">The property is empty</string>
     <string name="object_values_delete_title">Sei sicuro/a?</string>

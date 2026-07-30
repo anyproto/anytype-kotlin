@@ -1268,6 +1268,7 @@
     <string name="options_delete_title">您確定嗎?</string>
     <string name="options_delete_description">該選項將從您的空間中永久刪除</string>
     <string name="object_values_empty_description">找不到物件</string>
+    <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
     <string name="object_values_empty_title">無數值</string>
     <string name="object_values_empty_not_editable">The property is empty</string>
     <string name="object_values_delete_title">您確定嗎?</string>

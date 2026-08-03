@@ -9,8 +9,10 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelationOptions
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -105,14 +107,31 @@ class TagOrStatusValueViewModelTest {
         )
     )
 
-    private fun option(id: Id, order: String, key: String = relationKey) = ObjectWrapper.Option(
+    private fun option(
+        id: Id,
+        order: String,
+        key: String = relationKey,
+        name: String = id
+    ) = ObjectWrapper.Option(
         mapOf(
             Relations.ID to id,
             Relations.RELATION_KEY to key,
-            Relations.NAME to id,
+            Relations.NAME to name,
             Relations.ORDER_ID to order,
             Relations.RELATION_OPTION_COLOR to ThemeColor.RED.code
         )
+    )
+
+    private fun stubReorderSuccess() {
+        setRelationOptionOrder.stub {
+            onBlocking { async(any()) } doReturn Resultat.Success(Unit)
+        }
+    }
+
+    private fun orderParams(vararg ids: Id) = SetRelationOptionOrder.Params(
+        spaceId = space,
+        relationKey = RelationKey(relationKey),
+        orderedIds = ids.toList()
     )
 
     private fun stubPersistSuccess() {
@@ -298,6 +317,186 @@ class TagOrStatusValueViewModelTest {
         // Reverted to the pre-click state.
         assertEquals(snapshot, vm.viewState.value)
     }
+
+    @Test
+    fun `selecting a tag while a query hides other selections keeps them`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(
+            listOf(option(tagA, "0"), option(tagB, "1"), option(tagC, "2"))
+        )
+        stubPersistSuccess()
+
+        // A and B are already selected; the query leaves only C on screen.
+        val vm = buildViewModel(initialIds = listOf(tagA, tagB))
+        advanceUntilIdle()
+
+        vm.onQueryChanged(tagC)
+        advanceUntilIdle()
+        assertEquals(listOf(tagC), vm.items().map { it.optionId })
+
+        vm.onAction(TagStatusAction.Click(vm.items().byId(tagC)))
+        advanceUntilIdle()
+
+        // A and B are filtered out of the list, but must survive in the persisted value.
+        verifyBlocking(setObjectDetails) { invoke(params(listOf(tagA, tagB, tagC))) }
+    }
+
+    @Test
+    fun `deselecting a tag while a query hides other selections keeps them`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(
+            listOf(option(tagA, "0"), option(tagB, "1"), option(tagC, "2"))
+        )
+        stubPersistSuccess()
+
+        val vm = buildViewModel(initialIds = listOf(tagA, tagB, tagC))
+        advanceUntilIdle()
+
+        vm.onQueryChanged(tagB)
+        advanceUntilIdle()
+        assertEquals(listOf(tagB), vm.items().map { it.optionId })
+
+        vm.onAction(TagStatusAction.Click(vm.items().byId(tagB)))
+        advanceUntilIdle()
+
+        verifyBlocking(setObjectDetails) { invoke(params(listOf(tagA, tagC))) }
+    }
+
+    @Test
+    fun `clear stays available when the query hides every selected tag`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1")))
+        stubPersistSuccess()
+
+        val vm = buildViewModel(initialIds = listOf(tagA))
+        advanceUntilIdle()
+
+        vm.onQueryChanged(tagB)
+        advanceUntilIdle()
+
+        val content = vm.viewState.value as TagStatusViewState.Content
+        assertTrue(content.items.none { it.isSelected })
+        assertTrue(content.hasSelection)
+    }
+
+    @Test
+    fun `tags selected when the sheet opened float to the top in selection order`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(
+            listOf(option(tagA, "0"), option(tagB, "1"), option(tagC, "2"))
+        )
+        stubPersistSuccess()
+
+        // Selection order C, A — reverse of the store order.
+        val vm = buildViewModel(initialIds = listOf(tagC, tagA))
+        advanceUntilIdle()
+
+        assertEquals(listOf(tagC, tagA, tagB), vm.items().map { it.optionId })
+    }
+
+    @Test
+    fun `a tag selected while the sheet is open keeps its row`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(
+            listOf(option(tagA, "0"), option(tagB, "1"), option(tagC, "2"))
+        )
+        stubPersistSuccess()
+
+        val vm = buildViewModel(initialIds = emptyList())
+        advanceUntilIdle()
+        assertEquals(listOf(tagA, tagB, tagC), vm.items().map { it.optionId })
+
+        vm.onAction(TagStatusAction.Click(vm.items().byId(tagC)))
+        advanceUntilIdle()
+
+        // No jumping under the user's finger: order is unchanged, only the state of the row is.
+        assertEquals(listOf(tagA, tagB, tagC), vm.items().map { it.optionId })
+        assertTrue(vm.items().byId(tagC).isSelected)
+    }
+
+    @Test
+    fun `moving a visible option up leaves the options hidden by the query in place`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        // Query "red" matches A and C, hiding B in the middle of the store order.
+        storeOfRelationOptions.merge(
+            listOf(
+                option(tagA, "0", name = "red"),
+                option(tagB, "1", name = "blue"),
+                option(tagC, "2", name = "reddish")
+            )
+        )
+        stubReorderSuccess()
+
+        val vm = buildViewModel(initialIds = emptyList())
+        advanceUntilIdle()
+
+        vm.onQueryChanged("red")
+        advanceUntilIdle()
+        assertEquals(listOf(tagA, tagC), vm.items().map { it.optionId })
+
+        // Drag C above A in the visible list.
+        vm.onAction(TagStatusAction.OnMove(from = 1, to = 0))
+        advanceUntilIdle()
+
+        // C lands before A, and B — invisible, never dragged — keeps its place.
+        verifyBlocking(setRelationOptionOrder) { async(orderParams(tagC, tagA, tagB)) }
+    }
+
+    @Test
+    fun `moving a visible option down leaves the options hidden by the query in place`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(
+            listOf(
+                option(tagA, "0", name = "red"),
+                option(tagB, "1", name = "blue"),
+                option(tagC, "2", name = "reddish")
+            )
+        )
+        stubReorderSuccess()
+
+        val vm = buildViewModel(initialIds = emptyList())
+        advanceUntilIdle()
+
+        vm.onQueryChanged("red")
+        advanceUntilIdle()
+
+        // Drag A below C in the visible list.
+        vm.onAction(TagStatusAction.OnMove(from = 0, to = 1))
+        advanceUntilIdle()
+
+        verifyBlocking(setRelationOptionOrder) { async(orderParams(tagB, tagC, tagA)) }
+    }
+
+    @Test
+    fun `manual sorting persists what the user sees and takes over from the selection float`() =
+        runTest {
+            storeOfRelations.merge(listOf(tagRelation()))
+            storeOfRelationOptions.merge(
+                listOf(option(tagA, "0"), option(tagB, "1"), option(tagC, "2"))
+            )
+            stubReorderSuccess()
+            stubPersistSuccess()
+
+            // C is selected on open, so it floats: display is [C, A, B] over store order [A, B, C].
+            val vm = buildViewModel(initialIds = listOf(tagC))
+            advanceUntilIdle()
+            assertEquals(listOf(tagC, tagA, tagB), vm.items().map { it.optionId })
+
+            // Drag B (last row) above A (middle row) → the user now sees [C, B, A], and that is
+            // exactly what gets stored, float and all.
+            vm.onAction(TagStatusAction.OnMove(from = 2, to = 1))
+            advanceUntilIdle()
+
+            verifyBlocking(setRelationOptionOrder) { async(orderParams(tagC, tagB, tagA)) }
+
+            // Manual sorting takes over from the float: the next rebuild follows the stored
+            // order only (still [A, B, C] here, since setRelationOptionOrder is stubbed out)
+            // instead of lifting C back to the top.
+            vm.onAction(TagStatusAction.Click(vm.items().byId(tagA)))
+            advanceUntilIdle()
+
+            assertEquals(listOf(tagA, tagB, tagC), vm.items().map { it.optionId })
+        }
 
     @Test
     fun `stale subscription emission does not clobber the optimistic state`() = runTest {

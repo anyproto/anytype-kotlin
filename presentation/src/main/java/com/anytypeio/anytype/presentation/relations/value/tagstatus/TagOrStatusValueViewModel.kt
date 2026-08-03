@@ -98,6 +98,29 @@ class TagOrStatusValueViewModel(
     // re-reading the (possibly orphaned / never re-emitting) value store. See proceedWithOptimisticUpdate.
     private var currentRelation: ObjectWrapper.Relation? = null
 
+    /**
+     * Authoritative, *unfiltered* selection — the single source of truth for every write.
+     * Must never be derived from [viewState], whose items are filtered by the search query:
+     * selections hidden by an active query would then be silently dropped from the persisted
+     * value.
+     */
+    private var currentIds: List<Id> = emptyList()
+
+    /**
+     * All options of this relation in store (drag-and-drop) order, kept unfiltered so a
+     * reorder can be expressed against the full order even while a query is active and
+     * while the list is displayed selected-first.
+     */
+    private var currentOptions: List<ObjectWrapper.Option> = emptyList()
+
+    /**
+     * Ids selected at the moment the sheet was opened. Selected-first sorting is anchored to
+     * this snapshot — not to the live selection — so that toggling an option does not make
+     * rows jump under the user's finger mid-session.
+     */
+    private val initialIds = mutableListOf<Id>()
+    private var isInitialSortDone = false
+
     init {
         viewModelScope.launch {
             val relation = storeOfRelations.getByKey(key = viewModelParams.relationKey) ?: return@launch
@@ -119,6 +142,9 @@ class TagOrStatusValueViewModel(
                 val options = storeOfRelationOptions.getByRelationKey(viewModelParams.relationKey)
                     .sortedBy { it.orderId }
                 val ids = getRecordValues(record)
+                currentOptions = options
+                currentIds = ids
+                captureInitialSelection(ids)
                 if (!isInitialExpandDone) {
                     isInitialExpandDone = true
                     if (ids.isEmpty() && isEditableRelation) {
@@ -137,6 +163,16 @@ class TagOrStatusValueViewModel(
                 }
                 .collect()
         }
+    }
+
+    /**
+     * Snapshots the selection the sheet was opened with, once. See [initialIds].
+     */
+    private fun captureInitialSelection(ids: List<Id>) {
+        if (isInitialSortDone) return
+        isInitialSortDone = true
+        initialIds.clear()
+        initialIds.addAll(ids)
     }
 
     private fun filterOptions(
@@ -236,10 +272,23 @@ class TagOrStatusValueViewModel(
                 viewModelScope.launch {
                     val currentState = viewState.value
                     if (currentState !is TagStatusViewState.Content) return@launch
-                    val reorderedIds = currentState.items
+                    val visible = currentState.items.map { it.optionId }
+                    if (action.from !in visible.indices || action.to !in visible.indices) {
+                        Timber.w("OnMove with out-of-bounds indices, ignoring")
+                        return@launch
+                    }
+                    val reorderedVisible = visible
                         .toMutableList()
                         .apply { add(action.to, removeAt(action.from)) }
-                        .map { it.optionId }
+                    val reorderedIds = reorderOptions(
+                        fullOrder = currentOptions.map { it.id },
+                        reorderedVisible = reorderedVisible,
+                        movedIndex = action.to
+                    )
+                    if (reorderedIds == null) {
+                        Timber.w("OnMove could not be projected on the full option order")
+                        return@launch
+                    }
                     // Activate lock before sending to middleware to prevent race conditions
                     activateOptionEventLock()
                     setRelationOptionOrder.async(
@@ -251,6 +300,10 @@ class TagOrStatusValueViewModel(
                     ).fold(
                         onSuccess = {
                             Timber.d("Option order saved successfully")
+                            // Manual sorting wins over the selected-first float: once the user
+                            // has dragged a row, stop lifting the initially selected tags, so
+                            // the list they rebuild is the one they see.
+                            initialIds.clear()
                         },
                         onFailure = { e ->
                             Timber.e(e, "Failed to save option order")
@@ -353,7 +406,10 @@ class TagOrStatusValueViewModel(
                 isRelationEditable = isEditableRelation,
                 title = relation.name.orEmpty(),
                 items = result,
-                createItem = createItem
+                createItem = createItem,
+                // Derived from the unfiltered selection: a query that hides every selected
+                // option must not hide the "Clear" action along with it.
+                hasSelection = ids.isNotEmpty()
             )
         }.also {
             Timber.d("TagStatusViewModel initViewState, viewState: $it")
@@ -369,21 +425,52 @@ class TagOrStatusValueViewModel(
     }
 
     /**
-     * Reconstructs the current ordered list of selected option ids from the *UI* state
-     * ([viewState]) rather than from [values], whose backing store may never re-emit for
-     * some hosts (see [proceedWithOptimisticUpdate]). For tags the selection order is carried
-     * by [RelationsListItem.Item.Tag.number] (1-based index among selected); status has at
-     * most one selected item.
+     * Projects a move performed on the *visible* list onto the full option order.
+     *
+     * When every option is on screen the visible list *is* the new order — what the user sees
+     * is what gets stored. When a search query hides part of the list, persisting it verbatim
+     * would drop every hidden option from the order, so the moved option is instead re-inserted
+     * next to whichever visible neighbour it was dropped against, and every other option keeps
+     * its place.
+     *
+     * @param fullOrder every option of the relation, in store order.
+     * @param reorderedVisible the visible list *after* the move.
+     * @param movedIndex index of the moved option within [reorderedVisible].
+     * @return the new full order, or null if the move cannot be resolved.
      */
-    private fun currentSelectedIds(content: TagStatusViewState.Content): List<Id> =
-        content.items
-            .filter { it.isSelected }
-            .sortedBy { (it as? RelationsListItem.Item.Tag)?.number ?: 0 }
-            .map { it.optionId }
+    private fun reorderOptions(
+        fullOrder: List<Id>,
+        reorderedVisible: List<Id>,
+        movedIndex: Int
+    ): List<Id>? {
+        if (reorderedVisible.size == fullOrder.size && reorderedVisible.toSet() == fullOrder.toSet()) {
+            return reorderedVisible
+        }
+        val moved = reorderedVisible.getOrNull(movedIndex) ?: return null
+        val result = fullOrder.toMutableList()
+        if (!result.remove(moved)) return null
+        val precedingVisible = reorderedVisible
+            .take(movedIndex)
+            .lastOrNull { result.contains(it) }
+        val insertAt = if (precedingVisible != null) {
+            result.indexOf(precedingVisible) + 1
+        } else {
+            val followingVisible = reorderedVisible
+                .drop(movedIndex + 1)
+                .firstOrNull { result.contains(it) }
+            // Without a visible neighbour on either side there is nothing to position the
+            // option against, and moving it blindly would shuffle the order the user cannot
+            // see. Leave the stored order alone.
+                ?: return null
+            result.indexOf(followingVisible)
+        }
+        result.add(insertAt, moved)
+        return result
+    }
 
     private fun addTag(tag: Id) {
-        val content = viewState.value as? TagStatusViewState.Content ?: return
-        val newIds = currentSelectedIds(content) + tag
+        if (currentIds.contains(tag)) return
+        val newIds = currentIds + tag
         proceedWithOptimisticUpdate(
             newIds = newIds,
             persistedValue = newIds,
@@ -393,8 +480,7 @@ class TagOrStatusValueViewModel(
     }
 
     private fun removeTag(tag: Id) {
-        val content = viewState.value as? TagStatusViewState.Content ?: return
-        val newIds = currentSelectedIds(content) - tag
+        val newIds = currentIds - tag
         proceedWithOptimisticUpdate(
             newIds = newIds,
             persistedValue = newIds,
@@ -442,12 +528,15 @@ class TagOrStatusValueViewModel(
     ) {
         val relation = currentRelation ?: return
         val previousState = viewState.value
+        val previousIds = currentIds
         viewModelScope.launch {
             // Lock BEFORE the optimistic write so any concurrent combine emission is skipped.
             activateOptionEventLock()
             val options = storeOfRelationOptions
                 .getByRelationKey(viewModelParams.relationKey)
                 .sortedBy { it.orderId }
+            currentOptions = options
+            currentIds = newIds
             val query = input.value
             initViewState(
                 relation = relation,
@@ -466,6 +555,7 @@ class TagOrStatusValueViewModel(
                     Timber.e(e, "Error while updating tag/status value")
                     // Revert optimistic update and release the lock so real events are honored again.
                     optionEventLockTimestamp = null
+                    currentIds = previousIds
                     viewState.value = previousState
                     sendToast("Error while updating value")
                 },
@@ -487,7 +577,15 @@ class TagOrStatusValueViewModel(
 
     /**
      * Maps options to Tag items.
-     * Options from store are already sorted by relationOptionOrder.
+     *
+     * Options come from the store already sorted by relationOptionOrder; on top of that the
+     * tags that were *already selected when the sheet was opened* float to the top, in their
+     * selection order, so a long option list doesn't have to be scrolled to see what is active.
+     *
+     * The partition is anchored to [initialIds] rather than to the live selection on purpose:
+     * a tag selected or deselected while the sheet is open keeps its row, and only moves to
+     * the top the next time the sheet is opened. [sortedWith] is stable, so options outside
+     * [initialIds] keep the store order.
      */
     private fun mapTagOptions(
         ids: List<Id>,
@@ -500,7 +598,12 @@ class TagOrStatusValueViewModel(
             isSelected = ids.contains(option.id),
             number = ids.indexOf(option.id).takeIf { it != -1 }?.plus(1) ?: Int.MAX_VALUE
         )
-    }
+    }.sortedWith(
+        compareBy(
+            { !initialIds.contains(it.optionId) },
+            { initialIds.indexOf(it.optionId) }
+        )
+    )
 
     /**
      * Maps options to Status items.
@@ -598,7 +701,12 @@ sealed class TagStatusViewState {
         val items: List<RelationsListItem.Item>,
         val createItem: RelationsListItem.CreateItem.Tag? = null,
         val isRelationEditable: Boolean,
-        val showItemMenu: RelationsListItem.Item? = null
+        val showItemMenu: RelationsListItem.Item? = null,
+        /**
+         * Whether the relation currently holds any value. Unlike [items], which is filtered by
+         * the search query, this reflects the whole selection.
+         */
+        val hasSelection: Boolean = false
     ) : TagStatusViewState()
 }
 

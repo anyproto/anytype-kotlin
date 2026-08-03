@@ -394,10 +394,9 @@ fun RelationsViewLoading() {
 
 private fun isClearButtonVisible(state: TagStatusViewState): Boolean {
     if (state !is TagStatusViewState.Content) return false
-    return state.items.any {
-        it is RelationsListItem.Item.Tag && it.isSelected
-                || it is RelationsListItem.Item.Status && it.isSelected
-    } && state.isRelationEditable
+    // state.hasSelection, not state.items: the items are filtered by the search query, so a
+    // query hiding every selected option would otherwise hide the "Clear" action too.
+    return state.hasSelection && state.isRelationEditable
 }
 
 private fun isPlusButtonVisible(state: TagStatusViewState): Boolean {
@@ -480,7 +479,8 @@ private fun TagOrStatusValueScreenPreview() {
         title = "Priority",
         isRelationEditable = true,
         items = items,
-        createItem = null
+        createItem = null,
+        hasSelection = true
     )
 
     MaterialTheme {
@@ -521,7 +521,8 @@ private fun StatusValueScreenPreview() {
         title = "Status",
         isRelationEditable = true,
         items = items,
-        createItem = null
+        createItem = null,
+        hasSelection = true
     )
 
     MaterialTheme {

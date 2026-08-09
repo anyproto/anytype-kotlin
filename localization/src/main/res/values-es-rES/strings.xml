@@ -162,7 +162,7 @@
     <string name="modal_properties">Propiedades</string>
     <string name="detail_title">Título 1</string>
     <string name="detail_text">Texto</string>
-    <string name="detail_select">Seleccionar</string>
+    <string name="detail_select">Selección</string>
     <string name="detail_person">Persona</string>
     <string name="detail_email">Correo electrónico</string>
     <string name="detail_number">Número</string>
@@ -311,7 +311,7 @@
     <string name="relation_format_title">Título 1</string>
     <string name="relation_format_number">Número</string>
     <string name="relation_format_date">Fecha</string>
-    <string name="relation_format_status">Seleccionar</string>
+    <string name="relation_format_status">Selección</string>
     <string name="relation_format_file">Archivos y medios</string>
     <string name="relation_format_checkbox">Casilla</string>
     <string name="relation_format_url">URL</string>

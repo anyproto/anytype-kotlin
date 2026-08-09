@@ -177,7 +177,7 @@
     <string name="modal_reorder">Reordenar</string>
     <string name="modal_done">Listo</string>
     <string name="modal_prop_name">Nombre de propiedad</string>
-    <string name="modal_property_type">Tipo de propiedad</string>
+    <string name="modal_property_type">Formato de propiedad</string>
     <string name="modal_hide">Ocultar</string>
     <string name="modal_show">Mostrar</string>
     <string name="modal_view_name">Nombre de vista</string>
@@ -823,7 +823,7 @@
     <string name="do_not_forget_to_save_recovery_phrase_msg">No olvides copiar y guardar tu clave desde los ajustes</string>
     <string name="unlock_your_object_to_add_new_relation">Desprotege el objeto para añadir una propiedad</string>
     <string name="unlock_your_object_to_edit_relations">Desprotege el objeto para editar las relaciones</string>
-    <string name="fragment_relation_create_from_scratch_title">Seleccionar tipo de propiedad</string>
+    <string name="fragment_relation_create_from_scratch_title">Elegir formato de propiedad</string>
     <string name="fragment_dashboard_restore">Restaurar</string>
     <string name="your_account_deleted">Tu arca se ha eliminado.</string>
     <plurals name="fragment_dashboard_selected_count">

@@ -26,6 +26,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -35,6 +36,7 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
@@ -348,6 +350,38 @@ class TagOrStatusValueViewModelTest {
         advanceUntilIdle()
 
         verifyBlocking(setObjectDetails) { invoke(params(listOf(tag2, tag3))) }
+    }
+
+    @Test
+    fun `a late failure does not revert a newer write that already succeeded`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(
+            listOf(option(tagA, "0"), option(tagB, "1"), option(tagC, "2"))
+        )
+
+        // The first write fails, but only after the second write succeeds.
+        setObjectDetails.stub {
+            onBlocking { invoke(params(listOf(tagA, tagB))) } doSuspendableAnswer {
+                delay(1000)
+                Either.Left(RuntimeException("boom"))
+            }
+            onBlocking { invoke(params(listOf(tagA, tagB, tagC))) } doReturn
+                    Either.Right(Payload(context = objectId, events = emptyList()))
+        }
+
+        val vm = buildViewModel(initialIds = listOf(tagA))
+        advanceUntilIdle()
+
+        // Two taps in flight together.
+        vm.onAction(TagStatusAction.Click(vm.items().byId(tagB)))
+        vm.onAction(TagStatusAction.Click(vm.items().byId(tagC)))
+        advanceUntilIdle()
+
+        // The late failure must not resurrect the snapshot that holds tagA alone.
+        val updated = vm.items()
+        assertTrue(updated.byId(tagA).isSelected)
+        assertTrue(updated.byId(tagB).isSelected)
+        assertTrue(updated.byId(tagC).isSelected)
     }
 
     @Test

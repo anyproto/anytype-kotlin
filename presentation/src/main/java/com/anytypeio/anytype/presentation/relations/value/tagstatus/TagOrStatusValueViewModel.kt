@@ -107,7 +107,12 @@ class TagOrStatusValueViewModel(
      * (DROID-4570).
      *
      * The field is updated from the [values].subscribe emission and from every optimistic
-     * write, so it stays correct while the query changes.
+     * write. It therefore survives a query change, which the rendered items do not.
+     *
+     * The field stays consistent with [viewState], because the [combine] block writes both
+     * from the same `ids`. That is deliberate: a divergence would show one selection in the
+     * list and persist a different one. A record that goes stale — a host with no live writer
+     * for the backing store — makes the field and the list stale together, never in conflict.
      */
     private var selectedIds: List<Id> = emptyList()
 
@@ -468,10 +473,16 @@ class TagOrStatusValueViewModel(
             ).process(
                 failure = { e ->
                     Timber.e(e, "Error while updating tag/status value")
-                    // Revert optimistic update and release the lock so real events are honored again.
-                    optionEventLockTimestamp = null
-                    selectedIds = previousSelectedIds
-                    viewState.value = previousState
+                    // Revert only while this write is still the newest one. Two taps can be in
+                    // flight together, because setObjectDetails suspends onto the io dispatcher.
+                    // A late failure must not restore a snapshot older than a newer write that
+                    // already succeeded, and must not release the lock under that newer write.
+                    // The identity check holds because this call assigned newIds to selectedIds.
+                    if (selectedIds === newIds) {
+                        optionEventLockTimestamp = null
+                        selectedIds = previousSelectedIds
+                        viewState.value = previousState
+                    }
                     sendToast("Error while updating value")
                 },
                 success = {

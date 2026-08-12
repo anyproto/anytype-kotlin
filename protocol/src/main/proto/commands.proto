@@ -3016,6 +3016,43 @@ message Rpc {
             }
         }
 
+        // DeletionAudit lists what was removed from a space, newest first, with who created and who
+        // removed each one.
+        //
+        // Records come in two kinds, told apart by isUninstalled:
+        //  - absent: an object destroyed outright. Its tree is gone, so it has no name, and
+        //    creation-side keys are present only if it was deleted by a build that preserves them.
+        //  - true: a type, property, relation option or template that was uninstalled. Reversible,
+        //    tree intact, name and sourceObject still readable.
+        message DeletionAudit {
+            message Request {
+                string spaceId = 1;
+                // relation keys to return; empty => a default audit set.
+                // id, deletedBy, deletedDate and isUninstalled are always included.
+                repeated string keys = 2;
+                int32 offset = 3;
+                int32 limit = 4;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated google.protobuf.Struct records = 2;
+                // total number of deleted objects in the space, ignoring limit/offset
+                int64 total = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
         message CleanupSuggestionIgnore {
             message Request {
                 repeated string objectIds = 1;

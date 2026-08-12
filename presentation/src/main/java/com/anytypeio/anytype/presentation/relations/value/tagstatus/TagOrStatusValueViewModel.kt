@@ -252,32 +252,7 @@ class TagOrStatusValueViewModel(
             }
             is TagStatusAction.OnMove -> {
                 Timber.d("OnMove from ${action.from} to ${action.to}")
-                viewModelScope.launch {
-                    val currentState = viewState.value
-                    if (currentState !is TagStatusViewState.Content) return@launch
-                    val reorderedIds = currentState.items
-                        .filterIsInstance<RelationsListItem.Item>()
-                        .toMutableList()
-                        .apply { add(action.to, removeAt(action.from)) }
-                        .map { it.optionId }
-                    // Activate lock before sending to middleware to prevent race conditions
-                    activateOptionEventLock()
-                    setRelationOptionOrder.async(
-                        SetRelationOptionOrder.Params(
-                            spaceId = viewModelParams.space,
-                            relationKey = RelationKey(viewModelParams.relationKey),
-                            orderedIds = reorderedIds
-                        )
-                    ).fold(
-                        onSuccess = {
-                            Timber.d("Option order saved successfully")
-                        },
-                        onFailure = { e ->
-                            Timber.e(e, "Failed to save option order")
-                            sendToast("Failed to save order")
-                        }
-                    )
-                }
+                onMove(from = action.from, to = action.to)
             }
         }
     }
@@ -324,6 +299,93 @@ class TagOrStatusValueViewModel(
                 )
             }
         }
+    }
+
+    /**
+     * [from] and [to] are indices into the flat, header-inclusive items list.
+     * The section of the dragged item decides the write path: a selected item
+     * permutes this object's value list, an unselected item permutes the
+     * global option order. A move whose target is a header or an item of the
+     * other section is ignored — the UI rejects those moves as well, this is
+     * the second gate.
+     */
+    private fun onMove(from: Int, to: Int) {
+        val currentState = viewState.value as? TagStatusViewState.Content ?: return
+        val items = currentState.items
+        val dragged = items.getOrNull(from) as? RelationsListItem.Item ?: return
+        val target = items.getOrNull(to) as? RelationsListItem.Item ?: return
+        if (dragged.isSelected != target.isSelected) return
+        val moved = items.toMutableList().apply { add(to, removeAt(from)) }
+        if (dragged.isSelected) {
+            moveSelectedValue(moved)
+        } else {
+            moveOptionOrder(moved)
+        }
+    }
+
+    private fun moveSelectedValue(moved: List<RelationsListItem>) {
+        val displayedOrder = moved
+            .filterIsInstance<RelationsListItem.Item>()
+            .filter { it.isSelected }
+            .map { it.optionId }
+        val newIds = mergeReorderedSubset(
+            full = selectedIds,
+            displayedNewOrder = displayedOrder
+        )
+        proceedWithOptimisticUpdate(
+            newIds = newIds,
+            persistedValue = newIds,
+            analyticsEvent = EventsDictionary.relationChangeValue,
+            dismissOnSuccess = false
+        )
+    }
+
+    private fun moveOptionOrder(moved: List<RelationsListItem>) {
+        viewModelScope.launch {
+            val fullOrder = storeOfRelationOptions
+                .getByRelationKey(viewModelParams.relationKey)
+                .sortedBy { it.orderId }
+                .map { it.id }
+            val displayedOrder = moved
+                .filterIsInstance<RelationsListItem.Item>()
+                .filter { !it.isSelected }
+                .map { it.optionId }
+            val orderedIds = mergeReorderedSubset(
+                full = fullOrder,
+                displayedNewOrder = displayedOrder
+            )
+            // Activate lock before sending to middleware to prevent race conditions
+            activateOptionEventLock()
+            setRelationOptionOrder.async(
+                SetRelationOptionOrder.Params(
+                    spaceId = viewModelParams.space,
+                    relationKey = RelationKey(viewModelParams.relationKey),
+                    orderedIds = orderedIds
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Option order saved successfully")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Failed to save option order")
+                    sendToast("Failed to save order")
+                }
+            )
+        }
+    }
+
+    /**
+     * Applies the new relative order of a displayed subset to the full list.
+     * An id that the list displays takes the next displayed slot in the new
+     * order. An id that the query or the section hides keeps its position.
+     */
+    private fun mergeReorderedSubset(
+        full: List<Id>,
+        displayedNewOrder: List<Id>
+    ): List<Id> {
+        val displayed = displayedNewOrder.toSet()
+        val iterator = displayedNewOrder.iterator()
+        return full.map { id -> if (displayed.contains(id)) iterator.next() else id }
     }
 
     private fun initViewState(

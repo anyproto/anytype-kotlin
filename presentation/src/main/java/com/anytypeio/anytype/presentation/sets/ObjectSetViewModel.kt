@@ -4617,18 +4617,30 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
             is ViewerLayoutWidgetUi.Action.CardSize -> {
                 viewerLayoutWidgetState.value =
                     viewerLayoutWidgetState.value.copy(showCardSize = false)
+                val cardSizeViewerId = viewerLayoutWidgetState.value.viewer
                 when (action.cardSize) {
                     ViewerLayoutWidgetUi.State.CardSize.Small -> {
-                        viewModelScope.launch {
-                            proceedWithUpdateViewer(
-                                viewerId = viewerLayoutWidgetState.value.viewer
-                            ) { it.copy(cardSize = DVViewerCardSize.SMALL) }
+                        // Desktop has three card sizes, mobile only two: SMALL and MEDIUM both
+                        // render as two columns here. Since cardSize lives on the viewer and is
+                        // synced across devices, writing SMALL over a MEDIUM viewer would shrink
+                        // the desktop layout while changing nothing on mobile — so leave it alone.
+                        val current = stateReducer.state.value.dataViewState()
+                            ?.viewerById(cardSizeViewerId)
+                            ?.cardSize
+                        if (current == DVViewerCardSize.MEDIUM) {
+                            Timber.d("Viewer card size is MEDIUM, already rendered as small on mobile — skipping update")
+                        } else {
+                            viewModelScope.launch {
+                                proceedWithUpdateViewer(
+                                    viewerId = cardSizeViewerId
+                                ) { it.copy(cardSize = DVViewerCardSize.SMALL) }
+                            }
                         }
                     }
                     ViewerLayoutWidgetUi.State.CardSize.Large -> {
                         viewModelScope.launch {
                             proceedWithUpdateViewer(
-                                viewerId = viewerLayoutWidgetState.value.viewer
+                                viewerId = cardSizeViewerId
                             ) { it.copy(cardSize = DVViewerCardSize.LARGE) }
                         }
                     }

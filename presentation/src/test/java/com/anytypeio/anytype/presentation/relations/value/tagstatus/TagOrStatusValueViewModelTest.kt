@@ -134,7 +134,10 @@ class TagOrStatusValueViewModelTest {
         }
     }
 
-    private fun buildViewModel(initialIds: List<Id>): TagOrStatusValueViewModel {
+    private fun buildViewModel(
+        initialIds: List<Id>,
+        isLocked: Boolean = false
+    ): TagOrStatusValueViewModel {
         values = FakeObjectValueProvider(
             values = mapOf(objectId to mapOf(relationKey to initialIds))
         )
@@ -144,7 +147,7 @@ class TagOrStatusValueViewModelTest {
                 space = space,
                 objectId = objectId,
                 relationKey = relationKey,
-                isLocked = false,
+                isLocked = isLocked,
                 relationContext = RelationContext.DATA_VIEW
             ),
             values = values,
@@ -159,10 +162,18 @@ class TagOrStatusValueViewModelTest {
         )
     }
 
-    private fun TagOrStatusValueViewModel.items(): List<RelationsListItem.Item> =
+    private fun TagOrStatusValueViewModel.allItems(): List<RelationsListItem> =
         (viewState.value as TagStatusViewState.Content).items
 
-    private fun List<RelationsListItem.Item>.byId(id: Id) = first { it.optionId == id }
+    private fun TagOrStatusValueViewModel.items(): List<RelationsListItem.Item> =
+        allItems().filterIsInstance<RelationsListItem.Item>()
+
+    private fun List<RelationsListItem>.byId(id: Id) =
+        filterIsInstance<RelationsListItem.Item>().first { it.optionId == id }
+
+    /** Maps each row to its optionId, or to the Section object itself, for order assertions. */
+    private fun TagOrStatusValueViewModel.rows(): List<Any> =
+        allItems().map { if (it is RelationsListItem.Item) it.optionId else it }
 
     private fun params(value: Any?) = UpdateDetail.Params(target = objectId, key = relationKey, value = value)
 
@@ -404,5 +415,85 @@ class TagOrStatusValueViewModelTest {
         advanceUntilIdle()
 
         assertTrue(vm.items().byId(tagB).isSelected)
+    }
+
+    @Test
+    fun `editable tag list shows the selected section then the all values section`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1"), option(tagC, "2")))
+
+        val vm = buildViewModel(initialIds = listOf(tagC, tagB))
+        advanceUntilIdle()
+
+        assertEquals(
+            listOf<Any>(
+                RelationsListItem.Section.Selected,
+                tagC,
+                tagB,
+                RelationsListItem.Section.AllValues,
+                tagA
+            ),
+            vm.rows()
+        )
+        assertEquals(1, (vm.allItems().byId(tagC) as RelationsListItem.Item.Tag).number)
+        assertEquals(2, (vm.allItems().byId(tagB) as RelationsListItem.Item.Tag).number)
+    }
+
+    @Test
+    fun `no selection shows only the all values header`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1")))
+
+        val vm = buildViewModel(initialIds = emptyList())
+        advanceUntilIdle()
+
+        assertEquals(
+            listOf<Any>(RelationsListItem.Section.AllValues, tagA, tagB),
+            vm.rows()
+        )
+    }
+
+    @Test
+    fun `full selection shows only the selected header`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1")))
+
+        val vm = buildViewModel(initialIds = listOf(tagA, tagB))
+        advanceUntilIdle()
+
+        assertEquals(
+            listOf<Any>(RelationsListItem.Section.Selected, tagA, tagB),
+            vm.rows()
+        )
+    }
+
+    @Test
+    fun `status list gets the same sections`() = runTest {
+        storeOfRelations.merge(listOf(statusRelation()))
+        storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1")))
+
+        val vm = buildViewModel(initialIds = listOf(tagB))
+        advanceUntilIdle()
+
+        assertEquals(
+            listOf<Any>(
+                RelationsListItem.Section.Selected,
+                tagB,
+                RelationsListItem.Section.AllValues,
+                tagA
+            ),
+            vm.rows()
+        )
+    }
+
+    @Test
+    fun `read-only list has no section headers`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1")))
+
+        val vm = buildViewModel(initialIds = listOf(tagB), isLocked = true)
+        advanceUntilIdle()
+
+        assertEquals(listOf<Any>(tagB), vm.rows())
     }
 }

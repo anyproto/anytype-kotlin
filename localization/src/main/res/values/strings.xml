@@ -1464,6 +1464,8 @@
     <string name="options_empty_not_editable">The property is empty</string>
     <string name="options_delete_title">Are you sure?</string>
     <string name="options_delete_description">The option will be permanently removed from your space</string>
+    <string name="tag_status_section_selected">Selected</string>
+    <string name="tag_status_section_all_values">All values</string>
 
     <string name="object_values_empty_description">Objects not found</string>
     <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>

@@ -256,6 +256,7 @@ class TagOrStatusValueViewModel(
                     val currentState = viewState.value
                     if (currentState !is TagStatusViewState.Content) return@launch
                     val reorderedIds = currentState.items
+                        .filterIsInstance<RelationsListItem.Item>()
                         .toMutableList()
                         .apply { add(action.to, removeAt(action.from)) }
                         .map { it.optionId }
@@ -296,6 +297,7 @@ class TagOrStatusValueViewModel(
 
     private fun onActionClick(item: RelationsListItem) {
         when (item) {
+            is RelationsListItem.Section -> Unit
             is RelationsListItem.Item.Status -> {
                 if (item.isSelected) {
                     clearTagsOrStatus()
@@ -330,30 +332,18 @@ class TagOrStatusValueViewModel(
         options: List<ObjectWrapper.Option>,
         query: String
     ) {
-        val result = mutableListOf<RelationsListItem.Item>()
         val isTagRelation = relation.format == Relation.Format.TAG
 
-        when (relation.format) {
-            Relation.Format.STATUS -> {
-                result.addAll(
-                    mapStatusOptions(
-                        ids = ids,
-                        options = options
-                    )
-                )
-            }
-            Relation.Format.TAG -> {
-                result.addAll(
-                    mapTagOptions(
-                        ids = ids,
-                        options = options
-                    )
-                )
-            }
+        val mapped: List<RelationsListItem.Item> = when (relation.format) {
+            Relation.Format.STATUS -> mapStatusOptions(ids = ids, options = options)
+            Relation.Format.TAG -> mapTagOptions(ids = ids, options = options)
             else -> {
                 Timber.w("Relation format should be Tag or Status but was: ${relation.format}")
+                emptyList()
             }
         }
+
+        val items = buildSectionedList(mapped = mapped, ids = ids)
 
         // CreateItem is only shown for TAG relations when there's a search query
         val createItem = if (isTagRelation && query.isNotBlank() && isEditableRelation) {
@@ -362,7 +352,7 @@ class TagOrStatusValueViewModel(
             null
         }
 
-        viewState.value = if (result.isEmpty() && createItem == null) {
+        viewState.value = if (items.isEmpty() && createItem == null) {
             TagStatusViewState.Empty(
                 isRelationEditable = isEditableRelation,
                 title = relation.name.orEmpty(),
@@ -371,11 +361,36 @@ class TagOrStatusValueViewModel(
             TagStatusViewState.Content(
                 isRelationEditable = isEditableRelation,
                 title = relation.name.orEmpty(),
-                items = result,
+                items = items,
                 createItem = createItem
             )
         }.also {
             Timber.d("TagStatusViewModel initViewState, viewState: $it")
+        }
+    }
+
+    /**
+     * Editable relations get two sections: the selected options in value order,
+     * then the unselected options in the global option order. The read-only list
+     * stays flat. A header is omitted when its group is empty. The display sort
+     * is deliberately separate from the persisted option order (DROID-3916).
+     */
+    private fun buildSectionedList(
+        mapped: List<RelationsListItem.Item>,
+        ids: List<Id>
+    ): List<RelationsListItem> {
+        if (!isEditableRelation) return mapped
+        val selected = mapped.filter { it.isSelected }.sortedBy { ids.indexOf(it.optionId) }
+        val unselected = mapped.filter { !it.isSelected }
+        return buildList {
+            if (selected.isNotEmpty()) {
+                add(RelationsListItem.Section.Selected)
+                addAll(selected)
+            }
+            if (unselected.isNotEmpty()) {
+                add(RelationsListItem.Section.AllValues)
+                addAll(unselected)
+            }
         }
     }
 
@@ -611,7 +626,7 @@ sealed class TagStatusViewState {
 
     data class Content(
         val title: String,
-        val items: List<RelationsListItem.Item>,
+        val items: List<RelationsListItem>,
         val createItem: RelationsListItem.CreateItem.Tag? = null,
         val isRelationEditable: Boolean,
         val showItemMenu: RelationsListItem.Item? = null
@@ -633,6 +648,11 @@ sealed class TagStatusAction {
 enum class RelationContext { OBJECT, OBJECT_SET, DATA_VIEW }
 
 sealed class RelationsListItem {
+
+    sealed class Section : RelationsListItem() {
+        object Selected : Section()
+        object AllValues : Section()
+    }
 
     sealed class Item : RelationsListItem() {
 

@@ -46,6 +46,7 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
@@ -192,7 +193,7 @@ fun RelationsViewContent(
 
     if (state.isRelationEditable) {
         // Use reorderable list for both Tags and Status
-        val items = remember { mutableStateListOf<RelationsListItem.Item>() }
+        val items = remember { mutableStateListOf<RelationsListItem>() }
         items.swapList(state.items)
 
         // Track the original dragged item's ID (not index) to handle multiple callback invocations
@@ -202,9 +203,9 @@ fun RelationsViewContent(
             val originalItemId = draggedItemId.value
             if (originalItemId != null) {
                 // Find original index from state.items (unchanged during drag)
-                val originalIndex = state.items.indexOfFirst { it.optionId == originalItemId }
+                val originalIndex = state.items.indexOfFirst { it.uiKey() == originalItemId }
                 // Find new index in reordered items list
-                val newIndex = items.indexOfFirst { it.optionId == originalItemId }
+                val newIndex = items.indexOfFirst { it.uiKey() == originalItemId }
 
                 if (originalIndex != -1 && newIndex != -1 && originalIndex != newIndex) {
                     action(TagStatusAction.OnMove(from = originalIndex, to = newIndex))
@@ -226,10 +227,18 @@ fun RelationsViewContent(
             }
 
             // Find current indices by key
-            val f = items.indexOfFirst { it.optionId == fromId }
-            val t = items.indexOfFirst { it.optionId == toId }
+            val f = items.indexOfFirst { it.uiKey() == fromId }
+            val t = items.indexOfFirst { it.uiKey() == toId }
+            val fromItem = items.getOrNull(f) as? RelationsListItem.Item
+            val toItem = items.getOrNull(t) as? RelationsListItem.Item
 
-            if (f != -1 && t != -1 && f != t) {
+            // A drag never crosses a section header: the target must be an item
+            // of the same section (same selection state).
+            if (fromItem == null || toItem == null || fromItem.isSelected != toItem.isSelected) {
+                return@rememberReorderableLazyListState
+            }
+
+            if (f != t) {
                 val newList = items.toMutableList().apply {
                     add(t, removeAt(f))
                 }
@@ -249,49 +258,60 @@ fun RelationsViewContent(
             // Reorderable items
             items(
                 count = items.size,
-                key = { index -> items[index].optionId }
+                key = { index -> items[index].uiKey() }
             ) { index ->
-                val item = items[index]
-                ReorderableItem(reorderableLazyListState, key = item.optionId) { isDragging ->
-                    val currentItem = LocalView.current
-                    if (isDragging) {
-                        currentItem.isHapticFeedbackEnabled = true
-                        currentItem.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                    }
-                    val dragHandleModifier = Modifier.longPressDraggableHandle(
-                        onDragStarted = {
-                            ViewCompat.performHapticFeedback(
-                                view,
-                                HapticFeedbackConstantsCompat.GESTURE_START
-                            )
-                        },
-                        onDragStopped = {
-                            ViewCompat.performHapticFeedback(
-                                view,
-                                HapticFeedbackConstantsCompat.GESTURE_END
-                            )
-                            onDragStoppedHandler()
-                        }
+                when (val item = items[index]) {
+                    RelationsListItem.Section.Selected -> Section(
+                        title = stringResource(id = R.string.tag_status_section_selected)
                     )
-                    when (item) {
-                        is RelationsListItem.Item.Tag -> TagItem(
-                            state = item,
-                            action = action,
-                            isEditable = state.isRelationEditable,
-                            showDivider = true,
-                            isDragging = isDragging,
-                            dragHandleModifier = dragHandleModifier
+                    RelationsListItem.Section.AllValues -> Section(
+                        title = stringResource(id = R.string.tag_status_section_all_values)
+                    )
+                    is RelationsListItem.Item -> ReorderableItem(
+                        reorderableLazyListState,
+                        key = item.uiKey()
+                    ) { isDragging ->
+                        val currentItem = LocalView.current
+                        if (isDragging) {
+                            currentItem.isHapticFeedbackEnabled = true
+                            currentItem.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                        }
+                        val dragHandleModifier = Modifier.longPressDraggableHandle(
+                            onDragStarted = {
+                                ViewCompat.performHapticFeedback(
+                                    view,
+                                    HapticFeedbackConstantsCompat.GESTURE_START
+                                )
+                            },
+                            onDragStopped = {
+                                ViewCompat.performHapticFeedback(
+                                    view,
+                                    HapticFeedbackConstantsCompat.GESTURE_END
+                                )
+                                onDragStoppedHandler()
+                            }
                         )
+                        when (item) {
+                            is RelationsListItem.Item.Tag -> TagItem(
+                                state = item,
+                                action = action,
+                                isEditable = state.isRelationEditable,
+                                showDivider = true,
+                                isDragging = isDragging,
+                                dragHandleModifier = dragHandleModifier
+                            )
 
-                        is RelationsListItem.Item.Status -> StatusItem(
-                            state = item,
-                            action = action,
-                            isEditable = state.isRelationEditable,
-                            showDivider = true,
-                            isDragging = isDragging,
-                            dragHandleModifier = dragHandleModifier
-                        )
+                            is RelationsListItem.Item.Status -> StatusItem(
+                                state = item,
+                                action = action,
+                                isEditable = state.isRelationEditable,
+                                showDivider = true,
+                                isDragging = isDragging,
+                                dragHandleModifier = dragHandleModifier
+                            )
+                        }
                     }
+                    is RelationsListItem.CreateItem -> Unit
                 }
             }
 
@@ -329,6 +349,8 @@ fun RelationsViewContent(
                             isEditable = state.isRelationEditable,
                             showDivider = !isLastItem
                         )
+
+                        else -> Unit
                     }
                 }
             )
@@ -416,6 +438,13 @@ private fun getTitle(state: TagStatusViewState): String {
     }
 }
 
+private fun RelationsListItem.uiKey(): String = when (this) {
+    RelationsListItem.Section.Selected -> "section_selected"
+    RelationsListItem.Section.AllValues -> "section_all_values"
+    is RelationsListItem.Item -> optionId
+    is RelationsListItem.CreateItem -> "create_item"
+}
+
 @DefaultPreviews
 @Composable
 private fun TagOrStatusValueScreenEmptyEditablePreview() {
@@ -452,7 +481,8 @@ private fun TagOrStatusValueScreenEmptyReadOnlyPreview() {
 @DefaultPreviews
 @Composable
 private fun TagOrStatusValueScreenPreview() {
-    val items = listOf(
+    val items: List<RelationsListItem> = listOf(
+        RelationsListItem.Section.Selected,
         RelationsListItem.Item.Tag(
             optionId = "1",
             name = "Urgent",
@@ -460,6 +490,7 @@ private fun TagOrStatusValueScreenPreview() {
             color = ThemeColor.RED,
             number = 10
         ),
+        RelationsListItem.Section.AllValues,
         RelationsListItem.Item.Tag(
             optionId = "2",
             name = "In Progress",

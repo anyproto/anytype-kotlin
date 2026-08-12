@@ -37,9 +37,16 @@ interface Store<T> {
 
         override fun stream(): Flow<T> = state
         override fun current(): T = state.value
-        override suspend fun update(t: T) {
+
+        /**
+         * Non-suspending write, for call sites that must be readable by the
+         * caller that follows them in the same input callback.
+         */
+        fun set(t: T) {
             state.value = t
         }
+
+        override suspend fun update(t: T) = set(t)
 
         override fun cancel() {}
     }

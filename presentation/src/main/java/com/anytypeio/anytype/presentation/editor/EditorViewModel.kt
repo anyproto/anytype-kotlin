@@ -799,12 +799,21 @@ class EditorViewModel(
             Timber.w("Can't apply link markup to a non-text block: $blockId")
             return
         }
+        // "Paste link" on a caret inserts the url into the block, then asks for the
+        // mark — both in the same action-mode callback. The insert reaches the
+        // document only after a round trip through the changes/saves pipeline, so
+        // the copy read above can still hold the pre-insert text, and a mark over
+        // it would point past that text. Take the reported change while it is in
+        // flight; the document is authoritative once the pipeline has applied it.
+        val reported = unappliedTextChange?.takeIf { it.target == blockId }
+        val text = reported?.text ?: targetContent.text
+        val marks = reported?.markup ?: targetContent.marks
+
         val linkMark = Content.Text.Mark(
             type = Content.Text.Mark.Type.LINK,
             range = IntRange(start = range.first, endInclusive = range.last.inc()),
             param = link
         )
-        val marks = targetContent.marks
 
         updateLinkMarks(
             scope = viewModelScope,
@@ -817,23 +826,48 @@ class EditorViewModel(
                     fnL = { throwable ->
                         Timber.e("Error update marks:${throwable.message}")
                     },
-                    fnR = { marks ->
-                        val sortedMarks = marks.sortByType()
-                        val newContent = targetContent.copy(marks = sortedMarks)
-                        val newBlock = targetBlock.copy(content = newContent)
-                        rerenderingBlocks(newBlock)
-                        proceedWithUpdatingText(
-                            intent = Intent.Text.UpdateText(
-                                context = vmParams.ctx,
-                                text = newBlock.content.asText().text,
-                                target = targetBlock.id,
-                                marks = sortedMarks
-                            )
+                    fnR = { updated ->
+                        val update = TextUpdate.Default(
+                            target = blockId,
+                            text = text,
+                            markup = updated.sortByType()
                         )
+                        // Route the write through the text pipeline instead of
+                        // sending the intent straight to the middleware: set-text
+                        // is whole-value last-writer-wins, and the insert still on
+                        // its way through the pipeline would overwrite the mark.
+                        // The proxy is FIFO, so this write lands last.
+                        pendingMarkupRender = update
+                        viewModelScope.launch {
+                            orchestrator.proxies.changes.send(update)
+                        }
                     }
                 )
             }
         )
+    }
+
+    /**
+     * Markup write handed to the text pipeline by [applyLinkMarkup]. The pipeline
+     * does not re-render — text edits render themselves in the input field — but a
+     * markup change must, so the saves stage renders once it applies this update.
+     */
+    private var pendingMarkupRender: TextUpdate? = null
+
+    /**
+     * Change the input field reported last, while the changes/saves pipeline has
+     * not applied it to the document yet. The document lags the input field by a
+     * pipeline round trip, and [applyLinkMarkup] runs inside that window.
+     */
+    private var unappliedTextChange: TextUpdate? = null
+
+    /**
+     * Hands a change reported by an input field to the text pipeline, recording it
+     * as [unappliedTextChange] until the saves stage writes it to the document.
+     */
+    private fun sendTextChange(update: TextUpdate) {
+        unappliedTextChange = update
+        viewModelScope.launch { orchestrator.proxies.changes.send(update) }
     }
 
     private suspend fun applyMarkup(
@@ -1287,6 +1321,14 @@ class EditorViewModel(
                     }
                 }
                 orchestrator.stores.document.update(updated)
+                if (update.target == unappliedTextChange?.target) {
+                    // The document has caught up with the input field.
+                    unappliedTextChange = null
+                }
+                if (update == pendingMarkupRender) {
+                    pendingMarkupRender = null
+                    refresh()
+                }
             }
             .map { update ->
                 Intent.Text.UpdateText(
@@ -1331,6 +1373,8 @@ class EditorViewModel(
         lastMaterializedTrailingBlock = null
         identityFork = null
         lastForkedBlock = null
+        unappliedTextChange = null
+        pendingMarkupRender = null
 
         // Re-fetch the discussion comment count once per screen entry: the count can
         // change while the editor is stopped (e.g. comments posted in the discussion
@@ -1668,7 +1712,7 @@ class EditorViewModel(
             markup = emptyList()
         )
         viewModelScope.launch { orchestrator.stores.views.update(new) }
-        viewModelScope.launch { orchestrator.proxies.changes.send(update) }
+        sendTextChange(update)
         sendHideTypesWidgetEvent()
     }
 
@@ -1718,16 +1762,17 @@ class EditorViewModel(
             }
         }
 
-        viewModelScope.launch { orchestrator.proxies.changes.send(update) }
+        sendTextChange(update)
         sendHideTypesWidgetEvent()
     }
 
     fun onSelectionChanged(id: String, selection: IntRange) {
         if (mode != EditorMode.Edit) return
         Timber.d("onSelectionChanged, id:[$id] selection:[$selection]")
-        viewModelScope.launch {
-            orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
-        }
+        // Written synchronously: an action dispatched from the same input callback
+        // reads the selection right after it changes. "Paste link" does exactly
+        // that — it selects the inserted url, then asks for the link mark over it.
+        orchestrator.stores.textSelection.set(Editor.TextSelection(id, selection))
         blocks.find { it.id == id }?.let { target ->
             val targetBlockType = when (val content = target.content) {
                 is TextBlock -> when (content.style) {
@@ -3977,7 +4022,7 @@ class EditorViewModel(
                     }
                 )
             }
-            viewModelScope.launch { orchestrator.proxies.changes.send(update) }
+            sendTextChange(update)
             return
         }
         state.text = view.text
@@ -4373,7 +4418,7 @@ class EditorViewModel(
                     }
                 )
             }
-            viewModelScope.launch { orchestrator.proxies.changes.send(update) }
+            sendTextChange(update)
             return true
         }
         // Not part of a fork: check whether this change must start one.

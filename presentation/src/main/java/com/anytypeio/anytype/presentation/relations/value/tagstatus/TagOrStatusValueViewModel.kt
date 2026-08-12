@@ -342,6 +342,8 @@ class TagOrStatusValueViewModel(
 
     private fun moveOptionOrder(moved: List<RelationsListItem>) {
         viewModelScope.launch {
+            // Activate lock before sending to middleware to prevent race conditions
+            activateOptionEventLock()
             val fullOrder = storeOfRelationOptions
                 .getByRelationKey(viewModelParams.relationKey)
                 .sortedBy { it.orderId }
@@ -356,8 +358,6 @@ class TagOrStatusValueViewModel(
                 full = fullOrder,
                 displayedNewOrder = displayedOrder
             )
-            // Activate lock before sending to middleware to prevent race conditions
-            activateOptionEventLock()
             setRelationOptionOrder.async(
                 SetRelationOptionOrder.Params(
                     spaceId = viewModelParams.space,
@@ -387,7 +387,9 @@ class TagOrStatusValueViewModel(
     ): List<Id> {
         val displayed = displayedNewOrder.toSet()
         val iterator = displayedNewOrder.iterator()
-        return full.map { id -> if (displayed.contains(id)) iterator.next() else id }
+        return full.map { id ->
+            if (displayed.contains(id) && iterator.hasNext()) iterator.next() else id
+        }
     }
 
     private fun initViewState(

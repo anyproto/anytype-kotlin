@@ -346,10 +346,12 @@ class TagOrStatusValueViewModel(
                 .getByRelationKey(viewModelParams.relationKey)
                 .sortedBy { it.orderId }
                 .map { it.id }
+            val fullOrderSet = fullOrder.toSet()
             val displayedOrder = moved
                 .filterIsInstance<RelationsListItem.Item>()
                 .filter { !it.isSelected }
                 .map { it.optionId }
+                .filter { it in fullOrderSet }
             val orderedIds = mergeReorderedSubset(
                 full = fullOrder,
                 displayedNewOrder = displayedOrder

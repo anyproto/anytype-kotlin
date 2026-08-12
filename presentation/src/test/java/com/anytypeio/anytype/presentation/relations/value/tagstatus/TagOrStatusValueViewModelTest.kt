@@ -632,6 +632,34 @@ class TagOrStatusValueViewModelTest {
     }
 
     @Test
+    fun `an option deleted from the store after the drag is dropped from the persisted order`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(
+            listOf(option(tagA, "0"), option(tagB, "1"), option(tagC, "2"), option(tagD, "3"))
+        )
+        stubOptionOrderSuccess()
+
+        val vm = buildViewModel(initialIds = listOf(tagB))
+        advanceUntilIdle()
+
+        // Flat list: [Section.Selected, B, Section.AllValues, A, C, D]. Move C before A.
+        // onAction captures the displayed order [C, A, D] synchronously; the store fetch
+        // inside moveOptionOrder only runs once advanceUntilIdle resumes the coroutine.
+        vm.onAction(TagStatusAction.OnMove(from = 4, to = 3))
+
+        // Simulate a concurrent deletion (another device or a fast second drag) that lands
+        // before the suspend fetch resolves. This id was part of the captured displayed order.
+        storeOfRelationOptions.remove(tagC)
+        advanceUntilIdle()
+
+        // Full order at fetch time is [A, B, D]; the dropped tagC is neither written into the
+        // order nor does it displace tagD's slot. tagA and tagD swap as the drag intended.
+        verifyBlocking(setRelationOptionOrder) {
+            async(orderParams(listOf(tagA, tagB, tagD)))
+        }
+    }
+
+    @Test
     fun `drag across sections is ignored`() = runTest {
         storeOfRelations.merge(listOf(tagRelation()))
         storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1")))

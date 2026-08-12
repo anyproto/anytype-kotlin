@@ -99,7 +99,7 @@ interface Editor {
         val focus: Store<Focus> = Store.Focus()
         val details: Store.Details = Store.Details()
 
-        val textSelection: Store.TextSelection = Store.TextSelection()
+        val textSelection: Store<Editor.TextSelection> = Store.TextSelection()
         val objectRestrictions: Store.ObjectRestrictions = Store.ObjectRestrictions()
 
         val hasLayoutOrRelationConflict: Store<Boolean> = Store.LayoutConflict()

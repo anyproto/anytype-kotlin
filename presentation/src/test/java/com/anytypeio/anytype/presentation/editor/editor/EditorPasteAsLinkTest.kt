@@ -2,13 +2,10 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -26,7 +23,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verifyBlocking
 
@@ -63,69 +59,6 @@ class EditorPasteAsLinkTest : EditorPresentationTestSetup() {
         return listOf(page, header, title) + blocks
     }
 
-    private fun stubUpdateLinkMark() {
-        updateLinkMark.stub {
-            on { invoke(any(), any(), any()) } doAnswer { invocation ->
-                val params = invocation.getArgument<UpdateLinkMarks.Params>(1)
-                val onResult = invocation
-                    .getArgument<(Either<Throwable, List<Block.Content.Text.Mark>>) -> Unit>(2)
-                onResult(Either.Right(params.marks + params.newMark))
-            }
-        }
-    }
-
-    private fun stubReplaceBlock(empty: Block, forked: Block) {
-        replaceBlock.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
-                Pair(
-                    forked.id,
-                    Payload(
-                        context = root,
-                        events = listOf(
-                            Event.Command.UpdateStructure(
-                                context = root,
-                                id = root,
-                                children = listOf(header.id, forked.id)
-                            ),
-                            Event.Command.AddBlock(
-                                context = root,
-                                blocks = listOf(forked)
-                            ),
-                            Event.Command.DeleteBlock(
-                                context = root,
-                                targets = listOf(empty.id)
-                            )
-                        )
-                    )
-                )
-            )
-        }
-    }
-
-    private fun stubCreateBlock(created: Block, siblings: List<String>) {
-        createBlock.stub {
-            onBlocking { async(any()) } doReturn Resultat.success(
-                Pair(
-                    created.id,
-                    Payload(
-                        context = root,
-                        events = listOf(
-                            Event.Command.AddBlock(
-                                context = root,
-                                blocks = listOf(created)
-                            ),
-                            Event.Command.UpdateStructure(
-                                context = root,
-                                id = root,
-                                children = listOf(header.id) + siblings + created.id
-                            )
-                        )
-                    )
-                )
-            )
-        }
-    }
-
     @Test
     fun `should apply the link mark over the text pasted at the caret of a non-empty block`() =
         runTest {
@@ -139,7 +72,7 @@ class EditorPasteAsLinkTest : EditorPresentationTestSetup() {
             stubInterceptEvents()
             stubOpenDocument(givenDocument(block))
             stubUpdateText()
-            stubUpdateLinkMark()
+            stubUpdateLinkMarksToAppend()
 
             val vm = buildViewModel()
 
@@ -216,8 +149,12 @@ class EditorPasteAsLinkTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(givenDocument(empty))
         stubUpdateText()
-        stubUpdateLinkMark()
-        stubReplaceBlock(empty = empty, forked = forked)
+        stubUpdateLinkMarksToAppend()
+        stubReplaceBlockWithSwap(
+            empty = empty,
+            forked = forked,
+            children = listOf(header.id, forked.id)
+        )
 
         val vm = buildViewModel()
 
@@ -271,8 +208,11 @@ class EditorPasteAsLinkTest : EditorPresentationTestSetup() {
             stubInterceptEvents()
             stubOpenDocument(givenDocument(block))
             stubUpdateText()
-            stubUpdateLinkMark()
-            stubCreateBlock(created = created, siblings = listOf(block.id))
+            stubUpdateLinkMarksToAppend()
+            stubCreateBlockWithSwap(
+                created = created,
+                children = listOf(header.id, block.id, created.id)
+            )
 
             val vm = buildViewModel()
 
@@ -327,7 +267,7 @@ class EditorPasteAsLinkTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(givenDocument(block))
         stubUpdateText()
-        stubUpdateLinkMark()
+        stubUpdateLinkMarksToAppend()
 
         val vm = buildViewModel()
 
@@ -364,5 +304,71 @@ class EditorPasteAsLinkTest : EditorPresentationTestSetup() {
             ),
             last.marks
         )
+    }
+
+    @Test
+    fun `should keep a keystroke reported while the link mark request is in flight`() = runTest {
+
+        // SETUP
+
+        val before = "Anytype "
+        val url = "https://anytype.io"
+        val block = StubParagraph(text = before)
+
+        stubInterceptEvents()
+        stubOpenDocument(givenDocument(block))
+        stubUpdateText()
+
+        // Capture the UpdateLinkMarks callback instead of answering at once:
+        // the real use case runs on IO, so input can arrive before it returns.
+        var deferredParams: UpdateLinkMarks.Params? = null
+        var deferredResult: ((Either<Throwable, List<Block.Content.Text.Mark>>) -> Unit)? = null
+        updateLinkMark.stub {
+            on { invoke(any(), any(), any()) } doAnswer { invocation ->
+                deferredParams = invocation.getArgument(1)
+                deferredResult = invocation.getArgument(2)
+                Unit
+            }
+        }
+
+        val vm = buildViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
+        // TESTING
+
+        vm.onBlockFocusChanged(id = block.id, hasFocus = true)
+        vm.onSelectionChanged(id = block.id, selection = before.length..before.length)
+
+        advanceUntilIdle()
+
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Paragraph(id = block.id, text = before + url)
+        )
+        vm.onSelectionChanged(
+            id = block.id,
+            selection = before.length..(before.length + url.length)
+        )
+        vm.proceedToAddUriToTextAsLink(url)
+
+        // A keystroke lands while the mark request is still in flight...
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Paragraph(id = block.id, text = before + url + "!")
+        )
+
+        // ...and the mark request completes only afterwards.
+        val params = deferredParams!!
+        deferredResult!!(Either.Right(params.marks + params.newMark))
+
+        advanceUntilIdle()
+
+        // The final write must keep the keystroke — not revert to the snapshot.
+        val captor = argumentCaptor<UpdateText.Params>()
+
+        verifyBlocking(updateText, atLeastOnce()) { invoke(params = captor.capture()) }
+
+        kotlin.test.assertEquals(before + url + "!", captor.lastValue.text)
     }
 }

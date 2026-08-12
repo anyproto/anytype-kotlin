@@ -827,9 +827,16 @@ class EditorViewModel(
                         Timber.e("Error update marks:${throwable.message}")
                     },
                     fnR = { updated ->
+                        // Input can arrive while UpdateLinkMarks runs, and this
+                        // write lands last in the FIFO — so re-read the newest
+                        // text here. The entry snapshot would revert a keystroke
+                        // reported during the round trip.
+                        val latest = unappliedTextChange?.takeIf { it.target == blockId }?.text
+                            ?: (blocks.find { it.id == blockId }?.content as? Content.Text)?.text
+                            ?: text
                         val update = TextUpdate.Default(
                             target = blockId,
-                            text = text,
+                            text = latest,
                             markup = updated.sortByType()
                         )
                         // Route the write through the text pipeline instead of
@@ -838,9 +845,7 @@ class EditorViewModel(
                         // its way through the pipeline would overwrite the mark.
                         // The proxy is FIFO, so this write lands last.
                         pendingMarkupRender = update
-                        viewModelScope.launch {
-                            orchestrator.proxies.changes.send(update)
-                        }
+                        sendTextChange(update)
                     }
                 )
             }
@@ -1304,11 +1309,18 @@ class EditorViewModel(
                 // can stomp a concurrent peer edit on merge. Only proceed when
                 // the text or marks actually differ from the locally known
                 // synced state.
-                !isTextSameAsSynced(
+                val proceed = !isTextSameAsSynced(
                     target = update.target,
                     text = update.text,
                     marks = update.markup.filter { it.range.first != it.range.last }
                 )
+                if (!proceed) {
+                    // A dropped no-op still settles the trackers: the document
+                    // already carries this text, so nothing is in flight.
+                    if (update === unappliedTextChange) unappliedTextChange = null
+                    if (update === pendingMarkupRender) pendingMarkupRender = null
+                }
+                proceed
             }
             .onEach { update ->
                 val current = blocks
@@ -1321,11 +1333,14 @@ class EditorViewModel(
                     }
                 }
                 orchestrator.stores.document.update(updated)
-                if (update.target == unappliedTextChange?.target) {
+                // Identity, not equality: an older queued update for the same
+                // block must not clear the record of a newer in-flight change,
+                // and a structurally equal later update must not re-render.
+                if (update === unappliedTextChange) {
                     // The document has caught up with the input field.
                     unappliedTextChange = null
                 }
-                if (update == pendingMarkupRender) {
+                if (update === pendingMarkupRender) {
                     pendingMarkupRender = null
                     refresh()
                 }
@@ -1678,7 +1693,7 @@ class EditorViewModel(
             return
         }
         val update = TextUpdate.Default(target = id, text = text, markup = marks)
-        viewModelScope.launch { orchestrator.proxies.changes.send(update) }
+        sendTextChange(update)
     }
 
     fun onTitleBlockTextChanged(id: Id, text: String) {
@@ -1697,7 +1712,7 @@ class EditorViewModel(
             markup = emptyList()
         )
         viewModelScope.launch { orchestrator.stores.views.update(new) }
-        viewModelScope.launch { orchestrator.proxies.changes.send(update) }
+        sendTextChange(update)
         sendHideTypesWidgetEvent()
     }
 
@@ -1772,7 +1787,7 @@ class EditorViewModel(
         // Written synchronously: an action dispatched from the same input callback
         // reads the selection right after it changes. "Paste link" does exactly
         // that — it selects the inserted url, then asks for the link mark over it.
-        orchestrator.stores.textSelection.set(Editor.TextSelection(id, selection))
+        orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
         blocks.find { it.id == id }?.let { target ->
             val targetBlockType = when (val content = target.content) {
                 is TextBlock -> when (content.style) {
@@ -1795,9 +1810,10 @@ class EditorViewModel(
     fun onCellSelectionChanged(id: Id, selection: IntRange) {
         if (mode != EditorMode.Edit) return
         Timber.d("onCellSelectionChanged, id:[$id] selection:[$selection]")
-        viewModelScope.launch {
-            orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
-        }
+        // Written synchronously for the same reason as [onSelectionChanged]:
+        // table cells offer "Paste link" too, and the paste reads the selection
+        // in the same input callback that changes it.
+        orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
         blocks.find { it.id == id }?.let { target ->
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.OnSelectionChanged(
@@ -4224,15 +4240,13 @@ class EditorViewModel(
                         identityFork = null
                         val pending = state.onForked.toList()
                         state.onForked.clear()
-                        viewModelScope.launch {
-                            orchestrator.proxies.changes.send(
-                                TextUpdate.Pattern(
-                                    target = state.oldId,
-                                    text = state.text,
-                                    markup = state.marks
-                                )
+                        sendTextChange(
+                            TextUpdate.Pattern(
+                                target = state.oldId,
+                                text = state.text,
+                                markup = state.marks
                             )
-                        }
+                        )
                         if (pending.isNotEmpty()) {
                             viewModelScope.launch {
                                 yield()
@@ -4272,11 +4286,9 @@ class EditorViewModel(
         marks: List<Content.Text.Mark>
     ) {
         if (forkPatternMatcher.match(text).isNotEmpty()) {
-            viewModelScope.launch {
-                orchestrator.proxies.changes.send(
-                    TextUpdate.Pattern(target = target, text = text, markup = marks)
-                )
-            }
+            sendTextChange(
+                TextUpdate.Pattern(target = target, text = text, markup = marks)
+            )
         } else {
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(

@@ -8278,14 +8278,25 @@ class EditorViewModel(
 
     fun proceedToAddUriToTextAsLink(uri: String) {
         Timber.d("proceedToAddUriToTextAsLink, uri:[$uri]")
+        // Capture the selection now: the action mode closes right after this
+        // call, which collapses the selection to the caret. A deferred replay
+        // that read the store again would mark a zero-width range.
+        val range = orchestrator.stores.textSelection.current().selection
+        if (range == null) {
+            Timber.e("Can't add uri to text, range is null")
+            return
+        }
+        proceedToAddUriToTextAsLink(uri = uri, range = range)
+    }
+
+    private fun proceedToAddUriToTextAsLink(uri: String, range: IntRange) {
         // "Paste link" first inserts the uri into the block, which starts the
         // placeholder materialization (or the identity fork) for an empty
         // block. The link mark must then be applied to the real block once the
         // identity settles — the old id write would race the in-flight
         // create/replace and lose the mark.
-        if (deferUntilBlockIdentitySettled { proceedToAddUriToTextAsLink(uri) }) return
-        val range = orchestrator.stores.textSelection.current().selection
-        if (range != null) {
+        if (deferUntilBlockIdentitySettled { proceedToAddUriToTextAsLink(uri, range) }) return
+        run {
             val focused = orchestrator.stores.focus.current().targetOrNull()
             val target = when {
                 focused == null -> null
@@ -8301,8 +8312,6 @@ class EditorViewModel(
             } else {
                 Timber.e("No target")
             }
-        } else {
-            Timber.e("Can't add uri to text, range is null")
         }
     }
 

@@ -172,6 +172,9 @@ class EditorPasteAsLinkTest : EditorPresentationTestSetup() {
         vm.onTextBlockTextChanged(BlockView.Text.Paragraph(id = empty.id, text = url))
         vm.onSelectionChanged(id = empty.id, selection = 0..url.length)
         vm.proceedToAddUriToTextAsLink(url)
+        // The action mode closes right after the paste, which collapses the
+        // selection to the caret — before the deferred replay runs.
+        vm.onSelectionChanged(id = empty.id, selection = url.length..url.length)
 
         advanceUntilIdle()
 
@@ -232,6 +235,12 @@ class EditorPasteAsLinkTest : EditorPresentationTestSetup() {
             )
             vm.onSelectionChanged(id = VIRTUAL_TRAILING_BLOCK_ID, selection = 0..url.length)
             vm.proceedToAddUriToTextAsLink(url)
+            // The action mode closes right after the paste, which collapses the
+            // selection to the caret — before the deferred replay runs.
+            vm.onSelectionChanged(
+                id = VIRTUAL_TRAILING_BLOCK_ID,
+                selection = url.length..url.length
+            )
 
             advanceUntilIdle()
 

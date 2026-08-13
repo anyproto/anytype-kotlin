@@ -97,12 +97,9 @@ class MentionTextWatcher(
         val triggered = getMentionSuggestPosition(text, start, count)
         if (triggered != NO_MENTION_POSITION) {
             mentionCharPosition = triggered
-            // The inserted run can carry more than the mention char itself, so seed the
-            // query with everything the IME committed from the mention char onwards.
-            mention = text.substring(
-                startIndex = triggered,
-                endIndex = (start + count).coerceAtMost(text.length)
-            )
+            // The trigger only matches when the inserted run ends with the mention char,
+            // so the query starts out as the mention char alone.
+            mention = MENTION_CHAR.toString()
             proceedWithMentionEvent(MentionTextWatcherState.Start(mentionCharPosition))
             proceedWithMentionEvent(MentionTextWatcherState.Text(mention))
             return

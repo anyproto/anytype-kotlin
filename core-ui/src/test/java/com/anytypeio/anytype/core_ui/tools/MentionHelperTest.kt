@@ -334,7 +334,7 @@ class MentionHelperTest {
     }
 
     @Test
-    fun `should isMentionSuggestTriggered be false 1`() {
+    fun `should not trigger mention suggest when the inserted char is not the mention char`() {
 
         val  s = "text $"
         val start = 5
@@ -346,7 +346,7 @@ class MentionHelperTest {
     }
 
     @Test
-    fun `should isMentionSuggestTriggered be false 2`() {
+    fun `should not trigger mention suggest when the run ends with a doubled mention char`() {
 
         val  s = "text $@@"
         val start = 5
@@ -358,7 +358,7 @@ class MentionHelperTest {
     }
 
     @Test
-    fun `should isMentionSuggestTriggered be false 3`() {
+    fun `should not trigger mention suggest when a single mention char follows a word`() {
 
         val  s = "text@"
         val start = 4
@@ -370,7 +370,7 @@ class MentionHelperTest {
     }
 
     @Test
-    fun `should isMentionSuggestTriggered be false 4`() {
+    fun `should not trigger mention suggest when the run ends with a query char`() {
 
         val  s = "text @t"
         val start = 5
@@ -382,7 +382,7 @@ class MentionHelperTest {
     }
 
     @Test
-    fun `should isMentionSuggestTriggered be true 1`() {
+    fun `should trigger mention suggest when a single mention char follows a space`() {
 
         val  s = "text @"
         val start = 5

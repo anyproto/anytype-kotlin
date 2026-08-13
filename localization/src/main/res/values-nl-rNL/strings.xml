@@ -1271,6 +1271,8 @@
     <string name="options_empty_not_editable">De eigenschap is leeg</string>
     <string name="options_delete_title">Weet je het zeker?</string>
     <string name="options_delete_description">De optie zal permanent worden verwijderd uit jouw ruimte</string>
+    <string name="tag_status_section_selected">Selected</string>
+    <string name="tag_status_section_all_values">All values</string>
     <string name="object_values_empty_description">Objecten niet gevonden</string>
     <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
     <string name="object_values_empty_title">Geen waarden</string>

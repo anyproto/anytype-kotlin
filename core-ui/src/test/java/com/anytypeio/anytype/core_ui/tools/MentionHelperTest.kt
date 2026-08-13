@@ -297,7 +297,7 @@ class MentionHelperTest {
 
         textConditions.forEach { condition ->
 
-            val result = MentionHelper.isMentionSuggestTriggered(
+            val result = isTriggered(
                 s = condition.s,
                 start = condition.start,
                 count = condition.count
@@ -318,7 +318,7 @@ class MentionHelperTest {
 
         textConditions.forEach { condition ->
 
-            val result = MentionHelper.isMentionSuggestTriggered(
+            val result = isTriggered(
                 s = condition.s,
                 start = condition.start,
                 count = condition.count
@@ -340,7 +340,7 @@ class MentionHelperTest {
         val start = 5
         val count = 1
 
-        val result = MentionHelper.isMentionSuggestTriggered(s = s, start = start, count = count)
+        val result = isTriggered(s = s, start = start, count = count)
 
         assertFalse(result)
     }
@@ -352,7 +352,7 @@ class MentionHelperTest {
         val start = 5
         val count = 3
 
-        val result = MentionHelper.isMentionSuggestTriggered(s = s, start = start, count = count)
+        val result = isTriggered(s = s, start = start, count = count)
 
         assertFalse(result)
     }
@@ -364,7 +364,7 @@ class MentionHelperTest {
         val start = 4
         val count = 1
 
-        val result = MentionHelper.isMentionSuggestTriggered(s = s, start = start, count = count)
+        val result = isTriggered(s = s, start = start, count = count)
 
         assertFalse(result)
     }
@@ -376,7 +376,7 @@ class MentionHelperTest {
         val start = 5
         val count = 2
 
-        val result = MentionHelper.isMentionSuggestTriggered(s = s, start = start, count = count)
+        val result = isTriggered(s = s, start = start, count = count)
 
         assertFalse(result)
     }
@@ -388,10 +388,67 @@ class MentionHelperTest {
         val start = 5
         val count = 1
 
-        val result = MentionHelper.isMentionSuggestTriggered(s = s, start = start, count = count)
+        val result = isTriggered(s = s, start = start, count = count)
 
         assertTrue(result)
     }
+
+    @Test
+    fun `should trigger when ime commits a multi char run ending with mention char`() {
+
+        // Gboard replaces the whole composing region on every keystroke, so the "@"
+        // arrives as the last char of a multi-char replacement, not as a lone insert.
+        val s = "text @"
+        val start = 0
+        val count = 6
+
+        val result = isTriggered(s = s, start = start, count = count)
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `should trigger when mention char opens a new line inside the block`() {
+
+        val s = "text\n@"
+        val start = 5
+        val count = 1
+
+        val result = isTriggered(s = s, start = start, count = count)
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `should trigger when mention char follows a non breaking space`() {
+
+        val s = "text @"
+        val start = 5
+        val count = 1
+
+        val result = isTriggered(s = s, start = start, count = count)
+
+        assertTrue(result)
+    }
+
+    @Test
+    fun `should not trigger when a multi char run ends with mention char glued to a word`() {
+
+        val s = "mail@"
+        val start = 0
+        val count = 5
+
+        val result = isTriggered(s = s, start = start, count = count)
+
+        assertFalse(result)
+    }
+
+    private fun isTriggered(s: CharSequence, start: Int, count: Int): Boolean =
+        MentionHelper.getMentionSuggestPosition(
+            s = s,
+            start = start,
+            count = count
+        ) != MentionTextWatcher.NO_MENTION_POSITION
 
     data class TextChanged(
         val isEvent: Boolean,

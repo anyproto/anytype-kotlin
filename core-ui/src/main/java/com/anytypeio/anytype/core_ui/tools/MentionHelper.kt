@@ -8,22 +8,31 @@ import timber.log.Timber
 
 object MentionHelper {
 
-    fun isMentionSuggestTriggered(
+    /**
+     * Position of the mention char that should open the suggester,
+     * or [NO_MENTION_POSITION] when this text change is not a mention trigger.
+     *
+     * Only the last char of the freshly inserted run is inspected: soft keyboards
+     * re-commit the whole composing word on every keystroke, so the mention char
+     * regularly arrives at the tail of a multi-char replacement instead of on its own.
+     * Matching a single-char insert only ([count] == 1) made the suggester miss those.
+     *
+     * The suggester opens at the start of a line or after whitespace only, so that
+     * "word@" — an e-mail address, a handle — stays plain text.
+     */
+    fun getMentionSuggestPosition(
         s: CharSequence,
         start: Int,
         count: Int,
         mentionChar: Char = MENTION_CHAR
-    ): Boolean {
-        if (count == 1 && start < s.length && s[start] == mentionChar) {
-            if (start == 0) {
-                return true
-            }
-            val before = start - 1
-            if (before in 0..s.length && s[before] == ' ') {
-                return true
-            }
+    ): Int {
+        if (count <= 0) return NO_MENTION_POSITION
+        val position = start + count - 1
+        if (position !in s.indices || s[position] != mentionChar) {
+            return NO_MENTION_POSITION
         }
-        return false
+        val before = position - 1
+        return if (before < 0 || s[before].isWhitespace()) position else NO_MENTION_POSITION
     }
 
     fun isMentionDeleted(text: CharSequence, start: Int, mentionPosition: Int, before: Int, count: Int): Boolean {

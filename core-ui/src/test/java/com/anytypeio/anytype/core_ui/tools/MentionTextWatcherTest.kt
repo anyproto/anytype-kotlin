@@ -481,6 +481,47 @@ class MentionTextWatcherTest {
         )
     }
 
+    @Test
+    fun `should fire start when ime commits a run ending with mention char`() {
+
+        val events: MutableList<MentionTextWatcher.MentionTextWatcherState> = mutableListOf()
+
+        val watcher = buildMentionWatcher { state -> events.add(state) }
+
+        // The IME re-commits the whole composing word plus the new char in one shot.
+        watcher.onTextChanged("Hello @", 0, 6, 7)
+
+        assertEquals(
+            expected = listOf(
+                MentionTextWatcher.MentionTextWatcherState.Start(start = 6),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@")
+            ),
+            actual = events
+        )
+    }
+
+    @Test
+    fun `should keep filtering after the mention char arrived inside a multi char run`() {
+
+        val events: MutableList<MentionTextWatcher.MentionTextWatcherState> = mutableListOf()
+
+        val watcher = buildMentionWatcher { state -> events.add(state) }
+
+        watcher.onTextChanged("Hello @", 0, 6, 7)
+        watcher.onTextChanged("Hello @a", 7, 0, 1)
+        watcher.onTextChanged("Hello @ab", 8, 0, 1)
+
+        assertEquals(
+            expected = listOf(
+                MentionTextWatcher.MentionTextWatcherState.Start(start = 6),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@"),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@a"),
+                MentionTextWatcher.MentionTextWatcherState.Text(text = "@ab")
+            ),
+            actual = events
+        )
+    }
+
     private fun buildMentionWatcher(
         onMentionEvent: (MentionTextWatcher.MentionTextWatcherState) -> Unit
     ): MentionTextWatcher {

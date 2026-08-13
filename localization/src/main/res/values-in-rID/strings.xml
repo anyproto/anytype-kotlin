@@ -1267,6 +1267,8 @@
     <string name="options_empty_not_editable">Atribut kosong</string>
     <string name="options_delete_title">Apakah kamu yakin?</string>
     <string name="options_delete_description">Opsi ini akan dihapus secara permanen dari ruangmu</string>
+    <string name="tag_status_section_selected">Selected</string>
+    <string name="tag_status_section_all_values">All values</string>
     <string name="object_values_empty_description">Objek tidak ditemukan</string>
     <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
     <string name="object_values_empty_title">No values</string>

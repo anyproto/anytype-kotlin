@@ -1271,6 +1271,8 @@
     <string name="options_empty_not_editable">A propriedade está vazia</string>
     <string name="options_delete_title">Você tem certeza?</string>
     <string name="options_delete_description">A opção será removida permanentemente do seu espaço</string>
+    <string name="tag_status_section_selected">Selected</string>
+    <string name="tag_status_section_all_values">All values</string>
     <string name="object_values_empty_description">Objetos não encontrados</string>
     <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
     <string name="object_values_empty_title">Nenhum valor</string>

@@ -9,8 +9,10 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelationOptions
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -39,6 +41,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -82,6 +85,12 @@ class TagOrStatusValueViewModelTest {
     private val tag2 = "tag2"
     private val tag3 = "tag3"
     private val tag7 = "tag7"
+
+    private val tagD = "opt-d"
+
+    // Named so that the query "7" matches both.
+    private val tag7a = "tag7a"
+    private val tag7b = "tag7b"
 
     @Before
     fun setup() {
@@ -134,7 +143,22 @@ class TagOrStatusValueViewModelTest {
         }
     }
 
-    private fun buildViewModel(initialIds: List<Id>): TagOrStatusValueViewModel {
+    private fun stubOptionOrderSuccess() {
+        setRelationOptionOrder.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(Unit)
+        }
+    }
+
+    private fun orderParams(orderedIds: List<Id>) = SetRelationOptionOrder.Params(
+        spaceId = space,
+        relationKey = RelationKey(relationKey),
+        orderedIds = orderedIds
+    )
+
+    private fun buildViewModel(
+        initialIds: List<Id>,
+        isLocked: Boolean = false
+    ): TagOrStatusValueViewModel {
         values = FakeObjectValueProvider(
             values = mapOf(objectId to mapOf(relationKey to initialIds))
         )
@@ -144,7 +168,7 @@ class TagOrStatusValueViewModelTest {
                 space = space,
                 objectId = objectId,
                 relationKey = relationKey,
-                isLocked = false,
+                isLocked = isLocked,
                 relationContext = RelationContext.DATA_VIEW
             ),
             values = values,
@@ -159,10 +183,18 @@ class TagOrStatusValueViewModelTest {
         )
     }
 
-    private fun TagOrStatusValueViewModel.items(): List<RelationsListItem.Item> =
+    private fun TagOrStatusValueViewModel.allItems(): List<RelationsListItem> =
         (viewState.value as TagStatusViewState.Content).items
 
-    private fun List<RelationsListItem.Item>.byId(id: Id) = first { it.optionId == id }
+    private fun TagOrStatusValueViewModel.items(): List<RelationsListItem.Item> =
+        allItems().filterIsInstance<RelationsListItem.Item>()
+
+    private fun List<RelationsListItem>.byId(id: Id) =
+        filterIsInstance<RelationsListItem.Item>().first { it.optionId == id }
+
+    /** Maps each row to its optionId, or to the Section object itself, for order assertions. */
+    private fun TagOrStatusValueViewModel.rows(): List<Any> =
+        allItems().map { if (it is RelationsListItem.Item) it.optionId else it }
 
     private fun params(value: Any?) = UpdateDetail.Params(target = objectId, key = relationKey, value = value)
 
@@ -404,5 +436,245 @@ class TagOrStatusValueViewModelTest {
         advanceUntilIdle()
 
         assertTrue(vm.items().byId(tagB).isSelected)
+    }
+
+    @Test
+    fun `editable tag list shows the selected section then the all values section`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1"), option(tagC, "2")))
+
+        val vm = buildViewModel(initialIds = listOf(tagC, tagB))
+        advanceUntilIdle()
+
+        assertEquals(
+            listOf<Any>(
+                RelationsListItem.Section.Selected,
+                tagC,
+                tagB,
+                RelationsListItem.Section.AllValues,
+                tagA
+            ),
+            vm.rows()
+        )
+        assertEquals(1, (vm.allItems().byId(tagC) as RelationsListItem.Item.Tag).number)
+        assertEquals(2, (vm.allItems().byId(tagB) as RelationsListItem.Item.Tag).number)
+    }
+
+    @Test
+    fun `no selection shows only the all values header`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1")))
+
+        val vm = buildViewModel(initialIds = emptyList())
+        advanceUntilIdle()
+
+        assertEquals(
+            listOf<Any>(RelationsListItem.Section.AllValues, tagA, tagB),
+            vm.rows()
+        )
+    }
+
+    @Test
+    fun `full selection shows only the selected header`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1")))
+
+        val vm = buildViewModel(initialIds = listOf(tagA, tagB))
+        advanceUntilIdle()
+
+        assertEquals(
+            listOf<Any>(RelationsListItem.Section.Selected, tagA, tagB),
+            vm.rows()
+        )
+    }
+
+    @Test
+    fun `status list gets the same sections`() = runTest {
+        storeOfRelations.merge(listOf(statusRelation()))
+        storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1")))
+
+        val vm = buildViewModel(initialIds = listOf(tagB))
+        advanceUntilIdle()
+
+        assertEquals(
+            listOf<Any>(
+                RelationsListItem.Section.Selected,
+                tagB,
+                RelationsListItem.Section.AllValues,
+                tagA
+            ),
+            vm.rows()
+        )
+    }
+
+    @Test
+    fun `read-only list has no section headers`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1")))
+
+        val vm = buildViewModel(initialIds = listOf(tagB), isLocked = true)
+        advanceUntilIdle()
+
+        assertEquals(listOf<Any>(tagB), vm.rows())
+    }
+
+    @Test
+    fun `drag inside the selected section reorders the object value`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1"), option(tagC, "2")))
+        stubPersistSuccess()
+
+        val vm = buildViewModel(initialIds = listOf(tagA, tagB, tagC))
+        advanceUntilIdle()
+
+        // Flat list: [Section.Selected, A, B, C]. Move A after C.
+        vm.onAction(TagStatusAction.OnMove(from = 1, to = 3))
+        advanceUntilIdle()
+
+        assertEquals(
+            listOf<Any>(RelationsListItem.Section.Selected, tagB, tagC, tagA),
+            vm.rows()
+        )
+        assertEquals(1, (vm.allItems().byId(tagB) as RelationsListItem.Item.Tag).number)
+        assertEquals(3, (vm.allItems().byId(tagA) as RelationsListItem.Item.Tag).number)
+        verifyBlocking(setObjectDetails) { invoke(params(listOf(tagB, tagC, tagA))) }
+        verifyNoInteractions(setRelationOptionOrder)
+    }
+
+    @Test
+    fun `drag inside the selected section keeps the selections hidden by the query`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(
+            listOf(option(tag2, "0"), option(tag7a, "1"), option(tag7b, "2"))
+        )
+        stubPersistSuccess()
+
+        val vm = buildViewModel(initialIds = listOf(tag2, tag7a, tag7b))
+        advanceUntilIdle()
+
+        vm.onQueryChanged("7")
+        advanceUntilIdle()
+
+        // Flat list under the query: [Section.Selected, tag7a, tag7b]. Swap them.
+        vm.onAction(TagStatusAction.OnMove(from = 1, to = 2))
+        advanceUntilIdle()
+
+        // The hidden selection tag2 keeps its first position.
+        verifyBlocking(setObjectDetails) { invoke(params(listOf(tag2, tag7b, tag7a))) }
+    }
+
+    @Test
+    fun `a failed value write after a selected drag reverts the order and toasts`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1")))
+        stubPersistFailure()
+
+        val vm = buildViewModel(initialIds = listOf(tagA, tagB))
+        advanceUntilIdle()
+        val snapshot = vm.viewState.value
+
+        vm.toasts.test {
+            vm.onAction(TagStatusAction.OnMove(from = 1, to = 2))
+            advanceUntilIdle()
+            val messages = cancelAndConsumeRemainingEvents()
+                .filterIsInstance<Event.Item<String>>()
+                .map { it.value }
+            assertTrue(messages.contains("Error while updating value"))
+        }
+
+        assertEquals(snapshot, vm.viewState.value)
+    }
+
+    @Test
+    fun `drag inside all values saves the merged global option order`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(
+            listOf(option(tagA, "0"), option(tagB, "1"), option(tagC, "2"), option(tagD, "3"))
+        )
+        stubOptionOrderSuccess()
+
+        val vm = buildViewModel(initialIds = listOf(tagB))
+        advanceUntilIdle()
+
+        // Flat list: [Section.Selected, B, Section.AllValues, A, C, D]. Move D before A.
+        vm.onAction(TagStatusAction.OnMove(from = 5, to = 3))
+        advanceUntilIdle()
+
+        // Full order was [A, B, C, D]; B is hidden from the section and keeps its slot.
+        verifyBlocking(setRelationOptionOrder) {
+            async(orderParams(listOf(tagD, tagB, tagA, tagC)))
+        }
+        verifyNoInteractions(setObjectDetails)
+    }
+
+    @Test
+    fun `drag inside all values under a query keeps the hidden options in place`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(
+            listOf(option(tag7a, "0"), option(tag2, "1"), option(tag7b, "2"))
+        )
+        stubOptionOrderSuccess()
+
+        val vm = buildViewModel(initialIds = emptyList())
+        advanceUntilIdle()
+
+        vm.onQueryChanged("7")
+        advanceUntilIdle()
+
+        // Flat list under the query: [Section.AllValues, tag7a, tag7b]. Swap them.
+        vm.onAction(TagStatusAction.OnMove(from = 1, to = 2))
+        advanceUntilIdle()
+
+        // Full order was [tag7a, tag2, tag7b]; hidden tag2 keeps its slot.
+        verifyBlocking(setRelationOptionOrder) {
+            async(orderParams(listOf(tag7b, tag2, tag7a)))
+        }
+    }
+
+    @Test
+    fun `an option deleted from the store after the drag is dropped from the persisted order`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(
+            listOf(option(tagA, "0"), option(tagB, "1"), option(tagC, "2"), option(tagD, "3"))
+        )
+        stubOptionOrderSuccess()
+
+        val vm = buildViewModel(initialIds = listOf(tagB))
+        advanceUntilIdle()
+
+        // Flat list: [Section.Selected, B, Section.AllValues, A, C, D]. Move C before A.
+        // onAction captures the displayed order [C, A, D] synchronously; the store fetch
+        // inside moveOptionOrder only runs once advanceUntilIdle resumes the coroutine.
+        vm.onAction(TagStatusAction.OnMove(from = 4, to = 3))
+
+        // Simulate a concurrent deletion (another device or a fast second drag) that lands
+        // before the suspend fetch resolves. This id was part of the captured displayed order.
+        storeOfRelationOptions.remove(tagC)
+        advanceUntilIdle()
+
+        // Full order at fetch time is [A, B, D]; the dropped tagC is neither written into the
+        // order nor does it displace tagD's slot. tagA and tagD swap as the drag intended.
+        verifyBlocking(setRelationOptionOrder) {
+            async(orderParams(listOf(tagA, tagB, tagD)))
+        }
+    }
+
+    @Test
+    fun `drag across sections is ignored`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(listOf(option(tagA, "0"), option(tagB, "1")))
+
+        val vm = buildViewModel(initialIds = listOf(tagA))
+        advanceUntilIdle()
+
+        // Flat list: [Section.Selected, A, Section.AllValues, B].
+        // from = selected item, to = unselected item.
+        vm.onAction(TagStatusAction.OnMove(from = 1, to = 3))
+        // from = item, to = section header.
+        vm.onAction(TagStatusAction.OnMove(from = 3, to = 2))
+        advanceUntilIdle()
+
+        verifyNoInteractions(setObjectDetails)
+        verifyNoInteractions(setRelationOptionOrder)
     }
 }

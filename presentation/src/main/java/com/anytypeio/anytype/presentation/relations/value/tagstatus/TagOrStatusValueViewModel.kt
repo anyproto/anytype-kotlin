@@ -252,31 +252,7 @@ class TagOrStatusValueViewModel(
             }
             is TagStatusAction.OnMove -> {
                 Timber.d("OnMove from ${action.from} to ${action.to}")
-                viewModelScope.launch {
-                    val currentState = viewState.value
-                    if (currentState !is TagStatusViewState.Content) return@launch
-                    val reorderedIds = currentState.items
-                        .toMutableList()
-                        .apply { add(action.to, removeAt(action.from)) }
-                        .map { it.optionId }
-                    // Activate lock before sending to middleware to prevent race conditions
-                    activateOptionEventLock()
-                    setRelationOptionOrder.async(
-                        SetRelationOptionOrder.Params(
-                            spaceId = viewModelParams.space,
-                            relationKey = RelationKey(viewModelParams.relationKey),
-                            orderedIds = reorderedIds
-                        )
-                    ).fold(
-                        onSuccess = {
-                            Timber.d("Option order saved successfully")
-                        },
-                        onFailure = { e ->
-                            Timber.e(e, "Failed to save option order")
-                            sendToast("Failed to save order")
-                        }
-                    )
-                }
+                onMove(from = action.from, to = action.to)
             }
         }
     }
@@ -296,6 +272,7 @@ class TagOrStatusValueViewModel(
 
     private fun onActionClick(item: RelationsListItem) {
         when (item) {
+            is RelationsListItem.Section -> Unit
             is RelationsListItem.Item.Status -> {
                 if (item.isSelected) {
                     clearTagsOrStatus()
@@ -324,36 +301,115 @@ class TagOrStatusValueViewModel(
         }
     }
 
+    /**
+     * [from] and [to] are indices into the flat, header-inclusive items list.
+     * The section of the dragged item decides the write path: a selected item
+     * permutes this object's value list, an unselected item permutes the
+     * global option order. A move whose target is a header or an item of the
+     * other section is ignored — the UI rejects those moves as well, this is
+     * the second gate.
+     */
+    private fun onMove(from: Int, to: Int) {
+        val currentState = viewState.value as? TagStatusViewState.Content ?: return
+        val items = currentState.items
+        val dragged = items.getOrNull(from) as? RelationsListItem.Item ?: return
+        val target = items.getOrNull(to) as? RelationsListItem.Item ?: return
+        if (dragged.isSelected != target.isSelected) return
+        val moved = items.toMutableList().apply { add(to, removeAt(from)) }
+        if (dragged.isSelected) {
+            moveSelectedValue(moved)
+        } else {
+            moveOptionOrder(moved)
+        }
+    }
+
+    private fun moveSelectedValue(moved: List<RelationsListItem>) {
+        val displayedOrder = moved
+            .filterIsInstance<RelationsListItem.Item>()
+            .filter { it.isSelected }
+            .map { it.optionId }
+        val newIds = mergeReorderedSubset(
+            full = selectedIds,
+            displayedNewOrder = displayedOrder
+        )
+        proceedWithOptimisticUpdate(
+            newIds = newIds,
+            persistedValue = newIds,
+            analyticsEvent = EventsDictionary.relationChangeValue,
+            dismissOnSuccess = false
+        )
+    }
+
+    private fun moveOptionOrder(moved: List<RelationsListItem>) {
+        viewModelScope.launch {
+            // Activate lock before sending to middleware to prevent race conditions
+            activateOptionEventLock()
+            val fullOrder = storeOfRelationOptions
+                .getByRelationKey(viewModelParams.relationKey)
+                .sortedBy { it.orderId }
+                .map { it.id }
+            val fullOrderSet = fullOrder.toSet()
+            val displayedOrder = moved
+                .filterIsInstance<RelationsListItem.Item>()
+                .filter { !it.isSelected }
+                .map { it.optionId }
+                .filter { it in fullOrderSet }
+            val orderedIds = mergeReorderedSubset(
+                full = fullOrder,
+                displayedNewOrder = displayedOrder
+            )
+            setRelationOptionOrder.async(
+                SetRelationOptionOrder.Params(
+                    spaceId = viewModelParams.space,
+                    relationKey = RelationKey(viewModelParams.relationKey),
+                    orderedIds = orderedIds
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Option order saved successfully")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Failed to save option order")
+                    sendToast("Failed to save order")
+                }
+            )
+        }
+    }
+
+    /**
+     * Applies the new relative order of a displayed subset to the full list.
+     * An id that the list displays takes the next displayed slot in the new
+     * order. An id that the query or the section hides keeps its position.
+     */
+    private fun mergeReorderedSubset(
+        full: List<Id>,
+        displayedNewOrder: List<Id>
+    ): List<Id> {
+        val displayed = displayedNewOrder.toSet()
+        val iterator = displayedNewOrder.iterator()
+        return full.map { id ->
+            if (displayed.contains(id) && iterator.hasNext()) iterator.next() else id
+        }
+    }
+
     private fun initViewState(
         relation: ObjectWrapper.Relation,
         ids: List<Id>,
         options: List<ObjectWrapper.Option>,
         query: String
     ) {
-        val result = mutableListOf<RelationsListItem.Item>()
         val isTagRelation = relation.format == Relation.Format.TAG
 
-        when (relation.format) {
-            Relation.Format.STATUS -> {
-                result.addAll(
-                    mapStatusOptions(
-                        ids = ids,
-                        options = options
-                    )
-                )
-            }
-            Relation.Format.TAG -> {
-                result.addAll(
-                    mapTagOptions(
-                        ids = ids,
-                        options = options
-                    )
-                )
-            }
+        val mapped: List<RelationsListItem.Item> = when (relation.format) {
+            Relation.Format.STATUS -> mapStatusOptions(ids = ids, options = options)
+            Relation.Format.TAG -> mapTagOptions(ids = ids, options = options)
             else -> {
                 Timber.w("Relation format should be Tag or Status but was: ${relation.format}")
+                emptyList()
             }
         }
+
+        val items = buildSectionedList(mapped = mapped, ids = ids)
 
         // CreateItem is only shown for TAG relations when there's a search query
         val createItem = if (isTagRelation && query.isNotBlank() && isEditableRelation) {
@@ -362,7 +418,7 @@ class TagOrStatusValueViewModel(
             null
         }
 
-        viewState.value = if (result.isEmpty() && createItem == null) {
+        viewState.value = if (items.isEmpty() && createItem == null) {
             TagStatusViewState.Empty(
                 isRelationEditable = isEditableRelation,
                 title = relation.name.orEmpty(),
@@ -371,11 +427,36 @@ class TagOrStatusValueViewModel(
             TagStatusViewState.Content(
                 isRelationEditable = isEditableRelation,
                 title = relation.name.orEmpty(),
-                items = result,
+                items = items,
                 createItem = createItem
             )
         }.also {
             Timber.d("TagStatusViewModel initViewState, viewState: $it")
+        }
+    }
+
+    /**
+     * Editable relations get two sections: the selected options in value order,
+     * then the unselected options in the global option order. The read-only list
+     * stays flat. A header is omitted when its group is empty. The display sort
+     * is deliberately separate from the persisted option order (DROID-3916).
+     */
+    private fun buildSectionedList(
+        mapped: List<RelationsListItem.Item>,
+        ids: List<Id>
+    ): List<RelationsListItem> {
+        if (!isEditableRelation) return mapped
+        val selected = mapped.filter { it.isSelected }.sortedBy { ids.indexOf(it.optionId) }
+        val unselected = mapped.filter { !it.isSelected }
+        return buildList {
+            if (selected.isNotEmpty()) {
+                add(RelationsListItem.Section.Selected)
+                addAll(selected)
+            }
+            if (unselected.isNotEmpty()) {
+                add(RelationsListItem.Section.AllValues)
+                addAll(unselected)
+            }
         }
     }
 
@@ -611,7 +692,7 @@ sealed class TagStatusViewState {
 
     data class Content(
         val title: String,
-        val items: List<RelationsListItem.Item>,
+        val items: List<RelationsListItem>,
         val createItem: RelationsListItem.CreateItem.Tag? = null,
         val isRelationEditable: Boolean,
         val showItemMenu: RelationsListItem.Item? = null
@@ -633,6 +714,11 @@ sealed class TagStatusAction {
 enum class RelationContext { OBJECT, OBJECT_SET, DATA_VIEW }
 
 sealed class RelationsListItem {
+
+    sealed class Section : RelationsListItem() {
+        object Selected : Section()
+        object AllValues : Section()
+    }
 
     sealed class Item : RelationsListItem() {
 

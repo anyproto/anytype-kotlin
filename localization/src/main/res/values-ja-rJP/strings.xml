@@ -1268,6 +1268,8 @@
     <string name="options_empty_not_editable">プロパティが空です</string>
     <string name="options_delete_title">本当によろしいですか？</string>
     <string name="options_delete_description">このオプションがスペースから完全に削除されます</string>
+    <string name="tag_status_section_selected">Selected</string>
+    <string name="tag_status_section_all_values">All values</string>
     <string name="object_values_empty_description">オブジェクトが見つかりません</string>
     <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
     <string name="object_values_empty_title">値なし</string>

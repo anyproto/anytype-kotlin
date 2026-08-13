@@ -1280,6 +1280,8 @@
     <string name="options_empty_not_editable">The property is empty</string>
     <string name="options_delete_title">Вы ўпэўнены?</string>
     <string name="options_delete_description">Параметр будзе назаўсёды выдалены з вашай прасторы</string>
+    <string name="tag_status_section_selected">Selected</string>
+    <string name="tag_status_section_all_values">All values</string>
     <string name="object_values_empty_description">Аб\'екты не знойдзены</string>
     <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
     <string name="object_values_empty_title">Няма значэнняў</string>

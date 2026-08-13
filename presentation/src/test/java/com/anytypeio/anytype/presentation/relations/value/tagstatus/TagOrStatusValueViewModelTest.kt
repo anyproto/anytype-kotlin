@@ -26,6 +26,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -35,6 +36,7 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.whenever
@@ -75,6 +77,11 @@ class TagOrStatusValueViewModelTest {
     private val tagA = "opt-a"
     private val tagB = "opt-b"
     private val tagC = "opt-c"
+
+    // Named so that the query "7" matches tag7 only.
+    private val tag2 = "tag2"
+    private val tag3 = "tag3"
+    private val tag7 = "tag7"
 
     @Before
     fun setup() {
@@ -297,6 +304,84 @@ class TagOrStatusValueViewModelTest {
 
         // Reverted to the pre-click state.
         assertEquals(snapshot, vm.viewState.value)
+    }
+
+    @Test
+    fun `selecting a tag under an active query keeps the selections hidden by the query`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(
+            listOf(option(tag2, "0"), option(tag3, "1"), option(tag7, "2"))
+        )
+        stubPersistSuccess()
+
+        val vm = buildViewModel(initialIds = listOf(tag2, tag3))
+        advanceUntilIdle()
+
+        vm.onQueryChanged("7")
+        advanceUntilIdle()
+
+        // The query hides the two selected tags.
+        assertEquals(listOf(tag7), vm.items().map { it.optionId })
+
+        vm.onAction(TagStatusAction.Click(vm.items().byId(tag7)))
+        advanceUntilIdle()
+
+        verifyBlocking(setObjectDetails) { invoke(params(listOf(tag2, tag3, tag7))) }
+    }
+
+    @Test
+    fun `deselecting a tag under an active query keeps the selections hidden by the query`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(
+            listOf(option(tag2, "0"), option(tag3, "1"), option(tag7, "2"))
+        )
+        stubPersistSuccess()
+
+        val vm = buildViewModel(initialIds = listOf(tag2, tag3, tag7))
+        advanceUntilIdle()
+
+        vm.onQueryChanged("7")
+        advanceUntilIdle()
+
+        assertEquals(listOf(tag7), vm.items().map { it.optionId })
+        assertTrue(vm.items().byId(tag7).isSelected)
+
+        vm.onAction(TagStatusAction.Click(vm.items().byId(tag7)))
+        advanceUntilIdle()
+
+        verifyBlocking(setObjectDetails) { invoke(params(listOf(tag2, tag3))) }
+    }
+
+    @Test
+    fun `a late failure does not revert a newer write that already succeeded`() = runTest {
+        storeOfRelations.merge(listOf(tagRelation()))
+        storeOfRelationOptions.merge(
+            listOf(option(tagA, "0"), option(tagB, "1"), option(tagC, "2"))
+        )
+
+        // The first write fails, but only after the second write succeeds.
+        setObjectDetails.stub {
+            onBlocking { invoke(params(listOf(tagA, tagB))) } doSuspendableAnswer {
+                delay(1000)
+                Either.Left(RuntimeException("boom"))
+            }
+            onBlocking { invoke(params(listOf(tagA, tagB, tagC))) } doReturn
+                    Either.Right(Payload(context = objectId, events = emptyList()))
+        }
+
+        val vm = buildViewModel(initialIds = listOf(tagA))
+        advanceUntilIdle()
+
+        // Two taps in flight together.
+        vm.onAction(TagStatusAction.Click(vm.items().byId(tagB)))
+        vm.onAction(TagStatusAction.Click(vm.items().byId(tagC)))
+        advanceUntilIdle()
+
+        // The late failure must not resurrect the snapshot that holds tagA alone.
+        val updated = vm.items()
+        assertTrue(updated.byId(tagA).isSelected)
+        assertTrue(updated.byId(tagB).isSelected)
+        assertTrue(updated.byId(tagC).isSelected)
     }
 
     @Test

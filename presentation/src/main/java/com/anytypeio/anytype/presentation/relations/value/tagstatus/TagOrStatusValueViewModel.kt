@@ -98,6 +98,24 @@ class TagOrStatusValueViewModel(
     // re-reading the (possibly orphaned / never re-emitting) value store. See proceedWithOptimisticUpdate.
     private var currentRelation: ObjectWrapper.Relation? = null
 
+    /**
+     * The authoritative, ordered list of selected option ids.
+     *
+     * It must NOT be derived from [viewState], because [filterOptions] removes every option
+     * that the search query hides. A selection that the query hides is therefore absent from
+     * the rendered items. A write built from the rendered items deletes that selection
+     * (DROID-4570).
+     *
+     * The field is updated from the [values].subscribe emission and from every optimistic
+     * write. It therefore survives a query change, which the rendered items do not.
+     *
+     * The field stays consistent with [viewState], because the [combine] block writes both
+     * from the same `ids`. That is deliberate: a divergence would show one selection in the
+     * list and persist a different one. A record that goes stale — a host with no live writer
+     * for the backing store — makes the field and the list stale together, never in conflict.
+     */
+    private var selectedIds: List<Id> = emptyList()
+
     init {
         viewModelScope.launch {
             val relation = storeOfRelations.getByKey(key = viewModelParams.relationKey) ?: return@launch
@@ -119,6 +137,7 @@ class TagOrStatusValueViewModel(
                 val options = storeOfRelationOptions.getByRelationKey(viewModelParams.relationKey)
                     .sortedBy { it.orderId }
                 val ids = getRecordValues(record)
+                selectedIds = ids
                 if (!isInitialExpandDone) {
                     isInitialExpandDone = true
                     if (ids.isEmpty() && isEditableRelation) {
@@ -368,22 +387,9 @@ class TagOrStatusValueViewModel(
         }
     }
 
-    /**
-     * Reconstructs the current ordered list of selected option ids from the *UI* state
-     * ([viewState]) rather than from [values], whose backing store may never re-emit for
-     * some hosts (see [proceedWithOptimisticUpdate]). For tags the selection order is carried
-     * by [RelationsListItem.Item.Tag.number] (1-based index among selected); status has at
-     * most one selected item.
-     */
-    private fun currentSelectedIds(content: TagStatusViewState.Content): List<Id> =
-        content.items
-            .filter { it.isSelected }
-            .sortedBy { (it as? RelationsListItem.Item.Tag)?.number ?: 0 }
-            .map { it.optionId }
-
     private fun addTag(tag: Id) {
-        val content = viewState.value as? TagStatusViewState.Content ?: return
-        val newIds = currentSelectedIds(content) + tag
+        if (selectedIds.contains(tag)) return
+        val newIds = selectedIds + tag
         proceedWithOptimisticUpdate(
             newIds = newIds,
             persistedValue = newIds,
@@ -393,8 +399,7 @@ class TagOrStatusValueViewModel(
     }
 
     private fun removeTag(tag: Id) {
-        val content = viewState.value as? TagStatusViewState.Content ?: return
-        val newIds = currentSelectedIds(content) - tag
+        val newIds = selectedIds - tag
         proceedWithOptimisticUpdate(
             newIds = newIds,
             persistedValue = newIds,
@@ -427,12 +432,13 @@ class TagOrStatusValueViewModel(
      * Single entry point for value edits. The sheet's list is normally rebuilt only when
      * [values].subscribe re-emits, but some hosts have no live writer for the backing store,
      * so a click would never be reflected. To fix that we update [viewState] optimistically:
-     * 1. lock event processing so a stale [values] re-emission can't clobber the UI,
-     * 2. rebuild [viewState] from [newIds] via [initViewState] (reuses filterOptions +
+     * 1. adopt [newIds] as the new [selectedIds],
+     * 2. lock event processing so a stale [values] re-emission can't clobber the UI,
+     * 3. rebuild [viewState] from [newIds] via [initViewState] (reuses filterOptions +
      *    option mapping / number recompute + create-item logic),
-     * 3. persist via [setObjectDetails],
-     * 4. on failure revert to the pre-click snapshot and toast,
-     * 5. on success dispatch the payload, send analytics, optionally dismiss.
+     * 4. persist via [setObjectDetails],
+     * 5. on failure revert [selectedIds] and [viewState] to the pre-click snapshot, then toast,
+     * 6. on success dispatch the payload, send analytics, optionally dismiss.
      */
     private fun proceedWithOptimisticUpdate(
         newIds: List<Id>,
@@ -442,6 +448,9 @@ class TagOrStatusValueViewModel(
     ) {
         val relation = currentRelation ?: return
         val previousState = viewState.value
+        val previousSelectedIds = selectedIds
+        // Assign before the launch, so a second click reads the result of the first one.
+        selectedIds = newIds
         viewModelScope.launch {
             // Lock BEFORE the optimistic write so any concurrent combine emission is skipped.
             activateOptionEventLock()
@@ -464,9 +473,16 @@ class TagOrStatusValueViewModel(
             ).process(
                 failure = { e ->
                     Timber.e(e, "Error while updating tag/status value")
-                    // Revert optimistic update and release the lock so real events are honored again.
-                    optionEventLockTimestamp = null
-                    viewState.value = previousState
+                    // Revert only while this write is still the newest one. Two taps can be in
+                    // flight together, because setObjectDetails suspends onto the io dispatcher.
+                    // A late failure must not restore a snapshot older than a newer write that
+                    // already succeeded, and must not release the lock under that newer write.
+                    // The identity check holds because this call assigned newIds to selectedIds.
+                    if (selectedIds === newIds) {
+                        optionEventLockTimestamp = null
+                        selectedIds = previousSelectedIds
+                        viewState.value = previousState
+                    }
                     sendToast("Error while updating value")
                 },
                 success = {

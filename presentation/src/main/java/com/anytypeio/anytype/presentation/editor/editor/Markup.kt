@@ -180,6 +180,14 @@ interface Markup {
 
     companion object {
         const val DEFAULT_SPANNABLE_FLAG = Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+
+        /**
+         * Link-type spans (url, object link, mention) do not grow over text
+         * typed at their end: the link covers its own text only. Formatting
+         * spans (bold, italic, color) keep [DEFAULT_SPANNABLE_FLAG] — there,
+         * text typed at the end continues the style on purpose.
+         */
+        const val LINK_SPANNABLE_FLAG = Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         const val MENTION_SPANNABLE_FLAG = Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
         const val SPAN_MONOSPACE = "monospace"
         const val NON_EXISTENT_OBJECT_MENTION_NAME = "Non-existent object"

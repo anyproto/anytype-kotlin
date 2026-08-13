@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.StubCodeSnippet
@@ -14,9 +13,7 @@ import com.anytypeio.anytype.core_models.StubTable
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.Either
-import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
-import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.page.bookmark.CreateBookmarkBlock
 import com.anytypeio.anytype.presentation.MockBlockFactory
@@ -34,7 +31,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
@@ -425,27 +421,10 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(doc)
 
-        createBlock.stub {
-            onBlocking { async(any()) } doReturn Resultat.success(
-                Pair(
-                    created.id,
-                    Payload(
-                        context = root,
-                        events = listOf(
-                            Event.Command.AddBlock(
-                                context = root,
-                                blocks = listOf(created)
-                            ),
-                            Event.Command.UpdateStructure(
-                                context = root,
-                                id = root,
-                                children = listOf(header.id, block.id, created.id)
-                            )
-                        )
-                    )
-                )
-            )
-        }
+        stubCreateBlockWithSwap(
+            created = created,
+            children = listOf(header.id, block.id, created.id)
+        )
 
         val vm = buildViewModel()
 
@@ -695,27 +674,10 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(doc)
 
-        createBlock.stub {
-            onBlocking { async(any()) } doReturn Resultat.success(
-                Pair(
-                    created.id,
-                    Payload(
-                        context = root,
-                        events = listOf(
-                            Event.Command.AddBlock(
-                                context = root,
-                                blocks = listOf(created)
-                            ),
-                            Event.Command.UpdateStructure(
-                                context = root,
-                                id = root,
-                                children = listOf(header.id, block.id, created.id)
-                            )
-                        )
-                    )
-                )
-            )
-        }
+        stubCreateBlockWithSwap(
+            created = created,
+            children = listOf(header.id, block.id, created.id)
+        )
 
         createBookmarkBlock.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
@@ -779,36 +741,12 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         stubOpenDocument(doc)
         stubUpdateText()
 
-        createBlock.stub {
-            onBlocking { async(any()) } doReturn Resultat.success(
-                Pair(
-                    created.id,
-                    Payload(
-                        context = root,
-                        events = listOf(
-                            Event.Command.AddBlock(
-                                context = root,
-                                blocks = listOf(created)
-                            ),
-                            Event.Command.UpdateStructure(
-                                context = root,
-                                id = root,
-                                children = listOf(header.id, block.id, created.id)
-                            )
-                        )
-                    )
-                )
-            )
-        }
+        stubCreateBlockWithSwap(
+            created = created,
+            children = listOf(header.id, block.id, created.id)
+        )
 
-        updateLinkMark.stub {
-            on { invoke(any(), any(), any()) } doAnswer { invocation ->
-                val params = invocation.getArgument<UpdateLinkMarks.Params>(1)
-                val onResult = invocation
-                    .getArgument<(Either<Throwable, List<Block.Content.Text.Mark>>) -> Unit>(2)
-                onResult(Either.Right(params.marks + params.newMark))
-            }
-        }
+        stubUpdateLinkMarksToAppend()
 
         val vm = buildViewModel()
 

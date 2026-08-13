@@ -211,7 +211,7 @@ private fun SpannableStringBuilder.applyMarkupSpans(
                 ),
                 mark.from,
                 mark.to,
-                Markup.DEFAULT_SPANNABLE_FLAG
+                Markup.LINK_SPANNABLE_FLAG
             )
 
             is Markup.Mark.Keyboard -> {
@@ -254,7 +254,7 @@ private fun SpannableStringBuilder.applyMarkupSpans(
                 ),
                 mark.from,
                 mark.to,
-                Markup.DEFAULT_SPANNABLE_FLAG
+                Markup.LINK_SPANNABLE_FLAG
             )
 
             is Markup.Mark.Emoji -> {

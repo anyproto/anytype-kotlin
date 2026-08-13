@@ -25,9 +25,11 @@ interface Store<T> {
     fun current(): T
 
     /**
-     * Updates current values
+     * Updates current values. Synchronous: a caller that follows the write in
+     * the same input callback reads the new value. "Paste link" relies on this
+     * — it selects the inserted url, then asks for the link mark over it.
      */
-    suspend fun update(t: T)
+    fun update(t: T)
 
     fun cancel()
 
@@ -37,7 +39,8 @@ interface Store<T> {
 
         override fun stream(): Flow<T> = state
         override fun current(): T = state.value
-        override suspend fun update(t: T) {
+
+        override fun update(t: T) {
             state.value = t
         }
 
@@ -45,7 +48,7 @@ interface Store<T> {
     }
 
     class Focus : State<Editor.Focus>(Editor.Focus.empty()) {
-        override suspend fun update(t: Editor.Focus) {
+        override fun update(t: Editor.Focus) {
             Timber.d("Update focus in store: $t")
             super.update(t)
         }

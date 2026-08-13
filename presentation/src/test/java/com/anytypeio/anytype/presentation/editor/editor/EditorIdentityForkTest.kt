@@ -2,14 +2,10 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.StubHeader
-import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
-import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -25,8 +21,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
-import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -291,32 +285,11 @@ class EditorIdentityForkTest : EditorPresentationTestSetup() {
 
         stubInterceptEvents()
         stubOpenDocument(givenDocument(empty))
-
-        replaceBlock.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
-                Pair(
-                    forked.id,
-                    Payload(
-                        context = root,
-                        events = listOf(
-                            Event.Command.UpdateStructure(
-                                context = root,
-                                id = root,
-                                children = listOf(header.id, forked.id)
-                            ),
-                            Event.Command.AddBlock(
-                                context = root,
-                                blocks = listOf(forked)
-                            ),
-                            Event.Command.DeleteBlock(
-                                context = root,
-                                targets = listOf(empty.id)
-                            )
-                        )
-                    )
-                )
-            )
-        }
+        stubReplaceBlockWithSwap(
+            empty = empty,
+            forked = forked,
+            children = listOf(header.id, forked.id)
+        )
 
         val vm = buildViewModel()
 
@@ -427,34 +400,6 @@ class EditorIdentityForkTest : EditorPresentationTestSetup() {
         verifyNoInteractions(replaceBlock)
     }
 
-    private fun stubReplaceBlockWithSwap(empty: Block, forked: Block) {
-        replaceBlock.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
-                Pair(
-                    forked.id,
-                    Payload(
-                        context = root,
-                        events = listOf(
-                            Event.Command.UpdateStructure(
-                                context = root,
-                                id = root,
-                                children = listOf(header.id, forked.id)
-                            ),
-                            Event.Command.AddBlock(
-                                context = root,
-                                blocks = listOf(forked)
-                            ),
-                            Event.Command.DeleteBlock(
-                                context = root,
-                                targets = listOf(empty.id)
-                            )
-                        )
-                    )
-                )
-            )
-        }
-    }
-
     @Test
     fun `should defer link paste while the fork is in flight and apply the mark to the forked block`() = runTest {
 
@@ -467,16 +412,12 @@ class EditorIdentityForkTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(givenDocument(empty))
         stubUpdateText()
-        stubReplaceBlockWithSwap(empty, forked)
-
-        updateLinkMark.stub {
-            on { invoke(any(), any(), any()) } doAnswer { invocation ->
-                val params = invocation.getArgument<UpdateLinkMarks.Params>(1)
-                val onResult = invocation
-                    .getArgument<(Either<Throwable, List<Block.Content.Text.Mark>>) -> Unit>(2)
-                onResult(Either.Right(params.marks + params.newMark))
-            }
-        }
+        stubReplaceBlockWithSwap(
+            empty = empty,
+            forked = forked,
+            children = listOf(header.id, forked.id)
+        )
+        stubUpdateLinkMarksToAppend()
 
         val vm = buildViewModel()
 
@@ -537,7 +478,11 @@ class EditorIdentityForkTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubOpenDocument(givenDocument(empty))
         stubPaste()
-        stubReplaceBlockWithSwap(empty, forked)
+        stubReplaceBlockWithSwap(
+            empty = empty,
+            forked = forked,
+            children = listOf(header.id, forked.id)
+        )
 
         val vm = buildViewModel()
 

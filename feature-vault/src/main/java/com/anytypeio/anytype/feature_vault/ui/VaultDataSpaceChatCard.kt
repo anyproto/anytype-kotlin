@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
@@ -192,7 +193,7 @@ private fun ContentDataSpaceChat(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(24.dp),
+                .heightIn(min = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             TitleRow(

@@ -1267,8 +1267,8 @@
     <string name="options_empty_not_editable">该属性为空</string>
     <string name="options_delete_title">是否确定?</string>
     <string name="options_delete_description">此选项将从您的空间永久删除。</string>
-    <string name="tag_status_section_selected">Selected</string>
-    <string name="tag_status_section_all_values">All values</string>
+    <string name="tag_status_section_selected">已选中</string>
+    <string name="tag_status_section_all_values">所有值</string>
     <string name="object_values_empty_description">未找到对象</string>
     <string name="object_values_empty_description_limited">未找到符合要求的对象。此属性仅接受以下类型：%1$s</string>
     <string name="object_values_empty_title">输入为空</string>

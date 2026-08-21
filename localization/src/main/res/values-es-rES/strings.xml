@@ -113,7 +113,7 @@
     <string name="option_tool_set">Conjunto</string>
     <string name="option_tool_contact">Contacto</string>
     <string name="option_tool_existing_tool">Herramienta existente</string>
-    <string name="option_media_file">Archivo</string>
+    <string name="option_media_file">Documento</string>
     <string name="option_media_picture">Imagen</string>
     <string name="option_media_video">Vídeo</string>
     <string name="option_media_bookmark">Marcador</string>
@@ -168,7 +168,7 @@
     <string name="detail_number">Número</string>
     <string name="detail_multiple">Selección múltiple</string>
     <string name="detail_date">Fecha</string>
-    <string name="detail_file">Archivo y medios</string>
+    <string name="detail_file">Documentos y medios</string>
     <string name="detail_checkbox">Casilla</string>
     <string name="detail_url">URL</string>
     <string name="detail_phone">Teléfono</string>
@@ -193,7 +193,7 @@
     <string name="hint_checkbox">Casilla</string>
     <string name="hint_upload_video">Cargar un vídeo</string>
     <string name="hint_upload_image">Cargar una imagen</string>
-    <string name="hint_upload_file">Cargar un archivo</string>
+    <string name="hint_upload_file">Cargar un documento</string>
     <string name="hint_upload_audio">Cargar audio</string>
     <string name="hint_add_a_web_bookmark">Añadir marcador</string>
     <string name="hint_bullet">Elemento de lista con viñetas</string>
@@ -312,7 +312,7 @@
     <string name="relation_format_number">Número</string>
     <string name="relation_format_date">Fecha</string>
     <string name="relation_format_status">Selección</string>
-    <string name="relation_format_file">Archivos y medios</string>
+    <string name="relation_format_file">Documentos y medios</string>
     <string name="relation_format_checkbox">Casilla</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">Correo electrónico</string>
@@ -971,17 +971,17 @@
     <string name="slash_widget_style_code">Código</string>
     <string name="slash_widget_style_link">Enlace</string>
     <string name="slash_widget_style_underline">Subrayado</string>
-    <string name="slash_widget_media_file">Archivo</string>
-    <string name="slash_widget_media_file_subtitle">Almacenar el archivo en su estado original</string>
+    <string name="slash_widget_media_file">Documento</string>
+    <string name="slash_widget_media_file_subtitle">Almacena el documento en su estado original</string>
     <string name="slash_widget_media_picture">Imagen</string>
     <string name="slash_widget_media_image">Imagen</string>
     <string name="slash_widget_media_picture_subtitle">Enriquece tu página con una imagen</string>
     <string name="slash_widget_media_video">Vídeo</string>
-    <string name="slash_widget_media_video_subtitle">Cargar un vídeo reproducible</string>
+    <string name="slash_widget_media_video_subtitle">Carga un vídeo reproducible</string>
     <string name="slash_widget_media_bookmark">Marcador</string>
-    <string name="slash_widget_media_bookmark_subtitle">Guardar un enlace favorito con resumen</string>
+    <string name="slash_widget_media_bookmark_subtitle">Guarda un enlace favorito con resumen</string>
     <string name="slash_widget_media_code">Fragmento de código</string>
-    <string name="slash_widget_media_code_subtitle">Capturar un fragmento de código</string>
+    <string name="slash_widget_media_code_subtitle">Captura un fragmento de código</string>
     <string name="slash_widget_other_line">Línea divisoria</string>
     <string name="slash_widget_other_dots">Puntos divisorios</string>
     <string name="slash_widget_other_toc">Índice</string>
@@ -1173,9 +1173,9 @@
     <string name="sharing_menu_save_as_note_option">Nota</string>
     <string name="sharing_menu_save_as_bookmark_option">Marcador</string>
     <string name="sharing_menu_save_as_image_option">Imagen</string>
-    <string name="sharing_menu_save_as_file_option">Archivo</string>
+    <string name="sharing_menu_save_as_file_option">Documento</string>
     <string name="sharing_menu_save_as_images_option">Imágenes</string>
-    <string name="sharing_menu_save_as_files_option">Archivos</string>
+    <string name="sharing_menu_save_as_files_option">Documentos</string>
     <string name="sharing_menu_save_as_videos_option">Vídeos</string>
     <string name="sharing_menu_data">Datos</string>
     <string name="sharing_menu_add_to_anytype_header_title">Añadir a Anytype</string>
@@ -1889,7 +1889,7 @@
     <string name="day_of_week_saturday">Sábado</string>
     <string name="day_of_week_sunday">Domingo</string>
     <string name="file">Archivo</string>
-    <string name="files">Archivos</string>
+    <string name="files">Documentos</string>
     <string name="image">Imagen</string>
     <string name="images">Imágenes</string>
     <string name="attachment">Adjunto</string>
@@ -1936,7 +1936,7 @@
     <string name="field_multiselect_empty">Seleccionar</string>
     <string name="field_object_title">Objeto</string>
     <string name="field_object_empty">Añadir</string>
-    <string name="field_file_and_media_title">Archivos y medios</string>
+    <string name="field_file_and_media_title">Documentos y medios</string>
     <string name="field_file_and_media_empty">Añadir</string>
     <string name="field_checkbox_title">Seleccionar</string>
     <string name="field_menu_add_to_type">Añadir al tipo actual</string>
@@ -2118,7 +2118,7 @@
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Fotos</string>
     <string name="attachment_menu_camera">Cámara</string>
-    <string name="attachment_menu_files">Archivos</string>
+    <string name="attachment_menu_files">Documentos</string>
     <string name="attachment_menu_attach_object">Adjuntar objeto</string>
     <string name="attachment_menu_see_all">Ver todo</string>
     <string name="attachment_menu_search_placeholder">Buscar</string>

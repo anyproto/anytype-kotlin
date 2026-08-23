@@ -17,8 +17,8 @@
     <string name="experimental_features">Experimentelle Funktionen</string>
     <string name="experimental_features_compact_vault">Kompakter Tresormodus</string>
     <string name="experimental_features_compact_vault_description">Versteckt Nachrichtenvorschau für gelesene Kanäle im Tresor</string>
-    <string name="experimental_features_kanban">Kanban board</string>
-    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
+    <string name="experimental_features_kanban">Kanban Board</string>
+    <string name="experimental_features_kanban_description">Aktiviert das Kanban (Board) Layout für Sets und Sammlungen</string>
     <string name="account">Tresor</string>
     <string name="reset_account">Tresor zurücksetzen</string>
     <string name="delete_account">Tresor löschen</string>
@@ -596,7 +596,7 @@
     <string name="dataview_board_unchecked">Nicht ausgewählt</string>
     <string name="dataview_board_new_object">Neu</string>
     <string name="dataview_board_no_group_title">Keine Gruppierungseigenschaft</string>
-    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
+    <string name="dataview_board_no_group_description">Wählen Sie eine Eigenschaft, um Karten nach Ansichtseinstellungen zu gruppieren</string>
     <string name="page_cover">Seitencover</string>
     <string name="object_action_pin">Anheften</string>
     <string name="object_action_unpin">Loslösen</string>
@@ -883,7 +883,7 @@
     <string name="create_space_space_name">Space-Name</string>
     <!-- Homepage Picker -->
     <string name="homepage_picker_title">Create Home</string>
-    <string name="homepage_picker_description">Members will land here directly instead of browsing navigation.</string>
+    <string name="homepage_picker_description">Die Mitglieder landen hier direkt statt der Navigation.</string>
     <string name="homepage_picker_chat">Chat</string>
     <string name="homepage_picker_page">Seite</string>
     <string name="homepage_picker_collection">Sammlung</string>
@@ -1271,10 +1271,10 @@
     <string name="options_empty_not_editable">Die Eigenschaft ist leer</string>
     <string name="options_delete_title">Sind Sie sicher?</string>
     <string name="options_delete_description">Die Option wird dauerhaft aus Ihrem Bereich entfernt.</string>
-    <string name="tag_status_section_selected">Selected</string>
-    <string name="tag_status_section_all_values">All values</string>
+    <string name="tag_status_section_selected">Ausgewählt</string>
+    <string name="tag_status_section_all_values">Alle Werte</string>
     <string name="object_values_empty_description">Objekte nicht gefunden</string>
-    <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
+    <string name="object_values_empty_description_limited">Objekte nicht gefunden. Diese Eigenschaft akzeptiert nur: %1$s</string>
     <string name="object_values_empty_title">Keine Werte</string>
     <string name="object_values_empty_not_editable">Die Eigenschaft ist leer</string>
     <string name="object_values_delete_title">Sind Sie sicher?</string>
@@ -1321,7 +1321,7 @@
     <string name="multiplayer_mute">Stummschalten</string>
     <string name="multiplayer_unmute">Stummschaltung aufheben</string>
     <string name="multiplayer_space_muted">Space stumm gestellt</string>
-    <string name="multiplayer_space_unmuted">Space unmuted</string>
+    <string name="multiplayer_space_unmuted">Raum nicht gemutet</string>
     <string name="multiplayer_unable_to_change_notification_settings">Benachrichtigungseinstellungen konnten nicht geändert werden</string>
     <string name="multiplayer_failed_to_change_notification_settings">Ändern der Benachrichtigungseinstellungen fehlgeschlagen</string>
     <string name="multiplayer_change_access_title">Einladungslink-Zugriff ändern?</string>
@@ -1332,19 +1332,19 @@
     <string name="multiplayer_change_to_request_confirmation">Jeder mit dem Link muss den Zugang zum Space anfragen.</string>
     <string name="multiplayer_invite_link_copied">Einladungslink in die Zwischenablage kopiert</string>
     <!-- Invite sharing (GO-7222): owner-held invites, share-within-space toggle, link reset -->
-    <string name="multiplayer_invite_share_toggle_title">Everyone in the space can share this invite</string>
-    <string name="multiplayer_invite_share_toggle_locked_hint">To make this invite private again, reset the link.</string>
-    <string name="multiplayer_invite_share_disabled_reason">Anyone with this link joins as an editor, without approval. Only you can share it.</string>
-    <string name="multiplayer_invite_share_confirm_title">Share invite with all members?</string>
-    <string name="multiplayer_invite_share_confirm_description">All space members will be able to see this invite link and share it with anyone. To make it private again, you\'ll need to reset the link.</string>
-    <string name="multiplayer_invite_auto_approval_warning">Anyone who gains access to this invitation link will be able to join this space at any time, until you reset the link.</string>
-    <string name="multiplayer_invite_editor_upgrade_note">Any existing Viewer who gains access to this invitation link can use it to upgrade themselves to Editor.</string>
-    <string name="multiplayer_invite_legacy_unsafe_warning">Every member of this space can see and share this invite link, and anyone who has it joins as an editor without approval. Any existing Viewer can use it to upgrade themselves to Editor.</string>
-    <string name="multiplayer_invite_held_by_owner">The invite link is held by the space owner. Ask them to share it.</string>
+    <string name="multiplayer_invite_share_toggle_title">Jeder im Kanal kann diese Einladung teilen</string>
+    <string name="multiplayer_invite_share_toggle_locked_hint">Um diese Einladung wieder privat zu machen, setze den Link zurück.</string>
+    <string name="multiplayer_invite_share_disabled_reason">Jeder mit diesem Link tritt als Editor bei, ohne Genehmigung. Nur du kannst ihn teilen.</string>
+    <string name="multiplayer_invite_share_confirm_title">Einladung mit allen Mitgliedern teilen?</string>
+    <string name="multiplayer_invite_share_confirm_description">Alle Kanal-Mitglieder können diesen Einladungslink sehen und mit jedem teilen. Um ihn wieder privat zu machen, musst du den Link zurücksetzen.</string>
+    <string name="multiplayer_invite_auto_approval_warning">Jeder, der Zugriff auf diesen Einladungslink erhält, kann diesem Kanal jederzeit beitreten, bis du den Link zurücksetzt.</string>
+    <string name="multiplayer_invite_editor_upgrade_note">Jeder vorhandene Betrachter, der Zugriff auf diesen Einladungslink erhält, kann sich damit selbst zum Editor hochstufen.</string>
+    <string name="multiplayer_invite_legacy_unsafe_warning">Jedes Mitglied dieses Raumes kann diesen Einladungslink sehen und teilen und jeder, der ihn als Redakteur ohne Genehmigung hat. Jeder vorhandene Viewer kann ihn verwenden, um sich selbst zum Redakteur hochzustufen.</string>
+    <string name="multiplayer_invite_held_by_owner">Der Einladungslink wird vom Raumbesitzer beansprucht. Bitte ihn, ihn dir zu teilen.</string>
     <string name="multiplayer_invite_reset_link">Link zurücksetzen</string>
     <string name="multiplayer_invite_reset_confirm_title">Einladungslink zurücksetzen?</string>
-    <string name="multiplayer_invite_reset_confirm_description">The current link stops working for everyone who has it, including the people you meant to invite. A new link is created in its place.</string>
-    <string name="multiplayer_editor_access_disabled_shared">Unavailable while everyone in the space can share this invite. Reset the link first.</string>
+    <string name="multiplayer_invite_reset_confirm_description">Der aktuelle Link funktioniert für alle nicht mehr, die ihn haben, auch für die Personen, die du eigentlich einladen wolltest. An seiner Stelle wird ein neuer Link erstellt.</string>
+    <string name="multiplayer_editor_access_disabled_shared">Nicht verfügbar, solange jeder in der Gruppe diese Einladung teilen kann. Setze zuerst den Link zurück.</string>
     <string name="link_copied">Link in die Zwischenablage kopiert</string>
     <string name="remove_from_collection">Aus Sammlung entfernen</string>
     <string name="multiplayer_copy_link">Link kopieren</string>
@@ -1568,22 +1568,22 @@
     <string name="payments_code_resend">Erneut senden</string>
     <string name="payments_code_resend_in">Erneut senden in %1$d Sek.</string>
     <!-- Membership Activate Code -->
-    <string name="payments_activate_code_entry">Have a code?</string>
-    <string name="payments_activate_code_title">Activate Your Code</string>
-    <string name="payments_activate_code_subtitle">Enter the code you received after purchase or from an invitation. Your membership will be activated instantly.</string>
+    <string name="payments_activate_code_entry">Hast du einen Code?</string>
+    <string name="payments_activate_code_title">Aktiviere deinen Code</string>
+    <string name="payments_activate_code_subtitle">Gib den Code ein, den du nach dem Kauf oder über den Einladungslink erhalten hast. Deine Mitgliedschaft wird sofort aktiviert.</string>
     <string name="payments_activate_code_hint">Aktivierungscode einfügen…</string>
     <string name="payments_activate_code_button">Aktivieren</string>
     <!-- Membership Activate Code — success -->
-    <string name="payments_activate_code_success_title">You\'re all set</string>
-    <string name="payments_activate_code_success_subtitle">Your %1$s membership is now active</string>
-    <string name="payments_activate_code_success_subtitle_generic">Your membership is now active</string>
+    <string name="payments_activate_code_success_title">Du bist startklar</string>
+    <string name="payments_activate_code_success_subtitle">Deine %1$s Mitgliedschaft ist jetzt aktiv</string>
+    <string name="payments_activate_code_success_subtitle_generic">Deine  Mitgliedschaft ist jetzt aktiv</string>
     <!-- Membership Activate Code — errors (CodeGetInfo) -->
     <string name="membership_code_error_unknown">Unbekannter Fehler aufgetreten</string>
     <string name="membership_code_error_bad_input">Falsche Eingabe</string>
     <string name="membership_code_error_not_logged_in">Nicht angemeldet</string>
-    <string name="membership_code_error_payment_node">No connection to payment node. Please try again.</string>
-    <string name="membership_code_error_code_invalid">The code is not valid. Please check and try again.</string>
-    <string name="membership_code_error_already_member">Membership already exists for the current identity</string>
+    <string name="membership_code_error_payment_node">Keine Verbindung zum Zahlungsnetzwerk. Bitte erneut versuchen.</string>
+    <string name="membership_code_error_code_invalid">Der Code ist nicht gültig. Bitte überprüfen und erneut versuchen.</string>
+    <string name="membership_code_error_already_member">Für diese ID besteht bereits eine Mitgliedschaft</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Willkommen im Netzwerk,\n%1$s</string>
     <string name="payments_welcome_subtitle">Ein Hoch auf deine Neugierde!</string>
@@ -1673,11 +1673,11 @@
     <string name="membership_support_different_subscription">Ein Abonnement mit einer anderen ID gefunden</string>
     <string name="membership_support_more_then_one_subscription">Mehr als ein Abonnement gefunden</string>
     <string name="multiplayer_space_join_request_participants_error">Fehler beim Beitritt in den Space</string>
-    <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
-    <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
+    <string name="multiplayer_space_join_request_new_member_error">Mitgliedsbeitritt fehlgeschlagen</string>
+    <string name="multiplayer_space_join_request_current_user_error">Aktueller Benutzerstatus Fehler</string>
     <string name="multiplayer_space_join_request_membership_status_error">Aktueller Mitgliedschaftsstatus Fehler</string>
     <string name="membership_space_settings_share_limit">Du hast die Grenze von %1$d geteilten Spaces erreicht</string>
-    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
+    <string name="membership_space_settings_share_limit_2">Upgrade für mehr oder entferne bestehende Räume</string>
     <plurals name="period_years">
         <item quantity="one">Jahr</item>
         <item quantity="other">%d Jahre</item>
@@ -1754,7 +1754,7 @@
     <string name="vault_max_pinned_limit_reached">Du hast die Grenze von %1$d angepinnten Spaces erreicht</string>
     <string name="all_content_title_all_content">Alle Objekte</string>
     <string name="all_content_title_only_unlinked">Nur unverlinkte</string>
-    <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
+    <string name="all_content_title_only_unlinked_description">Unverlinkte Objekte, die keinen direkten Link oder Backlink zu anderen Objekten im Graph haben.</string>
     <string name="all_content_view_bin">Papierkorb ansehen</string>
     <string name="all_content_title_tab_pages">Seiten</string>
     <string name="all_content_title_tab_lists">Gruppen</string>
@@ -1797,7 +1797,7 @@
     <string name="all_content_toast_archived">Objekt archiviert</string>
     <string name="all_content_new_relation">Neue Eigenschaft</string>
     <string name="all_content_new_type">Neuer Typ</string>
-    <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
+    <string name="all_content_unlinked_description">Unverlinkte Objekte, die keinen direkten Link oder Backlink zu anderen Objekten im Graph haben.</string>
     <string name="all_content_snackbar_title">in den  Papierkorb verschoben</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Teilen- und Mitglieder-Button</string>
@@ -1968,7 +1968,7 @@
     <string name="profile_qr_code_button">Mein QR-Code</string>
     <string name="profile_qr_share_button">Teilen</string>
     <string name="profile_qr_copy_button">Link kopieren</string>
-    <string name="profile_qr_circular_text">CONNECT ME AT ANYTYPE </string>
+    <string name="profile_qr_circular_text">Verbinde mich jederzeit</string>
     <string name="profile_qr_link_copied">Link in die Zwischenablage kopiert</string>
     <string name="object_type_add_property_screen_title">Eigenschaft hinzufügen</string>
     <string name="object_type_add_property_screen_create">Eigenschaft ‚%1$s‘ erstellen</string>

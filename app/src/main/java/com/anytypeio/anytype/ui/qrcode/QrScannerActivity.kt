@@ -21,6 +21,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -135,11 +136,13 @@ private fun QrScannerScreen(
             }
         }
 
-        // Close button
+        // Close button. The camera stays full-bleed, so only this control needs the insets.
+        // In landscape the cutout and the system bars move to the side that holds it.
         IconButton(
             onClick = onClose,
             modifier = Modifier
                 .align(Alignment.TopStart)
+                .safeDrawingPadding()
                 .padding(16.dp)
         ) {
             Box(

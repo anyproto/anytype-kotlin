@@ -40,6 +40,7 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -330,6 +331,19 @@ class MainViewModel(
          * etc.
          */
         runBlocking {
+            // A rotation now recreates the activity, so this path also runs while the user is
+            // still on the auth flow. There is no account to resume there, the resume fails with
+            // MnemonicEmptyException, and the destructive logout dialog appears on every turn.
+            // Skip the resume only for a user we positively know to be unauthorized. An error
+            // during the check keeps the previous behaviour.
+            val status = checkAuthorizationStatus.async(Unit)
+                .onFailure { Timber.e(it, "onRestore: auth status check failed, so the resume proceeds") }
+                .getOrNull()
+                ?.first
+            if (status == AuthStatus.UNAUTHORIZED) {
+                Timber.d("onRestore: the user is unauthorized, so there is no account to resume")
+                return@runBlocking
+            }
             resumeAccount.run(params = BaseUseCase.None).process(
                 success = {
 

@@ -75,6 +75,20 @@ UI (Compose/Views) → ViewModels → Use Cases → Repositories → Middleware 
 - Maintain consistency with hybrid UI approach
 - Check `/docs/design_system.md` for guidelines
 
+#### The content column
+The app runs in any orientation. `activity_main.xml` caps the content at
+`@dimen/max_content_width` and centers it, so a window wider than 600dp shows one centered
+column instead of stretched rows. The dimension lives in `core-utils`: the default never binds,
+and `res/values-w600dp` sets 600dp.
+
+**Never size a view or a composable from the display.** `resources.displayMetrics.widthPixels`
+and `LocalConfiguration.current.screenWidthDp` report the whole window, which is wider than the
+column on a tablet and on a phone in landscape. Use instead:
+- `View.contentWidth()` — the width of the container that owns the space, in pixels.
+- `contentWidthDp()` — the same value for a composable, in dp.
+- `BottomSheetDialogFragment.applyContentWidthCap()` — a sheet owns its own window, so the
+  activity layout cannot reach it. The three sheet host classes already call this.
+
 ### Testing
 - Unit tests: Follow patterns in existing test directories
 - Use Robolectric for Android unit tests

@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemViewerGridRowBinding
+import com.anytypeio.anytype.core_ui.extensions.contentWidth
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -43,11 +44,9 @@ class ViewerGridAdapter(
             inflater, parent, false
         )
 
-        with(parent.context.resources) {
-            val headerMargin = getDimensionPixelSize(R.dimen.dv_grid_name_margin_end)
-            binding.headerContainer.updateLayoutParams<LinearLayout.LayoutParams> {
-                width = displayMetrics.widthPixels - headerMargin * 2
-            }
+        val headerMargin = parent.resources.getDimensionPixelSize(R.dimen.dv_grid_name_margin_end)
+        binding.headerContainer.updateLayoutParams<LinearLayout.LayoutParams> {
+            width = parent.contentWidth() - headerMargin * 2
         }
 
         val horizontalDivider = binding.root.context.drawable(R.drawable.divider_dv_horizontal_2)

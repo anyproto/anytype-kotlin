@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.AppShutdown
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.anytypeio.anytype.domain.auth.interactor.HasAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.MnemonicEmptyException
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
@@ -40,6 +41,7 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
@@ -96,6 +98,7 @@ class MainViewModel(
     private val interceptAccountStatus: InterceptAccountStatus,
     private val logout: Logout,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
+    private val hasAccount: HasAccount,
     private val configStorage: ConfigStorage,
     private val localeProvider: LocaleProvider,
     private val notificationsProvider: NotificationsProvider,
@@ -331,19 +334,6 @@ class MainViewModel(
          * etc.
          */
         runBlocking {
-            // A rotation now recreates the activity, so this path also runs while the user is
-            // still on the auth flow. There is no account to resume there, the resume fails with
-            // MnemonicEmptyException, and the destructive logout dialog appears on every turn.
-            // Skip the resume only for a user we positively know to be unauthorized. An error
-            // during the check keeps the previous behaviour.
-            val status = checkAuthorizationStatus.async(Unit)
-                .onFailure { Timber.e(it, "onRestore: auth status check failed, so the resume proceeds") }
-                .getOrNull()
-                ?.first
-            if (status == AuthStatus.UNAUTHORIZED) {
-                Timber.d("onRestore: the user is unauthorized, so there is no account to resume")
-                return@runBlocking
-            }
             resumeAccount.run(params = BaseUseCase.None).process(
                 success = {
 
@@ -399,8 +389,21 @@ class MainViewModel(
                             // Process restored without a wallet (post-logout, deletion, or
                             // transient prefs read failure). Logout is destructive, so ask
                             // the user before wiping local state.
-                            Timber.w("onRestore: mnemonic empty, asking user to confirm logout")
-                            commandsChannel.send(Command.ConfirmResumeAccountLogout)
+                            //
+                            // A rotation now recreates the activity, so this path also runs
+                            // while the user is still on the auth flow. There is no account to
+                            // log out of there, and the dialog would appear on every turn. Ask
+                            // only when the device actually holds an account. The check costs
+                            // nothing on a normal restore, because it runs on this branch only.
+                            val deviceHasAccount = hasAccount.async(Unit)
+                                .onFailure { Timber.e(it, "onRestore: account check failed") }
+                                .getOrDefault(true)
+                            if (deviceHasAccount) {
+                                Timber.w("onRestore: mnemonic empty, asking user to confirm logout")
+                                commandsChannel.send(Command.ConfirmResumeAccountLogout)
+                            } else {
+                                Timber.d("onRestore: no account on the device, so nothing to resume")
+                            }
                         }
 
                         else -> {

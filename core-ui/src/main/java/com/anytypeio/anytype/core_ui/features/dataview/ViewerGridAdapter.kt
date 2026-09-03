@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemViewerGridRowBinding
-import com.anytypeio.anytype.core_ui.extensions.contentWidth
+import com.anytypeio.anytype.core_ui.extensions.horizontalViewportWidth
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -44,9 +44,12 @@ class ViewerGridAdapter(
             inflater, parent, false
         )
 
+        // The header is pinned to the visible area with translationX, so it must be as wide as
+        // that area. The row list sits inside a HorizontalScrollView and reports the width of the
+        // whole grid, so read the scroll container rather than the list.
         val headerMargin = parent.resources.getDimensionPixelSize(R.dimen.dv_grid_name_margin_end)
         binding.headerContainer.updateLayoutParams<LinearLayout.LayoutParams> {
-            width = parent.contentWidth() - headerMargin * 2
+            width = parent.horizontalViewportWidth() - headerMargin * 2
         }
 
         val horizontalDivider = binding.root.context.drawable(R.drawable.divider_dv_horizontal_2)

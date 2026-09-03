@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.AppShutdown
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.anytypeio.anytype.domain.auth.interactor.HasAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -81,6 +82,7 @@ object MainEntryModule {
         interceptAccountStatus: InterceptAccountStatus,
         logout: Logout,
         checkAuthorizationStatus: CheckAuthorizationStatus,
+        hasAccount: HasAccount,
         configStorage: ConfigStorage,
         localeProvider: LocaleProvider,
         notificationsProvider: NotificationsProvider,
@@ -115,6 +117,7 @@ object MainEntryModule {
         interceptAccountStatus = interceptAccountStatus,
         logout = logout,
         checkAuthorizationStatus = checkAuthorizationStatus,
+        hasAccount = hasAccount,
         configStorage = configStorage,
         localeProvider = localeProvider,
         notificationsProvider = notificationsProvider,
@@ -219,6 +222,14 @@ object MainEntryModule {
         repo: AuthRepository,
         dispatchers: AppCoroutineDispatchers
     ): CheckAuthorizationStatus = CheckAuthorizationStatus(repo, dispatchers)
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideHasAccount(
+        repo: AuthRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): HasAccount = HasAccount(repo, dispatchers)
 
     @JvmStatic
     @PerScreen

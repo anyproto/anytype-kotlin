@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.extensions
 
 import android.view.View
+import android.widget.HorizontalScrollView
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.platform.LocalConfiguration
@@ -27,6 +28,22 @@ fun View.contentWidth(): Int =
             resources.displayMetrics.widthPixels,
             resources.getDimensionPixelSize(R.dimen.max_content_width)
         )
+
+/**
+ * Width of the visible area for a view inside a horizontally scrolling container, in pixels.
+ *
+ * A [HorizontalScrollView] measures its child with `UNSPECIFIED`, so the child reports the width
+ * of its whole content rather than the width the user sees. A view that must match the visible
+ * area, such as a row header pinned with `translationX`, has to read the scroll container
+ * instead. Without such an ancestor the receiver itself is the visible area.
+ */
+fun View.horizontalViewportWidth(): Int {
+    var candidate: View? = this
+    while (candidate != null && candidate !is HorizontalScrollView) {
+        candidate = candidate.parent as? View
+    }
+    return (candidate ?: this).contentWidth()
+}
 
 /**
  * Width of the single content column, in density independent pixels.

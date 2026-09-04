@@ -57,6 +57,7 @@ import androidx.constraintlayout.compose.Dimension
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
@@ -84,11 +85,11 @@ fun ViewerEditWidget(
 
     if (state is ViewerEditWidgetUi.Data) {
         ModalBottomSheet(
+            sheetMaxWidth = contentWidthDp(),
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets.ime)
                 .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
                 .systemBarsPadding()
-                .fillMaxWidth()
                 .wrapContentHeight(),
             scrimColor = colorResource(id = R.color.modal_screen_outside_background),
             containerColor = colorResource(id = R.color.background_secondary),

@@ -89,6 +89,19 @@ column on a tablet and on a phone in landscape. Use instead:
 - `BottomSheetDialogFragment.applyContentWidthCap()` — a sheet owns its own window, so the
   activity layout cannot reach it. The three sheet host classes already call this.
 
+**Never pass `fillMaxWidth()` or `fillMaxSize()` to a `ModalBottomSheet`.** Material3 caps the
+sheet through `sheetMaxWidth`, but the caller's modifier is applied outside that cap and pins the
+width to the whole window, so the sheet stretches across a tablet. Fill only the height, and set
+the cap explicitly:
+
+```kotlin
+ModalBottomSheet(
+    sheetMaxWidth = contentWidthDp(),
+    modifier = Modifier.fillMaxHeight(),   // never fillMaxSize or fillMaxWidth
+    ...
+)
+```
+
 ### Testing
 - Unit tests: Follow patterns in existing test directories
 - Use Robolectric for Android unit tests

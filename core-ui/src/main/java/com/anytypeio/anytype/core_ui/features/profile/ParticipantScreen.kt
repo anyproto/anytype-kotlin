@@ -41,6 +41,7 @@ import coil3.compose.AsyncImage
 import com.anytypeio.anytype.core_models.ui.ProfileIconView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.AvatarTitle
@@ -65,8 +66,8 @@ fun ParticipantScreen(
     )
 
     ModalBottomSheet(
+        sheetMaxWidth = contentWidthDp(),
         modifier = Modifier
-            .fillMaxWidth()
             .padding(start = 12.dp, end = 12.dp),
         dragHandle = null,
         scrimColor = colorResource(id = R.color.modal_screen_outside_background),

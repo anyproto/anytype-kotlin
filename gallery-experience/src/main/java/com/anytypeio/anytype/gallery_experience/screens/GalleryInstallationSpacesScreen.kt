@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Title3
@@ -47,9 +48,9 @@ fun GalleryInstallationSpacesScreen(
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
+        sheetMaxWidth = contentWidthDp(),
         modifier = Modifier
             .padding(start = 8.dp, end = 8.dp)
-            .fillMaxWidth()
             .wrapContentHeight(),
         sheetState = sheetState,
         onDismissRequest = onDismiss,

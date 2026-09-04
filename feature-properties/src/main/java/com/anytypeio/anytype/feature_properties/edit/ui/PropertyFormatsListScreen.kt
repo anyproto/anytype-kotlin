@@ -20,6 +20,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.dv.DragHandle
@@ -40,7 +41,7 @@ fun PropertyFormatsListScreen(
     val lazyListState = rememberLazyListState()
 
     ModalBottomSheet(
-        modifier = Modifier.fillMaxWidth(),
+        sheetMaxWidth = contentWidthDp(),
         onDismissRequest = onDismissRequest,
         dragHandle = { DragHandle() },
         scrimColor = colorResource(id = R.color.modal_screen_outside_background),

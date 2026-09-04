@@ -163,6 +163,7 @@ import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MEN
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.mention.getMentionName
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.model.EditorFocusSnapshot
 import com.anytypeio.anytype.presentation.editor.editor.model.Focusable
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetDescriptor.Companion.END_RANGE
@@ -484,6 +485,26 @@ class EditorViewModel(
      */
     var currentMediaUploadDescription: Media.Upload.Description? = null
         private set
+
+    /**
+     * Where the caret is right now, for the fragment to save in its instance state.
+     * Null while no block has focus.
+     */
+    val focusSnapshot: EditorFocusSnapshot?
+        get() {
+            val target = orchestrator.stores.focus.current().targetOrNull() ?: return null
+            val selection = orchestrator.stores.textSelection.current()
+                .takeIf { it.id == target }
+                ?.selection
+            return EditorFocusSnapshot(
+                blockId = target,
+                selectionStart = selection?.first,
+                selectionEnd = selection?.last
+            )
+        }
+
+    /** Handed in by [onRestoreSavedState]; consumed by the next document open. */
+    private var pendingFocusRestore: EditorFocusSnapshot? = null
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
     override val commands = MutableLiveData<EventWrapper<Command>>()
@@ -1435,6 +1456,7 @@ class EditorViewModel(
                         is Result.Success -> {
                             session.value = Session.OPEN
                             onStartFocusing(result.data)
+                            restorePendingFocus(result.data)
                             orchestrator.proxies.payloads.send(result.data)
                             result.data.events.forEach { event ->
                                 if (event is Event.Command.ShowObject) {
@@ -1468,6 +1490,40 @@ class EditorViewModel(
     }
 
     //TODO need refactoring, logic must depend on Object Layouts
+    /**
+     * Puts the caret back where [onRestoreSavedState] said it was, before the first render.
+     * The renderer reads the focus store, so the block comes back focused with the cursor set.
+     * Runs once per restore: the snapshot is consumed even when its block is gone.
+     */
+    private fun restorePendingFocus(payload: Payload) {
+        val snapshot = pendingFocusRestore ?: return
+        pendingFocusRestore = null
+        Timber.d("restorePendingFocus, snapshot:[$snapshot]")
+        val shown = payload.events.filterIsInstance<Event.Command.ShowObject>().firstOrNull()
+        if (shown == null || shown.blocks.none { it.id == snapshot.blockId }) {
+            Timber.d("Skipping focus restore: block ${snapshot.blockId} is not in the document")
+            return
+        }
+        val start = snapshot.selectionStart
+        val end = snapshot.selectionEnd
+        val cursor = if (start != null && end != null) {
+            // The selection store feeds the next snapshot and the style toolbar, so it must
+            // agree with the caret the renderer is about to place.
+            orchestrator.stores.textSelection.update(
+                Editor.TextSelection(id = snapshot.blockId, selection = start..end)
+            )
+            Editor.Cursor.Range(start..end)
+        } else {
+            Editor.Cursor.End
+        }
+        orchestrator.stores.focus.update(
+            Editor.Focus(
+                target = Editor.Focus.Target.Block(snapshot.blockId),
+                cursor = cursor
+            )
+        )
+    }
+
     private fun onStartFocusing(payload: Payload) {
         val event = payload.events.find { it is Event.Command.ShowObject }
         if (event is Event.Command.ShowObject) {
@@ -5717,8 +5773,13 @@ class EditorViewModel(
         }
     }
 
-    fun onRestoreSavedState(uploadMediaDescription: Media.Upload.Description?) {
+    fun onRestoreSavedState(
+        uploadMediaDescription: Media.Upload.Description?,
+        focus: EditorFocusSnapshot? = null
+    ) {
+        Timber.d("onRestoreSavedState, focus:[$focus]")
         currentMediaUploadDescription = uploadMediaDescription
+        pendingFocusRestore = focus
     }
 
     fun onObjectIconClicked() {

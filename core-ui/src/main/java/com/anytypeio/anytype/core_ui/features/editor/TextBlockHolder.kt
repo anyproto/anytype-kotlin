@@ -365,6 +365,10 @@ interface TextBlockHolder : TextHolder {
 
         if (payload.focusChanged()) {
             setFocus(item)
+            // A block that gains focus also takes its caret from the model. The cursor payload
+            // alone cannot do it: the adapter keeps the last caret on the old item in place, so
+            // the cursor diffs as unchanged although the view was rebuilt with its caret at zero.
+            if (item.isFocused) setCursor(item)
         }
 
         try {

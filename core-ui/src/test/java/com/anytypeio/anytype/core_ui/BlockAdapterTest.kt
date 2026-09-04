@@ -259,6 +259,51 @@ class BlockAdapterTest {
     }
 
     @Test
+    fun `a block that gains focus takes its caret from the model even when the cursor is unchanged`() {
+
+        // A rotation rebuilds the views. The adapter keeps the last caret on the old item in
+        // place (cursor = 5) and clears its focus, so the next render — focused, same cursor —
+        // diffs as FOCUS_CHANGED alone. The fresh EditText starts with its caret at zero, and
+        // nothing but the focus payload can put it back (DROID-4586).
+
+        val paragraph = BlockView.Text.Paragraph(
+            text = "hello world",
+            id = MockDataFactory.randomUuid(),
+            isFocused = false,
+            cursor = 5
+        )
+
+        val focused = paragraph.copy(isFocused = true, cursor = 5)
+
+        val adapter = givenAdapter(listOf(paragraph))
+
+        val recycler = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+        }
+
+        val holder = adapter.onCreateViewHolder(recycler, HOLDER_PARAGRAPH)
+
+        adapter.onBindViewHolder(holder, 0)
+
+        check(holder is Paragraph)
+
+        holder.processChangePayload(
+            item = focused,
+            payloads = listOf(
+                BlockViewDiffUtil.Payload(
+                    changes = listOf(FOCUS_CHANGED)
+                )
+            ),
+            clicked = {},
+        )
+
+        assertEquals(
+            expected = 5,
+            actual = holder.content.selectionStart
+        )
+    }
+
+    @Test
     fun `should update paragraph background color`() {
 
         // Setup

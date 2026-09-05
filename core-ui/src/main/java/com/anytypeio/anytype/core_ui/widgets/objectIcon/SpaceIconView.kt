@@ -53,7 +53,9 @@ fun SpaceIconView(
         48.dp -> 8.dp
         64.dp -> 12.dp
         96.dp -> 20.dp
-        else -> 6.dp
+        // Scale with the box instead of a fixed 6dp: an unlisted size used to get radius and
+        // font values meant for a much larger icon, which visibly broke letter placeholders.
+        else -> (mainSize.value / 5f).dp
     }
 
     val fontSize = when (mainSize) {
@@ -63,7 +65,7 @@ fun SpaceIconView(
         48.dp -> 28.sp
         64.dp -> 40.sp
         96.dp -> 65.sp
-        else -> 28.sp
+        else -> (mainSize.value * 0.6f).sp
     }
 
     when (icon) {

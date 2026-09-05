@@ -12,6 +12,7 @@ import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.core_utils.R
 import com.anytypeio.anytype.core_utils.ext.fixBottomSheetNavigationBarGap
 import com.anytypeio.anytype.core_utils.ext.LONG_THROTTLE_DURATION
+import com.anytypeio.anytype.core_utils.ext.applyContentWidthCap
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
@@ -69,6 +70,7 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
 
     override fun onStart() {
         super.onStart()
+        applyContentWidthCap()
         if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) {
             expand()
         }

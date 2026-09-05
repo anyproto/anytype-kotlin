@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.AppShutdown
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.anytypeio.anytype.domain.auth.interactor.HasAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
@@ -44,6 +45,7 @@ class MainViewModelFactory @Inject constructor(
     private val interceptAccountStatus: InterceptAccountStatus,
     private val logout: Logout,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
+    private val hasAccount: HasAccount,
     private val configStorage: ConfigStorage,
     private val localeProvider: LocaleProvider,
     private val notificationsProvider: NotificationsProvider,
@@ -83,6 +85,7 @@ class MainViewModelFactory @Inject constructor(
         interceptAccountStatus = interceptAccountStatus,
         logout = logout,
         checkAuthorizationStatus = checkAuthorizationStatus,
+        hasAccount = hasAccount,
         configStorage = configStorage,
         localeProvider = localeProvider,
         notificationsProvider = notificationsProvider,

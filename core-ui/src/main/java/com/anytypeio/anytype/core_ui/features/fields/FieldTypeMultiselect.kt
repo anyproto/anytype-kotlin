@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
@@ -33,6 +32,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.views.Relations1
@@ -67,9 +67,9 @@ fun FieldTypeMultiSelect(
         .padding(vertical = 16.dp)
         .padding(horizontal = 16.dp)
 
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val halfScreenWidth = screenWidth / 2 - 32.dp
+    // Half of the content column, not half of the display. The activity layout caps the column
+    // on a tablet and on a phone in landscape, so the title would never ellipsize there.
+    val halfScreenWidth = contentWidthDp() / 2 - 32.dp
 
     Row(
         modifier = defaultModifier,

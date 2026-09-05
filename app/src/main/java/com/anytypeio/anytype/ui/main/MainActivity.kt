@@ -123,6 +123,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     val container: FragmentContainerView get() = findViewById(R.id.fragment)
 
+    /**
+     * The wallpaper belongs on the root, not on [container]. The content column stops at
+     * @dimen/max_content_width on a wide window, so a wallpaper painted on the column would
+     * leave a bare strip down each side of a tablet.
+     */
+    private val rootContainer: android.view.View get() = findViewById(R.id.rootContainer)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 1) Enable edge-to-edge with automatic light/dark icons
@@ -459,20 +466,22 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     private fun setWallpaper(result: WallpaperResult) {
         when (result) {
             is WallpaperResult.Gradient -> {
-                container.setBackgroundResource(getGradientDrawableResource(result.gradientCode))
-                container.background?.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
+                rootContainer.setBackgroundResource(getGradientDrawableResource(result.gradientCode))
+                rootContainer.background?.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
             }
             is WallpaperResult.SolidColor -> {
                 try {
-                    container.setBackgroundColor(Color.parseColor(result.colorHex))
-                    container.background?.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
+                    rootContainer.setBackgroundColor(Color.parseColor(result.colorHex))
+                    rootContainer.background?.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
                 } catch (e: IllegalArgumentException) {
                     Timber.w(e, "Invalid color format: ${result.colorHex}")
-                    container.background = null
+                    rootContainer.setBackgroundResource(R.color.background_primary)
                 }
             }
             WallpaperResult.None -> {
-                container.background = null
+                // Restore the backdrop instead of clearing it: a null background would expose the
+                // window behind the column on a wide screen.
+                rootContainer.setBackgroundResource(R.color.background_primary)
             }
         }
     }

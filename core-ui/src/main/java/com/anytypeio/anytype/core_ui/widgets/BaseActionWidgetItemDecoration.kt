@@ -1,20 +1,16 @@
 package com.anytypeio.anytype.core_ui.widgets
 
-import android.content.Context
 import android.graphics.Rect
-import android.util.DisplayMetrics
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.extensions.contentWidth
 import com.anytypeio.anytype.core_utils.ext.dp
 
 class BaseActionWidgetItemDecoration(
-    private val context: Context,
     private val itemWidth: Int = 72.dp,
     private val minSpaceWidth: Int = 4.dp,
     private val horizontalPadding: Int = 32.dp
 ) : RecyclerView.ItemDecoration() {
-
-    private val screenWidth = screenWidth() - horizontalPadding
 
     override fun getItemOffsets(
         outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State
@@ -22,12 +18,15 @@ class BaseActionWidgetItemDecoration(
         super.getItemOffsets(outRect, view, parent, state)
 
         val position = parent.getChildAdapterPosition(view)
+        // The list, not the display, owns the space. The content column is narrower than the
+        // window on a tablet and on a phone in landscape.
+        val availableWidth = parent.contentWidth() - horizontalPadding
         val totalWidth = (itemWidth * state.itemCount) + (minSpaceWidth * (state.itemCount - 1))
 
-        if (totalWidth < screenWidth) {
+        if (totalWidth < availableWidth) {
             proceedItemsLtScreen(outRect)
         } else {
-            proceedItemsGtScreen(position, outRect, state, screenWidth)
+            proceedItemsGtScreen(position, outRect, state, availableWidth)
         }
     }
 
@@ -40,7 +39,7 @@ class BaseActionWidgetItemDecoration(
         position: Int,
         outRect: Rect,
         state: RecyclerView.State,
-        screenWidth: Int
+        availableWidth: Int
     ) {
         when (position) {
             0 -> {
@@ -50,7 +49,7 @@ class BaseActionWidgetItemDecoration(
                 outRect.right = minSpaceWidth * 2
             }
             else -> {
-                val space = (screenWidth - itemWidth) / (state.itemCount - 1)
+                val space = (availableWidth - itemWidth) / (state.itemCount - 1)
 
                 val leftSpace = space * position
                 val rightSpace = space * (state.itemCount - position - 1)
@@ -63,9 +62,4 @@ class BaseActionWidgetItemDecoration(
             }
         }
     }
-    private fun screenWidth(): Int {
-        val displayMetrics: DisplayMetrics = context.resources.displayMetrics
-        return displayMetrics.widthPixels
-    }
-
 }

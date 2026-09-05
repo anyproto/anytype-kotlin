@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.MaterialTheme
@@ -31,6 +30,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.features.multiplayer.JoinSpaceScreen
 import com.anytypeio.anytype.core_ui.features.multiplayer.JoinSpaceWithoutApproveScreen
 import com.anytypeio.anytype.core_ui.features.multiplayer.JoiningLoadingState
@@ -119,8 +119,8 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                                 }
                             }
                             ModalBottomSheet(
+                                sheetMaxWidth = contentWidthDp(),
                                 modifier = Modifier
-                                    .fillMaxWidth()
                                     .windowInsetsPadding(WindowInsets.navigationBars),
                                 onDismissRequest = {
                                     if (isLoadingInvite) {

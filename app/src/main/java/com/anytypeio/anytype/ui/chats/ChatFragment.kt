@@ -52,6 +52,7 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectAction
 import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectViewModelFactory
 import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
@@ -434,8 +435,8 @@ class ChatFragment : Fragment() {
                 )
                 
                 ModalBottomSheet(
+                    sheetMaxWidth = contentWidthDp(),
                     modifier = Modifier
-                        .fillMaxWidth()
                         .windowInsetsPadding(WindowInsets.statusBars),
                     onDismissRequest = { 
                         showChatInfoScreen = false

@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.AppShutdown
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.anytypeio.anytype.domain.auth.interactor.HasAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.MnemonicEmptyException
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
@@ -40,6 +41,8 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.getOrDefault
+import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -96,6 +99,7 @@ class MainViewModel(
     private val interceptAccountStatus: InterceptAccountStatus,
     private val logout: Logout,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
+    private val hasAccount: HasAccount,
     private val configStorage: ConfigStorage,
     private val localeProvider: LocaleProvider,
     private val notificationsProvider: NotificationsProvider,
@@ -138,6 +142,9 @@ class MainViewModel(
 
     // Safety flag to ensure spaces introduction is only shown once per ViewModel lifecycle
     private var hasShownSpacesIntroductionInSession = false
+
+    // Safety flag to ensure the account resume is attempted only once per session. See [onRestore].
+    private var hasAttemptedAccountResumeInSession = false
 
     private var spaceStatusMonitorJob: Job? = null
 
@@ -327,7 +334,6 @@ class MainViewModel(
     }
 
     fun onRestore() {
-        Timber.d("onRestoreCalled")
         /***
          * Before fragment backstack and screen states are restored by the OS,
          * We need to resume account session in a blocking manner.
@@ -335,7 +341,31 @@ class MainViewModel(
          * 1) to open an object, profile or dashboard
          * 2) to execute queries and searches
          * etc.
+         *
+         * Resume the account one time per process only. The app no longer locks the activity
+         * to portrait. The OS therefore recreates the activity on every rotation, and it
+         * always passes a non-null saved state. A second resume blocks the main thread on the
+         * middleware round trip. It also restarts the global subscriptions, and
+         * [ChatPreviewContainer.start] clears the previews and the unread badges. Two guards
+         * are necessary:
+         *
+         * 1) [AwaitAccountStartManager.hasStarted] is true when the account session is already
+         *    live in this process. LaunchAccount, SelectAccount, CreateAccount and an earlier
+         *    ResumeAccount all set it, and Logout clears it. This covers the first rotation
+         *    after a cold start, where this method never ran before.
+         * 2) The session flag covers the case where the state stays Init: the user is on the
+         *    auth flow, or the resume failed. The failure branch raises a dialog, so it must
+         *    not repeat on each rotation.
+         *
+         * Both signals die with the process, so a real process death still resumes the
+         * account, which is the case this method exists for.
          */
+        if (awaitAccountStartManager.hasStarted() || hasAttemptedAccountResumeInSession) {
+            Timber.d("onRestore: account session already live in this process. Skipping resume.")
+            return
+        }
+        hasAttemptedAccountResumeInSession = true
+        Timber.d("onRestoreCalled")
         runBlocking {
             resumeAccount.run(params = BaseUseCase.None).process(
                 success = {
@@ -392,8 +422,21 @@ class MainViewModel(
                             // Process restored without a wallet (post-logout, deletion, or
                             // transient prefs read failure). Logout is destructive, so ask
                             // the user before wiping local state.
-                            Timber.w("onRestore: mnemonic empty, asking user to confirm logout")
-                            commandsChannel.send(Command.ConfirmResumeAccountLogout)
+                            //
+                            // A rotation now recreates the activity, so this path also runs
+                            // while the user is still on the auth flow. There is no account to
+                            // log out of there, and the dialog would appear on every turn. Ask
+                            // only when the device actually holds an account. The check costs
+                            // nothing on a normal restore, because it runs on this branch only.
+                            val deviceHasAccount = hasAccount.async(Unit)
+                                .onFailure { Timber.e(it, "onRestore: account check failed") }
+                                .getOrDefault(true)
+                            if (deviceHasAccount) {
+                                Timber.w("onRestore: mnemonic empty, asking user to confirm logout")
+                                commandsChannel.send(Command.ConfirmResumeAccountLogout)
+                            } else {
+                                Timber.d("onRestore: no account on the device, so nothing to resume")
+                            }
                         }
 
                         else -> {

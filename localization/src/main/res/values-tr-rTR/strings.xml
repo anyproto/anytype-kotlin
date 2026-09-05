@@ -2244,7 +2244,6 @@ Erişim talebi</string>
     <string name="select_view">Görünüm seç</string>
     <string name="os_widget_data_view_title">Veri Görünümü</string>
     <string name="os_widget_data_view_description">Bir Set veya Koleksiyondaki öğeleri görüntüle</string>
-    <string name="chats_search_close_content_description">Aramayı kapat</string>
     <!-- DROID-4358 Offline Downloads settings -->
     <string name="offline_downloads_section_title">Çevrimdışı erişim</string>
     <string name="offline_downloads_title">Çevrimdışı İndirmeler</string>
@@ -2257,4 +2256,40 @@ Erişim talebi</string>
     <string name="offline_downloads_value_1gb">1 GB</string>
     <string name="offline_downloads_value_unlimited">Limitsiz</string>
     <string name="device_storage_used">Kullanılan cihaz depolama alanı</string>
+    <!-- Search v2 (unified cross-space search) -->
+    <string name="search_v2_hint">Ara</string>
+    <string name="search_v2_chip_in_space">In %1$s</string>
+    <string name="search_v2_chip_channels">Alanlar</string>
+    <string name="search_v2_chip_messages">Messages</string>
+    <string name="search_v2_chip_by_me">By me</string>
+    <string name="search_v2_chip_by_name">By %1$s</string>
+    <string name="search_v2_chip_media">Medya</string>
+    <string name="search_v2_chip_pages">Sayfalar</string>
+    <string name="search_v2_chip_bookmarks">Yer işaretleri</string>
+    <string name="search_v2_chip_collections">Koleksiyonlar</string>
+    <string name="search_v2_chip_queries">Setler</string>
+    <string name="search_v2_chip_chats">Chats</string>
+    <string name="search_v2_chip_types">Türler</string>
+    <string name="search_v2_chip_people">People</string>
+    <string name="search_v2_section_recent_messages">Recent Messages</string>
+    <string name="search_v2_section_objects">Nesneler</string>
+    <string name="search_v2_person_member_in_one">member in 1 Channel</string>
+    <string name="search_v2_person_member_in">member in %1$d Channels</string>
+    <string name="search_v2_sort_name">İsim</string>
+    <string name="search_v2_today">Bugün</string>
+    <string name="search_v2_yesterday">Dün</string>
+    <string name="search_v2_in_space_caption">in %1$s</string>
+    <string name="search_v2_type_agg_caption">in %1$d Channels</string>
+    <string name="search_v2_no_results">Hiçbir şey bulunamadı</string>
+    <string name="search_v2_focus_search_type_everywhere">Search %1$s in all Channels</string>
+    <string name="search_v2_focus_search_by_everywhere">Search by %1$s in all Channels</string>
+    <string name="search_v2_focus_person_header">Search objects created in Channels</string>
+    <string name="search_v2_one_to_one_caption">1-1 Channel</string>
+    <string name="search_v2_messages_tutorial_hint">Looking for a message?</string>
+    <string name="search_v2_messages_tutorial_button">Search messages</string>
+    <string name="search_v2_create_channel">Kanal Oluştur</string>
+    <string name="search_v2_could_not_open_object">Could not open object</string>
+    <string name="search_v2_recently_edited">Yakın zamanda düzenlenen</string>
+    <string name="search_v2_recently_created">Recently created</string>
+    <string name="search_v2_filter_by">Filter by %1$s</string>
 </resources>

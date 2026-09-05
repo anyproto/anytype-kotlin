@@ -2243,7 +2243,7 @@
     <string name="search_v2_hint">Telusuri</string>
     <string name="search_v2_chip_in_space">In %1$s</string>
     <string name="search_v2_chip_channels">Saluran-saluran</string>
-    <string name="search_v2_chip_messages">Messages</string>
+    <string name="search_v2_chip_messages">Pesan</string>
     <string name="search_v2_chip_by_me">By me</string>
     <string name="search_v2_chip_by_name">By %1$s</string>
     <string name="search_v2_chip_media">Media</string>

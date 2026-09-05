@@ -202,11 +202,23 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
                         editor?.flushPendingText()
                         vm.onSpaceSelected(
                             target = target,
-                            sourceHasContent = editor?.hasContent()
+                            sourceHasContent = editor?.hasContent(),
+                            // Absent an editor, assume the text is the user's own and keep
+                            // the "text follows the chip" behaviour rather than prompting.
+                            sourceEditedThisSession = editor?.hasEdits() ?: true
                         )
                     }
                 },
                 onDismiss = vm::onSpacePickerDismissed
+            )
+        }
+        val moveOrNew by vm.moveOrNewPrompt.collectAsStateWithLifecycle()
+        moveOrNew?.let { request ->
+            MoveOrNewDraftDialog(
+                spaceName = request.spaceName,
+                onMoveDraft = vm::onMoveDraftChosen,
+                onStartNew = vm::onStartNewDraftChosen,
+                onCancel = vm::onMoveOrNewCancelled
             )
         }
         val draftConflict by vm.draftConflict.collectAsStateWithLifecycle()

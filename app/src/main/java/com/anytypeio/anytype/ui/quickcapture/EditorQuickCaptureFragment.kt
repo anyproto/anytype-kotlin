@@ -124,6 +124,13 @@ class EditorQuickCaptureFragment : EditorFragment() {
     /** Live emptiness of the draft, ahead of the editor's text debounce. */
     fun hasContent(): Boolean = vm.hasQuickCaptureContent()
 
+    /**
+     * Whether the user typed into this draft during this session — a restored draft reports
+     * content but no edits, which is what separates "carry my note across" from "I only
+     * opened it".
+     */
+    fun hasEdits(): Boolean = vm.hasQuickCaptureEdits()
+
     suspend fun flushPendingText() = vm.flushPendingTextChanges()
 
     companion object {

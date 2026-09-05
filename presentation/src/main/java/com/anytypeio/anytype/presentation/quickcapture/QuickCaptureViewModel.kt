@@ -35,6 +35,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -218,6 +219,9 @@ class QuickCaptureViewModel(
             details.name.isNullOrBlank() && details.snippet.isNullOrBlank()
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
+
+    /** Latches on the first send so a second tap during the dismiss animation is a no-op. */
+    private val isSending = AtomicBoolean(false)
 
     /**
      * Emptiness for *destructive-ish* decisions (space switch): here the safe side is the
@@ -519,22 +523,35 @@ class QuickCaptureViewModel(
             )
         ).fold(
             onSuccess = { newDraft ->
-                // The move committed — finish the bookkeeping even if the sheet goes away now.
+                // The draft pointers were already rewritten inside the use case, on the
+                // uninterruptible side of the commit: this lambda is NOT reached when the
+                // sheet is dismissed mid-move, because ResultInteractor.async wraps doWork in
+                // withContext, which rethrows CancellationException on resume if the caller's
+                // scope died. Only the discretionary cleanup below may live here.
                 withContext(NonCancellable) {
                     // Replace the target space's previously saved draft only AFTER the move
                     // succeeded: deleting first would destroy it for nothing on failure
                     // (Object.ListDelete is permanent, not move-to-bin).
+                    //
+                    // Re-validate immediately before deleting rather than trusting the
+                    // pointer. A pointer can outlive the draft it named — a send publishes
+                    // the object and only then clears it — and deleting on a stale pointer
+                    // would destroy a real, published note. isDraftAlive requires
+                    // isHidden == true, so anything already published is spared and the
+                    // stale pointer is simply dropped.
                     if (replaced != null && replaced != newDraft) {
-                        deleteObjects.async(DeleteObjects.Params(listOf(replaced))).fold(
-                            onSuccess = { /* replaced */ },
-                            onFailure = {
-                                // Orphaned hidden draft; empties are GC'd by heart on close.
-                                Timber.w(it, "Quick capture: could not delete replaced draft")
-                            }
-                        )
+                        if (isDraftAlive(space = to, draft = replaced)) {
+                            deleteObjects.async(DeleteObjects.Params(listOf(replaced))).fold(
+                                onSuccess = { /* replaced */ },
+                                onFailure = {
+                                    // Orphaned hidden draft; empties are GC'd by heart on close.
+                                    Timber.w(it, "Quick capture: could not delete replaced draft")
+                                }
+                            )
+                        } else {
+                            Timber.d("Quick capture: stale pointer in ${to.id}, not deleting")
+                        }
                     }
-                    settings.clearQuickCaptureDraft(from.space)
-                    settings.setQuickCaptureDraft(space = to, obj = newDraft)
                 }
                 screenState.value = ScreenState.Ready(space = to, draft = newDraft)
             },
@@ -597,6 +614,13 @@ class QuickCaptureViewModel(
     fun onSendClicked() {
         val current = screenState.value
         if (current !is ScreenState.Ready || isDraftEmpty.value) return
+        // Nothing observable changes fast enough to re-disable the button: screenState stays
+        // Ready and the draft still has content, while the sheet remains tappable through its
+        // dismiss animation. The UI throttle cannot cover this — noRippleThrottledClickable
+        // is not remembered, so any recomposition (the sync status ticks constantly) resets
+        // its window. Without this latch a double tap logs objectCreate twice, which is the
+        // exact inflation the "log at commit, not at draft creation" rule exists to prevent.
+        if (!isSending.compareAndSet(false, true)) return
         viewModelScope.launch {
             setObjectDetails.async(
                 SetObjectDetails.Params(
@@ -607,13 +631,21 @@ class QuickCaptureViewModel(
                 onFailure = {
                     Timber.e(it, "Quick capture: publish failed")
                     sendToast(SOMETHING_WENT_WRONG)
+                    // Nothing was published — let the user try again.
+                    isSending.set(false)
                 },
                 onSuccess = {
                     // The object is published — the bookkeeping and the Dismiss command must
                     // complete even if the user backgrounds the app right now. The buffered
                     // command channel delivers Dismiss on the next sheet start if needed.
                     withContext(NonCancellable) {
-                        settings.clearQuickCaptureDraft(current.space)
+                        // Guarded like its neighbours: an escaping exception here would both
+                        // crash (this is a bare viewModelScope.launch with no handler) and
+                        // skip the Dismiss below, leaving the pointer aimed at an object that
+                        // is now published — the exact state that used to make a later space
+                        // switch delete a real note.
+                        runCatching { settings.clearQuickCaptureDraft(current.space) }
+                            .onFailure { Timber.w(it, "Quick capture: could not clear draft pointer") }
                         runCatching {
                             settings.setSpaceLastInteraction(
                                 space = current.space,
@@ -746,6 +778,11 @@ class QuickCaptureViewModel(
             Relations.IS_HIDDEN,
             Relations.INTERNAL_FLAGS,
             Relations.NAME,
+            // Emptiness is content-based (spec §15), and body text lives in the snippet.
+            // Without this key `snippet` reads null for every fetched draft and
+            // draftHasContent() silently degenerates to a title-only check — which would
+            // skip the replace confirmation and permanently delete a body-only note.
+            Relations.SNIPPET,
             Relations.TYPE,
             Relations.LAYOUT
         )

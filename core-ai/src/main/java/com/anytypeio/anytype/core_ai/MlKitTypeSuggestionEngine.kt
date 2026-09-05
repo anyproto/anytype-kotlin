@@ -5,6 +5,8 @@ import com.google.mlkit.genai.common.FeatureStatus
 import com.google.mlkit.genai.prompt.Generation
 import com.google.mlkit.genai.prompt.TextPart
 import com.google.mlkit.genai.prompt.generateContentRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
@@ -29,53 +31,63 @@ class MlKitTypeSuggestionEngine : TypeSuggestionEngine {
     // quickCaptureTypeSuggestions flag lets a call through (see FlagGatedTypeSuggestionEngine).
     private val model by lazy { Generation.getClient() }
 
-    override suspend fun isAvailable(): Boolean {
-        return runCatching { model.checkStatus() == FeatureStatus.AVAILABLE }
+    override suspend fun isAvailable(): Boolean = withContext(Dispatchers.IO) {
+        runCatching { model.checkStatus() == FeatureStatus.AVAILABLE }
             .onFailure { Timber.d(it, "QC suggestions: availability check failed") }
             .getOrDefault(false)
     }
 
-    override suspend fun prewarm() {
+    override suspend fun prewarm() = withContext(Dispatchers.IO) {
         runCatching {
             if (model.checkStatus() == FeatureStatus.AVAILABLE) {
                 model.warmup()
             }
         }.onFailure { Timber.d(it, "QC suggestions: warmup failed") }
+        Unit
     }
 
     override suspend fun suggest(text: String, typeNames: List<String>): String? {
         if (typeNames.isEmpty()) return null
         val input = text.trim().take(MAX_INPUT_LENGTH)
         if (input.length < MIN_INPUT_LENGTH) return null
-        return withTimeoutOrNull(SUGGESTION_TIMEOUT_MS) {
-            runCatching {
-                if (model.checkStatus() != FeatureStatus.AVAILABLE) {
-                    Timber.d("QC suggestions: model not available")
-                    return@runCatching null
-                }
-                val response = model.generateContent(
-                    generateContentRequest(
-                        TextPart(buildPrompt(input, typeNames))
-                    ) {
-                        temperature = 0.0f
-                        topK = 1
-                        candidateCount = 1
-                        maxOutputTokens = MAX_OUTPUT_TOKENS
+        // Off the main thread: the caller runs on viewModelScope (Main.immediate) while the
+        // user is typing, and withTimeoutOrNull only bounds a cooperatively suspending body —
+        // it cannot interrupt a blocking call inside a third-party beta SDK. Confining here
+        // makes "capture never blocks on AI" structural rather than an assumption about
+        // ML Kit's threading.
+        return withContext(Dispatchers.IO) {
+            withTimeoutOrNull(SUGGESTION_TIMEOUT_MS) {
+                runCatching {
+                    if (model.checkStatus() != FeatureStatus.AVAILABLE) {
+                        Timber.d("QC suggestions: model not available")
+                        return@runCatching null
                     }
-                )
-                val raw = response.candidates.firstOrNull()?.text?.trim()
-                // Strict validation replaces constrained decoding: out-of-list → discarded.
-                val match = typeNames.firstOrNull { it.equals(raw, ignoreCase = true) }
-                if (match == null) {
-                    Timber.d("QC suggestions: no valid match (raw = %s)", raw)
-                }
-                match
-            }.onFailure {
-                // Safety refusal, BUSY quota, unsupported language — all silent.
-                Timber.d(it, "QC suggestions: generation failed")
-            }.getOrNull()
-        }.also {
-            if (it == null) Timber.d("QC suggestions: silent fallback (no suggestion)")
+                    val response = model.generateContent(
+                        generateContentRequest(
+                            TextPart(buildPrompt(input, typeNames))
+                        ) {
+                            temperature = 0.0f
+                            topK = 1
+                            candidateCount = 1
+                            maxOutputTokens = MAX_OUTPUT_TOKENS
+                        }
+                    )
+                    val raw = response.candidates.firstOrNull()?.text?.trim()
+                    // Strict validation replaces constrained decoding: out-of-list → discarded.
+                    val match = typeNames.firstOrNull { it.equals(raw, ignoreCase = true) }
+                    if (match == null) {
+                        Timber.d("QC suggestions: no valid match (raw = %s)", raw)
+                    }
+                    match
+                }.onFailure {
+                    // Cancellation reaches here too (runCatching catches Throwable), so a
+                    // superseded classification returns null rather than propagating — the
+                    // caller must therefore not treat null as "this text was classified".
+                    Timber.d(it, "QC suggestions: generation failed")
+                }.getOrNull()
+            }.also {
+                if (it == null) Timber.d("QC suggestions: silent fallback (no suggestion)")
+            }
         }
     }
 

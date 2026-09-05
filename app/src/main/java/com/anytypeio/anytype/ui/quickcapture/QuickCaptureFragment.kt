@@ -17,6 +17,7 @@ import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
@@ -31,6 +32,7 @@ import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.presentation.quickcapture.QuickCaptureViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 /**
  * Quick-capture sheet over the vault (spec: docs/quick-capture-android-spec.md):
@@ -105,9 +107,12 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
 
     private val dragCallback = object : BottomSheetBehavior.BottomSheetCallback() {
         override fun onStateChanged(bottomSheet: View, newState: Int) {
-            if (newState == BottomSheetBehavior.STATE_DRAGGING ||
-                newState == BottomSheetBehavior.STATE_HIDDEN
-            ) {
+            // Only on an actual dismissal. STATE_DRAGGING is not a commitment to close — the
+            // behavior enters it as soon as the sheet moves at all, including the flick that
+            // springs straight back — and hideKeyboardNow() also clears focus, so reacting to
+            // it destroyed the keyboard *and* the caret on every cancelled drag. The recycler
+            // sits at the top of a fresh draft, so it hands that gesture to the sheet.
+            if (newState == BottomSheetBehavior.STATE_HIDDEN) {
                 hideKeyboardNow()
             }
         }
@@ -120,6 +125,12 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
             // (a child would slide away together with the sheet).
             val visibleFraction = ((slideOffset + 1f) / 2f).coerceIn(0f, 1f)
             applyScrimDim(SCRIM_DIM_AMOUNT * visibleFraction)
+            // Retire the keyboard once the sheet has travelled far enough that it is heading
+            // for a dismissal, rather than waiting for the window to go — otherwise the IME
+            // lingers and collapses in a second, separate step after the sheet has gone.
+            // Keyed to distance, not to STATE_DRAGGING, so a small drag that springs back
+            // keeps both the keyboard and the caret.
+            if (slideOffset < KEYBOARD_RETIRE_SLIDE_OFFSET) hideKeyboardNow()
         }
     }
 
@@ -181,14 +192,19 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
             QuickCaptureSpacePicker(
                 spaces = vm.spaces.collectAsStateWithLifecycle().value,
                 onSpaceClicked = { target ->
-                    // Push anything still inside the editor's text debounce, then decide
-                    // with the editor's live view of the draft rather than stale details.
+                    // Wait for queued text writes to reach the middleware BEFORE selecting:
+                    // a cross-space move reads the source server-side and then permanently
+                    // deletes it, so acting on a stale document would drop the tail of the
+                    // note. Only then read the editor's live emptiness, rather than the
+                    // lagging details subscription.
                     val editor = editor()
-                    editor?.flushPendingText()
-                    vm.onSpaceSelected(
-                        target = target,
-                        sourceHasContent = editor?.hasContent()
-                    )
+                    viewLifecycleOwner.lifecycleScope.launch {
+                        editor?.flushPendingText()
+                        vm.onSpaceSelected(
+                            target = target,
+                            sourceHasContent = editor?.hasContent()
+                        )
+                    }
                 },
                 onDismiss = vm::onSpacePickerDismissed
             )
@@ -328,6 +344,13 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
 
         /** Smallest dim change worth a window relayout during a drag. */
         private const val DIM_UPDATE_THRESHOLD = 0.02f
+
+        /**
+         * Sheet travel at which the keyboard is retired. Past roughly half, the drag is
+         * committed to a dismissal (this is also where BottomSheetBehavior's own hide
+         * threshold sits), so the IME can start leaving with the sheet instead of after it.
+         */
+        private const val KEYBOARD_RETIRE_SLIDE_OFFSET = 0.5f
         private const val TAG_EDITOR = "quick-capture-editor"
         const val RESULT_KEY = "quick_capture.result"
         const val RESULT_OBJECT_ID = "quick_capture.result.object_id"

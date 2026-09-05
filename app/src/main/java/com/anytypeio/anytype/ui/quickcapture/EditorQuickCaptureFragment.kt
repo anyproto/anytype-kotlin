@@ -124,7 +124,7 @@ class EditorQuickCaptureFragment : EditorFragment() {
     /** Live emptiness of the draft, ahead of the editor's text debounce. */
     fun hasContent(): Boolean = vm.hasQuickCaptureContent()
 
-    fun flushPendingText() = vm.flushPendingTextChanges()
+    suspend fun flushPendingText() = vm.flushPendingTextChanges()
 
     companion object {
         fun newInstance(ctx: Id, space: Id): EditorQuickCaptureFragment =

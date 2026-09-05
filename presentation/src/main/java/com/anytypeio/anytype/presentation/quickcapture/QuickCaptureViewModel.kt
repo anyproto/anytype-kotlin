@@ -175,6 +175,24 @@ class QuickCaptureViewModel(
      */
     private val draftSpaces = MutableStateFlow<Set<Id>>(emptySet())
 
+    /**
+     * True when the cross-space query found a draft in some space other than the one on
+     * screen — surfaced as a dot beside the space chip.
+     *
+     * Without it, the sheet always opens where this device last captured, so a user who
+     * discards that draft has no way to learn that unfinished drafts exist elsewhere: the
+     * only affordance is the picker, and nothing suggests opening it.
+     */
+    val hasDraftsElsewhere: StateFlow<Boolean> = combine(
+        draftSpaces,
+        selectedSpaceId
+    ) { spacesWithDrafts, selected ->
+        spacesWithDrafts.any { it != selected }
+        // Eagerly, not WhileSubscribed: this is a combine of two MutableStateFlows, so there
+        // is nothing to keep warm, and WhileSubscribed leaves `.value` stale whenever nothing
+        // happens to be collecting.
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
     private var startJob: Job? = null
 
     /** Editable candidate spaces, ordered by [spaceComparator]. */
@@ -301,7 +319,11 @@ class QuickCaptureViewModel(
             val recencyMap = runCatching { settings.getSpaceLastInteractions() }
                 .getOrDefault(emptyMap())
             recency.value = recencyMap
-            refreshDraftSpaces()
+            // Cross-space discovery is NOT awaited: on a cold start the per-space stores are
+            // still warming and it can take seconds. Opening the sheet must not wait on it —
+            // the saved draft is resolved by a direct, single-space lookup below. Discovery
+            // runs alongside, and only feeds the pencils and the "drafts elsewhere" dot.
+            discoverDraftsInBackground()
             // Auto-selection is computed from the raw inputs, not the UI flow, so it cannot
             // race the recency load against the Compose subscription of [spaces].
             val candidates = withTimeoutOrNull(SPACES_AWAIT_TIMEOUT_MS) {
@@ -334,42 +356,31 @@ class QuickCaptureViewModel(
     private suspend fun resolveInitialSpace(
         candidates: List<ObjectWrapper.SpaceView>
     ): Pair<SpaceId, Id?>? {
-        // The store is the source of truth for what drafts exist; the local pointer only says
-        // which of them this device was last writing, so that the compose button resumes it.
-        val discovered = discoverDrafts()
-
+        // Resolved with a DIRECT single-space lookup by id, never the cross-space query: this
+        // is on the path to showing the sheet, and it is the one answer the device already
+        // knows. Drafts made elsewhere are surfaced by the background discovery instead, as a
+        // dot on the space chip — jumping the user into another space on open would be worse
+        // than telling them one is there.
         val last = runCatching { settings.getQuickCaptureLastSpace() }.getOrNull()
         if (last != null && candidates.any { it.targetSpaceId == last }) {
             val lastSpace = SpaceId(last)
             val hint = runCatching { settings.getQuickCaptureDraft(lastSpace) }.getOrNull()
-            // Honour the hint only if the store still lists that exact draft.
-            val stillListed = hint != null && discovered.drafts.any { it.id == hint }
-            if (stillListed) {
+            if (hint != null && isDraftAlive(space = lastSpace, draft = hint)) {
                 Timber.d("Quick capture: resuming this device's draft in $last")
                 return lastSpace to hint
-            }
-            // The hint is gone (published, deleted, or made on another device), but this
-            // space may still hold a newer draft made elsewhere.
-            discovered.newestIn(last)?.let { draft ->
-                Timber.d("Quick capture: adopting draft made on another device in $last")
-                return lastSpace to draft.id
-            }
-        }
-
-        // No usable hint: open the newest draft anywhere — the thought most recently left
-        // unfinished, on whichever device it was written.
-        discovered.drafts.firstOrNull { draft ->
-            candidates.any { it.targetSpaceId == draft.spaceId }
-        }?.let { newest ->
-            val space = newest.spaceId
-            if (space != null) {
-                Timber.d("Quick capture: opening newest draft across spaces, in $space")
-                return SpaceId(space) to newest.id
             }
         }
 
         val fallback = candidates.firstOrNull { !it.isOneToOneSpace }?.targetSpaceId
         return fallback?.let { SpaceId(it) to null }
+    }
+
+    /**
+     * Runs the cross-space draft query off the open path. Populates the picker's pencils and
+     * the chip's "you have drafts elsewhere" dot; never changes which space is open.
+     */
+    private fun discoverDraftsInBackground() {
+        viewModelScope.launch { discoverDrafts() }
     }
 
     /**

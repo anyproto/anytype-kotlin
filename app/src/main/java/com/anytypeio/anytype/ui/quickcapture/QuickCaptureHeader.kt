@@ -33,6 +33,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
@@ -56,6 +58,7 @@ fun QuickCaptureHeader(
     selectedSpace: QuickCaptureViewModel.SpaceView?,
     syncStatus: SpaceSyncAndP2PStatusState,
     isDraftEmpty: Boolean,
+    hasDraftsElsewhere: Boolean,
     onSpaceChipClicked: () -> Unit,
     onSyncStatusClicked: () -> Unit,
     onMenuClicked: () -> Unit,
@@ -101,6 +104,25 @@ fun QuickCaptureHeader(
                     contentDescription = stringResource(id = R.string.quick_capture_choose_space),
                     tint = colorResource(id = R.color.glyph_active)
                 )
+                if (hasDraftsElsewhere) {
+                    val draftsElsewhereLabel =
+                        stringResource(id = R.string.quick_capture_drafts_elsewhere)
+                    // The sheet always opens where this device last captured, so a user who
+                    // discards that draft would never learn that other spaces still hold
+                    // unfinished ones. This is the only hint that opening the picker is
+                    // worthwhile. Populated by the background cross-space query, so it
+                    // appears a moment after open rather than blocking it.
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .clip(CircleShape)
+                            .background(colorResource(id = R.color.palette_system_amber_100))
+                            .semantics {
+                                contentDescription = draftsElsewhereLabel
+                            }
+                    )
+                }
             }
         }
         Box(
@@ -292,7 +314,10 @@ fun MoveOrNewDraftDialog(
         },
         text = {
             Text(
-                text = stringResource(id = R.string.quick_capture_move_or_new_message),
+                text = stringResource(
+                    id = R.string.quick_capture_move_or_new_message,
+                    spaceName.ifEmpty { stringResource(id = R.string.untitled) }
+                ),
                 style = BodyRegular,
                 color = colorResource(id = R.color.text_secondary)
             )

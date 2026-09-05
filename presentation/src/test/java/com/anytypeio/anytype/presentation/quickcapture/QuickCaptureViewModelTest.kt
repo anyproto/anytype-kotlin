@@ -345,21 +345,23 @@ class QuickCaptureViewModelTest {
     }
 
     /**
-     * The point of the whole discovery model: a draft written on another device has no local
-     * pointer here, and must still be found and reopened rather than replaced by a new one.
+     * Opening must not jump to another space just because a newer draft exists there — that
+     * would move the user somewhere they did not ask to go, and the open path deliberately
+     * does not wait for the cross-space query at all. The draft elsewhere is surfaced as a
+     * dot on the space chip instead.
      */
     @Test
-    fun `opens a draft created on another device when this one has no pointer`() = runTest {
+    fun `does not jump to another device's draft on open, but signals that one exists`() = runTest {
+        val remoteSpace = MockDataFactory.randomUuid()
         val remoteDraft = MockDataFactory.randomUuid()
         val remote = ObjectWrapper.Basic(
             mapOf(
                 Relations.ID to remoteDraft,
-                Relations.SPACE_ID to targetSpace,
+                Relations.SPACE_ID to remoteSpace,
                 Relations.IS_HIDDEN to true,
                 Relations.IS_DRAFT to true
             )
         )
-        // No pointer on this device at all.
         settings.stub {
             onBlocking { getQuickCaptureLastSpace() } doReturn null
             onBlocking { getQuickCaptureDraft(SpaceId(targetSpace)) } doReturn null
@@ -369,9 +371,6 @@ class QuickCaptureViewModelTest {
                 SearchQuickCaptureDrafts.Result(drafts = listOf(remote), isComplete = true)
             )
         }
-        fetchQuickCaptureDraft.stub {
-            onBlocking { async(any()) } doReturn Resultat.success(remote)
-        }
 
         val vm = vm()
         vm.onStart()
@@ -379,8 +378,9 @@ class QuickCaptureViewModelTest {
 
         val state = vm.screenState.value
         assertTrue(state is QuickCaptureViewModel.ScreenState.Ready)
-        assertEquals(remoteDraft, state.draft, "must adopt the draft, not create a second one")
-        verifyBlocking(createObject, never()) { async(any()) }
+        assertEquals(targetSpace, state.space.id, "must stay in the resolved space")
+        assertEquals(draftId, state.draft, "must open this space's own draft")
+        assertTrue(vm.hasDraftsElsewhere.value, "the draft elsewhere must be signalled")
     }
 
     /**

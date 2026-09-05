@@ -153,11 +153,17 @@ note on your phone and finish it on your tablet.
   ordered by `createdDate` descending. `CrossSpaceSearchObjects`
   (`domain/.../search/CrossSpaceSearchObjects.kt`) is the mechanism; the search-v2 rule of **no
   per-space fan-out** applies here too.
-- **Which one opens**: the newest by `createdDate`.
-- **The device-local pointer becomes a hint, not the source of truth.** It records the last
-  space/object captured into on *this* device so the compose button reopens what you were last
-  writing here. Its absence must never prevent discovery — a fresh device has no pointer and
-  must still find your drafts.
+- **Which one opens**: whatever this device's pointer names, resolved by a **direct
+  single-space lookup by id** — never the cross-space query. Cross-space search can take
+  seconds on a cold start while per-space stores warm, and the open path must not wait on it.
+  The pointer is the one answer the device already has.
+- **Discovery runs alongside, never on the open path.** It populates the picker's pencils and
+  a dot on the space chip meaning "you have drafts in other spaces". It deliberately does
+  *not* change which space opens: jumping the user into another space because a newer draft
+  exists there would move them somewhere they did not ask to go. Telling them is enough.
+- **Why the dot matters**: the sheet always opens where this device last captured. Without
+  the dot, a user who discards that draft has no way to learn that unfinished drafts exist
+  elsewhere — the picker is the only affordance, and nothing would suggest opening it.
 
 **`creator` is per-space — a single id will not work cross-space.** The same account has a
 *different* participant object in every space, so filtering one cross-space query on one

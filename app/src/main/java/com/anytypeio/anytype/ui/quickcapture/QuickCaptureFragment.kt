@@ -181,6 +181,7 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
             selectedSpace = selectedSpace,
             syncStatus = syncStatus,
             isDraftEmpty = isDraftEmpty,
+            hasDraftsElsewhere = vm.hasDraftsElsewhere.collectAsStateWithLifecycle().value,
             onSpaceChipClicked = vm::onSpaceChipClicked,
             onSyncStatusClicked = vm::onSyncStatusBadgeClicked,
             onMenuClicked = { editor()?.onDocumentMenuClicked() },

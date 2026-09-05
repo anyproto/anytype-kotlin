@@ -20,7 +20,7 @@ class ExperimentalFeaturesViewModel(
     private val _isKanbanEnabled = MutableStateFlow(true)
     val isKanbanEnabled: StateFlow<Boolean> = _isKanbanEnabled.asStateFlow()
 
-    private val _isQuickCaptureEnabled = MutableStateFlow(false)
+    private val _isQuickCaptureEnabled = MutableStateFlow(true)
     val isQuickCaptureEnabled: StateFlow<Boolean> = _isQuickCaptureEnabled.asStateFlow()
 
     private val _isQuickCaptureAiEnabled = MutableStateFlow(false)

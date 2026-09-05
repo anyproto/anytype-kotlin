@@ -66,8 +66,10 @@ class DefaultUserSettingsCache(
         FileDownloadLimit.fromStorageKey(prefs.getString(FILE_DOWNLOAD_LIMIT_KEY, null))
     )
 
+    // Default ON: quick capture is no longer opt-in. The stored value still wins, so anyone
+    // who explicitly turned it off keeps it off.
     private val _quickCaptureFlow = MutableStateFlow(
-        prefs.getBoolean(QUICK_CAPTURE_ENABLED_KEY, false)
+        prefs.getBoolean(QUICK_CAPTURE_ENABLED_KEY, true)
     )
 
     private val _quickCaptureAiFlow = MutableStateFlow(
@@ -837,7 +839,7 @@ class DefaultUserSettingsCache(
     }
 
     override suspend fun getQuickCaptureEnabled(): Boolean {
-        return prefs.getBoolean(QUICK_CAPTURE_ENABLED_KEY, false)
+        return prefs.getBoolean(QUICK_CAPTURE_ENABLED_KEY, true)
     }
 
     override suspend fun setQuickCaptureEnabled(enabled: Boolean) {

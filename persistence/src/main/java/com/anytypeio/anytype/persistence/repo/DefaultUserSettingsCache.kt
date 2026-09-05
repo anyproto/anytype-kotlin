@@ -769,6 +769,16 @@ class DefaultUserSettingsCache(
             .first()
     }
 
+    override suspend fun getQuickCaptureDrafts(): Map<Id, Id> {
+        val spacePreferences = context.spacePrefsStore.data.first()
+        return spacePreferences.preferences
+            .mapNotNull { (spaceId, spacePref) ->
+                val draft = spacePref.quickCaptureDraftObjectId
+                if (!draft.isNullOrEmpty()) spaceId to draft else null
+            }
+            .toMap()
+    }
+
     override suspend fun clearQuickCaptureDraft(space: SpaceId) {
         context.spacePrefsStore.updateData { existingPreferences ->
             val givenSpacePreference = existingPreferences

@@ -229,6 +229,19 @@ fun QuickCaptureSpacePicker(
                         mainSize = 48.dp
                     )
                     Spacer(modifier = Modifier.width(12.dp))
+                    if (view.hasDraft) {
+                        // Left of the name: this space is already holding an unsent draft, so
+                        // switching to it opens that draft rather than a blank one.
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_edit_24),
+                            contentDescription = stringResource(
+                                id = R.string.quick_capture_space_has_draft
+                            ),
+                            tint = colorResource(id = R.color.glyph_active),
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                    }
                     Text(
                         text = view.name.ifEmpty { stringResource(id = R.string.untitled) },
                         style = BodyRegular,
@@ -252,13 +265,16 @@ fun QuickCaptureSpacePicker(
 }
 
 /**
- * Switching a non-empty draft into a space that already holds unsent text destroys that
- * text permanently (Object.ListDelete, not the bin), so it must be confirmed.
+ * Both spaces hold unsent text. The question is only ever about the draft on screen — the
+ * target's draft is never touched, because the user cannot see it and so cannot judge what
+ * replacing it would cost. Keeping both is the safe answer and is offered first; discarding
+ * destroys only what is visible, on an explicit instruction. Dismissing changes nothing.
  */
 @Composable
-fun ReplaceDraftConfirmation(
+fun DraftConflictDialog(
     spaceName: String,
-    onConfirm: () -> Unit,
+    onKeepBoth: () -> Unit,
+    onDiscardCurrent: () -> Unit,
     onCancel: () -> Unit
 ) {
     AlertDialog(
@@ -267,7 +283,7 @@ fun ReplaceDraftConfirmation(
         title = {
             Text(
                 text = stringResource(
-                    id = R.string.quick_capture_replace_draft_title,
+                    id = R.string.quick_capture_draft_conflict_title,
                     spaceName.ifEmpty { stringResource(id = R.string.untitled) }
                 ),
                 style = BodyRegular,
@@ -276,24 +292,24 @@ fun ReplaceDraftConfirmation(
         },
         text = {
             Text(
-                text = stringResource(id = R.string.quick_capture_replace_draft_message),
+                text = stringResource(id = R.string.quick_capture_draft_conflict_message),
                 style = BodyRegular,
                 color = colorResource(id = R.color.text_secondary)
             )
         },
         confirmButton = {
-            TextButton(onClick = onConfirm) {
+            TextButton(onClick = onKeepBoth) {
                 Text(
-                    text = stringResource(id = R.string.quick_capture_replace_draft_confirm),
-                    color = colorResource(id = R.color.palette_system_red)
+                    text = stringResource(id = R.string.quick_capture_draft_conflict_keep),
+                    color = colorResource(id = R.color.text_primary)
                 )
             }
         },
         dismissButton = {
-            TextButton(onClick = onCancel) {
+            TextButton(onClick = onDiscardCurrent) {
                 Text(
-                    text = stringResource(id = R.string.cancel),
-                    color = colorResource(id = R.color.text_primary)
+                    text = stringResource(id = R.string.quick_capture_draft_conflict_discard),
+                    color = colorResource(id = R.color.palette_system_red)
                 )
             }
         }

@@ -111,6 +111,9 @@ interface UserSettingsRepository {
     suspend fun getQuickCaptureDraft(space: SpaceId): Id?
     suspend fun clearQuickCaptureDraft(space: SpaceId)
 
+    /** `[spaceId → draftObjectId]` for every space holding a pending draft. */
+    suspend fun getQuickCaptureDrafts(): Map<Id, Id>
+
     suspend fun setSpaceLastInteraction(space: SpaceId, timestamp: Long)
     suspend fun getSpaceLastInteractions(): Map<Id, Long>
 

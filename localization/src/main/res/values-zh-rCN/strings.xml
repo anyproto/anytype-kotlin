@@ -2227,7 +2227,6 @@
     <string name="select_view">选择视图</string>
     <string name="os_widget_data_view_title">数据视图</string>
     <string name="os_widget_data_view_description">从动态集或合集中显示项目</string>
-    <string name="chats_search_close_content_description">关闭搜索</string>
     <!-- DROID-4358 Offline Downloads settings -->
     <string name="offline_downloads_section_title">离线访问</string>
     <string name="offline_downloads_title">离线下载</string>
@@ -2240,4 +2239,40 @@
     <string name="offline_downloads_value_1gb">1 GB</string>
     <string name="offline_downloads_value_unlimited">无限的</string>
     <string name="device_storage_used">设备存储用量</string>
+    <!-- Search v2 (unified cross-space search) -->
+    <string name="search_v2_hint">搜索</string>
+    <string name="search_v2_chip_in_space">In %1$s</string>
+    <string name="search_v2_chip_channels">空间</string>
+    <string name="search_v2_chip_messages">Messages</string>
+    <string name="search_v2_chip_by_me">By me</string>
+    <string name="search_v2_chip_by_name">By %1$s</string>
+    <string name="search_v2_chip_media">媒体</string>
+    <string name="search_v2_chip_pages">页面</string>
+    <string name="search_v2_chip_bookmarks">书签</string>
+    <string name="search_v2_chip_collections">合集</string>
+    <string name="search_v2_chip_queries">集合</string>
+    <string name="search_v2_chip_chats">Chats</string>
+    <string name="search_v2_chip_types">类型</string>
+    <string name="search_v2_chip_people">People</string>
+    <string name="search_v2_section_recent_messages">Recent Messages</string>
+    <string name="search_v2_section_objects">对象</string>
+    <string name="search_v2_person_member_in_one">member in 1 Channel</string>
+    <string name="search_v2_person_member_in">member in %1$d Channels</string>
+    <string name="search_v2_sort_name">名称</string>
+    <string name="search_v2_today">今天</string>
+    <string name="search_v2_yesterday">昨天</string>
+    <string name="search_v2_in_space_caption">in %1$s</string>
+    <string name="search_v2_type_agg_caption">in %1$d Channels</string>
+    <string name="search_v2_no_results">未找到任何内容</string>
+    <string name="search_v2_focus_search_type_everywhere">Search %1$s in all Channels</string>
+    <string name="search_v2_focus_search_by_everywhere">Search by %1$s in all Channels</string>
+    <string name="search_v2_focus_person_header">Search objects created in Channels</string>
+    <string name="search_v2_one_to_one_caption">1-1 Channel</string>
+    <string name="search_v2_messages_tutorial_hint">Looking for a message?</string>
+    <string name="search_v2_messages_tutorial_button">Search messages</string>
+    <string name="search_v2_create_channel">创建频道</string>
+    <string name="search_v2_could_not_open_object">Could not open object</string>
+    <string name="search_v2_recently_edited">最近编辑的文档</string>
+    <string name="search_v2_recently_created">Recently created</string>
+    <string name="search_v2_filter_by">Filter by %1$s</string>
 </resources>

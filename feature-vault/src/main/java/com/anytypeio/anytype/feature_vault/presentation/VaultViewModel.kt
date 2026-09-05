@@ -78,6 +78,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -832,6 +833,7 @@ class VaultViewModel(
                 },
                 onSuccess = { config ->
                     Timber.d("Selected space: $targetSpace")
+                    markSpaceInteraction(SpaceId(targetSpace))
                     proceedWithSavingCurrentSpace(
                         targetSpace = SpaceId(targetSpace),
                         config = config,
@@ -843,6 +845,101 @@ class VaultViewModel(
             Timber.e("Missing target space")
         }
     }
+
+    private suspend fun markSpaceInteraction(space: SpaceId) {
+        runCatching {
+            userSettingsRepository.setSpaceLastInteraction(
+                space = space,
+                timestamp = System.currentTimeMillis()
+            )
+        }.onFailure {
+            Timber.w(it, "Failed to persist space interaction for ${space.id}")
+        }
+    }
+
+    //region Quick capture
+
+    /**
+     * The pencil entry point shows only when the feature flag is on and at least one
+     * editable (owner/writer) non-1:1 space exists — 1:1 spaces are conversations, not
+     * capture targets, and are never auto-selected (handoff §3).
+     */
+    val showQuickCapture: StateFlow<Boolean> = combine(
+        userSettingsRepository.observeQuickCaptureEnabled(),
+        spaceFlow,
+        permissionsFlow
+    ) { enabled, spaces, permissions ->
+        enabled && spaces.any { view ->
+            val target = view.targetSpaceId
+            view.isActive && target != null && !view.isOneToOneSpace &&
+                permissions[target]?.isOwnerOrEditor() == true
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    data class QuickCaptureSuccess(
+        val objectId: Id,
+        val spaceId: Id,
+        val typeName: String,
+        val spaceName: String
+    )
+
+    val quickCaptureSuccess = MutableStateFlow<QuickCaptureSuccess?>(null)
+    private var quickCaptureBannerJob: Job? = null
+
+    fun onQuickCaptureClicked() {
+        viewModelScope.launch {
+            commands.emit(VaultCommand.OpenQuickCapture)
+        }
+    }
+
+    fun onQuickCaptureObjectPublished(
+        objectId: Id,
+        spaceId: Id,
+        typeName: String,
+        spaceName: String
+    ) {
+        quickCaptureBannerJob?.cancel()
+        quickCaptureSuccess.value = QuickCaptureSuccess(
+            objectId = objectId,
+            spaceId = spaceId,
+            typeName = typeName,
+            spaceName = spaceName
+        )
+        quickCaptureBannerJob = viewModelScope.launch {
+            delay(QUICK_CAPTURE_BANNER_DURATION_MS)
+            quickCaptureSuccess.value = null
+        }
+    }
+
+    fun onQuickCaptureBannerDismissed() {
+        quickCaptureBannerJob?.cancel()
+        quickCaptureSuccess.value = null
+    }
+
+    fun onQuickCaptureBannerClicked() {
+        val banner = quickCaptureSuccess.value ?: return
+        onQuickCaptureBannerDismissed()
+        viewModelScope.launch {
+            onDeepLinkToObjectAwait(
+                obj = banner.objectId,
+                space = SpaceId(banner.spaceId),
+                switchSpaceIfObjectFound = true
+            ).collect { result ->
+                when (result) {
+                    is DeepLinkToObjectDelegate.Result.Error -> {
+                        Timber.w("Quick capture banner: could not open object: $result")
+                        navigations.emit(VaultNavigation.ShowError("Could not open object"))
+                    }
+                    is DeepLinkToObjectDelegate.Result.Success -> {
+                        markSpaceInteraction(SpaceId(banner.spaceId))
+                        proceedWithNavigation(result.obj.navigation())
+                    }
+                }
+            }
+        }
+    }
+
+    //endregion
 
     fun onSettingsClicked() {
         viewModelScope.launch {
@@ -1756,6 +1853,7 @@ class VaultViewModel(
             },
             onSuccess = { config ->
                 Timber.d("Selected space: ${spaceId.id}")
+                markSpaceInteraction(spaceId)
                 proceedWithSavingCurrentSpace(
                     targetSpace = spaceId,
                     config = config,
@@ -1772,5 +1870,6 @@ class VaultViewModel(
         private const val OS_WIDGET_SYNC_DEBOUNCE_MS = 2000L
         private const val ONE_TO_ONE_HOMEPAGE_POLL_DELAY_MS = 100L
         private const val ONE_TO_ONE_HOMEPAGE_MAX_ATTEMPTS = 30
+        private const val QUICK_CAPTURE_BANNER_DURATION_MS = 6_000L
     }
 }

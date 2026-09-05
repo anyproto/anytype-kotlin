@@ -89,6 +89,7 @@ import com.anytypeio.anytype.di.feature.sets.CreateFilterModule
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterModule
 import com.anytypeio.anytype.di.feature.sets.PickConditionModule
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationModule
+import com.anytypeio.anytype.di.feature.quickcapture.DaggerQuickCaptureComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerAboutAppComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerDebugComponent
@@ -178,6 +179,12 @@ class ComponentManager(
 
     val experimentalFeaturesComponent = Component {
         DaggerExperimentalFeaturesComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val quickCaptureComponent = Component {
+        DaggerQuickCaptureComponent
             .factory()
             .create(findComponentDependencies())
     }

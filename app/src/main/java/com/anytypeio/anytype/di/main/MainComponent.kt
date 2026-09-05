@@ -57,6 +57,7 @@ import com.anytypeio.anytype.di.feature.search.SearchV2Dependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
 import com.anytypeio.anytype.di.feature.settings.DebugDependencies
+import com.anytypeio.anytype.di.feature.quickcapture.QuickCaptureDependencies
 import com.anytypeio.anytype.di.feature.settings.ExperimentalFeaturesDependencies
 import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
@@ -88,6 +89,7 @@ import javax.inject.Singleton
     modules = [
         ComponentDependenciesModule::class,
         ContextModule::class,
+        AiModule::class,
         DataModule::class,
         EventModule::class,
         ConfigModule::class,
@@ -157,6 +159,7 @@ interface MainComponent :
     EditTypePropertiesDependencies,
     DebugDependencies,
     ExperimentalFeaturesDependencies,
+    QuickCaptureDependencies,
     CreateObjectTypeDependencies,
     SpaceTypesDependencies,
     SpacePropertiesDependencies,
@@ -432,6 +435,11 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(ExperimentalFeaturesDependencies::class)
     abstract fun provideExperimentalFeaturesDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(QuickCaptureDependencies::class)
+    abstract fun provideQuickCaptureDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

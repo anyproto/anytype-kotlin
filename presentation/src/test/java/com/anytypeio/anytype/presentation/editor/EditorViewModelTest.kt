@@ -28,6 +28,7 @@ import com.anytypeio.anytype.core_models.primitives.ParsedProperties
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
+import com.anytypeio.anytype.domain.ai.TypeSuggestionEngine
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -3758,7 +3759,8 @@ open class EditorViewModelTest {
             addDiscussion = mock(),
             getChatMessages = mock(),
             backHistoryDelegate = mock(),
-            exitToVaultDelegate = mock()
+            exitToVaultDelegate = mock(),
+            typeSuggestionEngine = TypeSuggestionEngine.NoOp
         )
     }
 

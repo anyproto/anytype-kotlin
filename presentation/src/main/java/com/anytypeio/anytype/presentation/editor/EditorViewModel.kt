@@ -311,6 +311,11 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
@@ -766,7 +771,10 @@ class EditorViewModel(
             controlPanelInteractor
                 .state()
                 .distinctUntilChanged()
-                .collect { controlPanelViewState.postValue(it) }
+                .collect {
+                    controlPanelViewState.postValue(it)
+                    applyQuickCaptureTypeBarSuppression(it)
+                }
         }
     }
 
@@ -1473,9 +1481,16 @@ class EditorViewModel(
     }
 
     /**
-     * Puts the caret at the end of the draft: the trailing empty text block when there is
-     * one, otherwise the end of the last text block. Returns false when the document has no
-     * text block at all, so the caller falls through to the base policy.
+     * Puts the caret at the end of the draft: the trailing text block when there is one,
+     * otherwise the title. Returns false when the document has no text block at all, so the
+     * caller falls through to the base policy.
+     *
+     * The title is deliberately included as a fallback. It is a child of the HEADER block,
+     * not of the root, so it never appears in [root]'s children — and a one-line capture
+     * ("Buy milk" typed straight into the title) creates no body block at all. Without this,
+     * the single most likely restore shape falls through to the base policy, which explicitly
+     * declines to focus a non-empty title, and the draft reopens with no caret, no keyboard
+     * and therefore no type bar.
      */
     private fun focusRestoredQuickCaptureDraft(
         event: Event.Command.ShowObject,
@@ -1484,8 +1499,10 @@ class EditorViewModel(
         val textBlocks = root.children.mapNotNull { id ->
             event.blocks.firstOrNull { it.id == id && it.content is Content.Text }
         }
-        val target = textBlocks.lastOrNull { it.content<Content.Text>().text.isEmpty() }
-            ?: textBlocks.lastOrNull()
+        // Only a *trailing* empty block is a continuation point; an empty block in the middle
+        // of the document would drop the caret above the user's existing text.
+        val target = textBlocks.lastOrNull()
+            ?: event.blocks.title()
             ?: return false
         viewModelScope.launch {
             orchestrator.stores.focus.update(
@@ -6341,6 +6358,8 @@ class EditorViewModel(
         const val VIRTUAL_TRAILING_BLOCK_ID = "virtual-trailing-block"
         const val TEXT_CHANGES_DEBOUNCE_DURATION = 500L
         const val QUICK_CAPTURE_SUGGESTION_DEBOUNCE_MS = 1_000L
+        /** Upper bound on waiting for queued text writes before a cross-space move. */
+        const val QUICK_CAPTURE_FLUSH_TIMEOUT_MS = 2_000L
         const val QUICK_CAPTURE_SUGGESTION_MIN_LENGTH = 3
         const val QUICK_CAPTURE_SUGGESTION_INPUT_LIMIT = 500
         const val DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE = 150L
@@ -8072,12 +8091,43 @@ class EditorViewModel(
         }
     }
 
-    /** Pushes text still inside the debounce window to the middleware before a space switch. */
-    fun flushPendingTextChanges() {
-        viewModelScope.launch {
-            orchestrator.proxies.saves.send(null)
-            orchestrator.proxies.changes.send(null)
-        }
+    /**
+     * Waits until the text the user can see has actually reached the middleware, so a
+     * cross-space move copies the current document rather than a stale one — it reads the
+     * source server-side and then permanently deletes it.
+     *
+     * Every proxy here is a rendezvous channel, so a `send` returns only once the consumer
+     * has taken the item, i.e. finished the previous one. That handshake is the whole point;
+     * the `null`s are sentinels that both text consumers filter out.
+     *
+     *  1. `changes` drains the pattern-matching stage, whose consumer forwards to `saves`.
+     *  2. `saves` drains the document-update stage — after which `blocks` is current.
+     *  3. `intents` is the only stage whose consumer awaits the middleware write itself
+     *     (Orchestrator collects sequentially and suspends on each call). The stage feeding
+     *     it is fire-and-forget (`proceedWithUpdatingText` launches), so a barrier is needed:
+     *     the first send proves everything queued earlier completed, the second proves the
+     *     first one's own write did. Re-sending the block's current text is idempotent, and
+     *     this runs only on a private, unpublished, single-writer draft.
+     */
+    suspend fun flushPendingTextChanges() {
+        runCatching {
+            withTimeoutOrNull(QUICK_CAPTURE_FLUSH_TIMEOUT_MS) {
+                orchestrator.proxies.changes.send(null)
+                orchestrator.proxies.saves.send(null)
+                val target = (orchestrator.stores.focus.current().target
+                    as? Editor.Focus.Target.Block)?.id ?: return@withTimeoutOrNull
+                val content = blocks.firstOrNull { it.id == target }?.content as? Content.Text
+                    ?: return@withTimeoutOrNull
+                val barrier = Intent.Text.UpdateText(
+                    context = context,
+                    target = target,
+                    text = content.text,
+                    marks = content.marks.filter { it.range.first != it.range.last }
+                )
+                orchestrator.proxies.intents.send(barrier)
+                orchestrator.proxies.intents.send(barrier)
+            }
+        }.onFailure { Timber.w(it, "Quick capture: could not flush pending text") }
     }
 
     fun enableQuickCaptureMode() {
@@ -8143,6 +8193,14 @@ class EditorViewModel(
             text = text,
             typeNames = types.map { it.name }
         )
+        // A superseded classification must not claim this text was classified, nor clear the
+        // pin the newer run is about to replace. The engine cannot signal this by throwing:
+        // its runCatching swallows CancellationException and returns null like any other
+        // failure, so cancellation is checked here instead.
+        if (!currentCoroutineContext().isActive) {
+            Timber.d("QC suggestions: classification superseded, staying retryable")
+            return
+        }
         lastClassifiedText = text
         if (suggestion == null) {
             // Silence is the only failure mode — but a previously pinned suggestion no
@@ -8180,9 +8238,51 @@ class EditorViewModel(
     private val _objectTypes = mutableListOf<ObjectWrapper.Type>()
     private val _typesWidgetState = MutableStateFlow(TypesWidgetState(emptyList(), false))
     private val isTypesWidgetVisible: Boolean get() = _typesWidgetState.value.visible
+
+    /**
+     * In quick capture the type bar is permanent, which makes it the last-declared
+     * bottom-gravity child of the editor's root — so it paints *over* every other
+     * bottom-anchored panel (undo/redo, the block and style toolbars, the block-action and
+     * table widgets), all of which slide up to the same edge. Those panels are opaque and
+     * full-width, so the overlap is total: the undo/redo entry the trimmed quick-capture
+     * menu deliberately keeps was unreachable. Yield the edge while one of them is up.
+     */
     val typesWidgetState: StateFlow<TypesWidgetState> get() = _typesWidgetState
 
+    /** What quick capture *wants* the bar to be, independent of momentary suppression. */
+    private var quickCaptureTypeBarWanted = false
+
+    /**
+     * Yields the bottom edge while another panel occupies it, then restores the bar.
+     * Driven from the existing control-panel collector.
+     */
+    private fun applyQuickCaptureTypeBarSuppression(state: ControlPanelState) {
+        if (!isQuickCapture) return
+        val visible = quickCaptureTypeBarWanted && !state.hasCompetingBottomPanel()
+        val current = _typesWidgetState.value
+        if (current.visible == visible) return
+        _typesWidgetState.value = current.copy(visible = visible, expanded = visible)
+    }
+
+    /**
+     * True when a panel that occupies the same bottom edge as the type bar is showing.
+     * The mention and slash widgets are excluded: they are anchored to the caret rather
+     * than the bottom edge, and suppressing the bar for them would make it flicker on
+     * every "@" and "/".
+     */
+    private fun ControlPanelState.hasCompetingBottomPanel(): Boolean =
+        mainToolbar.isVisible ||
+            multiSelect.isVisible ||
+            styleTextToolbar.isVisible ||
+            styleExtraToolbar.isVisible ||
+            styleColorBackgroundToolbar.isVisible ||
+            styleBackgroundToolbar.isVisible ||
+            markupMainToolbar.isVisible ||
+            markupColorToolbar.isVisible ||
+            simpleTableWidget.isVisible
+
     private fun setTypesWidgetVisibility(visible: Boolean) {
+        if (isQuickCapture) quickCaptureTypeBarWanted = visible
         if (visible) {
             proceedWithGettingObjectTypesForTypesWidget()
             _typesWidgetState.value = _typesWidgetState.value.copy(

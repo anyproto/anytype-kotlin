@@ -78,7 +78,7 @@ fun QuickCaptureSuccessBanner(
                 text = stringResource(
                     id = R.string.quick_capture_created_in,
                     content.typeName.ifEmpty { stringResource(id = R.string.untitled) },
-                    content.spaceName
+                    content.spaceName.ifEmpty { stringResource(id = R.string.untitled) }
                 ),
                 style = BodyCalloutRegular,
                 color = colorResource(id = R.color.text_primary),

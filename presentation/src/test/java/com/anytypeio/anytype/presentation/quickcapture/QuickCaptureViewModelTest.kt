@@ -41,6 +41,8 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnit
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.atLeastOnce
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -294,5 +296,66 @@ class QuickCaptureViewModelTest {
         val state = vm.screenState.value
         assertTrue(state is QuickCaptureViewModel.ScreenState.Ready)
         assertEquals(draftId, state.draft)
+    }
+
+    /**
+     * The target space's draft carries body text but no title. Emptiness is content-based, so
+     * this must raise the replace confirmation — the delete behind it is Object.ListDelete,
+     * which is permanent. Regression guard for the fetch that omitted SNIPPET and therefore
+     * read every body-only draft as empty.
+     */
+    @Test
+    fun `treats a body-only draft in the target space as content worth confirming`() = runTest {
+        val otherSpace = MockDataFactory.randomUuid()
+        val otherDraft = MockDataFactory.randomUuid()
+        userPermissionProvider.stub {
+            on { all() } doReturn flowOf(
+                mapOf(
+                    targetSpace to SpaceMemberPermissions.OWNER,
+                    otherSpace to SpaceMemberPermissions.OWNER
+                )
+            )
+        }
+        settings.stub {
+            onBlocking { getQuickCaptureDraft(SpaceId(otherSpace)) } doReturn otherDraft
+        }
+        spaceManager.stub {
+            onBlocking { set(otherSpace, false) } doReturn Result.success(mock<Config>())
+        }
+        fetchObject.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(
+                ObjectWrapper.Basic(
+                    mapOf(
+                        Relations.ID to otherDraft,
+                        Relations.IS_HIDDEN to true,
+                        // No NAME: the only evidence of content is the snippet.
+                        Relations.SNIPPET to "call the dentist"
+                    )
+                )
+            )
+        }
+
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+        vm.onSpaceSelected(target = otherSpace, sourceHasContent = true)
+        coroutineTestRule.advanceUntilIdle()
+
+        val confirmation = vm.replaceDraftConfirmation.value
+        assertTrue(
+            confirmation != null,
+            "a body-only draft must not be deleted without confirmation"
+        )
+        verifyBlocking(deleteObjects, never()) { async(any()) }
+
+        // The mock returns the snippet whatever is asked for, so the behavioural assertion
+        // above cannot catch the actual defect — the middleware returns only requested keys,
+        // and omitting SNIPPET made every body-only draft read as empty. Assert the request.
+        val params = argumentCaptor<FetchObject.Params>()
+        verifyBlocking(fetchObject, atLeastOnce()) { async(params.capture()) }
+        assertTrue(
+            params.allValues.all { it.keys.contains(Relations.SNIPPET) },
+            "draft validation must request SNIPPET, else body-only drafts read as empty"
+        )
     }
 }

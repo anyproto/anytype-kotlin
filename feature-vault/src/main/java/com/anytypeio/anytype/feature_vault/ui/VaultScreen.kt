@@ -146,7 +146,8 @@ fun VaultScreen(
                         onOrderChanged = onOrderChanged,
                         onDragEnd = onDragEnd,
                         onSpaceSettings = onSpaceSettings,
-                        onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
+                        onDeleteOrLeaveSpace = onDeleteOrLeaveSpace,
+                        reservesFabSpace = showQuickCaptureFab
                     )
                 }
             }
@@ -181,7 +182,8 @@ fun VaultScreenContent(
     onOrderChanged: (String, String) -> Unit,
     onDragEnd: () -> Unit = { /* No-op */ },
     onSpaceSettings: (Id) -> Unit,
-    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit
+    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit,
+    reservesFabSpace: Boolean = false
 ) {
     var expandedSpaceId by remember { mutableStateOf<String?>(null) }
 
@@ -254,11 +256,14 @@ fun VaultScreenContent(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             // Edge-to-edge: cards draw under the gesture area; the bottom
             // inset lives in contentPadding so the last card scrolls clear.
+            // The Scaffold uses zero content insets, so the quick-capture FAB overlaps the
+            // list rather than displacing it — the last card needs room to scroll past it,
+            // or the FAB permanently covers that card's mute/unread controls.
             contentPadding = PaddingValues(
                 top = 4.dp,
                 bottom = WindowInsets.navigationBars
                     .asPaddingValues()
-                    .calculateBottomPadding() + 8.dp
+                    .calculateBottomPadding() + if (reservesFabSpace) FAB_RESERVED_SPACE else 8.dp
             )
         ) {
             // Pinned Spaces Section
@@ -556,6 +561,9 @@ fun VaultScreenContent(
         }
     }
 }
+
+/** 56dp FAB + its 16dp bottom margin + 8dp breathing room. */
+private val FAB_RESERVED_SPACE = 80.dp
 
 const val TYPE_SPACE = "space"
 const val TYPE_DATA_SPACE_WITH_CHAT = "data_space_with_chat"

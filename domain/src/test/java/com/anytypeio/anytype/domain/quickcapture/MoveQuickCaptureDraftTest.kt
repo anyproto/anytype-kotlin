@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.util.dispatchers
@@ -33,6 +34,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verifyBlocking
@@ -55,6 +57,9 @@ class MoveQuickCaptureDraftTest {
     @Mock
     lateinit var logger: Logger
 
+    @Mock
+    lateinit var settings: UserSettingsRepository
+
     lateinit var usecase: MoveQuickCaptureDraft
 
     private val fromSpace = SpaceId(MockDataFactory.randomUuid())
@@ -76,6 +81,28 @@ class MoveQuickCaptureDraftTest {
             marks = emptyList()
         ),
         fields = Block.Fields.empty()
+    )
+
+    /**
+     * The target draft as it looks after a successful paste. [withContent] false models the
+     * failure the move must catch: a copy/paste that reports success but carries nothing.
+     */
+    private fun targetView(withContent: Boolean = true) = ObjectView(
+        root = createdDraft,
+        blocks = buildList {
+            add(
+                Block(
+                    id = createdDraft,
+                    children = if (withContent) listOf(paragraphId) else emptyList(),
+                    content = Block.Content.Smart,
+                    fields = Block.Fields.empty()
+                )
+            )
+            if (withContent) add(paragraph)
+        },
+        details = emptyMap(),
+        objectRestrictions = emptyList(),
+        dataViewRestrictions = emptyList()
     )
 
     private fun sourceView(withContent: Boolean = true) = ObjectView(
@@ -122,14 +149,22 @@ class MoveQuickCaptureDraftTest {
         usecase = MoveQuickCaptureDraft(
             repo = repo,
             getDefaultObjectType = getDefaultObjectType,
+            settings = settings,
             logger = logger,
             dispatchers = dispatchers
         )
     }
 
-    private fun stubHappyPath(typeInTargetSpace: Boolean, hiddenApplied: Boolean = true) {
+    private fun stubHappyPath(
+        typeInTargetSpace: Boolean,
+        hiddenApplied: Boolean = true,
+        targetCarriesContent: Boolean = true
+    ) {
         repo.stub {
             onBlocking { getObject(sourceDraft, fromSpace) } doReturn sourceView()
+            // Read back after the paste: the move verifies the text actually landed before
+            // it permanently deletes the source.
+            onBlocking { getObject(createdDraft, toSpace) } doReturn targetView(targetCarriesContent)
             onBlocking {
                 searchObjects(
                     space = toSpace,
@@ -294,5 +329,45 @@ class MoveQuickCaptureDraftTest {
         verifyBlocking(repo, never()) { copy(any()) }
         verifyBlocking(repo, never()) { paste(any()) }
         verifyBlocking(repo) { deleteObjects(listOf(sourceDraft)) }
+    }
+
+    @Test
+    fun `keeps the source when the paste reports success but carries no text`() = runBlocking {
+        // Object.ListDelete is permanent, so a silently empty copy must not be committed.
+        stubHappyPath(typeInTargetSpace = true, targetCarriesContent = false)
+
+        assertFailsWith<IllegalStateException> {
+            usecase.run(
+                MoveQuickCaptureDraft.Params(
+                    from = sourceDraft,
+                    fromSpace = fromSpace,
+                    toSpace = toSpace
+                )
+            )
+        }
+
+        // The half-created target is rolled back and the source survives intact.
+        verifyBlocking(repo) { deleteObjects(listOf(createdDraft)) }
+        verifyBlocking(repo, never()) { deleteObjects(listOf(sourceDraft)) }
+    }
+
+    @Test
+    fun `points the target space at the moved draft before deleting the source`() = runBlocking {
+        stubHappyPath(typeInTargetSpace = true)
+
+        usecase.run(
+            MoveQuickCaptureDraft.Params(
+                from = sourceDraft,
+                fromSpace = fromSpace,
+                toSpace = toSpace
+            )
+        )
+
+        // Ordering is the whole point: a hidden draft no pointer names is unreachable, so the
+        // pointer must exist before the only other copy is destroyed.
+        val order = inOrder(settings, repo)
+        order.verifyBlocking(settings) { setQuickCaptureDraft(toSpace, createdDraft) }
+        order.verifyBlocking(repo) { deleteObjects(listOf(sourceDraft)) }
+        verifyBlocking(settings) { clearQuickCaptureDraft(fromSpace) }
     }
 }

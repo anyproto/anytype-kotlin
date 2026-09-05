@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import javax.inject.Inject
@@ -33,6 +34,15 @@ import kotlinx.coroutines.withContext
  * rolled back — never a hidden orphan copy of the user's text. Object deletion here is
  * `Object.ListDelete` (permanent, no bin), which is why the ordering matters.
  *
+ * The draft pointers are rewritten HERE rather than by the caller, inside the same
+ * uninterruptible block as the source delete. A caller cannot do it safely: ResultInteractor
+ * runs doWork in `withContext(dispatchers.io)`, and withContext rethrows CancellationException
+ * on resume if its parent was cancelled, so a caller's `fold(onSuccess = ...)` never runs when
+ * the sheet is dismissed mid-move. Bookkeeping left there would be skipped while this block
+ * still deleted the source, stranding the user's text in a hidden object no pointer names.
+ * The target pointer is written BEFORE the source is deleted, so an interruption leaves a
+ * recoverable duplicate rather than an unreachable orphan.
+ *
  * Deliberately uses the repository directly instead of the [com.anytypeio.anytype.domain.clipboard.Copy]
  * use case: that one also writes the user's system clipboard, which must not be clobbered
  * as a side effect of switching the space chip.
@@ -43,6 +53,7 @@ import kotlinx.coroutines.withContext
 class MoveQuickCaptureDraft @Inject constructor(
     private val repo: BlockRepository,
     private val getDefaultObjectType: GetDefaultObjectType,
+    private val settings: UserSettingsRepository,
     private val logger: Logger,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<MoveQuickCaptureDraft.Params, Id>(dispatchers.io) {
@@ -120,6 +131,14 @@ class MoveQuickCaptureDraft @Inject constructor(
                         isPartOfBlock = null
                     )
                 )
+                // Verify the text actually landed before the source is destroyed. A copy or
+                // paste that fails *without throwing* (an empty clipboard slot; cross-space
+                // paste behaving differently than expected — spec V4) would otherwise commit
+                // an empty target and permanently delete the only copy of the body. Throwing
+                // here routes into the rollback below, leaving the source authoritative.
+                if (hasText(contentBlocks) && !hasText(readContentBlocks(created.id, params.toSpace))) {
+                    error("Quick capture: move produced an empty target draft; keeping source")
+                }
             }
         } catch (e: Throwable) {
             // Source stays authoritative; never leave a hidden orphan copy of the text.
@@ -134,12 +153,38 @@ class MoveQuickCaptureDraft @Inject constructor(
         // not be interruptible half-way (cancellation between paste and delete would leave
         // two copies); a *failed* delete leaves the hidden source as a logged orphan, which
         // is preferable to rolling back the copy the caller is about to point at.
+        //
+        // Pointer first, delete second. A hidden draft that no pointer names is unreachable
+        // by construction — it is excluded from search, recents and widgets — so writing the
+        // pointer last would make any interruption here permanent data loss, while writing it
+        // first makes the same interruption a duplicate the next open can reconcile.
         withContext(NonCancellable) {
+            runCatching { settings.setQuickCaptureDraft(space = params.toSpace, obj = created.id) }
+                .onFailure { logger.logException(it, "Quick capture: could not point target space at moved draft") }
+            runCatching { settings.clearQuickCaptureDraft(params.fromSpace) }
+                .onFailure { logger.logException(it, "Quick capture: could not clear source draft pointer") }
             runCatching { repo.deleteObjects(listOf(params.from)) }
                 .onFailure { logger.logException(it, "Quick capture: could not delete source draft after move") }
         }
 
         return created.id
+    }
+
+    /** True when any of these blocks carries non-blank text. */
+    private fun hasText(blocks: List<Block>): Boolean = blocks.any { block ->
+        val content = block.content
+        content is Block.Content.Text && content.text.isNotBlank()
+    }
+
+    /** The target draft's blocks below the header, as they exist server-side after the paste. */
+    private suspend fun readContentBlocks(obj: Id, space: SpaceId): List<Block> {
+        val view = repo.getObject(id = obj, space = space)
+        val root = view.blocks.firstOrNull { it.id == view.root }
+        val header = view.blocks.firstOrNull { block ->
+            val content = block.content
+            content is Block.Content.Layout && content.type == Block.Content.Layout.Type.HEADER
+        }
+        return collectWithDescendants(root?.children.orEmpty().filter { it != header?.id }, view.blocks)
     }
 
     private fun collectWithDescendants(roots: List<Id>, all: List<Block>): List<Block> {

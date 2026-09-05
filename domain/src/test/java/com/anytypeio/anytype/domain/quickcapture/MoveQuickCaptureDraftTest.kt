@@ -305,8 +305,16 @@ class MoveQuickCaptureDraftTest {
             )
         )
 
+        // Both markers are restored: isHidden keeps it out of the UI, isDraft keeps it
+        // findable by the cross-device discovery query.
         verifyBlocking(repo) {
-            setObjectDetails(createdDraft, mapOf(Relations.IS_HIDDEN to true))
+            setObjectDetails(
+                createdDraft,
+                mapOf(
+                    Relations.IS_HIDDEN to true,
+                    Relations.IS_DRAFT to true
+                )
+            )
         }
     }
 

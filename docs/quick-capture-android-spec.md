@@ -138,10 +138,11 @@ Retarget the current thought, don't swap drafts:
 ## 5. Draft mechanics (the core contract)
 
 > **Revised 2026-09-05 — drafts become discoverable, not device-local.** §5a is the target
-> model; §5b is what currently ships. The change is gated on a new `isDraft` relation being
-> added heart-side (relations.json + bundled relations); until it lands, §5b stands.
+> Drafts always synced between devices; what they lacked was a property to ask the store for
+> them by. `isDraft` (bool, heart-side) is that property. §5b describes the pointer, which
+> survives as a per-device hint.
 
-### 5a. Target model: drafts are found by query, on any device
+### 5a. Drafts are found by query, on any device — IMPLEMENTED
 
 A draft is a real object carrying `isDraft: true` (new) and `isHidden: true`. It is identified
 by **who made it and where**, not by a pointer on one phone — which is what lets you start a
@@ -184,15 +185,18 @@ draft mechanism is built to avoid. Reconciliation (surface both, or merge) is a 
 If unsent text must not leave the device until sent, that is a heart-side guarantee and this
 design does not provide it — worth settling before shared-space capture ships.
 
-**Migration.** Drafts created before `isDraft` exists carry only `isHidden`, so the new query
-will not find them and they become invisible unsent notes. Either stamp `isDraft` on the
-pointed-at draft once at upgrade (the pointer is still there to name it), or run a transitional
-query that also accepts `isHidden && ShouldEmptyDelete && creator ∈ mine`. Do not ship the new
-query without one of the two.
+**No migration.** There are no pre-existing drafts in the wild, so nothing needs stamping.
 
-**Open questions for heart**: is `isDraft` writable from the client at create time (via
-`prefilled`) or set by the middleware? Is it in the default index, and filterable in
-`CrossSpaceSearch`? Does it need to be in `skipRefreshKeys`?
+**Implementation**: `SearchQuickCaptureDrafts` (cross-space query, newest first, `IN` over our
+participants) and `FetchQuickCaptureDraft` (single draft by id, creator-scoped). `isDraft` is
+written in `prefilled` at create — in the view model and in `MoveQuickCaptureDraft` — and
+cleared alongside `isHidden` on publish. `isDraft && isHidden` is now the definitive "still an
+unsent draft" predicate used by every validation and both delete guards; `isHidden` alone was
+only ever a proxy for it.
+
+**Still to confirm against heart**: that `isDraft` is client-writable via `prefilled` (else the
+existing create-then-set fallback covers it, as it already does for `isHidden`), that it is
+indexed and filterable in `CrossSpaceSearch`, and whether it belongs in `skipRefreshKeys`.
 
 ### 5b. Current implementation: one draft per space, device-local pointer
 
@@ -370,14 +374,14 @@ suspend fun suggest(text: String, typeNames: List<String>): String? =
 | V6 | `LAST_USED_DATE` in type-subscription keys (a); heart bumps it on `SetObjectType` (b) | §6 sorting |
 | V7 | Editor's `BottomSheetBehavior` toolbars (undo/redo, style) inside a `BottomSheetDialog` | §7 |
 | V8 | ML Kit GenAI beta4 response accessor naming + real-device eval of Nano's pick-one-of-N accuracy on short notes | §9; beta API surface may shift |
-| V9 | `isDraft` exists in relations.json/bundled relations, is client-writable at create (`prefilled`), is indexed, and is filterable in `CrossSpaceSearch` | §5a is blocked on all four |
-| V10 | `creator IN [participant ids]` is supported as a cross-space filter | §5a discovery; a single creator id cannot work cross-space |
+| V9 | `isDraft` is client-writable at create (`prefilled`), indexed, and filterable in `CrossSpaceSearch` | §5a assumes all three; the create-then-set fallback already covers the first |
+| V10 | `creator IN [participant ids]` is supported as a cross-space filter | §5a discovery; a single creator id cannot work cross-space — fails silently as "no drafts" |
 | V11 | Cross-device round trip: draft made on device A appears on device B, edits merge, and publishing on one clears it on the other | the reason §5a exists |
 | V12 | Behaviour when `allStoresLoaded == false` — confirm partial results are distinguishable from genuinely empty | §5a; deciding wrong creates duplicate drafts |
 
 ## 14. Known gaps echoed from the iOS handoff (still true here)
 
-- ~~Hidden-draft is an interim substitute for a real heart-side unsynced-draft state; a queryable `isDraft` relation needs heart work (GO follow-up).~~ **Now the plan** — see §5a. `isDraft` is being added heart-side; once it lands, drafts stop being device-local and become cross-device.
+- ~~Hidden-draft is an interim substitute for a real heart-side unsynced-draft state; a queryable `isDraft` relation needs heart work (GO follow-up).~~ **Closed** — `isDraft` exists and drafts are now found by query (§5a). Drafts were always cross-device; this is what makes them reachable from another device.
 - A proper cross-space types subscription is a future shared foundation (D2 is the pragmatic v1).
 - AI min-length guard stays low; log every silent AI fallback; never block capture on AI.
 

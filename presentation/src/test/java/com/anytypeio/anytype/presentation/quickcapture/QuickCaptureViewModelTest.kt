@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.quickcapture.FetchQuickCaptureDraft
 import com.anytypeio.anytype.domain.quickcapture.MoveQuickCaptureDraft
+import com.anytypeio.anytype.domain.quickcapture.SearchQuickCaptureDrafts
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
@@ -64,6 +65,7 @@ class QuickCaptureViewModelTest {
     @Mock lateinit var settings: UserSettingsRepository
     @Mock lateinit var createObject: CreateObject
     @Mock lateinit var fetchQuickCaptureDraft: FetchQuickCaptureDraft
+    @Mock lateinit var searchQuickCaptureDrafts: SearchQuickCaptureDrafts
 
     @Mock lateinit var setObjectDetails: SetObjectDetails
     @Mock lateinit var deleteObjects: DeleteObjects
@@ -88,6 +90,7 @@ class QuickCaptureViewModelTest {
         settings = settings,
         createObject = createObject,
         fetchQuickCaptureDraft = fetchQuickCaptureDraft,
+        searchQuickCaptureDrafts = searchQuickCaptureDrafts,
         setObjectDetails = setObjectDetails,
         deleteObjects = deleteObjects,
         moveQuickCaptureDraft = moveQuickCaptureDraft,
@@ -117,6 +120,11 @@ class QuickCaptureViewModelTest {
         }
         spaceManager.stub {
             onBlocking { set(targetSpace, false) } doReturn Result.success(mock<Config>())
+        }
+        searchQuickCaptureDrafts.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(
+                SearchQuickCaptureDrafts.Result(drafts = emptyList(), isComplete = true)
+            )
         }
         createObject.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
@@ -177,7 +185,8 @@ class QuickCaptureViewModelTest {
                 ObjectWrapper.Basic(
                     mapOf(
                         Relations.ID to existing,
-                        Relations.IS_HIDDEN to true
+                        Relations.IS_HIDDEN to true,
+                        Relations.IS_DRAFT to true
                     )
                 )
             )
@@ -222,11 +231,22 @@ class QuickCaptureViewModelTest {
             onBlocking { getQuickCaptureLastSpace() } doReturn otherSpace
             onBlocking { getQuickCaptureDraft(SpaceId(otherSpace)) } doReturn pendingDraft
         }
+        val pending = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to pendingDraft,
+                Relations.SPACE_ID to otherSpace,
+                Relations.IS_HIDDEN to true,
+                Relations.IS_DRAFT to true
+            )
+        )
         fetchQuickCaptureDraft.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(pending)
+        }
+        // The pointer is only a hint now: it is honoured because the store still lists that
+        // draft. Discovery is the source of truth for what exists.
+        searchQuickCaptureDrafts.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
-                ObjectWrapper.Basic(
-                    mapOf(Relations.ID to pendingDraft, Relations.IS_HIDDEN to true)
-                )
+                SearchQuickCaptureDrafts.Result(drafts = listOf(pending), isComplete = true)
             )
         }
 
@@ -324,6 +344,69 @@ class QuickCaptureViewModelTest {
         verifyBlocking(deleteObjects, never()) { async(any()) }
     }
 
+    /**
+     * The point of the whole discovery model: a draft written on another device has no local
+     * pointer here, and must still be found and reopened rather than replaced by a new one.
+     */
+    @Test
+    fun `opens a draft created on another device when this one has no pointer`() = runTest {
+        val remoteDraft = MockDataFactory.randomUuid()
+        val remote = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to remoteDraft,
+                Relations.SPACE_ID to targetSpace,
+                Relations.IS_HIDDEN to true,
+                Relations.IS_DRAFT to true
+            )
+        )
+        // No pointer on this device at all.
+        settings.stub {
+            onBlocking { getQuickCaptureLastSpace() } doReturn null
+            onBlocking { getQuickCaptureDraft(SpaceId(targetSpace)) } doReturn null
+        }
+        searchQuickCaptureDrafts.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(
+                SearchQuickCaptureDrafts.Result(drafts = listOf(remote), isComplete = true)
+            )
+        }
+        fetchQuickCaptureDraft.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(remote)
+        }
+
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+
+        val state = vm.screenState.value
+        assertTrue(state is QuickCaptureViewModel.ScreenState.Ready)
+        assertEquals(remoteDraft, state.draft, "must adopt the draft, not create a second one")
+        verifyBlocking(createObject, never()) { async(any()) }
+    }
+
+    /**
+     * A partial cross-space result means "unknown", not "no drafts". Creating one here is how
+     * a space that already holds a draft ends up with two.
+     */
+    @Test
+    fun `does not treat a partial draft view as proof that none exist`() = runTest {
+        settings.stub {
+            onBlocking { getQuickCaptureLastSpace() } doReturn null
+            onBlocking { getQuickCaptureDraft(SpaceId(targetSpace)) } doReturn null
+        }
+        searchQuickCaptureDrafts.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(
+                SearchQuickCaptureDrafts.Result(drafts = emptyList(), isComplete = false)
+            )
+        }
+
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+
+        // Pencils must not be cleared on an inconclusive answer.
+        assertTrue(vm.spaces.value.none { it.hasDraft })
+    }
+
     private val conflictSpace = MockDataFactory.randomUuid()
     private val conflictDraft = MockDataFactory.randomUuid()
 
@@ -352,6 +435,7 @@ class QuickCaptureViewModelTest {
                     mapOf(
                         Relations.ID to conflictDraft,
                         Relations.IS_HIDDEN to true,
+                        Relations.IS_DRAFT to true,
                         Relations.NAME to "already here"
                     )
                 )
@@ -396,6 +480,7 @@ class QuickCaptureViewModelTest {
                     mapOf(
                         Relations.ID to otherDraft,
                         Relations.IS_HIDDEN to true,
+                        Relations.IS_DRAFT to true,
                         // No NAME: the only evidence of content is the snippet.
                         Relations.SNIPPET to "call the dentist"
                     )

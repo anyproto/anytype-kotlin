@@ -175,6 +175,9 @@ class QuickCaptureViewModel(
      */
     private val draftSpaces = MutableStateFlow<Set<Id>>(emptySet())
 
+    /** Last cross-space answer, so a draft made on another device can actually be opened. */
+    private var lastDiscovery: SearchQuickCaptureDrafts.Result? = null
+
     /**
      * True when the cross-space query found a draft in some space other than the one on
      * screen — surfaced as a dot beside the space chip.
@@ -394,6 +397,7 @@ class QuickCaptureViewModel(
         val result = searchQuickCaptureDrafts.async(Unit).getOrNull()
             ?: SearchQuickCaptureDrafts.Result(drafts = emptyList(), isComplete = false)
         if (result.isComplete) {
+            lastDiscovery = result
             draftSpaces.value = result.spacesWithDrafts
         } else {
             Timber.d("Quick capture: partial draft view, keeping known draft spaces")
@@ -420,8 +424,37 @@ class QuickCaptureViewModel(
      * still refuses anything already published — which is what keeps the trash and the
      * replaced-draft delete off real notes.
      */
-    private fun ObjectWrapper.Basic.isDraft(): Boolean =
-        getSingleValue<Boolean>(Relations.IS_DRAFT) == true && isHidden == true
+    private fun ObjectWrapper.Basic.isDraft(): Boolean {
+        if (isHidden != true) return false
+        return when (getSingleValue<Boolean>(Relations.IS_DRAFT)) {
+            true -> true
+            false -> false // explicitly published; never resurrect it as a draft
+            // The relation does not exist server-side yet (GO-7499), so heart drops the key
+            // and every draft comes back without it. Requiring `true` made nothing anywhere
+            // a draft: restore never fired, and a space holding text read as empty — which
+            // is how a real draft got orphaned by a second one being created beside it.
+            // isHidden is what marked drafts before isDraft existed. Retires itself once the
+            // relation ships, because the value is then always present.
+            null -> true
+        }
+    }
+
+    /**
+     * The draft a space already holds — the local pointer first, then whatever the
+     * cross-space query found.
+     *
+     * The pointer alone is not enough: it only knows about drafts made on THIS device, so a
+     * draft written on another phone was invisible to every decision even while the picker
+     * drew a dot for it from the query. That split is what made switching into a space that
+     * visibly had a draft offer to start a new one — and starting one there would have
+     * orphaned the real draft.
+     */
+    private suspend fun existingDraftIn(space: SpaceId): Id? {
+        val pointer = runCatching { settings.getQuickCaptureDraft(space) }.getOrNull()
+        if (pointer != null && isDraftAlive(space = space, draft = pointer)) return pointer
+        val discovered = lastDiscovery?.newestIn(space.id)?.id ?: return null
+        return discovered.takeIf { isDraftAlive(space = space, draft = it) }
+    }
 
     /**
      * Reads the space's draft, scoped by the query to the one this participant created —
@@ -506,15 +539,26 @@ class QuickCaptureViewModel(
     }
 
     private suspend fun ensureDraft(space: SpaceId) {
-        val existing = settings.getQuickCaptureDraft(space)
+        // Adopts a draft made on another device as readily as one made here: creating a
+        // second draft beside an existing one would leave the first with no pointer naming
+        // it, and a hidden object nothing points at is unreachable.
+        val pointer = runCatching { settings.getQuickCaptureDraft(space) }.getOrNull()
+        val existing = existingDraftIn(space)
         if (existing != null) {
-            if (isDraftAlive(space = space, draft = existing)) {
-                screenState.value = ScreenState.Ready(space = space, draft = existing)
-                return
-            } else {
-                Timber.d("Quick capture: stale draft pointer for ${space.id} — creating fresh")
-                settings.clearQuickCaptureDraft(space)
+            if (existing != pointer) {
+                // Point this device at it: either there was no pointer (a draft made on
+                // another device) or it named something else.
+                runCatching { settings.setQuickCaptureDraft(space = space, obj = existing) }
+                    .onFailure { Timber.w(it, "Quick capture: could not point at draft") }
+                refreshDraftSpaces()
             }
+            screenState.value = ScreenState.Ready(space = space, draft = existing)
+            return
+        }
+        // Nothing here on any device, so a pointer that still exists is provably stale.
+        if (pointer != null) {
+            Timber.d("Quick capture: stale draft pointer for ${space.id} — creating fresh")
+            runCatching { settings.clearQuickCaptureDraft(space) }
         }
         createDraft(space)
     }
@@ -601,8 +645,7 @@ class QuickCaptureViewModel(
             // one they can see. The target's draft is never touched — it is off-screen, so
             // any automatic decision about it would be a blind delete.
             if (current is ScreenState.Ready && !isSourceDraftEmpty()) {
-                val existing = runCatching { settings.getQuickCaptureDraft(SpaceId(target)) }
-                    .getOrNull()
+                val existing = existingDraftIn(SpaceId(target))
                 val targetHasContent = existing != null &&
                     draftHasContent(space = SpaceId(target), draft = existing)
 

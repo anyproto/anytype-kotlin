@@ -49,6 +49,9 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.presentation.quickcapture.QuickCaptureViewModel
 
+/** Material's small-badge size. One value so the chip and the picker cannot drift apart. */
+private val DRAFT_DOT_SIZE = 6.dp
+
 /**
  * Single-row header of the quick-capture sheet:
  * [ space chip ▾ ]        [sync ●] [⋯] [🗑] [ ↑ ]
@@ -98,12 +101,6 @@ fun QuickCaptureHeader(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f, fill = false)
                 )
-                Spacer(modifier = Modifier.width(4.dp))
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_arrow_down_18),
-                    contentDescription = stringResource(id = R.string.quick_capture_choose_space),
-                    tint = colorResource(id = R.color.glyph_active)
-                )
                 if (hasDraftsElsewhere) {
                     val draftsElsewhereLabel =
                         stringResource(id = R.string.quick_capture_drafts_elsewhere)
@@ -112,10 +109,16 @@ fun QuickCaptureHeader(
                     // unfinished ones. This is the only hint that opening the picker is
                     // worthwhile. Populated by the background cross-space query, so it
                     // appears a moment after open rather than blocking it.
-                    Spacer(modifier = Modifier.width(6.dp))
+                    //
+                    // Spacing groups it with the chevron rather than the name: wider gap
+                    // before, tight gap after, so it reads as "this control has something
+                    // behind it" instead of as punctuation after the space name. 6dp is
+                    // Material's small-badge size; a numeric badge would need 16dp with 11sp
+                    // text, which would outweigh an 18dp chevron.
+                    Spacer(modifier = Modifier.width(8.dp))
                     Box(
                         modifier = Modifier
-                            .size(6.dp)
+                            .size(DRAFT_DOT_SIZE)
                             .clip(CircleShape)
                             .background(colorResource(id = R.color.palette_system_amber_100))
                             .semantics {
@@ -123,6 +126,12 @@ fun QuickCaptureHeader(
                             }
                     )
                 }
+                Spacer(modifier = Modifier.width(2.dp))
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_arrow_down_18),
+                    contentDescription = stringResource(id = R.string.quick_capture_choose_space),
+                    tint = colorResource(id = R.color.glyph_active)
+                )
             }
         }
         Box(
@@ -251,21 +260,30 @@ fun QuickCaptureSpacePicker(
                         mainSize = 48.dp
                     )
                     Spacer(modifier = Modifier.width(12.dp))
-                    if (view.hasDraft) {
-                        // The same amber dot the space chip uses for "drafts elsewhere": one
-                        // mark, one meaning. A pencil here and a dot there read as two
-                        // different states when they are the same one — an unsent draft.
-                        val hasDraftLabel =
-                            stringResource(id = R.string.quick_capture_space_has_draft)
-                        Box(
-                            modifier = Modifier
-                                .size(6.dp)
-                                .clip(CircleShape)
-                                .background(colorResource(id = R.color.palette_system_amber_100))
-                                .semantics { contentDescription = hasDraftLabel }
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
+                    // The gutter is always reserved, dot or no dot, so every space name
+                    // starts on the same vertical line. Showing it only on marked rows
+                    // shifted those names 14dp right and broke the column.
+                    val hasDraftLabel = stringResource(id = R.string.quick_capture_space_has_draft)
+                    Box(
+                        modifier = Modifier.width(DRAFT_DOT_SIZE),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (view.hasDraft) {
+                            // The same amber dot the space chip uses for "drafts elsewhere":
+                            // one mark, one meaning. A pencil here and a dot there read as
+                            // two different states when they are the same one.
+                            Box(
+                                modifier = Modifier
+                                    .size(DRAFT_DOT_SIZE)
+                                    .clip(CircleShape)
+                                    .background(
+                                        colorResource(id = R.color.palette_system_amber_100)
+                                    )
+                                    .semantics { contentDescription = hasDraftLabel }
+                            )
+                        }
                     }
+                    Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = view.name.ifEmpty { stringResource(id = R.string.untitled) },
                         style = BodyRegular,

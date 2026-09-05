@@ -15,7 +15,7 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import javax.inject.Inject
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
@@ -100,8 +100,9 @@ class SearchQuickCaptureDrafts @Inject constructor(
             .toSet()
         mine(participants.get()).takeIf { it.isNotEmpty() }?.let { return it }
         // Subscription not populated yet — wait briefly rather than answer wrongly.
+        // firstOrNull, not first: `first` throws when the flow completes without a match.
         return withTimeoutOrNull(PARTICIPANT_AWAIT_TIMEOUT_MS) {
-            participants.observe().first { mine(it).isNotEmpty() }.let(::mine)
+            participants.observe().firstOrNull { mine(it).isNotEmpty() }?.let(::mine)
         }.orEmpty()
     }
 

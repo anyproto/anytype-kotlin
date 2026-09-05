@@ -24,10 +24,14 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 
 /**
- * These tests stub the EXACT query the use case is expected to issue, rather than verifying
- * with argument matchers: SpaceId is a value class, and a Mockito matcher for one returns
- * null, which NPEs when the call unboxes it. A stub that does not match returns Mockito's
- * default (an empty list), so a wrong or missing filter surfaces as a null result.
+ * The lookup is by id, and the creator check is applied to the result rather than pushed
+ * into the query. These tests exist mostly to pin the FAIL-OPEN cases: a creator filter in
+ * the query hid real drafts whenever `creator` was unset or our participant could not be
+ * resolved, and an unfindable draft is indistinguishable from a space with no draft — which
+ * is how one got orphaned by a second being created beside it.
+ *
+ * Stubs match the exact expected query: SpaceId is a value class, and a Mockito matcher for
+ * one returns null, which NPEs when the call unboxes it.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class FetchQuickCaptureDraftTest {
@@ -54,7 +58,7 @@ class FetchQuickCaptureDraftTest {
     private val draft = MockDataFactory.randomUuid()
     private val identity = MockDataFactory.randomUuid()
     private val participantId = MockDataFactory.randomUuid()
-    private val keys = listOf(Relations.ID, Relations.NAME)
+    private val keys = listOf(Relations.ID, Relations.CREATOR)
 
     @Before
     fun setup() {
@@ -64,7 +68,6 @@ class FetchQuickCaptureDraftTest {
             auth = auth,
             dispatchers = dispatchers
         )
-        auth.stub { onBlocking { getCurrentAccountId() } doReturn identity }
     }
 
     private fun member(spaceId: String, id: String = participantId) = ObjectWrapper.SpaceMember(
@@ -75,24 +78,22 @@ class FetchQuickCaptureDraftTest {
         )
     )
 
-    /** The query the use case must issue: by id AND scoped to our participant as creator. */
-    private fun scopedFilters(creator: String) = listOf(
-        DVFilter(
-            relation = Relations.ID,
-            value = draft,
-            condition = DVFilterCondition.EQUAL
-        ),
-        DVFilter(
-            relation = Relations.CREATOR,
-            value = creator,
-            condition = DVFilterCondition.EQUAL
-        )
-    )
-
-    private fun stubSearch(filters: List<DVFilter>, result: List<Map<String, Any?>>) {
+    /** The query is by id alone — no creator filter, so nothing of ours can be hidden. */
+    private fun stubSearch(result: List<Map<String, Any?>>) {
         repo.stub {
             onBlocking {
-                searchObjects(space = space, filters = filters, limit = 1, keys = keys)
+                searchObjects(
+                    space = space,
+                    filters = listOf(
+                        DVFilter(
+                            relation = Relations.ID,
+                            value = draft,
+                            condition = DVFilterCondition.EQUAL
+                        )
+                    ),
+                    limit = 1,
+                    keys = keys
+                )
             } doReturn result
         }
     }
@@ -102,38 +103,52 @@ class FetchQuickCaptureDraftTest {
     )
 
     @Test
-    fun `scopes the query to this participant as creator`() = runBlocking {
+    fun `returns our own draft`() = runBlocking {
+        auth.stub { onBlocking { getCurrentAccountId() } doReturn identity }
         participants.stub { on { get() } doReturn listOf(member(space.id)) }
-        // Only the creator-scoped query is stubbed. An unscoped one returns Mockito's
-        // default empty list, so this assertion fails if the filter is dropped — which is
-        // the whole point: another participant's draft must never come back.
-        stubSearch(scopedFilters(participantId), listOf(mapOf(Relations.ID to draft)))
+        stubSearch(listOf(mapOf(Relations.ID to draft, Relations.CREATOR to participantId)))
 
         assertEquals(draft, run()?.id)
     }
 
     @Test
-    fun `matches the participant of this space, not merely this identity`() = runBlocking {
-        val otherSpaceParticipant = MockDataFactory.randomUuid()
-        // Same account, another space listed first. Taking the first identity match would
-        // filter on a participant id that never appears as creator in this space, so every
-        // draft here would read as missing.
-        participants.stub {
-            on { get() } doReturn listOf(
-                member(spaceId = MockDataFactory.randomUuid(), id = otherSpaceParticipant),
-                member(space.id)
-            )
-        }
-        stubSearch(scopedFilters(otherSpaceParticipant), emptyList())
-        stubSearch(scopedFilters(participantId), listOf(mapOf(Relations.ID to draft)))
+    fun `refuses a draft another participant created`() = runBlocking {
+        auth.stub { onBlocking { getCurrentAccountId() } doReturn identity }
+        participants.stub { on { get() } doReturn listOf(member(space.id)) }
+        stubSearch(
+            listOf(mapOf(Relations.ID to draft, Relations.CREATOR to MockDataFactory.randomUuid()))
+        )
 
-        assertEquals(draft, run()?.id)
+        assertNull(run(), "another member's draft must never be surfaced")
+    }
+
+    @Test
+    fun `returns a draft whose creator is not set`() = runBlocking {
+        auth.stub { onBlocking { getCurrentAccountId() } doReturn identity }
+        participants.stub { on { get() } doReturn listOf(member(space.id)) }
+        // No creator on the object: the veto cannot be certain, so it must not fire.
+        stubSearch(listOf(mapOf(Relations.ID to draft)))
+
+        assertEquals(draft, run()?.id, "an unset creator must not hide our own draft")
+    }
+
+    @Test
+    fun `returns the draft when our participant cannot be resolved`() = runBlocking {
+        // Identity unavailable and no participants loaded — the previous query-level filter
+        // silently returned nothing here, which read as "this space has no draft".
+        auth.stub { onBlocking { getCurrentAccountId() } doReturn identity }
+        participants.stub { on { get() } doReturn emptyList() }
+        participants.stub { on { observe() } doReturn kotlinx.coroutines.flow.emptyFlow() }
+        stubSearch(listOf(mapOf(Relations.ID to draft, Relations.CREATOR to participantId)))
+
+        assertEquals(draft, run()?.id, "an unresolvable participant must not hide the draft")
     }
 
     @Test
     fun `returns null when the store has no match`() = runBlocking {
+        auth.stub { onBlocking { getCurrentAccountId() } doReturn identity }
         participants.stub { on { get() } doReturn listOf(member(space.id)) }
-        stubSearch(scopedFilters(participantId), emptyList())
+        stubSearch(emptyList())
 
         assertNull(run())
     }

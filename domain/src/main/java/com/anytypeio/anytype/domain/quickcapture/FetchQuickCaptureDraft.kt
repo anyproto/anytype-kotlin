@@ -13,26 +13,25 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import javax.inject.Inject
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * Reads a quick-capture draft from the object store, scoped to this account.
  *
  * A draft is unique per space *per participant*: every member of a shared space keeps their
- * own, and other members' drafts are invisible — they are hidden objects belonging to
- * someone else, and nothing in quick capture may surface or act on one. The creator filter
- * is therefore part of the query rather than a check applied to the result: the store never
- * returns another participant's draft in the first place, so there is no window in which one
- * could be adopted, counted, or deleted.
+ * own, and nothing in quick capture may surface or act on someone else's.
+ *
+ * That check is applied to the RESULT, and vetoes only when it is certain — it is
+ * deliberately not a filter in the query. As a filter it excluded real drafts: an object
+ * whose `creator` is unset, or whose owning participant this client cannot resolve, simply
+ * never came back, and "no draft found" is indistinguishable from "this space has no draft".
+ * A space holding text then looked empty, and the draft in it was orphaned by creating a
+ * second one beside it. Fetching by id and refusing only a *provably* foreign creator fails
+ * the safe way: our own draft is always found, another member's is still refused.
  *
  * The participant id differs per space for the same account, which is why it is resolved
  * against [SpaceId] rather than taken as a single account-wide value.
- *
- * If our participant cannot be resolved (the subscription has not populated yet), the query
- * falls back to an id-only lookup rather than returning nothing — otherwise a cold start
- * would report "no draft" and strand the existing one behind a freshly created replacement.
- * That fallback is safe because the id came from this device's own pointer.
  */
 class FetchQuickCaptureDraft @Inject constructor(
     private val repo: BlockRepository,
@@ -42,34 +41,31 @@ class FetchQuickCaptureDraft @Inject constructor(
 ) : ResultInteractor<FetchQuickCaptureDraft.Params, ObjectWrapper.Basic?>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): ObjectWrapper.Basic? {
-        val creator = ownParticipantId(params.space)
-        val filters = buildList {
-            add(
+        val result = repo.searchObjects(
+            space = params.space,
+            filters = listOf(
                 DVFilter(
                     relation = Relations.ID,
                     value = params.draft,
                     condition = DVFilterCondition.EQUAL
                 )
-            )
-            if (creator != null) {
-                add(
-                    DVFilter(
-                        relation = Relations.CREATOR,
-                        value = creator,
-                        condition = DVFilterCondition.EQUAL
-                    )
-                )
-            }
-        }
-        val result = repo.searchObjects(
-            space = params.space,
-            filters = filters,
+            ),
             limit = 1,
             keys = params.keys
         )
-        return result.firstOrNull()
+        val obj = result.firstOrNull()
             ?.takeIf { it.isNotEmpty() }
             ?.let { ObjectWrapper.Basic(it) }
+            ?: return null
+
+        // Veto only on certainty: both sides known and different. An absent creator, or a
+        // participant we cannot resolve, must never hide our own draft.
+        val creator = obj.getSingleValue<Id>(Relations.CREATOR)
+        if (creator != null) {
+            val mine = ownParticipantId(params.space)
+            if (mine != null && creator != mine) return null
+        }
+        return obj
     }
 
     /** This account's participant object in [space] — the value recorded as `creator`. */
@@ -79,9 +75,11 @@ class FetchQuickCaptureDraft @Inject constructor(
             member.identity == identity && member.spaceId == space.id
         }?.id
         find(participants.get())?.let { return it }
-        // Not populated yet — wait briefly rather than silently querying unscoped.
+        // Not populated yet — wait briefly. firstOrNull, not first: a flow that completes
+        // without ever matching makes `first` THROW, which would fail the whole lookup and
+        // report the draft as missing — the very outcome this veto must never cause.
         return withTimeoutOrNull(PARTICIPANT_AWAIT_TIMEOUT_MS) {
-            participants.observe().first { find(it) != null }.let(::find)
+            participants.observe().firstOrNull { find(it) != null }?.let(::find)
         }
     }
 

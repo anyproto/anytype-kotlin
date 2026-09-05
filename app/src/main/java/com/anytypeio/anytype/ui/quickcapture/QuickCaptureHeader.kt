@@ -252,17 +252,19 @@ fun QuickCaptureSpacePicker(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     if (view.hasDraft) {
-                        // Left of the name: this space is already holding an unsent draft, so
-                        // switching to it opens that draft rather than a blank one.
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_edit_24),
-                            contentDescription = stringResource(
-                                id = R.string.quick_capture_space_has_draft
-                            ),
-                            tint = colorResource(id = R.color.glyph_active),
-                            modifier = Modifier.size(18.dp)
+                        // The same amber dot the space chip uses for "drafts elsewhere": one
+                        // mark, one meaning. A pencil here and a dot there read as two
+                        // different states when they are the same one — an unsent draft.
+                        val hasDraftLabel =
+                            stringResource(id = R.string.quick_capture_space_has_draft)
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .clip(CircleShape)
+                                .background(colorResource(id = R.color.palette_system_amber_100))
+                                .semantics { contentDescription = hasDraftLabel }
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
                     }
                     Text(
                         text = view.name.ifEmpty { stringResource(id = R.string.untitled) },

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.quickcapture
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -27,6 +28,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.quickcapture.DeleteQuickCaptureDraftIfEmpty
 import com.anytypeio.anytype.domain.quickcapture.FetchQuickCaptureDraft
 import com.anytypeio.anytype.domain.quickcapture.MoveQuickCaptureDraft
 import com.anytypeio.anytype.domain.quickcapture.SearchQuickCaptureDrafts
@@ -38,6 +40,8 @@ import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
+import javax.inject.Named
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -88,7 +92,9 @@ class QuickCaptureViewModel(
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val typeSuggestionEngine: TypeSuggestionEngine,
     private val fetchQuickCaptureDraft: FetchQuickCaptureDraft,
-    private val searchQuickCaptureDrafts: SearchQuickCaptureDrafts
+    private val searchQuickCaptureDrafts: SearchQuickCaptureDrafts,
+    private val deleteQuickCaptureDraftIfEmpty: DeleteQuickCaptureDraftIfEmpty,
+    private val appScope: CoroutineScope
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     sealed class ScreenState {
@@ -781,11 +787,13 @@ class QuickCaptureViewModel(
                     // the type/relation stores have already switched space beneath it.
                     mode == SwitchMode.KEEP_CURRENT -> {
                         screenState.value = ScreenState.Loading
+                        deleteSourceIfEmpty(current)
                         ensureDraft(SpaceId(target))
                     }
                     isSourceDraftEmpty() -> {
                         // Nothing typed — just open/create the target space's own draft.
                         screenState.value = ScreenState.Loading
+                        deleteSourceIfEmpty(current)
                         ensureDraft(SpaceId(target))
                     }
                     else -> {
@@ -795,6 +803,28 @@ class QuickCaptureViewModel(
                     }
                 }
             }
+        )
+    }
+
+    /**
+     * The space we are leaving keeps its draft only if that draft holds something. An empty
+     * one is not "parked", it is litter: it would keep a pointer and a picker dot alive for a
+     * space with nothing in it.
+     *
+     * Safe to run unconditionally — the use case re-reads the object and deletes only when it
+     * is genuinely empty and still a draft, so a draft with content is never touched here.
+     */
+    private suspend fun deleteSourceIfEmpty(source: ScreenState.Ready) {
+        deleteQuickCaptureDraftIfEmpty.async(
+            DeleteQuickCaptureDraftIfEmpty.Params(space = source.space, draft = source.draft)
+        ).fold(
+            onSuccess = { deleted ->
+                if (deleted) {
+                    Timber.d("Quick capture: deleted empty draft in ${source.space.id}")
+                    refreshDraftSpaces()
+                }
+            },
+            onFailure = { Timber.w(it, "Quick capture: leaving empty draft in place") }
         )
     }
 
@@ -1052,7 +1082,32 @@ class QuickCaptureViewModel(
      */
     override fun onCleared() {
         super.onCleared()
+        cleanUpAbandonedDraft()
         spaceManager.clear()
+    }
+
+    /**
+     * The sheet is really going away (onCleared does not fire for a configuration change), so
+     * a draft still holding nothing is abandoned rather than parked, and is deleted.
+     *
+     * Runs on the application scope: viewModelScope is already cancelled here, so anything
+     * launched on it would never execute. The use case decides emptiness from the store, not
+     * from the editor — which no longer exists by this point.
+     */
+    @VisibleForTesting
+    internal fun cleanUpAbandonedDraft() {
+        if (isSending.get()) return // published, not abandoned
+        val current = screenState.value as? ScreenState.Ready ?: return
+        appScope.launch {
+            deleteQuickCaptureDraftIfEmpty.async(
+                DeleteQuickCaptureDraftIfEmpty.Params(space = current.space, draft = current.draft)
+            ).fold(
+                onSuccess = { deleted ->
+                    if (deleted) Timber.d("Quick capture: deleted empty draft on close")
+                },
+                onFailure = { Timber.w(it, "Quick capture: empty-draft cleanup failed") }
+            )
+        }
     }
 
     class Factory @Inject constructor(
@@ -1072,7 +1127,9 @@ class QuickCaptureViewModel(
         private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
         private val typeSuggestionEngine: TypeSuggestionEngine,
         private val fetchQuickCaptureDraft: FetchQuickCaptureDraft,
-        private val searchQuickCaptureDrafts: SearchQuickCaptureDrafts
+        private val searchQuickCaptureDrafts: SearchQuickCaptureDrafts,
+        private val deleteQuickCaptureDraftIfEmpty: DeleteQuickCaptureDraftIfEmpty,
+        @Named(APP_COROUTINE_SCOPE) private val appScope: CoroutineScope
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -1093,7 +1150,9 @@ class QuickCaptureViewModel(
                 spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
                 typeSuggestionEngine = typeSuggestionEngine,
                 fetchQuickCaptureDraft = fetchQuickCaptureDraft,
-                searchQuickCaptureDrafts = searchQuickCaptureDrafts
+                searchQuickCaptureDrafts = searchQuickCaptureDrafts,
+                deleteQuickCaptureDraftIfEmpty = deleteQuickCaptureDraftIfEmpty,
+                appScope = appScope
             ) as T
         }
     }
@@ -1102,6 +1161,14 @@ class QuickCaptureViewModel(
         const val QUICK_CAPTURE_DRAFT_SUBSCRIPTION = "quick-capture-draft-subscription"
         private const val SOMETHING_WENT_WRONG = "Something went wrong. Please, try again."
         private const val SPACES_AWAIT_TIMEOUT_MS = 3_000L
+        /**
+         * Must match ConfigModule.DEFAULT_APP_COROUTINE_SCOPE. Duplicated rather than
+         * imported because that constant lives in :app, which :presentation cannot depend
+         * on. Dagger matches qualifiers by string, so a divergence fails the build with
+         * MissingBinding rather than misbehaving at runtime.
+         */
+        const val APP_COROUTINE_SCOPE = "Default application coroutine scope"
+
         private val DRAFT_VALIDATION_KEYS = listOf(
             Relations.ID,
             Relations.IS_DELETED,

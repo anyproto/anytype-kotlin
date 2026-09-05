@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.quickcapture.DeleteQuickCaptureDraftIfEmpty
 import com.anytypeio.anytype.domain.quickcapture.FetchQuickCaptureDraft
 import com.anytypeio.anytype.domain.quickcapture.MoveQuickCaptureDraft
 import com.anytypeio.anytype.domain.quickcapture.SearchQuickCaptureDrafts
@@ -31,6 +32,7 @@ import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -66,6 +68,7 @@ class QuickCaptureViewModelTest {
     @Mock lateinit var createObject: CreateObject
     @Mock lateinit var fetchQuickCaptureDraft: FetchQuickCaptureDraft
     @Mock lateinit var searchQuickCaptureDrafts: SearchQuickCaptureDrafts
+    @Mock lateinit var deleteQuickCaptureDraftIfEmpty: DeleteQuickCaptureDraftIfEmpty
 
     @Mock lateinit var setObjectDetails: SetObjectDetails
     @Mock lateinit var deleteObjects: DeleteObjects
@@ -91,6 +94,8 @@ class QuickCaptureViewModelTest {
         createObject = createObject,
         fetchQuickCaptureDraft = fetchQuickCaptureDraft,
         searchQuickCaptureDrafts = searchQuickCaptureDrafts,
+        deleteQuickCaptureDraftIfEmpty = deleteQuickCaptureDraftIfEmpty,
+        appScope = CoroutineScope(coroutineTestRule.dispatcher),
         setObjectDetails = setObjectDetails,
         deleteObjects = deleteObjects,
         moveQuickCaptureDraft = moveQuickCaptureDraft,
@@ -120,6 +125,9 @@ class QuickCaptureViewModelTest {
         }
         spaceManager.stub {
             onBlocking { set(targetSpace, false) } doReturn Result.success(mock<Config>())
+        }
+        deleteQuickCaptureDraftIfEmpty.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(false)
         }
         searchQuickCaptureDrafts.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
@@ -244,6 +252,9 @@ class QuickCaptureViewModelTest {
         }
         // The pointer is only a hint now: it is honoured because the store still lists that
         // draft. Discovery is the source of truth for what exists.
+        deleteQuickCaptureDraftIfEmpty.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(false)
+        }
         searchQuickCaptureDrafts.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
                 SearchQuickCaptureDrafts.Result(drafts = listOf(pending), isComplete = true)
@@ -366,6 +377,9 @@ class QuickCaptureViewModelTest {
             onBlocking { getQuickCaptureLastSpace() } doReturn null
             onBlocking { getQuickCaptureDraft(SpaceId(targetSpace)) } doReturn null
         }
+        deleteQuickCaptureDraftIfEmpty.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(false)
+        }
         searchQuickCaptureDrafts.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
                 SearchQuickCaptureDrafts.Result(drafts = listOf(remote), isComplete = true)
@@ -393,6 +407,9 @@ class QuickCaptureViewModelTest {
             onBlocking { getQuickCaptureLastSpace() } doReturn null
             onBlocking { getQuickCaptureDraft(SpaceId(targetSpace)) } doReturn null
         }
+        deleteQuickCaptureDraftIfEmpty.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(false)
+        }
         searchQuickCaptureDrafts.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
                 SearchQuickCaptureDrafts.Result(drafts = emptyList(), isComplete = false)
@@ -405,6 +422,57 @@ class QuickCaptureViewModelTest {
 
         // Pencils must not be cleared on an inconclusive answer.
         assertTrue(vm.spaces.value.none { it.hasDraft })
+    }
+
+    /**
+     * Closing the sheet on a draft nobody filled in should clean it up. The decision is the
+     * use case's — this only pins that the sheet actually asks on the way out, on a scope
+     * that outlives it (viewModelScope is already cancelled inside onCleared).
+     */
+    @Test
+    fun `asks to clean up the draft when the sheet closes`() = runTest {
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+
+        vm.cleanUpAbandonedDraft()
+        coroutineTestRule.advanceUntilIdle()
+
+        val params = argumentCaptor<DeleteQuickCaptureDraftIfEmpty.Params>()
+        verifyBlocking(deleteQuickCaptureDraftIfEmpty) { async(params.capture()) }
+        assertEquals(draftId, params.lastValue.draft)
+        assertEquals(targetSpace, params.lastValue.space.id)
+    }
+
+    /** A draft on its way to being published is not abandoned, whatever it currently holds. */
+    @Test
+    fun `does not clean up a draft that is being sent`() = runTest {
+        // Send is only reachable on a non-empty draft, so give the subscription content.
+        storelessSubscriptionContainer.stub {
+            on { subscribe(any<StoreSearchByIdsParams>()) } doReturn flowOf(
+                listOf(
+                    ObjectWrapper.Basic(
+                        mapOf(Relations.ID to draftId, Relations.NAME to "Buy milk")
+                    )
+                )
+            )
+        }
+        setObjectDetails.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(mock())
+        }
+        analyticSpaceHelperDelegate.stub {
+            on { provideParams(any()) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
+        }
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+        vm.onSendClicked()
+        coroutineTestRule.advanceUntilIdle()
+
+        vm.cleanUpAbandonedDraft()
+        coroutineTestRule.advanceUntilIdle()
+
+        verifyBlocking(deleteQuickCaptureDraftIfEmpty, never()) { async(any()) }
     }
 
     private val conflictSpace = MockDataFactory.randomUuid()

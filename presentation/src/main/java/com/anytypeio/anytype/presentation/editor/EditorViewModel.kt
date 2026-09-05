@@ -8093,12 +8093,29 @@ class EditorViewModel(
         val document = blocks
         val title = document.title()?.content<Content.Text>()?.text
         if (!title.isNullOrBlank()) return true
-        return document.any { block ->
-            val content = block.content
-            content is Content.Text &&
-                content.style != Content.Text.Style.TITLE &&
-                content.text.isNotBlank()
-        }
+        return document.any { block -> block.isQuickCaptureContent() }
+    }
+
+    /**
+     * Whether this block is something the user put here, as opposed to structure every
+     * object is born with.
+     *
+     * Deliberately inverted: the listed types are the ones known to be structural, and
+     * everything else counts as content. This answer gates a permanent delete, so an
+     * unrecognised block type must read as "there is something here" rather than as empty.
+     * A text-only test would call an image-only draft empty and destroy the image with it.
+     */
+    private fun Block.isQuickCaptureContent(): Boolean = when (val content = content) {
+        // Structure present on every object before the user does anything.
+        is Content.Smart,
+        is Content.Layout,
+        is Content.FeaturedRelations,
+        is Content.RelationBlock,
+        is Content.Icon -> false
+        // The title is judged separately; an empty paragraph is not content.
+        is Content.Text -> content.style != Content.Text.Style.TITLE && content.text.isNotBlank()
+        // Files, images, bookmarks, links, tables, embeds, dividers — all user-placed.
+        else -> true
     }
 
     /**

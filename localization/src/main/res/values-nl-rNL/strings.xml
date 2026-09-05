@@ -2244,7 +2244,6 @@
     <string name="select_view">Select view</string>
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
-    <string name="chats_search_close_content_description">Close search</string>
     <!-- DROID-4358 Offline Downloads settings -->
     <string name="offline_downloads_section_title">Offline access</string>
     <string name="offline_downloads_title">Offline Downloads</string>
@@ -2257,4 +2256,40 @@
     <string name="offline_downloads_value_1gb">1 GB</string>
     <string name="offline_downloads_value_unlimited">Onbeperkt</string>
     <string name="device_storage_used">Device storage used</string>
+    <!-- Search v2 (unified cross-space search) -->
+    <string name="search_v2_hint">Zoeken</string>
+    <string name="search_v2_chip_in_space">In %1$s</string>
+    <string name="search_v2_chip_channels">Ruimtes</string>
+    <string name="search_v2_chip_messages">Messages</string>
+    <string name="search_v2_chip_by_me">By me</string>
+    <string name="search_v2_chip_by_name">By %1$s</string>
+    <string name="search_v2_chip_media">Media</string>
+    <string name="search_v2_chip_pages">Pagina\'s</string>
+    <string name="search_v2_chip_bookmarks">Bladwijzers</string>
+    <string name="search_v2_chip_collections">Collecties</string>
+    <string name="search_v2_chip_queries">Sets</string>
+    <string name="search_v2_chip_chats">Chats</string>
+    <string name="search_v2_chip_types">Types</string>
+    <string name="search_v2_chip_people">People</string>
+    <string name="search_v2_section_recent_messages">Recent Messages</string>
+    <string name="search_v2_section_objects">Objecten</string>
+    <string name="search_v2_person_member_in_one">member in 1 Channel</string>
+    <string name="search_v2_person_member_in">member in %1$d Channels</string>
+    <string name="search_v2_sort_name">Naam</string>
+    <string name="search_v2_today">Vandaag</string>
+    <string name="search_v2_yesterday">Gisteren</string>
+    <string name="search_v2_in_space_caption">in %1$s</string>
+    <string name="search_v2_type_agg_caption">in %1$d Channels</string>
+    <string name="search_v2_no_results">Niets gevonden</string>
+    <string name="search_v2_focus_search_type_everywhere">Search %1$s in all Channels</string>
+    <string name="search_v2_focus_search_by_everywhere">Search by %1$s in all Channels</string>
+    <string name="search_v2_focus_person_header">Search objects created in Channels</string>
+    <string name="search_v2_one_to_one_caption">1-1 Channel</string>
+    <string name="search_v2_messages_tutorial_hint">Looking for a message?</string>
+    <string name="search_v2_messages_tutorial_button">Search messages</string>
+    <string name="search_v2_create_channel">Create Channel</string>
+    <string name="search_v2_could_not_open_object">Could not open object</string>
+    <string name="search_v2_recently_edited">Onlangs bewerkt</string>
+    <string name="search_v2_recently_created">Recently created</string>
+    <string name="search_v2_filter_by">Filter by %1$s</string>
 </resources>

@@ -1374,7 +1374,9 @@ class Middleware @Inject constructor(
             fullText = command.query,
             offset = command.offset,
             limit = command.limit,
-            keys = command.keys
+            keys = command.keys,
+            returnMeta = command.withMeta,
+            returnMetaRelationDetails = command.withMetaRelationDetails
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectSearchWithMeta(request) }
@@ -1458,6 +1460,32 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.objectGroupsSubscribe(request) }
         logResponseIfDebug(response, time)
         return response.groups.map { it.toCoreModelsGroup() }
+    }
+
+    @Throws(Exception::class)
+    fun objectCrossSpaceSearch(
+        command: Command.CrossSpaceSearch
+    ): Command.CrossSpaceSearch.Result {
+        val request = Rpc.Object.CrossSpaceSearch.Request(
+            filters = command.filters.map { it.toMiddlewareModel() },
+            sorts = command.sorts.map { it.toMiddlewareModel() },
+            fullText = command.query,
+            offset = command.offset,
+            limit = command.limit,
+            keys = command.keys
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectCrossSpaceSearch(request) }
+        logResponseIfDebug(response, time)
+        return Command.CrossSpaceSearch.Result(
+            records = response.records.mapNotNull { record ->
+                if (record != null && record.isNotEmpty() && record.isValidObject())
+                    ObjectWrapper.Basic(record)
+                else
+                    null
+            },
+            allStoresLoaded = response.allStoresLoaded
+        )
     }
 
     @Throws(Exception::class)
@@ -3171,16 +3199,12 @@ class Middleware @Inject constructor(
     fun chatSearch(command: Command.ChatCommand.SearchMessages): Command.ChatCommand.SearchMessages.Response {
         val request = Rpc.Chat.Search.Request(
             spaceId = command.space.id,
-            chatId = command.chat,
+            chatId = command.chat.orEmpty(),
             fullText = command.query,
             offset = command.offset,
             limit = command.limit,
-            sorts = listOf(
-                anytype.model.Search.Message.Sort(
-                    key = anytype.model.Search.Message.Sort.Key.ORDER_ID,
-                    type = anytype.model.Search.Message.Sort.Type.Desc
-                )
-            )
+            sorts = command.sorts.map { it.toMiddlewareModel() },
+            creators = command.creators
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatSearch(request) }
@@ -3196,7 +3220,8 @@ class Middleware @Inject constructor(
                     highlightRanges = result.highlightRanges.map { range ->
                         range.from..range.to
                     },
-                    message = message.core()
+                    message = message.core(),
+                    spaceId = result.spaceId
                 )
             }
         )

@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SpaceCreationUseCase
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.ChatMessageSort
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
@@ -396,6 +397,20 @@ fun DVSortEmptyType.toMiddlewareModel(): MDVSortEmptyType = when (this) {
     DVSortEmptyType.START -> MDVSortEmptyType.Start
     DVSortEmptyType.END -> MDVSortEmptyType.End
 }
+
+fun ChatMessageSort.toMiddlewareModel(): anytype.model.Search.Message.Sort =
+    anytype.model.Search.Message.Sort(
+        key = when (key) {
+            ChatMessageSort.Key.ORDER_ID -> anytype.model.Search.Message.Sort.Key.ORDER_ID
+            ChatMessageSort.Key.SCORE -> anytype.model.Search.Message.Sort.Key.SCORE
+            ChatMessageSort.Key.CREATED_AT -> anytype.model.Search.Message.Sort.Key.CREATED_AT
+            ChatMessageSort.Key.MODIFIED_AT -> anytype.model.Search.Message.Sort.Key.MODIFIED_AT
+        },
+        type = if (descending)
+            anytype.model.Search.Message.Sort.Type.Desc
+        else
+            anytype.model.Search.Message.Sort.Type.Asc
+    )
 
 fun Block.Content.DataView.Sort.Type.toMiddlewareModel(): MDVSortType = when (this) {
     Block.Content.DataView.Sort.Type.ASC -> MDVSortType.Asc

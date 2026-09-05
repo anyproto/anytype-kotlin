@@ -60,6 +60,10 @@ The vault (`feature-vault/.../ui/VaultScreen.kt:42`, Compose, hosted by `app/...
 - Add a **FAB** to the vault `Scaffold` (`floatingActionButton` slot), pencil/compose glyph (new asset, e.g. `ic_vault_quick_capture.xml` — no pencil icon exists in `core-ui` today), inset above `navigationBarsPadding`. This is the Android-platform equivalent of "primary spot in the bottom bar". *(Flag for design review: FAB position center vs. end; the handoff's bottom-bar layout doesn't map 1:1.)*
 - Visible only when `quickCapture` flag is on **and** at least one editable space exists (see §4 — the handoff's "if no editable space, the sheet closes" becomes "the pencil doesn't show").
 - Tap → `VaultViewModel.onQuickCaptureClicked()` → `VaultCommand.OpenQuickCapture` → `VaultFragment` navigates to the `quickCaptureScreen` dialog destination.
+- **Which draft opens** (§5a): the device-local pointer names what was last captured *here*, so
+  the compose button resumes that. If the pointer is absent or no longer resolves — a new
+  device, a reinstall, a draft published elsewhere — fall back to the newest draft the
+  discovery query returns, and only create one if the query came back complete and empty.
 - The existing "+" and its dropdown (`CreateChannelDropdownMenu`) are untouched.
 
 ## 3. Capture sheet composition
@@ -133,6 +137,65 @@ Retarget the current thought, don't swap drafts:
 
 ## 5. Draft mechanics (the core contract)
 
+> **Revised 2026-09-05 — drafts become discoverable, not device-local.** §5a is the target
+> model; §5b is what currently ships. The change is gated on a new `isDraft` relation being
+> added heart-side (relations.json + bundled relations); until it lands, §5b stands.
+
+### 5a. Target model: drafts are found by query, on any device
+
+A draft is a real object carrying `isDraft: true` (new) and `isHidden: true`. It is identified
+by **who made it and where**, not by a pointer on one phone — which is what lets you start a
+note on your phone and finish it on your tablet.
+
+- **Identity**: unique per (space, participant).
+- **Discovery**: one cross-space query — `isDraft == true AND creator ∈ {my participants}` —
+  ordered by `createdDate` descending. `CrossSpaceSearchObjects`
+  (`domain/.../search/CrossSpaceSearchObjects.kt`) is the mechanism; the search-v2 rule of **no
+  per-space fan-out** applies here too.
+- **Which one opens**: the newest by `createdDate`.
+- **The device-local pointer becomes a hint, not the source of truth.** It records the last
+  space/object captured into on *this* device so the compose button reopens what you were last
+  writing here. Its absence must never prevent discovery — a fresh device has no pointer and
+  must still find your drafts.
+
+**`creator` is per-space — a single id will not work cross-space.** The same account has a
+*different* participant object in every space, so filtering one cross-space query on one
+creator id matches drafts in exactly one space and silently reports none anywhere else. Use an
+`IN` filter over the full set of our participant ids, which `ParticipantSubscriptionContainer`
+already holds account-wide (it is one subscription, not per-space). This is the single most
+likely thing to get wrong here, and it fails quietly: no error, just "you have no drafts".
+
+**Publishing must clear `isDraft`, not only `isHidden`.** Otherwise every note ever sent keeps
+matching the discovery query, and the newest-wins rule starts reopening published notes.
+`isDraft` and `isHidden` are cleared in the same `SetObjectDetails` write as the publish.
+
+**Partial results are not "no results".** `Command.CrossSpaceSearch.Result.allStoresLoaded ==
+false` means some per-space stores are still warming. Treat a partial result as *unknown*, not
+empty: fall back to the pointer hint, and **never create a new draft on a partial result** —
+doing so is how a user ends up with a second draft in a space that already had one.
+
+**More than one draft per space is now reachable**, e.g. two devices both offline. Newest wins
+for opening; the older is **not** auto-deleted. `Object.ListDelete` is permanent, and silently
+destroying the copy that lost a `createdDate` comparison is exactly the failure the whole
+draft mechanism is built to avoid. Reconciliation (surface both, or merge) is a follow-up.
+
+**Hidden is not private.** An `isDraft` object in a shared space still syncs to every member;
+`isHidden` only keeps it out of *our* UI surfaces. Another member's client holds the object.
+If unsent text must not leave the device until sent, that is a heart-side guarantee and this
+design does not provide it — worth settling before shared-space capture ships.
+
+**Migration.** Drafts created before `isDraft` exists carry only `isHidden`, so the new query
+will not find them and they become invisible unsent notes. Either stamp `isDraft` on the
+pointed-at draft once at upgrade (the pointer is still there to name it), or run a transitional
+query that also accepts `isHidden && ShouldEmptyDelete && creator ∈ mine`. Do not ship the new
+query without one of the two.
+
+**Open questions for heart**: is `isDraft` writable from the client at create time (via
+`prefilled`) or set by the middleware? Is it in the default index, and filterable in
+`CrossSpaceSearch`? Does it need to be in `skipRefreshKeys`?
+
+### 5b. Current implementation: one draft per space, device-local pointer
+
 One draft per space, device-local pointer, real middleware object.
 
 - **Registry**: `SpacePreference` proto — add `optional string quickCaptureDraftObjectId = 14;`. Use cases `SetQuickCaptureDraft` / `ClearQuickCaptureDraft` / `GetQuickCaptureDraft` (write idiom: `DefaultUserSettingsCache.setLastOpenedObject`, `:366-414`).
@@ -183,7 +246,10 @@ Undo/Redo rides the editor's existing `undoRedoToolbar` (`fragment_editor.xml:31
 On ↑ (enabled only when non-empty):
 
 1. `SetObjectDetails(ctx = draftId, details = mapOf(Relations.IS_HIDDEN to false))` — this *is* publishing. Failure → error toast, draft untouched.
-2. Clear the draft pointer for that space.
+   - **Under §5a this write must also set `isDraft = false`, in the same call.** A published
+     note that still matches `isDraft == true` stays in the discovery query forever, and the
+     newest-wins rule will eventually reopen it as a draft.
+2. Clear the draft pointer for that space (a hint under §5a, authoritative under §5b).
 3. Write space recency (§4); send analytics (§10).
 4. Success haptic — `ViewCompat.performHapticFeedback(view, HapticFeedbackConstantsCompat.CONFIRM)`. (The existing helper `core-ui/.../common/HapticExt.kt` is reorder-specific; add a small sibling, don't overload `ReorderHapticFeedbackType`.)
 5. Dismiss the sheet (then vault-state cleanup per D2); user lands on the vault.
@@ -304,10 +370,14 @@ suspend fun suggest(text: String, typeNames: List<String>): String? =
 | V6 | `LAST_USED_DATE` in type-subscription keys (a); heart bumps it on `SetObjectType` (b) | §6 sorting |
 | V7 | Editor's `BottomSheetBehavior` toolbars (undo/redo, style) inside a `BottomSheetDialog` | §7 |
 | V8 | ML Kit GenAI beta4 response accessor naming + real-device eval of Nano's pick-one-of-N accuracy on short notes | §9; beta API surface may shift |
+| V9 | `isDraft` exists in relations.json/bundled relations, is client-writable at create (`prefilled`), is indexed, and is filterable in `CrossSpaceSearch` | §5a is blocked on all four |
+| V10 | `creator IN [participant ids]` is supported as a cross-space filter | §5a discovery; a single creator id cannot work cross-space |
+| V11 | Cross-device round trip: draft made on device A appears on device B, edits merge, and publishing on one clears it on the other | the reason §5a exists |
+| V12 | Behaviour when `allStoresLoaded == false` — confirm partial results are distinguishable from genuinely empty | §5a; deciding wrong creates duplicate drafts |
 
 ## 14. Known gaps echoed from the iOS handoff (still true here)
 
-- Hidden-draft is an interim substitute for a real heart-side unsynced-draft state; a queryable `isDraft` relation needs heart work (GO follow-up).
+- ~~Hidden-draft is an interim substitute for a real heart-side unsynced-draft state; a queryable `isDraft` relation needs heart work (GO follow-up).~~ **Now the plan** — see §5a. `isDraft` is being added heart-side; once it lands, drafts stop being device-local and become cross-device.
 - A proper cross-space types subscription is a future shared foundation (D2 is the pragmatic v1).
 - AI min-length guard stays low; log every silent AI fallback; never block capture on AI.
 

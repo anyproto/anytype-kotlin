@@ -36,6 +36,10 @@
     <string name="quick_capture_draft_conflict_keep">Keep both</string>
     <string name="quick_capture_draft_conflict_discard">Discard current</string>
     <string name="quick_capture_space_has_draft">Has an unsent draft</string>
+    <string name="quick_capture_move_or_new_title">Take this draft to %1$s?</string>
+    <string name="quick_capture_move_or_new_message">You haven\'t changed this note. You can move it, or leave it where it is and start a new one.</string>
+    <string name="quick_capture_move_or_new_move">Move draft</string>
+    <string name="quick_capture_move_or_new_start">Start new</string>
     <string name="quick_capture_send">Send</string>
     <string name="account">Vault</string>
     <string name="reset_account">Reset vault</string>

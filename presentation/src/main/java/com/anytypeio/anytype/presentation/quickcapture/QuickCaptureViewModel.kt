@@ -138,6 +138,16 @@ class QuickCaptureViewModel(
 
     data class DraftConflict(val space: Id, val spaceName: String)
 
+    /**
+     * Raised when the draft on screen has content the user did not type this session — they
+     * reopened an earlier note and switched spaces without touching it. "Text follows the
+     * chip" reads as intent only when the text was just written; silently relocating an older
+     * draft because its space was left is not what the gesture meant. So ask.
+     */
+    val moveOrNewPrompt = MutableStateFlow<MoveOrNewRequest?>(null)
+
+    data class MoveOrNewRequest(val space: Id, val spaceName: String)
+
     /** What to do with the current draft when the selection actually proceeds. */
     private enum class SwitchMode {
         /** No conflict: "text follows the chip" — carry the draft into the target space. */
@@ -180,10 +190,7 @@ class QuickCaptureViewModel(
                     space = view,
                     icon = view.spaceIcon(urlBuilder),
                     isSelected = view.targetSpaceId == selected,
-                    // The space currently on screen is where the visible draft lives; showing
-                    // a pencil against it would just label the obvious.
-                    hasDraft = view.targetSpaceId != selected &&
-                        view.targetSpaceId in drafts
+                    hasDraft = view.targetSpaceId in drafts
                 )
             }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -483,7 +490,11 @@ class QuickCaptureViewModel(
      * resurrect the title of) a draft the user has just emptied. Null = unknown, fall back
      * to the subscription.
      */
-    fun onSpaceSelected(target: Id, sourceHasContent: Boolean? = null) {
+    fun onSpaceSelected(
+        target: Id,
+        sourceHasContent: Boolean? = null,
+        sourceEditedThisSession: Boolean = true
+    ) {
         showSpacePicker.value = false
         val current = screenState.value
         if (current is ScreenState.Ready && current.space.id == target) return
@@ -499,8 +510,16 @@ class QuickCaptureViewModel(
                 if (existing != null && draftHasContent(space = SpaceId(target), draft = existing)) {
                     draftConflict.value = DraftConflict(
                         space = target,
-                        spaceName = spaces.value.firstOrNull { it.targetSpaceId == target }
-                            ?.name.orEmpty()
+                        spaceName = spaceNameOf(target)
+                    )
+                    return@launch
+                }
+                // Nothing to lose in the target space, but the text here is not this
+                // session's — moving it would relocate a note the user only reopened.
+                if (!sourceEditedThisSession) {
+                    moveOrNewPrompt.value = MoveOrNewRequest(
+                        space = target,
+                        spaceName = spaceNameOf(target)
                     )
                     return@launch
                 }
@@ -530,6 +549,31 @@ class QuickCaptureViewModel(
     fun onDraftConflictCancelled() {
         draftConflict.value = null
     }
+
+    /** Untouched draft, empty target: carry the note across, as the chip normally implies. */
+    fun onMoveDraftChosen() {
+        val request = moveOrNewPrompt.value ?: return
+        moveOrNewPrompt.value = null
+        viewModelScope.launch {
+            proceedWithSpaceSelection(request.space, SwitchMode.MOVE_CURRENT)
+        }
+    }
+
+    /** Untouched draft, empty target: leave the note where it is and start a fresh one. */
+    fun onStartNewDraftChosen() {
+        val request = moveOrNewPrompt.value ?: return
+        moveOrNewPrompt.value = null
+        viewModelScope.launch {
+            proceedWithSpaceSelection(request.space, SwitchMode.KEEP_CURRENT)
+        }
+    }
+
+    fun onMoveOrNewCancelled() {
+        moveOrNewPrompt.value = null
+    }
+
+    private fun spaceNameOf(target: Id): String =
+        spaces.value.firstOrNull { it.targetSpaceId == target }?.name.orEmpty()
 
     /** True when the target space's stored draft still exists and holds real content. */
     private suspend fun draftHasContent(space: SpaceId, draft: Id): Boolean {

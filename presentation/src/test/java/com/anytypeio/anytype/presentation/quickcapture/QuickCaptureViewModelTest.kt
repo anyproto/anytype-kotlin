@@ -425,6 +425,76 @@ class QuickCaptureViewModelTest {
     }
 
     /**
+     * A reopened draft the user never touched must not follow the chip on its own. The target
+     * space has no draft, so nothing is at stake there — the question is purely whether this
+     * older note should be relocated.
+     */
+    @Test
+    fun `asks before moving a draft the user has not edited this session`() = runTest {
+        val emptySpace = MockDataFactory.randomUuid()
+        userPermissionProvider.stub {
+            on { all() } doReturn flowOf(
+                mapOf(
+                    targetSpace to SpaceMemberPermissions.OWNER,
+                    emptySpace to SpaceMemberPermissions.OWNER
+                )
+            )
+        }
+        settings.stub {
+            onBlocking { getQuickCaptureDraft(SpaceId(emptySpace)) } doReturn null
+        }
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+
+        vm.onSpaceSelected(
+            target = emptySpace,
+            sourceHasContent = true,
+            sourceEditedThisSession = false
+        )
+        coroutineTestRule.advanceUntilIdle()
+
+        assertTrue(vm.moveOrNewPrompt.value != null, "an untouched draft must not move silently")
+        verifyBlocking(moveQuickCaptureDraft, never()) { async(any()) }
+    }
+
+    /** Typing this session restores the plain "text follows the chip" behaviour. */
+    @Test
+    fun `moves without asking when the user typed this session`() = runTest {
+        val emptySpace = MockDataFactory.randomUuid()
+        userPermissionProvider.stub {
+            on { all() } doReturn flowOf(
+                mapOf(
+                    targetSpace to SpaceMemberPermissions.OWNER,
+                    emptySpace to SpaceMemberPermissions.OWNER
+                )
+            )
+        }
+        settings.stub {
+            onBlocking { getQuickCaptureDraft(SpaceId(emptySpace)) } doReturn null
+        }
+        spaceManager.stub {
+            onBlocking { set(emptySpace, false) } doReturn Result.success(mock<Config>())
+        }
+        moveQuickCaptureDraft.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(MockDataFactory.randomUuid())
+        }
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+
+        vm.onSpaceSelected(
+            target = emptySpace,
+            sourceHasContent = true,
+            sourceEditedThisSession = true
+        )
+        coroutineTestRule.advanceUntilIdle()
+
+        assertTrue(vm.moveOrNewPrompt.value == null)
+        verifyBlocking(moveQuickCaptureDraft) { async(any()) }
+    }
+
+    /**
      * Discarding deletes only the draft the user can see, and still never touches the
      * target's.
      */

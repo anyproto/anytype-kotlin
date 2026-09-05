@@ -884,6 +884,9 @@ class EditorViewModel(
      */
     private fun sendTextChange(update: TextUpdate) {
         unappliedTextChange = update
+        // Single funnel for both the title and body blocks, so this is the whole "the user
+        // has actually typed something into this draft" signal (see hasQuickCaptureEdits).
+        if (isQuickCapture) hasQuickCaptureEdits = true
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
     }
 
@@ -8135,6 +8138,20 @@ class EditorViewModel(
         isQuickCapture = true
         startQuickCaptureSuggestions()
     }
+
+    /**
+     * Whether the user has typed into the draft during THIS sheet session.
+     *
+     * Distinct from [hasQuickCaptureContent], which only says the draft is non-empty — a
+     * restored draft is non-empty the moment it opens. The two differ exactly where it
+     * matters: carrying text to another space is right when the user just wrote it, and
+     * surprising when they merely reopened something written earlier and moved on.
+     */
+    private var hasQuickCaptureEdits = false
+
+    // No reset needed: the editor component is keyed by the draft id, so switching space
+    // builds a new view model for the new draft and the flag starts false again.
+    fun hasQuickCaptureEdits(): Boolean = hasQuickCaptureEdits
 
     //region Quick capture — on-device type suggestion (suggest-only, never blocks capture)
 

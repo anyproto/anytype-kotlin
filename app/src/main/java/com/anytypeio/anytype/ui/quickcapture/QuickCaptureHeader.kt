@@ -265,6 +265,58 @@ fun QuickCaptureSpacePicker(
 }
 
 /**
+ * The draft on screen was written earlier and not touched this session, and the target space
+ * has nothing at stake. Moving is still available, but it is no longer assumed: reopening a
+ * note and then switching space is not the same gesture as writing one and sending it
+ * elsewhere. Dismissing changes nothing.
+ */
+@Composable
+fun MoveOrNewDraftDialog(
+    spaceName: String,
+    onMoveDraft: () -> Unit,
+    onStartNew: () -> Unit,
+    onCancel: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onCancel,
+        containerColor = colorResource(id = R.color.background_secondary),
+        title = {
+            Text(
+                text = stringResource(
+                    id = R.string.quick_capture_move_or_new_title,
+                    spaceName.ifEmpty { stringResource(id = R.string.untitled) }
+                ),
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_primary)
+            )
+        },
+        text = {
+            Text(
+                text = stringResource(id = R.string.quick_capture_move_or_new_message),
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_secondary)
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onMoveDraft) {
+                Text(
+                    text = stringResource(id = R.string.quick_capture_move_or_new_move),
+                    color = colorResource(id = R.color.text_primary)
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onStartNew) {
+                Text(
+                    text = stringResource(id = R.string.quick_capture_move_or_new_start),
+                    color = colorResource(id = R.color.text_primary)
+                )
+            }
+        }
+    )
+}
+
+/**
  * Both spaces hold unsent text. The question is only ever about the draft on screen — the
  * target's draft is never touched, because the user cannot see it and so cannot judge what
  * replacing it would cost. Keeping both is the safe answer and is offered first; discarding

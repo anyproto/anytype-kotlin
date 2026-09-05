@@ -643,6 +643,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         observeSelectingTemplate()
 
+        // The object re-opens on every view creation (onStart -> vm.onStart), and the blocks
+        // arrive asynchronously through pendingBlockListUpdates. The adapter is therefore empty
+        // during the first layout pass. Under the default ALLOW policy the RecyclerView applies
+        // the restored scroll anchor against 0 items, then drops it, so a rotation sends the
+        // reader back to the top of the object. PREVENT_WHEN_EMPTY holds the anchor until the
+        // first blocks arrive. The command-driven scroll paths stay correct, because they run
+        // inside runAfterBlockListUpdates and set an explicit position.
+        blockAdapter.stateRestorationPolicy =
+            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)

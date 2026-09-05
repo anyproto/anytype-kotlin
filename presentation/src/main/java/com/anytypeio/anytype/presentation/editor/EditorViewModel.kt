@@ -1396,6 +1396,31 @@ class EditorViewModel(
         // screen), and the render pipeline only fetches when this id changes.
         lastFetchedDiscussionId = null
 
+        // The OS rebuilds the view on every configuration change, and the document then
+        // re-renders from the stores. The live caret lives in stores.textSelection, which
+        // onSelectionChanged keeps current. The renderer reads focus.cursor instead, and
+        // onBlockFocusChanged always writes that field as null. A rotation therefore put the
+        // caret at index 0. Seed the cursor from the last known selection, so the caret
+        // returns where the user left it.
+        //
+        // A fresh open is unaffected: the ViewModel is new there, so the focus target is
+        // empty and nothing is seeded. The store write is synchronous, so it lands before
+        // the render below. Never overwrite a cursor that another operation set on purpose,
+        // for example the Cursor.End of a block split.
+        val restoredFocus = orchestrator.stores.focus.current()
+        val restoredFocusTarget = restoredFocus.targetOrNull()
+        if (restoredFocusTarget != null && restoredFocus.cursor == null) {
+            val lastSelection = orchestrator.stores.textSelection.current()
+            if (lastSelection.id == restoredFocusTarget) {
+                lastSelection.selection?.let { range ->
+                    Timber.d("onStart: restoring caret of [$restoredFocusTarget] to $range")
+                    orchestrator.stores.focus.update(
+                        restoredFocus.copy(cursor = Editor.Cursor.Range(range))
+                    )
+                }
+            }
+        }
+
         stateData.postValue(ViewState.Loading)
 
         jobs += viewModelScope.launch {

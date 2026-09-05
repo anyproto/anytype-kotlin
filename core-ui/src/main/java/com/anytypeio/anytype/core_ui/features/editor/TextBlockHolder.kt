@@ -368,7 +368,13 @@ interface TextBlockHolder : TextHolder {
         }
 
         try {
-            if (payload.isCursorChanged) {
+            // Apply the cursor when the diff reports one, and also when the block just gained
+            // focus. A view rebuild — a rotation, for example — re-renders the focused block
+            // with the cursor already correct, so the diff reports FOCUS_CHANGED alone, the
+            // branch below never runs, and the caret falls to 0. Ordinary editing is not
+            // affected: onBlockFocusChanged stores a null cursor, so item.cursor is null on a
+            // normal tap and this block does nothing.
+            if (payload.isCursorChanged || (payload.focusChanged() && item.isFocused)) {
                 item.cursor?.let { cursor ->
                     val textLength = content.text?.length ?: 0
                     val validCursor = cursor.coerceIn(0, textLength)

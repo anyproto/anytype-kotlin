@@ -158,6 +158,14 @@ fun ChooseTypeHorizontalWidgetExpanded(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Spacer(modifier = Modifier.width(12.dp))
+                                if (state.suggestedTypeId == item.item.id) {
+                                    Text(
+                                        text = "✨",
+                                        style = Caption1Medium,
+                                        maxLines = 1
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                }
                                 ListWidgetObjectIcon(
                                     modifier = Modifier.size(16.dp),
                                     icon = item.item.icon
@@ -239,20 +247,22 @@ private fun ChooseTypeHeader(
                 modifier = Modifier.padding(start = 6.dp)
             )
         }
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .align(Alignment.CenterEnd)
-                .noRippleThrottledClickable { action(TypesWidgetItem.Done) }
-        ) {
-            Text(
+        if (state.showDoneButton) {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 16.dp),
-                text = stringResource(id = R.string.done),
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_primary)
-            )
+                    .fillMaxHeight()
+                    .align(Alignment.CenterEnd)
+                    .noRippleThrottledClickable { action(TypesWidgetItem.Done) }
+            ) {
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(horizontal = 16.dp),
+                    text = stringResource(id = R.string.done),
+                    style = BodyRegular,
+                    color = colorResource(id = R.color.text_primary)
+                )
+            }
         }
     }
 }

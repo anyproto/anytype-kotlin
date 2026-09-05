@@ -66,6 +66,16 @@ class DefaultUserSettingsCache(
         FileDownloadLimit.fromStorageKey(prefs.getString(FILE_DOWNLOAD_LIMIT_KEY, null))
     )
 
+    // Default ON: quick capture is no longer opt-in. The stored value still wins, so anyone
+    // who explicitly turned it off keeps it off.
+    private val _quickCaptureFlow = MutableStateFlow(
+        prefs.getBoolean(QUICK_CAPTURE_ENABLED_KEY, true)
+    )
+
+    private val _quickCaptureAiFlow = MutableStateFlow(
+        prefs.getBoolean(QUICK_CAPTURE_AI_ENABLED_KEY, false)
+    )
+
     //region Vault default settings
     fun initialVaultSettings(): VaultPreference {
         return VaultPreference(
@@ -731,6 +741,131 @@ class DefaultUserSettingsCache(
 
     //endregion
 
+    //region Quick capture
+
+    override suspend fun setQuickCaptureDraft(space: SpaceId, obj: Id) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+            val updated = givenSpacePreference.copy(
+                quickCaptureDraftObjectId = obj
+            )
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(preferences = result)
+        }
+    }
+
+    override suspend fun getQuickCaptureDraft(space: SpaceId): Id? {
+        return context.spacePrefsStore
+            .data
+            .map { preferences ->
+                preferences
+                    .preferences[space.id]
+                    ?.quickCaptureDraftObjectId
+                    ?.ifEmpty { null }
+            }
+            .first()
+    }
+
+    override suspend fun getQuickCaptureDrafts(): Map<Id, Id> {
+        val spacePreferences = context.spacePrefsStore.data.first()
+        return spacePreferences.preferences
+            .mapNotNull { (spaceId, spacePref) ->
+                val draft = spacePref.quickCaptureDraftObjectId
+                if (!draft.isNullOrEmpty()) spaceId to draft else null
+            }
+            .toMap()
+    }
+
+    override suspend fun clearQuickCaptureDraft(space: SpaceId) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+            val updated = givenSpacePreference.copy(
+                quickCaptureDraftObjectId = null
+            )
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(preferences = result)
+        }
+    }
+
+    override suspend fun setQuickCaptureLastSpace(space: Id) {
+        prefs.edit()
+            .putString(QUICK_CAPTURE_LAST_SPACE_KEY, space)
+            .apply()
+    }
+
+    override suspend fun getQuickCaptureLastSpace(): Id? {
+        val value = prefs.getString(QUICK_CAPTURE_LAST_SPACE_KEY, "")
+        return if (value.isNullOrEmpty()) null else value
+    }
+
+    override suspend fun setSpaceLastInteraction(space: SpaceId, timestamp: Long) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+            val updated = givenSpacePreference.copy(
+                lastInteractionTimestamp = timestamp
+            )
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(preferences = result)
+        }
+    }
+
+    override suspend fun getSpaceLastInteractions(): Map<Id, Long> {
+        val spacePreferences = context.spacePrefsStore.data.first()
+        return spacePreferences.preferences
+            .mapNotNull { (spaceId, spacePref) ->
+                val timestamp = spacePref.lastInteractionTimestamp
+                if (timestamp != null && timestamp > 0) {
+                    spaceId to timestamp
+                } else {
+                    null
+                }
+            }
+            .toMap()
+    }
+
+    override suspend fun getQuickCaptureEnabled(): Boolean {
+        return prefs.getBoolean(QUICK_CAPTURE_ENABLED_KEY, true)
+    }
+
+    override suspend fun setQuickCaptureEnabled(enabled: Boolean) {
+        prefs.edit()
+            .putBoolean(QUICK_CAPTURE_ENABLED_KEY, enabled)
+            .apply()
+        _quickCaptureFlow.value = enabled
+    }
+
+    override fun observeQuickCaptureEnabled(): Flow<Boolean> = _quickCaptureFlow.asStateFlow()
+
+    override suspend fun getQuickCaptureAiEnabled(): Boolean {
+        return prefs.getBoolean(QUICK_CAPTURE_AI_ENABLED_KEY, false)
+    }
+
+    override suspend fun setQuickCaptureAiEnabled(enabled: Boolean) {
+        prefs.edit()
+            .putBoolean(QUICK_CAPTURE_AI_ENABLED_KEY, enabled)
+            .apply()
+        _quickCaptureAiFlow.value = enabled
+    }
+
+    override fun observeQuickCaptureAiEnabled(): Flow<Boolean> = _quickCaptureAiFlow.asStateFlow()
+
+    //endregion
+
     override suspend fun getHasShownSpacesIntroduction(): Boolean {
         return prefs.getBoolean(HAS_SHOWN_SPACES_INTRODUCTION_KEY, false)
     }
@@ -971,5 +1106,8 @@ class DefaultUserSettingsCache(
         const val KANBAN_ENABLED_KEY = "prefs.device.kanban_enabled"
         const val FILE_DOWNLOAD_LIMIT_KEY = "prefs.device.file_download_limit"
         const val USE_CELLULAR_FOR_DOWNLOADS_KEY = "prefs.device.use_cellular_for_downloads"
+        const val QUICK_CAPTURE_LAST_SPACE_KEY = "prefs.device.quick_capture_last_space"
+        const val QUICK_CAPTURE_ENABLED_KEY = "prefs.device.quick_capture_enabled"
+        const val QUICK_CAPTURE_AI_ENABLED_KEY = "prefs.device.quick_capture_ai_enabled"
     }
 }

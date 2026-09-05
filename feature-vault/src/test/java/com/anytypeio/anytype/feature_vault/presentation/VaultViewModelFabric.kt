@@ -96,6 +96,7 @@ object VaultViewModelFabric {
         setHomepage: SetHomepage = mock(),
         userSettingsRepository: UserSettingsRepository = mock {
             on { observeCompactModeEnabled() }.thenReturn(flowOf(false))
+            on { observeQuickCaptureEnabled() }.thenReturn(flowOf(false))
         }
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,

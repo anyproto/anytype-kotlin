@@ -195,4 +195,92 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
         assertNotNull(objectTypesWidget)
         assertFalse(objectTypesWidget.visible)
     }
+
+    /**
+     * Quick capture: the type bar is the sheet's permanent type UI. It must show even for
+     * a restored draft whose ShouldSelectType flag heart has already cleared and whose
+     * title/body has text — the exact conditions under which the base editor hides it.
+     */
+    @Test
+    fun `quick capture - should show expanded widget without done button despite cleared flags and non-empty text`() {
+
+        val paragraph = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "Buy milk",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "Groceries",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.TITLE
+            )
+        )
+
+        val featuredBlock = Block(
+            id = "featuredRelations",
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.FeaturedRelations
+        )
+
+        val header = Block(
+            id = "header",
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id, featuredBlock.id)
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart,
+            children = listOf(header.id, title.id, paragraph.id)
+        )
+
+        val doc = listOf(page, header, title, paragraph, featuredBlock)
+
+        val objectDetails =
+            mapOf(
+                Relations.SPACE_ID to defaultSpace,
+                Relations.TYPE to ObjectTypeIds.PAGE,
+                Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+                // no internal flags: heart cleared them when content appeared
+            )
+
+        val detailsList = ObjectViewDetails(details = mapOf(root to objectDetails))
+
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubSearchObjects()
+        stubGetDefaultObjectType(type = ObjectTypeIds.PAGE)
+        stubOpenDocument(
+            document = doc,
+            details = detailsList
+        )
+        stubGetObjectTypes(listOf())
+
+        val vm = buildViewModel()
+
+        vm.enableQuickCaptureMode()
+        vm.onStart(id = root, space = defaultSpace)
+
+        val objectTypesWidget = vm.typesWidgetState.value
+
+        assertNotNull(objectTypesWidget)
+        assertTrue(objectTypesWidget.visible, "type bar must be visible in quick capture")
+        assertTrue(objectTypesWidget.expanded, "type bar must be expanded in quick capture")
+        assertFalse(objectTypesWidget.showDoneButton, "no Done button in quick capture")
+    }
 }

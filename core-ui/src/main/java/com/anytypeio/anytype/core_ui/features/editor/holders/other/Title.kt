@@ -80,7 +80,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             enableReadMode()
         } else {
             enableEditMode()
-            if (item.isFocused) setCursor(item)
             focus(item.isFocused)
         }
         content.pauseTextWatchers {
@@ -94,6 +93,12 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 content.setText(item.text, TextView.BufferType.EDITABLE)
             }
         }
+        // After the text, not before it. setCursor measures content.text, so on a first bind
+        // it used to read the widget's *previous* (empty) contents, decide the position was
+        // out of range, and silently drop it — leaving the caret at 0 on a title that has
+        // text. Only visible once something focused a non-empty title, which the base editor
+        // never does; quick capture reopening a saved draft is the first case.
+        if (item.mode != BlockView.Mode.READ && item.isFocused) setCursor(item)
         cover?.setOnClickListener { onCoverClicked() }
     }
 

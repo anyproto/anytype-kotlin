@@ -114,9 +114,9 @@ sealed class ObjectWrapper {
             get() = when (val value = map[Relations.INTERNAL_FLAGS]) {
                 is Double -> buildList {
                     when (value.toInt()) {
-                        InternalFlags.ShouldSelectType.code -> InternalFlags.ShouldSelectType
-                        InternalFlags.ShouldSelectTemplate.code -> InternalFlags.ShouldSelectTemplate
-                        InternalFlags.ShouldEmptyDelete.code -> InternalFlags.ShouldEmptyDelete
+                        InternalFlags.ShouldSelectType.code -> add(InternalFlags.ShouldSelectType)
+                        InternalFlags.ShouldSelectTemplate.code -> add(InternalFlags.ShouldSelectTemplate)
+                        InternalFlags.ShouldEmptyDelete.code -> add(InternalFlags.ShouldEmptyDelete)
                     }
                 }
                 is List<*> -> value.typeOf<Double>().mapNotNull { code ->
@@ -210,6 +210,8 @@ sealed class ObjectWrapper {
             }
 
         val defaultTemplateId: Id? get() = getSingleValue(Relations.DEFAULT_TEMPLATE_ID)
+
+        val lastUsedDate: Double? get() = getSingleValue(Relations.LAST_USED_DATE)
 
         val restrictions: List<ObjectRestriction>
             get() = when (val value = map[Relations.RESTRICTIONS]) {

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Root is transparent and gets a top padding equal to the status-bar inset at runtime,
+    so the strip above the sheet shows the dimmed vault instead of the sheet's own
+    background. The surface below it paints the editor background with rounded top corners.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/quickCaptureRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+    <LinearLayout
+        android:id="@+id/quickCaptureSurface"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/rounded_dialog_primary"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="36dp"
+            android:layout_height="5dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="6dp"
+            android:background="@drawable/dragger" />
+
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/quickCaptureHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <!-- 0dp + weight, NOT match_parent: a match_parent child of a vertical LinearLayout
+             keeps the parent's full height, pushing its bottom (and the editor's bottom-gravity
+             type bar with it) below the visible sheet. -->
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/quickCaptureEditorContainer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+    </LinearLayout>
+
+</FrameLayout>

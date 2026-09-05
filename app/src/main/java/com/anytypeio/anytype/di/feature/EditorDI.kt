@@ -11,6 +11,7 @@ import com.anytypeio.anytype.di.feature.history.VersionHistoryComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
+import com.anytypeio.anytype.domain.ai.TypeSuggestionEngine
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.UpdateDivider
@@ -301,7 +302,8 @@ object EditorSessionModule {
         addDiscussion: AddDiscussion,
         getChatMessages: GetChatMessages,
         backHistoryDelegate: BackHistoryDelegate,
-        exitToVaultDelegate: ExitToVaultDelegate
+        exitToVaultDelegate: ExitToVaultDelegate,
+        typeSuggestionEngine: TypeSuggestionEngine
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -355,7 +357,8 @@ object EditorSessionModule {
         addDiscussion = addDiscussion,
         getChatMessages = getChatMessages,
         backHistoryDelegate = backHistoryDelegate,
-        exitToVaultDelegate = exitToVaultDelegate
+        exitToVaultDelegate = exitToVaultDelegate,
+        typeSuggestionEngine = typeSuggestionEngine
     )
 
     @JvmStatic

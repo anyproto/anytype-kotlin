@@ -106,4 +106,26 @@ interface UserSettingsRepository {
     suspend fun getHomepagePickerDismissed(space: SpaceId): Boolean
     suspend fun setInviteMembersDismissed(space: SpaceId, dismissed: Boolean)
     fun observeInviteMembersDismissed(space: SpaceId): Flow<Boolean>
+
+    suspend fun setQuickCaptureDraft(space: SpaceId, obj: Id)
+    suspend fun getQuickCaptureDraft(space: SpaceId): Id?
+    suspend fun clearQuickCaptureDraft(space: SpaceId)
+
+    /** `[spaceId → draftObjectId]` for every space holding a pending draft. */
+    suspend fun getQuickCaptureDrafts(): Map<Id, Id>
+
+    suspend fun setSpaceLastInteraction(space: SpaceId, timestamp: Long)
+    suspend fun getSpaceLastInteractions(): Map<Id, Long>
+
+    /** The space quick capture was last pointed at, so the sheet can reopen there. */
+    suspend fun setQuickCaptureLastSpace(space: Id)
+    suspend fun getQuickCaptureLastSpace(): Id?
+
+    suspend fun getQuickCaptureEnabled(): Boolean
+    suspend fun setQuickCaptureEnabled(enabled: Boolean)
+    fun observeQuickCaptureEnabled(): Flow<Boolean>
+
+    suspend fun getQuickCaptureAiEnabled(): Boolean
+    suspend fun setQuickCaptureAiEnabled(enabled: Boolean)
+    fun observeQuickCaptureAiEnabled(): Flow<Boolean>
 }

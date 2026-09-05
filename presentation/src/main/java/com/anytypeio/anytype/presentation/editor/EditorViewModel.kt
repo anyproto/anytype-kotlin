@@ -70,6 +70,7 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.toPrettyString
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
+import com.anytypeio.anytype.domain.ai.TypeSuggestionEngine
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
@@ -310,6 +311,11 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
@@ -320,11 +326,13 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
 
+@OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
 class EditorViewModel(
     private val vmParams: Params,
     private val permissions: UserPermissionProvider,
@@ -378,7 +386,8 @@ class EditorViewModel(
     private val addDiscussion: AddDiscussion,
     private val getChatMessages: GetChatMessages,
     private val backHistoryDelegate: BackHistoryDelegate,
-    private val exitToVaultDelegate: ExitToVaultDelegate
+    private val exitToVaultDelegate: ExitToVaultDelegate,
+    private val typeSuggestionEngine: TypeSuggestionEngine
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -762,7 +771,17 @@ class EditorViewModel(
             controlPanelInteractor
                 .state()
                 .distinctUntilChanged()
-                .collect { controlPanelViewState.postValue(it) }
+                .collect {
+                    controlPanelViewState.postValue(it)
+                    lastControlPanelState = it
+                    applyQuickCaptureTypeBarSuppression()
+                }
+        }
+        // Undo/redo lives outside ControlPanelState. Observing the flow rather than patching
+        // its four assignment sites keeps the suppression correct if a fifth appears.
+        viewModelScope.launch {
+            // Already conflated: StateFlow does not re-emit equal values.
+            isUndoRedoToolbarIsVisible.collect { applyQuickCaptureTypeBarSuppression() }
         }
     }
 
@@ -872,6 +891,9 @@ class EditorViewModel(
      */
     private fun sendTextChange(update: TextUpdate) {
         unappliedTextChange = update
+        // Single funnel for both the title and body blocks, so this is the whole "the user
+        // has actually typed something into this draft" signal (see hasQuickCaptureEdits).
+        if (isQuickCapture) hasQuickCaptureEdits = true
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
     }
 
@@ -1108,6 +1130,7 @@ class EditorViewModel(
             .onEach {
                 refreshTableToolbar()
                 proceedWithCheckingInternalFlags()
+                updateQuickCaptureSuggestionInput()
             }
             .launchIn(viewModelScope)
     }
@@ -1467,11 +1490,53 @@ class EditorViewModel(
         }
     }
 
+    /**
+     * Puts the caret at the end of the draft: the trailing text block when there is one,
+     * otherwise the title. Returns false when the document has no text block at all, so the
+     * caller falls through to the base policy.
+     *
+     * The title is deliberately included as a fallback. It is a child of the HEADER block,
+     * not of the root, so it never appears in [root]'s children — and a one-line capture
+     * ("Buy milk" typed straight into the title) creates no body block at all. Without this,
+     * the single most likely restore shape falls through to the base policy, which explicitly
+     * declines to focus a non-empty title, and the draft reopens with no caret, no keyboard
+     * and therefore no type bar.
+     */
+    private fun focusRestoredQuickCaptureDraft(
+        event: Event.Command.ShowObject,
+        root: Block
+    ): Boolean {
+        val textBlocks = root.children.mapNotNull { id ->
+            event.blocks.firstOrNull { it.id == id && it.content is Content.Text }
+        }
+        // Only a *trailing* empty block is a continuation point; an empty block in the middle
+        // of the document would drop the caret above the user's existing text.
+        val target = textBlocks.lastOrNull()
+            ?: event.blocks.title()
+            ?: return false
+        viewModelScope.launch {
+            orchestrator.stores.focus.update(
+                Editor.Focus(
+                    target = Editor.Focus.Target.Block(target.id),
+                    cursor = Editor.Cursor.End
+                )
+            )
+        }
+        return true
+    }
+
     //TODO need refactoring, logic must depend on Object Layouts
     private fun onStartFocusing(payload: Payload) {
         val event = payload.events.find { it is Event.Command.ShowObject }
         if (event is Event.Command.ShowObject) {
             val root = event.blocks.find { it.id == context }
+            // Quick capture reopens onto a draft that usually already has text. The base
+            // policy below only focuses an *empty* document, which would leave a restored
+            // draft with no caret, no keyboard and therefore no type bar — breaking the
+            // two-tap promise on exactly the flow the per-space draft exists to serve.
+            if (isQuickCapture && root != null && root.fields.isLocked != true) {
+                if (focusRestoredQuickCaptureDraft(event, root)) return
+            }
             when {
                 root == null -> Timber.e("Could not find the root block on initial focusing")
                 root.fields.isLocked == true -> {
@@ -6302,6 +6367,11 @@ class EditorViewModel(
          */
         const val VIRTUAL_TRAILING_BLOCK_ID = "virtual-trailing-block"
         const val TEXT_CHANGES_DEBOUNCE_DURATION = 500L
+        const val QUICK_CAPTURE_SUGGESTION_DEBOUNCE_MS = 1_000L
+        /** Upper bound on waiting for queued text writes before a cross-space move. */
+        const val QUICK_CAPTURE_FLUSH_TIMEOUT_MS = 2_000L
+        const val QUICK_CAPTURE_SUGGESTION_MIN_LENGTH = 3
+        const val QUICK_CAPTURE_SUGGESTION_INPUT_LIMIT = 500
         const val DELAY_REFRESH_DOCUMENT_TO_ENTER_MULTI_SELECT_MODE = 150L
         const val DELAY_REFRESH_DOCUMENT_ON_EXIT_MULTI_SELECT_MODE = 300L
         const val INITIAL_INDENT = 0
@@ -7999,8 +8069,187 @@ class EditorViewModel(
     data class TypesWidgetState(
         val items: List<TypesWidgetItem>,
         val visible: Boolean,
-        val expanded: Boolean = false
+        val expanded: Boolean = false,
+        val showDoneButton: Boolean = true,
+        val suggestedTypeId: Id? = null
     )
+
+    /**
+     * Quick-capture mode: the editor is embedded in the capture sheet over the vault.
+     * Set by the host fragment before [onStart]; changes the type-widget behavior
+     * (expanded by default, no Done button, no set/collection types, lastUsedDate sorting)
+     * and enables on-device type suggestions when available.
+     */
+    var isQuickCapture: Boolean = false
+        private set
+
+    /**
+     * Live content check for quick capture, straight from the local document store — which
+     * is updated synchronously on every keystroke, unlike the middleware details that lag
+     * behind the editor's 500 ms text debounce. Reading the stale side is how an emptied
+     * draft used to get moved (and its old title resurrected) on a space switch.
+     */
+    fun hasQuickCaptureContent(): Boolean {
+        val document = blocks
+        val title = document.title()?.content<Content.Text>()?.text
+        if (!title.isNullOrBlank()) return true
+        return document.any { block ->
+            val content = block.content
+            content is Content.Text &&
+                content.style != Content.Text.Style.TITLE &&
+                content.text.isNotBlank()
+        }
+    }
+
+    /**
+     * Waits until the text the user can see has actually reached the middleware, so a
+     * cross-space move copies the current document rather than a stale one — it reads the
+     * source server-side and then permanently deletes it.
+     *
+     * Every proxy here is a rendezvous channel, so a `send` returns only once the consumer
+     * has taken the item, i.e. finished the previous one. That handshake is the whole point;
+     * the `null`s are sentinels that both text consumers filter out.
+     *
+     *  1. `changes` drains the pattern-matching stage, whose consumer forwards to `saves`.
+     *  2. `saves` drains the document-update stage — after which `blocks` is current.
+     *  3. `intents` is the only stage whose consumer awaits the middleware write itself
+     *     (Orchestrator collects sequentially and suspends on each call). The stage feeding
+     *     it is fire-and-forget (`proceedWithUpdatingText` launches), so a barrier is needed:
+     *     the first send proves everything queued earlier completed, the second proves the
+     *     first one's own write did. Re-sending the block's current text is idempotent, and
+     *     this runs only on a private, unpublished, single-writer draft.
+     */
+    suspend fun flushPendingTextChanges() {
+        runCatching {
+            withTimeoutOrNull(QUICK_CAPTURE_FLUSH_TIMEOUT_MS) {
+                orchestrator.proxies.changes.send(null)
+                orchestrator.proxies.saves.send(null)
+                val target = (orchestrator.stores.focus.current().target
+                    as? Editor.Focus.Target.Block)?.id ?: return@withTimeoutOrNull
+                val content = blocks.firstOrNull { it.id == target }?.content as? Content.Text
+                    ?: return@withTimeoutOrNull
+                val barrier = Intent.Text.UpdateText(
+                    context = context,
+                    target = target,
+                    text = content.text,
+                    marks = content.marks.filter { it.range.first != it.range.last }
+                )
+                orchestrator.proxies.intents.send(barrier)
+                orchestrator.proxies.intents.send(barrier)
+            }
+        }.onFailure { Timber.w(it, "Quick capture: could not flush pending text") }
+    }
+
+    fun enableQuickCaptureMode() {
+        if (isQuickCapture) return
+        isQuickCapture = true
+        startQuickCaptureSuggestions()
+    }
+
+    /**
+     * Whether the user has typed into the draft during THIS sheet session.
+     *
+     * Distinct from [hasQuickCaptureContent], which only says the draft is non-empty — a
+     * restored draft is non-empty the moment it opens. The two differ exactly where it
+     * matters: carrying text to another space is right when the user just wrote it, and
+     * surprising when they merely reopened something written earlier and moved on.
+     */
+    private var hasQuickCaptureEdits = false
+
+    // No reset needed: the editor component is keyed by the draft id, so switching space
+    // builds a new view model for the new draft and the flag starts false again.
+    fun hasQuickCaptureEdits(): Boolean = hasQuickCaptureEdits
+
+    //region Quick capture — on-device type suggestion (suggest-only, never blocks capture)
+
+    private val quickCaptureSuggestionInput = MutableStateFlow("")
+    private var quickCaptureSuggestionJob: Job? = null
+    private var lastClassifiedText: String? = null
+
+    /** Called from the render pipeline: plain text of the draft (title + body), capped. */
+    private fun updateQuickCaptureSuggestionInput() {
+        if (!isQuickCapture) return
+        val text = buildString {
+            blocks.forEach { block ->
+                val content = block.content
+                if (content is Content.Text && content.text.isNotBlank()) {
+                    if (isNotEmpty()) append('\n')
+                    append(content.text)
+                }
+            }
+        }.trim().take(QUICK_CAPTURE_SUGGESTION_INPUT_LIMIT)
+        quickCaptureSuggestionInput.value = text
+    }
+
+    private fun startQuickCaptureSuggestions() {
+        quickCaptureSuggestionJob?.cancel()
+        quickCaptureSuggestionJob = viewModelScope.launch {
+            if (!typeSuggestionEngine.isAvailable()) {
+                Timber.d("QC suggestions: engine unavailable, staying with lastUsed ordering")
+                return@launch
+            }
+            typeSuggestionEngine.prewarm()
+            quickCaptureSuggestionInput
+                .debounce(QUICK_CAPTURE_SUGGESTION_DEBOUNCE_MS)
+                // mapLatest, not collect: a classification for text the user has already
+                // moved past is cancelled instead of being awaited, so a slow answer can
+                // never land on top of newer text.
+                .mapLatest { text -> classifyQuickCaptureDraft(text) }
+                .collect { }
+        }
+    }
+
+    private suspend fun classifyQuickCaptureDraft(text: String) {
+        // Min-length guard stays low on purpose: "Buy milk" is a prime capture.
+        if (text.length < QUICK_CAPTURE_SUGGESTION_MIN_LENGTH) return
+        if (text == lastClassifiedText) return
+        // N.B. lastClassifiedText is set only once the engine has answered (below): a
+        // cancelled classification must stay retryable.
+        val types = _typesWidgetState.value.items
+            .filterIsInstance<TypesWidgetItem.Type>()
+            .map { it.item }
+        if (types.isEmpty()) {
+            // Type bar not populated yet — do not mark this text classified, retry later.
+            Timber.d("QC suggestions: type bar empty, deferring classification")
+            return
+        }
+        val suggestion = typeSuggestionEngine.suggest(
+            text = text,
+            typeNames = types.map { it.name }
+        )
+        // A superseded classification must not claim this text was classified, nor clear the
+        // pin the newer run is about to replace. The engine cannot signal this by throwing:
+        // its runCatching swallows CancellationException and returns null like any other
+        // failure, so cancellation is checked here instead.
+        if (!currentCoroutineContext().isActive) {
+            Timber.d("QC suggestions: classification superseded, staying retryable")
+            return
+        }
+        lastClassifiedText = text
+        if (suggestion == null) {
+            // Silence is the only failure mode — but a previously pinned suggestion no
+            // longer reflects the current text, so clear it rather than mislead.
+            Timber.d("QC suggestions: no suggestion for current text — clearing stale pin")
+            setQuickCaptureSuggestedType(null)
+            return
+        }
+        val match = types.firstOrNull { it.name.equals(suggestion, ignoreCase = true) }
+        if (match == null) {
+            Timber.d("QC suggestions: engine returned out-of-list name '%s' — discarded", suggestion)
+            setQuickCaptureSuggestedType(null)
+            return
+        }
+        setQuickCaptureSuggestedType(match.id)
+    }
+
+    private fun setQuickCaptureSuggestedType(typeId: Id?) {
+        if (_typesWidgetState.value.suggestedTypeId == typeId) return
+        _typesWidgetState.value = _typesWidgetState.value.copy(suggestedTypeId = typeId)
+        // Rebuild the widget items so the suggested chip is pinned to the front.
+        proceedWithGettingObjectTypesForTypesWidget()
+    }
+
+    //endregion
 
     sealed class TypesWidgetItem {
         data object Search : TypesWidgetItem()
@@ -8013,12 +8262,68 @@ class EditorViewModel(
     private val _objectTypes = mutableListOf<ObjectWrapper.Type>()
     private val _typesWidgetState = MutableStateFlow(TypesWidgetState(emptyList(), false))
     private val isTypesWidgetVisible: Boolean get() = _typesWidgetState.value.visible
+
+    /**
+     * In quick capture the type bar is permanent, which makes it the last-declared
+     * bottom-gravity child of the editor's root — so it paints *over* every other
+     * bottom-anchored panel (undo/redo, the block and style toolbars, the block-action and
+     * table widgets), all of which slide up to the same edge. Those panels are opaque and
+     * full-width, so the overlap is total: the undo/redo entry the trimmed quick-capture
+     * menu deliberately keeps was unreachable. Yield the edge while one of them is up.
+     */
     val typesWidgetState: StateFlow<TypesWidgetState> get() = _typesWidgetState
 
+    /** What quick capture *wants* the bar to be, independent of momentary suppression. */
+    private var quickCaptureTypeBarWanted = false
+
+    private var lastControlPanelState: ControlPanelState? = null
+
+    /**
+     * Yields the bottom edge while another panel occupies it, then restores the bar.
+     * Driven from the control-panel collector and from the undo/redo toggle.
+     */
+    private fun applyQuickCaptureTypeBarSuppression() {
+        if (!isQuickCapture) return
+        val competing = lastControlPanelState?.hasCompetingBottomPanel() == true ||
+            // NOT part of ControlPanelState — its own flow. It is also the panel this
+            // suppression exists for: the trimmed quick-capture menu keeps exactly one
+            // horizontal action, Undo/Redo, and the type bar was painting over it.
+            isUndoRedoToolbarIsVisible.value
+        val visible = quickCaptureTypeBarWanted && !competing
+        val current = _typesWidgetState.value
+        if (current.visible == visible) return
+        _typesWidgetState.value = current.copy(visible = visible, expanded = visible)
+    }
+
+    /**
+     * True when a panel that occupies the same bottom edge as the type bar is showing.
+     * The mention and slash widgets are excluded: they are anchored to the caret rather
+     * than the bottom edge, and suppressing the bar for them would make it flicker on
+     * every "@" and "/".
+     */
+    private fun ControlPanelState.hasCompetingBottomPanel(): Boolean =
+        // mainToolbar is deliberately NOT here. It is the editor's ordinary block toolbar,
+        // which goes visible on every focus change — so including it suppressed the bar for
+        // the whole typing session. In quick capture the type bar *replaces* that toolbar;
+        // yielding to it would invert the design.
+        multiSelect.isVisible ||
+            styleTextToolbar.isVisible ||
+            styleExtraToolbar.isVisible ||
+            styleColorBackgroundToolbar.isVisible ||
+            styleBackgroundToolbar.isVisible ||
+            markupMainToolbar.isVisible ||
+            markupColorToolbar.isVisible ||
+            simpleTableWidget.isVisible
+
     private fun setTypesWidgetVisibility(visible: Boolean) {
+        if (isQuickCapture) quickCaptureTypeBarWanted = visible
         if (visible) {
             proceedWithGettingObjectTypesForTypesWidget()
-            _typesWidgetState.value = _typesWidgetState.value.copy(visible = true, expanded = false)
+            _typesWidgetState.value = _typesWidgetState.value.copy(
+                visible = true,
+                expanded = isQuickCapture,
+                showDoneButton = !isQuickCapture
+            )
         } else {
             if (_typesWidgetState.value.visible) {
                 _typesWidgetState.value =
@@ -8048,18 +8353,26 @@ class EditorViewModel(
                     SupportedLayouts.editorCreateObjectLayouts.contains(layout) &&
                     type.isArchived != true &&
                     type.isDeleted != true &&
-                    type.uniqueKey != ObjectTypeIds.TEMPLATE
+                    type.uniqueKey != ObjectTypeIds.TEMPLATE &&
+                    // Quick capture targets a single object — containers are not capture targets.
+                    (!isQuickCapture || (layout != ObjectType.Layout.SET && layout != ObjectType.Layout.COLLECTION))
             }
             _objectTypes.clear()
             _objectTypes.addAll(filteredTypes)
-            val sortedObjects = filteredTypes.sortByTypePriority(
+            val prioritySorted = filteredTypes.sortByTypePriority(
                 isChatSpace = spaceViews.get(vmParams.space)?.isOneToOneSpace == true
             )
+            val sortedObjects = if (isQuickCapture) {
+                // Recently used first; stable sort keeps the priority order for ties.
+                prioritySorted.sortedByDescending { it.lastUsedDate ?: 0.0 }
+            } else {
+                prioritySorted
+            }
             val items = buildList {
                 add(TypesWidgetItem.Search)
                 addAll(
                     sortedObjects.toObjectTypeViews(
-                        includeListTypes = true,
+                        includeListTypes = !isQuickCapture,
                         includeBookmarkType = true,
                         excludedTypeIds = excludeTypes
                     ).map {
@@ -8069,7 +8382,25 @@ class EditorViewModel(
                     }
                 )
             }
-            _typesWidgetState.value = _typesWidgetState.value.copy(items = items)
+            _typesWidgetState.value = _typesWidgetState.value.copy(
+                items = items.pinSuggestedType(_typesWidgetState.value.suggestedTypeId)
+            )
+        }
+    }
+
+    /**
+     * Moves the AI-suggested type chip to the front of the bar (right after Search).
+     * Suggest-only by design: the user still taps to apply; send never auto-applies.
+     */
+    private fun List<TypesWidgetItem>.pinSuggestedType(suggested: Id?): List<TypesWidgetItem> {
+        if (suggested == null) return this
+        val suggestedItem = filterIsInstance<TypesWidgetItem.Type>()
+            .firstOrNull { it.item.id == suggested }
+            ?: return this
+        return buildList {
+            add(TypesWidgetItem.Search)
+            add(suggestedItem)
+            addAll(this@pinSuggestedType.filter { it != TypesWidgetItem.Search && it != suggestedItem })
         }
     }
 
@@ -8094,6 +8425,10 @@ class EditorViewModel(
     }
 
     private fun sendHideTypesWidgetEvent() {
+        // Quick capture: the type bar is the sheet's permanent type UI. The base editor
+        // treats it as a one-shot prompt and hides it on title/text edits, focus changes,
+        // outside taps and key events — all of which are normal during a capture.
+        if (isQuickCapture) return
         setTypesWidgetVisibility(false)
     }
 
@@ -9261,6 +9596,23 @@ class EditorViewModel(
     }
 
     private fun proceedWithCheckingInternalFlagShouldSelectType(flags: List<InternalFlags>) {
+        if (isQuickCapture) {
+            // Quick capture: the type bar is the sheet's permanent type UI (this is also
+            // where AI suggestions land). It stays for the whole draft session — independent
+            // of the title text and of heart clearing ShouldSelectType on first content.
+            //
+            // Test the INTENT, not the rendered visibility. This runs on every render, so
+            // reading isTypesWidgetVisible would re-raise the bar the moment a competing
+            // panel had suppressed it — two writers with opposite goals racing on every
+            // keystroke, settled by whichever fired last.
+            if (!quickCaptureTypeBarWanted) {
+                val allowed = orchestrator.stores.objectRestrictions.current()
+                    .none { it == ObjectRestriction.TYPE_CHANGE } &&
+                    permission.value?.isOwnerOrEditor() == true
+                if (allowed) setTypesWidgetVisibility(true)
+            }
+            return
+        }
         val containsFlag = flags.any { it == InternalFlags.ShouldSelectType }
         val isUserEditor = permission.value?.isOwnerOrEditor() == true
         when {

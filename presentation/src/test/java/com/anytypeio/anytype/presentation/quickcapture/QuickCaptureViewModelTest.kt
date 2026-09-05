@@ -18,11 +18,11 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.`object`.FetchObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.quickcapture.FetchQuickCaptureDraft
 import com.anytypeio.anytype.domain.quickcapture.MoveQuickCaptureDraft
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -63,7 +63,8 @@ class QuickCaptureViewModelTest {
     @Mock lateinit var spaceManager: SpaceManager
     @Mock lateinit var settings: UserSettingsRepository
     @Mock lateinit var createObject: CreateObject
-    @Mock lateinit var fetchObject: FetchObject
+    @Mock lateinit var fetchQuickCaptureDraft: FetchQuickCaptureDraft
+
     @Mock lateinit var setObjectDetails: SetObjectDetails
     @Mock lateinit var deleteObjects: DeleteObjects
     @Mock lateinit var moveQuickCaptureDraft: MoveQuickCaptureDraft
@@ -86,7 +87,7 @@ class QuickCaptureViewModelTest {
         spaceManager = spaceManager,
         settings = settings,
         createObject = createObject,
-        fetchObject = fetchObject,
+        fetchQuickCaptureDraft = fetchQuickCaptureDraft,
         setObjectDetails = setObjectDetails,
         deleteObjects = deleteObjects,
         moveQuickCaptureDraft = moveQuickCaptureDraft,
@@ -96,7 +97,7 @@ class QuickCaptureViewModelTest {
         analytics = analytics,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-        typeSuggestionEngine = TypeSuggestionEngine.NoOp
+        typeSuggestionEngine = TypeSuggestionEngine.NoOp,
     )
 
     @Before
@@ -171,7 +172,7 @@ class QuickCaptureViewModelTest {
         settings.stub {
             onBlocking { getQuickCaptureDraft(SpaceId(targetSpace)) } doReturn existing
         }
-        fetchObject.stub {
+        fetchQuickCaptureDraft.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
                 ObjectWrapper.Basic(
                     mapOf(
@@ -221,7 +222,7 @@ class QuickCaptureViewModelTest {
             onBlocking { getQuickCaptureLastSpace() } doReturn otherSpace
             onBlocking { getQuickCaptureDraft(SpaceId(otherSpace)) } doReturn pendingDraft
         }
-        fetchObject.stub {
+        fetchQuickCaptureDraft.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
                 ObjectWrapper.Basic(
                     mapOf(Relations.ID to pendingDraft, Relations.IS_HIDDEN to true)
@@ -265,7 +266,7 @@ class QuickCaptureViewModelTest {
             // Pointer is stale — the draft was deleted elsewhere.
             onBlocking { getQuickCaptureDraft(SpaceId(otherSpace)) } doReturn MockDataFactory.randomUuid()
         }
-        fetchObject.stub {
+        fetchQuickCaptureDraft.stub {
             onBlocking { async(any()) } doReturn Resultat.success(null)
         }
 
@@ -285,7 +286,7 @@ class QuickCaptureViewModelTest {
         settings.stub {
             onBlocking { getQuickCaptureDraft(SpaceId(targetSpace)) } doReturn published
         }
-        fetchObject.stub {
+        fetchQuickCaptureDraft.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
                 ObjectWrapper.Basic(mapOf(Relations.ID to published))
             )
@@ -296,6 +297,31 @@ class QuickCaptureViewModelTest {
         val state = vm.screenState.value
         assertTrue(state is QuickCaptureViewModel.ScreenState.Ready)
         assertEquals(draftId, state.draft)
+    }
+
+    /**
+     * The store query is scoped to drafts this participant created, so another member's
+     * hidden object simply is not returned. The view model must then start its own draft
+     * rather than treat the empty result as a reason to act on the pointed-at object.
+     */
+    @Test
+    fun `starts a fresh draft when the scoped query returns nothing`() = runTest {
+        val foreignDraft = MockDataFactory.randomUuid()
+        settings.stub {
+            onBlocking { getQuickCaptureDraft(SpaceId(targetSpace)) } doReturn foreignDraft
+        }
+        fetchQuickCaptureDraft.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(null)
+        }
+
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+
+        val state = vm.screenState.value
+        assertTrue(state is QuickCaptureViewModel.ScreenState.Ready)
+        assertEquals(draftId, state.draft, "must create its own draft, not adopt theirs")
+        verifyBlocking(deleteObjects, never()) { async(any()) }
     }
 
     private val conflictSpace = MockDataFactory.randomUuid()
@@ -320,7 +346,7 @@ class QuickCaptureViewModelTest {
         spaceManager.stub {
             onBlocking { set(conflictSpace, false) } doReturn Result.success(mock<Config>())
         }
-        fetchObject.stub {
+        fetchQuickCaptureDraft.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
                 ObjectWrapper.Basic(
                     mapOf(
@@ -364,7 +390,7 @@ class QuickCaptureViewModelTest {
         spaceManager.stub {
             onBlocking { set(otherSpace, false) } doReturn Result.success(mock<Config>())
         }
-        fetchObject.stub {
+        fetchQuickCaptureDraft.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
                 ObjectWrapper.Basic(
                     mapOf(
@@ -393,8 +419,8 @@ class QuickCaptureViewModelTest {
         // The mock returns the snippet whatever is asked for, so the behavioural assertion
         // above cannot catch the actual defect — the middleware returns only requested keys,
         // and omitting SNIPPET made every body-only draft read as empty. Assert the request.
-        val params = argumentCaptor<FetchObject.Params>()
-        verifyBlocking(fetchObject, atLeastOnce()) { async(params.capture()) }
+        val params = argumentCaptor<FetchQuickCaptureDraft.Params>()
+        verifyBlocking(fetchQuickCaptureDraft, atLeastOnce()) { async(params.capture()) }
         assertTrue(
             params.allValues.all { it.keys.contains(Relations.SNIPPET) },
             "draft validation must request SNIPPET, else body-only drafts read as empty"

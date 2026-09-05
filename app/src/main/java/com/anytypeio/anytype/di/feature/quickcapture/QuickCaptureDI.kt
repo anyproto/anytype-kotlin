@@ -12,6 +12,8 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -47,5 +49,7 @@ interface QuickCaptureDependencies : ComponentDependencies {
     fun analyticsHelper(): AnalyticSpaceHelperDelegate
     fun spaceSyncAndP2PStatusProvider(): SpaceSyncAndP2PStatusProvider
     fun typeSuggestionEngine(): TypeSuggestionEngine
+    fun participantSubscriptionContainer(): ParticipantSubscriptionContainer
+    fun authRepository(): AuthRepository
     fun logger(): Logger
 }

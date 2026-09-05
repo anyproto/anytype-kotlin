@@ -513,6 +513,31 @@ class QuickCaptureViewModelTest {
     }
 
     /**
+     * Browsing between drafts you have not touched must feel like opening them. Restored
+     * draft on screen, untouched; target space also holds one; switching asks nothing and
+     * simply opens the target's — the same thing a fresh sheet in that space would do.
+     */
+    @Test
+    fun `switching an untouched draft into a space that has one asks nothing`() = runTest {
+        val vm = vmWithConflict()
+
+        vm.onSpaceSelected(
+            target = conflictSpace,
+            sourceHasContent = true,
+            sourceEditedThisSession = false
+        )
+        coroutineTestRule.advanceUntilIdle()
+
+        assertTrue(vm.draftConflict.value == null, "nothing is at stake, so nothing to confirm")
+        assertTrue(vm.moveOrNewPrompt.value == null, "the target already has a draft to open")
+        val state = vm.screenState.value
+        assertTrue(state is QuickCaptureViewModel.ScreenState.Ready)
+        assertEquals(conflictDraft, state.draft, "opens the target space's own draft")
+        verifyBlocking(deleteObjects, never()) { async(any()) }
+        verifyBlocking(moveQuickCaptureDraft, never()) { async(any()) }
+    }
+
+    /**
      * Keeping both must leave the current draft exactly where it is and open the target's own
      * draft — no move, and above all no delete: the target's draft is off-screen, so the user
      * cannot judge what replacing it would cost.

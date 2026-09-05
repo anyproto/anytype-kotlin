@@ -603,17 +603,33 @@ class QuickCaptureViewModel(
             if (current is ScreenState.Ready && !isSourceDraftEmpty()) {
                 val existing = runCatching { settings.getQuickCaptureDraft(SpaceId(target)) }
                     .getOrNull()
-                if (existing != null && draftHasContent(space = SpaceId(target), draft = existing)) {
-                    draftConflict.value = DraftConflict(
-                        space = target,
-                        spaceName = spaceNameOf(target)
-                    )
+                val targetHasContent = existing != null &&
+                    draftHasContent(space = SpaceId(target), draft = existing)
+
+                // "Have I changed anything?" is decided FIRST, because if the answer is no
+                // there is nothing at stake and nothing to ask about. Browsing between
+                // existing drafts must feel like opening them, not like a negotiation.
+                if (!sourceEditedThisSession) {
+                    if (targetHasContent) {
+                        // Both drafts already exist and neither is at risk: this draft stays
+                        // where it is, that one opens. Exactly what opening a fresh sheet in
+                        // that space would do.
+                        proceedWithSpaceSelection(target, SwitchMode.KEEP_CURRENT)
+                    } else {
+                        // The target has nothing, so there IS a real choice: carry this
+                        // untouched draft across, or leave it and start fresh there.
+                        moveOrNewPrompt.value = MoveOrNewRequest(
+                            space = target,
+                            spaceName = spaceNameOf(target)
+                        )
+                    }
                     return@launch
                 }
-                // Nothing to lose in the target space, but the text here is not this
-                // session's — moving it would relocate a note the user only reopened.
-                if (!sourceEditedThisSession) {
-                    moveOrNewPrompt.value = MoveOrNewRequest(
+
+                // Edited this session, and the target holds text of its own: the only case
+                // where something has to be given up.
+                if (targetHasContent) {
+                    draftConflict.value = DraftConflict(
                         space = target,
                         spaceName = spaceNameOf(target)
                     )

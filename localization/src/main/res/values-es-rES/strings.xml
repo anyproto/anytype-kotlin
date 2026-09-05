@@ -2257,11 +2257,11 @@
     <string name="device_storage_used">Almacenamiento usado en el dispositivo</string>
     <!-- Search v2 (unified cross-space search) -->
     <string name="search_v2_hint">Buscar</string>
-    <string name="search_v2_chip_in_space">In %1$s</string>
+    <string name="search_v2_chip_in_space">en %1$s</string>
     <string name="search_v2_chip_channels">Canales</string>
-    <string name="search_v2_chip_messages">Messages</string>
-    <string name="search_v2_chip_by_me">By me</string>
-    <string name="search_v2_chip_by_name">By %1$s</string>
+    <string name="search_v2_chip_messages">Mensajes</string>
+    <string name="search_v2_chip_by_me">Por mí</string>
+    <string name="search_v2_chip_by_name">Por %1$s</string>
     <string name="search_v2_chip_media">Medios</string>
     <string name="search_v2_chip_pages">Páginas</string>
     <string name="search_v2_chip_bookmarks">Marcadores</string>

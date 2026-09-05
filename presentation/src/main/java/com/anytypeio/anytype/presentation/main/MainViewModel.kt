@@ -53,6 +53,7 @@ import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.preferredSpaceId
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.CrossSpaceObjectTypesContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
@@ -118,6 +119,12 @@ class MainViewModel(
     private val chatPreviewContainer: ChatPreviewContainer,
     private val chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer,
     private val participantSubscriptionContainer: ParticipantSubscriptionContainer,
+    // Retained, not called: constructing it here makes the vault-wide types
+    // subscription open at account start (its own AwaitAccountStartManager
+    // wiring drives start/stop) instead of on the first search open —
+    // cross-space search must never begin with a cold type store (iOS B10).
+    @Suppress("unused")
+    private val crossSpaceObjectTypesContainer: CrossSpaceObjectTypesContainer,
     private val userSettingsRepository: UserSettingsRepository,
     private val resolveSpaceHomepage: ResolveSpaceHomepage,
     private val debugRunProfiler: DebugRunProfiler,

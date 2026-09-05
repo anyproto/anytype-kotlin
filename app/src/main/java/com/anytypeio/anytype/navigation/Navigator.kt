@@ -24,7 +24,7 @@ import com.anytypeio.anytype.ui.primitives.CreateTypeFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
-import com.anytypeio.anytype.ui.search.GlobalSearchFragment
+import com.anytypeio.anytype.ui.search.v2.SearchV2Fragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
@@ -226,11 +226,10 @@ class Navigator : AppNavigation {
     }
 
     override fun openGlobalSearch(space: Id) {
+        // Unified search (search v2): in-space entry seeds the space scope token.
         navController?.navigate(
-            resId = R.id.globalSearchScreen,
-            args = GlobalSearchFragment.args(
-                space = space
-            )
+            resId = R.id.searchV2Screen,
+            args = SearchV2Fragment.args(space = space)
         )
     }
 

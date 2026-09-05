@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.intents.SystemAction.OpenUrl
 import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.di.common.componentManager
@@ -45,6 +46,7 @@ class DiscussionFragment : Fragment() {
 
     val ctx get() = arg<Id>(CTX_KEY)
     private val space get() = arg<Id>(SPACE_KEY)
+    private val startAtMessage get() = argOrNull<Id>(START_AT_MESSAGE_KEY)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         injectDependencies()
@@ -220,16 +222,24 @@ class DiscussionFragment : Fragment() {
     }
 
     private fun injectDependencies() {
-        componentManager()
-            .discussionComponent
-            .get(
-                key = ctx,
-                param = DiscussionViewModel.Params(
-                    ctx = ctx,
-                    space = SpaceId(space)
-                )
-            )
-            .inject(this)
+        val params = DiscussionViewModel.Params(
+            ctx = ctx,
+            space = SpaceId(space),
+            startAtMessage = startAtMessage
+        )
+        // The keyed holder ignores params on a cache hit — a discussion
+        // already on the back stack would silently drop startAtMessage.
+        // Force a rebuild when a target message is requested.
+        val holder = componentManager().discussionComponent
+        val component = if (startAtMessage != null) {
+            holder.new(ctx, params)
+        } else {
+            holder.get(ctx, params)
+        }
+        component.inject(this)
+        // One-shot: the target message must not re-apply after process death
+        // (the args bundle is what gets persisted).
+        arguments?.remove(START_AT_MESSAGE_KEY)
     }
 
     private fun releaseDependencies() {
@@ -239,13 +249,16 @@ class DiscussionFragment : Fragment() {
     companion object {
         private const val CTX_KEY = "arg.discussion.ctx"
         private const val SPACE_KEY = "arg.discussion.space"
+        private const val START_AT_MESSAGE_KEY = "arg.discussion.start-at-message"
 
         fun args(
             ctx: Id,
-            space: Id
+            space: Id,
+            startAtMessage: Id? = null
         ) = bundleOf(
             CTX_KEY to ctx,
-            SPACE_KEY to space
+            SPACE_KEY to space,
+            START_AT_MESSAGE_KEY to startAtMessage
         )
     }
 }

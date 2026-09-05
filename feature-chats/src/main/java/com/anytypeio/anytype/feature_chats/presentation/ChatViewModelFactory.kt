@@ -74,7 +74,6 @@ class ChatViewModelFactory @Inject constructor(
     private val setSpaceDetails: SetSpaceDetails,
     private val setChatNotificationMode: SetChatNotificationMode,
     private val fieldParser: FieldParser,
-    private val chatSearchDelegate: ChatSearchDelegate,
     private val deepLinkResolver: DeepLinkResolver,
     private val backHistoryDelegate: BackHistoryDelegate
 ) : ViewModelProvider.Factory {
@@ -114,7 +113,6 @@ class ChatViewModelFactory @Inject constructor(
         setSpaceDetails = setSpaceDetails,
         setChatNotificationMode = setChatNotificationMode,
         fieldParser = fieldParser,
-        chatSearchDelegate = chatSearchDelegate,
         deepLinkResolver = deepLinkResolver,
         backHistoryDelegate = backHistoryDelegate
     ) as T

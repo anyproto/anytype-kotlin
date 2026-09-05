@@ -2169,7 +2169,6 @@
     <string name="select_view">Görünüm seç</string>
     <string name="os_widget_data_view_title">Veri Görünümü</string>
     <string name="os_widget_data_view_description">Bir Set veya Koleksiyondaki öğeleri görüntüle</string>
-    <string name="chats_search_close_content_description">Aramayı kapat</string>
     <!-- DROID-4358 Offline Downloads settings -->
     <string name="offline_downloads_section_title">Çevrimdışı erişim</string>
     <string name="offline_downloads_title">Çevrimdışı İndirmeler</string>

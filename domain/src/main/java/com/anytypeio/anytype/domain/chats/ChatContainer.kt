@@ -150,8 +150,8 @@ class ChatContainer @Inject constructor(
             }
     }
 
-    fun watchWhileTrackingAttachments(chat: Id): Flow<ChatStreamState> {
-        return watch(chat)
+    fun watchWhileTrackingAttachments(chat: Id, startAtMessage: Id? = null): Flow<ChatStreamState> {
+        return watch(chat, startAtMessage)
             .onEach { state ->
                 val messages = state.messages
                 val repliesIds = mutableSetOf<Id>()
@@ -183,7 +183,7 @@ class ChatContainer @Inject constructor(
         }
     }
 
-    fun watch(chat: Id): Flow<ChatStreamState> = flow {
+    fun watch(chat: Id, startAtMessage: Id? = null): Flow<ChatStreamState> = flow {
         coroutineScope {
             val scope = this
 
@@ -243,8 +243,26 @@ class ChatContainer @Inject constructor(
             // re-subscription and can never leak between chats.
             var newestVisibleMessageId: Id? = null
 
+            // A requested start position (e.g. opening a search result at its message)
+            // wins over the unread-section positioning; on failure (message deleted
+            // between search and open) fall through to the default flow.
+            val aroundStart = if (startAtMessage != null) {
+                runCatching { loadAroundMessage(chat = chat, msg = startAtMessage) }
+                    .onFailure { logger.logWarning("DROID-2966 Could not load window around start message:\n${it.message}") }
+                    .getOrNull()
+            } else {
+                null
+            }
+
             val initial = buildList {
-                if (initialState.hasUnReadMessages && !initialState.oldestMessageOrderId.isNullOrEmpty()) {
+                if (aroundStart != null) {
+                    intent = Intent.ScrollToMessage(
+                        id = startAtMessage.orEmpty(),
+                        smooth = false,
+                        highlight = true
+                    )
+                    addAll(aroundStart)
+                } else if (initialState.hasUnReadMessages && !initialState.oldestMessageOrderId.isNullOrEmpty()) {
                     val lastUnreadMessage = response.messages.find { it.order == initialState.oldestMessageOrderId }
                     if (lastUnreadMessage != null) {
                         // Last unread message is within the subscription results (the chat tail).

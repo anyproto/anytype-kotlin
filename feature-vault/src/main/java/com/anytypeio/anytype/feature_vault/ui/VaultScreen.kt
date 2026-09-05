@@ -5,8 +5,9 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -62,7 +63,8 @@ fun VaultScreen(
     onOrderChanged: (String, String) -> Unit,
     onDragEnd: () -> Unit = { /* No-op */ },
     onSpaceSettings: (Id) -> Unit,
-    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit
+    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit,
+    onSearchBarClicked: (() -> Unit)? = null
 ) {
 
     var searchQuery by remember { mutableStateOf("") }
@@ -91,7 +93,8 @@ fun VaultScreen(
                 onSettingsClicked = onSettingsClicked,
                 onUpdateSearchQuery = { query ->
                     searchQuery = query
-                }
+                },
+                onSearchBarClicked = onSearchBarClicked
             )
         }
     ) { paddings ->
@@ -207,12 +210,17 @@ fun VaultScreenContent(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddings)
-                .navigationBarsPadding()
-            ,
+                .padding(paddings),
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(top = 4.dp)
+            // Edge-to-edge: cards draw under the gesture area; the bottom
+            // inset lives in contentPadding so the last card scrolls clear.
+            contentPadding = PaddingValues(
+                top = 4.dp,
+                bottom = WindowInsets.navigationBars
+                    .asPaddingValues()
+                    .calculateBottomPadding() + 8.dp
+            )
         ) {
             // Pinned Spaces Section
             if (filteredPinnedSpaces.isNotEmpty()) {

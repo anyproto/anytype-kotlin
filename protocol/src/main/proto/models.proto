@@ -99,6 +99,7 @@ message Search {
             string highlight = 4; // truncated text with highlights
             repeated Range highlightRanges = 5; // ranges of the highlight in the text (using utf-16 runes)
             ChatMessage message = 6;
+            string spaceId = 7; // space the chat belongs to; set in all search scopes
         }
     }
 

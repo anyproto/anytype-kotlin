@@ -8,4 +8,7 @@ data object FragmentResultContract {
 
     const val CREATE_SPACE_BACK_TO_SELECT_MEMBERS_KEY =
         "fragment.result.create-space.back-to-select-members"
+
+    /** Search v2's Channels bucket -> the vault's create-channel menu. */
+    const val OPEN_CREATE_CHANNEL_KEY = "fragment.result.open-create-channel"
 }

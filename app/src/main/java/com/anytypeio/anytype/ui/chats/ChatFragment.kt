@@ -26,6 +26,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +64,7 @@ import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
@@ -74,7 +76,6 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.FragmentResultContract
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatObjectIcon
-import com.anytypeio.anytype.feature_chats.presentation.ChatSearchState
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.presentation.main.MainViewModel
@@ -84,12 +85,10 @@ import com.anytypeio.anytype.feature_chats.tools.LinkDetector.MAILTO_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.TEL_PREFIX
 import com.anytypeio.anytype.feature_chats.ui.ChatInfoScreenState
 import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
-import com.anytypeio.anytype.feature_chats.ui.ChatSearchScreen
 import com.anytypeio.anytype.feature_chats.ui.ChatTopToolbar
 import com.anytypeio.anytype.feature_chats.ui.EditChatInfoScreen
 import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.feature_vault.ui.AlertScreenModals
-import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.WidgetOverlayFragment
@@ -99,7 +98,11 @@ import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
-import com.anytypeio.anytype.ui.search.GlobalSearchScreen
+import com.anytypeio.anytype.feature_search.presentation.SearchNavigation
+import com.anytypeio.anytype.feature_search.presentation.SearchPurpose
+import com.anytypeio.anytype.feature_search.presentation.SearchViewModel
+import com.anytypeio.anytype.feature_search.ui.SearchScreen
+import com.anytypeio.anytype.ui.search.v2.SearchV2Fragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -125,6 +128,7 @@ class ChatFragment : Fragment() {
 
     private val triggeredByPush get() = arg<Boolean>(TRIGGERED_BY_PUSH_KEY)
     private val popUpToVault get() = arg<Boolean>(POP_UP_TO_VAULT_KEY)
+    private val startAtMessage get() = argOrNull<Id>(START_AT_MESSAGE_KEY)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         injectDependencies()
@@ -160,8 +164,6 @@ class ChatFragment : Fragment() {
                 vm.showMoveToBinDialog.collectAsStateWithLifecycle().value
 
             ErrorScreen()
-
-            val chatSearchState = vm.chatSearchState.collectAsStateWithLifecycle().value
 
             Box(modifier = Modifier.fillMaxSize()) {
             Scaffold(
@@ -230,24 +232,7 @@ class ChatFragment : Fragment() {
                             obj = attachment.obj,
                             space = space
                         )
-                    },
-                    chatSearchState = chatSearchState,
-                    onSearchDismissed = vm::onSearchDismissed,
-                    onSearchBarTapped = vm::onSearchBarTapped,
-                    onSearchNextResult = vm::onSearchNextResult,
-                    onSearchPreviousResult = vm::onSearchPreviousResult
-                )
-            }
-
-            // Search overlay
-            if (chatSearchState is ChatSearchState.Active && chatSearchState.isResultsListVisible) {
-                ChatSearchScreen(
-                    state = chatSearchState,
-                    onQueryChanged = vm::onSearchQueryChanged,
-                    onResultSelected = vm::onSearchResultSelected,
-                    onDismiss = vm::onSearchDismissed,
-                    resolveMemberName = vm::resolveMemberName,
-                    resolveMemberAvatar = vm::resolveMemberAvatar
+                    }
                 )
             }
 
@@ -272,7 +257,21 @@ class ChatFragment : Fragment() {
                 onCopyLink = vm::onCopyChatLink,
                 onMoveToBin = vm::onMoveToBin,
                 onNotificationSettingChanged = vm::onNotificationSettingChanged,
-                onSearchClick = vm::onSearchTriggered,
+                onSearchClick = {
+                    // Unified search: in-chat entry seeds the space scope AND
+                    // a chat filter token; removing the chat token widens to
+                    // the space's messages, then to global. safeNavigate: a
+                    // double tap must not push the screen twice.
+                    runCatching {
+                        findNavController().safeNavigate(
+                            R.id.chatScreen,
+                            R.id.searchV2Screen,
+                            SearchV2Fragment.args(space = space, chat = ctx)
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error opening unified search from chat")
+                    }
+                },
                 onSpaceSettingsClicked = vm::onOpenSpaceSettings,
                 backHistoryMenu = vm.backHistoryMenu.collectAsStateWithLifecycle().value,
                 onBackButtonLongClicked = vm::onBackButtonLongClicked,
@@ -377,29 +376,40 @@ class ChatFragment : Fragment() {
                     shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
                     dragHandle = null
                 ) {
-                    val component = componentManager().globalSearchComponent
+                    // Unified search in picker purpose: the space scope is
+                    // seeded but hidden and non-removable — an attach picker
+                    // must never return cross-space objects. new(), never
+                    // get(): the holder is shared with the full-screen search
+                    // and a cached instance would carry the WRONG purpose.
+                    val component = componentManager().searchV2Component
                     val searchViewModel = daggerViewModel {
-                        component.get(
-                            params = GlobalSearchViewModel.VmParams(
-                                space = SpaceId(space)
+                        component.new(
+                            params = SearchViewModel.VmParams(
+                                entrySpace = SpaceId(space),
+                                purpose = SearchPurpose.ATTACH_TO_CHAT
                             )
-                        ).getViewModel()
+                        ).searchViewModel()
                     }
-                    GlobalSearchScreen(
-                        modifier = Modifier.padding(top = 12.dp),
-                        state = searchViewModel.state
-                            .collectAsStateWithLifecycle()
-                            .value,
-                        onQueryChanged = searchViewModel::onQueryChanged,
-                        onObjectClicked = {
-                            vm.onAttachObject(it)
-                            showGlobalSearchBottomSheet = false
-                        },
+                    SearchScreen(
+                        viewModel = searchViewModel,
+                        onBackClicked = { showGlobalSearchBottomSheet = false },
                         focusOnStart = false
                     )
+                    LaunchedEffect(Unit) {
+                        searchViewModel.commands.collect { command ->
+                            if (command is SearchNavigation.ObjectSelected) {
+                                vm.onAttachObject(target = command.id)
+                                showGlobalSearchBottomSheet = false
+                            }
+                        }
+                    }
+                    // A proper disposal hook, not a bare else-branch side
+                    // effect in the composition body — Compose may skip or
+                    // abandon compositions.
+                    DisposableEffect(Unit) {
+                        onDispose { componentManager().searchV2Component.release() }
+                    }
                 }
-            } else {
-                componentManager().globalSearchComponent.release()
             }
 
             if (showChatInfoScreen && chatInfoData != null) {
@@ -804,11 +814,7 @@ class ChatFragment : Fragment() {
             onHideQrCodeScreen = vm::onHideQRCodeScreen
         )
         BackHandler {
-            if (vm.chatSearchState.value is ChatSearchState.Active) {
-                vm.onSearchDismissed()
-            } else {
-                vm.onBackButtonPressed(isExitingVault = popUpToVault)
-            }
+            vm.onBackButtonPressed(isExitingVault = popUpToVault)
         }
         //DROID-3943 Temporarily disabled
 //        LaunchedEffect(Unit) {
@@ -845,17 +851,26 @@ class ChatFragment : Fragment() {
     // DI
 
     private fun injectDependencies() {
-        componentManager()
-            .chatComponent
-            .get(
-                key = ctx,
-                param = ChatViewModel.Params.Default(
-                    ctx = ctx,
-                    space = SpaceId(space),
-                    triggeredByPush = triggeredByPush
-                )
-            )
-            .inject(this)
+        val chatParams = ChatViewModel.Params.Default(
+            ctx = ctx,
+            space = SpaceId(space),
+            triggeredByPush = triggeredByPush,
+            startAtMessage = startAtMessage
+        )
+        // The keyed holder ignores params on a cache hit — a chat already on
+        // the back stack (opened, then searched, then reopened via a search
+        // result) would silently drop startAtMessage. Force a rebuild when a
+        // target message is requested.
+        val chatComponent = componentManager().chatComponent
+        val component = if (startAtMessage != null) {
+            chatComponent.new(ctx, chatParams)
+        } else {
+            chatComponent.get(ctx, chatParams)
+        }
+        component.inject(this)
+        // One-shot: the target message must not re-apply after process death
+        // (the args bundle is what gets persisted).
+        arguments?.remove(START_AT_MESSAGE_KEY)
         // See-all popup: full type list, no media rows, no attach-existing row.
         createObjectFactory = componentManager()
             .createObjectFeatureComponent
@@ -914,17 +929,20 @@ class ChatFragment : Fragment() {
         internal const val SPACE_KEY = "arg.discussion.space"
         private const val TRIGGERED_BY_PUSH_KEY = "arg.discussion.triggered-by-push"
         private const val POP_UP_TO_VAULT_KEY = "arg.discussion.pop-up-to-vault"
+        private const val START_AT_MESSAGE_KEY = "arg.discussion.start-at-message"
         const val PERMISSIONS_REQUEST_CODE = 100
         fun args(
             space: Id,
             ctx: Id,
             triggeredByPush: Boolean = false,
-            popUpToVault: Boolean = true
+            popUpToVault: Boolean = true,
+            startAtMessage: Id? = null
         ) = bundleOf(
             CTX_KEY to ctx,
             SPACE_KEY to space,
             TRIGGERED_BY_PUSH_KEY to triggeredByPush,
-            POP_UP_TO_VAULT_KEY to popUpToVault
+            POP_UP_TO_VAULT_KEY to popUpToVault,
+            START_AT_MESSAGE_KEY to startAtMessage
         )
     }
 }

@@ -136,6 +136,9 @@ class MainViewModel(
     // Safety flag to ensure spaces introduction is only shown once per ViewModel lifecycle
     private var hasShownSpacesIntroductionInSession = false
 
+    // Safety flag to ensure the account resume is attempted only once per session. See [onRestore].
+    private var hasAttemptedAccountResumeInSession = false
+
     private var spaceStatusMonitorJob: Job? = null
 
     /**
@@ -324,7 +327,6 @@ class MainViewModel(
     }
 
     fun onRestore() {
-        Timber.d("onRestoreCalled")
         /***
          * Before fragment backstack and screen states are restored by the OS,
          * We need to resume account session in a blocking manner.
@@ -332,7 +334,31 @@ class MainViewModel(
          * 1) to open an object, profile or dashboard
          * 2) to execute queries and searches
          * etc.
+         *
+         * Resume the account one time per process only. The app no longer locks the activity
+         * to portrait. The OS therefore recreates the activity on every rotation, and it
+         * always passes a non-null saved state. A second resume blocks the main thread on the
+         * middleware round trip. It also restarts the global subscriptions, and
+         * [ChatPreviewContainer.start] clears the previews and the unread badges. Two guards
+         * are necessary:
+         *
+         * 1) [AwaitAccountStartManager.hasStarted] is true when the account session is already
+         *    live in this process. LaunchAccount, SelectAccount, CreateAccount and an earlier
+         *    ResumeAccount all set it, and Logout clears it. This covers the first rotation
+         *    after a cold start, where this method never ran before.
+         * 2) The session flag covers the case where the state stays Init: the user is on the
+         *    auth flow, or the resume failed. The failure branch raises a dialog, so it must
+         *    not repeat on each rotation.
+         *
+         * Both signals die with the process, so a real process death still resumes the
+         * account, which is the case this method exists for.
          */
+        if (awaitAccountStartManager.hasStarted() || hasAttemptedAccountResumeInSession) {
+            Timber.d("onRestore: account session already live in this process. Skipping resume.")
+            return
+        }
+        hasAttemptedAccountResumeInSession = true
+        Timber.d("onRestoreCalled")
         runBlocking {
             resumeAccount.run(params = BaseUseCase.None).process(
                 success = {

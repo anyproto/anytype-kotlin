@@ -21,6 +21,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -46,6 +47,7 @@ import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.qrcode.QrScannerActivity
+import com.anytypeio.anytype.ui.search.v2.SearchV2Fragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
@@ -118,7 +120,19 @@ class VaultFragment : BaseComposeFragment() {
                 onOrderChanged = vm::onOrderChanged,
                 onDragEnd = vm::onDragEnd,
                 onSpaceSettings = vm::onSpaceSettingsClicked,
-                onDeleteOrLeaveSpace = vm::onDeleteSpaceClicked
+                onDeleteOrLeaveSpace = vm::onDeleteSpaceClicked,
+                onSearchBarClicked = {
+                    // safeNavigate: a double tap must not push the screen twice.
+                    runCatching {
+                        findNavController().safeNavigate(
+                            R.id.vaultScreen,
+                            R.id.searchV2Screen,
+                            SearchV2Fragment.args(space = null)
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error opening search from vault")
+                    }
+                }
             )
 
             val notificationError = vm.notificationError.collectAsStateWithLifecycle().value
@@ -212,6 +226,12 @@ class VaultFragment : BaseComposeFragment() {
             viewLifecycleOwner
         ) { _, _ ->
             vm.onCreateSpaceBackPressed()
+        }
+        parentFragmentManager.setFragmentResultListener(
+            FragmentResultContract.OPEN_CREATE_CHANNEL_KEY,
+            viewLifecycleOwner
+        ) { _, _ ->
+            vm.onCreateChannelMenuClicked()
         }
     }
 

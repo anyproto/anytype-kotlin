@@ -717,6 +717,11 @@
         android:id="@+id/actionOpenSpaceFromVault"
         app:destination="@id/homeScreen" />
 
+    <fragment
+        android:id="@+id/searchV2Screen"
+        android:name="com.anytypeio.anytype.ui.search.v2.SearchV2Fragment"
+        android:label="SearchV2Screen" />
+
     <fragment android:id="@+id/spacePropertiesScreen"
         android:name="com.anytypeio.anytype.ui.primitives.SpacePropertiesFragment"
         android:label="SpacePropertiesScreen" />

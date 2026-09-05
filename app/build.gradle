@@ -221,6 +221,7 @@ dependencies {
     implementation project(':feature-object-type')
     implementation project(':feature-properties')
     implementation project(':feature-vault')
+    implementation project(':feature-search')
     implementation project(':feature-create-object')
     implementation project(':feature-os-widgets')
 

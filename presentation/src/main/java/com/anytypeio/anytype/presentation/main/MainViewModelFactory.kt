@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
 import com.anytypeio.anytype.domain.launch.RemainingSpacesPreloader
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.CrossSpaceObjectTypesContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
@@ -66,6 +67,7 @@ class MainViewModelFactory @Inject constructor(
     private val chatPreviewContainer: ChatPreviewContainer,
     private val chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer,
     private val participantSubscriptionContainer: ParticipantSubscriptionContainer,
+    private val crossSpaceObjectTypesContainer: CrossSpaceObjectTypesContainer,
     private val userSettingsRepository: UserSettingsRepository,
     private val resolveSpaceHomepage: ResolveSpaceHomepage,
     private val debugRunProfiler: DebugRunProfiler,
@@ -104,6 +106,7 @@ class MainViewModelFactory @Inject constructor(
         chatPreviewContainer = chatPreviewContainer,
         chatsDetailsSubscriptionContainer = chatsDetailsSubscriptionContainer,
         participantSubscriptionContainer = participantSubscriptionContainer,
+        crossSpaceObjectTypesContainer = crossSpaceObjectTypesContainer,
         userSettingsRepository = userSettingsRepository,
         resolveSpaceHomepage = resolveSpaceHomepage,
         debugRunProfiler = debugRunProfiler,

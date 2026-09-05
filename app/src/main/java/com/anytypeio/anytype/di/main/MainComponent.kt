@@ -53,6 +53,7 @@ import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreation
 import com.anytypeio.anytype.di.feature.participant.ParticipantComponentDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.search.GlobalSearchDependencies
+import com.anytypeio.anytype.di.feature.search.SearchV2Dependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
 import com.anytypeio.anytype.di.feature.settings.DebugDependencies
@@ -74,6 +75,7 @@ import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceDependencies
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeDependencies
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.CrossSpaceObjectTypesContainer
 import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
 import dagger.Binds
 import dagger.Component
@@ -137,6 +139,7 @@ interface MainComponent :
     GalleryInstallationComponentDependencies,
     NotificationDependencies,
     GlobalSearchDependencies,
+    SearchV2Dependencies,
     VaultComponentDependencies,
     AllContentDependencies,
     ChatComponentDependencies,
@@ -189,6 +192,7 @@ interface MainComponent :
 
     fun chatPreviewContainer(): ChatPreviewContainer
     fun chatsDetailsSubscriptionContainer(): ChatsDetailsSubscriptionContainer
+    fun crossSpaceObjectTypesContainer(): CrossSpaceObjectTypesContainer
 }
 
 @Module
@@ -343,6 +347,11 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(GlobalSearchDependencies::class)
     abstract fun provideGlobalSearchDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SearchV2Dependencies::class)
+    abstract fun provideSearchV2Dependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

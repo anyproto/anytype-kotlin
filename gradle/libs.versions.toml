@@ -47,6 +47,7 @@ gsonVersion = '2.11.0'
 betterLinkMethodVersion = '2.2.0'
 picktVersion = '2.0.5'
 mlkitBarcodeScanningVersion = '17.3.0'
+mlkitGenAiPromptVersion = '1.0.0-beta4'
 cameraxVersion = '1.4.2'
 urlcleanerVersion = '0.4.0'
 katexVersion = '1.0.2'
@@ -135,6 +136,7 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
 pickT = { module = "com.github.HBiSoft:PickiT", version.ref = "picktVersion" }
 mlkit-barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkitBarcodeScanningVersion" }
+mlkit-genai-prompt = { module = "com.google.mlkit:genai-prompt", version.ref = "mlkitGenAiPromptVersion" }
 camerax-core = { module = "androidx.camera:camera-core", version.ref = "cameraxVersion" }
 camerax-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraxVersion" }
 camerax-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraxVersion" }

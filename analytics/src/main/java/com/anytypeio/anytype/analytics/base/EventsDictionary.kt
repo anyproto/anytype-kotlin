@@ -469,6 +469,7 @@ object EventsDictionary {
         const val featuredRelations = "FeaturedRelations"
         const val objectRoute = "Object"
         const val typeRoute = "Type"
+        const val quickCapture = "QuickCapture"
     }
 
     object Type {

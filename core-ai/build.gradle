@@ -1,0 +1,22 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+dependencies {
+
+    implementation project(':domain')
+
+    implementation libs.kotlin
+    implementation libs.coroutinesAndroid
+
+    // Gemini Nano via the AICore system service — the model lives on-device,
+    // outside the APK. See docs/quick-capture-android-spec.md §9.
+    implementation libs.mlkit.genai.prompt
+
+    implementation libs.timber
+}
+
+android {
+    namespace 'com.anytypeio.anytype.core_ai'
+}

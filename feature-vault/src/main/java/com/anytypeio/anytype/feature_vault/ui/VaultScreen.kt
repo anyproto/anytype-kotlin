@@ -3,11 +3,13 @@ package com.anytypeio.anytype.feature_vault.ui
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -15,6 +17,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,10 +35,12 @@ import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ui.AccountProfile
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
+import com.anytypeio.anytype.core_ui.widgets.CircularFabButton
 import com.anytypeio.anytype.core_ui.widgets.toSpaceBackground
 import com.anytypeio.anytype.feature_vault.R
 import com.anytypeio.anytype.feature_vault.presentation.VaultSpaceView
 import com.anytypeio.anytype.feature_vault.presentation.VaultUiState
+import com.anytypeio.anytype.feature_vault.presentation.VaultViewModel
 import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -64,7 +70,11 @@ fun VaultScreen(
     onDragEnd: () -> Unit = { /* No-op */ },
     onSpaceSettings: (Id) -> Unit,
     onDeleteOrLeaveSpace: (Id, Boolean) -> Unit,
-    onSearchBarClicked: (() -> Unit)? = null
+    onSearchBarClicked: (() -> Unit)? = null,
+    showQuickCaptureFab: Boolean = false,
+    onQuickCaptureClicked: () -> Unit = {},
+    quickCaptureSuccess: VaultViewModel.QuickCaptureSuccess? = null,
+    onQuickCaptureBannerClicked: () -> Unit = {}
 ) {
 
     var searchQuery by remember { mutableStateOf("") }
@@ -96,31 +106,60 @@ fun VaultScreen(
                 },
                 onSearchBarClicked = onSearchBarClicked
             )
-        }
-    ) { paddings ->
-        when (uiState) {
-            VaultUiState.Loading -> {}
-
-            is VaultUiState.Sections -> {
-                VaultScreenContent(
-                    sections = uiState,
-                    lazyListState = lazyListState,
-                    paddings = paddings,
-                    searchQuery = searchQuery,
-                    isCompactMode = isCompactMode,
-                    onSpaceClicked = onSpaceClicked,
-                    onCreateSpaceClicked = onCreateChannelMenuClicked,
-                    onMuteSpace = onMuteSpace,
-                    onUnmuteSpace = onUnmuteSpace,
-                    onSetSpaceNotificationMode = onSetSpaceNotificationMode,
-                    onPinSpace = onPinSpace,
-                    onUnpinSpace = onUnpinSpace,
-                    onOrderChanged = onOrderChanged,
-                    onDragEnd = onDragEnd,
-                    onSpaceSettings = onSpaceSettings,
-                    onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
+        },
+        floatingActionButton = {
+            if (showQuickCaptureFab) {
+                // Same component and glyph as the space (widgets) screen's create-object
+                // FAB, one size up: quick capture is the vault's primary action.
+                CircularFabButton(
+                    iconRes = R.drawable.ic_create_obj_32,
+                    contentDescription = stringResource(id = R.string.quick_capture),
+                    size = 56.dp,
+                    iconSize = 28.dp,
+                    elevation = 2.dp,
+                    showBorder = false,
+                    backgroundColor = colorResource(id = R.color.background_secondary),
+                    onClick = onQuickCaptureClicked,
+                    modifier = Modifier.navigationBarsPadding()
                 )
             }
+        }
+    ) { paddings ->
+        Box(modifier = Modifier.fillMaxSize()) {
+            when (uiState) {
+                VaultUiState.Loading -> {}
+
+                is VaultUiState.Sections -> {
+                    VaultScreenContent(
+                        sections = uiState,
+                        lazyListState = lazyListState,
+                        paddings = paddings,
+                        searchQuery = searchQuery,
+                        isCompactMode = isCompactMode,
+                        onSpaceClicked = onSpaceClicked,
+                        onCreateSpaceClicked = onCreateChannelMenuClicked,
+                        onMuteSpace = onMuteSpace,
+                        onUnmuteSpace = onUnmuteSpace,
+                        onSetSpaceNotificationMode = onSetSpaceNotificationMode,
+                        onPinSpace = onPinSpace,
+                        onUnpinSpace = onUnpinSpace,
+                        onOrderChanged = onOrderChanged,
+                        onDragEnd = onDragEnd,
+                        onSpaceSettings = onSpaceSettings,
+                        onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
+                    )
+                }
+            }
+            QuickCaptureSuccessBanner(
+                banner = quickCaptureSuccess,
+                onClicked = onQuickCaptureBannerClicked,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
+                    // Clears the 56dp FAB (which is always present when a capture just
+                    // succeeded) so the trailing "View" label stays tappable.
+                    .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 88.dp)
+            )
         }
     }
 }

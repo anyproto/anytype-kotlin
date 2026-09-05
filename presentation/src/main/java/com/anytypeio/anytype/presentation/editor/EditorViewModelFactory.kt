@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.domain.ai.TypeSuggestionEngine
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
@@ -113,7 +114,8 @@ open class EditorViewModelFactory @Inject constructor(
     private val addDiscussion: AddDiscussion,
     private val getChatMessages: GetChatMessages,
     private val backHistoryDelegate: BackHistoryDelegate,
-    private val exitToVaultDelegate: ExitToVaultDelegate
+    private val exitToVaultDelegate: ExitToVaultDelegate,
+    private val typeSuggestionEngine: TypeSuggestionEngine = TypeSuggestionEngine.NoOp
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -171,7 +173,8 @@ open class EditorViewModelFactory @Inject constructor(
             addDiscussion = addDiscussion,
             getChatMessages = getChatMessages,
             backHistoryDelegate = backHistoryDelegate,
-            exitToVaultDelegate = exitToVaultDelegate
+            exitToVaultDelegate = exitToVaultDelegate,
+            typeSuggestionEngine = typeSuggestionEngine
         ) as T
     }
 }

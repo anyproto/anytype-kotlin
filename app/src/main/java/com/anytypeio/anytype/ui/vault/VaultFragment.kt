@@ -47,6 +47,7 @@ import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.qrcode.QrScannerActivity
+import com.anytypeio.anytype.ui.quickcapture.QuickCaptureFragment
 import com.anytypeio.anytype.ui.search.v2.SearchV2Fragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -132,7 +133,11 @@ class VaultFragment : BaseComposeFragment() {
                     }.onFailure {
                         Timber.e(it, "Error opening search from vault")
                     }
-                }
+                },
+                showQuickCaptureFab = vm.showQuickCapture.collectAsStateWithLifecycle().value,
+                onQuickCaptureClicked = vm::onQuickCaptureClicked,
+                quickCaptureSuccess = vm.quickCaptureSuccess.collectAsStateWithLifecycle().value,
+                onQuickCaptureBannerClicked = vm::onQuickCaptureBannerClicked
             )
 
             val notificationError = vm.notificationError.collectAsStateWithLifecycle().value
@@ -233,6 +238,21 @@ class VaultFragment : BaseComposeFragment() {
         ) { _, _ ->
             vm.onCreateChannelMenuClicked()
         }
+        parentFragmentManager.setFragmentResultListener(
+            QuickCaptureFragment.RESULT_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val objectId = bundle.getString(QuickCaptureFragment.RESULT_OBJECT_ID)
+            val spaceId = bundle.getString(QuickCaptureFragment.RESULT_SPACE_ID)
+            if (objectId != null && spaceId != null) {
+                vm.onQuickCaptureObjectPublished(
+                    objectId = objectId,
+                    spaceId = spaceId,
+                    typeName = bundle.getString(QuickCaptureFragment.RESULT_TYPE_NAME).orEmpty(),
+                    spaceName = bundle.getString(QuickCaptureFragment.RESULT_SPACE_NAME).orEmpty()
+                )
+            }
+        }
     }
 
     override fun onStart() {
@@ -294,6 +314,19 @@ class VaultFragment : BaseComposeFragment() {
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening profile settings from vault")
+                }
+            }
+
+            is VaultCommand.OpenQuickCapture -> {
+                runCatching {
+                    val nav = findNavController()
+                    // A double-tap on the FAB must not stack two sheets sharing one editor
+                    // component for the same draft.
+                    if (nav.currentDestination?.id != R.id.quickCaptureScreen) {
+                        nav.navigate(R.id.nav_quick_capture)
+                    }
+                }.onFailure {
+                    Timber.e(it, "Error while opening quick capture from vault")
                 }
             }
 

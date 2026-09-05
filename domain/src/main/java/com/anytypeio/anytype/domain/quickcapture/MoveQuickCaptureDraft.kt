@@ -88,6 +88,7 @@ class MoveQuickCaptureDraft @Inject constructor(
                 },
                 prefilled = buildMap {
                     put(Relations.IS_HIDDEN, true)
+                    put(Relations.IS_DRAFT, true)
                     if (!name.isNullOrEmpty()) put(Relations.NAME, name)
                 }
             )
@@ -100,7 +101,10 @@ class MoveQuickCaptureDraft @Inject constructor(
             if (created.details[Relations.IS_HIDDEN] != true) {
                 repo.setObjectDetails(
                     ctx = created.id,
-                    details = mapOf(Relations.IS_HIDDEN to true)
+                    details = mapOf(
+                        Relations.IS_HIDDEN to true,
+                        Relations.IS_DRAFT to true
+                    )
                 )
             }
             if (contentBlocks.isNotEmpty()) {

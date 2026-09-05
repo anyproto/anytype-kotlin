@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.quickcapture.FetchQuickCaptureDraft
 import com.anytypeio.anytype.domain.quickcapture.MoveQuickCaptureDraft
+import com.anytypeio.anytype.domain.quickcapture.SearchQuickCaptureDrafts
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -86,7 +87,8 @@ class QuickCaptureViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val typeSuggestionEngine: TypeSuggestionEngine,
-    private val fetchQuickCaptureDraft: FetchQuickCaptureDraft
+    private val fetchQuickCaptureDraft: FetchQuickCaptureDraft,
+    private val searchQuickCaptureDrafts: SearchQuickCaptureDrafts
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     sealed class ScreenState {
@@ -332,17 +334,60 @@ class QuickCaptureViewModel(
     private suspend fun resolveInitialSpace(
         candidates: List<ObjectWrapper.SpaceView>
     ): Pair<SpaceId, Id?>? {
+        // The store is the source of truth for what drafts exist; the local pointer only says
+        // which of them this device was last writing, so that the compose button resumes it.
+        val discovered = discoverDrafts()
+
         val last = runCatching { settings.getQuickCaptureLastSpace() }.getOrNull()
         if (last != null && candidates.any { it.targetSpaceId == last }) {
             val lastSpace = SpaceId(last)
-            val draft = runCatching { settings.getQuickCaptureDraft(lastSpace) }.getOrNull()
-            if (draft != null && isDraftAlive(space = lastSpace, draft = draft)) {
-                Timber.d("Quick capture: restoring pending draft in last space $last")
-                return lastSpace to draft
+            val hint = runCatching { settings.getQuickCaptureDraft(lastSpace) }.getOrNull()
+            // Honour the hint only if the store still lists that exact draft.
+            val stillListed = hint != null && discovered.drafts.any { it.id == hint }
+            if (stillListed) {
+                Timber.d("Quick capture: resuming this device's draft in $last")
+                return lastSpace to hint
+            }
+            // The hint is gone (published, deleted, or made on another device), but this
+            // space may still hold a newer draft made elsewhere.
+            discovered.newestIn(last)?.let { draft ->
+                Timber.d("Quick capture: adopting draft made on another device in $last")
+                return lastSpace to draft.id
             }
         }
+
+        // No usable hint: open the newest draft anywhere — the thought most recently left
+        // unfinished, on whichever device it was written.
+        discovered.drafts.firstOrNull { draft ->
+            candidates.any { it.targetSpaceId == draft.spaceId }
+        }?.let { newest ->
+            val space = newest.spaceId
+            if (space != null) {
+                Timber.d("Quick capture: opening newest draft across spaces, in $space")
+                return SpaceId(space) to newest.id
+            }
+        }
+
         val fallback = candidates.firstOrNull { !it.isOneToOneSpace }?.targetSpaceId
         return fallback?.let { SpaceId(it) to null }
+    }
+
+    /**
+     * Runs the cross-space draft query and refreshes the picker's pencils from it.
+     *
+     * A partial result (`isComplete == false`) means some per-space stores were still
+     * warming — unknown, not empty. The pencils keep their previous value rather than
+     * flickering off, and callers must not read "no drafts" from it.
+     */
+    private suspend fun discoverDrafts(): SearchQuickCaptureDrafts.Result {
+        val result = searchQuickCaptureDrafts.async(Unit).getOrNull()
+            ?: SearchQuickCaptureDrafts.Result(drafts = emptyList(), isComplete = false)
+        if (result.isComplete) {
+            draftSpaces.value = result.spacesWithDrafts
+        } else {
+            Timber.d("Quick capture: partial draft view, keeping known draft spaces")
+        }
+        return result
     }
 
     /**
@@ -355,8 +400,17 @@ class QuickCaptureViewModel(
         val obj = fetchOwnDraft(space, draft) ?: return false
         return obj.isDeleted != true &&
             obj.isArchived != true &&
-            obj.isHidden == true
+            obj.isDraft()
     }
+
+    /**
+     * The definitive "still an unsent draft" test. isHidden alone was a proxy for it; now
+     * that publishing clears isDraft in the same write, this is the direct answer, and it
+     * still refuses anything already published — which is what keeps the trash and the
+     * replaced-draft delete off real notes.
+     */
+    private fun ObjectWrapper.Basic.isDraft(): Boolean =
+        getSingleValue<Boolean>(Relations.IS_DRAFT) == true && isHidden == true
 
     /**
      * Reads the space's draft, scoped by the query to the one this participant created —
@@ -371,11 +425,16 @@ class QuickCaptureViewModel(
             )
         ).getOrNull()
 
-    /** Re-reads the device-local draft pointers that drive the picker's pencils. */
+    /**
+     * Refreshes the picker's pencils from the store rather than from local pointers.
+     *
+     * Pointers made a poor indicator: one is written the instant a draft object is created,
+     * before any content exists, and is never cleared when heart garbage-collects an
+     * abandoned empty draft — so a pencil appeared for every space ever opened and stayed
+     * there forever. The query reflects what actually exists, on any device.
+     */
     private suspend fun refreshDraftSpaces() {
-        draftSpaces.value = runCatching { settings.getQuickCaptureDrafts().keys }
-            .onFailure { Timber.w(it, "Quick capture: could not read draft pointers") }
-            .getOrDefault(emptySet())
+        discoverDrafts()
     }
 
     private suspend fun markSelectedSpace(space: SpaceId) {
@@ -458,7 +517,11 @@ class QuickCaptureViewModel(
                     InternalFlags.ShouldEmptyDelete,
                     InternalFlags.ShouldSelectType
                 ),
-                prefilled = mapOf(Relations.IS_HIDDEN to true)
+                prefilled = mapOf(
+                    Relations.IS_HIDDEN to true,
+                    // What makes this draft findable from another device.
+                    Relations.IS_DRAFT to true
+                )
             )
         ).fold(
             onSuccess = { result ->
@@ -481,7 +544,10 @@ class QuickCaptureViewModel(
             setObjectDetails.async(
                 SetObjectDetails.Params(
                     ctx = result.objectId,
-                    details = mapOf(Relations.IS_HIDDEN to true)
+                    details = mapOf(
+                        Relations.IS_HIDDEN to true,
+                        Relations.IS_DRAFT to true
+                    )
                 )
             ).fold(
                 onSuccess = { /* hidden */ },
@@ -607,14 +673,14 @@ class QuickCaptureViewModel(
     private suspend fun isDisposableDraft(space: SpaceId, draft: Id): Boolean {
         val obj = fetchOwnDraft(space, draft) ?: return false
         // Not a draft any more (published, archived, deleted) — never ours to delete.
-        if (obj.isDeleted == true || obj.isArchived == true || obj.isHidden != true) return false
+        if (obj.isDeleted == true || obj.isArchived == true || !obj.isDraft()) return false
         return obj.name.isNullOrBlank() && obj.snippet.isNullOrBlank()
     }
 
     /** True when the target space's stored draft still exists and holds real content. */
     private suspend fun draftHasContent(space: SpaceId, draft: Id): Boolean {
         val obj = fetchOwnDraft(space, draft) ?: return false
-        if (obj.isDeleted == true || obj.isArchived == true || obj.isHidden != true) return false
+        if (obj.isDeleted == true || obj.isArchived == true || !obj.isDraft()) return false
         return !obj.name.isNullOrBlank() || !obj.snippet.isNullOrBlank()
     }
 
@@ -812,7 +878,13 @@ class QuickCaptureViewModel(
             setObjectDetails.async(
                 SetObjectDetails.Params(
                     ctx = current.draft,
-                    details = mapOf(Relations.IS_HIDDEN to false)
+                    details = mapOf(
+                        Relations.IS_HIDDEN to false,
+                        // Must clear together with isHidden: a published note that still
+                        // reads isDraft stays in the discovery query forever, and
+                        // newest-first would eventually reopen it as a draft.
+                        Relations.IS_DRAFT to false
+                    )
                 )
             ).fold(
                 onFailure = {
@@ -929,7 +1001,8 @@ class QuickCaptureViewModel(
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
         private val typeSuggestionEngine: TypeSuggestionEngine,
-        private val fetchQuickCaptureDraft: FetchQuickCaptureDraft
+        private val fetchQuickCaptureDraft: FetchQuickCaptureDraft,
+        private val searchQuickCaptureDrafts: SearchQuickCaptureDrafts
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -949,7 +1022,8 @@ class QuickCaptureViewModel(
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
                 typeSuggestionEngine = typeSuggestionEngine,
-                fetchQuickCaptureDraft = fetchQuickCaptureDraft
+                fetchQuickCaptureDraft = fetchQuickCaptureDraft,
+                searchQuickCaptureDrafts = searchQuickCaptureDrafts
             ) as T
         }
     }
@@ -963,6 +1037,7 @@ class QuickCaptureViewModel(
             Relations.IS_DELETED,
             Relations.IS_ARCHIVED,
             Relations.IS_HIDDEN,
+            Relations.IS_DRAFT,
             Relations.INTERNAL_FLAGS,
             Relations.NAME,
             // Scopes every draft decision to objects this account created: in a shared space

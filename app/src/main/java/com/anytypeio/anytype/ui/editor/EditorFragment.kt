@@ -615,12 +615,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putParcelable(CURRENT_MEDIA_UPLOAD_KEY, vm.currentMediaUploadDescription)
+        // The focus store survives a rotation, but not process death. Save the caret in both
+        // cases; the ViewModel applies it once the document opens again.
+        val focus = vm.focusSnapshot
+        Timber.d("onSaveInstanceState, focus:[$focus]")
+        outState.putParcelable(FOCUS_SNAPSHOT_KEY, focus)
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
         if (savedInstanceState != null) {
-            vm.onRestoreSavedState(savedInstanceState.getParcelable(CURRENT_MEDIA_UPLOAD_KEY))
+            vm.onRestoreSavedState(
+                uploadMediaDescription = savedInstanceState.getParcelable(CURRENT_MEDIA_UPLOAD_KEY),
+                focus = savedInstanceState.getParcelable(FOCUS_SNAPSHOT_KEY)
+            )
         }
     }
 
@@ -2804,6 +2812,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         const val EMPTY_TEXT = ""
         const val DRAG_AND_DROP_LABEL = "Anytype's editor drag-and-drop."
         private const val CURRENT_MEDIA_UPLOAD_KEY = "currentMediaUploadDescription"
+        private const val FOCUS_SNAPSHOT_KEY = "editorFocusSnapshot"
     }
 }
 

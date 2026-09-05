@@ -349,19 +349,23 @@ fun DraftConflictDialog(
                 color = colorResource(id = R.color.text_secondary)
             )
         },
+        // Material renders dismissButton on the LEFT. The destructive choice therefore belongs
+        // in confirmButton, matching ClearDraftConfirmation below and every other destructive
+        // dialog in the app — otherwise the permanent delete would sit exactly where this same
+        // feature's other dialog puts "Cancel", and muscle memory would destroy a note.
         confirmButton = {
-            TextButton(onClick = onKeepBoth) {
-                Text(
-                    text = stringResource(id = R.string.quick_capture_draft_conflict_keep),
-                    color = colorResource(id = R.color.text_primary)
-                )
-            }
-        },
-        dismissButton = {
             TextButton(onClick = onDiscardCurrent) {
                 Text(
                     text = stringResource(id = R.string.quick_capture_draft_conflict_discard),
                     color = colorResource(id = R.color.palette_system_red)
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onKeepBoth) {
+                Text(
+                    text = stringResource(id = R.string.quick_capture_draft_conflict_keep),
+                    color = colorResource(id = R.color.text_primary)
                 )
             }
         }

@@ -23,11 +23,11 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.`object`.FetchObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.quickcapture.FetchQuickCaptureDraft
 import com.anytypeio.anytype.domain.quickcapture.MoveQuickCaptureDraft
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -76,7 +76,6 @@ class QuickCaptureViewModel(
     private val spaceManager: SpaceManager,
     private val settings: UserSettingsRepository,
     private val createObject: CreateObject,
-    private val fetchObject: FetchObject,
     private val setObjectDetails: SetObjectDetails,
     private val deleteObjects: DeleteObjects,
     private val moveQuickCaptureDraft: MoveQuickCaptureDraft,
@@ -86,7 +85,8 @@ class QuickCaptureViewModel(
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
-    private val typeSuggestionEngine: TypeSuggestionEngine
+    private val typeSuggestionEngine: TypeSuggestionEngine,
+    private val fetchQuickCaptureDraft: FetchQuickCaptureDraft
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     sealed class ScreenState {
@@ -259,7 +259,13 @@ class QuickCaptureViewModel(
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
-    /** Latches on the first send so a second tap during the dismiss animation is a no-op. */
+    /**
+     * Latches on the first send. Guards far more than a double tap: between the publish
+     * succeeding and the sheet actually going away there is bookkeeping, a lastUsedDate
+     * write and an analytics event — real round trips — during which screenState still names
+     * the object, it is no longer hidden, and the whole sheet is tappable. Every path that
+     * could destroy or relocate that object has to stand down once a send is in flight.
+     */
     private val isSending = AtomicBoolean(false)
 
     /**
@@ -346,14 +352,24 @@ class QuickCaptureViewModel(
      * where the trash button would permanently delete it.
      */
     private suspend fun isDraftAlive(space: SpaceId, draft: Id): Boolean {
-        val obj = fetchObject.async(
-            FetchObject.Params(space = space, obj = draft, keys = DRAFT_VALIDATION_KEYS)
-        ).getOrNull()
-        return obj != null &&
-            obj.isDeleted != true &&
+        val obj = fetchOwnDraft(space, draft) ?: return false
+        return obj.isDeleted != true &&
             obj.isArchived != true &&
             obj.isHidden == true
     }
+
+    /**
+     * Reads the space's draft, scoped by the query to the one this participant created —
+     * another member's draft is never returned, so it cannot be adopted, counted or deleted.
+     */
+    private suspend fun fetchOwnDraft(space: SpaceId, draft: Id): ObjectWrapper.Basic? =
+        fetchQuickCaptureDraft.async(
+            FetchQuickCaptureDraft.Params(
+                space = space,
+                draft = draft,
+                keys = DRAFT_VALIDATION_KEYS
+            )
+        ).getOrNull()
 
     /** Re-reads the device-local draft pointers that drive the picker's pencils. */
     private suspend fun refreshDraftSpaces() {
@@ -499,6 +515,9 @@ class QuickCaptureViewModel(
         val current = screenState.value
         if (current is ScreenState.Ready && current.space.id == target) return
         if (current is ScreenState.Loading) return // a transition is already in flight
+        // Publish in flight: the object screenState names is already public, and moving it
+        // would delete the user's real note as the move's source.
+        if (isSending.get()) return
         pendingSourceHasContent = sourceHasContent
         viewModelScope.launch {
             // Two drafts with content and one sheet: the user has to say what happens to the
@@ -575,11 +594,26 @@ class QuickCaptureViewModel(
     private fun spaceNameOf(target: Id): String =
         spaces.value.firstOrNull { it.targetSpaceId == target }?.name.orEmpty()
 
+    /**
+     * True only when this object is safe to delete without asking: it fetched cleanly, is
+     * still an unpublished draft, and holds nothing.
+     *
+     * Every uncertainty fails CLOSED. That is the difference from [draftHasContent], which
+     * answers "should we prompt?" and fails open — a fetch error there costs a needless
+     * dialog, whereas the same error here would cost the user their note. The delete site
+     * must establish its own precondition rather than trust a decision taken earlier, before
+     * the target space was even opened.
+     */
+    private suspend fun isDisposableDraft(space: SpaceId, draft: Id): Boolean {
+        val obj = fetchOwnDraft(space, draft) ?: return false
+        // Not a draft any more (published, archived, deleted) — never ours to delete.
+        if (obj.isDeleted == true || obj.isArchived == true || obj.isHidden != true) return false
+        return obj.name.isNullOrBlank() && obj.snippet.isNullOrBlank()
+    }
+
     /** True when the target space's stored draft still exists and holds real content. */
     private suspend fun draftHasContent(space: SpaceId, draft: Id): Boolean {
-        val obj = fetchObject.async(
-            FetchObject.Params(space = space, obj = draft, keys = DRAFT_VALIDATION_KEYS)
-        ).getOrNull() ?: return false
+        val obj = fetchOwnDraft(space, draft) ?: return false
         if (obj.isDeleted == true || obj.isArchived == true || obj.isHidden != true) return false
         return !obj.name.isNullOrBlank() || !obj.snippet.isNullOrBlank()
     }
@@ -599,13 +633,23 @@ class QuickCaptureViewModel(
                 markSelectedSpace(SpaceId(target))
                 when {
                     mode == SwitchMode.DISCARD_CURRENT -> {
+                        // Loading detaches the editor first. Without it the editor stays bound
+                        // to the object about to be deleted, still firing text writes at it,
+                        // and the re-entrancy guard above stays disarmed for the whole round
+                        // trip. Same reason the other branches take it.
+                        screenState.value = ScreenState.Loading
                         discardDraft(current)
                         ensureDraft(SpaceId(target))
                     }
-                    // The current draft stays put; the target opens its own.
-                    mode == SwitchMode.KEEP_CURRENT -> ensureDraft(SpaceId(target))
+                    // The current draft stays put; the target opens its own. Still detach:
+                    // the type/relation stores have already switched space beneath it.
+                    mode == SwitchMode.KEEP_CURRENT -> {
+                        screenState.value = ScreenState.Loading
+                        ensureDraft(SpaceId(target))
+                    }
                     isSourceDraftEmpty() -> {
                         // Nothing typed — just open/create the target space's own draft.
+                        screenState.value = ScreenState.Loading
                         ensureDraft(SpaceId(target))
                     }
                     else -> {
@@ -625,11 +669,19 @@ class QuickCaptureViewModel(
      */
     private suspend fun discardDraft(current: ScreenState.Ready) {
         deleteObjects.async(DeleteObjects.Params(listOf(current.draft))).fold(
-            onSuccess = { Timber.d("Quick capture: discarded draft in ${current.space.id}") },
-            onFailure = { Timber.w(it, "Quick capture: could not discard draft") }
+            onSuccess = {
+                Timber.d("Quick capture: discarded draft in ${current.space.id}")
+                // Only now: clearing on a failed delete would strand a hidden object that no
+                // pointer names, which is unreachable by construction. Keeping the pointer
+                // leaves the draft where the user can still get back to it.
+                runCatching { settings.clearQuickCaptureDraft(current.space) }
+                    .onFailure { Timber.w(it, "Quick capture: could not clear discarded pointer") }
+            },
+            onFailure = {
+                Timber.w(it, "Quick capture: could not discard draft — keeping its pointer")
+                sendToast(SOMETHING_WENT_WRONG)
+            }
         )
-        runCatching { settings.clearQuickCaptureDraft(current.space) }
-            .onFailure { Timber.w(it, "Quick capture: could not clear discarded draft pointer") }
         refreshDraftSpaces()
     }
 
@@ -661,11 +713,17 @@ class QuickCaptureViewModel(
                     // Re-validate immediately before deleting rather than trusting the
                     // pointer. A pointer can outlive the draft it named — a send publishes
                     // the object and only then clears it — and deleting on a stale pointer
-                    // would destroy a real, published note. isDraftAlive requires
-                    // isHidden == true, so anything already published is spared and the
-                    // stale pointer is simply dropped.
+                    // would destroy a real, published note.
+                    //
+                    // isDisposableDraft re-establishes the FULL precondition here, now that
+                    // the target space is actually open: still an unpublished draft, and
+                    // empty. Checking only "does it still exist" would trust the emptiness
+                    // decision taken back in onSpaceSelected — which ran before
+                    // spaceManager.set(), against a possibly stale index, and which treats a
+                    // failed fetch as "no content". A single transient error there would
+                    // otherwise land here as a permanent delete of someone's note.
                     if (replaced != null && replaced != newDraft) {
-                        if (isDraftAlive(space = to, draft = replaced)) {
+                        if (isDisposableDraft(space = to, draft = replaced)) {
                             deleteObjects.async(DeleteObjects.Params(listOf(replaced))).fold(
                                 onSuccess = { /* replaced */ },
                                 onFailure = {
@@ -674,7 +732,7 @@ class QuickCaptureViewModel(
                                 }
                             )
                         } else {
-                            Timber.d("Quick capture: stale pointer in ${to.id}, not deleting")
+                            Timber.d("Quick capture: ${to.id} draft not disposable, keeping it")
                         }
                     }
                 }
@@ -704,6 +762,7 @@ class QuickCaptureViewModel(
     //region Clear draft
 
     fun onClearDraftClicked() {
+        if (isSending.get()) return // see isSending: the object is published, not a draft
         if (!isDraftEmpty.value) {
             showClearDraftConfirmation.value = true
         }
@@ -717,6 +776,8 @@ class QuickCaptureViewModel(
         showClearDraftConfirmation.value = false
         val current = screenState.value
         if (current !is ScreenState.Ready) return
+        // A send that started while this dialog was up: the target is a published note now.
+        if (isSending.get()) return
         viewModelScope.launch {
             screenState.value = ScreenState.Loading
             deleteObjects.async(DeleteObjects.Params(listOf(current.draft))).fold(
@@ -858,7 +919,6 @@ class QuickCaptureViewModel(
         private val spaceManager: SpaceManager,
         private val settings: UserSettingsRepository,
         private val createObject: CreateObject,
-        private val fetchObject: FetchObject,
         private val setObjectDetails: SetObjectDetails,
         private val deleteObjects: DeleteObjects,
         private val moveQuickCaptureDraft: MoveQuickCaptureDraft,
@@ -868,7 +928,8 @@ class QuickCaptureViewModel(
         private val analytics: Analytics,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
-        private val typeSuggestionEngine: TypeSuggestionEngine
+        private val typeSuggestionEngine: TypeSuggestionEngine,
+        private val fetchQuickCaptureDraft: FetchQuickCaptureDraft
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -878,7 +939,6 @@ class QuickCaptureViewModel(
                 spaceManager = spaceManager,
                 settings = settings,
                 createObject = createObject,
-                fetchObject = fetchObject,
                 setObjectDetails = setObjectDetails,
                 deleteObjects = deleteObjects,
                 moveQuickCaptureDraft = moveQuickCaptureDraft,
@@ -888,7 +948,8 @@ class QuickCaptureViewModel(
                 analytics = analytics,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
-                typeSuggestionEngine = typeSuggestionEngine
+                typeSuggestionEngine = typeSuggestionEngine,
+                fetchQuickCaptureDraft = fetchQuickCaptureDraft
             ) as T
         }
     }
@@ -904,6 +965,9 @@ class QuickCaptureViewModel(
             Relations.IS_HIDDEN,
             Relations.INTERNAL_FLAGS,
             Relations.NAME,
+            // Scopes every draft decision to objects this account created: in a shared space
+            // a pointer must never let us adopt or delete another member's hidden object.
+            Relations.CREATOR,
             // Emptiness is content-based (spec §15), and body text lives in the snippet.
             // Without this key `snippet` reads null for every fetched draft and
             // draftHasContent() silently degenerates to a title-only check — which would

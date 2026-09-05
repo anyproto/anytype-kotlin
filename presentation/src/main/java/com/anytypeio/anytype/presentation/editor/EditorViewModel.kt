@@ -773,8 +773,15 @@ class EditorViewModel(
                 .distinctUntilChanged()
                 .collect {
                     controlPanelViewState.postValue(it)
-                    applyQuickCaptureTypeBarSuppression(it)
+                    lastControlPanelState = it
+                    applyQuickCaptureTypeBarSuppression()
                 }
+        }
+        // Undo/redo lives outside ControlPanelState. Observing the flow rather than patching
+        // its four assignment sites keeps the suppression correct if a fifth appears.
+        viewModelScope.launch {
+            // Already conflated: StateFlow does not re-emit equal values.
+            isUndoRedoToolbarIsVisible.collect { applyQuickCaptureTypeBarSuppression() }
         }
     }
 
@@ -8269,13 +8276,20 @@ class EditorViewModel(
     /** What quick capture *wants* the bar to be, independent of momentary suppression. */
     private var quickCaptureTypeBarWanted = false
 
+    private var lastControlPanelState: ControlPanelState? = null
+
     /**
      * Yields the bottom edge while another panel occupies it, then restores the bar.
-     * Driven from the existing control-panel collector.
+     * Driven from the control-panel collector and from the undo/redo toggle.
      */
-    private fun applyQuickCaptureTypeBarSuppression(state: ControlPanelState) {
+    private fun applyQuickCaptureTypeBarSuppression() {
         if (!isQuickCapture) return
-        val visible = quickCaptureTypeBarWanted && !state.hasCompetingBottomPanel()
+        val competing = lastControlPanelState?.hasCompetingBottomPanel() == true ||
+            // NOT part of ControlPanelState — its own flow. It is also the panel this
+            // suppression exists for: the trimmed quick-capture menu keeps exactly one
+            // horizontal action, Undo/Redo, and the type bar was painting over it.
+            isUndoRedoToolbarIsVisible.value
+        val visible = quickCaptureTypeBarWanted && !competing
         val current = _typesWidgetState.value
         if (current.visible == visible) return
         _typesWidgetState.value = current.copy(visible = visible, expanded = visible)
@@ -8288,8 +8302,11 @@ class EditorViewModel(
      * every "@" and "/".
      */
     private fun ControlPanelState.hasCompetingBottomPanel(): Boolean =
-        mainToolbar.isVisible ||
-            multiSelect.isVisible ||
+        // mainToolbar is deliberately NOT here. It is the editor's ordinary block toolbar,
+        // which goes visible on every focus change — so including it suppressed the bar for
+        // the whole typing session. In quick capture the type bar *replaces* that toolbar;
+        // yielding to it would invert the design.
+        multiSelect.isVisible ||
             styleTextToolbar.isVisible ||
             styleExtraToolbar.isVisible ||
             styleColorBackgroundToolbar.isVisible ||
@@ -9583,7 +9600,12 @@ class EditorViewModel(
             // Quick capture: the type bar is the sheet's permanent type UI (this is also
             // where AI suggestions land). It stays for the whole draft session — independent
             // of the title text and of heart clearing ShouldSelectType on first content.
-            if (!isTypesWidgetVisible) {
+            //
+            // Test the INTENT, not the rendered visibility. This runs on every render, so
+            // reading isTypesWidgetVisible would re-raise the bar the moment a competing
+            // panel had suppressed it — two writers with opposite goals racing on every
+            // keystroke, settled by whichever fired last.
+            if (!quickCaptureTypeBarWanted) {
                 val allowed = orchestrator.stores.objectRestrictions.current()
                     .none { it == ObjectRestriction.TYPE_CHANGE } &&
                     permission.value?.isOwnerOrEditor() == true

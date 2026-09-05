@@ -136,8 +136,17 @@ class MoveQuickCaptureDraft @Inject constructor(
                 // paste behaving differently than expected — spec V4) would otherwise commit
                 // an empty target and permanently delete the only copy of the body. Throwing
                 // here routes into the rollback below, leaving the source authoritative.
-                if (hasText(contentBlocks) && !hasText(readContentBlocks(created.id, params.toSpace))) {
+                val landed = readContentBlocks(created.id, params.toSpace)
+                if (hasText(contentBlocks) && !hasText(landed)) {
                     error("Quick capture: move produced an empty target draft; keeping source")
+                }
+                // Text landing does not prove the rest did. File and image blocks are
+                // space-scoped and whether Block.Paste re-resolves them across spaces is
+                // unverified middleware behaviour (spec V4) — so a "look at this" + image
+                // draft could pass the text check and still lose the image to the delete
+                // below, silently and permanently. Count the non-text blocks too.
+                if (countNonText(contentBlocks) > countNonText(landed)) {
+                    error("Quick capture: move dropped non-text content; keeping source")
                 }
             }
         } catch (e: Throwable) {
@@ -159,12 +168,28 @@ class MoveQuickCaptureDraft @Inject constructor(
         // pointer last would make any interruption here permanent data loss, while writing it
         // first makes the same interruption a duplicate the next open can reconcile.
         withContext(NonCancellable) {
-            runCatching { settings.setQuickCaptureDraft(space = params.toSpace, obj = created.id) }
-                .onFailure { logger.logException(it, "Quick capture: could not point target space at moved draft") }
-            runCatching { settings.clearQuickCaptureDraft(params.fromSpace) }
-                .onFailure { logger.logException(it, "Quick capture: could not clear source draft pointer") }
-            runCatching { repo.deleteObjects(listOf(params.from)) }
-                .onFailure { logger.logException(it, "Quick capture: could not delete source draft after move") }
+            // The ordering defends against cancellation; this condition defends against the
+            // write simply FAILING (a full or corrupt DataStore throws). Deleting the source
+            // anyway would leave the text in a hidden object no pointer names — precisely the
+            // unreachable state this ordering exists to prevent. If the pointer did not land,
+            // keep both objects and both pointers: a duplicate is recoverable, an orphan is not.
+            val pointed = runCatching {
+                settings.setQuickCaptureDraft(space = params.toSpace, obj = created.id)
+            }.onFailure {
+                logger.logException(it, "Quick capture: could not point target space at moved draft")
+            }.isSuccess
+
+            if (pointed) {
+                runCatching { settings.clearQuickCaptureDraft(params.fromSpace) }
+                    .onFailure { logger.logException(it, "Quick capture: could not clear source draft pointer") }
+                runCatching { repo.deleteObjects(listOf(params.from)) }
+                    .onFailure { logger.logException(it, "Quick capture: could not delete source draft after move") }
+            } else {
+                logger.logException(
+                    IllegalStateException("target pointer not written"),
+                    "Quick capture: keeping the source draft — the moved copy is unreachable"
+                )
+            }
         }
 
         return created.id
@@ -174,6 +199,12 @@ class MoveQuickCaptureDraft @Inject constructor(
     private fun hasText(blocks: List<Block>): Boolean = blocks.any { block ->
         val content = block.content
         content is Block.Content.Text && content.text.isNotBlank()
+    }
+
+    /** Blocks that carry something other than text — files, images, bookmarks, tables. */
+    private fun countNonText(blocks: List<Block>): Int = blocks.count { block ->
+        val content = block.content
+        content !is Block.Content.Text && content !is Block.Content.Layout
     }
 
     /** The target draft's blocks below the header, as they exist server-side after the paste. */

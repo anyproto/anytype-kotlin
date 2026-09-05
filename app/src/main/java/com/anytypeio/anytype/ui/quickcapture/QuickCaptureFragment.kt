@@ -209,12 +209,13 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
                 onDismiss = vm::onSpacePickerDismissed
             )
         }
-        val replaceDraft by vm.replaceDraftConfirmation.collectAsStateWithLifecycle()
-        replaceDraft?.let { request ->
-            ReplaceDraftConfirmation(
-                spaceName = request.spaceName,
-                onConfirm = vm::onReplaceDraftConfirmed,
-                onCancel = vm::onReplaceDraftCancelled
+        val draftConflict by vm.draftConflict.collectAsStateWithLifecycle()
+        draftConflict?.let { conflict ->
+            DraftConflictDialog(
+                spaceName = conflict.spaceName,
+                onKeepBoth = vm::onKeepCurrentDraftChosen,
+                onDiscardCurrent = vm::onDiscardCurrentDraftChosen,
+                onCancel = vm::onDraftConflictCancelled
             )
         }
         val showClearDraftConfirmation by vm.showClearDraftConfirmation.collectAsStateWithLifecycle()

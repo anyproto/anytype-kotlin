@@ -104,6 +104,7 @@ interface UserSettingsCache {
 
     suspend fun setQuickCaptureDraft(space: SpaceId, obj: Id)
     suspend fun getQuickCaptureDraft(space: SpaceId): Id?
+    suspend fun getQuickCaptureDrafts(): Map<Id, Id>
     suspend fun clearQuickCaptureDraft(space: SpaceId)
 
     suspend fun setSpaceLastInteraction(space: SpaceId, timestamp: Long)

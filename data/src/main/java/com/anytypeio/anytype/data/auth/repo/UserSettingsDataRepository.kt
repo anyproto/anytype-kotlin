@@ -290,6 +290,10 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         return cache.getQuickCaptureDraft(space)
     }
 
+    override suspend fun getQuickCaptureDrafts(): Map<Id, Id> {
+        return cache.getQuickCaptureDrafts()
+    }
+
     override suspend fun clearQuickCaptureDraft(space: SpaceId) {
         cache.clearQuickCaptureDraft(space)
     }

@@ -109,7 +109,9 @@ class QuickCaptureViewModel(
     data class SpaceView(
         val space: ObjectWrapper.SpaceView,
         val icon: SpaceIconView,
-        val isSelected: Boolean
+        val isSelected: Boolean,
+        /** This space is holding an unsent draft — surfaced as a pencil in the picker. */
+        val hasDraft: Boolean = false
     ) {
         val targetSpaceId: Id? get() = space.targetSpaceId
         val name: String get() = space.name.orEmpty()
@@ -126,15 +128,40 @@ class QuickCaptureViewModel(
     val showSpacePicker = MutableStateFlow(false)
     val showClearDraftConfirmation = MutableStateFlow(false)
 
-    /** Target space whose existing draft would be destroyed by the pending switch. */
-    val replaceDraftConfirmation = MutableStateFlow<ReplaceDraftRequest?>(null)
+    /**
+     * Raised when both the current draft and the target space's draft hold content. The
+     * target's draft is never destroyed — the user cannot see it, so overwriting it would be
+     * a blind delete. The choice is only ever about the draft in front of them: discard it,
+     * or leave it where it is. Both then open the target's own draft.
+     */
+    val draftConflict = MutableStateFlow<DraftConflict?>(null)
 
-    data class ReplaceDraftRequest(val space: Id, val spaceName: String)
+    data class DraftConflict(val space: Id, val spaceName: String)
+
+    /** What to do with the current draft when the selection actually proceeds. */
+    private enum class SwitchMode {
+        /** No conflict: "text follows the chip" — carry the draft into the target space. */
+        MOVE_CURRENT,
+
+        /** Conflict, user chose to drop the visible draft and pick up the target's. */
+        DISCARD_CURRENT,
+
+        /** Conflict, user chose to leave the visible draft in its own space. */
+        KEEP_CURRENT
+    }
 
     private val selectedSpaceId = MutableStateFlow<Id?>(null)
 
     /** Device-local `[spaceId → lastInteractionDate]`; an input of [spaces] so ordering reacts to it. */
     private val recency = MutableStateFlow<Map<Id, Long>>(emptyMap())
+
+    /**
+     * Spaces holding an unsent draft, from the device-local pointers. Deliberately not
+     * validated against the backend: that would be one fetch per space on every picker open,
+     * and the cost of a rare stale pencil is far lower than the latency. Refreshed whenever
+     * this VM creates, moves, discards or publishes a draft.
+     */
+    private val draftSpaces = MutableStateFlow<Set<Id>>(emptySet())
 
     private var startJob: Job? = null
 
@@ -143,15 +170,20 @@ class QuickCaptureViewModel(
         spaceViews.observe(),
         userPermissionProvider.all(),
         selectedSpaceId,
-        recency
-    ) { all, permissions, selected, recencyMap ->
+        recency,
+        draftSpaces
+    ) { all, permissions, selected, recencyMap, drafts ->
         all.filter { view -> view.isEditable(permissions) }
             .sortedWith(spaceComparator(recencyMap))
             .map { view ->
                 SpaceView(
                     space = view,
                     icon = view.spaceIcon(urlBuilder),
-                    isSelected = view.targetSpaceId == selected
+                    isSelected = view.targetSpaceId == selected,
+                    // The space currently on screen is where the visible draft lives; showing
+                    // a pencil against it would just label the obvious.
+                    hasDraft = view.targetSpaceId != selected &&
+                        view.targetSpaceId in drafts
                 )
             }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
@@ -254,6 +286,7 @@ class QuickCaptureViewModel(
             val recencyMap = runCatching { settings.getSpaceLastInteractions() }
                 .getOrDefault(emptyMap())
             recency.value = recencyMap
+            refreshDraftSpaces()
             // Auto-selection is computed from the raw inputs, not the UI flow, so it cannot
             // race the recency load against the Compose subscription of [spaces].
             val candidates = withTimeoutOrNull(SPACES_AWAIT_TIMEOUT_MS) {
@@ -313,6 +346,13 @@ class QuickCaptureViewModel(
             obj.isDeleted != true &&
             obj.isArchived != true &&
             obj.isHidden == true
+    }
+
+    /** Re-reads the device-local draft pointers that drive the picker's pencils. */
+    private suspend fun refreshDraftSpaces() {
+        draftSpaces.value = runCatching { settings.getQuickCaptureDrafts().keys }
+            .onFailure { Timber.w(it, "Quick capture: could not read draft pointers") }
+            .getOrDefault(emptySet())
     }
 
     private suspend fun markSelectedSpace(space: SpaceId) {
@@ -403,6 +443,7 @@ class QuickCaptureViewModel(
                 proceedWithHidingDraftIfNeeded(result)
                 settings.setQuickCaptureDraft(space = space, obj = result.objectId)
                 screenState.value = ScreenState.Ready(space = space, draft = result.objectId)
+                refreshDraftSpaces()
             },
             onFailure = {
                 Timber.e(it, "Quick capture: could not create draft in ${space.id}")
@@ -449,13 +490,14 @@ class QuickCaptureViewModel(
         if (current is ScreenState.Loading) return // a transition is already in flight
         pendingSourceHasContent = sourceHasContent
         viewModelScope.launch {
-            // Moving a draft replaces whatever draft the target space already holds, and
-            // Object.ListDelete is permanent. Never destroy someone's unsent text silently.
+            // Two drafts with content and one sheet: the user has to say what happens to the
+            // one they can see. The target's draft is never touched — it is off-screen, so
+            // any automatic decision about it would be a blind delete.
             if (current is ScreenState.Ready && !isSourceDraftEmpty()) {
-                val replaced = runCatching { settings.getQuickCaptureDraft(SpaceId(target)) }
+                val existing = runCatching { settings.getQuickCaptureDraft(SpaceId(target)) }
                     .getOrNull()
-                if (replaced != null && draftHasContent(space = SpaceId(target), draft = replaced)) {
-                    replaceDraftConfirmation.value = ReplaceDraftRequest(
+                if (existing != null && draftHasContent(space = SpaceId(target), draft = existing)) {
+                    draftConflict.value = DraftConflict(
                         space = target,
                         spaceName = spaces.value.firstOrNull { it.targetSpaceId == target }
                             ?.name.orEmpty()
@@ -463,18 +505,30 @@ class QuickCaptureViewModel(
                     return@launch
                 }
             }
-            proceedWithSpaceSelection(target)
+            proceedWithSpaceSelection(target, SwitchMode.MOVE_CURRENT)
         }
     }
 
-    fun onReplaceDraftConfirmed() {
-        val request = replaceDraftConfirmation.value ?: return
-        replaceDraftConfirmation.value = null
-        viewModelScope.launch { proceedWithSpaceSelection(request.space) }
+    /** Conflict resolved: throw away the visible draft, then open the target's own. */
+    fun onDiscardCurrentDraftChosen() {
+        val request = draftConflict.value ?: return
+        draftConflict.value = null
+        viewModelScope.launch {
+            proceedWithSpaceSelection(request.space, SwitchMode.DISCARD_CURRENT)
+        }
     }
 
-    fun onReplaceDraftCancelled() {
-        replaceDraftConfirmation.value = null
+    /** Conflict resolved: leave the visible draft in its space, then open the target's own. */
+    fun onKeepCurrentDraftChosen() {
+        val request = draftConflict.value ?: return
+        draftConflict.value = null
+        viewModelScope.launch {
+            proceedWithSpaceSelection(request.space, SwitchMode.KEEP_CURRENT)
+        }
+    }
+
+    fun onDraftConflictCancelled() {
+        draftConflict.value = null
     }
 
     /** True when the target space's stored draft still exists and holds real content. */
@@ -486,7 +540,7 @@ class QuickCaptureViewModel(
         return !obj.name.isNullOrBlank() || !obj.snippet.isNullOrBlank()
     }
 
-    private suspend fun proceedWithSpaceSelection(target: Id) {
+    private suspend fun proceedWithSpaceSelection(target: Id, mode: SwitchMode) {
         val current = screenState.value
         if (current !is ScreenState.Ready) {
             proceedWithSpace(SpaceId(target))
@@ -499,16 +553,40 @@ class QuickCaptureViewModel(
             },
             onSuccess = {
                 markSelectedSpace(SpaceId(target))
-                if (isSourceDraftEmpty()) {
-                    // Nothing typed — just open/create the target space's own draft.
-                    ensureDraft(SpaceId(target))
-                } else {
-                    // Includes the "subscription hasn't confirmed emptiness yet" case:
-                    // moving a possibly-empty draft is harmless, dropping typed text is not.
-                    retargetDraft(from = current, to = SpaceId(target))
+                when {
+                    mode == SwitchMode.DISCARD_CURRENT -> {
+                        discardDraft(current)
+                        ensureDraft(SpaceId(target))
+                    }
+                    // The current draft stays put; the target opens its own.
+                    mode == SwitchMode.KEEP_CURRENT -> ensureDraft(SpaceId(target))
+                    isSourceDraftEmpty() -> {
+                        // Nothing typed — just open/create the target space's own draft.
+                        ensureDraft(SpaceId(target))
+                    }
+                    else -> {
+                        // Includes the "subscription hasn't confirmed emptiness yet" case:
+                        // moving a possibly-empty draft is harmless, dropping typed text is not.
+                        retargetDraft(from = current, to = SpaceId(target))
+                    }
                 }
             }
         )
+    }
+
+    /**
+     * Deletes the draft the user is looking at, on their explicit instruction. Delete first,
+     * clear the pointer second: if the delete fails the pointer still names a live draft and
+     * the text is recoverable, whereas the reverse order would strand it.
+     */
+    private suspend fun discardDraft(current: ScreenState.Ready) {
+        deleteObjects.async(DeleteObjects.Params(listOf(current.draft))).fold(
+            onSuccess = { Timber.d("Quick capture: discarded draft in ${current.space.id}") },
+            onFailure = { Timber.w(it, "Quick capture: could not discard draft") }
+        )
+        runCatching { settings.clearQuickCaptureDraft(current.space) }
+            .onFailure { Timber.w(it, "Quick capture: could not clear discarded draft pointer") }
+        refreshDraftSpaces()
     }
 
     /** "Text follows the chip": the typed content moves to the newly selected space. */
@@ -529,9 +607,12 @@ class QuickCaptureViewModel(
                 // withContext, which rethrows CancellationException on resume if the caller's
                 // scope died. Only the discretionary cleanup below may live here.
                 withContext(NonCancellable) {
-                    // Replace the target space's previously saved draft only AFTER the move
-                    // succeeded: deleting first would destroy it for nothing on failure
-                    // (Object.ListDelete is permanent, not move-to-bin).
+                    // Only reachable when the target's draft was EMPTY: a target draft with
+                    // content raises the conflict dialog instead and never moves. So this
+                    // disposes an empty placeholder, not anything the user typed.
+                    //
+                    // Still after the move, not before: deleting first would destroy it for
+                    // nothing on failure (Object.ListDelete is permanent, not move-to-bin).
                     //
                     // Re-validate immediately before deleting rather than trusting the
                     // pointer. A pointer can outlive the draft it named — a send publishes
@@ -554,6 +635,7 @@ class QuickCaptureViewModel(
                     }
                 }
                 screenState.value = ScreenState.Ready(space = to, draft = newDraft)
+                refreshDraftSpaces()
             },
             onFailure = {
                 Timber.e(it, "Quick capture: could not move draft to ${to.id}")

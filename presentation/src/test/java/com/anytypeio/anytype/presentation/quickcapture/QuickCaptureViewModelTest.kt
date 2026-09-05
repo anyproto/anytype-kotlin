@@ -298,6 +298,48 @@ class QuickCaptureViewModelTest {
         assertEquals(draftId, state.draft)
     }
 
+    private val conflictSpace = MockDataFactory.randomUuid()
+    private val conflictDraft = MockDataFactory.randomUuid()
+
+    /**
+     * Both spaces hold a draft with content: [targetSpace] is on screen with [draftId], and
+     * [conflictSpace] already holds [conflictDraft].
+     */
+    private fun vmWithConflict(): QuickCaptureViewModel {
+        userPermissionProvider.stub {
+            on { all() } doReturn flowOf(
+                mapOf(
+                    targetSpace to SpaceMemberPermissions.OWNER,
+                    conflictSpace to SpaceMemberPermissions.OWNER
+                )
+            )
+        }
+        settings.stub {
+            onBlocking { getQuickCaptureDraft(SpaceId(conflictSpace)) } doReturn conflictDraft
+        }
+        spaceManager.stub {
+            onBlocking { set(conflictSpace, false) } doReturn Result.success(mock<Config>())
+        }
+        fetchObject.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(
+                ObjectWrapper.Basic(
+                    mapOf(
+                        Relations.ID to conflictDraft,
+                        Relations.IS_HIDDEN to true,
+                        Relations.NAME to "already here"
+                    )
+                )
+            )
+        }
+        deleteObjects.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(Unit)
+        }
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+        return vm
+    }
+
     /**
      * The target space's draft carries body text but no title. Emptiness is content-based, so
      * this must raise the replace confirmation — the delete behind it is Object.ListDelete,
@@ -341,10 +383,10 @@ class QuickCaptureViewModelTest {
         vm.onSpaceSelected(target = otherSpace, sourceHasContent = true)
         coroutineTestRule.advanceUntilIdle()
 
-        val confirmation = vm.replaceDraftConfirmation.value
+        val conflict = vm.draftConflict.value
         assertTrue(
-            confirmation != null,
-            "a body-only draft must not be deleted without confirmation"
+            conflict != null,
+            "a body-only draft in the target space must raise the conflict, not be replaced"
         )
         verifyBlocking(deleteObjects, never()) { async(any()) }
 
@@ -357,5 +399,51 @@ class QuickCaptureViewModelTest {
             params.allValues.all { it.keys.contains(Relations.SNIPPET) },
             "draft validation must request SNIPPET, else body-only drafts read as empty"
         )
+    }
+
+    /**
+     * Keeping both must leave the current draft exactly where it is and open the target's own
+     * draft — no move, and above all no delete: the target's draft is off-screen, so the user
+     * cannot judge what replacing it would cost.
+     */
+    @Test
+    fun `keeping both drafts opens the target draft and destroys nothing`() = runTest {
+        val vm = vmWithConflict()
+        vm.onSpaceSelected(target = conflictSpace, sourceHasContent = true)
+        coroutineTestRule.advanceUntilIdle()
+
+        vm.onKeepCurrentDraftChosen()
+        coroutineTestRule.advanceUntilIdle()
+
+        val state = vm.screenState.value
+        assertTrue(state is QuickCaptureViewModel.ScreenState.Ready)
+        assertEquals(conflictSpace, state.space.id)
+        assertEquals(conflictDraft, state.draft, "must open the target space's existing draft")
+        verifyBlocking(deleteObjects, never()) { async(any()) }
+        verifyBlocking(moveQuickCaptureDraft, never()) { async(any()) }
+        verifyBlocking(settings, never()) { clearQuickCaptureDraft(SpaceId(targetSpace)) }
+    }
+
+    /**
+     * Discarding deletes only the draft the user can see, and still never touches the
+     * target's.
+     */
+    @Test
+    fun `discarding the current draft deletes it and leaves the target draft intact`() = runTest {
+        val vm = vmWithConflict()
+        vm.onSpaceSelected(target = conflictSpace, sourceHasContent = true)
+        coroutineTestRule.advanceUntilIdle()
+
+        vm.onDiscardCurrentDraftChosen()
+        coroutineTestRule.advanceUntilIdle()
+
+        val state = vm.screenState.value
+        assertTrue(state is QuickCaptureViewModel.ScreenState.Ready)
+        assertEquals(conflictDraft, state.draft)
+        // Exactly the visible draft, never the target's.
+        val deleted = argumentCaptor<DeleteObjects.Params>()
+        verifyBlocking(deleteObjects) { async(deleted.capture()) }
+        assertEquals(listOf(draftId), deleted.lastValue.targets)
+        verifyBlocking(settings) { clearQuickCaptureDraft(SpaceId(targetSpace)) }
     }
 }

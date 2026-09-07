@@ -46,6 +46,7 @@ import androidx.constraintlayout.compose.Visibility
 import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.ViewCompat
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -79,10 +80,10 @@ fun ViewersWidget(
 
     if (state.showWidget) {
         ModalBottomSheet(
+            sheetMaxWidth = contentWidthDp(),
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets.ime)
                 .padding(start = 8.dp, end = 8.dp, bottom = 30.dp)
-                .fillMaxWidth()
                 .wrapContentHeight(),
             scrimColor = colorResource(id = R.color.modal_screen_outside_background),
             containerColor = colorResource(id = R.color.background_secondary),

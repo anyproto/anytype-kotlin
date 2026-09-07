@@ -54,6 +54,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.ui.WallpaperResult
+import com.anytypeio.anytype.core_utils.ext.applyContentWidthCap
 import com.anytypeio.anytype.core_utils.ext.isVideo
 import com.anytypeio.anytype.core_models.ui.WallpaperView
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
@@ -398,6 +399,7 @@ class WidgetOverlayFragment : BottomSheetDialogFragment(),
 
     override fun onStart() {
         super.onStart()
+        applyContentWidthCap()
         dialog?.window?.setLayout(
             ViewGroup.LayoutParams.MATCH_PARENT,
             ViewGroup.LayoutParams.MATCH_PARENT

@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.core_utils.R
 import com.anytypeio.anytype.core_utils.ext.LONG_THROTTLE_DURATION
+import com.anytypeio.anytype.core_utils.ext.applyContentWidthCap
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -58,6 +59,7 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
+        applyContentWidthCap()
         if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) {
             expand()
         }

@@ -10,6 +10,7 @@ import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.RelationValueListBinding
+import com.anytypeio.anytype.core_ui.extensions.contentWidth
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.extensions.light
@@ -44,12 +45,12 @@ class RelationValueListWidget @JvmOverloads constructor(
     private val icon2: ObjectIconWidget = binding.icon2
     private val number: TextView = binding.number
     private val dot: View = binding.dot
-    private var maxTextWidth: Int = 0
 
-    init {
-        maxTextWidth =
-            resources.displayMetrics.widthPixels / 2 - resources.getDimensionPixelSize(R.dimen.dp_72)
-    }
+    // Half of the row that holds this widget. The display width overstates the space once the
+    // content column is capped, and the text then ellipsizes too late. The value is read on
+    // every use, because the widget has no size yet while the holder binds it.
+    private val maxTextWidth: Int
+        get() = contentWidth() / 2 - resources.getDimensionPixelSize(R.dimen.dp_72)
 
     fun setRelation(
         relation: ObjectRelationView,

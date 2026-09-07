@@ -19,7 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -27,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.Relations1
 
@@ -147,9 +147,9 @@ private fun FieldHorizontalEmpty(
     onRemoveFromObjectClick: () -> Unit,
 ) {
     val isMenuExpanded = remember { mutableStateOf(false) }
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val halfScreenWidth = screenWidth / 2 - 32.dp
+    // Half of the content column, not half of the display. The activity layout caps the column
+    // on a tablet and on a phone in landscape, so the title would never ellipsize there.
+    val halfScreenWidth = contentWidthDp() / 2 - 32.dp
 
     Row(
         modifier = modifier

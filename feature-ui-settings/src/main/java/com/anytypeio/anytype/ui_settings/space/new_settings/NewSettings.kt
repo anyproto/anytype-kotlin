@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ui.WallpaperView
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -514,9 +515,10 @@ fun NewSpaceSettingsScreen(
             // Wallpaper Selection Modal
             if (showWallpaperPicker.value) {
                 ModalBottomSheet(
+                    sheetMaxWidth = contentWidthDp(),
                     modifier = Modifier
                         .windowInsetsPadding(WindowInsets.systemBars)
-                        .fillMaxSize(),
+                        .fillMaxHeight(),
                     onDismissRequest = {
                         showWallpaperPicker.value = false
                     },

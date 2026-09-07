@@ -30,6 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.relations.CircleIcon
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
@@ -77,9 +78,9 @@ fun PropertyLimitTypesEditScreen(
     val lazyListState = rememberLazyListState()
 
     ModalBottomSheet(
+        sheetMaxWidth = contentWidthDp(),
         modifier = Modifier
-            .padding(top = 60.dp)
-            .fillMaxWidth(),
+            .padding(top = 60.dp),
         onDismissRequest = onDismissRequest,
         dragHandle = null,
         scrimColor = colorResource(id = R.color.modal_screen_outside_background),

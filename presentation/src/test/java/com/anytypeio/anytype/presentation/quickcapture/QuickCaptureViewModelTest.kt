@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.presentation.quickcapture
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
 import app.cash.turbine.test
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Config
@@ -425,17 +428,26 @@ class QuickCaptureViewModelTest {
     }
 
     /**
-     * Closing the sheet on a draft nobody filled in should clean it up. The decision is the
-     * use case's — this only pins that the sheet actually asks on the way out, on a scope
-     * that outlives it (viewModelScope is already cancelled inside onCleared).
+     * Drives the REAL teardown — ViewModelStore.clear() cancels viewModelScope and then calls
+     * onCleared — rather than invoking the cleanup directly. That is the whole point of the
+     * design: work launched on viewModelScope from onCleared would never run, so the cleanup
+     * is dispatched to a scope that outlives the sheet. Calling the method by hand proves
+     * neither that onCleared triggers it nor that the scope choice matters.
      */
     @Test
-    fun `asks to clean up the draft when the sheet closes`() = runTest {
-        val vm = vm()
+    fun `cleans up the draft when the view model is actually cleared`() = runTest {
+        val store = ViewModelStore()
+        val vm = ViewModelProvider(
+            store,
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T = vm() as T
+            }
+        )[QuickCaptureViewModel::class.java]
         vm.onStart()
         coroutineTestRule.advanceUntilIdle()
 
-        vm.cleanUpAbandonedDraft()
+        store.clear()
         coroutineTestRule.advanceUntilIdle()
 
         val params = argumentCaptor<DeleteQuickCaptureDraftIfEmpty.Params>()
@@ -466,9 +478,28 @@ class QuickCaptureViewModelTest {
         val vm = vm()
         vm.onStart()
         coroutineTestRule.advanceUntilIdle()
+        // Guard the false pass: cleanup also bails when state is not Ready.
+        assertTrue(vm.screenState.value is QuickCaptureViewModel.ScreenState.Ready)
         vm.onSendClicked()
         coroutineTestRule.advanceUntilIdle()
 
+        vm.cleanUpAbandonedDraft()
+        coroutineTestRule.advanceUntilIdle()
+
+        verifyBlocking(deleteQuickCaptureDraftIfEmpty, never()) { async(any()) }
+    }
+
+    /**
+     * A keystroke can still be in flight while the editor's write scope is torn down, so the
+     * store may not yet show it. Anything the user typed means hands off.
+     */
+    @Test
+    fun `does not clean up when the editor reported edits`() = runTest {
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+
+        vm.onEditorDetached(hasEdits = true)
         vm.cleanUpAbandonedDraft()
         coroutineTestRule.advanceUntilIdle()
 

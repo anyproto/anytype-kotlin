@@ -57,13 +57,23 @@ class DeleteQuickCaptureDraftIfEmpty @Inject constructor(
 
         if (!(details[Relations.NAME] as? String).isNullOrBlank()) return false
 
-        val root = view.blocks.firstOrNull { it.id == view.root }
-        val header = view.blocks.firstOrNull { block ->
-            val content = block.content
-            content is Block.Content.Layout && content.type == Block.Content.Layout.Type.HEADER
-        }
-        val body = root?.children.orEmpty().filter { it != header?.id }
-        if (view.blocks.any { it.id in body && it.holdsContent() }) return false
+        // A view with no root block is a malformed answer, not an empty object.
+        val root = view.blocks.firstOrNull { it.id == view.root } ?: return false
+
+        // Walk EVERY block, not the root's direct children. Content nests — inside a toggle,
+        // a list item, a table cell — and a one-level scan reads all of it as empty. The
+        // description also lives under the header, so excluding that subtree wholesale hid it
+        // too. Skipping by identity/style instead of by parentage means nothing is out of
+        // scope: this is the same shape as EditorViewModel.hasQuickCaptureContent().
+        val structural = setOfNotNull(
+            root.id,
+            view.blocks.firstOrNull { block ->
+                val content = block.content
+                content is Block.Content.Layout &&
+                    content.type == Block.Content.Layout.Type.HEADER
+            }?.id
+        )
+        if (view.blocks.any { it.id !in structural && it.holdsContent() }) return false
 
         runCatching { repo.deleteObjects(listOf(params.draft)) }
             .onFailure {
@@ -85,7 +95,10 @@ class DeleteQuickCaptureDraftIfEmpty @Inject constructor(
         is Block.Content.FeaturedRelations,
         is Block.Content.RelationBlock,
         is Block.Content.Icon -> false
-        is Block.Content.Text -> content.text.isNotBlank()
+        // The title is judged from details[name] above; every other text block counts,
+        // including the description, which sits under the header.
+        is Block.Content.Text ->
+            content.style != Block.Content.Text.Style.TITLE && content.text.isNotBlank()
         else -> true
     }
 

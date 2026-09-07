@@ -164,6 +164,98 @@ class DeleteQuickCaptureDraftIfEmptyTest {
         verifyBlocking(repo, never()) { deleteObjects(any()) }
     }
 
+    /**
+     * The note lives inside a toggle, not at the top level. A scan of the root's direct
+     * children sees only the toggle — which is itself blank — and calls the draft empty.
+     * Typing "> " turns a paragraph into a toggle, so this is an ordinary thing to do.
+     */
+    @Test
+    fun `keeps a draft whose only text is nested inside another block`() {
+        val nestedId = MockDataFactory.randomUuid()
+        val toggle = Block(
+            id = bodyId,
+            children = listOf(nestedId),
+            content = Block.Content.Text(
+                text = "",
+                style = Block.Content.Text.Style.TOGGLE,
+                marks = emptyList()
+            ),
+            fields = Block.Fields.empty()
+        )
+        val nested = Block(
+            id = nestedId,
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "the actual note",
+                style = Block.Content.Text.Style.P,
+                marks = emptyList()
+            ),
+            fields = Block.Fields.empty()
+        )
+        val v = view(body = emptyParagraph)
+        stub(v.copy(blocks = v.blocks.filter { it.id != bodyId } + listOf(toggle, nested)))
+
+        assertFalse(run())
+
+        verifyBlocking(repo, never()) { deleteObjects(any()) }
+    }
+
+    /**
+     * The description block is a child of the header, not of the root. Excluding the header
+     * subtree to skip the title hid the description with it — and the quick-capture menu
+     * deliberately keeps "Show description".
+     */
+    @Test
+    fun `keeps a draft whose only text is in the description`() {
+        val descriptionId = MockDataFactory.randomUuid()
+        val description = Block(
+            id = descriptionId,
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "written into the description",
+                style = Block.Content.Text.Style.DESCRIPTION,
+                marks = emptyList()
+            ),
+            fields = Block.Fields.empty()
+        )
+        val v = view(body = emptyParagraph)
+        val header = v.blocks.first { it.id == headerId }
+        stub(
+            v.copy(
+                blocks = v.blocks.filter { it.id != headerId } +
+                    listOf(header.copy(children = listOf(descriptionId)), description)
+            )
+        )
+
+        assertFalse(run())
+
+        verifyBlocking(repo, never()) { deleteObjects(any()) }
+    }
+
+    /** A view without its root block is a malformed answer, not an empty object. */
+    @Test
+    fun `keeps the draft when the view has no root block`() {
+        val v = view(body = emptyParagraph)
+        stub(v.copy(blocks = v.blocks.filter { it.id != draft }))
+
+        assertFalse(run())
+
+        verifyBlocking(repo, never()) { deleteObjects(any()) }
+    }
+
+    /** A failed delete must not clear the pointer, or the object is stranded unreachable. */
+    @Test
+    fun `keeps the pointer when the delete fails`() {
+        stub(view(body = emptyParagraph))
+        repo.stub { onBlocking { deleteObjects(any()) } doThrow IllegalStateException("offline") }
+
+        assertFalse(run())
+
+        // Concrete, not any(): SpaceId is a value class and a Mockito matcher for one
+        // returns null, which NPEs on unboxing and poisons the following tests.
+        verifyBlocking(settings, never()) { clearQuickCaptureDraft(space) }
+    }
+
     @Test
     fun `keeps a draft with a title`() {
         stub(view(body = emptyParagraph, name = "Buy milk"))

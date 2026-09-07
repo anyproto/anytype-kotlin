@@ -786,12 +786,17 @@ class QuickCaptureViewModel(
                     // The current draft stays put; the target opens its own. Still detach:
                     // the type/relation stores have already switched space beneath it.
                     mode == SwitchMode.KEEP_CURRENT -> {
+                        // No cleanup here: the user was asked and said keep. This branch is
+                        // only reachable with a source the editor reported as non-empty, so
+                        // deleting on a second opinion could only ever contradict them.
                         screenState.value = ScreenState.Loading
-                        deleteSourceIfEmpty(current)
                         ensureDraft(SpaceId(target))
                     }
                     isSourceDraftEmpty() -> {
                         // Nothing typed — just open/create the target space's own draft.
+                        // The source's cleanup is fired and forgotten: it is a different
+                        // object, and awaiting a read + delete + cross-space refresh would
+                        // hold the sheet on Loading for no benefit to the user.
                         screenState.value = ScreenState.Loading
                         deleteSourceIfEmpty(current)
                         ensureDraft(SpaceId(target))
@@ -814,7 +819,12 @@ class QuickCaptureViewModel(
      * Safe to run unconditionally — the use case re-reads the object and deletes only when it
      * is genuinely empty and still a draft, so a draft with content is never touched here.
      */
-    private suspend fun deleteSourceIfEmpty(source: ScreenState.Ready) {
+    private fun deleteSourceIfEmpty(source: ScreenState.Ready) {
+        if (isSending.get()) return
+        appScope.launch { runCleanup(source) }
+    }
+
+    private suspend fun runCleanup(source: ScreenState.Ready) {
         deleteQuickCaptureDraftIfEmpty.async(
             DeleteQuickCaptureDraftIfEmpty.Params(space = source.space, draft = source.draft)
         ).fold(
@@ -1094,9 +1104,26 @@ class QuickCaptureViewModel(
      * launched on it would never execute. The use case decides emptiness from the store, not
      * from the editor — which no longer exists by this point.
      */
+    /**
+     * Recorded while the editor is still alive (onDestroyView runs before onCleared), because
+     * by cleanup time it is gone and its pending writes are gone with it.
+     */
+    private var editorReportedEdits = false
+
+    fun onEditorDetached(hasEdits: Boolean) {
+        editorReportedEdits = hasEdits
+    }
+
     @VisibleForTesting
     internal fun cleanUpAbandonedDraft() {
         if (isSending.get()) return // published, not abandoned
+        // The user typed something. Whether it reached the store yet is not knowable here:
+        // the editor's write pipeline lives on its own scope and is cancelled during this
+        // same teardown, so a keystroke can still be in flight while this reads the store and
+        // sees nothing. The switch path solves it by flushing first; the close path cannot
+        // suspend, so it declines to delete instead. An empty draft that survives is litter;
+        // a deleted one that was not empty is gone for good.
+        if (editorReportedEdits) return
         val current = screenState.value as? ScreenState.Ready ?: return
         appScope.launch {
             deleteQuickCaptureDraftIfEmpty.async(

@@ -167,6 +167,10 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
     private fun hasBinding(): Boolean = view != null
 
     override fun onDestroyView() {
+        // Before super: the child editor is still attached here, and onCleared (where the
+        // empty-draft cleanup decides) runs after this. Config changes reach this too, but
+        // recording a boolean is harmless — onCleared does not fire for those.
+        vm.onEditorDetached(hasEdits = editor()?.hasEdits() == true)
         binding.root.viewTreeObserver.removeOnGlobalLayoutListener(imeLayoutListener)
         sheet?.let { view -> BottomSheetBehavior.from(view).removeBottomSheetCallback(dragCallback) }
         super.onDestroyView()

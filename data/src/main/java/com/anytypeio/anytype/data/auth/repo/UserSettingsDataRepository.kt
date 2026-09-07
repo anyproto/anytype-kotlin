@@ -306,6 +306,14 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         return cache.getSpaceLastInteractions()
     }
 
+    override suspend fun getVaultSortKeys(): Map<Id, Long> {
+        return cache.getVaultSortKeys()
+    }
+
+    override suspend fun setVaultSortKeys(keys: Map<Id, Long>) {
+        cache.setVaultSortKeys(keys)
+    }
+
     override suspend fun setQuickCaptureLastSpace(space: Id) {
         cache.setQuickCaptureLastSpace(space)
     }

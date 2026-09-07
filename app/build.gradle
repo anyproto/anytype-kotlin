@@ -207,6 +207,7 @@ dependencies {
     implementation project(':clipboard')
     implementation project(':core-utils')
     implementation project(':core-ui')
+    implementation project(':core-ai')
     implementation project(':library-page-icon-picker-widget')
     implementation project(':library-emojifier')
     implementation project(':analytics')
@@ -221,6 +222,7 @@ dependencies {
     implementation project(':feature-object-type')
     implementation project(':feature-properties')
     implementation project(':feature-vault')
+    implementation project(':feature-search')
     implementation project(':feature-create-object')
     implementation project(':feature-os-widgets')
 

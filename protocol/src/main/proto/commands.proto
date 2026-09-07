@@ -2477,6 +2477,54 @@ message Rpc {
             }
         }
 
+        // one-shot cross-space search, no subscription overhead. Queries the
+        // spaces whose object stores are loaded at the moment of the call —
+        // stores load sequentially on app start, so early calls can see a
+        // partial space set; the response reports it via allStoresLoaded.
+        // Tech-space and marketplace objects are excluded. No total is
+        // returned. fullText uses the detailed matching of
+        // ObjectSearchWithMeta (not ObjectSearch's name-prefix mode).
+        message CrossSpaceSearch {
+            message Request {
+                repeated anytype.model.Block.Content.Dataview.Filter filters = 1;
+                // empty sorts: fullText queries default to relevance order,
+                // browse queries (empty fullText) to lastModifiedDate desc
+                repeated anytype.model.Block.Content.Dataview.Sort sorts = 2;
+                string fullText = 3;
+                // offset and limit apply to the merged cross-space result.
+                // Always set a limit: an unlimited request materializes every
+                // space in full
+                int32 offset = 4;
+                int32 limit = 5;
+                // keys to return in records; empty = all
+                repeated string keys = 6;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated google.protobuf.Struct records = 2;
+                // false = records are a partial view: the sequential
+                // per-space store warm-up had not finished when the query
+                // ran, or a space's store failed and was skipped. Retry
+                // later for the complete view, or use
+                // ObjectCrossSpaceSearchSubscribe, which streams
+                // later-loading spaces as they open.
+                bool allStoresLoaded = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
         message CrossSpaceSearchSubscribe {
             message Request {
                 // (optional) subscription identifier
@@ -9474,12 +9522,19 @@ message Rpc {
 
         message Search {
             message Request {
+                // empty spaceId means all spaces (usually combined with empty chatId)
                 string spaceId = 1;
+                // empty chatId means all chats in spaceId; results carry chatId/spaceId per message
                 string chatId = 2;
+                // Note: ORDER_ID sort is only meaningful within a single chat
                 repeated anytype.model.Search.Message.Sort sorts = 3;
+                // empty fullText browses the latest messages in scope (default sort CREATED_AT desc);
+                // non-empty fullText is a relevance search (default sort SCORE desc)
                 string fullText = 4;
                 int32 offset = 5;
                 int32 limit = 6;
+                // (optional) restrict to messages authored by these identities; empty = all authors
+                repeated string creators = 7;
             }
 
             message Response {

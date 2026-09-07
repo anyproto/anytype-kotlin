@@ -27,6 +27,13 @@ object Relations {
     const val IS_FAVORITE = "isFavorite"
     const val IS_READ_ONLY = "isReadonly"
     const val IS_HIDDEN = "isHidden"
+
+    /**
+     * Marks an unsent quick-capture draft. Bool. The property that makes drafts *findable*:
+     * they always synced across devices, but without it there was no way to ask the store
+     * for them, so each device could only see the one its own pointer named.
+     */
+    const val IS_DRAFT = "isDraft"
     const val LAST_OPENED_DATE = "lastOpenedDate"
     const val LAST_MODIFIED_DATE = "lastModifiedDate"
     const val LAST_USED_DATE = "lastUsedDate"

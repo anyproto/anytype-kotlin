@@ -56,6 +56,7 @@ fun VaultScreenTopToolbar(
     onJoinViaQrClicked: () -> Unit,
     onCreateChannelMenuDismissed: () -> Unit,
     onSettingsClicked: () -> Unit,
+    onSearchBarClicked: (() -> Unit)? = null
 ) {
     Column(
         modifier = Modifier
@@ -83,13 +84,35 @@ fun VaultScreenTopToolbar(
                     .height(60.dp)
             )
         } else {
-            DefaultSearchBar(
-                value = searchQuery,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 10.dp),
-                onQueryChanged = onUpdateSearchQuery
-            )
+            if (onSearchBarClicked != null) {
+                // The bar is a pure entry point into the unified search
+                // surface — tapping it opens search v2 instead of filtering
+                // the space cards in place.
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
+                ) {
+                    DefaultSearchBar(
+                        value = "",
+                        modifier = Modifier.fillMaxWidth(),
+                        onQueryChanged = {}
+                    )
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .noRippleThrottledClickable { onSearchBarClicked() }
+                    )
+                }
+            } else {
+                DefaultSearchBar(
+                    value = searchQuery,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    onQueryChanged = onUpdateSearchQuery
+                )
+            }
         }
     }
 }

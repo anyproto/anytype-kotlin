@@ -2196,7 +2196,6 @@
     <string name="select_view">Select view</string>
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
-    <string name="chats_search_close_content_description">Close search</string>
     <!-- DROID-4358 Offline Downloads settings -->
     <string name="offline_downloads_section_title">Offline access</string>
     <string name="offline_downloads_title">Offline Downloads</string>

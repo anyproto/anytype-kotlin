@@ -254,6 +254,14 @@ interface BlockRepository {
     ): List<DataViewGroup>
 
     /**
+     * One-shot search across all user spaces — no subscription overhead.
+     * Scope narrowing is expressed via filters (e.g. SPACE_ID Equal).
+     */
+    suspend fun crossSpaceSearch(
+        command: Command.CrossSpaceSearch
+    ): Command.CrossSpaceSearch.Result
+
+    /**
      * Subscribe to search results across all user spaces.
      * Unlike searchObjectsWithSubscription which is scoped to a single space,
      * this searches across all spaces globally.

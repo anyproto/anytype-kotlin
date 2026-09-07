@@ -125,7 +125,8 @@ class ObjectTypesSubscriptionManager (
                     Relations.WIDGET_LIMIT,
                     Relations.WIDGET_VIEW_ID,
                     Relations.ORDER_ID,
-                    Relations.FEATURED_RELATIONS
+                    Relations.FEATURED_RELATIONS,
+                    Relations.LAST_USED_DATE
                     ),
                 ignoreWorkspace = true
             )

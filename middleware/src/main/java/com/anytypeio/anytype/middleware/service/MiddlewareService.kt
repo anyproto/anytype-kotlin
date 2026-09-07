@@ -117,6 +117,9 @@ interface MiddlewareService {
     fun objectGroupsSubscribe(request: Rpc.Object.GroupsSubscribe.Request): Rpc.Object.GroupsSubscribe.Response
 
     @Throws(Exception::class)
+    fun objectCrossSpaceSearch(request: Rpc.Object.CrossSpaceSearch.Request): Rpc.Object.CrossSpaceSearch.Response
+
+    @Throws(Exception::class)
     fun objectCrossSpaceSubscribe(request: Rpc.Object.CrossSpaceSearchSubscribe.Request): Rpc.Object.CrossSpaceSearchSubscribe.Response
 
     @Throws(Exception::class)

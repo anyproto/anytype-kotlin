@@ -33,7 +33,11 @@ fun ExperimentalFeaturesScreen(
     isCompactModeEnabled: Boolean,
     onCompactModeToggled: (Boolean) -> Unit,
     isKanbanEnabled: Boolean,
-    onKanbanToggled: (Boolean) -> Unit
+    onKanbanToggled: (Boolean) -> Unit,
+    isQuickCaptureEnabled: Boolean,
+    onQuickCaptureToggled: (Boolean) -> Unit,
+    isQuickCaptureAiEnabled: Boolean,
+    onQuickCaptureAiToggled: (Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -72,6 +76,24 @@ fun ExperimentalFeaturesScreen(
             description = stringResource(R.string.experimental_features_kanban_description),
             isEnabled = isKanbanEnabled,
             onToggle = onKanbanToggled
+        )
+
+        Divider()
+
+        ToggleItemWithDescription(
+            title = stringResource(R.string.experimental_features_quick_capture),
+            description = stringResource(R.string.experimental_features_quick_capture_description),
+            isEnabled = isQuickCaptureEnabled,
+            onToggle = onQuickCaptureToggled
+        )
+
+        Divider()
+
+        ToggleItemWithDescription(
+            title = stringResource(R.string.experimental_features_quick_capture_ai),
+            description = stringResource(R.string.experimental_features_quick_capture_ai_description),
+            isEnabled = isQuickCaptureAiEnabled,
+            onToggle = onQuickCaptureAiToggled
         )
 
         Divider()
@@ -121,6 +143,10 @@ fun ExperimentalFeaturesScreenPreview() {
         isCompactModeEnabled = false,
         onCompactModeToggled = {},
         isKanbanEnabled = false,
-        onKanbanToggled = {}
+        onKanbanToggled = {},
+        isQuickCaptureEnabled = false,
+        onQuickCaptureToggled = {},
+        isQuickCaptureAiEnabled = false,
+        onQuickCaptureAiToggled = {}
     )
 }

@@ -483,6 +483,10 @@ class BlockDataRepository(
         keys = keys
     )
 
+    override suspend fun crossSpaceSearch(
+        command: Command.CrossSpaceSearch
+    ): Command.CrossSpaceSearch.Result = remote.crossSpaceSearch(command)
+
     override suspend fun crossSpaceSearchSubscribe(
         command: Command.CrossSpaceSearchSubscribe
     ): SearchResult = remote.crossSpaceSearchSubscribe(command)

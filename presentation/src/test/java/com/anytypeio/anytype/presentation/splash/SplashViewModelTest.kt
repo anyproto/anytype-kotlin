@@ -401,6 +401,47 @@ class SplashViewModelTest {
     }
 
     @Test
+    fun `chat push still opens the chat when the last-space route has expired`() = runTest {
+        // DROID-4590: expiring the last-opened-space route must not divert a cold
+        // start from a chat push to the vault. The push branch takes its space and
+        // chat from the payload and never reads the stored space, which is what
+        // makes it safe — this pins that.
+        val response = Resultat.Success(Pair(AuthStatus.AUTHORIZED, Account(id = "id")))
+        val pushSpace = "push-space"
+        val pushChat = "push-chat"
+
+        stubCheckAuthStatus(response)
+        stubLaunchWallet()
+        stubLaunchAccount()
+        stubGetLastOpenedObject()
+
+        // The route has expired, so there is no stored space at all.
+        getLastOpenedSpace.stub {
+            onBlocking { async(Unit) } doReturn Resultat.Success(null)
+        }
+
+        initViewModel()
+
+        spaceManager.stub {
+            onBlocking { set(space = pushSpace) } doReturn Result.success(defaultSpaceConfig)
+        }
+
+        vm.commands.test {
+            assertEquals(SplashViewModel.Command.CheckAppStartIntent, awaitItem())
+
+            vm.onIntentTriggeredByChatPush(space = pushSpace, chat = pushChat)
+
+            assertEquals(
+                expected = SplashViewModel.Command.NavigateToChat(
+                    space = pushSpace,
+                    chat = pushChat
+                ),
+                actual = awaitItem()
+            )
+        }
+    }
+
+    @Test
     fun `should navigate to vault even if chat is available if given space has data ux type`() = runTest {
         // GIVEN
         val deeplink = "test-deeplink"

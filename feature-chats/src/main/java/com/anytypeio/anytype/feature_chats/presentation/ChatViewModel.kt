@@ -157,14 +157,12 @@ class ChatViewModel @Inject constructor(
     private val setSpaceDetails: SetSpaceDetails,
     private val setChatNotificationMode: SetChatNotificationMode,
     private val fieldParser: FieldParser,
-    private val chatSearchDelegate: ChatSearchDelegate,
     private val deepLinkResolver: DeepLinkResolver,
     private val backHistoryDelegate: BackHistoryDelegate
 ) : BaseViewModel(),
     ExitToVaultDelegate by exitToVaultDelegate,
     PinObjectAsWidgetDelegate by pinObjectAsWidgetDelegate,
-    BackHistoryDelegate by backHistoryDelegate,
-    ChatSearchDelegate by chatSearchDelegate {
+    BackHistoryDelegate by backHistoryDelegate {
     private val preloadingJobs = mutableListOf<Job>()
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -278,15 +276,6 @@ class ChatViewModel @Inject constructor(
     init {
         Timber.d("DROID-2966 init")
 
-        chatSearchDelegate.initSearchDelegate(
-            scope = viewModelScope,
-            space = vmParams.space,
-            chat = vmParams.ctx,
-            onScrollToMessage = { messageId ->
-                chatContainer.onLoadToReply(replyMessage = messageId)
-            }
-        )
-
         viewModelScope.launch {
             spacePermissionProvider
                 .observe(vmParams.space)
@@ -355,7 +344,10 @@ class ChatViewModel @Inject constructor(
                         notificationSetting = notificationSetting,
                         canEdit = canEdit,
                         showAddMembers = spaceView.spaceUxType != SpaceUxType.ONE_TO_ONE,
-                        showDropDownMenu = false,
+                        // 1:1 chats get the menu too (search + notifications +
+                        // settings); invite/copy-link stay gated off above, and
+                        // this menu never had Edit info or Move to bin.
+                        showDropDownMenu = true,
                         spaceType = spaceView.spaceType
                     )
                 } else if (chatObject != null) {
@@ -460,7 +452,10 @@ class ChatViewModel @Inject constructor(
         fieldParser: FieldParser
     ) {
         combine(
-            chatContainer.watchWhileTrackingAttachments(chat = chat).distinctUntilChanged(),
+            chatContainer.watchWhileTrackingAttachments(
+                chat = chat,
+                startAtMessage = vmParams.startAtMessage
+            ).distinctUntilChanged(),
             chatContainer.subscribeToAttachments(vmParams.ctx, vmParams.space)
                 .distinctUntilChanged(),
             chatContainer.fetchReplies(chat = chat).distinctUntilChanged(),
@@ -2377,29 +2372,6 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun resolveMemberName(identity: String): String {
-        val store = members.get()
-        return if (store is Store.Data) {
-            store.members.find { it.identity == identity }?.name.orEmpty()
-        } else {
-            ""
-        }
-    }
-
-    fun resolveMemberAvatar(identity: String): ChatView.Message.Avatar {
-        val store = members.get()
-        if (store is Store.Data) {
-            val member = store.members.find { it.identity == identity }
-            if (member != null && !member.iconImage.isNullOrEmpty()) {
-                return ChatView.Message.Avatar.Image(
-                    urlBuilder.thumbnail(member.iconImage!!)
-                )
-            }
-            return ChatView.Message.Avatar.Initials(member?.name.orEmpty())
-        }
-        return ChatView.Message.Avatar.Initials("")
-    }
-
     fun onMemberIconClicked(member: Id?) {
         Timber.d("onMemberIconClicked: $member")
         viewModelScope.launch {
@@ -2882,7 +2854,8 @@ class ChatViewModel @Inject constructor(
         data class Default(
             val ctx: Id,
             override val space: Space,
-            val triggeredByPush: Boolean = false
+            val triggeredByPush: Boolean = false,
+            val startAtMessage: Id? = null
         ) : Params()
     }
 

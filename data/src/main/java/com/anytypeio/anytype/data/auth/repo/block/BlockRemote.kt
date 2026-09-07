@@ -218,6 +218,10 @@ interface BlockRemote {
         collection: Id?
     ): List<DataViewGroup>
 
+    suspend fun crossSpaceSearch(
+        command: Command.CrossSpaceSearch
+    ): Command.CrossSpaceSearch.Result
+
     suspend fun crossSpaceSearchSubscribe(
         command: Command.CrossSpaceSearchSubscribe
     ): SearchResult

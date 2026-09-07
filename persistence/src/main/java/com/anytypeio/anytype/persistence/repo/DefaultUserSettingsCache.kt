@@ -66,6 +66,16 @@ class DefaultUserSettingsCache(
         FileDownloadLimit.fromStorageKey(prefs.getString(FILE_DOWNLOAD_LIMIT_KEY, null))
     )
 
+    // Default ON: quick capture is no longer opt-in. The stored value still wins, so anyone
+    // who explicitly turned it off keeps it off.
+    private val _quickCaptureFlow = MutableStateFlow(
+        prefs.getBoolean(QUICK_CAPTURE_ENABLED_KEY, true)
+    )
+
+    private val _quickCaptureAiFlow = MutableStateFlow(
+        prefs.getBoolean(QUICK_CAPTURE_AI_ENABLED_KEY, false)
+    )
+
     //region Vault default settings
     fun initialVaultSettings(): VaultPreference {
         return VaultPreference(
@@ -109,6 +119,17 @@ class DefaultUserSettingsCache(
         prefs.edit()
             .putString(CURRENT_SPACE_KEY, "")
             .apply()
+    }
+
+    override suspend fun setLastBackgroundedAt(timeInSeconds: Long) {
+        prefs.edit()
+            .putLong(LAST_BACKGROUNDED_AT_KEY, timeInSeconds)
+            .apply()
+    }
+
+    override suspend fun getLastBackgroundedAt(): Long? {
+        val value = prefs.getLong(LAST_BACKGROUNDED_AT_KEY, NO_TIMESTAMP)
+        return if (value == NO_TIMESTAMP) null else value
     }
 
     override suspend fun setDefaultObjectType(space: SpaceId, type: TypeId) {
@@ -731,6 +752,159 @@ class DefaultUserSettingsCache(
 
     //endregion
 
+    //region Quick capture
+
+    override suspend fun setQuickCaptureDraft(space: SpaceId, obj: Id) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+            val updated = givenSpacePreference.copy(
+                quickCaptureDraftObjectId = obj
+            )
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(preferences = result)
+        }
+    }
+
+    override suspend fun getQuickCaptureDraft(space: SpaceId): Id? {
+        return context.spacePrefsStore
+            .data
+            .map { preferences ->
+                preferences
+                    .preferences[space.id]
+                    ?.quickCaptureDraftObjectId
+                    ?.ifEmpty { null }
+            }
+            .first()
+    }
+
+    override suspend fun getQuickCaptureDrafts(): Map<Id, Id> {
+        val spacePreferences = context.spacePrefsStore.data.first()
+        return spacePreferences.preferences
+            .mapNotNull { (spaceId, spacePref) ->
+                val draft = spacePref.quickCaptureDraftObjectId
+                if (!draft.isNullOrEmpty()) spaceId to draft else null
+            }
+            .toMap()
+    }
+
+    override suspend fun clearQuickCaptureDraft(space: SpaceId) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+            val updated = givenSpacePreference.copy(
+                quickCaptureDraftObjectId = null
+            )
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(preferences = result)
+        }
+    }
+
+    override suspend fun setQuickCaptureLastSpace(space: Id) {
+        prefs.edit()
+            .putString(QUICK_CAPTURE_LAST_SPACE_KEY, space)
+            .apply()
+    }
+
+    override suspend fun getQuickCaptureLastSpace(): Id? {
+        val value = prefs.getString(QUICK_CAPTURE_LAST_SPACE_KEY, "")
+        return if (value.isNullOrEmpty()) null else value
+    }
+
+    override suspend fun setSpaceLastInteraction(space: SpaceId, timestamp: Long) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+            val updated = givenSpacePreference.copy(
+                lastInteractionTimestamp = timestamp
+            )
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(preferences = result)
+        }
+    }
+
+    override suspend fun getSpaceLastInteractions(): Map<Id, Long> {
+        val spacePreferences = context.spacePrefsStore.data.first()
+        return spacePreferences.preferences
+            .mapNotNull { (spaceId, spacePref) ->
+                val timestamp = spacePref.lastInteractionTimestamp
+                if (timestamp != null && timestamp > 0) {
+                    spaceId to timestamp
+                } else {
+                    null
+                }
+            }
+            .toMap()
+    }
+
+    override suspend fun getVaultSortKeys(): Map<Id, Long> {
+        val spacePreferences = context.spacePrefsStore.data.first()
+        return spacePreferences.preferences
+            .mapNotNull { (spaceId, spacePref) ->
+                val date = spacePref.vaultLastMessageDate
+                if (date != null && date > 0) spaceId to date else null
+            }
+            .toMap()
+    }
+
+    override suspend fun setVaultSortKeys(keys: Map<Id, Long>) {
+        if (keys.isEmpty()) return
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                keys.forEach { (spaceId, date) ->
+                    val given = existingPreferences
+                        .preferences
+                        .getOrDefault(key = spaceId, defaultValue = SpacePreference())
+                    put(key = spaceId, given.copy(vaultLastMessageDate = date))
+                }
+            }
+            // copy(), not the constructor: preserves top-level unknown fields written
+            // by a newer build, matching how the rest of this file mutates the store.
+            existingPreferences.copy(preferences = result)
+        }
+    }
+
+    override suspend fun getQuickCaptureEnabled(): Boolean {
+        return prefs.getBoolean(QUICK_CAPTURE_ENABLED_KEY, true)
+    }
+
+    override suspend fun setQuickCaptureEnabled(enabled: Boolean) {
+        prefs.edit()
+            .putBoolean(QUICK_CAPTURE_ENABLED_KEY, enabled)
+            .apply()
+        _quickCaptureFlow.value = enabled
+    }
+
+    override fun observeQuickCaptureEnabled(): Flow<Boolean> = _quickCaptureFlow.asStateFlow()
+
+    override suspend fun getQuickCaptureAiEnabled(): Boolean {
+        return prefs.getBoolean(QUICK_CAPTURE_AI_ENABLED_KEY, false)
+    }
+
+    override suspend fun setQuickCaptureAiEnabled(enabled: Boolean) {
+        prefs.edit()
+            .putBoolean(QUICK_CAPTURE_AI_ENABLED_KEY, enabled)
+            .apply()
+        _quickCaptureAiFlow.value = enabled
+    }
+
+    override fun observeQuickCaptureAiEnabled(): Flow<Boolean> = _quickCaptureAiFlow.asStateFlow()
+
+    //endregion
+
     override suspend fun getHasShownSpacesIntroduction(): Boolean {
         return prefs.getBoolean(HAS_SHOWN_SPACES_INTRODUCTION_KEY, false)
     }
@@ -949,6 +1123,8 @@ class DefaultUserSettingsCache(
 
     companion object {
         const val CURRENT_SPACE_KEY = "prefs.user_settings.current_space"
+        const val LAST_BACKGROUNDED_AT_KEY = "prefs.user_settings.last_backgrounded_at"
+        private const val NO_TIMESTAMP = -1L
         const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"
         const val DEFAULT_OBJECT_TYPE_NAME_KEY = "prefs.user_settings.default_object_type.name"
 
@@ -971,5 +1147,8 @@ class DefaultUserSettingsCache(
         const val KANBAN_ENABLED_KEY = "prefs.device.kanban_enabled"
         const val FILE_DOWNLOAD_LIMIT_KEY = "prefs.device.file_download_limit"
         const val USE_CELLULAR_FOR_DOWNLOADS_KEY = "prefs.device.use_cellular_for_downloads"
+        const val QUICK_CAPTURE_LAST_SPACE_KEY = "prefs.device.quick_capture_last_space"
+        const val QUICK_CAPTURE_ENABLED_KEY = "prefs.device.quick_capture_enabled"
+        const val QUICK_CAPTURE_AI_ENABLED_KEY = "prefs.device.quick_capture_ai_enabled"
     }
 }

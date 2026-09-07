@@ -29,7 +29,11 @@ class ExperimentalFeaturesFragment : BaseBottomSheetComposeFragment() {
             isCompactModeEnabled = vm.isCompactModeEnabled.collectAsStateWithLifecycle().value,
             onCompactModeToggled = vm::onCompactModeToggled,
             isKanbanEnabled = vm.isKanbanEnabled.collectAsStateWithLifecycle().value,
-            onKanbanToggled = vm::onKanbanToggled
+            onKanbanToggled = vm::onKanbanToggled,
+            isQuickCaptureEnabled = vm.isQuickCaptureEnabled.collectAsStateWithLifecycle().value,
+            onQuickCaptureToggled = vm::onQuickCaptureToggled,
+            isQuickCaptureAiEnabled = vm.isQuickCaptureAiEnabled.collectAsStateWithLifecycle().value,
+            onQuickCaptureAiToggled = vm::onQuickCaptureAiToggled
         )
     }
 

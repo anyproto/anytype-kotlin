@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.CrossSpaceObjectTypesContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
@@ -106,6 +107,7 @@ object MainEntryModule {
         chatPreviewContainer: ChatPreviewContainer,
         chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer,
         participantSubscriptionContainer: ParticipantSubscriptionContainer,
+        crossSpaceObjectTypesContainer: CrossSpaceObjectTypesContainer,
         userSettingsRepository: UserSettingsRepository,
         resolveSpaceHomepage: ResolveSpaceHomepage,
         debugRunProfiler: DebugRunProfiler,
@@ -141,6 +143,7 @@ object MainEntryModule {
         chatPreviewContainer = chatPreviewContainer,
         chatsDetailsSubscriptionContainer = chatsDetailsSubscriptionContainer,
         participantSubscriptionContainer = participantSubscriptionContainer,
+        crossSpaceObjectTypesContainer = crossSpaceObjectTypesContainer,
         userSettingsRepository = userSettingsRepository,
         resolveSpaceHomepage = resolveSpaceHomepage,
         debugRunProfiler = debugRunProfiler,

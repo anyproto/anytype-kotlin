@@ -53,9 +53,11 @@ import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreation
 import com.anytypeio.anytype.di.feature.participant.ParticipantComponentDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.search.GlobalSearchDependencies
+import com.anytypeio.anytype.di.feature.search.SearchV2Dependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
 import com.anytypeio.anytype.di.feature.settings.DebugDependencies
+import com.anytypeio.anytype.di.feature.quickcapture.QuickCaptureDependencies
 import com.anytypeio.anytype.di.feature.settings.ExperimentalFeaturesDependencies
 import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
@@ -74,6 +76,7 @@ import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceDependencies
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeDependencies
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.CrossSpaceObjectTypesContainer
 import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
 import dagger.Binds
 import dagger.Component
@@ -86,6 +89,7 @@ import javax.inject.Singleton
     modules = [
         ComponentDependenciesModule::class,
         ContextModule::class,
+        AiModule::class,
         DataModule::class,
         EventModule::class,
         ConfigModule::class,
@@ -137,6 +141,7 @@ interface MainComponent :
     GalleryInstallationComponentDependencies,
     NotificationDependencies,
     GlobalSearchDependencies,
+    SearchV2Dependencies,
     VaultComponentDependencies,
     AllContentDependencies,
     ChatComponentDependencies,
@@ -154,6 +159,7 @@ interface MainComponent :
     EditTypePropertiesDependencies,
     DebugDependencies,
     ExperimentalFeaturesDependencies,
+    QuickCaptureDependencies,
     CreateObjectTypeDependencies,
     SpaceTypesDependencies,
     SpacePropertiesDependencies,
@@ -189,6 +195,7 @@ interface MainComponent :
 
     fun chatPreviewContainer(): ChatPreviewContainer
     fun chatsDetailsSubscriptionContainer(): ChatsDetailsSubscriptionContainer
+    fun crossSpaceObjectTypesContainer(): CrossSpaceObjectTypesContainer
 }
 
 @Module
@@ -346,6 +353,11 @@ abstract class ComponentDependenciesModule {
 
     @Binds
     @IntoMap
+    @ComponentDependenciesKey(SearchV2Dependencies::class)
+    abstract fun provideSearchV2Dependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
     @ComponentDependenciesKey(ChatComponentDependencies::class)
     abstract fun provideChatComponentDependencies(component: MainComponent): ComponentDependencies
 
@@ -423,6 +435,11 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(ExperimentalFeaturesDependencies::class)
     abstract fun provideExperimentalFeaturesDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(QuickCaptureDependencies::class)
+    abstract fun provideQuickCaptureDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

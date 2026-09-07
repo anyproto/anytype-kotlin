@@ -1813,6 +1813,7 @@ class EditorViewModel(
         // reads the selection right after it changes. "Paste link" does exactly
         // that — it selects the inserted url, then asks for the link mark over it.
         orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
+        clearSeededCursor(id)
         blocks.find { it.id == id }?.let { target ->
             val targetBlockType = when (val content = target.content) {
                 is TextBlock -> when (content.style) {
@@ -1839,6 +1840,7 @@ class EditorViewModel(
         // table cells offer "Paste link" too, and the paste reads the selection
         // in the same input callback that changes it.
         orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
+        clearSeededCursor(id)
         blocks.find { it.id == id }?.let { target ->
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.OnSelectionChanged(
@@ -1847,6 +1849,22 @@ class EditorViewModel(
                     targetBlockType = TargetBlockType.Cell
                 )
             )
+        }
+    }
+
+    /**
+     * A cursor left in the focus store re-applies on every later render, because the render
+     * pipeline reads the store each time. [onStart] seeds one for the view rebuild after a
+     * rotation, and [onBlockFocusChanged] normally clears it on the focus gain. BlockAdapter
+     * drops that callback while a list update is being applied, so the seed can outlive its
+     * one render. The caret has now moved, so the seed is obsolete. Clear it here, where the
+     * divergence would otherwise begin. The write is skipped on the normal path, where the
+     * cursor is already null.
+     */
+    private fun clearSeededCursor(id: Id) {
+        val focus = orchestrator.stores.focus.current()
+        if (focus.cursor != null && focus.isTarget(id)) {
+            orchestrator.stores.focus.update(focus.copy(cursor = null))
         }
     }
 

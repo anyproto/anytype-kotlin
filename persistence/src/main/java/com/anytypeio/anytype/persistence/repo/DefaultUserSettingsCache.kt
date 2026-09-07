@@ -838,6 +838,32 @@ class DefaultUserSettingsCache(
             .toMap()
     }
 
+    override suspend fun getVaultSortKeys(): Map<Id, Long> {
+        val spacePreferences = context.spacePrefsStore.data.first()
+        return spacePreferences.preferences
+            .mapNotNull { (spaceId, spacePref) ->
+                val date = spacePref.vaultLastMessageDate
+                if (date != null && date > 0) spaceId to date else null
+            }
+            .toMap()
+    }
+
+    override suspend fun setVaultSortKeys(keys: Map<Id, Long>) {
+        if (keys.isEmpty()) return
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                keys.forEach { (spaceId, date) ->
+                    val given = existingPreferences
+                        .preferences
+                        .getOrDefault(key = spaceId, defaultValue = SpacePreference())
+                    put(key = spaceId, given.copy(vaultLastMessageDate = date))
+                }
+            }
+            SpacePreferences(preferences = result)
+        }
+    }
+
     override suspend fun getQuickCaptureEnabled(): Boolean {
         return prefs.getBoolean(QUICK_CAPTURE_ENABLED_KEY, true)
     }

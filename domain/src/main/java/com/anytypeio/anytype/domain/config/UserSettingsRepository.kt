@@ -117,6 +117,14 @@ interface UserSettingsRepository {
     suspend fun setSpaceLastInteraction(space: SpaceId, timestamp: Long)
     suspend fun getSpaceLastInteractions(): Map<Id, Long>
 
+    /**
+     * Vault sort keys: spaceId -> last chat message timestamp (unix seconds),
+     * cached from the last session so the vault can paint its previous order
+     * before chat previews arrive from the middleware.
+     */
+    suspend fun getVaultSortKeys(): Map<Id, Long>
+    suspend fun setVaultSortKeys(keys: Map<Id, Long>)
+
     /** The space quick capture was last pointed at, so the sheet can reopen there. */
     suspend fun setQuickCaptureLastSpace(space: Id)
     suspend fun getQuickCaptureLastSpace(): Id?

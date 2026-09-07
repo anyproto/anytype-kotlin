@@ -91,6 +91,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
@@ -182,9 +183,12 @@ class VaultViewModel(
     // step, so we know to reopen it when the user presses back on CreateSpace.
     private var didShowSelectMembersForGroupCreation = false
 
+    // NOTE: deliberately NOT filtered to Ready. The vault paints as soon as the
+    // space list is available and enriches with chat previews when they land —
+    // Chat.SubscribeToMessagePreviews can take many seconds on a cold start with
+    // many spaces, and the previous sort order is restored from cache meanwhile.
     private val previewFlow: StateFlow<ChatPreviewContainer.PreviewState> =
         chatPreviewContainer.observePreviewsWithAttachments()
-            .filterIsInstance<ChatPreviewContainer.PreviewState.Ready>() // wait until ready
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
@@ -226,6 +230,23 @@ class VaultViewModel(
     // Flow for account identity (used to determine outgoing messages)
     // The Config.id is the account identity used as message creator
     private val accountIdentityFlow: StateFlow<Id?> = MutableStateFlow(configStorage.getAccountId())
+
+    /**
+     * spaceId -> last chat message date (unix seconds) as persisted by the last
+     * session. Used as the sort key for spaces whose chat preview has not arrived
+     * yet, so the cold-start vault paints in the order the user last saw instead
+     * of falling back to join/creation date and then re-shuffling.
+     */
+    private var cachedSortKeys: Map<Id, Long>? = null
+
+    private suspend fun sortKeyFallback(): Map<Id, Long> {
+        cachedSortKeys?.let { return it }
+        val loaded = runCatching { userSettingsRepository.getVaultSortKeys() }
+            .onFailure { Timber.w(it, "Failed to read cached vault sort keys") }
+            .getOrDefault(emptyMap())
+        cachedSortKeys = loaded
+        return loaded
+    }
 
     private val _uiState = MutableStateFlow<VaultUiState>(VaultUiState.Loading)
     val uiState: StateFlow<VaultUiState> = _uiState.asStateFlow()
@@ -280,7 +301,7 @@ class VaultViewModel(
         Timber.i("VaultViewModel - init started")
         combine(
             combine(
-                previewFlow.filterIsInstance<ChatPreviewContainer.PreviewState.Ready>(),
+                previewFlow,
                 spaceFlow,
                 permissionsFlow
             ) { previews, spaces, perms -> Triple(previews, spaces, perms) },
@@ -291,6 +312,16 @@ class VaultViewModel(
                 accountIdentityFlow
             ) { _, chatDetails, participants, accountIdentity -> Triple(chatDetails, participants, accountIdentity) }
         ) { first, second -> first to second }
+            // spaceFlow and the space container are both seeded with an empty list, so
+            // the combine fires once with no spaces before the subscription delivers.
+            // Publishing that seed paints an empty vault — measured on device at up to
+            // ~950ms before the real list replaced it. Hold Loading until real spaces
+            // arrive, or until previews go Ready so a genuinely empty vault still
+            // resolves off the spinner.
+            .filter { (first, _) ->
+                val (previews, spaces, _) = first
+                spaces.isNotEmpty() || previews is ChatPreviewContainer.PreviewState.Ready
+            }
             // Throttle-latest: the very first vault state passes through without delay;
             // afterwards, bursts of upstream events (chat previews, space views,
             // permissions) are coalesced into at most one rebuild per
@@ -305,9 +336,11 @@ class VaultViewModel(
             .map { (first, second) ->
                 val (previews, spaces, perms) = first
                 val (chatDetails, participants, accountIdentity) = second
+                val previewItems =
+                    (previews as? ChatPreviewContainer.PreviewState.Ready)?.items.orEmpty()
                 val sections = transformToVaultSpaceViews(
                     spaces,
-                    previews.items,
+                    previewItems,
                     perms,
                     chatDetails,
                     participants,
@@ -334,6 +367,28 @@ class VaultViewModel(
                     _uiState.value = sections
                 }
             }
+            .launchIn(viewModelScope)
+
+        // Cache the per-space last-message dates so the next cold start can paint the
+        // vault in this order before Chat.SubscribeToMessagePreviews returns.
+        previewFlow
+            .filterIsInstance<ChatPreviewContainer.PreviewState.Ready>()
+            .map { ready ->
+                ready.items
+                    .groupBy { it.space.id }
+                    .mapValues { (_, previews) ->
+                        previews.maxOf { it.message?.createdAt ?: 0L }
+                    }
+                    .filterValues { it > 0L }
+            }
+            .distinctUntilChanged()
+            .debounce(VAULT_SORT_KEY_PERSIST_DEBOUNCE_MS)
+            .onEach { keys ->
+                cachedSortKeys = keys
+                runCatching { userSettingsRepository.setVaultSortKeys(keys) }
+                    .onFailure { Timber.w(it, "Failed to persist vault sort keys") }
+            }
+            .flowOn(Dispatchers.Default)
             .launchIn(viewModelScope)
 
         // Track notification permission status for profile icon badge
@@ -430,6 +485,9 @@ class VaultViewModel(
             Timber.w("Failed to fetch space wallpapers")
             emptyMap()
         }
+
+        // Cached last-message dates, used to order spaces whose preview is still in flight.
+        val sortKeyFallback = sortKeyFallback()
 
         // Index chatPreviews by space.id for O(1) lookup, selecting most recent per space
         val chatPreviewMap = chatPreviews.groupBy { it.space.id }
@@ -534,7 +592,7 @@ class VaultViewModel(
 
         // Sort unpinned spaces by effective date (descending), then by creation date (descending)
         val sortedUnpinnedSpaces = unpinnedSpaces.sortedWith(
-            compareByDescending<VaultSpaceView> { calculateEffectiveDate(it) ?: 0L }
+            compareByDescending<VaultSpaceView> { calculateEffectiveDate(it, sortKeyFallback) ?: 0L }
                 .thenByDescending { it.space.getSingleValue<Double>(Relations.CREATED_DATE) ?: 0.0 }
         )
 
@@ -566,13 +624,21 @@ class VaultViewModel(
 
     /**
      * Calculates the effective date for a space by taking the maximum of lastMessageDate and spaceJoinDate.
+     * When the chat preview has not arrived yet, lastMessageDate falls back to the
+     * value cached from the previous session ([sortKeyFallback]) so the cold-start
+     * order matches what the user last saw.
+     *
      * - If both lastMessageDate and spaceJoinDate are available, return the maximum
      * - If only one is available, return that one
      * - If neither is available, fallback to createdDate
      * - If createdDate is also unavailable, return null
      */
-    private fun calculateEffectiveDate(space: VaultSpaceView): Long? {
+    private fun calculateEffectiveDate(
+        space: VaultSpaceView,
+        sortKeyFallback: Map<Id, Long> = emptyMap()
+    ): Long? {
         val lastMessageDate = space.lastMessageDate
+            ?: space.space.targetSpaceId?.let { sortKeyFallback[it] }
         val spaceJoinDate = space.space.spaceJoinDate?.toLong()
         val createdDate = space.space.getSingleValue<Double>(Relations.CREATED_DATE)?.toLong()
 
@@ -601,8 +667,12 @@ class VaultViewModel(
             space.isOneToOneSpace -> {
                 createOneToOneSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
             }
-            // Data space with chat preview → VaultSpaceView.DataSpaceWithChat
-            chatPreview != null -> {
+            // Data space that HAS a chat → VaultSpaceView.DataSpaceWithChat.
+            // Keyed off the space's own chatId rather than the presence of a preview,
+            // so a chat space keeps the same card type (and height) whether or not its
+            // preview has arrived yet — otherwise every chat row would swap card type
+            // when Chat.SubscribeToMessagePreviews finally returns.
+            space.chatId != null || chatPreview != null -> {
                 createDataSpaceWithChatView(space, chatPreview, unreadCounts, chatNames, permissions, wallpapers, participantsByIdentity, accountIdentity)
             }
             // Data space without chat preview → VaultSpaceView.DataSpace
@@ -726,7 +796,7 @@ class VaultViewModel(
      */
     private suspend fun createDataSpaceWithChatView(
         space: ObjectWrapper.SpaceView,
-        chatPreview: Chat.Preview,
+        chatPreview: Chat.Preview?,
         unreadCounts: UnreadCounts?,
         chatNames: List<String>,
         permissions: Map<Id, SpaceMemberPermissions>,
@@ -761,7 +831,9 @@ class VaultViewModel(
             isOwner = isOwner,
             chatNotificationState = calculateChatNotificationState(
                 chatSpace = space,
-                chatId = chatPreview.chat
+                // Preview may not have arrived yet; the space's own chatId identifies
+                // the same chat. Empty string falls through to the space-level mode.
+                chatId = chatPreview?.chat ?: space.chatId.orEmpty()
             ),
             wallpaper = wallpaperResult,
             spaceNotificationState = space.spacePushNotificationMode,
@@ -1867,6 +1939,7 @@ class VaultViewModel(
 
     companion object {
         private const val VAULT_STATE_THROTTLE_MS = 100L
+        private const val VAULT_SORT_KEY_PERSIST_DEBOUNCE_MS = 1_000L
         private const val OS_WIDGET_SYNC_DEBOUNCE_MS = 2000L
         private const val ONE_TO_ONE_HOMEPAGE_POLL_DELAY_MS = 100L
         private const val ONE_TO_ONE_HOMEPAGE_MAX_ATTEMPTS = 30

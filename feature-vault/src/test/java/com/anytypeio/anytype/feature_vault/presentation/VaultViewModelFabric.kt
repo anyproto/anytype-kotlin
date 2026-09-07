@@ -97,6 +97,7 @@ object VaultViewModelFabric {
         userSettingsRepository: UserSettingsRepository = mock {
             on { observeCompactModeEnabled() }.thenReturn(flowOf(false))
             on { observeQuickCaptureEnabled() }.thenReturn(flowOf(false))
+            onBlocking { getVaultSortKeys() }.thenReturn(emptyMap())
         }
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,

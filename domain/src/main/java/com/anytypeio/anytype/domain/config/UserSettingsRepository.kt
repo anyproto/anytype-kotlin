@@ -22,6 +22,16 @@ interface UserSettingsRepository {
     suspend fun getCurrentSpace(): SpaceId?
     suspend fun clearCurrentSpace()
 
+    /**
+     * Wall-clock seconds at which the app last went to background. Used by
+     * LaunchAccount to expire the "restore into the last opened space" route: come
+     * back more than an hour later and you land on the vault instead. Null when
+     * nothing has been stamped yet (fresh install, or an upgrade from a build
+     * without this), which is treated as not expired.
+     */
+    suspend fun setLastBackgroundedAt(timeInSeconds: Long)
+    suspend fun getLastBackgroundedAt(): Long?
+
     suspend fun setWallpaper(space: Id, wallpaper: Wallpaper)
     suspend fun getWallpaper(space: Id): Wallpaper
     suspend fun getWallpapers(): Map<Id, Wallpaper>

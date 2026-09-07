@@ -121,6 +121,17 @@ class DefaultUserSettingsCache(
             .apply()
     }
 
+    override suspend fun setLastBackgroundedAt(timeInSeconds: Long) {
+        prefs.edit()
+            .putLong(LAST_BACKGROUNDED_AT_KEY, timeInSeconds)
+            .apply()
+    }
+
+    override suspend fun getLastBackgroundedAt(): Long? {
+        val value = prefs.getLong(LAST_BACKGROUNDED_AT_KEY, NO_TIMESTAMP)
+        return if (value == NO_TIMESTAMP) null else value
+    }
+
     override suspend fun setDefaultObjectType(space: SpaceId, type: TypeId) {
         val curr = prefs
             .getString(DEFAULT_OBJECT_TYPES_KEY, NO_VALUE)
@@ -1112,6 +1123,8 @@ class DefaultUserSettingsCache(
 
     companion object {
         const val CURRENT_SPACE_KEY = "prefs.user_settings.current_space"
+        const val LAST_BACKGROUNDED_AT_KEY = "prefs.user_settings.last_backgrounded_at"
+        private const val NO_TIMESTAMP = -1L
         const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"
         const val DEFAULT_OBJECT_TYPE_NAME_KEY = "prefs.user_settings.default_object_type.name"
 

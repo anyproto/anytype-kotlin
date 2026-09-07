@@ -96,6 +96,7 @@ fun VaultScreenTopToolbar(
                     DefaultSearchBar(
                         value = "",
                         modifier = Modifier.fillMaxWidth(),
+                        hint = R.string.vault_search_hint,
                         onQueryChanged = {}
                     )
                     Box(

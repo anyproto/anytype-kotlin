@@ -22,6 +22,9 @@ interface UserSettingsCache {
     suspend fun getCurrentSpace(): SpaceId?
     suspend fun clearCurrentSpace()
 
+    suspend fun setLastBackgroundedAt(timeInSeconds: Long)
+    suspend fun getLastBackgroundedAt(): Long?
+
     suspend fun setDefaultObjectType(space: SpaceId, type: TypeId)
     suspend fun getDefaultObjectType(space: SpaceId): TypeId?
     suspend fun setPinnedObjectTypes(space: SpaceId, types: List<TypeId>)

@@ -860,7 +860,9 @@ class DefaultUserSettingsCache(
                     put(key = spaceId, given.copy(vaultLastMessageDate = date))
                 }
             }
-            SpacePreferences(preferences = result)
+            // copy(), not the constructor: preserves top-level unknown fields written
+            // by a newer build, matching how the rest of this file mutates the store.
+            existingPreferences.copy(preferences = result)
         }
     }
 

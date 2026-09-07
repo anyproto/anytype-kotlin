@@ -49,6 +49,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun VaultScreen(
     profile: AccountProfile,
     uiState: VaultUiState,
+    isEnrichingPreviews: Boolean = false,
     showNotificationBadge: Boolean = false,
     showCreateSpaceBadge: Boolean = false,
     isCompactMode: Boolean = false,
@@ -89,7 +90,7 @@ fun VaultScreen(
         topBar = {
             VaultScreenTopToolbar(
                 profile = profile,
-                isLoading = uiState is VaultUiState.Loading,
+                isLoading = uiState is VaultUiState.Loading || isEnrichingPreviews,
                 searchQuery = searchQuery,
                 showNotificationBadge = showNotificationBadge,
                 showCreateSpaceBadge = showCreateSpaceBadge,

@@ -152,6 +152,9 @@ class SharingViewModel(
                     allSpaces.clear()
                     allSpaces.addAll(spaces)
                     updateSpaceSelectionState()
+                    if (spaces.count() == 1) {
+                        onSpaceSelected(spaces.first())
+                    }
                 }
         }
     }

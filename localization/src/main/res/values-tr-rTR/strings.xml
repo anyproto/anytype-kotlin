@@ -1767,7 +1767,7 @@ Erişim talebi</string>
     <string name="version_history_error_get_members">Üyeler alınırken hata oluştu</string>
     <string name="new_object">Yeni nesne</string>
     <string name="vault_my_spaces">Kanallarım</string>
-    <string name="vault_search_hint">Search everything</string>
+    <string name="vault_search_hint">Her şeyi ara</string>
     <string name="vault_unread_section_title">Okunmamış</string>
     <string name="vault_all_section_title">Hepsi</string>
     <string name="vault_pinned_section_title">Sabitlendi</string>

@@ -87,6 +87,7 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
         // instead and pad the editor container, so the editor's bottom-gravity type bar
         // and style toolbar ride the keyboard.
         binding.root.viewTreeObserver.addOnGlobalLayoutListener(imeLayoutListener)
+        binding.root.viewTreeObserver.addOnWindowFocusChangeListener(windowFocusListener)
         // Dismissing with the keyboard up looks broken if the IME collapses only after the
         // sheet has gone: two unsynchronized animations plus a window resize. Retract the
         // IME the instant the drag starts, so it travels with the sheet.
@@ -107,6 +108,12 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
         // gesture/navigation bar. Padding by the full amount puts the editor's bottom
         // widgets exactly on the keyboard's top edge, and clear of the gesture bar when
         // the keyboard is down.
+        // Only while this window owns the keyboard. The space picker and the sheet's own
+        // dialogs are separate windows, and when one opens the IME goes with it: the visible
+        // frame then reports the keyboard as gone, which is true of the window in front and
+        // not of the sheet behind it. Acting on that measurement resized the editor by the
+        // keyboard's height under the picker and back again on dismissal — the blink.
+        if (!root.hasWindowFocus()) return@OnGlobalLayoutListener
         val covered = (root.rootView.height - frame.bottom).coerceAtLeast(0)
         if (binding.quickCaptureEditorContainer.paddingBottom != covered) {
             binding.quickCaptureEditorContainer.updatePadding(bottom = covered)
@@ -115,6 +122,20 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
         // step by the insets listener in onViewCreated — driving it from the visible frame
         // here as well would make it a per-layout output and hand it back the chance to
         // move after the sheet is on screen.
+    }
+
+    /**
+     * The scrim is a window dim layer, and a window dim belongs to the window in front. While
+     * the space picker (or any of the sheet's dialogs) is up, the window manager composites
+     * this sheet's 0.9 layer above the sheet and the keyboard rather than behind them, and
+     * tearing that front window down flashes the whole app black for a few frames — the
+     * system bars, which are not app windows, stay lit and give the flash away.
+     *
+     * So the sheet only dims while it is the front window. Nothing looks lighter meanwhile:
+     * the picker paints a scrim of its own over everything behind it.
+     */
+    private val windowFocusListener = ViewTreeObserver.OnWindowFocusChangeListener { hasFocus ->
+        applyScrimDim(if (hasFocus) SCRIM_DIM_AMOUNT else 0f)
     }
 
     private val dragCallback = object : BottomSheetBehavior.BottomSheetCallback() {
@@ -231,6 +252,7 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
         vm.onEditorDetached(hasEdits = editor()?.hasEdits() == true)
         binding.root.viewTreeObserver.removeOnGlobalLayoutListener(imeLayoutListener)
         binding.root.viewTreeObserver.removeOnPreDrawListener(topInsetPreDrawListener)
+        binding.root.viewTreeObserver.removeOnWindowFocusChangeListener(windowFocusListener)
         sheet?.let { view -> BottomSheetBehavior.from(view).removeBottomSheetCallback(dragCallback) }
         super.onDestroyView()
     }

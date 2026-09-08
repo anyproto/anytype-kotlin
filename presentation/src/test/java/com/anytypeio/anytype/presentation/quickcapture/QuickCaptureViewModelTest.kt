@@ -416,6 +416,65 @@ class QuickCaptureViewModelTest {
     }
 
     /**
+     * The pencil says a space holds an unfinished draft; the order should say it too, rather
+     * than leaving the user to find it below spaces they pinned months ago.
+     */
+    @Test
+    fun `lists spaces holding a draft before the rest`() = runTest {
+        val draftSpace = MockDataFactory.randomUuid()
+        // targetSpace is pinned, so without the draft it would sort first.
+        spaceViews.stub {
+            on { observe() } doReturn MutableStateFlow(
+                listOf(
+                    StubSpaceView(targetSpaceId = targetSpace, spaceOrder = "a"),
+                    StubSpaceView(targetSpaceId = draftSpace)
+                )
+            )
+        }
+        userPermissionProvider.stub {
+            on { all() } doReturn flowOf(
+                mapOf(
+                    targetSpace to SpaceMemberPermissions.OWNER,
+                    draftSpace to SpaceMemberPermissions.OWNER
+                )
+            )
+        }
+        searchQuickCaptureDrafts.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(
+                SearchQuickCaptureDrafts.Result(
+                    drafts = listOf(
+                        ObjectWrapper.Basic(
+                            mapOf(
+                                Relations.ID to MockDataFactory.randomUuid(),
+                                Relations.SPACE_ID to draftSpace,
+                                Relations.IS_HIDDEN to true,
+                                Relations.IS_DRAFT to true
+                            )
+                        )
+                    ),
+                    isComplete = true
+                )
+            )
+        }
+
+        val vm = vm()
+        // Subscribed before onStart: the list is shared WhileSubscribed, so without a
+        // collector it never leaves its initial empty value.
+        vm.spaces.test {
+            vm.onStart()
+            coroutineTestRule.advanceUntilIdle()
+            val listed = expectMostRecentItem()
+            assertEquals(draftSpace, listed.first().space.targetSpaceId)
+            assertTrue(listed.first().hasDraft)
+            cancelAndIgnoreRemainingEvents()
+        }
+        // Ordering the picker must not change which space the sheet opened into.
+        val state = vm.screenState.value
+        assertTrue(state is QuickCaptureViewModel.ScreenState.Ready)
+        assertEquals(targetSpace, state.space.id, "auto-selection must not follow the draft")
+    }
+
+    /**
      * A partial cross-space result means "unknown", not "no drafts". Creating one here is how
      * a space that already holds a draft ends up with two.
      */

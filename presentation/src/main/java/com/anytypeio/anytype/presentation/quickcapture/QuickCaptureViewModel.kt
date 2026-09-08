@@ -213,7 +213,7 @@ class QuickCaptureViewModel(
         draftSpaces
     ) { all, permissions, selected, recencyMap, drafts ->
         all.filter { view -> view.isEditable(permissions) }
-            .sortedWith(spaceComparator(recencyMap))
+            .sortedWith(pickerComparator(recencyMap = recencyMap, drafts = drafts))
             .map { view ->
                 SpaceView(
                     space = view,
@@ -506,6 +506,22 @@ class QuickCaptureViewModel(
      * top — 1:1 conversations always sort last — and uses device-local capture recency
      * where the vault uses chat-message recency.
      */
+    /**
+     * Picker order: a space already holding an unsent draft comes first, whatever it is —
+     * a 1:1 space included. An unfinished thought is the strongest statement of where the
+     * user is going next, and the pencil beside it explains why the row is at the top.
+     *
+     * Deliberately not [spaceComparator], which orders auto-selection on open: opening the
+     * sheet into a different space because a draft happens to live there would take the
+     * choice away, which is why the draft is signalled rather than followed (handoff §3).
+     */
+    private fun pickerComparator(
+        recencyMap: Map<Id, Long>,
+        drafts: Set<Id>
+    ): Comparator<ObjectWrapper.SpaceView> =
+        compareByDescending<ObjectWrapper.SpaceView> { view -> view.targetSpaceId in drafts }
+            .then(spaceComparator(recencyMap))
+
     private fun spaceComparator(
         recencyMap: Map<Id, Long>
     ): Comparator<ObjectWrapper.SpaceView> {

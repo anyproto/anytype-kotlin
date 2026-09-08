@@ -130,6 +130,8 @@ class ObjectMenuViewModel(
 
     fun onResolveWebPublishPermission(space: SpaceId) {
         viewModelScope.launch {
+            // Never offer publishing an unpublished quick-capture draft.
+            if (isQuickCapture) return@launch
             val permission = userPermissionProvider.get(space = space)
             if (permission?.isOwnerOrEditor() == true) {
                 canBePublished.value = true

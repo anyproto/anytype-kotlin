@@ -21,6 +21,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
@@ -46,6 +47,8 @@ import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.qrcode.QrScannerActivity
+import com.anytypeio.anytype.ui.quickcapture.QuickCaptureFragment
+import com.anytypeio.anytype.ui.search.v2.SearchV2Fragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
@@ -95,6 +98,7 @@ class VaultFragment : BaseComposeFragment() {
 
             VaultScreen(
                 uiState = vm.uiState.collectAsStateWithLifecycle().value,
+                isEnrichingPreviews = vm.isEnrichingPreviews.collectAsStateWithLifecycle().value,
                 showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
                 showCreateSpaceBadge = vm.showCreateSpaceBadge.collectAsStateWithLifecycle().value,
                 isCompactMode = vm.isCompactMode.collectAsStateWithLifecycle().value,
@@ -118,7 +122,23 @@ class VaultFragment : BaseComposeFragment() {
                 onOrderChanged = vm::onOrderChanged,
                 onDragEnd = vm::onDragEnd,
                 onSpaceSettings = vm::onSpaceSettingsClicked,
-                onDeleteOrLeaveSpace = vm::onDeleteSpaceClicked
+                onDeleteOrLeaveSpace = vm::onDeleteSpaceClicked,
+                onSearchBarClicked = {
+                    // safeNavigate: a double tap must not push the screen twice.
+                    runCatching {
+                        findNavController().safeNavigate(
+                            R.id.vaultScreen,
+                            R.id.searchV2Screen,
+                            SearchV2Fragment.args(space = null)
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Error opening search from vault")
+                    }
+                },
+                showQuickCaptureFab = vm.showQuickCapture.collectAsStateWithLifecycle().value,
+                onQuickCaptureClicked = vm::onQuickCaptureClicked,
+                quickCaptureSuccess = vm.quickCaptureSuccess.collectAsStateWithLifecycle().value,
+                onQuickCaptureBannerClicked = vm::onQuickCaptureBannerClicked
             )
 
             val notificationError = vm.notificationError.collectAsStateWithLifecycle().value
@@ -213,6 +233,27 @@ class VaultFragment : BaseComposeFragment() {
         ) { _, _ ->
             vm.onCreateSpaceBackPressed()
         }
+        parentFragmentManager.setFragmentResultListener(
+            FragmentResultContract.OPEN_CREATE_CHANNEL_KEY,
+            viewLifecycleOwner
+        ) { _, _ ->
+            vm.onCreateChannelMenuClicked()
+        }
+        parentFragmentManager.setFragmentResultListener(
+            QuickCaptureFragment.RESULT_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val objectId = bundle.getString(QuickCaptureFragment.RESULT_OBJECT_ID)
+            val spaceId = bundle.getString(QuickCaptureFragment.RESULT_SPACE_ID)
+            if (objectId != null && spaceId != null) {
+                vm.onQuickCaptureObjectPublished(
+                    objectId = objectId,
+                    spaceId = spaceId,
+                    typeName = bundle.getString(QuickCaptureFragment.RESULT_TYPE_NAME).orEmpty(),
+                    spaceName = bundle.getString(QuickCaptureFragment.RESULT_SPACE_NAME).orEmpty()
+                )
+            }
+        }
     }
 
     override fun onStart() {
@@ -274,6 +315,19 @@ class VaultFragment : BaseComposeFragment() {
                     )
                 }.onFailure {
                     Timber.e(it, "Error while opening profile settings from vault")
+                }
+            }
+
+            is VaultCommand.OpenQuickCapture -> {
+                runCatching {
+                    val nav = findNavController()
+                    // A double-tap on the FAB must not stack two sheets sharing one editor
+                    // component for the same draft.
+                    if (nav.currentDestination?.id != R.id.quickCaptureScreen) {
+                        nav.navigate(R.id.nav_quick_capture)
+                    }
+                }.onFailure {
+                    Timber.e(it, "Error while opening quick capture from vault")
                 }
             }
 

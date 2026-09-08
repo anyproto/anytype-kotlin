@@ -22,6 +22,16 @@ interface UserSettingsRepository {
     suspend fun getCurrentSpace(): SpaceId?
     suspend fun clearCurrentSpace()
 
+    /**
+     * Wall-clock seconds at which the app last went to background. Used by
+     * LaunchAccount to expire the "restore into the last opened space" route: come
+     * back more than an hour later and you land on the vault instead. Null when
+     * nothing has been stamped yet (fresh install, or an upgrade from a build
+     * without this), which is treated as not expired.
+     */
+    suspend fun setLastBackgroundedAt(timeInSeconds: Long)
+    suspend fun getLastBackgroundedAt(): Long?
+
     suspend fun setWallpaper(space: Id, wallpaper: Wallpaper)
     suspend fun getWallpaper(space: Id): Wallpaper
     suspend fun getWallpapers(): Map<Id, Wallpaper>
@@ -106,4 +116,34 @@ interface UserSettingsRepository {
     suspend fun getHomepagePickerDismissed(space: SpaceId): Boolean
     suspend fun setInviteMembersDismissed(space: SpaceId, dismissed: Boolean)
     fun observeInviteMembersDismissed(space: SpaceId): Flow<Boolean>
+
+    suspend fun setQuickCaptureDraft(space: SpaceId, obj: Id)
+    suspend fun getQuickCaptureDraft(space: SpaceId): Id?
+    suspend fun clearQuickCaptureDraft(space: SpaceId)
+
+    /** `[spaceId → draftObjectId]` for every space holding a pending draft. */
+    suspend fun getQuickCaptureDrafts(): Map<Id, Id>
+
+    suspend fun setSpaceLastInteraction(space: SpaceId, timestamp: Long)
+    suspend fun getSpaceLastInteractions(): Map<Id, Long>
+
+    /**
+     * Vault sort keys: spaceId -> last chat message timestamp (unix seconds),
+     * cached from the last session so the vault can paint its previous order
+     * before chat previews arrive from the middleware.
+     */
+    suspend fun getVaultSortKeys(): Map<Id, Long>
+    suspend fun setVaultSortKeys(keys: Map<Id, Long>)
+
+    /** The space quick capture was last pointed at, so the sheet can reopen there. */
+    suspend fun setQuickCaptureLastSpace(space: Id)
+    suspend fun getQuickCaptureLastSpace(): Id?
+
+    suspend fun getQuickCaptureEnabled(): Boolean
+    suspend fun setQuickCaptureEnabled(enabled: Boolean)
+    fun observeQuickCaptureEnabled(): Flow<Boolean>
+
+    suspend fun getQuickCaptureAiEnabled(): Boolean
+    suspend fun setQuickCaptureAiEnabled(enabled: Boolean)
+    fun observeQuickCaptureAiEnabled(): Flow<Boolean>
 }

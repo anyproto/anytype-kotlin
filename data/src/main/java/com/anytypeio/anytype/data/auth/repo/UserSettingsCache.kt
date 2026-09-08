@@ -22,6 +22,9 @@ interface UserSettingsCache {
     suspend fun getCurrentSpace(): SpaceId?
     suspend fun clearCurrentSpace()
 
+    suspend fun setLastBackgroundedAt(timeInSeconds: Long)
+    suspend fun getLastBackgroundedAt(): Long?
+
     suspend fun setDefaultObjectType(space: SpaceId, type: TypeId)
     suspend fun getDefaultObjectType(space: SpaceId): TypeId?
     suspend fun setPinnedObjectTypes(space: SpaceId, types: List<TypeId>)
@@ -101,4 +104,26 @@ interface UserSettingsCache {
     suspend fun getHomepagePickerDismissed(space: SpaceId): Boolean
     suspend fun setInviteMembersDismissed(space: SpaceId, dismissed: Boolean)
     fun observeInviteMembersDismissed(space: SpaceId): Flow<Boolean>
+
+    suspend fun setQuickCaptureDraft(space: SpaceId, obj: Id)
+    suspend fun getQuickCaptureDraft(space: SpaceId): Id?
+    suspend fun getQuickCaptureDrafts(): Map<Id, Id>
+    suspend fun clearQuickCaptureDraft(space: SpaceId)
+
+    suspend fun setSpaceLastInteraction(space: SpaceId, timestamp: Long)
+    suspend fun getSpaceLastInteractions(): Map<Id, Long>
+
+    suspend fun getVaultSortKeys(): Map<Id, Long>
+    suspend fun setVaultSortKeys(keys: Map<Id, Long>)
+
+    suspend fun setQuickCaptureLastSpace(space: Id)
+    suspend fun getQuickCaptureLastSpace(): Id?
+
+    suspend fun getQuickCaptureEnabled(): Boolean
+    suspend fun setQuickCaptureEnabled(enabled: Boolean)
+    fun observeQuickCaptureEnabled(): Flow<Boolean>
+
+    suspend fun getQuickCaptureAiEnabled(): Boolean
+    suspend fun setQuickCaptureAiEnabled(enabled: Boolean)
+    fun observeQuickCaptureAiEnabled(): Flow<Boolean>
 }

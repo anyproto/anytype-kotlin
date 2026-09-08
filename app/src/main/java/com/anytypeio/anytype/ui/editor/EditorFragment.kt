@@ -250,6 +250,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
      */
     protected open val navigationDestinationId: Int = R.id.pageScreen
 
+    /**
+     * Whether this editor shows its bottom action buttons (create / search-on-page FABs and
+     * the discussion button). Quick capture embeds the editor inside a sheet that owns its
+     * own chrome, and those buttons would float over the type-selection bar.
+     */
+    protected open val showsBottomActionButtons: Boolean = true
+
     private val sideEffect: OpenObjectNavigation.SideEffect
         get() {
             val attachedChatId = argOrNull<Id>(ATTACH_TO_CHAT_ID_KEY)
@@ -502,6 +509,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 val navToolbarVisible =
                     vm.controlPanelViewState.value?.navigationToolbar?.isVisible == true
                 if (!navToolbarVisible) return
+                if (!showsBottomActionButtons) return
                 binding.fabCreate.isVisible = true
                 binding.fabSearchOnPage.isVisible = true
                 if (vm.discussionButtonState.value !is
@@ -650,6 +658,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         )
 
         observeSelectingTemplate()
+
+        // The object re-opens on every view creation (onStart -> vm.onStart), and the blocks
+        // arrive asynchronously through pendingBlockListUpdates. The adapter is therefore empty
+        // during the first layout pass. Under the default ALLOW policy the RecyclerView applies
+        // the restored scroll anchor against 0 items, then drops it, so a rotation sends the
+        // reader back to the top of the object. PREVENT_WHEN_EMPTY holds the anchor until the
+        // first blocks arrive. The command-driven scroll paths stay correct, because they run
+        // inside runAfterBlockListUpdates and set an explicit position.
+        blockAdapter.stateRestorationPolicy =
+            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
 
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -859,7 +877,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         vm.discussionButtonState
             .onEach { state ->
-                binding.discussionButton.isVisible =
+                binding.discussionButton.isVisible = showsBottomActionButtons &&
                     state !is EditorViewModel.DiscussionButtonState.Hidden
             }
             .launchIn(lifecycleScope)
@@ -1369,7 +1387,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             isLocked = command.isLocked,
                             isReadOnly = command.isReadOnly,
                             fromName = getFrom(),
-                            isTemplate = command.isTemplate
+                            isTemplate = command.isTemplate,
+                            isQuickCapture = vm.isQuickCapture
                         ),
                         errorMessage = "Error while opening document menu"
                     )
@@ -1867,9 +1886,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             // FAB. The scroll-aware listener also uses instant isVisible
             // toggles so all three bottom-bar buttons (Search/Create FABs
             // and the Compose Discussion button) hide/show identically.
-            binding.fabCreate.isVisible = true
-            binding.fabSearchOnPage.isVisible = true
-            binding.discussionButton.isVisible =
+            binding.fabCreate.isVisible = showsBottomActionButtons
+            binding.fabSearchOnPage.isVisible = showsBottomActionButtons
+            binding.discussionButton.isVisible = showsBottomActionButtons &&
                 vm.discussionButtonState.value !is EditorViewModel.DiscussionButtonState.Hidden
         } else {
             binding.fabCreate.isVisible = false

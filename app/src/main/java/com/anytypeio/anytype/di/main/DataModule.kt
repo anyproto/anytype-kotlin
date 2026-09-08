@@ -394,10 +394,12 @@ object DataModule {
     @Singleton
     fun provideAppStateService(
         setAppState: SetAppState,
-        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        userSettingsRepository: UserSettingsRepository
     ): AppStateService = AppStateService(
         setAppState = setAppState,
-        coroutineScope = scope
+        coroutineScope = scope,
+        settings = userSettingsRepository
     )
 
     @JvmStatic

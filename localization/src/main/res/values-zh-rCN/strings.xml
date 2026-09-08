@@ -2152,7 +2152,6 @@
     <string name="select_view">选择视图</string>
     <string name="os_widget_data_view_title">数据视图</string>
     <string name="os_widget_data_view_description">从动态集或合集中显示项目</string>
-    <string name="chats_search_close_content_description">关闭搜索</string>
     <!-- DROID-4358 Offline Downloads settings -->
     <string name="offline_downloads_section_title">离线访问</string>
     <string name="offline_downloads_title">离线下载</string>

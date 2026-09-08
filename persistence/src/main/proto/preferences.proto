@@ -39,6 +39,12 @@ message SpacePreference {
   optional bool homepagePickerDismissed = 11;
   optional bool createHomeDismissed = 12;
   optional bool inviteMembersDismissed = 13;
+  optional string quickCaptureDraftObjectId = 14;
+  optional int64 lastInteractionTimestamp = 15;
+  // Last chat message timestamp (unix seconds) as last observed by the vault.
+  // Cached so the vault can restore its previous sort order on cold start,
+  // before Chat.SubscribeToMessagePreviews returns.
+  optional int64 vaultLastMessageDate = 16;
 }
 
 message GlobalSearchHistoryProto {

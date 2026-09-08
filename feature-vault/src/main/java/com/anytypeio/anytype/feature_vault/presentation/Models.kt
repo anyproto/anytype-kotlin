@@ -94,6 +94,7 @@ sealed class VaultCommand {
         val writersLimit: Int = 0
     ) : VaultCommand()
     data object OpenProfileSettings : VaultCommand()
+    data object OpenQuickCapture : VaultCommand()
     data class ShowDeleteSpaceWarning(val space: Id) : VaultCommand()
     data class ShowLeaveSpaceWarning(val space: Id) : VaultCommand()
     data class OpenSpaceSettings(val space: SpaceId) : VaultCommand()

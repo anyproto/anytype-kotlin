@@ -32,7 +32,6 @@ import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.feature_chats.presentation.ChatSearchDelegate
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.middleware.EventProxy
@@ -106,13 +105,6 @@ object ChatModule {
         showObject = showObject,
         payloadDelegator = payloadDelegator
     )
-
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun provideChatSearchDelegate(
-        impl: ChatSearchDelegate.Default
-    ): ChatSearchDelegate = impl
 
     @JvmStatic
     @PerScreen

@@ -169,7 +169,7 @@ class DiscussionViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun proceedWithObservingMessages() {
         val chatFlow = chatContainer
-            .watch(chat = vmParams.ctx)
+            .watch(chat = vmParams.ctx, startAtMessage = vmParams.startAtMessage)
             .distinctUntilChanged()
             .onEach { result ->
                 val linkIds = mutableSetOf<Id>()
@@ -1110,7 +1110,9 @@ class DiscussionViewModel @Inject constructor(
 
     data class Params(
         val ctx: Id,
-        val space: Space
+        val space: Space,
+        /** Open positioned at this message (e.g. a search result). */
+        val startAtMessage: Id? = null
     )
 
     fun onMentionClicked(id: Id) {

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.ChatMessageSearchResult
+import com.anytypeio.anytype.core_models.chats.ChatMessageSort
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
@@ -646,6 +647,31 @@ sealed class Command {
         val collectionId: Id? = null
     ) : Command()
 
+    /**
+     * One-shot search across all user spaces — no subscription overhead.
+     * There is no space argument: narrowing to one space is expressed
+     * with a SPACE_ID filter. Records carry no fulltext meta/highlights.
+     * Always set a [limit] — an unlimited request materializes every space in full.
+     */
+    data class CrossSpaceSearch(
+        val query: String = EMPTY_QUERY,
+        val filters: List<DVFilter> = emptyList(),
+        val sorts: List<DVSort> = emptyList(),
+        val offset: Int = 0,
+        val limit: Int,
+        val keys: List<Key> = emptyList()
+    ) : Command() {
+        /**
+         * [allStoresLoaded] false = partial view: per-space stores were still
+         * warming up when the query ran. Render what came back — every
+         * keystroke re-queries, so the view self-heals; do not build a retry loop.
+         */
+        data class Result(
+            val records: List<ObjectWrapper.Basic>,
+            val allStoresLoaded: Boolean
+        )
+    }
+
     data class ProcessCancel(
         val processId: Id
     ) : Command()
@@ -741,12 +767,21 @@ sealed class Command {
             val emoji: String
         ) : ChatCommand()
 
+        /**
+         * Scoped message search:
+         * [space] + [chat] set — one chat; [chat] null — all chats in the space;
+         * empty [space] id + null [chat] — all chats in all spaces.
+         * Empty [sorts] = backend defaults (created-at desc for browse, score desc for text).
+         * An ORDER_ID sort is only meaningful within a single chat.
+         */
         data class SearchMessages(
             val space: SpaceId,
-            val chat: Id,
+            val chat: Id?,
             val query: String,
             val offset: Int = 0,
-            val limit: Int = 100
+            val limit: Int = 100,
+            val sorts: List<ChatMessageSort> = emptyList(),
+            val creators: List<Id> = emptyList()
         ) : ChatCommand() {
             data class Response(val results: List<ChatMessageSearchResult>)
         }

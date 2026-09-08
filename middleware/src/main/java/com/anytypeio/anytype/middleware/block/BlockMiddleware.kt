@@ -455,6 +455,12 @@ class BlockMiddleware(
         keys = keys
     )
 
+    override suspend fun crossSpaceSearch(
+        command: Command.CrossSpaceSearch
+    ): Command.CrossSpaceSearch.Result = middleware.objectCrossSpaceSearch(
+        command
+    )
+
     override suspend fun crossSpaceSearchSubscribe(
         command: Command.CrossSpaceSearchSubscribe
     ): SearchResult = middleware.objectCrossSpaceSearchSubscribe(

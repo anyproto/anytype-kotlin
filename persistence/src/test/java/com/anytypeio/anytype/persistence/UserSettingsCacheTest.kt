@@ -52,6 +52,39 @@ class UserSettingsCacheTest {
     }
 
     @Test
+    fun `last backgrounded stamp is null until written, then round-trips`() = runTest {
+        // Null is meaningful: LaunchAccount treats "never stamped" as not expired,
+        // so a fresh install or an upgrade does not bounce the user to the vault.
+        val cache = DefaultUserSettingsCache(
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
+        )
+
+        assertEquals(expected = null, actual = cache.getLastBackgroundedAt())
+
+        cache.setLastBackgroundedAt(1_700_000_000L)
+        assertEquals(expected = 1_700_000_000L, actual = cache.getLastBackgroundedAt())
+
+        cache.setLastBackgroundedAt(1_700_000_500L)
+        assertEquals(expected = 1_700_000_500L, actual = cache.getLastBackgroundedAt())
+    }
+
+    @Test
+    fun `stamping the backgrounded time leaves the current space untouched`() = runTest {
+        val cache = DefaultUserSettingsCache(
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext(),
+            appDefaultDateFormatProvider = dateFormatProvider
+        )
+
+        cache.setCurrentSpace(SpaceId("space-1"))
+        cache.setLastBackgroundedAt(1_700_000_000L)
+
+        assertEquals(expected = SpaceId("space-1"), actual = cache.getCurrentSpace())
+    }
+
+    @Test
     fun `kanban experimental flag defaults to true and round-trips`() = runTest {
         val cache = DefaultUserSettingsCache(
             prefs = defaultPrefs,

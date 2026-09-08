@@ -3,9 +3,12 @@ package com.anytypeio.anytype.feature_vault.ui
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,6 +17,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,10 +35,12 @@ import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ui.AccountProfile
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
+import com.anytypeio.anytype.core_ui.widgets.CircularFabButton
 import com.anytypeio.anytype.core_ui.widgets.toSpaceBackground
 import com.anytypeio.anytype.feature_vault.R
 import com.anytypeio.anytype.feature_vault.presentation.VaultSpaceView
 import com.anytypeio.anytype.feature_vault.presentation.VaultUiState
+import com.anytypeio.anytype.feature_vault.presentation.VaultViewModel
 import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -42,6 +49,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun VaultScreen(
     profile: AccountProfile,
     uiState: VaultUiState,
+    isEnrichingPreviews: Boolean = false,
     showNotificationBadge: Boolean = false,
     showCreateSpaceBadge: Boolean = false,
     isCompactMode: Boolean = false,
@@ -62,7 +70,12 @@ fun VaultScreen(
     onOrderChanged: (String, String) -> Unit,
     onDragEnd: () -> Unit = { /* No-op */ },
     onSpaceSettings: (Id) -> Unit,
-    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit
+    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit,
+    onSearchBarClicked: (() -> Unit)? = null,
+    showQuickCaptureFab: Boolean = false,
+    onQuickCaptureClicked: () -> Unit = {},
+    quickCaptureSuccess: VaultViewModel.QuickCaptureSuccess? = null,
+    onQuickCaptureBannerClicked: () -> Unit = {}
 ) {
 
     var searchQuery by remember { mutableStateOf("") }
@@ -77,7 +90,7 @@ fun VaultScreen(
         topBar = {
             VaultScreenTopToolbar(
                 profile = profile,
-                isLoading = uiState is VaultUiState.Loading,
+                isLoading = uiState is VaultUiState.Loading || isEnrichingPreviews,
                 searchQuery = searchQuery,
                 showNotificationBadge = showNotificationBadge,
                 showCreateSpaceBadge = showCreateSpaceBadge,
@@ -91,33 +104,64 @@ fun VaultScreen(
                 onSettingsClicked = onSettingsClicked,
                 onUpdateSearchQuery = { query ->
                     searchQuery = query
-                }
+                },
+                onSearchBarClicked = onSearchBarClicked
             )
-        }
-    ) { paddings ->
-        when (uiState) {
-            VaultUiState.Loading -> {}
-
-            is VaultUiState.Sections -> {
-                VaultScreenContent(
-                    sections = uiState,
-                    lazyListState = lazyListState,
-                    paddings = paddings,
-                    searchQuery = searchQuery,
-                    isCompactMode = isCompactMode,
-                    onSpaceClicked = onSpaceClicked,
-                    onCreateSpaceClicked = onCreateChannelMenuClicked,
-                    onMuteSpace = onMuteSpace,
-                    onUnmuteSpace = onUnmuteSpace,
-                    onSetSpaceNotificationMode = onSetSpaceNotificationMode,
-                    onPinSpace = onPinSpace,
-                    onUnpinSpace = onUnpinSpace,
-                    onOrderChanged = onOrderChanged,
-                    onDragEnd = onDragEnd,
-                    onSpaceSettings = onSpaceSettings,
-                    onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
+        },
+        floatingActionButton = {
+            if (showQuickCaptureFab) {
+                // Same component and glyph as the space (widgets) screen's create-object
+                // FAB, one size up: quick capture is the vault's primary action.
+                CircularFabButton(
+                    iconRes = R.drawable.ic_create_obj_32,
+                    contentDescription = stringResource(id = R.string.quick_capture),
+                    size = 56.dp,
+                    iconSize = 28.dp,
+                    elevation = 2.dp,
+                    showBorder = false,
+                    backgroundColor = colorResource(id = R.color.background_secondary),
+                    onClick = onQuickCaptureClicked,
+                    modifier = Modifier.navigationBarsPadding()
                 )
             }
+        }
+    ) { paddings ->
+        Box(modifier = Modifier.fillMaxSize()) {
+            when (uiState) {
+                VaultUiState.Loading -> {}
+
+                is VaultUiState.Sections -> {
+                    VaultScreenContent(
+                        sections = uiState,
+                        lazyListState = lazyListState,
+                        paddings = paddings,
+                        searchQuery = searchQuery,
+                        isCompactMode = isCompactMode,
+                        onSpaceClicked = onSpaceClicked,
+                        onCreateSpaceClicked = onCreateChannelMenuClicked,
+                        onMuteSpace = onMuteSpace,
+                        onUnmuteSpace = onUnmuteSpace,
+                        onSetSpaceNotificationMode = onSetSpaceNotificationMode,
+                        onPinSpace = onPinSpace,
+                        onUnpinSpace = onUnpinSpace,
+                        onOrderChanged = onOrderChanged,
+                        onDragEnd = onDragEnd,
+                        onSpaceSettings = onSpaceSettings,
+                        onDeleteOrLeaveSpace = onDeleteOrLeaveSpace,
+                        reservesFabSpace = showQuickCaptureFab
+                    )
+                }
+            }
+            QuickCaptureSuccessBanner(
+                banner = quickCaptureSuccess,
+                onClicked = onQuickCaptureBannerClicked,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
+                    // Clears the 56dp FAB (which is always present when a capture just
+                    // succeeded) so the trailing "View" label stays tappable.
+                    .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 88.dp)
+            )
         }
     }
 }
@@ -139,7 +183,8 @@ fun VaultScreenContent(
     onOrderChanged: (String, String) -> Unit,
     onDragEnd: () -> Unit = { /* No-op */ },
     onSpaceSettings: (Id) -> Unit,
-    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit
+    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit,
+    reservesFabSpace: Boolean = false
 ) {
     var expandedSpaceId by remember { mutableStateOf<String?>(null) }
 
@@ -207,12 +252,20 @@ fun VaultScreenContent(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddings)
-                .navigationBarsPadding()
-            ,
+                .padding(paddings),
             state = lazyListState,
             verticalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(top = 4.dp)
+            // Edge-to-edge: cards draw under the gesture area; the bottom
+            // inset lives in contentPadding so the last card scrolls clear.
+            // The Scaffold uses zero content insets, so the quick-capture FAB overlaps the
+            // list rather than displacing it — the last card needs room to scroll past it,
+            // or the FAB permanently covers that card's mute/unread controls.
+            contentPadding = PaddingValues(
+                top = 4.dp,
+                bottom = WindowInsets.navigationBars
+                    .asPaddingValues()
+                    .calculateBottomPadding() + if (reservesFabSpace) FAB_RESERVED_SPACE else 8.dp
+            )
         ) {
             // Pinned Spaces Section
             if (filteredPinnedSpaces.isNotEmpty()) {
@@ -509,6 +562,9 @@ fun VaultScreenContent(
         }
     }
 }
+
+/** 56dp FAB + its 16dp bottom margin + 8dp breathing room. */
+private val FAB_RESERVED_SPACE = 80.dp
 
 const val TYPE_SPACE = "space"
 const val TYPE_DATA_SPACE_WITH_CHAT = "data_space_with_chat"

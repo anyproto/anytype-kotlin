@@ -28,6 +28,7 @@ import com.anytypeio.anytype.core_models.primitives.ParsedProperties
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
+import com.anytypeio.anytype.domain.ai.TypeSuggestionEngine
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -106,6 +107,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.editor.Editor as DomainEditor
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
@@ -144,6 +146,7 @@ import com.jraska.livedata.test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -2923,6 +2926,109 @@ open class EditorViewModelTest {
         coroutineTestRule.advanceTime(200)
     }
 
+    @Test
+    fun `should clear a seeded focus cursor when the selection of the focused block changes`() {
+
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+        val paragraph = MockBlockFactory.paragraph()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Smart,
+                children = listOf(paragraph.id)
+            ),
+            paragraph
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(listOf(showObjectEvent((page))))
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        givenViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        coroutineTestRule.advanceTime(100)
+
+        // onStart seeds this after a rotation. BlockAdapter can drop the focus callback
+        // that normally clears it, so the seed must not outlive the caret it restored.
+        orchestrator.stores.focus.update(
+            DomainEditor.Focus(
+                target = DomainEditor.Focus.Target.Block(paragraph.id),
+                cursor = DomainEditor.Cursor.Range(3..3),
+                isPending = false
+            )
+        )
+
+        // TESTING
+
+        vm.onSelectionChanged(id = paragraph.id, selection = 7..7)
+
+        val focus = orchestrator.stores.focus.current()
+        assertEquals(paragraph.id, focus.requireTarget())
+        assertNull(focus.cursor)
+
+        coroutineTestRule.advanceTime(200)
+    }
+
+    @Test
+    fun `should keep a seeded focus cursor when the selection changes in another block`() {
+
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+        val paragraph = MockBlockFactory.paragraph()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Smart,
+                children = listOf(paragraph.id)
+            ),
+            paragraph
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(listOf(showObjectEvent((page))))
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        givenViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        coroutineTestRule.advanceTime(100)
+
+        val seeded = DomainEditor.Cursor.Range(3..3)
+        orchestrator.stores.focus.update(
+            DomainEditor.Focus(
+                target = DomainEditor.Focus.Target.Block(paragraph.id),
+                cursor = seeded,
+                isPending = false
+            )
+        )
+
+        // TESTING
+
+        vm.onSelectionChanged(id = MockDataFactory.randomUuid(), selection = 7..7)
+
+        val focus = orchestrator.stores.focus.current()
+        assertEquals(paragraph.id, focus.requireTarget())
+        assertEquals(seeded, focus.cursor)
+
+        coroutineTestRule.advanceTime(200)
+    }
+
     fun stubDuplicateBlock(newBlockId: String, root: String) {
         duplicateBlock.stub {
             onBlocking { invoke(any()) } doReturn Either.Right(
@@ -3758,7 +3864,8 @@ open class EditorViewModelTest {
             addDiscussion = mock(),
             getChatMessages = mock(),
             backHistoryDelegate = mock(),
-            exitToVaultDelegate = mock()
+            exitToVaultDelegate = mock(),
+            typeSuggestionEngine = TypeSuggestionEngine.NoOp
         )
     }
 

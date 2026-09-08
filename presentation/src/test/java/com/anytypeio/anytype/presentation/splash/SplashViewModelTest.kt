@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.vault.SetVaultSearchHighlightSeen
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -48,6 +49,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
 
 class SplashViewModelTest {
@@ -105,6 +107,9 @@ class SplashViewModelTest {
     @Mock
     lateinit var migrationHelperDelegate: MigrationHelperDelegate
 
+    @Mock
+    lateinit var setVaultSearchHighlightSeen: SetVaultSearchHighlightSeen
+
     lateinit var vm: SplashViewModel
 
     private val defaultSpaceConfig = StubConfig()
@@ -140,7 +145,8 @@ class SplashViewModelTest {
             deepLinkResolver = mock(),
             pendingIntentStore = mock(),
             searchObjects = mock(),
-            preferredSpaceIdHolder = mock()
+            preferredSpaceIdHolder = mock(),
+            setVaultSearchHighlightSeen = setVaultSearchHighlightSeen
         )
     }
 
@@ -179,6 +185,43 @@ class SplashViewModelTest {
 
         runBlocking {
             verify(launchWallet, times(1)).invoke(any())
+        }
+    }
+
+    @Test
+    fun `should pre-dismiss the vault search highlight when there is no account on the device`() {
+
+        val response: Resultat.Success<Pair<AuthStatus, Account?>> =
+            Resultat.Success(Pair(AuthStatus.UNAUTHORIZED, null))
+
+        stubCheckAuthStatus(response)
+        setVaultSearchHighlightSeen.stub {
+            onBlocking { async(eq(Unit)) } doReturn Resultat.Success(Unit)
+        }
+
+        initViewModel()
+
+        runBlocking {
+            verify(setVaultSearchHighlightSeen, times(1)).async(eq(Unit))
+        }
+    }
+
+    @Test
+    fun `should leave the vault search highlight for a signed-in user`() {
+
+        val status = AuthStatus.AUTHORIZED
+
+        val response = Resultat.Success(Pair(status, Account(id = "id")))
+
+        stubCheckAuthStatus(response)
+        stubLaunchWallet()
+        stubLaunchAccount()
+        stubGetLastOpenedObject()
+
+        initViewModel()
+
+        runBlocking {
+            verifyNoInteractions(setVaultSearchHighlightSeen)
         }
     }
 

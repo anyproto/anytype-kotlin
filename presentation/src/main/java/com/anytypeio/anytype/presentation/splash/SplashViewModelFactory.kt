@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
+import com.anytypeio.anytype.domain.vault.SetVaultSearchHighlightSeen
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
@@ -45,7 +46,8 @@ class SplashViewModelFactory @Inject constructor(
     private val deepLinkResolver: DeepLinkResolver,
     private val pendingIntentStore: PendingIntentStore,
     private val searchObjects: SearchObjects,
-    private val preferredSpaceIdHolder: PreferredSpaceIdHolder
+    private val preferredSpaceIdHolder: PreferredSpaceIdHolder,
+    private val setVaultSearchHighlightSeen: SetVaultSearchHighlightSeen
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -68,6 +70,7 @@ class SplashViewModelFactory @Inject constructor(
             deepLinkResolver = deepLinkResolver,
             pendingIntentStore = pendingIntentStore,
             searchObjects = searchObjects,
-            preferredSpaceIdHolder = preferredSpaceIdHolder
+            preferredSpaceIdHolder = preferredSpaceIdHolder,
+            setVaultSearchHighlightSeen = setVaultSearchHighlightSeen
         ) as T
 }

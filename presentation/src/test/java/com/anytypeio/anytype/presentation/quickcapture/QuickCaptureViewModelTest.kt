@@ -54,6 +54,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -169,10 +170,24 @@ class QuickCaptureViewModelTest {
         assertEquals(draftId, state.draft)
     }
 
+    /**
+     * Workspace.Open costs ~5s on a space this session has not touched (measured on device)
+     * and produces a config the capture path never reads: Object.Create and Object.Open both
+     * carry the space id, and the space-scoped subscriptions are built from that id alone.
+     */
     @Test
-    fun `space open failure dismisses the sheet`() = runTest {
-        spaceManager.stub {
-            onBlocking { set(targetSpace, false) } doReturn Result.failure(
+    fun `activates the target space without opening the workspace`() = runTest {
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+        verify(spaceManager).activate(targetSpace)
+        verifyBlocking(spaceManager, never()) { set(any(), any()) }
+    }
+
+    @Test
+    fun `a draft that cannot be created dismisses the sheet`() = runTest {
+        createObject.stub {
+            onBlocking { async(any()) } doReturn Resultat.failure(
                 IllegalStateException("space is not ready")
             )
         }
@@ -398,6 +413,65 @@ class QuickCaptureViewModelTest {
         assertEquals(targetSpace, state.space.id, "must stay in the resolved space")
         assertEquals(draftId, state.draft, "must open this space's own draft")
         assertTrue(vm.hasDraftsElsewhere.value, "the draft elsewhere must be signalled")
+    }
+
+    /**
+     * The pencil says a space holds an unfinished draft; the order should say it too, rather
+     * than leaving the user to find it below spaces they pinned months ago.
+     */
+    @Test
+    fun `lists spaces holding a draft before the rest`() = runTest {
+        val draftSpace = MockDataFactory.randomUuid()
+        // targetSpace is pinned, so without the draft it would sort first.
+        spaceViews.stub {
+            on { observe() } doReturn MutableStateFlow(
+                listOf(
+                    StubSpaceView(targetSpaceId = targetSpace, spaceOrder = "a"),
+                    StubSpaceView(targetSpaceId = draftSpace)
+                )
+            )
+        }
+        userPermissionProvider.stub {
+            on { all() } doReturn flowOf(
+                mapOf(
+                    targetSpace to SpaceMemberPermissions.OWNER,
+                    draftSpace to SpaceMemberPermissions.OWNER
+                )
+            )
+        }
+        searchQuickCaptureDrafts.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(
+                SearchQuickCaptureDrafts.Result(
+                    drafts = listOf(
+                        ObjectWrapper.Basic(
+                            mapOf(
+                                Relations.ID to MockDataFactory.randomUuid(),
+                                Relations.SPACE_ID to draftSpace,
+                                Relations.IS_HIDDEN to true,
+                                Relations.IS_DRAFT to true
+                            )
+                        )
+                    ),
+                    isComplete = true
+                )
+            )
+        }
+
+        val vm = vm()
+        // Subscribed before onStart: the list is shared WhileSubscribed, so without a
+        // collector it never leaves its initial empty value.
+        vm.spaces.test {
+            vm.onStart()
+            coroutineTestRule.advanceUntilIdle()
+            val listed = expectMostRecentItem()
+            assertEquals(draftSpace, listed.first().space.targetSpaceId)
+            assertTrue(listed.first().hasDraft)
+            cancelAndIgnoreRemainingEvents()
+        }
+        // Ordering the picker must not change which space the sheet opened into.
+        val state = vm.screenState.value
+        assertTrue(state is QuickCaptureViewModel.ScreenState.Ready)
+        assertEquals(targetSpace, state.space.id, "auto-selection must not follow the draft")
     }
 
     /**

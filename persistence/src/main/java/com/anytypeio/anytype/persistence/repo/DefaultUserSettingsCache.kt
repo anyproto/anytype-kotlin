@@ -925,6 +925,16 @@ class DefaultUserSettingsCache(
             .apply()
     }
 
+    override suspend fun getHasSeenVaultSearchHighlight(): Boolean {
+        return prefs.getBoolean(HAS_SEEN_VAULT_SEARCH_HIGHLIGHT_KEY, false)
+    }
+
+    override suspend fun setHasSeenVaultSearchHighlight(hasSeen: Boolean) {
+        prefs.edit()
+            .putBoolean(HAS_SEEN_VAULT_SEARCH_HIGHLIGHT_KEY, hasSeen)
+            .apply()
+    }
+
     override suspend fun getRunProfilerOnStartup(): Boolean {
         return prefs.getBoolean(RUN_PROFILER_ON_STARTUP_KEY, false)
     }
@@ -1141,6 +1151,7 @@ class DefaultUserSettingsCache(
 
         const val HAS_SHOWN_SPACES_INTRODUCTION_KEY = "prefs.device.has_shown_spaces_introduction"
         const val HAS_SEEN_CREATE_SPACE_BADGE_KEY = "prefs.device.has_seen_create_space_badge"
+        const val HAS_SEEN_VAULT_SEARCH_HIGHLIGHT_KEY = "prefs.device.has_seen_vault_search_highlight"
         const val RUN_PROFILER_ON_STARTUP_KEY = "prefs.device.run_profiler_on_startup"
         const val DEBUG_MENU_ENABLED_KEY = "prefs.device.debug_menu_enabled"
         const val COMPACT_MODE_ENABLED_KEY = "prefs.device.compact_mode_enabled"

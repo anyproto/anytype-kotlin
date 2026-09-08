@@ -67,6 +67,8 @@ interface UserSettingsCache {
     suspend fun setHasShownSpacesIntroduction(hasShown: Boolean)
     suspend fun getHasSeenCreateSpaceBadge(): Boolean
     suspend fun setHasSeenCreateSpaceBadge(hasSeen: Boolean)
+    suspend fun getHasSeenVaultSearchHighlight(): Boolean
+    suspend fun setHasSeenVaultSearchHighlight(hasSeen: Boolean)
 
     suspend fun getRunProfilerOnStartup(): Boolean
     suspend fun setRunProfilerOnStartup(enabled: Boolean)

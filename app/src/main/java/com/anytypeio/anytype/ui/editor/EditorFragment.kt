@@ -542,11 +542,42 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     @Inject
     lateinit var factory: EditorViewModelFactory
 
+    /**
+     * Whether the document may be opened before the view is inflated.
+     *
+     * Off by default: this fragment's one-shot collectors (toasts, snacks, navigation) attach
+     * in [onStart], so a screen that opens ahead of them can miss an event from a fast
+     * failure. Screens where the open dominates the time to first content opt in — inflating
+     * this layout costs about as much as the round trip does, and there is no reason for the
+     * two to run one after the other.
+     */
+    protected open val opensDocumentEagerly: Boolean = false
+
+    private var openedDocumentEagerly = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         pickerDelegate.initPicker(ctx)
         setupOnBackPressedDispatcher()
         getEditorSettings()
+        onConfigureViewModel()
+        // A non-null savedInstanceState is a recreation: the view model survived it, and
+        // onStart's own call is the one that belongs there.
+        if (opensDocumentEagerly && savedInstanceState == null) {
+            openDocument()
+            openedDocumentEagerly = true
+        }
+    }
+
+    /**
+     * Runs after injection and before any document open, so a subclass can configure the view
+     * model while that ordering still means something — [EditorViewModel.onStart]'s success
+     * path reads that configuration.
+     */
+    protected open fun onConfigureViewModel() = Unit
+
+    private fun openDocument() {
+        vm.onStart(id = extractDocumentId(), space = space, saveAsLastOpened = saveAsLastOpened())
     }
 
     override fun onStart() {
@@ -610,7 +641,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             }
         }
-        vm.onStart(id = extractDocumentId(), space = space, saveAsLastOpened = saveAsLastOpened())
+        // Skipped exactly once, when onCreate already opened the document. Every later start
+        // — returning from background, where onStop closed it — opens again as before.
+        if (openedDocumentEagerly) openedDocumentEagerly = false else openDocument()
         super.onStart()
     }
 

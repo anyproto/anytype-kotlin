@@ -72,6 +72,7 @@ fun VaultScreen(
     onSpaceSettings: (Id) -> Unit,
     onDeleteOrLeaveSpace: (Id, Boolean) -> Unit,
     onSearchBarClicked: (() -> Unit)? = null,
+    showSearchHighlight: Boolean = false,
     showQuickCaptureFab: Boolean = false,
     onQuickCaptureClicked: () -> Unit = {},
     quickCaptureSuccess: VaultViewModel.QuickCaptureSuccess? = null,
@@ -105,7 +106,8 @@ fun VaultScreen(
                 onUpdateSearchQuery = { query ->
                     searchQuery = query
                 },
-                onSearchBarClicked = onSearchBarClicked
+                onSearchBarClicked = onSearchBarClicked,
+                showSearchHighlight = showSearchHighlight
             )
         },
         floatingActionButton = {

@@ -1766,6 +1766,7 @@
     <string name="version_history_error_get_members">Fout bij het ophalen van leden</string>
     <string name="new_object">Nieuw object</string>
     <string name="vault_my_spaces">My Channels</string>
+    <string name="vault_search_hint">Search everything</string>
     <string name="vault_unread_section_title">Ongelezen</string>
     <string name="vault_all_section_title">Alles</string>
     <string name="vault_pinned_section_title">Vastgezet</string>

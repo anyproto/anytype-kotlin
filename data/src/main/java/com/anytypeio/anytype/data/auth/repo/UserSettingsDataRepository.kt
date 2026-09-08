@@ -175,6 +175,14 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         cache.setHasSeenCreateSpaceBadge(hasSeen)
     }
 
+    override suspend fun getHasSeenVaultSearchHighlight(): Boolean {
+        return cache.getHasSeenVaultSearchHighlight()
+    }
+
+    override suspend fun setHasSeenVaultSearchHighlight(hasSeen: Boolean) {
+        cache.setHasSeenVaultSearchHighlight(hasSeen)
+    }
+
     override suspend fun getRunProfilerOnStartup(): Boolean {
         return cache.getRunProfilerOnStartup()
     }

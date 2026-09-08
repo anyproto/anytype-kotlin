@@ -80,6 +80,15 @@ interface UserSettingsRepository {
     suspend fun getHasSeenCreateSpaceBadge(): Boolean
     suspend fun setHasSeenCreateSpaceBadge(hasSeen: Boolean)
 
+    /**
+     * One-time attention glow on the vault search bar, pointing existing users at
+     * the search now that it covers every space. Device-wide, like the create-space
+     * badge. Set on the first tap, or pre-set at splash when there is no account on
+     * the device yet so fresh installs never see it.
+     */
+    suspend fun getHasSeenVaultSearchHighlight(): Boolean
+    suspend fun setHasSeenVaultSearchHighlight(hasSeen: Boolean)
+
     suspend fun getRunProfilerOnStartup(): Boolean
     suspend fun setRunProfilerOnStartup(enabled: Boolean)
 

@@ -65,6 +65,7 @@ import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
+import com.anytypeio.anytype.domain.vault.SetVaultSearchHighlightSeen
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
@@ -140,6 +141,7 @@ class VaultViewModel(
     private val getSpaceWallpapers: GetSpaceWallpapers,
     private val shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge,
     private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
+    private val setVaultSearchHighlightSeen: SetVaultSearchHighlightSeen,
     private val appInfo: AppInfo,
     private val searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity,
     private val createSpace: CreateSpace,
@@ -169,6 +171,14 @@ class VaultViewModel(
 
     // Track whether to show the blue dot badge on "Create a new space" button
     val showCreateSpaceBadge = MutableStateFlow(false)
+
+    /**
+     * One-time breathing glow on the search bar that points existing users at the
+     * search now that it covers every space. Splash pre-marks it as seen when the
+     * device has no account, so only users who upgraded into this build see it.
+     * Hidden, and persisted as seen, on the first tap.
+     */
+    val showSearchHighlight = MutableStateFlow(false)
 
     val isLocalOnly: Boolean
         get() = networkModeProvider.get().networkMode == NetworkMode.LOCAL
@@ -473,6 +483,15 @@ class VaultViewModel(
                     showCreateSpaceBadge.value = false
                 }
             )
+        }
+
+        viewModelScope.launch {
+            showSearchHighlight.value = runCatching {
+                !userSettingsRepository.getHasSeenVaultSearchHighlight()
+            }.getOrElse { e ->
+                Timber.w(e, "Error checking vault search highlight visibility")
+                false
+            }
         }
 
         // Sync spaces to OS home screen widget (debounced to avoid excessive updates)
@@ -1096,6 +1115,18 @@ class VaultViewModel(
                 showCreateSpaceBadge.value = false
                 Timber.d("Create space badge dismissed")
             }
+        }
+    }
+
+    fun onSearchBarClicked() {
+        if (!showSearchHighlight.value) return
+        // Hide first so a slow write never leaves the glow up behind the search screen.
+        showSearchHighlight.value = false
+        viewModelScope.launch {
+            setVaultSearchHighlightSeen.async(Unit).fold(
+                onSuccess = { Timber.d("Vault search highlight marked as seen") },
+                onFailure = { e -> Timber.w(e, "Error marking vault search highlight as seen") }
+            )
         }
     }
 

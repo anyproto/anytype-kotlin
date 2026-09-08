@@ -54,6 +54,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -169,10 +170,24 @@ class QuickCaptureViewModelTest {
         assertEquals(draftId, state.draft)
     }
 
+    /**
+     * Workspace.Open costs ~5s on a space this session has not touched (measured on device)
+     * and produces a config the capture path never reads: Object.Create and Object.Open both
+     * carry the space id, and the space-scoped subscriptions are built from that id alone.
+     */
     @Test
-    fun `space open failure dismisses the sheet`() = runTest {
-        spaceManager.stub {
-            onBlocking { set(targetSpace, false) } doReturn Result.failure(
+    fun `activates the target space without opening the workspace`() = runTest {
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+        verify(spaceManager).activate(targetSpace)
+        verifyBlocking(spaceManager, never()) { set(any(), any()) }
+    }
+
+    @Test
+    fun `a draft that cannot be created dismisses the sheet`() = runTest {
+        createObject.stub {
+            onBlocking { async(any()) } doReturn Resultat.failure(
                 IllegalStateException("space is not ready")
             )
         }

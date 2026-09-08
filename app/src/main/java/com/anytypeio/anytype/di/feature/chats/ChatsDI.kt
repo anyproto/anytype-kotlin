@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -48,10 +49,13 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import javax.inject.Named
+import kotlinx.coroutines.CoroutineScope
 
 @Component(
     dependencies = [ChatComponentDependencies::class],
     modules = [
+        ChatContainerModule::class,
         ChatModule::class,
         ChatModule.Declarations::class
     ]
@@ -132,6 +136,7 @@ object ChatModule {
 }
 
 interface ChatComponentDependencies : ComponentDependencies {
+    @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
     fun blockRepository(): BlockRepository
     fun authRepo(): AuthRepository
     fun appCoroutineDispatchers(): AppCoroutineDispatchers

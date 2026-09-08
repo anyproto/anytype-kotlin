@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_chats.presentation
 
+import com.anytypeio.anytype.domain.chats.ChatReadSnapshot
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
@@ -164,12 +165,6 @@ class ChatViewModel @Inject constructor(
     PinObjectAsWidgetDelegate by pinObjectAsWidgetDelegate,
     BackHistoryDelegate by backHistoryDelegate {
     private val preloadingJobs = mutableListOf<Job>()
-
-    private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
-        replay = 0,
-        extraBufferCapacity = 1,
-        onBufferOverflow = BufferOverflow.DROP_OLDEST
-    )
 
     val header = MutableStateFlow<HeaderView>(HeaderView.Init)
     val uiState = MutableStateFlow(ChatViewState(isLoading = true))
@@ -370,14 +365,6 @@ class ChatViewModel @Inject constructor(
                 }
                 // Note: if wrapper is null for chat object, header remains Init until wrapper is available
             }
-        }
-
-        viewModelScope.launch {
-            visibleRangeUpdates
-                .distinctUntilChanged()
-                .collect { (from, to) ->
-                    chatContainer.onVisibleRangeChanged(from, to)
-                }
         }
 
         viewModelScope.launch {
@@ -597,6 +584,7 @@ class ChatViewModel @Inject constructor(
                     messages = result.state.unreadMessages?.counter ?: 0,
                     mentions = result.state.unreadMentions?.counter ?: 0
                 ),
+                readSnapshot = result.readSnapshot,
                 isLoading = false
             )
         }.flowOn(dispatchers.io)
@@ -2619,11 +2607,12 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onVisibleRangeChanged(
-        from: Id,
-        to: Id
+        from: Id?,
+        to: Id?,
+        snapshot: ChatReadSnapshot?
     ) {
         Timber.d("DROID-2966 onVisibleRangeChanged, from: $from, to: $to")
-        visibleRangeUpdates.tryEmit(from to to)
+        chatContainer.onVisibleRangeChanged(from, to, snapshot)
     }
 
     fun onUrlPasted(url: Url) {

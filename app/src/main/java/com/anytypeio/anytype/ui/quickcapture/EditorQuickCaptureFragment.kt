@@ -32,8 +32,20 @@ class EditorQuickCaptureFragment : EditorFragment() {
     // would float over the type-selection bar.
     override val showsBottomActionButtons: Boolean = false
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    // The draft's Object.Open is the single longest step in opening the sheet, and inflating
+    // the editor's layout (18 toolbar widgets, 10 ComposeViews) costs about as much again.
+    // Opening from onCreate runs the round trip while that inflation happens, instead of
+    // after it.
+    override val opensDocumentEagerly: Boolean = true
+
+    override fun onConfigureViewModel() {
+        // Before the open, not after: the open's success path branches on quick-capture mode
+        // to focus a restored draft's title (EditorViewModel.onStartFocusing). Enabling it
+        // from onViewCreated was in time only while the open started later still.
         vm.enableQuickCaptureMode()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.topToolbar.hide()
         binding.recycler.addItemDecoration(firstItemPullUpDecoration)

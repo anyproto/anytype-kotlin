@@ -1770,6 +1770,7 @@
     <string name="version_history_error_get_members">Errore nell\'ottenere i membri</string>
     <string name="new_object">Nuovo oggetto</string>
     <string name="vault_my_spaces">I miei Canali</string>
+    <string name="vault_search_hint">Search everything</string>
     <string name="vault_unread_section_title">Non letto</string>
     <string name="vault_all_section_title">Tutto</string>
     <string name="vault_pinned_section_title">Fissato</string>

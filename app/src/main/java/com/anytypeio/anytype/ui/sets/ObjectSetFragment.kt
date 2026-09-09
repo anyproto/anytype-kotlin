@@ -38,6 +38,7 @@ import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -203,6 +204,10 @@ open class ObjectSetFragment :
     private var hasCover = false
     private var headerReadOnly = false
     private var headerEditing = false
+    private var headerImeVisible: Boolean? = null
+    private var headerImeLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+    private var headerImeObservation: Runnable? = null
+    private var headerImeObservationPosted = false
     private var titleInReadMode: Boolean? = null
     private var renderedCoverButtons: Boolean? = null
     private var renderedAccessibilityActions = -1
@@ -351,11 +356,8 @@ open class ObjectSetFragment :
                 }
             }
             subscribe(title.editorActionEvents(actionHandler)) {
-                title.apply {
-                    hideKeyboard()
-                    clearFocus()
-                    vm.hideTitleToolbar()
-                }
+                title.hideKeyboard()
+                finishHeaderEditing()
             }
             subscribe(topBackButton.clicks().throttleFirst()) { vm.onBackButtonClicked() }
             topBackButton.setOnLongClickListener {
@@ -493,7 +495,15 @@ open class ObjectSetFragment :
             imeOptions = IME_ACTION_DONE
             setRawInputType(InputType.TYPE_CLASS_TEXT)
             onFocusChangeListener = View.OnFocusChangeListener { _, _ -> updateHeaderEditing() }
+            setOnEditorActionListener { _, action, _ ->
+                if (action != IME_ACTION_DONE) false else {
+                    hideKeyboard()
+                    finishHeaderEditing()
+                    true
+                }
+            }
         }
+        setupHeaderImeObservation()
 
         setFragmentResultListener(BaseObjectTypeChangeFragment.OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
             val query = bundle.getString(BaseObjectTypeChangeFragment.OBJECT_TYPE_URL_KEY)
@@ -558,8 +568,8 @@ open class ObjectSetFragment :
                 ObjectSetTitle(
                     isVisible = vm.isTitleToolbarVisible.collectAsStateWithLifecycle().value,
                     doneAction = {
-                        vm.hideTitleToolbar()
                         hideKeyboard()
+                        finishHeaderEditing()
                     }
                 )
             }
@@ -626,6 +636,33 @@ open class ObjectSetFragment :
         if (!embedded) super.onApplyWindowRootInsets()
     }
 
+    private fun setupHeaderImeObservation() {
+        if (embedded) return
+        val root = binding.root
+        headerImeObservation = Runnable {
+            if (!hasBinding || binding.root !== root) return@Runnable
+            headerImeObservationPosted = false
+            if (!headerEditing) return@Runnable
+            // On API <30 visible bounds can change after inset dispatch, and an ancestor
+            // may consume the dispatch. Sample fresh root insets after layout instead.
+            val visible = ViewCompat.getRootWindowInsets(root)
+                ?.isVisible(WindowInsetsCompat.Type.ime()) ?: return@Runnable
+            val dismissed = headerImeVisible == true && !visible
+            headerImeVisible = visible
+            if (dismissed) finishHeaderEditing()
+        }
+        headerImeLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+            scheduleHeaderImeObservation()
+        }.also(root.viewTreeObserver::addOnGlobalLayoutListener)
+    }
+
+    private fun scheduleHeaderImeObservation() {
+        if (!headerEditing || headerImeObservationPosted) return
+        val observation = headerImeObservation ?: return
+        headerImeObservationPosted = true
+        binding.root.post(observation)
+    }
+
     private fun setupScrollHost() {
         val host = binding.scrollHost
         topToolbar.setBackgroundColor(requireContext().getColor(R.color.background_primary))
@@ -683,8 +720,18 @@ open class ObjectSetFragment :
             coordinator.setExpanded(true)
         }
         headerEditing = editing
+        if (!editing) headerImeVisible = null
         coordinator.setBlocked(MotionOrigin.Editing, editing)
         renderHeaderScrollState()
+        scheduleHeaderImeObservation()
+    }
+
+    private fun finishHeaderEditing() {
+        binding.root.requestFocus()
+        title.clearFocus()
+        tvDescription.clearFocus()
+        vm.hideTitleToolbar()
+        updateHeaderEditing()
     }
 
     private fun renderHeaderScrollState() {
@@ -1929,6 +1976,12 @@ open class ObjectSetFragment :
 
     override fun onDestroyView() {
         retainScrollState()
+        headerImeLayoutListener?.let(binding.root.viewTreeObserver::removeOnGlobalLayoutListener)
+        headerImeObservation?.let(binding.root::removeCallbacks)
+        headerImeLayoutListener = null
+        headerImeObservation = null
+        headerImeObservationPosted = false
+        headerImeVisible = null
         pendingPositionPreDraw?.let { binding.scrollHost.viewTreeObserver.removeOnPreDrawListener(it) }
         pendingPositionPreDraw = null
         binding.scrollHost.onHeaderChanged = null

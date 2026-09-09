@@ -518,6 +518,17 @@ abstract class TestObjectSetSetup {
         })
     }
 
+    fun stubSingleBoardCheckboxGroup() {
+        repo.stub {
+            onBlocking {
+                objectGroupsSubscribe(SpaceId(eq(defaultSpace)), any(), any(), any(), any(), anyOrNull())
+            } doReturn listOf(com.anytypeio.anytype.core_models.DataViewGroup(
+                "runtime-unchecked", com.anytypeio.anytype.core_models.DataViewGroup.Value.Checkbox(false)))
+        }
+        subscriptionEventChannel.stub { onBlocking { subscribe(any()) } doReturn emptyFlow() }
+        stringResourceProvider.stub { on { getKanbanCheckboxGroupTitle(any()) } doReturn "Unchecked" }
+    }
+
     fun launchFragment(args: Bundle): FragmentScenario<TestObjectSetFragment> {
         return launchFragmentInContainer(
             fragmentArgs = Bundle(args).apply {

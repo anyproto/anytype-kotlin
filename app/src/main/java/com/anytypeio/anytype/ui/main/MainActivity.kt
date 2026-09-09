@@ -500,6 +500,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
      * Both properties must belong to the screen below, not to the dialog. The listener therefore
      * resolves the topmost entry that is not a [FloatingWindow]. The activity is recreated on a
      * rotation, so this also gives the correct width when a dialog is on top at that moment.
+     *
+     * The listener reports the new destination before the screen appears. The enter animation of
+     * the new screen runs after that, and the old screen stays on the window. A plain backdrop at
+     * that moment removes the wallpaper under a screen that still shows it. The fragment callback
+     * therefore holds the plain backdrop back until the new screen is resumed. The navigation
+     * library resumes a destination only after the enter animation ends.
      */
     private fun setupContentColumnWidth() {
         runCatching {
@@ -516,6 +522,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 }
                 if (target != null) applyDestination(target.id)
             }
+            navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(
+                object : FragmentManager.FragmentLifecycleCallbacks() {
+                    override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
+                        applyBackdrop()
+                    }
+                },
+                false
+            )
             ViewCompat.setOnApplyWindowInsetsListener(container) { _, insets ->
                 windowEdgeInsets = insets.getInsets(
                     WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
@@ -528,10 +542,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         }
     }
 
+    /**
+     * The wallpaper returns at once, because the new screen shows it through the content. The
+     * plain backdrop waits for the new screen. See the fragment callback in
+     * [setupContentColumnWidth].
+     */
     private fun applyDestination(destinationId: Int) {
         currentDestinationId = destinationId
         applyContentColumnWidth(destinationId)
-        applyBackdrop()
+        if (showsWallpaper(destinationId)) applyBackdrop()
     }
 
     private fun applyContentColumnWidth(destinationId: Int) {

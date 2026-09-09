@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    The root paints the backdrop. On a window wider than 600dp the content column stops at
-    @dimen/max_content_width and the constraints center it, so a line of text stays readable
-    on a tablet and on a phone in landscape. On a phone in portrait the dimension is large
-    enough to never bind, and the column fills the window as before.
-
-    MainActivity removes the cap on the set screen and on the type screen. It also paints the
-    backdrop for the current destination. See ContentColumnWidth.kt.
+    The root paints the backdrop. The container fills the window: two screens share it during a
+    navigation, so a maximum width here would change the shape of the screen that the user still
+    sees. MainActivity gives each screen its own width instead, and it paints the backdrop for the
+    current screen. See ContentColumnWidth.kt.
 -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
@@ -27,7 +24,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_max="@dimen/max_content_width"
         app:navGraph="@navigation/graph"
         tools:context=".ui.main.MainActivity" />
 

@@ -6,6 +6,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -20,12 +24,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.Insets
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
@@ -34,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.FloatingWindow
+import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.NavOptions.Builder
 import androidx.navigation.findNavController
@@ -471,14 +476,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     /**
-     * True while the content column fills the window. See [contentColumnMaxWidth].
-     */
-    private var contentColumnFillsWindow = false
-
-    /**
      * The insets of the window edges, from the last insets pass.
      */
     private var windowEdgeInsets: Insets = Insets.NONE
+
+    /**
+     * The navigation controller of the content column. The activity reads the current screen from
+     * it while a fragment builds its view.
+     */
+    private var contentNavController: NavController? = null
 
     /**
      * The destination that owns the window now. The value is null until the navigation controller
@@ -492,38 +498,42 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     private var currentWallpaper: WallpaperResult = WallpaperResult.None
 
     /**
-     * The destination sets two properties of the content column: the maximum width of the column,
-     * and the backdrop beside it. See [contentColumnMaxWidth] and [showsWallpaper]. The listener
-     * reports the current destination as soon as the activity registers it.
+     * The screen sets two properties of the content column: the width of the screen itself, and
+     * the backdrop beside it. See [contentColumnMaxWidth] and [showsWallpaper].
      *
-     * A dialog destination owns its own window and leaves the screen below it on the back stack.
-     * Both properties must belong to the screen below, not to the dialog. The listener therefore
-     * resolves the topmost entry that is not a [FloatingWindow]. The activity is recreated on a
-     * rotation, so this also gives the correct width when a dialog is on top at that moment.
+     * Both properties belong to a moment in the life of a screen, not to the moment of the
+     * navigation. The controller reports a new destination before the screen appears. The enter
+     * animation runs after that, and the old screen stays on the window. The activity therefore
+     * sets the width of a screen on the view of that screen, when the fragment builds it, and it
+     * holds the plain backdrop back until the new screen is resumed. The navigation library
+     * resumes a destination only after the enter animation ends.
      *
-     * The listener reports the new destination before the screen appears. The enter animation of
-     * the new screen runs after that, and the old screen stays on the window. A plain backdrop at
-     * that moment removes the wallpaper under a screen that still shows it. The fragment callback
-     * therefore holds the plain backdrop back until the new screen is resumed. The navigation
-     * library resumes a destination only after the enter animation ends.
+     * The wallpaper is the exception: it returns as soon as the controller reports a destination
+     * that shows it, because the screen below the animation already needs it.
      */
     private fun setupContentColumnWidth() {
         runCatching {
             val navHostFragment =
                 supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment
             val controller = navHostFragment.navController
-            controller.addOnDestinationChangedListener { _, destination, _ ->
-                val target = if (destination is FloatingWindow) {
-                    controller.currentBackStack.value
-                        .lastOrNull { entry -> entry.destination !is FloatingWindow }
-                        ?.destination
-                } else {
-                    destination
-                }
-                if (target != null) applyDestination(target.id)
+            contentNavController = controller
+            controller.addOnDestinationChangedListener { _, _, _ ->
+                val target = currentScreenDestinationId()
+                if (target != null) applyDestination(target)
             }
             navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(
                 object : FragmentManager.FragmentLifecycleCallbacks() {
+                    override fun onFragmentViewCreated(
+                        fm: FragmentManager,
+                        f: Fragment,
+                        v: View,
+                        savedInstanceState: Bundle?
+                    ) {
+                        if (f is DialogFragment) return
+                        val target = currentScreenDestinationId() ?: return
+                        applyScreenWidth(v, target)
+                    }
+
                     override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
                         applyBackdrop()
                     }
@@ -543,39 +553,72 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     /**
+     * The identifier of the screen that owns the window now.
+     *
+     * A dialog destination owns its own window and leaves the screen below it on the back stack.
+     * The width and the backdrop belong to the screen below, not to the dialog. This resolves the
+     * topmost entry that is not a [FloatingWindow]. The activity is recreated on a rotation, so
+     * this also gives the correct screen when a dialog is on top at that moment.
+     */
+    private fun currentScreenDestinationId(): Int? {
+        val controller = contentNavController ?: return null
+        val destination = controller.currentDestination ?: return null
+        if (destination !is FloatingWindow) return destination.id
+        return controller.currentBackStack.value
+            .lastOrNull { entry -> entry.destination !is FloatingWindow }
+            ?.destination
+            ?.id
+    }
+
+    /**
      * The wallpaper returns at once, because the new screen shows it through the content. The
      * plain backdrop waits for the new screen. See the fragment callback in
      * [setupContentColumnWidth].
      */
     private fun applyDestination(destinationId: Int) {
         currentDestinationId = destinationId
-        applyContentColumnWidth(destinationId)
         if (showsWallpaper(destinationId)) applyBackdrop()
     }
 
-    private fun applyContentColumnWidth(destinationId: Int) {
+    /**
+     * The width of a screen belongs to the screen, not to the container. Two screens share the
+     * container during a navigation: the old screen holds the window while the new screen enters.
+     * A maximum width on the container therefore changes the shape of the old screen, and the user
+     * sees the old screen stretch before the new screen arrives. The container fills the window,
+     * and each screen carries its own width.
+     *
+     * @param view the root view of the fragment of the screen.
+     * @param destinationId the identifier of the screen.
+     */
+    private fun applyScreenWidth(view: View, destinationId: Int) {
+        val params = view.layoutParams as? FrameLayout.LayoutParams ?: return
         val max = contentColumnMaxWidth(
             destinationId = destinationId,
             cappedWidthPx = resources.getDimensionPixelSize(R.dimen.max_content_width)
         )
-        contentColumnFillsWindow = max == NO_MAX_WIDTH
-        applyContentColumnPadding()
-        val params = container.layoutParams as? ConstraintLayout.LayoutParams ?: return
-        if (params.matchConstraintMaxWidth != max) {
-            params.matchConstraintMaxWidth = max
-            container.layoutParams = params
+        val available = (container.width - container.paddingLeft - container.paddingRight)
+            .takeIf { it > 0 }
+            ?: resources.displayMetrics.widthPixels
+        val width = if (max == NO_MAX_WIDTH || max >= available) {
+            ViewGroup.LayoutParams.MATCH_PARENT
+        } else {
+            max
         }
+        if (params.width == width && params.gravity == Gravity.CENTER_HORIZONTAL) return
+        params.width = width
+        params.gravity = Gravity.CENTER_HORIZONTAL
+        view.layoutParams = params
     }
 
     /**
-     * The window draws under a display cutout, because [enableEdgeToEdge] asks for it. A capped
-     * column stays clear of both edges, so it needs no padding. A column that fills the window
-     * reaches the cutout and the side navigation bar, and text runs under them. Hold the content
-     * off both edges in that case.
+     * The window draws under a display cutout, because [enableEdgeToEdge] asks for it. A screen
+     * that fills the window reaches the cutout and the side navigation bar, and text runs under
+     * them. The container holds every screen off both edges. The padding stays the same on a
+     * navigation, so no screen moves while another screen enters.
      */
     private fun applyContentColumnPadding() {
-        val left = if (contentColumnFillsWindow) windowEdgeInsets.left else 0
-        val right = if (contentColumnFillsWindow) windowEdgeInsets.right else 0
+        val left = windowEdgeInsets.left
+        val right = windowEdgeInsets.right
         if (container.paddingLeft != left || container.paddingRight != right) {
             container.setPadding(left, container.paddingTop, right, container.paddingBottom)
         }

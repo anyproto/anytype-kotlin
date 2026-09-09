@@ -294,19 +294,27 @@ class WidgetOverlayFragment : BottomSheetDialogFragment(),
      * resumed" — the BottomSheetDialog tear-down dispatches ACTION_CANCEL
      * back into a coroutine that has already resumed). Yielding to the
      * main-thread queue lets the gesture finish cleanly first.
+     *
+     * The host can save its state before that frame arrives: the caller opens
+     * another screen first, and the user can rotate the device at any moment.
+     * A commit with the state check then throws IllegalStateException.
+     * [isAdded] does not report this, because it only tells that a manager
+     * holds the fragment. The sheet keeps no state that must survive, so the
+     * dismissal allows the loss.
      */
     private fun dismissAfterGesture() {
         val v = view ?: run {
-            if (isAdded) dismiss()
+            if (isAdded) dismissAllowingStateLoss()
             return
         }
-        v.post { if (isAdded) dismiss() }
+        v.post { if (isAdded) dismissAllowingStateLoss() }
     }
 
     private fun proceed(destination: HomeScreenViewModel.Navigation) {
         Timber.d("WidgetOverlay destination: $destination")
         // Always dismiss the overlay first so the back-stack does not contain the sheet.
-        dismiss()
+        // The command arrives from a flow, so the host can hold a saved state here.
+        dismissAllowingStateLoss()
         when (destination) {
             is HomeScreenViewModel.Navigation.OpenObject -> runCatching {
                 navigation().openDocument(
@@ -425,8 +433,9 @@ class WidgetOverlayFragment : BottomSheetDialogFragment(),
     override fun onChatObjectCreated(objectId: Id) {
         Timber.d("Chat object created from widget overlay: $objectId")
         // Match the proceed(Navigation) contract: dismiss the sheet first so it
-        // does not remain on the back stack beneath the newly-opened chat.
-        dismiss()
+        // does not remain on the back stack beneath the newly-opened chat. The
+        // callback arrives from a child screen, so the host can hold a saved state.
+        dismissAllowingStateLoss()
         runCatching {
             navigation().openChat(
                 target = objectId,

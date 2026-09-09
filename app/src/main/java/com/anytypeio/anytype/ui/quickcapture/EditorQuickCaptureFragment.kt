@@ -32,6 +32,10 @@ class EditorQuickCaptureFragment : EditorFragment() {
     // would float over the type-selection bar.
     override val showsBottomActionButtons: Boolean = false
 
+    // The sheet owns its own header, and topToolbar is hidden in onViewCreated. Select mode
+    // must not bring it back (DROID-4592).
+    override val showsTopToolbar: Boolean = false
+
     // The draft's Object.Open is the single longest step in opening the sheet, and inflating
     // the editor's layout (18 toolbar widgets, 10 ComposeViews) costs about as much again.
     // Opening from onCreate runs the round trip while that inflation happens, instead of

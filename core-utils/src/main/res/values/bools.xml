@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        The device class. A phone never reaches the sw600dp qualifier, in any orientation, so
+        this stays false on a phone. res/values-sw600dp overrides it for a tablet.
+    -->
+    <bool name="is_tablet">false</bool>
+
+</resources>

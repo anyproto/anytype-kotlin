@@ -20,6 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -28,6 +29,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.FloatingWindow
 import androidx.navigation.NavOptions
 import androidx.navigation.NavOptions.Builder
 import androidx.navigation.findNavController
@@ -146,6 +148,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         inject()
         setupTheme()
         setupFeatureIntroductions()
+        setupContentColumnWidth()
 
         if (savedInstanceState != null) vm.onRestore()
 
@@ -460,6 +463,40 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             }
         } else {
             Timber.d("onSaveInstanceStateNotNull")
+        }
+    }
+
+    /**
+     * The content column keeps its cap on every screen, except on the editor, the set, and the
+     * type screen on a phone. See [contentColumnMaxWidth]. The listener reports the current
+     * destination as soon as the activity registers it.
+     *
+     * A dialog destination owns its own window and leaves the screen below it on the back stack.
+     * The width of the column must not change while such a dialog is open, so the listener
+     * ignores every [FloatingWindow] destination.
+     */
+    private fun setupContentColumnWidth() {
+        runCatching {
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment
+            navHostFragment.navController.addOnDestinationChangedListener { _, destination, _ ->
+                if (destination !is FloatingWindow) applyContentColumnWidth(destination.id)
+            }
+        }.onFailure {
+            Timber.e(it, "Error while setting up the width of the content column")
+        }
+    }
+
+    private fun applyContentColumnWidth(destinationId: Int) {
+        val params = container.layoutParams as? ConstraintLayout.LayoutParams ?: return
+        val max = contentColumnMaxWidth(
+            destinationId = destinationId,
+            isTablet = resources.getBoolean(R.bool.is_tablet),
+            cappedWidthPx = resources.getDimensionPixelSize(R.dimen.max_content_width)
+        )
+        if (params.matchConstraintMaxWidth != max) {
+            params.matchConstraintMaxWidth = max
+            container.layoutParams = params
         }
     }
 

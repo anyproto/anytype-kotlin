@@ -81,6 +81,11 @@ The app runs in any orientation. `activity_main.xml` caps the content at
 column instead of stretched rows. The dimension lives in `core-utils`: the default never binds,
 and `res/values-w600dp` sets 600dp.
 
+Three screens are an exception on a phone: the editor, the set, and the type screen fill the
+whole window. `MainActivity.setupContentColumnWidth()` listens to the navigation destination and
+removes the cap for them. `contentColumnMaxWidth()` holds the rule, and `@bool/is_tablet` in
+`core-utils` reports the device class. A tablet keeps the capped column on every screen.
+
 **Never size a view or a composable from the display.** `resources.displayMetrics.widthPixels`
 and `LocalConfiguration.current.screenWidthDp` report the whole window, which is wider than the
 column on a tablet and on a phone in landscape. Use instead:

@@ -147,7 +147,18 @@ class ObjectSetGridColumnRenderingTest : TestObjectSetSetup() {
 
         // TESTING
 
-        launchFragment(bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to ctx))
+        val scenario = launchFragment(bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to ctx))
+        // Subscription/mapping runs on real IO dispatchers outside Espresso's idling resources.
+        // Wait for the fixture record to be committed before asserting the five header cells.
+        val deadline = android.os.SystemClock.uptimeMillis() + 5_000
+        var recordsReady = false
+        while (!recordsReady && android.os.SystemClock.uptimeMillis() < deadline) {
+            scenario.onFragment { fragment ->
+                recordsReady = (fragment.requireView().findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.rvRows).adapter?.itemCount ?: 0) > 0
+            }
+            if (!recordsReady) android.os.SystemClock.sleep(32)
+        }
+        org.junit.Assert.assertTrue("Fixture record must be committed before rendering assertions", recordsReady)
 
         with(R.id.rvHeader.rVMatcher()) {
             checkIsRecyclerSize(5)

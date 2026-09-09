@@ -36,3 +36,26 @@ internal object DataviewNativeInput : UiController {
     override fun loopMainThreadForAtLeast(millisDelay: Long) { SystemClock.sleep(millisDelay) }
     override fun loopMainThreadUntilIdle() { InstrumentationRegistry.getInstrumentation().waitForIdleSync() }
 }
+
+/** Wait for the actual system IME window, whose input surface can outlive hidden root insets. */
+internal fun awaitDataviewImeWindow(visible: Boolean) {
+    val automation = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().uiAutomation
+    automation.serviceInfo = automation.serviceInfo.apply {
+        flags = flags or android.accessibilityservice.AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+    }
+    val deadline = android.os.SystemClock.uptimeMillis() + 5_000
+    var previous: List<android.graphics.Rect>? = null
+    var stableSince = android.os.SystemClock.uptimeMillis()
+    var current = emptyList<android.graphics.Rect>()
+    while (android.os.SystemClock.uptimeMillis() < deadline) {
+        current = automation.windows.filter {
+            it.type == android.view.accessibility.AccessibilityWindowInfo.TYPE_INPUT_METHOD
+        }.map { window -> android.graphics.Rect().also(window::getBoundsInScreen) }
+        val matches = current.isNotEmpty() == visible
+        if (!matches || current != previous) stableSince = android.os.SystemClock.uptimeMillis()
+        if (matches && android.os.SystemClock.uptimeMillis() - stableSince >= 250) return
+        previous = current
+        android.os.SystemClock.sleep(32)
+    }
+    throw AssertionError("Expected settled native IME window visible=$visible; actual=$current all=" + automation.windows.map { "type=${it.type} title=${it.title} bounds=${android.graphics.Rect().also(it::getBoundsInScreen)}" })
+}

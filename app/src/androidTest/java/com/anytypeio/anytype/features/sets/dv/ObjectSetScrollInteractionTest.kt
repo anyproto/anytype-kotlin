@@ -40,7 +40,7 @@ class ObjectSetScrollInteractionTest : TestObjectSetSetup() {
     override val title = Block(
         id = "runtime-title",
         content = StubTextContent(style = Block.Content.Text.Style.TITLE,
-            text = "Actual dataview scroll\nTall object header\nRuntime regression", marks = emptyList()),
+            text = "Example object\nLong title\nScroll check", marks = emptyList()),
         children = emptyList(), fields = Block.Fields.empty()
     )
 
@@ -133,6 +133,7 @@ class ObjectSetScrollInteractionTest : TestObjectSetSetup() {
                     assertTrue("Editing guard must be verified with an actually visible IME", ViewCompat.getRootWindowInsets(screen)?.isVisible(WindowInsetsCompat.Type.ime()) == true)
                     assertTrue("Visible-IME editing must block header scrolling", host.coordinator.isBlocked)
                 }
+                awaitDataviewImeWindow(visible = true)
                 if (done) {
                     val activeBounds = checkDataviewMain { Rect().also {
                         assertTrue(target.getGlobalVisibleRect(it))
@@ -175,7 +176,9 @@ class ObjectSetScrollInteractionTest : TestObjectSetSetup() {
                         assertTrue("Native content gesture must keep IME visible", ViewCompat.getRootWindowInsets(screen)?.isVisible(WindowInsetsCompat.Type.ime()) == true)
                         assertEquals("Header must remain expanded during active native editing gesture", 0f, host.coordinator.offset, 0f)
                     }
-                    assertNotEquals("Native gesture must actually scroll active content while header is frozen", contentBefore, contentPosition())
+                    assertNotEquals("Native gesture must actually scroll active content while header is frozen; start=$activeBounds end=" + checkDataviewMain {
+                        "${Rect().also(target::getGlobalVisibleRect)} toolbar=${Rect().also(screen.findViewById<View>(R.id.titleWidget)::getGlobalVisibleRect)}"
+                    }, contentBefore, contentPosition())
                 }
                 if (done) {
                     // Dispatch the Android IME action through the real editor InputConnection.
@@ -196,7 +199,7 @@ class ObjectSetScrollInteractionTest : TestObjectSetSetup() {
                 assertTrue("Dismissal must hide IME, clear title focus and unblock header: " + checkDataviewMain {
                     "ime=${ViewCompat.getRootWindowInsets(screen)?.isVisible(WindowInsetsCompat.Type.ime())} titleFocus=${screen.findViewById<View>(R.id.tvSetTitle).hasFocus()} blocked=${host.coordinator.isBlocked}"
                 }, editEnded())
-                SystemClock.sleep(100)
+                awaitDataviewImeWindow(visible = false)
             }
             fun state(): String = checkDataviewMain {
                 val focus = screen.findFocus()

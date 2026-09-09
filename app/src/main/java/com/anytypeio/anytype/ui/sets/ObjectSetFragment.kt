@@ -27,11 +27,15 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
@@ -208,12 +212,20 @@ open class ObjectSetFragment :
     private var headerImeLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
     private var headerImeObservation: Runnable? = null
     private var headerImeObservationPosted = false
+    private var externalHeaderEditing = false
+    private var clearExternalHeaderFocus: (() -> Unit)? = null
+    private var externalHeaderCompositionContext: CompositionContext? = null
+    private val externalHeaderContent = mutableStateOf<(@Composable () -> Unit)?>(null)
+    private val externalHeaderSemanticsHidden = mutableStateOf(false)
+    private var externalHeaderCompositionInstalled = false
     private var titleInReadMode: Boolean? = null
     private var renderedCoverButtons: Boolean? = null
     private var renderedAccessibilityActions = -1
     private val headerAccessibility = WeakHashMap<View, Int>()
     private val headerAccessibilityBounds = Rect()
     private val embedded: Boolean get() = arguments?.getBoolean(EMBEDDED_KEY) == true
+    private val hasExternalHeader: Boolean get() = arguments?.getBoolean(EXTERNAL_HEADER_KEY) == true
+    private val hasNativeHeader: Boolean get() = !embedded && !hasExternalHeader
 
     // Controls
 
@@ -355,9 +367,11 @@ open class ObjectSetFragment :
                     DataViewInfo.TYPE.INIT -> {}
                 }
             }
-            subscribe(title.editorActionEvents(actionHandler)) {
-                title.hideKeyboard()
-                finishHeaderEditing()
+            if (hasNativeHeader) {
+                viewLifecycleOwner.lifecycleScope.subscribe(title.editorActionEvents(actionHandler)) {
+                    title.hideKeyboard()
+                    finishHeaderEditing()
+                }
             }
             subscribe(topBackButton.clicks().throttleFirst()) { vm.onBackButtonClicked() }
             topBackButton.setOnLongClickListener {
@@ -484,24 +498,29 @@ open class ObjectSetFragment :
             vm.onTaskCheckboxClicked(id)
         }
 
-        title.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-            vm.onTitleFocusChanged(hasFocus)
-            updateHeaderEditing()
-        }
+        if (hasNativeHeader) {
+            title.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+                vm.onTitleFocusChanged(hasFocus)
+                updateHeaderEditing()
+            }
 
-        with(tvDescription) {
-            syncFocusWithImeVisibility()
-            addTextChangedListener(tvDescriptionTextWatcher)
-            imeOptions = IME_ACTION_DONE
-            setRawInputType(InputType.TYPE_CLASS_TEXT)
-            onFocusChangeListener = View.OnFocusChangeListener { _, _ -> updateHeaderEditing() }
-            setOnEditorActionListener { _, action, _ ->
-                if (action != IME_ACTION_DONE) false else {
-                    hideKeyboard()
-                    finishHeaderEditing()
-                    true
+            with(tvDescription) {
+                syncFocusWithImeVisibility()
+                imeOptions = IME_ACTION_DONE
+                setRawInputType(InputType.TYPE_CLASS_TEXT)
+                onFocusChangeListener = View.OnFocusChangeListener { _, _ -> updateHeaderEditing() }
+                setOnEditorActionListener { _, action, _ ->
+                    if (action != IME_ACTION_DONE) false else {
+                        hideKeyboard()
+                        finishHeaderEditing()
+                        true
+                    }
                 }
             }
+        } else {
+            // These duplicate fields never own editing or UI state on a Type page.
+            title.isSaveEnabled = false
+            tvDescription.isSaveEnabled = false
         }
         setupHeaderImeObservation()
 
@@ -616,7 +635,7 @@ open class ObjectSetFragment :
         // floating action buttons. The object-set screen has no inline IME
         // text input near the FABs, so we don't sync their translation to
         // the keyboard — they're allowed to be covered if an IME appears.
-        title.syncFocusWithImeVisibility()
+        if (hasNativeHeader) title.syncFocusWithImeVisibility()
         binding.viewerEditWidget.syncTranslationWithImeVisibility(
             dispatchMode = DISPATCH_MODE_STOP
         )
@@ -637,7 +656,7 @@ open class ObjectSetFragment :
     }
 
     private fun setupHeaderImeObservation() {
-        if (embedded) return
+        if (embedded && !hasExternalHeader) return
         val root = binding.root
         headerImeObservation = Runnable {
             if (!hasBinding || binding.root !== root) return@Runnable
@@ -666,7 +685,7 @@ open class ObjectSetFragment :
     private fun setupScrollHost() {
         val host = binding.scrollHost
         topToolbar.setBackgroundColor(requireContext().getColor(R.color.background_primary))
-        host.embeddedMode = embedded
+        host.embeddedMode = embedded && !hasExternalHeader
         host.excludeNestedScrollTarget = binding.boardView
         host.setStableViewportChild(binding.boardView, binding.boardView::setViewportTopInset)
         host.eligibleNestedScrollTarget = { target ->
@@ -674,9 +693,9 @@ open class ObjectSetFragment :
         }
         host.onGeometryChanging = { binding.boardView.cancelDrag() }
         host.onHeaderChanged = ::renderHeaderScrollState
-        binding.boardView.scrollCoordinator = if (embedded) null else host.coordinator
+        binding.boardView.scrollCoordinator = if (host.embeddedMode) null else host.coordinator
         retainedBoardState?.let(binding.boardView::restoreScrollState)
-        host.coordinator.restoreProgress(if (embedded) 0f else retainedHeaderProgress)
+        host.coordinator.restoreProgress(if (host.embeddedMode) 0f else retainedHeaderProgress)
         topToolbar.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             if (hasBinding && binding.scrollHost === host) {
                 host.pinHeight = if (host.embeddedMode || !topToolbar.isVisible) 0
@@ -693,13 +712,70 @@ open class ObjectSetFragment :
         rvRows.updatePadding(bottom = (80 * resources.displayMetrics.density).toInt())
         rvRows.clipToPadding = false
         applyEmbeddedMode()
+        installExternalHeaderComposition()
         renderHeaderScrollState()
     }
 
+    /** The Type page supplies its header while retaining its own fixed navigation/insets. */
+    fun bindExternalHeader(compositionContext: CompositionContext, content: @Composable () -> Unit) {
+        check(hasExternalHeader) { "External header content requires externalHeader=true" }
+        if (externalHeaderCompositionContext !== compositionContext && hasBinding) {
+            binding.externalHeader.setParentCompositionContext(compositionContext)
+        }
+        externalHeaderCompositionContext = compositionContext
+        externalHeaderContent.value = content
+        if (hasBinding) installExternalHeaderComposition()
+    }
+
+    fun clearExternalHeader(compositionContext: CompositionContext) {
+        if (externalHeaderCompositionContext !== compositionContext) return
+        externalHeaderContent.value = null
+        externalHeaderCompositionContext = null
+        externalHeaderEditing = false
+        clearExternalHeaderFocus = null
+        if (hasBinding) {
+            binding.externalHeader.disposeComposition()
+            binding.externalHeader.setParentCompositionContext(null)
+            externalHeaderCompositionInstalled = false
+            updateHeaderEditing()
+        }
+    }
+
+    fun onExternalHeaderEditingChanged(editing: Boolean, clearFocus: (() -> Unit)? = null) {
+        if (!hasBinding || !hasExternalHeader) return
+        externalHeaderEditing = editing
+        clearExternalHeaderFocus = clearFocus.takeIf { editing }
+        updateHeaderEditing()
+    }
+
+    private fun installExternalHeaderComposition() {
+        if (!hasExternalHeader || externalHeaderCompositionInstalled) return
+        val compositionContext = externalHeaderCompositionContext ?: return
+        binding.externalHeader.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setParentCompositionContext(compositionContext)
+            setContent {
+                // Native ancestor clipping does not prune this Compose owner's virtual
+                // accessibility tree. Keep its Android visibility and composition intact.
+                Box(
+                    modifier = Modifier.fillMaxWidth().then(
+                        if (externalHeaderSemanticsHidden.value) Modifier.clearAndSetSemantics {}
+                        else Modifier
+                    )
+                ) {
+                    externalHeaderContent.value?.invoke()
+                }
+            }
+        }
+        externalHeaderCompositionInstalled = true
+    }
+
     private fun applyEmbeddedMode() {
-        val localHeaderHidden = embedded || vm.currentViewer.value is DataViewViewState.TypeSet
-        binding.scrollHost.embeddedMode = localHeaderHidden
-        binding.boardView.scrollCoordinator = if (localHeaderHidden) null else binding.scrollHost.coordinator
+        val localHeaderHidden = hasExternalHeader || embedded || vm.currentViewer.value is DataViewViewState.TypeSet
+        val outerOwnsHeader = localHeaderHidden && !hasExternalHeader
+        binding.scrollHost.embeddedMode = outerOwnsHeader
+        binding.boardView.scrollCoordinator = if (outerOwnsHeader) null else binding.scrollHost.coordinator
+        if (!hasExternalHeader) binding.externalHeader.gone()
         if (localHeaderHidden) {
             header.gone()
             topToolbar.gone()
@@ -713,7 +789,8 @@ open class ObjectSetFragment :
     else topToolbar.layoutParams.height.coerceAtLeast(0)
 
     private fun updateHeaderEditing() {
-        val editing = !headerReadOnly && (title.hasFocus() || tvDescription.hasFocus())
+        val editing = if (hasExternalHeader) externalHeaderEditing
+            else hasNativeHeader && !headerReadOnly && (title.hasFocus() || tvDescription.hasFocus())
         val coordinator = binding.scrollHost.coordinator
         if (editing && !headerEditing) {
             binding.boardView.cancelDrag()
@@ -727,6 +804,7 @@ open class ObjectSetFragment :
     }
 
     private fun finishHeaderEditing() {
+        clearExternalHeaderFocus?.invoke()
         binding.root.requestFocus()
         title.clearFocus()
         tvDescription.clearFocus()
@@ -738,6 +816,45 @@ open class ObjectSetFragment :
         val host = binding.scrollHost
         val coordinator = host.coordinator
         val collapsed = coordinator.range > 0f && coordinator.offset >= coordinator.range
+        if (hasExternalHeader) {
+            binding.externalHeader.visible()
+            externalHeaderSemanticsHidden.value = collapsed
+        } else if (hasNativeHeader) {
+            renderNativeHeaderScrollState(collapsed)
+        }
+        val actionTarget = if (hasExternalHeader) dataViewHeader else topToolbar
+        val expand = AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_EXPAND
+        val collapse = AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_COLLAPSE
+        val actions = if (host.embeddedMode || coordinator.range == 0f || coordinator.isBlocked) 0
+            else (if (coordinator.offset > 0f) 1 else 0) or
+                (if (coordinator.offset < coordinator.range) 2 else 0)
+        if (renderedAccessibilityActions == actions) return
+        renderedAccessibilityActions = actions
+        ViewCompat.removeAccessibilityAction(actionTarget, expand.id)
+        ViewCompat.removeAccessibilityAction(actionTarget, collapse.id)
+        if (actions != 0) {
+            if (actions and 1 != 0) {
+                ViewCompat.replaceAccessibilityAction(actionTarget, expand,
+                    getString(R.string.dataview_expand_header)) { _, _ ->
+                    binding.boardView.cancelDrag()
+                    coordinator.setExpanded(true)
+                    true
+                }
+            }
+            if (actions and 2 != 0) {
+                ViewCompat.replaceAccessibilityAction(actionTarget, collapse,
+                    getString(R.string.dataview_collapse_header)) { _, _ ->
+                    binding.boardView.cancelDrag()
+                    coordinator.setExpanded(false)
+                    true
+                }
+            }
+        }
+    }
+
+    private fun renderNativeHeaderScrollState(collapsed: Boolean) {
+        val host = binding.scrollHost
+        val coordinator = host.coordinator
         val progress = coordinator.progress
         topToolbar.background?.alpha = (progress * DRAWABLE_ALPHA_FULL).toInt()
         val coverButtons = hasCover && !collapsed
@@ -769,42 +886,15 @@ open class ObjectSetFragment :
         header.importantForAccessibility = if (collapsed || host.embeddedMode)
             View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS else View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
         updateHeaderAccessibility(header)
-        val expand = AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_EXPAND
-        val collapse = AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_COLLAPSE
-        val actions = if (host.embeddedMode || coordinator.range == 0f || coordinator.isBlocked) 0
-            else (if (coordinator.offset > 0f) 1 else 0) or
-                (if (coordinator.offset < coordinator.range) 2 else 0)
-        if (renderedAccessibilityActions == actions) return
-        renderedAccessibilityActions = actions
-        ViewCompat.removeAccessibilityAction(topToolbar, expand.id)
-        ViewCompat.removeAccessibilityAction(topToolbar, collapse.id)
-        if (actions != 0) {
-            if (actions and 1 != 0) {
-                ViewCompat.replaceAccessibilityAction(topToolbar, expand,
-                    getString(R.string.dataview_expand_header)) { _, _ ->
-                    binding.boardView.cancelDrag()
-                    coordinator.setExpanded(true)
-                    true
-                }
-            }
-            if (actions and 2 != 0) {
-                ViewCompat.replaceAccessibilityAction(topToolbar, collapse,
-                    getString(R.string.dataview_collapse_header)) { _, _ ->
-                    binding.boardView.cancelDrag()
-                    coordinator.setExpanded(false)
-                    true
-                }
-            }
-        }
     }
 
     private fun updateHeaderAccessibility(parent: ViewGroup) {
         parent.children.forEach { child ->
             val original = headerAccessibility.getOrPut(child) { child.importantForAccessibility }
             child.getDrawingRect(headerAccessibilityBounds)
-            header.offsetDescendantRectToMyCoords(child, headerAccessibilityBounds)
+            binding.scrollHost.offsetDescendantRectToMyCoords(child, headerAccessibilityBounds)
             val occluded = child.height > 0 &&
-                headerAccessibilityBounds.bottom + header.top <= binding.scrollHost.pinHeight
+                headerAccessibilityBounds.bottom <= binding.scrollHost.pinHeight
             child.importantForAccessibility = if (occluded)
                 View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS else original
             // A partially visible featured group can still contain fully hidden actions.
@@ -1401,6 +1491,7 @@ open class ObjectSetFragment :
     }
 
     private fun bindHeader(header: SetOrCollectionHeaderState.Default) {
+        if (!hasNativeHeader) return
         setupHeaderMargins(header)
 
         headerReadOnly = header.isReadOnlyMode
@@ -1887,7 +1978,11 @@ open class ObjectSetFragment :
             pageToRestore = null
         }
 
-        title.addTextChangedListener(titleTextWatcher)
+        if (hasNativeHeader) {
+            // Hierarchy restoration has finished; restoring text must not persist an edit.
+            title.addTextChangedListener(titleTextWatcher)
+            tvDescription.addTextChangedListener(tvDescriptionTextWatcher)
+        }
 
         // fabCreate stays visible. NavPanelState.isCreateEnabled is consumed
         // directly inside the fabCreate ComposeView (see onViewCreated) to gate
@@ -1971,17 +2066,26 @@ open class ObjectSetFragment :
         binding.scrollHost.cancelMotion()
         super.onStop()
         title.removeTextChangedListener(titleTextWatcher)
+        tvDescription.removeTextChangedListener(tvDescriptionTextWatcher)
         vm.onStop()
     }
 
     override fun onDestroyView() {
         retainScrollState()
+        title.onFocusChangeListener = null
+        tvDescription.onFocusChangeListener = null
+        tvDescription.setOnEditorActionListener(null)
         headerImeLayoutListener?.let(binding.root.viewTreeObserver::removeOnGlobalLayoutListener)
         headerImeObservation?.let(binding.root::removeCallbacks)
         headerImeLayoutListener = null
         headerImeObservation = null
         headerImeObservationPosted = false
         headerImeVisible = null
+        binding.externalHeader.disposeComposition()
+        binding.externalHeader.setParentCompositionContext(null)
+        externalHeaderCompositionInstalled = false
+        externalHeaderEditing = false
+        clearExternalHeaderFocus = null
         pendingPositionPreDraw?.let { binding.scrollHost.viewTreeObserver.removeOnPreDrawListener(it) }
         pendingPositionPreDraw = null
         binding.scrollHost.onHeaderChanged = null
@@ -2003,6 +2107,12 @@ open class ObjectSetFragment :
         viewerGridAdapter.clear()
         isSheetHostInstalled = false
         super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        externalHeaderContent.value = null
+        externalHeaderCompositionContext = null
+        super.onDestroy()
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
@@ -2259,6 +2369,7 @@ open class ObjectSetFragment :
         const val SPACE_ID_KEY = "arg.object_set.space-id"
         private const val INITIAL_VIEW_ID_KEY = "arg.object_set.initial-view"
         private const val EMBEDDED_KEY = "arg.object_set.embedded"
+        private const val EXTERNAL_HEADER_KEY = "arg.object_set.external_header"
         private const val SCROLL_STATE_KEY = "object_set.scroll_state"
         private const val MAX_RETAINED_VIEWERS = 16
         val EMPTY_TAG = null
@@ -2268,12 +2379,14 @@ open class ObjectSetFragment :
             ctx: Id,
             space: Id,
             view: Id? = null,
-            embedded: Boolean = false
+            embedded: Boolean = false,
+            externalHeader: Boolean = false
         ) = bundleOf(
             CONTEXT_ID_KEY to ctx,
             SPACE_ID_KEY to space,
             INITIAL_VIEW_ID_KEY to view,
-            EMBEDDED_KEY to embedded
+            EMBEDDED_KEY to embedded,
+            EXTERNAL_HEADER_KEY to externalHeader
         )
     }
 }

@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.OverScroller
 import android.widget.TextView
+import androidx.compose.ui.platform.AbstractComposeView
 import androidx.core.view.NestedScrollingParent3
 import androidx.core.view.NestedScrollingParentHelper
 import androidx.core.view.ViewCompat
@@ -410,6 +411,12 @@ open class DataviewScrollHost @JvmOverloads constructor(
             dragging = false
             directEligible = !embeddedMode && !coordinator.isBlocked && isHeaderBackground(event.x, event.y)
         }
+        // A Compose editor can acquire focus and block scrolling while handling DOWN,
+        // after this parent's initial hit test. Keep its subsequent selection events.
+        if (coordinator.isBlocked) {
+            directEligible = false
+            return false
+        }
         if (event.actionMasked == MotionEvent.ACTION_MOVE && directEligible && !dragging) {
             val dy = event.y - downY
             val dx = event.x - downX
@@ -444,6 +451,9 @@ open class DataviewScrollHost @JvmOverloads constructor(
 
     private fun interactiveAt(view: View, x: Float, y: Float): Boolean {
         if (view.visibility != VISIBLE || x < 0 || y < 0 || x >= view.width || y >= view.height) return false
+        // Native child traversal cannot inspect Compose click targets or text selection.
+        // The Compose owner must handle its own header gestures without interception.
+        if (view is AbstractComposeView) return true
         if (view is ViewGroup) {
             for (index in view.childCount - 1 downTo 0) {
                 val child = view.getChildAt(index)
@@ -463,6 +473,7 @@ open class DataviewScrollHost @JvmOverloads constructor(
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (coordinator.isBlocked) directEligible = false
         if (!directEligible) return false
         velocityTracker?.addMovement(event)
         when (event.actionMasked) {

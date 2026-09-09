@@ -10,6 +10,7 @@ import android.view.MotionEvent
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.EditText
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -247,6 +248,70 @@ class DataviewScrollHostTest {
 
         assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP), actions)
         assertTrue(editor.hasFocus())
+    }
+
+    @Test fun `header child entering editing on down keeps its remaining pointer stream`() {
+        val actions = mutableListOf<Int>()
+        val editor = object : View(context) {
+            override fun onTouchEvent(event: MotionEvent): Boolean {
+                actions.add(event.actionMasked)
+                if (event.actionMasked == MotionEvent.ACTION_DOWN) {
+                    host.coordinator.setBlocked(MotionOrigin.Editing, true)
+                }
+                return true
+            }
+        }
+        host.removeViewAt(0)
+        host.addView(editor, 0, ViewGroup.LayoutParams(-1, 244))
+        layout()
+        assertFalse(host.coordinator.isBlocked)
+        listOf(MotionEvent.ACTION_DOWN to 200f, MotionEvent.ACTION_MOVE to 100f,
+            MotionEvent.ACTION_UP to 100f).forEachIndexed { index, (action, y) ->
+            val event = MotionEvent.obtain(0, index * 16L, action, 100f, y, 0)
+            try { host.dispatchTouchEvent(event) } finally { event.recycle() }
+        }
+        assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP), actions)
+        assertEquals(0f, host.coordinator.offset)
+    }
+
+    @Test fun `wrapped Compose header is opaque to native background interception`() {
+        layout()
+        val compose = ComposeView(context)
+        val container = FrameLayout(context).apply { addView(compose) }
+        host.removeViewAt(0)
+        host.addView(container, 0, ViewGroup.LayoutParams(-1, 244))
+        // Only native hit testing is under test; no Compose runtime is needed to know
+        // that this owner may contain clickable controls and editable text.
+        container.layout(0, 0, 400, 244)
+        compose.layout(0, 0, 400, 244)
+        for ((action, y) in listOf(MotionEvent.ACTION_DOWN to 200f, MotionEvent.ACTION_MOVE to 100f)) {
+            val event = MotionEvent.obtain(0, 16, action, 100f, y, 0)
+            try { assertFalse(host.onInterceptTouchEvent(event)) } finally { event.recycle() }
+        }
+    }
+
+    @Test fun `external wrapped header applies saved progress after deferred content measurement`() {
+        val external = View(context).apply { visibility = View.GONE }
+        val container = FrameLayout(context).apply {
+            addView(View(context).apply { visibility = View.GONE }, ViewGroup.LayoutParams(-1, 244))
+            addView(external, ViewGroup.LayoutParams(-1, 300))
+        }
+        host.removeViewAt(0)
+        host.addView(container, 0, ViewGroup.LayoutParams(-1, -2))
+        host.pinHeight = 0
+        host.coordinator.restoreProgress(.5f)
+        layout()
+        assertEquals(0f, host.coordinator.range)
+        assertEquals(.5f, host.coordinator.savedProgress)
+
+        external.visibility = View.VISIBLE
+        layout()
+
+        assertEquals(300f, host.coordinator.range)
+        assertEquals(150f, host.coordinator.offset)
+        assertEquals(190, host.getChildAt(2).top)
+        assertEquals(610, host.getChildAt(2).height)
+        assertEquals(800, host.getChildAt(2).bottom)
     }
 
     @Test fun `Compose Android origin stays fixed while inner viewport remains finite`() {

@@ -124,7 +124,7 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var deepLinkResolver: DeepLinkResolver
 
-    private val defaultSpace: Id = MockDataFactory.randomString()
+    protected val defaultSpace: Id = MockDataFactory.randomString()
 
     lateinit var urlBuilder: UrlBuilder
 

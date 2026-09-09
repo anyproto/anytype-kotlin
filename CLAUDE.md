@@ -81,10 +81,17 @@ The app runs in any orientation. `activity_main.xml` caps the content at
 column instead of stretched rows. The dimension lives in `core-utils`: the default never binds,
 and `res/values-w600dp` sets 600dp.
 
-Three screens are an exception on a phone: the editor, the set, and the type screen fill the
-whole window. `MainActivity.setupContentColumnWidth()` listens to the navigation destination and
-removes the cap for them. `contentColumnMaxWidth()` holds the rule, and `@bool/is_tablet` in
-`core-utils` reports the device class. A tablet keeps the capped column on every screen.
+Two screens are an exception, on a phone and on a tablet: the set screen and the type screen
+fill the whole window. These screens show a data view, and a Kanban board needs every pixel of
+the window. The editor keeps the capped column, because a full width line of text is hard to
+read. `MainActivity.setupContentColumnWidth()` listens to the navigation destination, and
+`contentColumnMaxWidth()` holds the rule.
+
+The same listener sets the backdrop. The widgets screen, the collection screen, and the vault
+show the wallpaper of the space through their content, so the root paints the wallpaper there.
+Every other screen paints an opaque background over the column. The wallpaper then reaches the
+eye only in the strip beside a capped column. The root paints `@color/background_primary` there:
+white in the light theme, black in the dark theme. `showsWallpaper()` holds the rule.
 
 **Never size a view or a composable from the display.** `resources.displayMetrics.widthPixels`
 and `LocalConfiguration.current.screenWidthDp` report the whole window, which is wider than the

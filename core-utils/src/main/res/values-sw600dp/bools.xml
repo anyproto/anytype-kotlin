@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <!--
-        The shortest side of the window is at least 600dp. Only a tablet reaches this qualifier.
-    -->
-    <bool name="is_tablet">true</bool>
-
-</resources>

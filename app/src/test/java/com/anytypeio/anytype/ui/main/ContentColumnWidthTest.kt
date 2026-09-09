@@ -2,6 +2,8 @@ package com.anytypeio.anytype.ui.main
 
 import com.anytypeio.anytype.R
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import org.junit.Test
 
 class ContentColumnWidthTest {
@@ -9,60 +11,44 @@ class ContentColumnWidthTest {
     private val capped = 1800
 
     @Test
-    fun `should not cap the editor on a phone`() {
+    fun `should cap the editor`() {
         assertEquals(
-            NO_MAX_WIDTH,
+            capped,
             contentColumnMaxWidth(
                 destinationId = R.id.pageScreen,
-                isTablet = false,
                 cappedWidthPx = capped
             )
         )
     }
 
     @Test
-    fun `should not cap the set screen on a phone`() {
+    fun `should not cap the set screen`() {
         assertEquals(
             NO_MAX_WIDTH,
             contentColumnMaxWidth(
                 destinationId = R.id.objectSetScreen,
-                isTablet = false,
                 cappedWidthPx = capped
             )
         )
     }
 
     @Test
-    fun `should not cap the type screen on a phone`() {
+    fun `should not cap the type screen`() {
         assertEquals(
             NO_MAX_WIDTH,
             contentColumnMaxWidth(
                 destinationId = R.id.objectTypeScreen,
-                isTablet = false,
                 cappedWidthPx = capped
             )
         )
     }
 
     @Test
-    fun `should cap the editor on a tablet`() {
-        assertEquals(
-            capped,
-            contentColumnMaxWidth(
-                destinationId = R.id.pageScreen,
-                isTablet = true,
-                cappedWidthPx = capped
-            )
-        )
-    }
-
-    @Test
-    fun `should cap every other screen on a phone`() {
+    fun `should cap every other screen`() {
         assertEquals(
             capped,
             contentColumnMaxWidth(
                 destinationId = R.id.chatScreen,
-                isTablet = false,
                 cappedWidthPx = capped
             )
         )
@@ -70,9 +56,38 @@ class ContentColumnWidthTest {
             capped,
             contentColumnMaxWidth(
                 destinationId = R.id.vaultScreen,
-                isTablet = false,
                 cappedWidthPx = capped
             )
         )
+    }
+
+    @Test
+    fun `should show the wallpaper on the widgets screen`() {
+        assertTrue(showsWallpaper(R.id.homeScreen))
+    }
+
+    @Test
+    fun `should show the wallpaper on the collection screen`() {
+        assertTrue(showsWallpaper(R.id.homeScreenWidgets))
+    }
+
+    @Test
+    fun `should show the wallpaper on the vault`() {
+        assertTrue(showsWallpaper(R.id.vaultScreen))
+    }
+
+    @Test
+    fun `should paint the plain backdrop on the editor`() {
+        assertFalse(showsWallpaper(R.id.pageScreen))
+    }
+
+    @Test
+    fun `should paint the plain backdrop on the set screen`() {
+        assertFalse(showsWallpaper(R.id.objectSetScreen))
+    }
+
+    @Test
+    fun `should paint the plain backdrop on the chat`() {
+        assertFalse(showsWallpaper(R.id.chatScreen))
     }
 }

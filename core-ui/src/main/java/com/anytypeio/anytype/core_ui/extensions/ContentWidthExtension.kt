@@ -90,7 +90,7 @@ private val HALF_ROW_DEDUCT = 16.dp
  * Limits the content to half of the row that holds it.
  *
  * The row is not always as wide as the window. The activity layout caps the content column on a
- * tablet, and the editor, the set, and the type screen fill the window on a phone in landscape.
+ * wide window, and the set screen and the type screen fill the window.
  * The modifier reads the space that the parent offers, so it stays correct in both cases.
  * Neither [contentWidthDp] nor `LocalConfiguration.current.screenWidthDp` can report this.
  */

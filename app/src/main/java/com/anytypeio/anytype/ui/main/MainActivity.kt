@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.Insets
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
@@ -480,15 +481,25 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     private var windowEdgeInsets: Insets = Insets.NONE
 
     /**
-     * The content column keeps its cap on every screen, except on the editor, the set, and the
-     * type screen on a phone. See [contentColumnMaxWidth]. The listener reports the current
-     * destination as soon as the activity registers it.
+     * The destination that owns the window now. The value is null until the navigation controller
+     * reports the first destination.
+     */
+    private var currentDestinationId: Int? = null
+
+    /**
+     * The wallpaper of the space, from the last value of [MainViewModel.wallpaperState].
+     */
+    private var currentWallpaper: WallpaperResult = WallpaperResult.None
+
+    /**
+     * The destination sets two properties of the content column: the maximum width of the column,
+     * and the backdrop beside it. See [contentColumnMaxWidth] and [showsWallpaper]. The listener
+     * reports the current destination as soon as the activity registers it.
      *
      * A dialog destination owns its own window and leaves the screen below it on the back stack.
-     * The width of the column must belong to the screen below, not to the dialog. The listener
-     * therefore resolves the topmost entry that is not a [FloatingWindow]. The activity is
-     * recreated on a rotation, so this also gives the correct width when a dialog is on top at
-     * that moment.
+     * Both properties must belong to the screen below, not to the dialog. The listener therefore
+     * resolves the topmost entry that is not a [FloatingWindow]. The activity is recreated on a
+     * rotation, so this also gives the correct width when a dialog is on top at that moment.
      */
     private fun setupContentColumnWidth() {
         runCatching {
@@ -503,7 +514,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 } else {
                     destination
                 }
-                if (target != null) applyContentColumnWidth(target.id)
+                if (target != null) applyDestination(target.id)
             }
             ViewCompat.setOnApplyWindowInsetsListener(container) { _, insets ->
                 windowEdgeInsets = insets.getInsets(
@@ -517,10 +528,15 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         }
     }
 
+    private fun applyDestination(destinationId: Int) {
+        currentDestinationId = destinationId
+        applyContentColumnWidth(destinationId)
+        applyBackdrop()
+    }
+
     private fun applyContentColumnWidth(destinationId: Int) {
         val max = contentColumnMaxWidth(
             destinationId = destinationId,
-            isTablet = resources.getBoolean(R.bool.is_tablet),
             cappedWidthPx = resources.getDimensionPixelSize(R.dimen.max_content_width)
         )
         contentColumnFillsWindow = max == NO_MAX_WIDTH
@@ -547,26 +563,54 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     private fun setWallpaper(result: WallpaperResult) {
-        when (result) {
+        currentWallpaper = result
+        applyBackdrop()
+    }
+
+    /**
+     * The root paints the backdrop of the window. The widgets screen, the collection screen, and
+     * the vault show the wallpaper of the space through their content, so the root paints the
+     * wallpaper there. Every other screen paints an opaque background over the content column. The
+     * wallpaper then reaches the eye only in the strip beside a capped column. The root paints the
+     * plain backdrop there: white in the light theme, black in the dark theme.
+     */
+    private fun applyBackdrop() {
+        val destinationId = currentDestinationId
+        if (destinationId != null && !showsWallpaper(destinationId)) {
+            paintPlainBackdrop()
+            return
+        }
+        when (val wallpaper = currentWallpaper) {
             is WallpaperResult.Gradient -> {
-                rootContainer.setBackgroundResource(getGradientDrawableResource(result.gradientCode))
+                rootContainer.setBackgroundResource(
+                    getGradientDrawableResource(wallpaper.gradientCode)
+                )
                 rootContainer.background?.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
             }
             is WallpaperResult.SolidColor -> {
                 try {
-                    rootContainer.setBackgroundColor(Color.parseColor(result.colorHex))
+                    rootContainer.setBackgroundColor(Color.parseColor(wallpaper.colorHex))
                     rootContainer.background?.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
                 } catch (e: IllegalArgumentException) {
-                    Timber.w(e, "Invalid color format: ${result.colorHex}")
-                    rootContainer.setBackgroundResource(R.color.background_primary)
+                    Timber.w(e, "Invalid color format: ${wallpaper.colorHex}")
+                    paintPlainBackdrop()
                 }
             }
             WallpaperResult.None -> {
                 // Restore the backdrop instead of clearing it: a null background would expose the
                 // window behind the column on a wide screen.
-                rootContainer.setBackgroundResource(R.color.background_primary)
+                paintPlainBackdrop()
             }
         }
+    }
+
+    /**
+     * A wallpaper lowers the alpha of the background of the root. The view keeps one drawable for
+     * a color, so the plain backdrop restores the full alpha.
+     */
+    private fun paintPlainBackdrop() {
+        rootContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.background_primary))
+        rootContainer.background?.alpha = OPAQUE_ALPHA
     }
 
     /**
@@ -1196,3 +1240,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         componentManager().mainEntryComponent.release()
     }
 }
+
+/**
+ * The alpha of a background that hides everything behind it.
+ */
+private const val OPAQUE_ALPHA = 255

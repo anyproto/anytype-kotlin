@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.FieldRow
 import com.anytypeio.anytype.core_ui.extensions.halfRowWidth
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Relations1
@@ -68,7 +69,7 @@ fun FieldTypeObject(
     if (fieldObject.objects.size == 1) {
         // If there is only one item, display the title and the item in one row.
         val singleItem = fieldObject.objects.first()
-        Row(
+        FieldRow(
             modifier = defaultModifier,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -123,7 +124,7 @@ fun FieldTypeObject(
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Row(
+            FieldRow(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {

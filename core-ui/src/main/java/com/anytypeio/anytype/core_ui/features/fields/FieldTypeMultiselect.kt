@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -31,6 +30,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.FieldRow
 import com.anytypeio.anytype.core_ui.extensions.halfRowWidth
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
@@ -66,7 +66,7 @@ fun FieldTypeMultiSelect(
         .padding(vertical = 16.dp)
         .padding(horizontal = 16.dp)
 
-    Row(
+    FieldRow(
         modifier = defaultModifier,
         verticalAlignment = Alignment.CenterVertically
     ) {

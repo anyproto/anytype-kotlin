@@ -5,7 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -25,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.FieldRow
 import com.anytypeio.anytype.core_ui.extensions.halfRowWidth
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.Relations1
@@ -146,7 +146,7 @@ private fun FieldHorizontalEmpty(
     onRemoveFromObjectClick: () -> Unit,
 ) {
     val isMenuExpanded = remember { mutableStateOf(false) }
-    Row(
+    FieldRow(
         modifier = modifier
             .combinedClickable(
                 onClick = onFieldClick,

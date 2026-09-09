@@ -20,7 +20,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
+import com.anytypeio.anytype.core_ui.extensions.FieldRow
+import com.anytypeio.anytype.core_ui.extensions.halfRowWidth
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations2
@@ -50,10 +51,6 @@ fun FieldTypeObject(
     onRemoveFromObjectClick: () -> Unit,
 ) {
     val isMenuExpanded = remember { mutableStateOf(false) }
-    // Half of the content column, not half of the display. The activity layout caps the column
-    // on a tablet and on a phone in landscape, so the title would never ellipsize there.
-    val halfScreenWidth = contentWidthDp() / 2 - 32.dp
-
     val defaultModifier = modifier
         .combinedClickable(
             onClick = onFieldClick,
@@ -72,13 +69,13 @@ fun FieldTypeObject(
     if (fieldObject.objects.size == 1) {
         // If there is only one item, display the title and the item in one row.
         val singleItem = fieldObject.objects.first()
-        Row(
+        FieldRow(
             modifier = defaultModifier,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .widthIn(max = halfScreenWidth)
+                    .halfRowWidth()
                     .wrapContentHeight()
                     .padding(vertical = 2.dp)
             ) {
@@ -92,7 +89,7 @@ fun FieldTypeObject(
             }
             Spacer(modifier = Modifier.width(8.dp))
             Box(
-                modifier = Modifier.widthIn(max = halfScreenWidth)
+                modifier = Modifier.halfRowWidth()
             ) {
                 ItemView(
                     modifier = Modifier.wrapContentHeight(),
@@ -127,7 +124,7 @@ fun FieldTypeObject(
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Row(
+            FieldRow(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -135,7 +132,7 @@ fun FieldTypeObject(
                 if (fieldObject.objects.isNotEmpty()) {
                     Box(
                         modifier = Modifier
-                            .widthIn(max = halfScreenWidth)
+                            .halfRowWidth()
                     ) {
                         ItemView(
                             modifier = Modifier.wrapContentHeight(),
@@ -146,7 +143,7 @@ fun FieldTypeObject(
                 // The second item (if present)
                 if (fieldObject.objects.size > 1) {
                     Spacer(modifier = Modifier.width(8.dp))
-                    Box(modifier = Modifier.widthIn(max = halfScreenWidth)) {
+                    Box(modifier = Modifier.halfRowWidth()) {
                         if (fieldObject.objects.size == 2) {
                             ItemView(
                                 modifier = Modifier.wrapContentHeight(),

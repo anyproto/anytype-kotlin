@@ -91,6 +91,8 @@ and `LocalConfiguration.current.screenWidthDp` report the whole window, which is
 column on a tablet and on a phone in landscape. Use instead:
 - `View.contentWidth()` — the width of the container that owns the space, in pixels.
 - `contentWidthDp()` — the same value for a composable, in dp.
+- `Modifier.halfRowWidth()` — half of the row that holds the content. A field title and a
+  field value each take at most half of their row, and the row is not always the whole column.
 - `BottomSheetDialogFragment.applyContentWidthCap()` — a sheet owns its own window, so the
   activity layout cannot reach it. The three sheet host classes already call this.
 

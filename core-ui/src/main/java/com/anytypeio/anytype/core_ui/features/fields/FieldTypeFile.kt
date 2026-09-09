@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,7 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
+import com.anytypeio.anytype.core_ui.extensions.halfRowWidth
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations2
@@ -49,10 +48,6 @@ fun FieldTypeFile(
     onRemoveFromObjectClick: () -> Unit,
 ) {
     val isMenuExpanded = remember { mutableStateOf(false) }
-    // Half of the content column, not half of the display. The activity layout caps the column
-    // on a tablet and on a phone in landscape, so the title would never ellipsize there.
-    val halfScreenWidth = contentWidthDp() / 2 - 32.dp
-
     val defaultModifier = modifier
         .combinedClickable(
             onClick = onFieldClick,
@@ -78,7 +73,7 @@ fun FieldTypeFile(
         ) {
             Box(
                 modifier = Modifier
-                    .widthIn(max = halfScreenWidth)
+                    .halfRowWidth()
                     .wrapContentHeight()
                     .padding(vertical = 2.dp)
             ) {
@@ -92,7 +87,7 @@ fun FieldTypeFile(
             }
             Spacer(modifier = Modifier.width(8.dp))
             Box(
-                modifier = Modifier.widthIn(max = halfScreenWidth)
+                modifier = Modifier.halfRowWidth()
             ) {
                 ItemView(
                     modifier = Modifier.wrapContentHeight(),
@@ -135,7 +130,7 @@ fun FieldTypeFile(
                 if (fieldObject.files.isNotEmpty()) {
                     Box(
                         modifier = Modifier
-                            .widthIn(max = halfScreenWidth)
+                            .halfRowWidth()
                     ) {
                         ItemView(
                             modifier = Modifier.wrapContentHeight(),
@@ -146,7 +141,7 @@ fun FieldTypeFile(
                 // The second item (if present)
                 if (fieldObject.files.size > 1) {
                     Spacer(modifier = Modifier.width(8.dp))
-                    Box(modifier = Modifier.widthIn(max = halfScreenWidth)) {
+                    Box(modifier = Modifier.halfRowWidth()) {
                         if (fieldObject.files.size == 2) {
                             ItemView(
                                 modifier = Modifier.wrapContentHeight(),

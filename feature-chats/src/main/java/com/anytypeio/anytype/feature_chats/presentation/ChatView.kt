@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_chats.presentation
 
+import com.anytypeio.anytype.domain.chats.ChatReadSnapshot
 import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
@@ -264,6 +265,7 @@ data class ChatViewState(
     val intent: ChatContainer.Intent = ChatContainer.Intent.None,
     val counter: Counter = Counter(),
     val isLoading: Boolean = false,
+    val readSnapshot: ChatReadSnapshot? = null,
 ) {
     @Immutable
     data class Counter(

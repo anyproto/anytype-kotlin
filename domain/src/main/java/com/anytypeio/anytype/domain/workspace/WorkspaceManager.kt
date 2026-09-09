@@ -10,6 +10,8 @@ import javax.inject.Inject
 import kotlin.math.log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
@@ -21,6 +23,20 @@ interface SpaceManager {
 
     suspend fun get(): Id
     suspend fun set(space: Id, withChat: Boolean = false): Result<Config>
+
+    /**
+     * Points the app's space-scoped subscriptions (types, relations, relation options, sync
+     * status) at [space] without opening the workspace, leaving the manager in
+     * [State.Space.Idle] — active, config unknown.
+     *
+     * Workspace.Open exists to produce a [Config], and on a cold space it is expensive:
+     * measured at ~5s on device, against ~1.2s for the Object.Create that follows it. Every
+     * subscription built off the active space needs nothing from that config but the space
+     * id, and Object.Create/Object.Open carry the space themselves — so a screen that only
+     * writes an object into a space (quick capture) can activate it and skip the open. Use
+     * [set] wherever the config itself is needed: widgets, home, tech space, profile.
+     */
+    fun activate(space: Id)
 
     fun getConfig(): Config?
     fun getConfig(space: SpaceId) : Config?
@@ -38,7 +54,14 @@ interface SpaceManager {
     ) : SpaceManager {
 
         private val currentSpace = MutableStateFlow(NO_SPACE)
-        private val info = mutableMapOf<Id, Config>()
+
+        /**
+         * A flow rather than a plain map because a config can arrive for a space that is
+         * already the current one — a full [set] after a lightweight [activate]. With a map,
+         * [state] and [observe] are driven by [currentSpace] alone, which does not change in
+         * that case, so both would stay stuck on the id-only reading forever.
+         */
+        private val configs = MutableStateFlow<Map<Id, Config>>(emptyMap())
 
         override suspend fun get(): Id {
             val curr = currentSpace.value
@@ -51,14 +74,21 @@ interface SpaceManager {
         override fun getConfig(): Config? {
             val curr = currentSpace.value
             return if (curr.isNotEmpty()) {
-                info[curr]
+                configs.value[curr]
             } else {
                 null
             }
         }
 
         override fun getConfig(space: SpaceId): Config? {
-            return info[space.id]
+            return configs.value[space.id]
+        }
+
+        override fun activate(space: Id) {
+            logger.logInfo("SPACE MANAGER: activating space without workspace open: $space")
+            // Deliberately does not touch [configs]: a config this space already has (opened
+            // earlier in the session) stays valid and keeps the state Active.
+            currentSpace.value = space
         }
 
         override suspend fun set(space: Id, withChat: Boolean) : Result<Config> = withContext(dispatchers.io) {
@@ -67,7 +97,7 @@ interface SpaceManager {
                 result.fold(
                     onSuccess = { config ->
                         logger.logInfo("SPACE MANAGER: space opened: $space")
-                        info[space] = config
+                        configs.value = configs.value + (space to config)
                         currentSpace.value = space
                     },
                     onFailure = { error ->
@@ -84,52 +114,37 @@ interface SpaceManager {
         }
 
         override fun observe(): Flow<Config> {
-            return currentSpace.mapNotNull { space ->
-                if (space.isEmpty()) {
-                    null
-                } else {
-                    info[space]
-                }
-            }
+            return combine(currentSpace, configs) { space, known ->
+                if (space.isEmpty()) null else known[space]
+            }.filterNotNull()
         }
 
         override fun observe(space: SpaceId): Flow<Config> {
-            return currentSpace.mapNotNull {
-                info[space.id]
-            }
+            return combine(currentSpace, configs) { _, known ->
+                known[space.id]
+            }.filterNotNull()
         }
 
         override fun state(): Flow<State> {
-            return currentSpace.map { space ->
-                if (space == NO_SPACE) {
-                    State.NoSpace
-                } else {
-                    val config = info[space]
-                    if (config != null) {
-                        State.Space.Active(config)
-                    } else {
-                        State.Space.Idle(SpaceId(space))
-                    }
-                }
+            return combine(currentSpace, configs) { space, known ->
+                stateOf(space, known)
             }
         }
 
-        override fun getState(): State {
-            val space = currentSpace.value
-            return if (space == NO_SPACE) {
-                State.NoSpace
+        override fun getState(): State = stateOf(currentSpace.value, configs.value)
+
+        private fun stateOf(space: Id, known: Map<Id, Config>): State {
+            if (space == NO_SPACE) return State.NoSpace
+            val config = known[space]
+            return if (config != null) {
+                State.Space.Active(config)
             } else {
-                val config = info[space]
-                if (config != null) {
-                    State.Space.Active(config)
-                } else {
-                    State.Space.Idle(SpaceId(space))
-                }
+                State.Space.Idle(SpaceId(space))
             }
         }
 
         override fun clear() {
-            info.clear()
+            configs.value = emptyMap()
             currentSpace.value = NO_SPACE
         }
 
@@ -151,6 +166,20 @@ interface SpaceManager {
             data class Active(val config: Config): Space()
         }
     }
+}
+
+/**
+ * The space the state points at, or null when there is none to follow.
+ *
+ * [SpaceManager.State.Space.Active] and [SpaceManager.State.Space.Idle] answer with the same
+ * id on purpose: subscriptions are built from the id alone, so a config arriving after an
+ * [SpaceManager.activate] must not restart them.
+ */
+fun SpaceManager.State.spaceIdOrNull(): SpaceId? = when (this) {
+    is SpaceManager.State.Space.Active -> SpaceId(config.space)
+    is SpaceManager.State.Space.Idle -> space
+    is SpaceManager.State.NoSpace -> null
+    is SpaceManager.State.Init -> null
 }
 
 @Deprecated("Do not use.")

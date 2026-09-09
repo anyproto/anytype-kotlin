@@ -24,6 +24,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -51,9 +52,13 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.domain.chats.ChatReadSnapshot
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -126,17 +131,8 @@ fun ChatScreenWrapper(
         val clipboard = LocalClipboardManager.current
         val lazyListState = rememberLazyListState()
 
-        val messages by remember(vm) { vm.uiState.map { it.messages } }
-            .collectAsStateWithLifecycle(emptyList())
-
-        val counter by remember(vm) { vm.uiState.map { it.counter } }
-            .collectAsStateWithLifecycle(ChatViewState.Counter())
-
-        val intent by remember(vm) { vm.uiState.map { it.intent } }
-            .collectAsStateWithLifecycle(ChatContainer.Intent.None)
-
-        val isLoading by remember(vm) { vm.uiState.map { it.isLoading } }
-            .collectAsStateWithLifecycle(vm.uiState.value.isLoading)
+        // Messages and their read watermark must come from the same emission.
+        val chatState by vm.uiState.collectAsStateWithLifecycle()
 
         val chatBoxMode by vm.chatBoxMode.collectAsStateWithLifecycle()
 
@@ -147,12 +143,13 @@ fun ChatScreenWrapper(
         val spaceUxType by vm.currentSpaceUxType.collectAsStateWithLifecycle()
 
         ChatScreen(
-            isLoading = isLoading,
+            isLoading = chatState.isLoading,
             isSyncing = vm.isSyncing.collectAsStateWithLifecycle().value,
             chatBoxMode = chatBoxMode,
-            messages = messages,
-            counter = counter,
-            intent = intent,
+            messages = chatState.messages,
+            counter = chatState.counter,
+            intent = chatState.intent,
+            readSnapshot = chatState.readSnapshot,
             attachments = vm.chatBoxAttachments.collectAsState().value,
             inviteLinkAccessLevel = inviteLinkAccessLevel,
             onMessageSent = { text, spans ->
@@ -466,7 +463,7 @@ fun ChatScreen(
     onScrollToReplyClicked: (Id) -> Unit,
     onClearIntent: () -> Unit,
     onScrollToBottomClicked: (Id?) -> Unit,
-    onVisibleRangeChanged: (Id, Id) -> Unit,
+    onVisibleRangeChanged: (Id?, Id?, ChatReadSnapshot?) -> Unit,
     onUrlInserted: (Url) -> Unit,
     onGoToMentionClicked: () -> Unit,
     onAddMembersClick: () -> Unit,
@@ -481,7 +478,8 @@ fun ChatScreen(
     spaceUxType: SpaceUxType? = null,
     onOpenAttachmentInBrowser: (ChatView.Message) -> Unit = {},
     onOpenAttachmentFile: (ChatView.Message) -> Unit = {},
-    onOpenAttachmentAsObject: (ChatView.Message) -> Unit = {}
+    onOpenAttachmentAsObject: (ChatView.Message) -> Unit = {},
+    readSnapshot: ChatReadSnapshot? = null
 ) {
 
     val scope = rememberCoroutineScope()
@@ -529,73 +527,123 @@ fun ChatScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val isPerformingScrollIntent = remember { mutableStateOf(false) }
+    var visibilityGeneration by remember { mutableIntStateOf(0) }
 
     val offsetPx = with(LocalDensity.current) { 50.dp.toPx().toInt() }
 
     // Applying view model intents
     LaunchedEffect(intent) {
         Timber.d("DROID-2966 New intent: $intent")
-        when (intent) {
-            is ChatContainer.Intent.ScrollToMessage -> {
-                isPerformingScrollIntent.value = true
-                val index = messages.indexOfFirst {
-                    it is ChatView.Message && it.id == intent.id
-                }
-                if (index >= 0) {
-                    snapshotFlow { lazyListState.layoutInfo.totalItemsCount }
-                        .first { it > index }
-                    if (intent.smooth) {
-                        lazyListState.animateScrollToItem(index)
-                    } else {
-                        if (intent.startOfUnreadMessageSection) {
-                            lazyListState.scrollToItem(index, scrollOffset = -offsetPx)
+        if (intent == ChatContainer.Intent.None) return@LaunchedEffect
+        isPerformingScrollIntent.value = true
+        onVisibleRangeChanged(null, null, null)
+        try {
+            when (intent) {
+                is ChatContainer.Intent.ScrollToMessage -> {
+                    val index = messages.indexOfFirst {
+                        it is ChatView.Message && it.id == intent.id
+                    }
+                    if (index >= 0) {
+                        snapshotFlow { lazyListState.layoutInfo.totalItemsCount }
+                            .first { it > index }
+                        if (intent.smooth) {
+                            lazyListState.animateScrollToItem(index)
                         } else {
-                            lazyListState.scrollToItem(index)
+                            if (intent.startOfUnreadMessageSection) {
+                                lazyListState.scrollToItem(index, scrollOffset = -offsetPx)
+                            } else {
+                                lazyListState.scrollToItem(index)
+                            }
                         }
-                    }
-                    awaitFrame()
+                        awaitFrame()
 
-                    if (intent.highlight) {
-                        highlightedMessageId = intent.id
-                        delay(500)
-                        highlightedMessageId = null
+                        if (intent.highlight) {
+                            highlightedMessageId = intent.id
+                            delay(500)
+                            highlightedMessageId = null
+                        }
+                    } else {
+                        Timber.d("DROID-2966 COMPOSE Could not find the scrolling target for the intent")
                     }
-                } else {
-                    Timber.d("DROID-2966 COMPOSE Could not find the scrolling target for the intent")
                 }
-                onClearIntent()
-                isPerformingScrollIntent.value = false
+                is ChatContainer.Intent.ScrollToBottom -> {
+                    Timber.d("DROID-2966 COMPOSE scroll to bottom")
+                    smoothScrollToBottom(lazyListState)
+                    awaitFrame()
+                }
+                ChatContainer.Intent.None -> Unit
             }
-            is ChatContainer.Intent.ScrollToBottom -> {
-                Timber.d("DROID-2966 COMPOSE scroll to bottom")
-                isPerformingScrollIntent.value = true
-                smoothScrollToBottom(lazyListState)
-                awaitFrame()
-                isPerformingScrollIntent.value = false
-                onClearIntent()
-            }
-            ChatContainer.Intent.None -> Unit
+        } finally {
+            isPerformingScrollIntent.value = false
+            highlightedMessageId = null
+            // A missing target/no-op scroll can finish before snapshotFlow observes true.
+            // Force it to restore the range even when the visible ids have not changed.
+            visibilityGeneration++
         }
+        onClearIntent()
     }
 
     // Tracking visible range
-    val currentMessages by rememberUpdatedState(messages)
-    LaunchedEffect(lazyListState) {
+    val messagesById = remember(messages) {
+        messages.filterIsInstance<ChatView.Message>().associateBy { it.id }
+    }
+    val currentMessagesById by rememberUpdatedState(messagesById)
+    val messageKeys = remember(messages) {
+        messages.map { msg ->
+            when (msg) {
+                is ChatView.Message -> msg.id
+                is ChatView.DateSection -> "$DATE_KEY_PREFIX${msg.timeInMillis}"
+            }
+        }
+    }
+    val currentMessageKeys by rememberUpdatedState(messageKeys)
+    val currentReadSnapshot by rememberUpdatedState(readSnapshot)
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val reportVisibleRange by rememberUpdatedState(onVisibleRangeChanged)
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                visibilityGeneration++
+            } else if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                reportVisibleRange(null, null, null)
+                visibilityGeneration++
+            }
+        }
+        lifecycle.addObserver(observer)
+        onDispose {
+            lifecycle.removeObserver(observer)
+            reportVisibleRange(null, null, null)
+        }
+    }
+    LaunchedEffect(lazyListState, lifecycle) {
         snapshotFlow {
             val layoutInfo = lazyListState.layoutInfo
             var from: ChatView.Message? = null
             var to: ChatView.Message? = null
-            if (layoutInfo.totalItemsCount > 0 && !isPerformingScrollIntent.value) {
-                val viewportHeight = layoutInfo.viewportSize.height
-                val msgs = currentMessages
+            if (layoutInfo.totalItemsCount > 0 && !isPerformingScrollIntent.value &&
+                lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) &&
+                isChatReadLayoutCurrent(
+                    currentMessageKeys,
+                    layoutInfo.totalItemsCount,
+                    layoutInfo.visibleItemsInfo.map { it.index to it.key }
+                )
+            ) {
+                val msgs = currentMessagesById
                 var fromIndex = Int.MAX_VALUE
                 var toIndex = Int.MIN_VALUE
                 layoutInfo.visibleItemsInfo.forEach { item ->
-                    val itemBottom = item.offset + item.size
-                    val isFullyVisible = item.offset >= 0 && itemBottom <= viewportHeight
-                    if (isFullyVisible) {
-                        val msg = msgs.getOrNull(item.index)
-                        if (msg is ChatView.Message) {
+                    if (isMessageVisibleForReading(
+                            offset = item.offset,
+                            size = item.size,
+                            viewportStart = layoutInfo.viewportStartOffset,
+                            viewportEnd = layoutInfo.viewportEndOffset
+                        )
+                    ) {
+                        // The message list can update before LazyColumn has remeasured.
+                        // Its stable key, unlike the old layout index, still identifies
+                        // the message whose geometry was actually measured.
+                        val msg = msgs[item.key]
+                        if (msg != null) {
                             if (item.index < fromIndex) {
                                 fromIndex = item.index
                                 from = msg
@@ -610,13 +658,17 @@ fun ChatScreen(
             }
             val first = from
             val last = to
-            if (first != null && last != null) first.id to last.id else null
+            ChatReadVisibility(
+                range = if (first != null && last != null) first.id to last.id else null,
+                snapshot = currentReadSnapshot,
+                generation = visibilityGeneration
+            )
         }
             .distinctUntilChanged()
-            .collect { range ->
-                if (range != null) {
-                    onVisibleRangeChanged(range.first, range.second)
-                }
+            .collect { visible ->
+                // ON_PAUSE may invalidate visibility while a snapshot is already queued.
+                val range = visible.range.takeIf { lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) }
+                reportVisibleRange(range?.first, range?.second, visible.snapshot)
             }
     }
 

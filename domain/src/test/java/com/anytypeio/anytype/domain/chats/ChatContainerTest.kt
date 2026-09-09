@@ -74,7 +74,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val msg = StubChatMessage(
@@ -141,7 +142,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val initialMsg = StubChatMessage(
@@ -218,7 +220,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val messageToDelete = StubChatMessage(
@@ -283,7 +286,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val initialMessage = StubChatMessage(order = "A")
@@ -347,7 +351,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val initialMsg = StubChatMessage(
@@ -425,7 +430,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val firstMessage = StubChatMessage(order = "B")
@@ -491,7 +497,8 @@ class ChatContainerTest {
                     repo = repo,
                     channel = channel,
                     logger = logger,
-                    subscription = storelessSubscriptionContainer
+                    subscription = storelessSubscriptionContainer,
+                    readScope = backgroundScope
                 )
 
                 val messages = buildList {
@@ -597,7 +604,8 @@ class ChatContainerTest {
                 repo = repo,
                 channel = channel,
                 logger = logger,
-                subscription = storelessSubscriptionContainer
+                subscription = storelessSubscriptionContainer,
+                readScope = backgroundScope
             )
 
             val messages = buildList {
@@ -666,7 +674,8 @@ class ChatContainerTest {
                 repo = repo,
                 channel = channel,
                 logger = logger,
-                subscription = storelessSubscriptionContainer
+                subscription = storelessSubscriptionContainer,
+                readScope = backgroundScope
             )
 
             val allMessages = buildList {
@@ -760,7 +769,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val initialState = Chat.State(order = 1L)
@@ -810,7 +820,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val newerState = Chat.State(order = 5L)
@@ -860,7 +871,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val currentState = Chat.State(order = 3L)
@@ -910,7 +922,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val firstState = Chat.State(order = 1L)
@@ -959,7 +972,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val initialState = Chat.State(order = 1L)
@@ -1016,7 +1030,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val older = StubChatMessage(order = "A")
@@ -1162,7 +1177,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val older = StubChatMessage(order = "A")
@@ -1296,7 +1312,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val older = StubChatMessage(order = "A")
@@ -1414,7 +1431,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val tail = StubChatMessage(order = "T")
@@ -1483,7 +1501,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val older = StubChatMessage(order = "A")
@@ -1632,7 +1651,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val first = StubChatMessage(order = "A")
@@ -1694,7 +1714,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val first = StubChatMessage(order = "A")
@@ -1763,7 +1784,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val read = StubChatMessage(order = "A")
@@ -1835,7 +1857,8 @@ class ChatContainerTest {
             repo = repo,
             channel = channel,
             logger = logger,
-            subscription = storelessSubscriptionContainer
+            subscription = storelessSubscriptionContainer,
+            readScope = backgroundScope
         )
 
         val deletedTarget = "deleted-quoted-message-id"

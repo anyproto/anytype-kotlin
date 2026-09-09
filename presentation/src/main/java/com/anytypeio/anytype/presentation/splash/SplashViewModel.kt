@@ -38,6 +38,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
+import com.anytypeio.anytype.domain.vault.SetVaultSearchHighlightSeen
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
@@ -80,7 +81,8 @@ class SplashViewModel(
     private val deepLinkResolver: DeepLinkResolver,
     private val pendingIntentStore: PendingIntentStore,
     private val searchObjects: SearchObjects,
-    private val preferredSpaceIdHolder: PreferredSpaceIdHolder
+    private val preferredSpaceIdHolder: PreferredSpaceIdHolder,
+    private val setVaultSearchHighlightSeen: SetVaultSearchHighlightSeen
 ) : ViewModel(),
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate,
     MigrationHelperDelegate by migration {
@@ -164,11 +166,26 @@ class SplashViewModel(
                 onSuccess = { (status, account) ->
                     Timber.i("Authorization status: $status")
                     if (status == AuthStatus.UNAUTHORIZED) {
+                        markVaultSearchHighlightSeen()
                         commandsChannel.send(Command.NavigateToAuthStart)
                     } else {
                         proceedWithLaunchingWallet()
                     }
                 }
+            )
+        }
+    }
+
+    /**
+     * No account on this device means the user has never seen the vault, so its
+     * cross-space search is not new to them: pre-dismiss the one-time search glow.
+     * Anyone who arrives here already signed in is exactly who the glow is for.
+     */
+    private fun markVaultSearchHighlightSeen() {
+        viewModelScope.launch {
+            setVaultSearchHighlightSeen.async(Unit).fold(
+                onSuccess = { Timber.d("Vault search highlight pre-dismissed for a fresh install") },
+                onFailure = { e -> Timber.w(e, "Error pre-dismissing vault search highlight") }
             )
         }
     }

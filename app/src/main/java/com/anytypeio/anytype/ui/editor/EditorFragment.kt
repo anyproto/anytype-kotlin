@@ -658,8 +658,23 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         outState.putParcelable(CURRENT_MEDIA_UPLOAD_KEY, vm.currentMediaUploadDescription)
     }
 
+    /** The toolbar sheets of the editor, in declaration order. */
+    private fun editorSheets(): List<View> = listOf(
+        binding.styleToolbarMain,
+        binding.styleToolbarOther,
+        binding.styleToolbarColors,
+        binding.blockActionToolbar,
+        binding.undoRedoToolbar,
+        binding.styleToolbarBackground,
+        binding.simpleTableWidget
+    )
+
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
+        // DROID-4592. The hierarchy restore has just written the saved sheet state back into every
+        // BottomSheetBehavior, after onViewCreated hid them. Drop it here, before the first render,
+        // so that ControlPanelState stays the only source of truth for the editor chrome.
+        editorSheets().resetRestoredSheetState()
         if (savedInstanceState != null) {
             vm.onRestoreSavedState(savedInstanceState.getParcelable(CURRENT_MEDIA_UPLOAD_KEY))
         }
@@ -1082,15 +1097,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         // screen. They start invisible (see layout) and a single state callback
         // toggles draw-visibility: a sheet is drawn only while it is not hidden,
         // so a hidden sheet can never peek regardless of its resting offset.
-        listOf(
-            binding.styleToolbarMain,
-            binding.styleToolbarOther,
-            binding.styleToolbarColors,
-            binding.blockActionToolbar,
-            binding.undoRedoToolbar,
-            binding.styleToolbarBackground,
-            binding.simpleTableWidget
-        ).forEach { sheet ->
+        editorSheets().forEach { sheet ->
             BottomSheetBehavior.from(sheet).apply {
                 state = BottomSheetBehavior.STATE_HIDDEN
                 addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
@@ -2434,6 +2441,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 doOnEnd { if (hasBinding) binding.topToolbar.visible() }
                 start()
             }
+        } else {
+            // DROID-4592. The select toolbar is already off screen, so no animation runs. The title
+            // toolbar has exactly one other restore point, the doOnEnd callback above, so it never
+            // comes back without this branch. A configuration change reaches this path: it inflates
+            // the select toolbar at its resting translation while the view model still reports
+            // select mode.
+            binding.topToolbar.visible()
         }
     }
 

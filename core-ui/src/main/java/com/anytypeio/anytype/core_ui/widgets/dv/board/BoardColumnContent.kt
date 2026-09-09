@@ -5,18 +5,18 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
@@ -27,11 +27,16 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.LayoutCoordinates
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -51,6 +56,10 @@ import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.core_ui.widgets.dv.scroll.DataviewScrollCoordinator
+import com.anytypeio.anytype.core_ui.widgets.dv.scroll.MotionOrigin
+import com.anytypeio.anytype.core_ui.widgets.dv.scroll.dataviewColumnTouchObserver
+import com.anytypeio.anytype.core_ui.widgets.dv.scroll.rememberDataviewColumnScrollConnection
 
 /** How close to the end of a column (in items) triggers the next page request. */
 private const val BOARD_LOAD_MORE_THRESHOLD = 3
@@ -61,7 +70,7 @@ private const val BOARD_LOAD_MORE_THRESHOLD = 3
  * itself while a card from another column hovers over it.
  */
 @Composable
-fun BoardColumnContent(
+internal fun BoardColumnContent(
     column: Viewer.Board.Column,
     dragState: BoardDragState,
     targetColumnId: String?,
@@ -70,130 +79,187 @@ fun BoardColumnContent(
     onColumnLoadMore: (columnId: String) -> Unit,
     canCreateObject: Boolean = false,
     onCreateInColumn: (columnId: String) -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewerId: String = "preview",
+    coordinator: DataviewScrollCoordinator? = null,
+    scrollStore: BoardScrollStore? = null
 ) {
     val isDropTarget = dragState.isDragging &&
-        dragState.sourceColumnId != column.id &&
-        targetColumnId == column.id
-
-    // "Color columns": tint the whole column with its group color when set. The drop-target
-    // highlight still takes precedence while a card from another column hovers over it.
-    val columnBackgroundColor = column.backgroundColor
+        dragState.sourceColumnId != column.id && targetColumnId == column.id
     val background = when {
         isDropTarget -> colorResource(id = R.color.shape_secondary)
-        columnBackgroundColor != null -> light(columnBackgroundColor)
+        column.backgroundColor != null -> light(column.backgroundColor!!)
         else -> colorResource(id = R.color.shape_tertiary)
     }
+    val saved = remember(viewerId, column.id, scrollStore) { scrollStore?.anchor(viewerId, column.id) }
+    val restoreGeneration = remember(viewerId, column.id, scrollStore) {
+        coordinator?.inputGeneration ?: scrollStore?.inputGeneration
+    }
+    val initialIds = remember(viewerId, column.id) { column.cards.map { it.objectId } }
+    val initialResolved = remember(viewerId, column.id) {
+        boardAnchorResolved(saved, column)
+    }
+    val listState = remember(viewerId, column.id) {
+        val index = if (saved?.id == null || initialIds.isEmpty()) 0 else resolveBoardAnchor(saved, initialIds) + 1
+        LazyListState(index, saved?.offset ?: 0)
+    }
+    val connection = if (coordinator != null) {
+        rememberDataviewColumnScrollConnection(coordinator, viewerId, column.id, listState)
+    } else null
+    val currentColumn by rememberUpdatedState(column)
+    val currentLoadMore by rememberUpdatedState(onColumnLoadMore)
+    var restored by remember(viewerId, column.id) { mutableStateOf(initialResolved) }
+    val restoreIds = remember(column.cards) { column.cards.map { it.objectId } }
+    val bottomClearance = with(LocalDensity.current) { 88.dp.toPx() }
+    var listBounds by remember { mutableStateOf<Rect?>(null) }
+    var labelBottom by remember { mutableStateOf<Float?>(null) }
 
-    Column(
+    fun updateViewport() {
+        val bounds = listBounds ?: return
+        val top = (labelBottom ?: bounds.top).coerceIn(bounds.top, bounds.bottom)
+        dragState.cardViewports[column.id] = Rect(
+            bounds.left, top, bounds.right, (bounds.bottom - bottomClearance).coerceAtLeast(top)
+        )
+    }
+
+    DisposableEffect(viewerId, column.id, listState, connection) {
+        dragState.columnListStates[column.id] = listState
+        if (connection != null) dragState.columnScrollConnections[column.id] = connection
+        scrollStore?.register(viewerId, column.id) {
+            if (!restored && saved != null &&
+                restoreGeneration == (coordinator?.inputGeneration ?: scrollStore?.inputGeneration)
+            ) saved else columnScrollAnchor(listState, currentColumn.cards.map { it.objectId })
+        }
+        onDispose {
+            scrollStore?.unregister(viewerId, column.id)
+            dragState.columnListStates.remove(column.id)
+            dragState.columnScrollConnections.remove(column.id)
+            dragState.cardViewports.remove(column.id)
+            dragState.endInsertionBounds.remove(column.id)
+        }
+    }
+    LaunchedEffect(viewerId, column.id, restoreIds, column.count, column.hasLoadedRecords, saved) {
+        if (!restored && saved != null &&
+            restoreGeneration == (coordinator?.inputGeneration ?: scrollStore?.inputGeneration) &&
+            !listState.isScrollInProgress
+        ) {
+            val ids = column.cards.map { it.objectId }
+            if (saved.id != null && ids.isEmpty() &&
+                (!column.hasLoadedRecords || column.count > 0)
+            ) return@LaunchedEffect
+            val index = if (saved.id == null || ids.isEmpty()) 0 else resolveBoardAnchor(saved, ids) + 1
+            val restore: suspend () -> Unit = { listState.scrollToItem(index, saved.offset) }
+            if (connection != null) connection.withOrigin(MotionOrigin.Restoration, restore) else restore()
+            restored = boardAnchorResolved(saved, column)
+        }
+    }
+
+    // Loaded-count is the request generation. It re-arms after every page even if the
+    // near-end predicate stays true, and layout changes can make it true without a drag.
+    val canPaginate = rememberUpdatedState(column.hasLoadedRecords && column.cards.size < column.count)
+    val shouldPage by remember {
+        derivedStateOf {
+            shouldLoadMore(
+                lastVisibleIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1,
+                totalItemsCount = listState.layoutInfo.totalItemsCount,
+                canPaginate = canPaginate.value,
+                threshold = BOARD_LOAD_MORE_THRESHOLD
+            )
+        }
+    }
+    var requestedCount by remember(viewerId, column.id) { mutableStateOf<Int?>(null) }
+    LaunchedEffect(shouldPage, column.cards.size, column.count) {
+        if (shouldPage && requestedCount != column.cards.size) {
+            requestedCount = column.cards.size
+            currentLoadMore(column.id)
+        }
+    }
+
+    val input = if (connection != null) {
+        Modifier.dataviewColumnTouchObserver(connection).nestedScroll(connection)
+    } else Modifier
+    LazyColumn(
+        state = listState,
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .background(background)
-            .padding(8.dp)
+            .then(input)
+            .fillMaxSize()
+            .onGloballyPositioned { coords ->
+                val board = boardCoordsProvider()
+                if (board != null && coords.isAttached) {
+                    listBounds = board.localBoundingBoxOf(coords)
+                    updateViewport()
+                }
+            },
+        userScrollEnabled = !dragState.isDragging,
+        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 88.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp, vertical = 4.dp)
-        ) {
-            val colorCode = column.color
-            if (colorCode != null) {
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(dark(colorCode))
-                )
-                Spacer(modifier = Modifier.width(6.dp))
-            }
-            Text(
-                text = column.label,
-                style = Title2,
-                color = colorResource(id = R.color.text_primary),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f)
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "${column.count}",
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_secondary)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        if (column.cards.isEmpty()) {
-            Column(
+        stickyHeader(key = "board-label:${column.id}", contentType = "label") { _ ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
-            ) {
-                if (canCreateObject) {
-                    BoardAddCardButton(onClick = { onCreateInColumn(column.id) })
-                }
-            }
-        } else {
-            val listState = rememberLazyListState()
-            // Expose this column's list state for vertical auto-scroll during a drag (see BoardScreen).
-            DisposableEffect(column.id) {
-                dragState.columnListStates[column.id] = listState
-                onDispose { dragState.columnListStates.remove(column.id) }
-            }
-            // More records exist on the backend than are currently loaded for this column.
-            val canPaginate = rememberUpdatedState(column.cards.size < column.count)
-            val shouldPage by remember {
-                derivedStateOf {
-                    shouldLoadMore(
-                        lastVisibleIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: -1,
-                        totalItemsCount = listState.layoutInfo.totalItemsCount,
-                        canPaginate = canPaginate.value,
-                        threshold = BOARD_LOAD_MORE_THRESHOLD
-                    )
-                }
-            }
-            LaunchedEffect(shouldPage) {
-                if (shouldPage) onColumnLoadMore(column.id)
-            }
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.wrapContentHeight(),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(
-                    items = column.cards,
-                    key = { it.objectId }
-                ) { card ->
-                    BoardCard(
-                        card = card,
-                        dragState = dragState,
-                        boardCoordsProvider = boardCoordsProvider,
-                        onCardClick = onCardClick
-                    )
-                }
-                if (canCreateObject) {
-                    item(key = "add-card-${column.id}") {
-                        BoardAddCardButton(onClick = { onCreateInColumn(column.id) })
-                    }
-                }
-                if (canPaginate.value) {
-                    item(key = "board-load-more") {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            DotsLoadingIndicator(
-                                animating = true,
-                                animationSpecs = FadeAnimationSpecs(itemCount = 3),
-                                color = colorResource(id = R.color.glyph_active),
-                                size = ButtonSize.Small
-                            )
+                    .background(background)
+                    .onGloballyPositioned { coords ->
+                        val board = boardCoordsProvider()
+                        if (board != null && coords.isAttached) {
+                            labelBottom = board.localBoundingBoxOf(coords).bottom
+                            updateViewport()
                         }
                     }
+                    // Keep the same inset while pinned. A top contentPadding would scroll
+                    // away; placing it inside the sticky item leaves the full column touchable.
+                    .padding(top = 8.dp)
+                    .padding(horizontal = 4.dp, vertical = 4.dp)
+            ) {
+                column.color?.let { color ->
+                    Box(Modifier.size(8.dp).clip(CircleShape).background(dark(color)))
+                    Spacer(Modifier.width(6.dp))
+                }
+                Text(
+                    text = column.label,
+                    style = Title2,
+                    color = colorResource(id = R.color.text_primary),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(Modifier.width(8.dp))
+                if (column.hasLoadedRecords) {
+                    Text("${column.count}", style = Caption1Regular, color = colorResource(id = R.color.text_secondary))
+                }
+            }
+        }
+        items(column.cards, key = { "$BOARD_CARD_KEY_PREFIX${it.objectId}" }, contentType = { "card" }) { card ->
+            BoardCard(card, column.id, dragState, boardCoordsProvider, onCardClick)
+        }
+        if (column.hasLoadedRecords && isColumnFullyLoaded(column.cards.size, column.count)) {
+            item(key = "board-end:${column.id}", contentType = "insertion") {
+                Spacer(Modifier.fillMaxWidth().height(24.dp).onGloballyPositioned { coords ->
+                    val board = boardCoordsProvider()
+                    if (board != null && coords.isAttached) {
+                        dragState.endInsertionBounds[column.id] = board.localBoundingBoxOf(coords)
+                    }
+                })
+                DisposableEffect(column.id) { onDispose { dragState.endInsertionBounds.remove(column.id) } }
+            }
+        }
+        if (canCreateObject) {
+            item(key = "board-add:${column.id}", contentType = "add") {
+                BoardAddCardButton(onClick = { onCreateInColumn(column.id) })
+            }
+        }
+        if (!column.hasLoadedRecords || canPaginate.value) {
+            item(key = "board-load-more:${column.id}", contentType = "loading") {
+                Box(Modifier.fillMaxWidth().height(48.dp), contentAlignment = Alignment.Center) {
+                    DotsLoadingIndicator(
+                        animating = true,
+                        animationSpecs = FadeAnimationSpecs(itemCount = 3),
+                        color = colorResource(id = R.color.glyph_active),
+                        size = ButtonSize.Small
+                    )
                 }
             }
         }
@@ -203,6 +269,7 @@ fun BoardColumnContent(
 @Composable
 private fun BoardCard(
     card: Viewer.Board.Card,
+    columnId: String,
     dragState: BoardDragState,
     boardCoordsProvider: () -> LayoutCoordinates?,
     onCardClick: (Id) -> Unit
@@ -212,7 +279,11 @@ private fun BoardCard(
     // Keep the board's hit-test map current; the drag gesture itself lives on the board
     // container (see BoardScreen), so this item can be disposed without killing a drag.
     DisposableEffect(card.objectId) {
-        onDispose { dragState.cardBounds.remove(card.objectId) }
+        dragState.cardColumns[card.objectId] = columnId
+        onDispose {
+            dragState.cardBounds.remove(card.objectId)
+            dragState.cardColumns.remove(card.objectId)
+        }
     }
 
     BoardCardItem(
@@ -223,7 +294,7 @@ private fun BoardCard(
             .onGloballyPositioned { coords ->
                 val board = boardCoordsProvider()
                 if (board != null && coords.isAttached) {
-                    dragState.cardBounds[card.objectId] = board.localBoundingBoxOf(coords)
+                    dragState.cardBounds[card.objectId] = board.localBoundingBoxOf(coords, clipBounds = false)
                 }
             }
             .alpha(if (isBeingDragged) 0.4f else 1f)
@@ -292,7 +363,7 @@ private fun BoardColumnShortPreview() {
         onColumnLoadMore = {},
         canCreateObject = true,
         onCreateInColumn = {},
-        modifier = Modifier.width(280.dp)
+        modifier = Modifier.width(280.dp).height(600.dp)
     )
 }
 
@@ -313,6 +384,6 @@ private fun BoardColumnEmptyPreview() {
         onColumnLoadMore = {},
         canCreateObject = true,
         onCreateInColumn = {},
-        modifier = Modifier.width(280.dp)
+        modifier = Modifier.width(280.dp).height(600.dp)
     )
 }

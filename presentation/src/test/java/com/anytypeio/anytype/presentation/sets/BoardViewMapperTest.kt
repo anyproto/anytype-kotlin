@@ -31,8 +31,19 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.whenever
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class BoardViewMapperTest {
+
+    @Test
+    fun `canonical column ids include hidden eligible groups and only valid empty groups`() {
+        val status = listOf(DataViewGroup("status", DataViewGroup.Value.Status("option")))
+        assertEquals(listOf(BOARD_EMPTY_GROUP_ID, "status"), boardColumnIds(status))
+        val checkbox = listOf(DataViewGroup("checked", DataViewGroup.Value.Checkbox(true)))
+        assertEquals(listOf("checked"), boardColumnIds(checkbox))
+        assertTrue(boardColumnIds(emptyList()).isEmpty())
+    }
 
     private val defaultSpace = MockDataFactory.randomUuid()
 
@@ -122,6 +133,7 @@ class BoardViewMapperTest {
         assertEquals(2, columns.size)
         assertEquals(BOARD_EMPTY_GROUP_ID, columns[0].id)
         assertEquals(0, columns[0].cards.size)
+        assertFalse(columns[0].hasLoadedRecords)
         assertEquals(listOf("C", "A", "B"), columns[1].cards.map { it.objectId })
     }
 
@@ -672,6 +684,7 @@ class BoardViewMapperTest {
         val column = columns.first { it.id == todo.id }
         assertEquals(1, column.cards.size)
         assertEquals(120, column.count)
+        assertTrue(column.hasLoadedRecords)
     }
 
     private fun checkboxRecord(id: String, name: String, checked: Boolean): Map<String, Any?> = buildMap {

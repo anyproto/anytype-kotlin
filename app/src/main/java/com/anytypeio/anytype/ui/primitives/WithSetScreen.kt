@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.primitives
 
 import android.os.Build
-import android.view.View
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -26,7 +25,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.compose.AndroidFragment
-import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.BottomSyncStatus
@@ -238,13 +236,11 @@ private fun MainContentSet(
             arguments = ObjectSetFragment.args(
                 ctx = objectId,
                 space = space,
-                view = view
+                view = view,
+                embedded = true
             )
         ) { fragment ->
             objectSetFragment.value = fragment
-            fragment.view?.findViewById<View>(R.id.topToolbar)?.gone()
-            fragment.view?.findViewById<View>(R.id.objectHeader)?.visibility =
-                View.GONE
         }
     }
 }

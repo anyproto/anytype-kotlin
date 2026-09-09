@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.unit.IntSize
+import com.anytypeio.anytype.core_ui.widgets.dv.scroll.DataviewColumnScrollConnection
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 
 /**
@@ -58,9 +59,21 @@ class BoardDragState {
 
     /** Each column's LazyColumn state, keyed by column id — for vertical auto-scroll during drag. */
     val columnListStates = mutableMapOf<String, LazyListState>()
+    val columnScrollConnections = mutableMapOf<String, DataviewColumnScrollConnection>()
+
+    /** Visible content below the sticky label and above the fixed actions. */
+    val cardViewports = mutableStateMapOf<String, Rect>()
+    val endInsertionBounds = mutableStateMapOf<String, Rect>()
+    val cardColumns = mutableMapOf<String, String>()
 
     /** Card bounds in board coordinates, keyed by object id. */
     val cardBounds = mutableStateMapOf<String, Rect>()
+
+    /** Full bounds above remain suitable for sizing the lifted overlay. */
+    fun visibleCardBounds(): Map<String, Rect> = cardBounds.mapNotNull { (id, bounds) ->
+        val viewport = cardColumns[id]?.let(cardViewports::get) ?: return@mapNotNull null
+        clippedBoardCardBounds(bounds, viewport)?.let { id to it }
+    }.toMap()
 
     val isDragging: Boolean get() = draggedCard != null
 
@@ -78,7 +91,10 @@ class BoardDragState {
         pointer += delta
         cardTopLeft += delta
         autoScroll = edgeAutoScroll(pointer.x, boardWidth, edge)
-        verticalAutoScroll = edgeAutoScroll(pointer.y, boardHeight, edge)
+        val viewport = targetColumnId()?.let(cardViewports::get)
+        verticalAutoScroll = if (viewport != null) {
+            edgeAutoScroll(pointer.y - viewport.top, viewport.height.toInt(), edge)
+        } else 0
     }
 
     /** The column currently under the pointer, or null if none. */
@@ -93,3 +109,12 @@ class BoardDragState {
         verticalAutoScroll = 0
     }
 }
+
+internal fun clippedBoardCardBounds(bounds: Rect, viewport: Rect): Rect? {
+    val result = bounds.intersect(viewport)
+    return result.takeIf { it.width > 0f && it.height > 0f }
+}
+
+/** Density-aware speed integrated over elapsed time; a paused frame cannot jump a whole list. */
+internal fun boardAutoScrollDistance(direction: Int, density: Float, elapsedNanos: Long): Float =
+    direction * 480f * density * (elapsedNanos / 1_000_000_000f).coerceIn(0f, 0.05f)

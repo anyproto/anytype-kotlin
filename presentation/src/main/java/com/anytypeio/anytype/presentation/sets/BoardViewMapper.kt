@@ -20,6 +20,19 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
  */
 const val BOARD_EMPTY_GROUP_ID = "empty"
 
+/** Canonical columns before visibility filtering, including the synthetic empty group. */
+fun boardColumnIds(groups: List<DataViewGroup>): List<Id> {
+    if (groups.isEmpty()) return emptyList()
+    val emptyGroupId = groups.firstOrNull { it.value is DataViewGroup.Value.Empty }?.id
+        ?: BOARD_EMPTY_GROUP_ID
+    return buildList {
+        if (groups.none { it.value is DataViewGroup.Value.Checkbox } &&
+            groups.none { it.id == emptyGroupId }
+        ) add(emptyGroupId)
+        groups.forEach { add(it.id) }
+    }.distinct()
+}
+
 /**
  * Builds the columns of a [Viewer.Board] (Kanban) view from the backend group subscription
  * [groups] — canonical group ids, empty option columns, Checkbox / Tag combination groups,
@@ -81,16 +94,7 @@ private suspend fun DVViewer.buildColumnsFromGroups(
     // Checkbox boards are exhaustively split into true/false groups by the backend — there
     // is no "No value" state, so don't synthesize an empty column (it would render as a live
     // drop target that writes `checked = false`).
-    val isCheckbox = groups.any { it.value is DataViewGroup.Value.Checkbox }
-    val includeEmptyColumn = !isCheckbox
-
-    val orderedIds = buildList {
-        // Preserve the backend (ObjectGroupsSubscribe) order; only synthesize the
-        // empty column if the backend didn't return one (and the board isn't checkbox).
-        // Final column order is the saved GroupOrder index (see applyGroupOrder).
-        if (includeEmptyColumn && groups.none { it.id == emptyGroupId }) add(emptyGroupId)
-        groups.forEach { add(it.id) }
-    }.distinct()
+    val orderedIds = boardColumnIds(groups)
 
     val columns = orderedIds.map { gid ->
         val group = groups.firstOrNull { it.id == gid }
@@ -114,7 +118,8 @@ private suspend fun DVViewer.buildColumnsFromGroups(
             color = columnColor,
             backgroundColor = columnBackgroundColor,
             cards = cards,
-            count = countsByColumn[gid] ?: cards.size
+            count = countsByColumn[gid] ?: cards.size,
+            hasLoadedRecords = gid in countsByColumn
         )
     }
 

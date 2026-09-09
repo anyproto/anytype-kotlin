@@ -11,6 +11,11 @@ import kotlin.test.assertTrue
 class BoardLoadMoreTest {
 
     @Test
+    fun `does not request before a real viewport has visible items`() {
+        assertFalse(shouldLoadMore(lastVisibleIndex = -1, totalItemsCount = 0, canPaginate = true, threshold = 3))
+    }
+
+    @Test
     fun `fires when near the end and more records exist`() {
         // 50 loaded of 120; last visible item index 49 of 51 total (50 cards + footer).
         assertTrue(shouldLoadMore(lastVisibleIndex = 49, totalItemsCount = 51, canPaginate = true, threshold = 2))

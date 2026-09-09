@@ -6,7 +6,11 @@ import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
@@ -14,9 +18,7 @@ import com.anytypeio.anytype.test_utils.utils.checkIsRecyclerSize
 import com.anytypeio.anytype.test_utils.utils.onItemView
 import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
-import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -24,8 +26,6 @@ import org.junit.runner.RunWith
 @LargeTest
 class ObjectSetGridColumnRenderingTest : TestObjectSetSetup() {
 
-    @get:Rule
-    val animationsRule = DisableAnimationsRule()
 
     override val title: Block = Block(
         id = MockDataFactory.randomUuid(),
@@ -80,6 +80,8 @@ class ObjectSetGridColumnRenderingTest : TestObjectSetSetup() {
             format = Relation.Format.EMAIL,
             source = Relation.Source.values().random()
         )
+        val relations = listOf(relation1, relation2, relation3, relation4, relation5)
+        stubRelations(relations)
 
         val viewer = Block.Content.DataView.Viewer(
             id = MockDataFactory.randomUuid(),
@@ -117,7 +119,7 @@ class ObjectSetGridColumnRenderingTest : TestObjectSetSetup() {
             fields = Block.Fields.empty(),
             content = Block.Content.DataView(
                 viewers = listOf(viewer),
-                
+                relationLinks = relations.map { RelationLink(it.key, it.format) }
             )
         )
 
@@ -132,6 +134,12 @@ class ObjectSetGridColumnRenderingTest : TestObjectSetSetup() {
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
+        stubSubscriptionEventChannel()
+        stubSearchWithSubscription(listOf(ObjectWrapper.Basic(mapOf(
+            Relations.ID to "fixture-record",
+            Relations.NAME to "Fixture record",
+            Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+        ))))
         stubOpenObjectSetWithRecord(
             set = set,
             details = defaultDetails

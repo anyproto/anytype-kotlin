@@ -21,7 +21,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.graphics.Insets
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
@@ -467,20 +470,47 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     /**
+     * True while the content column fills the window. See [contentColumnMaxWidth].
+     */
+    private var contentColumnFillsWindow = false
+
+    /**
+     * The insets of the window edges, from the last insets pass.
+     */
+    private var windowEdgeInsets: Insets = Insets.NONE
+
+    /**
      * The content column keeps its cap on every screen, except on the editor, the set, and the
      * type screen on a phone. See [contentColumnMaxWidth]. The listener reports the current
      * destination as soon as the activity registers it.
      *
      * A dialog destination owns its own window and leaves the screen below it on the back stack.
-     * The width of the column must not change while such a dialog is open, so the listener
-     * ignores every [FloatingWindow] destination.
+     * The width of the column must belong to the screen below, not to the dialog. The listener
+     * therefore resolves the topmost entry that is not a [FloatingWindow]. The activity is
+     * recreated on a rotation, so this also gives the correct width when a dialog is on top at
+     * that moment.
      */
     private fun setupContentColumnWidth() {
         runCatching {
             val navHostFragment =
                 supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment
-            navHostFragment.navController.addOnDestinationChangedListener { _, destination, _ ->
-                if (destination !is FloatingWindow) applyContentColumnWidth(destination.id)
+            val controller = navHostFragment.navController
+            controller.addOnDestinationChangedListener { _, destination, _ ->
+                val target = if (destination is FloatingWindow) {
+                    controller.currentBackStack.value
+                        .lastOrNull { entry -> entry.destination !is FloatingWindow }
+                        ?.destination
+                } else {
+                    destination
+                }
+                if (target != null) applyContentColumnWidth(target.id)
+            }
+            ViewCompat.setOnApplyWindowInsetsListener(container) { _, insets ->
+                windowEdgeInsets = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+                )
+                applyContentColumnPadding()
+                insets
             }
         }.onFailure {
             Timber.e(it, "Error while setting up the width of the content column")
@@ -488,15 +518,31 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     private fun applyContentColumnWidth(destinationId: Int) {
-        val params = container.layoutParams as? ConstraintLayout.LayoutParams ?: return
         val max = contentColumnMaxWidth(
             destinationId = destinationId,
             isTablet = resources.getBoolean(R.bool.is_tablet),
             cappedWidthPx = resources.getDimensionPixelSize(R.dimen.max_content_width)
         )
+        contentColumnFillsWindow = max == NO_MAX_WIDTH
+        applyContentColumnPadding()
+        val params = container.layoutParams as? ConstraintLayout.LayoutParams ?: return
         if (params.matchConstraintMaxWidth != max) {
             params.matchConstraintMaxWidth = max
             container.layoutParams = params
+        }
+    }
+
+    /**
+     * The window draws under a display cutout, because [enableEdgeToEdge] asks for it. A capped
+     * column stays clear of both edges, so it needs no padding. A column that fills the window
+     * reaches the cutout and the side navigation bar, and text runs under them. Hold the content
+     * off both edges in that case.
+     */
+    private fun applyContentColumnPadding() {
+        val left = if (contentColumnFillsWindow) windowEdgeInsets.left else 0
+        val right = if (contentColumnFillsWindow) windowEdgeInsets.right else 0
+        if (container.paddingLeft != left || container.paddingRight != right) {
+            container.setPadding(left, container.paddingTop, right, container.paddingBottom)
         }
     }
 

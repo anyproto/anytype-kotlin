@@ -502,14 +502,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
      * the backdrop beside it. See [contentColumnMaxWidth] and [showsWallpaper].
      *
      * Both properties belong to a moment in the life of a screen, not to the moment of the
-     * navigation. The controller reports a new destination before the screen appears. The enter
-     * animation runs after that, and the old screen stays on the window. The activity therefore
-     * sets the width of a screen on the view of that screen, when the fragment builds it, and it
-     * holds the plain backdrop back until the new screen is resumed. The navigation library
-     * resumes a destination only after the enter animation ends.
+     * navigation. The controller reports a new destination before the screen appears, and the old
+     * screen holds the window while the animation runs. The activity therefore sets the width of a
+     * screen on the view of that screen, when the fragment builds it.
+     *
+     * The plain backdrop waits for the view of the old screen to leave the window. The fragment
+     * manager destroys that view when the exit animation ends, and the old screen can show the
+     * wallpaper through its content until then. The resumed state of the new screen is not the
+     * signal: a destination with an enter animation resumes while the animation runs.
      *
      * The wallpaper is the exception: it returns as soon as the controller reports a destination
-     * that shows it, because the screen below the animation already needs it.
+     * that shows it, because the screen that enters already needs it.
      */
     private fun setupContentColumnWidth() {
         runCatching {
@@ -534,7 +537,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                         applyScreenWidth(v, target)
                     }
 
-                    override fun onFragmentResumed(fm: FragmentManager, f: Fragment) {
+                    override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
                         applyBackdrop()
                     }
                 },
@@ -572,7 +575,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     /**
      * The wallpaper returns at once, because the new screen shows it through the content. The
-     * plain backdrop waits for the new screen. See the fragment callback in
+     * plain backdrop waits for the old screen to leave the window. See the fragment callback in
      * [setupContentColumnWidth].
      */
     private fun applyDestination(destinationId: Int) {

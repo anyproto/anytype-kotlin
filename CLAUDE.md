@@ -98,8 +98,10 @@ The wallpaper then reaches the eye only in the strip beside a capped column. The
 `showsWallpaper()` holds the rule.
 
 The moment of a change matters. The navigation controller reports a new destination before the
-new screen appears, and the old screen holds the window during the enter animation. The wallpaper
-therefore returns at once, and the plain backdrop waits for the new screen to resume.
+new screen appears, and the old screen holds the window during the animation. The wallpaper
+therefore returns at once. The plain backdrop waits until the fragment manager destroys the view
+of the old screen, which happens when the exit animation ends. Do not use the resumed state of the
+new screen for this: a destination with an enter animation resumes while the animation runs.
 
 **Never size a view or a composable from the display.** `resources.displayMetrics.widthPixels`
 and `LocalConfiguration.current.screenWidthDp` report the whole window, which is wider than the

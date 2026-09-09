@@ -548,7 +548,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
                 )
                 applyContentColumnPadding()
-                insets
+                // The container takes the left edge and the right edge as padding. A screen that
+                // reads the insets itself must not add that space a second time, so the listener
+                // reports the insets that remain. The top edge and the bottom edge stay, because
+                // the container does not pad them.
+                insets.inset(windowEdgeInsets.left, 0, windowEdgeInsets.right, 0)
             }
         }.onFailure {
             Timber.e(it, "Error while setting up the width of the content column")
@@ -599,9 +603,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             destinationId = destinationId,
             cappedWidthPx = resources.getDimensionPixelSize(R.dimen.max_content_width)
         )
+        // The container reports its width only after a measure pass, and a fragment builds its view
+        // before that. The display width stands in until then, minus the edges that the container
+        // holds back. A screen wider than the padded container would clip at both sides.
         val available = (container.width - container.paddingLeft - container.paddingRight)
             .takeIf { it > 0 }
-            ?: resources.displayMetrics.widthPixels
+            ?: (resources.displayMetrics.widthPixels - windowEdgeInsets.left - windowEdgeInsets.right)
         val width = if (max == NO_MAX_WIDTH || max >= available) {
             ViewGroup.LayoutParams.MATCH_PARENT
         } else {

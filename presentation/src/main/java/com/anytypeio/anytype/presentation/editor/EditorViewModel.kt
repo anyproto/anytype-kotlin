@@ -1451,16 +1451,26 @@ class EditorViewModel(
         // empty and nothing is seeded. The store write is synchronous, so it lands before
         // the render below. Never overwrite a cursor that another operation set on purpose,
         // for example the Cursor.End of a block split.
-        val restoredFocus = orchestrator.stores.focus.current()
-        val restoredFocusTarget = restoredFocus.targetOrNull()
-        if (restoredFocusTarget != null && restoredFocus.cursor == null) {
-            val lastSelection = orchestrator.stores.textSelection.current()
-            if (lastSelection.id == restoredFocusTarget) {
-                lastSelection.selection?.let { range ->
-                    Timber.d("onStart: restoring caret of [$restoredFocusTarget] to $range")
-                    orchestrator.stores.focus.update(
-                        restoredFocus.copy(cursor = Editor.Cursor.Range(range))
-                    )
+        //
+        // This path serves a return from background, where the fragment view survives and the
+        // OS restores no instance state. A recreation instead carries the caret in the saved
+        // state, and [restorePendingFocus] applies it after the open. Only one of the two may
+        // write the focus store per start, so stand down when a snapshot is pending: the
+        // snapshot is the newer value, and the two writers disagree on whether to overwrite a
+        // deliberate cursor. onViewStateRestored runs before onStart, so the field is already
+        // set here when a recreation is in progress.
+        if (pendingFocusRestore == null) {
+            val restoredFocus = orchestrator.stores.focus.current()
+            val restoredFocusTarget = restoredFocus.targetOrNull()
+            if (restoredFocusTarget != null && restoredFocus.cursor == null) {
+                val lastSelection = orchestrator.stores.textSelection.current()
+                if (lastSelection.id == restoredFocusTarget) {
+                    lastSelection.selection?.let { range ->
+                        Timber.d("onStart: restoring caret of [$restoredFocusTarget] to $range")
+                        orchestrator.stores.focus.update(
+                            restoredFocus.copy(cursor = Editor.Cursor.Range(range))
+                        )
+                    }
                 }
             }
         }
@@ -1503,8 +1513,12 @@ class EditorViewModel(
                     when (result) {
                         is Result.Success -> {
                             session.value = Session.OPEN
-                            onStartFocusing(result.data)
-                            restorePendingFocus(result.data)
+                            // Restore the saved caret first. The initial focus policy writes
+                            // the same store from a coroutine, so it must know that a caret is
+                            // already in place. Order alone does not protect it: the nested
+                            // launch runs inline only on Dispatchers.Main.immediate.
+                            val focusRestored = restorePendingFocus(result.data)
+                            onStartFocusing(result.data, skipInitialFocus = focusRestored)
                             orchestrator.proxies.payloads.send(result.data)
                             result.data.events.forEach { event ->
                                 if (event is Event.Command.ShowObject) {
@@ -1577,15 +1591,19 @@ class EditorViewModel(
      * Puts the caret back where [onRestoreSavedState] said it was, before the first render.
      * The renderer reads the focus store, so the block comes back focused with the cursor set.
      * Runs once per restore: the snapshot is consumed even when its block is gone.
+     *
+     * Returns true when this method wrote the focus store. The caller then skips the initial
+     * focus policy in [onStartFocusing], which writes the same store from a coroutine and
+     * would otherwise overwrite the restored caret.
      */
-    private fun restorePendingFocus(payload: Payload) {
-        val snapshot = pendingFocusRestore ?: return
+    private fun restorePendingFocus(payload: Payload): Boolean {
+        val snapshot = pendingFocusRestore ?: return false
         pendingFocusRestore = null
         Timber.d("restorePendingFocus, snapshot:[$snapshot]")
         val shown = payload.events.filterIsInstance<Event.Command.ShowObject>().firstOrNull()
         if (shown == null || shown.blocks.none { it.id == snapshot.blockId }) {
             Timber.d("Skipping focus restore: block ${snapshot.blockId} is not in the document")
-            return
+            return false
         }
         val start = snapshot.selectionStart
         val end = snapshot.selectionEnd
@@ -1597,7 +1615,12 @@ class EditorViewModel(
             )
             Editor.Cursor.Range(start..end)
         } else {
-            Editor.Cursor.End
+            // The block held focus, but the selection store did not track it: the focus came
+            // from an operation that set no cursor. The caret position is unknown, so do not
+            // invent one. Cursor.End would move the caret to the end of the text although the
+            // user may have left it at index 0. Restore the focus only, which brings back the
+            // keyboard and the type bar.
+            Editor.Cursor.Start
         }
         orchestrator.stores.focus.update(
             Editor.Focus(
@@ -1605,9 +1628,16 @@ class EditorViewModel(
                 cursor = cursor
             )
         )
+        return true
     }
 
-    private fun onStartFocusing(payload: Payload) {
+    /**
+     * Applies the initial focus policy for a freshly opened document.
+     *
+     * @param skipInitialFocus true when [restorePendingFocus] already placed the caret. The
+     * locked-mode branch still runs, because that is not a focus decision.
+     */
+    private fun onStartFocusing(payload: Payload, skipInitialFocus: Boolean = false) {
         val event = payload.events.find { it is Event.Command.ShowObject }
         if (event is Event.Command.ShowObject) {
             val root = event.blocks.find { it.id == context }
@@ -1615,7 +1645,7 @@ class EditorViewModel(
             // policy below only focuses an *empty* document, which would leave a restored
             // draft with no caret, no keyboard and therefore no type bar — breaking the
             // two-tap promise on exactly the flow the per-space draft exists to serve.
-            if (isQuickCapture && root != null && root.fields.isLocked != true) {
+            if (!skipInitialFocus && isQuickCapture && root != null && root.fields.isLocked != true) {
                 if (focusRestoredQuickCaptureDraft(event, root)) return
             }
             when {
@@ -1623,6 +1653,7 @@ class EditorViewModel(
                 root.fields.isLocked == true -> {
                     mode = EditorMode.Locked
                 }
+                skipInitialFocus -> Timber.d("Skipping initial focusing: a saved caret is restored.")
                 root.children.size == 1 -> {
                     val first = event.blocks.first { it.id == root.children.first() }
                     val content = first.content

@@ -76,16 +76,40 @@ UI (Compose/Views) → ViewModels → Use Cases → Repositories → Middleware 
 - Check `/docs/design_system.md` for guidelines
 
 #### The content column
-The app runs in any orientation. `activity_main.xml` caps the content at
-`@dimen/max_content_width` and centers it, so a window wider than 600dp shows one centered
-column instead of stretched rows. The dimension lives in `core-utils`: the default never binds,
-and `res/values-w600dp` sets 600dp.
+The app runs in any orientation. A window wider than 600dp shows one centered column instead of
+stretched rows. `@dimen/max_content_width` holds the maximum width. The dimension lives in
+`core-utils`: the default never binds, and `res/values-w600dp` sets 600dp.
+
+**The width belongs to the screen, not to the container.** The container in `activity_main.xml`
+fills the window. `MainActivity` sets the width on the root view of a fragment when the fragment
+builds the view. Two screens share the container during a navigation, so a maximum width on the
+container changes the shape of the screen that the user still sees.
+
+Two screens are an exception, on a phone and on a tablet: the set screen and the type screen fill
+the whole window. These screens show a data view, and a Kanban board needs every pixel of the
+window. The editor keeps the capped column, because a full width line of text is hard to read.
+`contentColumnMaxWidth()` holds the rule.
+
+`MainActivity.setupContentColumnWidth()` also sets the backdrop. The widgets screen, the
+collection screen, and the vault show the wallpaper of the space through their content, so the
+root paints the wallpaper there. Every other screen paints an opaque background over the column.
+The wallpaper then reaches the eye only in the strip beside a capped column. The root paints
+`@color/background_primary` there: white in the light theme, black in the dark theme.
+`showsWallpaper()` holds the rule.
+
+The moment of a change matters. The navigation controller reports a new destination before the
+new screen appears, and the old screen holds the window during the animation. The wallpaper
+therefore returns at once. The plain backdrop waits until the fragment manager destroys the view
+of the old screen, which happens when the exit animation ends. Do not use the resumed state of the
+new screen for this: a destination with an enter animation resumes while the animation runs.
 
 **Never size a view or a composable from the display.** `resources.displayMetrics.widthPixels`
 and `LocalConfiguration.current.screenWidthDp` report the whole window, which is wider than the
 column on a tablet and on a phone in landscape. Use instead:
 - `View.contentWidth()` — the width of the container that owns the space, in pixels.
 - `contentWidthDp()` — the same value for a composable, in dp.
+- `Modifier.halfRowWidth()` — half of the row that holds the content. A field title and a
+  field value each take at most half of their row, and the row is not always the whole column.
 - `BottomSheetDialogFragment.applyContentWidthCap()` — a sheet owns its own window, so the
   activity layout cannot reach it. The three sheet host classes already call this.
 

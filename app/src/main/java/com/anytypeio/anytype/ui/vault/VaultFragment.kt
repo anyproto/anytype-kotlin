@@ -98,6 +98,7 @@ class VaultFragment : BaseComposeFragment() {
 
             VaultScreen(
                 uiState = vm.uiState.collectAsStateWithLifecycle().value,
+                isEnrichingPreviews = vm.isEnrichingPreviews.collectAsStateWithLifecycle().value,
                 showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
                 showCreateSpaceBadge = vm.showCreateSpaceBadge.collectAsStateWithLifecycle().value,
                 isCompactMode = vm.isCompactMode.collectAsStateWithLifecycle().value,
@@ -123,6 +124,7 @@ class VaultFragment : BaseComposeFragment() {
                 onSpaceSettings = vm::onSpaceSettingsClicked,
                 onDeleteOrLeaveSpace = vm::onDeleteSpaceClicked,
                 onSearchBarClicked = {
+                    vm.onSearchBarClicked()
                     // safeNavigate: a double tap must not push the screen twice.
                     runCatching {
                         findNavController().safeNavigate(
@@ -134,6 +136,7 @@ class VaultFragment : BaseComposeFragment() {
                         Timber.e(it, "Error opening search from vault")
                     }
                 },
+                showSearchHighlight = vm.showSearchHighlight.collectAsStateWithLifecycle().value,
                 showQuickCaptureFab = vm.showQuickCapture.collectAsStateWithLifecycle().value,
                 onQuickCaptureClicked = vm::onQuickCaptureClicked,
                 quickCaptureSuccess = vm.quickCaptureSuccess.collectAsStateWithLifecycle().value,

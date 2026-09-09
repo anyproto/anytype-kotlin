@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.SubcomposeLayout
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
@@ -31,6 +29,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.FieldRow
+import com.anytypeio.anytype.core_ui.extensions.halfRowWidth
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations2
@@ -49,10 +49,6 @@ fun FieldTypeFile(
     onRemoveFromObjectClick: () -> Unit,
 ) {
     val isMenuExpanded = remember { mutableStateOf(false) }
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val halfScreenWidth = screenWidth / 2 - 32.dp
-
     val defaultModifier = modifier
         .combinedClickable(
             onClick = onFieldClick,
@@ -72,13 +68,13 @@ fun FieldTypeFile(
     if (fieldObject.files.size == 1) {
         // If there is only one item, display the title and the item in one row.
         val singleItem = fieldObject.files.first()
-        Row(
+        FieldRow(
             modifier = defaultModifier,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
-                    .widthIn(max = halfScreenWidth)
+                    .halfRowWidth()
                     .wrapContentHeight()
                     .padding(vertical = 2.dp)
             ) {
@@ -92,7 +88,7 @@ fun FieldTypeFile(
             }
             Spacer(modifier = Modifier.width(8.dp))
             Box(
-                modifier = Modifier.widthIn(max = halfScreenWidth)
+                modifier = Modifier.halfRowWidth()
             ) {
                 ItemView(
                     modifier = Modifier.wrapContentHeight(),
@@ -127,7 +123,7 @@ fun FieldTypeFile(
                 overflow = TextOverflow.Ellipsis
             )
             Spacer(modifier = Modifier.height(10.dp))
-            Row(
+            FieldRow(
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -135,7 +131,7 @@ fun FieldTypeFile(
                 if (fieldObject.files.isNotEmpty()) {
                     Box(
                         modifier = Modifier
-                            .widthIn(max = halfScreenWidth)
+                            .halfRowWidth()
                     ) {
                         ItemView(
                             modifier = Modifier.wrapContentHeight(),
@@ -146,7 +142,7 @@ fun FieldTypeFile(
                 // The second item (if present)
                 if (fieldObject.files.size > 1) {
                     Spacer(modifier = Modifier.width(8.dp))
-                    Box(modifier = Modifier.widthIn(max = halfScreenWidth)) {
+                    Box(modifier = Modifier.halfRowWidth()) {
                         if (fieldObject.files.size == 2) {
                             ItemView(
                                 modifier = Modifier.wrapContentHeight(),

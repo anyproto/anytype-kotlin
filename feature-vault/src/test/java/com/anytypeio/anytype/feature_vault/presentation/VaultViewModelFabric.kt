@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
+import com.anytypeio.anytype.domain.vault.SetVaultSearchHighlightSeen
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
@@ -78,6 +79,7 @@ object VaultViewModelFabric {
             on { runBlocking { async(any()) } }.thenReturn(com.anytypeio.anytype.domain.base.Resultat.Success(false))
         },
         setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen = mock(),
+        setVaultSearchHighlightSeen: SetVaultSearchHighlightSeen = mock(),
         appInfo: AppInfo = mock {
             on { versionName }.thenReturn("1.0.0-test")
         },
@@ -97,6 +99,7 @@ object VaultViewModelFabric {
         userSettingsRepository: UserSettingsRepository = mock {
             on { observeCompactModeEnabled() }.thenReturn(flowOf(false))
             on { observeQuickCaptureEnabled() }.thenReturn(flowOf(false))
+            onBlocking { getVaultSortKeys() }.thenReturn(emptyMap())
         }
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
@@ -124,6 +127,7 @@ object VaultViewModelFabric {
         getSpaceWallpapers = getSpaceWallpaper,
         shouldShowCreateSpaceBadge = shouldShowCreateSpaceBadge,
         setCreateSpaceBadgeSeen = setCreateSpaceBadgeSeen,
+        setVaultSearchHighlightSeen = setVaultSearchHighlightSeen,
         appInfo = appInfo,
         participantContainer = participantSubscriptionContainer,
         searchOneToOneChatByIdentity = searchOneToOneChatByIdentity,

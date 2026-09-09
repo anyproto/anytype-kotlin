@@ -6,6 +6,10 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -20,7 +24,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.Insets
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
@@ -28,6 +37,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.FloatingWindow
+import androidx.navigation.NavController
 import androidx.navigation.NavOptions
 import androidx.navigation.NavOptions.Builder
 import androidx.navigation.findNavController
@@ -123,6 +134,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     val container: FragmentContainerView get() = findViewById(R.id.fragment)
 
+    /**
+     * The wallpaper belongs on the root, not on [container]. The content column stops at
+     * @dimen/max_content_width on a wide window, so a wallpaper painted on the column would
+     * leave a bare strip down each side of a tablet.
+     */
+    private val rootContainer: android.view.View get() = findViewById(R.id.rootContainer)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 1) Enable edge-to-edge with automatic light/dark icons
@@ -139,6 +157,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         inject()
         setupTheme()
         setupFeatureIntroductions()
+        setupContentColumnWidth()
 
         if (savedInstanceState != null) vm.onRestore()
 
@@ -456,25 +475,214 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         }
     }
 
+    /**
+     * The insets of the window edges, from the last insets pass.
+     */
+    private var windowEdgeInsets: Insets = Insets.NONE
+
+    /**
+     * The navigation controller of the content column. The activity reads the current screen from
+     * it while a fragment builds its view.
+     */
+    private var contentNavController: NavController? = null
+
+    /**
+     * The destination that owns the window now. The value is null until the navigation controller
+     * reports the first destination.
+     */
+    private var currentDestinationId: Int? = null
+
+    /**
+     * The wallpaper of the space, from the last value of [MainViewModel.wallpaperState].
+     */
+    private var currentWallpaper: WallpaperResult = WallpaperResult.None
+
+    /**
+     * The screen sets two properties of the content column: the width of the screen itself, and
+     * the backdrop beside it. See [contentColumnMaxWidth] and [showsWallpaper].
+     *
+     * Both properties belong to a moment in the life of a screen, not to the moment of the
+     * navigation. The controller reports a new destination before the screen appears, and the old
+     * screen holds the window while the animation runs. The activity therefore sets the width of a
+     * screen on the view of that screen, when the fragment builds it.
+     *
+     * The plain backdrop waits for the view of the old screen to leave the window. The fragment
+     * manager destroys that view when the exit animation ends, and the old screen can show the
+     * wallpaper through its content until then. The resumed state of the new screen is not the
+     * signal: a destination with an enter animation resumes while the animation runs.
+     *
+     * The wallpaper is the exception: it returns as soon as the controller reports a destination
+     * that shows it, because the screen that enters already needs it.
+     */
+    private fun setupContentColumnWidth() {
+        runCatching {
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(R.id.fragment) as NavHostFragment
+            val controller = navHostFragment.navController
+            contentNavController = controller
+            controller.addOnDestinationChangedListener { _, _, _ ->
+                val target = currentScreenDestinationId()
+                if (target != null) applyDestination(target)
+            }
+            navHostFragment.childFragmentManager.registerFragmentLifecycleCallbacks(
+                object : FragmentManager.FragmentLifecycleCallbacks() {
+                    override fun onFragmentViewCreated(
+                        fm: FragmentManager,
+                        f: Fragment,
+                        v: View,
+                        savedInstanceState: Bundle?
+                    ) {
+                        if (f is DialogFragment) return
+                        val target = currentScreenDestinationId() ?: return
+                        applyScreenWidth(v, target)
+                    }
+
+                    override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
+                        applyBackdrop()
+                    }
+                },
+                false
+            )
+            ViewCompat.setOnApplyWindowInsetsListener(container) { _, insets ->
+                windowEdgeInsets = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout()
+                )
+                applyContentColumnPadding()
+                // The container takes the left edge and the right edge as padding. A screen that
+                // reads the insets itself must not add that space a second time, so the listener
+                // reports the insets that remain. The top edge and the bottom edge stay, because
+                // the container does not pad them.
+                insets.inset(windowEdgeInsets.left, 0, windowEdgeInsets.right, 0)
+            }
+        }.onFailure {
+            Timber.e(it, "Error while setting up the width of the content column")
+        }
+    }
+
+    /**
+     * The identifier of the screen that owns the window now.
+     *
+     * A dialog destination owns its own window and leaves the screen below it on the back stack.
+     * The width and the backdrop belong to the screen below, not to the dialog. This resolves the
+     * topmost entry that is not a [FloatingWindow]. The activity is recreated on a rotation, so
+     * this also gives the correct screen when a dialog is on top at that moment.
+     */
+    private fun currentScreenDestinationId(): Int? {
+        val controller = contentNavController ?: return null
+        val destination = controller.currentDestination ?: return null
+        if (destination !is FloatingWindow) return destination.id
+        return controller.currentBackStack.value
+            .lastOrNull { entry -> entry.destination !is FloatingWindow }
+            ?.destination
+            ?.id
+    }
+
+    /**
+     * The wallpaper returns at once, because the new screen shows it through the content. The
+     * plain backdrop waits for the old screen to leave the window. See the fragment callback in
+     * [setupContentColumnWidth].
+     */
+    private fun applyDestination(destinationId: Int) {
+        currentDestinationId = destinationId
+        if (showsWallpaper(destinationId)) applyBackdrop()
+    }
+
+    /**
+     * The width of a screen belongs to the screen, not to the container. Two screens share the
+     * container during a navigation: the old screen holds the window while the new screen enters.
+     * A maximum width on the container therefore changes the shape of the old screen, and the user
+     * sees the old screen stretch before the new screen arrives. The container fills the window,
+     * and each screen carries its own width.
+     *
+     * @param view the root view of the fragment of the screen.
+     * @param destinationId the identifier of the screen.
+     */
+    private fun applyScreenWidth(view: View, destinationId: Int) {
+        val params = view.layoutParams as? FrameLayout.LayoutParams ?: return
+        val max = contentColumnMaxWidth(
+            destinationId = destinationId,
+            cappedWidthPx = resources.getDimensionPixelSize(R.dimen.max_content_width)
+        )
+        // The container reports its width only after a measure pass, and a fragment builds its view
+        // before that. The display width stands in until then, minus the edges that the container
+        // holds back. A screen wider than the padded container would clip at both sides.
+        val available = (container.width - container.paddingLeft - container.paddingRight)
+            .takeIf { it > 0 }
+            ?: (resources.displayMetrics.widthPixels - windowEdgeInsets.left - windowEdgeInsets.right)
+        val width = if (max == NO_MAX_WIDTH || max >= available) {
+            ViewGroup.LayoutParams.MATCH_PARENT
+        } else {
+            max
+        }
+        if (params.width == width && params.gravity == Gravity.CENTER_HORIZONTAL) return
+        params.width = width
+        params.gravity = Gravity.CENTER_HORIZONTAL
+        view.layoutParams = params
+    }
+
+    /**
+     * The window draws under a display cutout, because [enableEdgeToEdge] asks for it. A screen
+     * that fills the window reaches the cutout and the side navigation bar, and text runs under
+     * them. The container holds every screen off both edges. The padding stays the same on a
+     * navigation, so no screen moves while another screen enters.
+     */
+    private fun applyContentColumnPadding() {
+        val left = windowEdgeInsets.left
+        val right = windowEdgeInsets.right
+        if (container.paddingLeft != left || container.paddingRight != right) {
+            container.setPadding(left, container.paddingTop, right, container.paddingBottom)
+        }
+    }
+
     private fun setWallpaper(result: WallpaperResult) {
-        when (result) {
+        currentWallpaper = result
+        applyBackdrop()
+    }
+
+    /**
+     * The root paints the backdrop of the window. The widgets screen, the collection screen, and
+     * the vault show the wallpaper of the space through their content, so the root paints the
+     * wallpaper there. Every other screen paints an opaque background over the content column. The
+     * wallpaper then reaches the eye only in the strip beside a capped column. The root paints the
+     * plain backdrop there: white in the light theme, black in the dark theme.
+     */
+    private fun applyBackdrop() {
+        val destinationId = currentDestinationId
+        if (destinationId != null && !showsWallpaper(destinationId)) {
+            paintPlainBackdrop()
+            return
+        }
+        when (val wallpaper = currentWallpaper) {
             is WallpaperResult.Gradient -> {
-                container.setBackgroundResource(getGradientDrawableResource(result.gradientCode))
-                container.background?.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
+                rootContainer.setBackgroundResource(
+                    getGradientDrawableResource(wallpaper.gradientCode)
+                )
+                rootContainer.background?.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
             }
             is WallpaperResult.SolidColor -> {
                 try {
-                    container.setBackgroundColor(Color.parseColor(result.colorHex))
-                    container.background?.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
+                    rootContainer.setBackgroundColor(Color.parseColor(wallpaper.colorHex))
+                    rootContainer.background?.alpha = WallpaperView.WALLPAPER_DEFAULT_ALPHA
                 } catch (e: IllegalArgumentException) {
-                    Timber.w(e, "Invalid color format: ${result.colorHex}")
-                    container.background = null
+                    Timber.w(e, "Invalid color format: ${wallpaper.colorHex}")
+                    paintPlainBackdrop()
                 }
             }
             WallpaperResult.None -> {
-                container.background = null
+                // Restore the backdrop instead of clearing it: a null background would expose the
+                // window behind the column on a wide screen.
+                paintPlainBackdrop()
             }
         }
+    }
+
+    /**
+     * A wallpaper lowers the alpha of the background of the root. The view keeps one drawable for
+     * a color, so the plain backdrop restores the full alpha.
+     */
+    private fun paintPlainBackdrop() {
+        rootContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.background_primary))
+        rootContainer.background?.alpha = OPAQUE_ALPHA
     }
 
     /**
@@ -1104,3 +1312,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         componentManager().mainEntryComponent.release()
     }
 }
+
+/**
+ * The alpha of a background that hides everything behind it.
+ */
+private const val OPAQUE_ALPHA = 255

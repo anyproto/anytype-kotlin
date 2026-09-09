@@ -21,6 +21,7 @@ import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
+import com.anytypeio.anytype.core_utils.ext.fixBottomSheetNavigationBarGap
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
@@ -57,6 +58,18 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
         super.onViewCreated(view, savedInstanceState)
         skipCollapsed()
         setFullHeightSheet()
+        // Own the status-bar inset instead of leaving it to BottomSheetDialog. Its
+        // EdgeToEdgeCallback pads the sheet by the inset, but it is only constructed on the
+        // first inset dispatch and only applies the padding from a state/slide callback —
+        // which on device landed ~900ms after the sheet was already on screen. Until then
+        // the sheet sits full-height at y=0 with the content under the status bar, and the
+        // padding then drops everything by the inset in one step: that is the open jump.
+        // The pass-through below is what keeps that callback from ever being built (the
+        // behavior itself installs no inset listener here — Widget.Design.BottomSheet.Modal
+        // sets none of the padding/margin inset flags and the peek height is auto).
+        fixBottomSheetNavigationBarGap(applyTopSystemBarInset = false)
+        applyTopInset()
+        binding.root.viewTreeObserver.addOnPreDrawListener(topInsetPreDrawListener)
         // The sheet's own rounded background paints the status-bar inset strip grey
         // (background_secondary). The layout paints its own surface, so drop it and let
         // that strip stay transparent over the dimmed vault.
@@ -74,6 +87,7 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
         // instead and pad the editor container, so the editor's bottom-gravity type bar
         // and style toolbar ride the keyboard.
         binding.root.viewTreeObserver.addOnGlobalLayoutListener(imeLayoutListener)
+        binding.root.viewTreeObserver.addOnWindowFocusChangeListener(windowFocusListener)
         // Dismissing with the keyboard up looks broken if the IME collapses only after the
         // sheet has gone: two unsynchronized animations plus a window resize. Retract the
         // IME the instant the drag starts, so it travels with the sheet.
@@ -94,15 +108,34 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
         // gesture/navigation bar. Padding by the full amount puts the editor's bottom
         // widgets exactly on the keyboard's top edge, and clear of the gesture bar when
         // the keyboard is down.
+        // Only while this window owns the keyboard. The space picker and the sheet's own
+        // dialogs are separate windows, and when one opens the IME goes with it: the visible
+        // frame then reports the keyboard as gone, which is true of the window in front and
+        // not of the sheet behind it. Acting on that measurement resized the editor by the
+        // keyboard's height under the picker and back again on dismissal — the blink.
+        if (!root.hasWindowFocus()) return@OnGlobalLayoutListener
         val covered = (root.rootView.height - frame.bottom).coerceAtLeast(0)
         if (binding.quickCaptureEditorContainer.paddingBottom != covered) {
             binding.quickCaptureEditorContainer.updatePadding(bottom = covered)
         }
-        // frame.top is the status-bar height: keep the sheet surface below it so the strip
-        // above the drag handle stays transparent.
-        if (root.paddingTop != frame.top) {
-            root.updatePadding(top = frame.top)
-        }
+        // Bottom only. The status-bar inset is applied once, up front, and then kept in
+        // step by the insets listener in onViewCreated — driving it from the visible frame
+        // here as well would make it a per-layout output and hand it back the chance to
+        // move after the sheet is on screen.
+    }
+
+    /**
+     * The scrim is a window dim layer, and a window dim belongs to the window in front. While
+     * the space picker (or any of the sheet's dialogs) is up, the window manager composites
+     * this sheet's 0.9 layer above the sheet and the keyboard rather than behind them, and
+     * tearing that front window down flashes the whole app black for a few frames — the
+     * system bars, which are not app windows, stay lit and give the flash away.
+     *
+     * So the sheet only dims while it is the front window. Nothing looks lighter meanwhile:
+     * the picker paints a scrim of its own over everything behind it.
+     */
+    private val windowFocusListener = ViewTreeObserver.OnWindowFocusChangeListener { hasFocus ->
+        applyScrimDim(if (hasFocus) SCRIM_DIM_AMOUNT else 0f)
     }
 
     private val dragCallback = object : BottomSheetBehavior.BottomSheetCallback() {
@@ -164,10 +197,62 @@ class QuickCaptureFragment : BaseBottomSheetFragment<FragmentQuickCaptureBinding
         }
     }
 
+    /**
+     * Runs after layout but before the frame is drawn, so a correction costs a dropped
+     * frame instead of a visible step: returning false here cancels this draw and re-runs
+     * the traversal with the new padding. A post-layout listener could only ever fix the
+     * position one frame *after* it was already shown wrong.
+     */
+    private val topInsetPreDrawListener = ViewTreeObserver.OnPreDrawListener {
+        if (!hasBinding()) return@OnPreDrawListener true
+        applyTopInset()
+    }
+
+    /**
+     * Holds the content below the status bar wherever the sheet itself is: the inset minus
+     * the sheet's own top, which is what BottomSheetDialog's edge-to-edge callback computes.
+     * The sheet passes through both configurations while opening — laid out below the status
+     * bar before the dialog goes edge to edge, at y=0 after — and this puts the content in
+     * the same place in each, so neither transition moves it.
+     *
+     * @return true when the padding already matched and the frame can be drawn as laid out.
+     */
+    private fun applyTopInset(): Boolean {
+        val target = (statusBarInsetTop() - (sheet?.top ?: 0)).coerceAtLeast(0)
+        if (binding.root.paddingTop == target) return true
+        binding.root.updatePadding(top = target)
+        return false
+    }
+
+    /**
+     * The dialog's own window has no insets in onViewCreated (verified on device:
+     * getRootWindowInsets is null there) and waiting for them is the jump this removes, so
+     * seed from the host activity's window — attached already, same status bar. A null means
+     * not attached; a zero is a real answer (the status bar can genuinely be hidden) and is
+     * returned as one. The framework dimension is the last resort.
+     */
+    private fun statusBarInsetTop(): Int {
+        val fromSheet = view?.let { ViewCompat.getRootWindowInsets(it) }
+        if (fromSheet != null) return fromSheet.getInsets(WindowInsetsCompat.Type.statusBars()).top
+        val fromActivity = activity?.window?.decorView
+            ?.let { ViewCompat.getRootWindowInsets(it) }
+        if (fromActivity != null) {
+            return fromActivity.getInsets(WindowInsetsCompat.Type.statusBars()).top
+        }
+        val id = resources.getIdentifier("status_bar_height", "dimen", "android")
+        return if (id > 0) resources.getDimensionPixelSize(id) else 0
+    }
+
     private fun hasBinding(): Boolean = view != null
 
     override fun onDestroyView() {
+        // Before super: the child editor is still attached here, and onCleared (where the
+        // empty-draft cleanup decides) runs after this. Config changes reach this too, but
+        // recording a boolean is harmless — onCleared does not fire for those.
+        vm.onEditorDetached(hasEdits = editor()?.hasEdits() == true)
         binding.root.viewTreeObserver.removeOnGlobalLayoutListener(imeLayoutListener)
+        binding.root.viewTreeObserver.removeOnPreDrawListener(topInsetPreDrawListener)
+        binding.root.viewTreeObserver.removeOnWindowFocusChangeListener(windowFocusListener)
         sheet?.let { view -> BottomSheetBehavior.from(view).removeBottomSheetCallback(dragCallback) }
         super.onDestroyView()
     }

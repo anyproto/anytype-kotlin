@@ -353,6 +353,7 @@ fun WidgetsScreen(
                                     key = SECTION_UNREAD,
                                 ) {
                                     UnreadSectionHeader(
+                                        isExpanded = !isUnreadSectionCollapsed,
                                         onSectionClicked = viewModel::onSectionUnreadClicked
                                     )
                                 }
@@ -419,7 +420,7 @@ fun WidgetsScreen(
                                 key = SECTION_OBJECT_TYPE,
                             ) {
                                 SpaceObjectTypesSectionHeader(
-                                    mode = mode,
+                                    isExpanded = !isObjectsSectionCollapsed,
                                     onSectionClicked = viewModel::onSectionTypesClicked
                                 )
                             }
@@ -462,6 +463,7 @@ fun WidgetsScreen(
                                     key = SECTION_RECENTLY_EDITED,
                                 ) {
                                     RecentlyEditedSectionHeader(
+                                        isExpanded = !isRecentlyEditedSectionCollapsed,
                                         onSectionClicked = viewModel::onSectionRecentlyEditedClicked
                                     )
                                 }
@@ -521,6 +523,7 @@ fun WidgetsScreen(
                                     key = SECTION_MY_FAVORITES,
                                 ) {
                                     MyFavoritesSectionHeader(
+                                        isExpanded = !isMyFavoritesSectionCollapsed,
                                         onSectionClicked = viewModel::onSectionMyFavoritesClicked
                                     )
                                 }

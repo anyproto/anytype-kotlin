@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.sharing
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -13,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.presentation.sharing.SelectableObjectView
 import com.anytypeio.anytype.presentation.sharing.SelectableSpaceView
 import com.anytypeio.anytype.presentation.sharing.SharingScreenState
@@ -57,8 +57,8 @@ fun SharingModalSheet(
     val scope = rememberCoroutineScope()
 
     ModalBottomSheet(
+        sheetMaxWidth = contentWidthDp(),
         modifier = Modifier
-            .fillMaxWidth()
             .statusBarsPadding(),
         onDismissRequest = { onDismiss() },
         sheetState = sheetState,

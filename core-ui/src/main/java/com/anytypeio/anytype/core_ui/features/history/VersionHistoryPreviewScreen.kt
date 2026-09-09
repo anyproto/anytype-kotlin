@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -43,6 +44,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -72,11 +74,12 @@ fun VersionHistoryPreviewScreen(
         versionTitle.value = "${state.dateFormatted}, ${state.timeFormatted}"
         versionIcon.value = state.icon
         ModalBottomSheet(
+            sheetMaxWidth = contentWidthDp(),
             dragHandle = null,
             sheetState = sheetState,
             onDismissRequest = onDismiss,
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxHeight()
                 .systemBarsPadding()
                 .padding(top = 16.dp),
             scrimColor = Color.Transparent,

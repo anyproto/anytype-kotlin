@@ -23,6 +23,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Prompt
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
@@ -48,8 +49,8 @@ fun AlertScreenModals(
         skipPartiallyExpanded = true
     )
     ModalBottomSheet(
+        sheetMaxWidth = contentWidthDp(),
         modifier = Modifier
-            .fillMaxWidth()
             .windowInsetsPadding(WindowInsets.navigationBars),
         onDismissRequest = onDismiss,
         dragHandle = null,
@@ -81,8 +82,8 @@ fun SharedSpaceLimitModal(
         skipPartiallyExpanded = true
     )
     ModalBottomSheet(
+        sheetMaxWidth = contentWidthDp(),
         modifier = Modifier
-            .fillMaxWidth()
             .padding(horizontal = 8.dp)
             .navigationBarsPadding(),
         onDismissRequest = onDismiss,

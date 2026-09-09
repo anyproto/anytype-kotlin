@@ -20,6 +20,9 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.ui.quickcapture.QuickCaptureFragment
 import dagger.Component
+import javax.inject.Named
+import kotlinx.coroutines.CoroutineScope
+import com.anytypeio.anytype.di.main.ConfigModule
 
 @Component(
     dependencies = [QuickCaptureDependencies::class]
@@ -51,5 +54,7 @@ interface QuickCaptureDependencies : ComponentDependencies {
     fun typeSuggestionEngine(): TypeSuggestionEngine
     fun participantSubscriptionContainer(): ParticipantSubscriptionContainer
     fun authRepository(): AuthRepository
+    @Named(ConfigModule.DEFAULT_APP_COROUTINE_SCOPE)
+    fun applicationCoroutineScope(): CoroutineScope
     fun logger(): Logger
 }

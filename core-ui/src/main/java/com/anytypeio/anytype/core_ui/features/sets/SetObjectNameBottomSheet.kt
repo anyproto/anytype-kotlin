@@ -44,6 +44,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
@@ -81,12 +82,12 @@ fun SetObjectNameBottomSheet(
     }
 
     ModalBottomSheet(
+        sheetMaxWidth = contentWidthDp(),
         // IME inset is applied once, on the inner content Box below (.imePadding()). Applying
         // it here too double-counted the keyboard height and could leave the sheet mispositioned
         // (intermittently not visible) while the IME animates in.
         modifier = Modifier
             .systemBarsPadding()
-            .fillMaxWidth()
             .wrapContentHeight(),
         onDismissRequest = onDismiss,
         sheetState = sheetState,

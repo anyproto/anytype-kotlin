@@ -49,6 +49,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 fun VaultScreen(
     profile: AccountProfile,
     uiState: VaultUiState,
+    isEnrichingPreviews: Boolean = false,
     showNotificationBadge: Boolean = false,
     showCreateSpaceBadge: Boolean = false,
     isCompactMode: Boolean = false,
@@ -71,6 +72,7 @@ fun VaultScreen(
     onSpaceSettings: (Id) -> Unit,
     onDeleteOrLeaveSpace: (Id, Boolean) -> Unit,
     onSearchBarClicked: (() -> Unit)? = null,
+    showSearchHighlight: Boolean = false,
     showQuickCaptureFab: Boolean = false,
     onQuickCaptureClicked: () -> Unit = {},
     quickCaptureSuccess: VaultViewModel.QuickCaptureSuccess? = null,
@@ -89,7 +91,7 @@ fun VaultScreen(
         topBar = {
             VaultScreenTopToolbar(
                 profile = profile,
-                isLoading = uiState is VaultUiState.Loading,
+                isLoading = uiState is VaultUiState.Loading || isEnrichingPreviews,
                 searchQuery = searchQuery,
                 showNotificationBadge = showNotificationBadge,
                 showCreateSpaceBadge = showCreateSpaceBadge,
@@ -104,7 +106,8 @@ fun VaultScreen(
                 onUpdateSearchQuery = { query ->
                     searchQuery = query
                 },
-                onSearchBarClicked = onSearchBarClicked
+                onSearchBarClicked = onSearchBarClicked,
+                showSearchHighlight = showSearchHighlight
             )
         },
         floatingActionButton = {

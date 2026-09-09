@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        Maximum width of the single content column. The default is large enough to never bind,
+        so a phone in portrait keeps the full window. res/values-w600dp overrides it.
+    -->
+    <dimen name="max_content_width">10000dp</dimen>
+
+</resources>

@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.di.feature.chats.ChatContainerModule
+import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -25,10 +27,13 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import javax.inject.Named
+import kotlinx.coroutines.CoroutineScope
 
 @Component(
     dependencies = [DiscussionComponentDependencies::class],
     modules = [
+        ChatContainerModule::class,
         DiscussionModule.Declarations::class,
         DiscussionModule.Providers::class
     ]
@@ -68,6 +73,7 @@ object DiscussionModule {
 }
 
 interface DiscussionComponentDependencies : ComponentDependencies {
+    @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
     fun blockRepository(): BlockRepository
     fun authRepo(): AuthRepository
     fun appCoroutineDispatchers(): AppCoroutineDispatchers

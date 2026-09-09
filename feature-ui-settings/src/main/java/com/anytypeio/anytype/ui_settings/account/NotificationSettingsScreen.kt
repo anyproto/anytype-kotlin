@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -49,10 +49,13 @@ fun NotificationSettingsScreen(
         skipPartiallyExpanded = true
     )
     ModalBottomSheet(
+        // fillMaxSize would force the width as well, which overrides sheetMaxWidth and stretches
+        // the sheet across a tablet. Only the height is meant to be filled here.
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxHeight()
             .systemBarsPadding()
             .padding(top = 16.dp),
+        sheetMaxWidth = contentWidthDp(),
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         containerColor = colorResource(id = R.color.background_secondary),

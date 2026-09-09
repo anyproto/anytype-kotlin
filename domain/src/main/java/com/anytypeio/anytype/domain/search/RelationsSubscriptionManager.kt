@@ -9,12 +9,14 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscription
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.spaceIdOrNull
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -25,7 +27,9 @@ class RelationsSubscriptionManager @Inject constructor(
     private val container: RelationsSubscriptionContainer,
     private val spaceManager: SpaceManager
 ): GlobalSubscription {
-    val pipeline get() = spaceManager.state().flatMapLatest { state ->
+    val pipeline get() = spaceManager.state()
+        .distinctUntilChangedBy { state -> state.spaceIdOrNull() }
+        .flatMapLatest { state ->
         when(state) {
             is SpaceManager.State.Space.Active -> {
                 // DROID-2916 TODO provide other spaces or add new subscription
@@ -35,9 +39,9 @@ class RelationsSubscriptionManager @Inject constructor(
                 container.observe(params)
             }
             is SpaceManager.State.Space.Idle -> {
-                flow {
-                    emit(RelationsSubscriptionContainer.Index.empty())
-                }
+                // A space activated without Workspace.Open (quick capture). The params below
+                // are built from the space id alone, so there is nothing a config would add.
+                container.observe(buildParams(space = state.space))
             }
             is SpaceManager.State.NoSpace -> {
                 flow {

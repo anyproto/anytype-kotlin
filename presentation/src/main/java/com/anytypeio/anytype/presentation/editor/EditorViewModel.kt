@@ -1419,6 +1419,31 @@ class EditorViewModel(
         // screen), and the render pipeline only fetches when this id changes.
         lastFetchedDiscussionId = null
 
+        // The OS rebuilds the view on every configuration change, and the document then
+        // re-renders from the stores. The live caret lives in stores.textSelection, which
+        // onSelectionChanged keeps current. The renderer reads focus.cursor instead, and
+        // onBlockFocusChanged always writes that field as null. A rotation therefore put the
+        // caret at index 0. Seed the cursor from the last known selection, so the caret
+        // returns where the user left it.
+        //
+        // A fresh open is unaffected: the ViewModel is new there, so the focus target is
+        // empty and nothing is seeded. The store write is synchronous, so it lands before
+        // the render below. Never overwrite a cursor that another operation set on purpose,
+        // for example the Cursor.End of a block split.
+        val restoredFocus = orchestrator.stores.focus.current()
+        val restoredFocusTarget = restoredFocus.targetOrNull()
+        if (restoredFocusTarget != null && restoredFocus.cursor == null) {
+            val lastSelection = orchestrator.stores.textSelection.current()
+            if (lastSelection.id == restoredFocusTarget) {
+                lastSelection.selection?.let { range ->
+                    Timber.d("onStart: restoring caret of [$restoredFocusTarget] to $range")
+                    orchestrator.stores.focus.update(
+                        restoredFocus.copy(cursor = Editor.Cursor.Range(range))
+                    )
+                }
+            }
+        }
+
         stateData.postValue(ViewState.Loading)
 
         jobs += viewModelScope.launch {
@@ -1853,6 +1878,7 @@ class EditorViewModel(
         // reads the selection right after it changes. "Paste link" does exactly
         // that — it selects the inserted url, then asks for the link mark over it.
         orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
+        clearSeededCursor(id)
         blocks.find { it.id == id }?.let { target ->
             val targetBlockType = when (val content = target.content) {
                 is TextBlock -> when (content.style) {
@@ -1879,6 +1905,7 @@ class EditorViewModel(
         // table cells offer "Paste link" too, and the paste reads the selection
         // in the same input callback that changes it.
         orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
+        clearSeededCursor(id)
         blocks.find { it.id == id }?.let { target ->
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.OnSelectionChanged(
@@ -1887,6 +1914,22 @@ class EditorViewModel(
                     targetBlockType = TargetBlockType.Cell
                 )
             )
+        }
+    }
+
+    /**
+     * A cursor left in the focus store re-applies on every later render, because the render
+     * pipeline reads the store each time. [onStart] seeds one for the view rebuild after a
+     * rotation, and [onBlockFocusChanged] normally clears it on the focus gain. BlockAdapter
+     * drops that callback while a list update is being applied, so the seed can outlive its
+     * one render. The caret has now moved, so the seed is obsolete. Clear it here, where the
+     * divergence would otherwise begin. The write is skipped on the normal path, where the
+     * cursor is already null.
+     */
+    private fun clearSeededCursor(id: Id) {
+        val focus = orchestrator.stores.focus.current()
+        if (focus.cursor != null && focus.isTarget(id)) {
+            orchestrator.stores.focus.update(focus.copy(cursor = null))
         }
     }
 
@@ -8093,12 +8136,29 @@ class EditorViewModel(
         val document = blocks
         val title = document.title()?.content<Content.Text>()?.text
         if (!title.isNullOrBlank()) return true
-        return document.any { block ->
-            val content = block.content
-            content is Content.Text &&
-                content.style != Content.Text.Style.TITLE &&
-                content.text.isNotBlank()
-        }
+        return document.any { block -> block.isQuickCaptureContent() }
+    }
+
+    /**
+     * Whether this block is something the user put here, as opposed to structure every
+     * object is born with.
+     *
+     * Deliberately inverted: the listed types are the ones known to be structural, and
+     * everything else counts as content. This answer gates a permanent delete, so an
+     * unrecognised block type must read as "there is something here" rather than as empty.
+     * A text-only test would call an image-only draft empty and destroy the image with it.
+     */
+    private fun Block.isQuickCaptureContent(): Boolean = when (val content = content) {
+        // Structure present on every object before the user does anything.
+        is Content.Smart,
+        is Content.Layout,
+        is Content.FeaturedRelations,
+        is Content.RelationBlock,
+        is Content.Icon -> false
+        // The title is judged separately; an empty paragraph is not content.
+        is Content.Text -> content.style != Content.Text.Style.TITLE && content.text.isNotBlank()
+        // Files, images, bookmarks, links, tables, embeds, dividers — all user-placed.
+        else -> true
     }
 
     /**

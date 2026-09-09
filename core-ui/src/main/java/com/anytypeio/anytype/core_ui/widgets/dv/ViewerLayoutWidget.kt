@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption2Medium
@@ -70,9 +71,9 @@ fun ViewerLayoutWidget(
 
     if (uiState.showWidget) {
         ModalBottomSheet(
+            sheetMaxWidth = contentWidthDp(),
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets.ime)
-                .fillMaxWidth()
                 .wrapContentHeight(),
             scrimColor = colorResource(id = R.color.modal_screen_outside_background),
             containerColor = colorResource(id = R.color.background_secondary),

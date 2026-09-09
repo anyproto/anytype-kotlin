@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.presentation.quickcapture
 
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
 import app.cash.turbine.test
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Config
@@ -22,6 +25,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.quickcapture.DeleteQuickCaptureDraftIfEmpty
 import com.anytypeio.anytype.domain.quickcapture.FetchQuickCaptureDraft
 import com.anytypeio.anytype.domain.quickcapture.MoveQuickCaptureDraft
 import com.anytypeio.anytype.domain.quickcapture.SearchQuickCaptureDrafts
@@ -31,6 +35,7 @@ import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.emptyFlow
@@ -49,6 +54,7 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -66,6 +72,7 @@ class QuickCaptureViewModelTest {
     @Mock lateinit var createObject: CreateObject
     @Mock lateinit var fetchQuickCaptureDraft: FetchQuickCaptureDraft
     @Mock lateinit var searchQuickCaptureDrafts: SearchQuickCaptureDrafts
+    @Mock lateinit var deleteQuickCaptureDraftIfEmpty: DeleteQuickCaptureDraftIfEmpty
 
     @Mock lateinit var setObjectDetails: SetObjectDetails
     @Mock lateinit var deleteObjects: DeleteObjects
@@ -91,6 +98,8 @@ class QuickCaptureViewModelTest {
         createObject = createObject,
         fetchQuickCaptureDraft = fetchQuickCaptureDraft,
         searchQuickCaptureDrafts = searchQuickCaptureDrafts,
+        deleteQuickCaptureDraftIfEmpty = deleteQuickCaptureDraftIfEmpty,
+        appScope = CoroutineScope(coroutineTestRule.dispatcher),
         setObjectDetails = setObjectDetails,
         deleteObjects = deleteObjects,
         moveQuickCaptureDraft = moveQuickCaptureDraft,
@@ -120,6 +129,9 @@ class QuickCaptureViewModelTest {
         }
         spaceManager.stub {
             onBlocking { set(targetSpace, false) } doReturn Result.success(mock<Config>())
+        }
+        deleteQuickCaptureDraftIfEmpty.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(false)
         }
         searchQuickCaptureDrafts.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
@@ -158,10 +170,24 @@ class QuickCaptureViewModelTest {
         assertEquals(draftId, state.draft)
     }
 
+    /**
+     * Workspace.Open costs ~5s on a space this session has not touched (measured on device)
+     * and produces a config the capture path never reads: Object.Create and Object.Open both
+     * carry the space id, and the space-scoped subscriptions are built from that id alone.
+     */
     @Test
-    fun `space open failure dismisses the sheet`() = runTest {
-        spaceManager.stub {
-            onBlocking { set(targetSpace, false) } doReturn Result.failure(
+    fun `activates the target space without opening the workspace`() = runTest {
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+        verify(spaceManager).activate(targetSpace)
+        verifyBlocking(spaceManager, never()) { set(any(), any()) }
+    }
+
+    @Test
+    fun `a draft that cannot be created dismisses the sheet`() = runTest {
+        createObject.stub {
+            onBlocking { async(any()) } doReturn Resultat.failure(
                 IllegalStateException("space is not ready")
             )
         }
@@ -244,6 +270,9 @@ class QuickCaptureViewModelTest {
         }
         // The pointer is only a hint now: it is honoured because the store still lists that
         // draft. Discovery is the source of truth for what exists.
+        deleteQuickCaptureDraftIfEmpty.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(false)
+        }
         searchQuickCaptureDrafts.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
                 SearchQuickCaptureDrafts.Result(drafts = listOf(pending), isComplete = true)
@@ -366,6 +395,9 @@ class QuickCaptureViewModelTest {
             onBlocking { getQuickCaptureLastSpace() } doReturn null
             onBlocking { getQuickCaptureDraft(SpaceId(targetSpace)) } doReturn null
         }
+        deleteQuickCaptureDraftIfEmpty.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(false)
+        }
         searchQuickCaptureDrafts.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
                 SearchQuickCaptureDrafts.Result(drafts = listOf(remote), isComplete = true)
@@ -384,6 +416,65 @@ class QuickCaptureViewModelTest {
     }
 
     /**
+     * The pencil says a space holds an unfinished draft; the order should say it too, rather
+     * than leaving the user to find it below spaces they pinned months ago.
+     */
+    @Test
+    fun `lists spaces holding a draft before the rest`() = runTest {
+        val draftSpace = MockDataFactory.randomUuid()
+        // targetSpace is pinned, so without the draft it would sort first.
+        spaceViews.stub {
+            on { observe() } doReturn MutableStateFlow(
+                listOf(
+                    StubSpaceView(targetSpaceId = targetSpace, spaceOrder = "a"),
+                    StubSpaceView(targetSpaceId = draftSpace)
+                )
+            )
+        }
+        userPermissionProvider.stub {
+            on { all() } doReturn flowOf(
+                mapOf(
+                    targetSpace to SpaceMemberPermissions.OWNER,
+                    draftSpace to SpaceMemberPermissions.OWNER
+                )
+            )
+        }
+        searchQuickCaptureDrafts.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(
+                SearchQuickCaptureDrafts.Result(
+                    drafts = listOf(
+                        ObjectWrapper.Basic(
+                            mapOf(
+                                Relations.ID to MockDataFactory.randomUuid(),
+                                Relations.SPACE_ID to draftSpace,
+                                Relations.IS_HIDDEN to true,
+                                Relations.IS_DRAFT to true
+                            )
+                        )
+                    ),
+                    isComplete = true
+                )
+            )
+        }
+
+        val vm = vm()
+        // Subscribed before onStart: the list is shared WhileSubscribed, so without a
+        // collector it never leaves its initial empty value.
+        vm.spaces.test {
+            vm.onStart()
+            coroutineTestRule.advanceUntilIdle()
+            val listed = expectMostRecentItem()
+            assertEquals(draftSpace, listed.first().space.targetSpaceId)
+            assertTrue(listed.first().hasDraft)
+            cancelAndIgnoreRemainingEvents()
+        }
+        // Ordering the picker must not change which space the sheet opened into.
+        val state = vm.screenState.value
+        assertTrue(state is QuickCaptureViewModel.ScreenState.Ready)
+        assertEquals(targetSpace, state.space.id, "auto-selection must not follow the draft")
+    }
+
+    /**
      * A partial cross-space result means "unknown", not "no drafts". Creating one here is how
      * a space that already holds a draft ends up with two.
      */
@@ -392,6 +483,9 @@ class QuickCaptureViewModelTest {
         settings.stub {
             onBlocking { getQuickCaptureLastSpace() } doReturn null
             onBlocking { getQuickCaptureDraft(SpaceId(targetSpace)) } doReturn null
+        }
+        deleteQuickCaptureDraftIfEmpty.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(false)
         }
         searchQuickCaptureDrafts.stub {
             onBlocking { async(any()) } doReturn Resultat.success(
@@ -405,6 +499,85 @@ class QuickCaptureViewModelTest {
 
         // Pencils must not be cleared on an inconclusive answer.
         assertTrue(vm.spaces.value.none { it.hasDraft })
+    }
+
+    /**
+     * Drives the REAL teardown — ViewModelStore.clear() cancels viewModelScope and then calls
+     * onCleared — rather than invoking the cleanup directly. That is the whole point of the
+     * design: work launched on viewModelScope from onCleared would never run, so the cleanup
+     * is dispatched to a scope that outlives the sheet. Calling the method by hand proves
+     * neither that onCleared triggers it nor that the scope choice matters.
+     */
+    @Test
+    fun `cleans up the draft when the view model is actually cleared`() = runTest {
+        val store = ViewModelStore()
+        val vm = ViewModelProvider(
+            store,
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T = vm() as T
+            }
+        )[QuickCaptureViewModel::class.java]
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+
+        store.clear()
+        coroutineTestRule.advanceUntilIdle()
+
+        val params = argumentCaptor<DeleteQuickCaptureDraftIfEmpty.Params>()
+        verifyBlocking(deleteQuickCaptureDraftIfEmpty) { async(params.capture()) }
+        assertEquals(draftId, params.lastValue.draft)
+        assertEquals(targetSpace, params.lastValue.space.id)
+    }
+
+    /** A draft on its way to being published is not abandoned, whatever it currently holds. */
+    @Test
+    fun `does not clean up a draft that is being sent`() = runTest {
+        // Send is only reachable on a non-empty draft, so give the subscription content.
+        storelessSubscriptionContainer.stub {
+            on { subscribe(any<StoreSearchByIdsParams>()) } doReturn flowOf(
+                listOf(
+                    ObjectWrapper.Basic(
+                        mapOf(Relations.ID to draftId, Relations.NAME to "Buy milk")
+                    )
+                )
+            )
+        }
+        setObjectDetails.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(mock())
+        }
+        analyticSpaceHelperDelegate.stub {
+            on { provideParams(any()) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
+        }
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+        // Guard the false pass: cleanup also bails when state is not Ready.
+        assertTrue(vm.screenState.value is QuickCaptureViewModel.ScreenState.Ready)
+        vm.onSendClicked()
+        coroutineTestRule.advanceUntilIdle()
+
+        vm.cleanUpAbandonedDraft()
+        coroutineTestRule.advanceUntilIdle()
+
+        verifyBlocking(deleteQuickCaptureDraftIfEmpty, never()) { async(any()) }
+    }
+
+    /**
+     * A keystroke can still be in flight while the editor's write scope is torn down, so the
+     * store may not yet show it. Anything the user typed means hands off.
+     */
+    @Test
+    fun `does not clean up when the editor reported edits`() = runTest {
+        val vm = vm()
+        vm.onStart()
+        coroutineTestRule.advanceUntilIdle()
+
+        vm.onEditorDetached(hasEdits = true)
+        vm.cleanUpAbandonedDraft()
+        coroutineTestRule.advanceUntilIdle()
+
+        verifyBlocking(deleteQuickCaptureDraftIfEmpty, never()) { async(any()) }
     }
 
     private val conflictSpace = MockDataFactory.randomUuid()

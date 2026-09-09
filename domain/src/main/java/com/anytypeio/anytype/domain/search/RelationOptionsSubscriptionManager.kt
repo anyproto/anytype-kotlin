@@ -11,11 +11,13 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscription
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.spaceIdOrNull
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
@@ -26,16 +28,18 @@ class RelationOptionsSubscriptionManager(
     private val spaceManager: SpaceManager
 ) : GlobalSubscription {
 
-    val pipeline get() = spaceManager.state().flatMapLatest { state ->
+    val pipeline get() = spaceManager.state()
+        .distinctUntilChangedBy { state -> state.spaceIdOrNull() }
+        .flatMapLatest { state ->
         when (state) {
             is SpaceManager.State.Space.Active -> {
-                val params = buildParams(state.config)
+                val params = buildParams(SpaceId(state.config.space))
                 container.observe(params)
             }
             is SpaceManager.State.Space.Idle -> {
-                flow {
-                    emit(RelationOptionsSubscriptionContainer.Index.empty())
-                }
+                // A space activated without Workspace.Open (quick capture). The params below
+                // are built from the space id alone, so there is nothing a config would add.
+                container.observe(buildParams(state.space))
             }
             is SpaceManager.State.NoSpace -> {
                 flow {
@@ -67,9 +71,11 @@ class RelationOptionsSubscriptionManager(
     }
 
     companion object {
-        fun buildParams(config: Config) =
+        fun buildParams(config: Config) = buildParams(SpaceId(config.space))
+
+        fun buildParams(space: SpaceId) =
             RelationOptionsSubscriptionContainer.Params(
-                space = SpaceId(config.space),
+                space = space,
                 subscription = RelationOptionsSubscriptionContainer.SUBSCRIPTION_ID,
                 filters = listOf(
                     DVFilter(

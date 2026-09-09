@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.quickcapture
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -27,6 +28,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.quickcapture.DeleteQuickCaptureDraftIfEmpty
 import com.anytypeio.anytype.domain.quickcapture.FetchQuickCaptureDraft
 import com.anytypeio.anytype.domain.quickcapture.MoveQuickCaptureDraft
 import com.anytypeio.anytype.domain.quickcapture.SearchQuickCaptureDrafts
@@ -38,6 +40,8 @@ import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
+import javax.inject.Named
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
@@ -88,7 +92,9 @@ class QuickCaptureViewModel(
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val typeSuggestionEngine: TypeSuggestionEngine,
     private val fetchQuickCaptureDraft: FetchQuickCaptureDraft,
-    private val searchQuickCaptureDrafts: SearchQuickCaptureDrafts
+    private val searchQuickCaptureDrafts: SearchQuickCaptureDrafts,
+    private val deleteQuickCaptureDraftIfEmpty: DeleteQuickCaptureDraftIfEmpty,
+    private val appScope: CoroutineScope
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     sealed class ScreenState {
@@ -207,7 +213,7 @@ class QuickCaptureViewModel(
         draftSpaces
     ) { all, permissions, selected, recencyMap, drafts ->
         all.filter { view -> view.isEditable(permissions) }
-            .sortedWith(spaceComparator(recencyMap))
+            .sortedWith(pickerComparator(recencyMap = recencyMap, drafts = drafts))
             .map { view ->
                 SpaceView(
                     space = view,
@@ -500,6 +506,22 @@ class QuickCaptureViewModel(
      * top — 1:1 conversations always sort last — and uses device-local capture recency
      * where the vault uses chat-message recency.
      */
+    /**
+     * Picker order: a space already holding an unsent draft comes first, whatever it is —
+     * a 1:1 space included. An unfinished thought is the strongest statement of where the
+     * user is going next, and the pencil beside it explains why the row is at the top.
+     *
+     * Deliberately not [spaceComparator], which orders auto-selection on open: opening the
+     * sheet into a different space because a draft happens to live there would take the
+     * choice away, which is why the draft is signalled rather than followed (handoff §3).
+     */
+    private fun pickerComparator(
+        recencyMap: Map<Id, Long>,
+        drafts: Set<Id>
+    ): Comparator<ObjectWrapper.SpaceView> =
+        compareByDescending<ObjectWrapper.SpaceView> { view -> view.targetSpaceId in drafts }
+            .then(spaceComparator(recencyMap))
+
     private fun spaceComparator(
         recencyMap: Map<Id, Long>
     ): Comparator<ObjectWrapper.SpaceView> {
@@ -515,27 +537,27 @@ class QuickCaptureViewModel(
     }
 
     /**
-     * Activates the target space (workspaceOpen + store swap; no navigation, no
-     * SaveCurrentSpace) and ensures its draft. [preValidatedDraft], when given, was already
-     * checked by [resolveInitialSpace] — skip the duplicate lookup.
+     * Activates the target space and ensures its draft.
+     *
+     * Activation points the app's space-scoped subscriptions (types, relations, relation
+     * options, sync status) at the space WITHOUT Workspace.Open. That open is what the sheet
+     * used to wait on, and on a cold space it cost ~5s of the ~6.7s between tapping the
+     * pencil and seeing the draft (measured on device) — all of it for a config the capture
+     * path never reads. Object.Create and Object.Open carry the space id themselves, and
+     * every subscription here is built from that id alone.
+     *
+     * [preValidatedDraft], when given, was already checked by [resolveInitialSpace] — skip
+     * the duplicate lookup.
      */
     private suspend fun proceedWithSpace(space: SpaceId, preValidatedDraft: Id? = null) {
         screenState.value = ScreenState.Loading
-        spaceManager.set(space.id).fold(
-            onFailure = {
-                Timber.e(it, "Quick capture: could not open space ${space.id}")
-                sendToast(SOMETHING_WENT_WRONG)
-                _commands.send(Command.Dismiss())
-            },
-            onSuccess = {
-                markSelectedSpace(space)
-                if (preValidatedDraft != null) {
-                    screenState.value = ScreenState.Ready(space = space, draft = preValidatedDraft)
-                } else {
-                    ensureDraft(space)
-                }
-            }
-        )
+        spaceManager.activate(space.id)
+        markSelectedSpace(space)
+        if (preValidatedDraft != null) {
+            screenState.value = ScreenState.Ready(space = space, draft = preValidatedDraft)
+        } else {
+            ensureDraft(space)
+        }
     }
 
     private suspend fun ensureDraft(space: SpaceId) {
@@ -550,7 +572,10 @@ class QuickCaptureViewModel(
                 // another device) or it named something else.
                 runCatching { settings.setQuickCaptureDraft(space = space, obj = existing) }
                     .onFailure { Timber.w(it, "Quick capture: could not point at draft") }
-                refreshDraftSpaces()
+                // Not awaited: this is the cross-space query, and it only feeds the picker's
+                // pencils. Awaiting it put a second full discovery pass (~640ms cold,
+                // measured) between the draft being known and the sheet showing it.
+                viewModelScope.launch { refreshDraftSpaces() }
             }
             screenState.value = ScreenState.Ready(space = space, draft = existing)
             return
@@ -760,41 +785,70 @@ class QuickCaptureViewModel(
             proceedWithSpace(SpaceId(target))
             return
         }
-        spaceManager.set(target).fold(
-            onFailure = {
-                Timber.e(it, "Quick capture: could not open space $target")
-                sendToast(SOMETHING_WENT_WRONG)
-            },
-            onSuccess = {
-                markSelectedSpace(SpaceId(target))
-                when {
-                    mode == SwitchMode.DISCARD_CURRENT -> {
-                        // Loading detaches the editor first. Without it the editor stays bound
-                        // to the object about to be deleted, still firing text writes at it,
-                        // and the re-entrancy guard above stays disarmed for the whole round
-                        // trip. Same reason the other branches take it.
-                        screenState.value = ScreenState.Loading
-                        discardDraft(current)
-                        ensureDraft(SpaceId(target))
-                    }
-                    // The current draft stays put; the target opens its own. Still detach:
-                    // the type/relation stores have already switched space beneath it.
-                    mode == SwitchMode.KEEP_CURRENT -> {
-                        screenState.value = ScreenState.Loading
-                        ensureDraft(SpaceId(target))
-                    }
-                    isSourceDraftEmpty() -> {
-                        // Nothing typed — just open/create the target space's own draft.
-                        screenState.value = ScreenState.Loading
-                        ensureDraft(SpaceId(target))
-                    }
-                    else -> {
-                        // Includes the "subscription hasn't confirmed emptiness yet" case:
-                        // moving a possibly-empty draft is harmless, dropping typed text is not.
-                        retargetDraft(from = current, to = SpaceId(target))
-                    }
-                }
+        // Same activation as the open path: no Workspace.Open, so switching into a space
+        // this session has not touched costs a store re-point rather than a cold space load.
+        spaceManager.activate(target)
+        markSelectedSpace(SpaceId(target))
+        when {
+            mode == SwitchMode.DISCARD_CURRENT -> {
+                // Loading detaches the editor first. Without it the editor stays bound
+                // to the object about to be deleted, still firing text writes at it,
+                // and the re-entrancy guard above stays disarmed for the whole round
+                // trip. Same reason the other branches take it.
+                screenState.value = ScreenState.Loading
+                discardDraft(current)
+                ensureDraft(SpaceId(target))
             }
+            // The current draft stays put; the target opens its own. Still detach:
+            // the type/relation stores have already switched space beneath it.
+            mode == SwitchMode.KEEP_CURRENT -> {
+                // No cleanup here: the user was asked and said keep. This branch is
+                // only reachable with a source the editor reported as non-empty, so
+                // deleting on a second opinion could only ever contradict them.
+                screenState.value = ScreenState.Loading
+                ensureDraft(SpaceId(target))
+            }
+            isSourceDraftEmpty() -> {
+                // Nothing typed — just open/create the target space's own draft.
+                // The source's cleanup is fired and forgotten: it is a different
+                // object, and awaiting a read + delete + cross-space refresh would
+                // hold the sheet on Loading for no benefit to the user.
+                screenState.value = ScreenState.Loading
+                deleteSourceIfEmpty(current)
+                ensureDraft(SpaceId(target))
+            }
+            else -> {
+                // Includes the "subscription hasn't confirmed emptiness yet" case:
+                // moving a possibly-empty draft is harmless, dropping typed text is not.
+                retargetDraft(from = current, to = SpaceId(target))
+            }
+        }
+    }
+
+    /**
+     * The space we are leaving keeps its draft only if that draft holds something. An empty
+     * one is not "parked", it is litter: it would keep a pointer and a picker dot alive for a
+     * space with nothing in it.
+     *
+     * Safe to run unconditionally — the use case re-reads the object and deletes only when it
+     * is genuinely empty and still a draft, so a draft with content is never touched here.
+     */
+    private fun deleteSourceIfEmpty(source: ScreenState.Ready) {
+        if (isSending.get()) return
+        appScope.launch { runCleanup(source) }
+    }
+
+    private suspend fun runCleanup(source: ScreenState.Ready) {
+        deleteQuickCaptureDraftIfEmpty.async(
+            DeleteQuickCaptureDraftIfEmpty.Params(space = source.space, draft = source.draft)
+        ).fold(
+            onSuccess = { deleted ->
+                if (deleted) {
+                    Timber.d("Quick capture: deleted empty draft in ${source.space.id}")
+                    refreshDraftSpaces()
+                }
+            },
+            onFailure = { Timber.w(it, "Quick capture: leaving empty draft in place") }
         )
     }
 
@@ -852,12 +906,12 @@ class QuickCaptureViewModel(
                     // would destroy a real, published note.
                     //
                     // isDisposableDraft re-establishes the FULL precondition here, now that
-                    // the target space is actually open: still an unpublished draft, and
+                    // the target space is the active one: still an unpublished draft, and
                     // empty. Checking only "does it still exist" would trust the emptiness
-                    // decision taken back in onSpaceSelected — which ran before
-                    // spaceManager.set(), against a possibly stale index, and which treats a
-                    // failed fetch as "no content". A single transient error there would
-                    // otherwise land here as a permanent delete of someone's note.
+                    // decision taken back in onSpaceSelected — which ran before the space was
+                    // activated, against a possibly stale index, and which treats a failed
+                    // fetch as "no content". A single transient error there would otherwise
+                    // land here as a permanent delete of someone's note.
                     if (replaced != null && replaced != newDraft) {
                         if (isDisposableDraft(space = to, draft = replaced)) {
                             deleteObjects.async(DeleteObjects.Params(listOf(replaced))).fold(
@@ -880,15 +934,10 @@ class QuickCaptureViewModel(
                 sendToast(SOMETHING_WENT_WRONG)
                 // Fall back to the original draft — the thought is never lost.
                 markSelectedSpace(from.space)
-                spaceManager.set(from.space.id).fold(
-                    onSuccess = { screenState.value = from },
-                    onFailure = { error ->
-                        // Cannot restore a coherent editor (stores belong to another space) —
-                        // close the sheet; the draft and its pointer are intact.
-                        Timber.e(error, "Quick capture: could not re-open source space")
-                        _commands.send(Command.Dismiss())
-                    }
-                )
+                // Re-point the stores at the space the draft never left. Activation cannot
+                // fail, so the rollback no longer has a rollback of its own.
+                spaceManager.activate(from.space.id)
+                screenState.value = from
             }
         )
     }
@@ -1046,13 +1095,55 @@ class QuickCaptureViewModel(
     /**
      * Real teardown only (dismiss, back, navigation away) — NOT config changes, which
      * recreate the view but retain this VM. viewModelScope is already cancelled here, so
-     * no in-flight `spaceManager.set()` can resurrect the space after this clear; the
+     * no in-flight space activation can resurrect the space after this clear; the
      * draft ids-subscription is closed by [draftDetails]' onCompletion. The draft itself
      * (with its pointer) is kept — it restores on the next pencil tap.
      */
     override fun onCleared() {
         super.onCleared()
+        cleanUpAbandonedDraft()
         spaceManager.clear()
+    }
+
+    /**
+     * The sheet is really going away (onCleared does not fire for a configuration change), so
+     * a draft still holding nothing is abandoned rather than parked, and is deleted.
+     *
+     * Runs on the application scope: viewModelScope is already cancelled here, so anything
+     * launched on it would never execute. The use case decides emptiness from the store, not
+     * from the editor — which no longer exists by this point.
+     */
+    /**
+     * Recorded while the editor is still alive (onDestroyView runs before onCleared), because
+     * by cleanup time it is gone and its pending writes are gone with it.
+     */
+    private var editorReportedEdits = false
+
+    fun onEditorDetached(hasEdits: Boolean) {
+        editorReportedEdits = hasEdits
+    }
+
+    @VisibleForTesting
+    internal fun cleanUpAbandonedDraft() {
+        if (isSending.get()) return // published, not abandoned
+        // The user typed something. Whether it reached the store yet is not knowable here:
+        // the editor's write pipeline lives on its own scope and is cancelled during this
+        // same teardown, so a keystroke can still be in flight while this reads the store and
+        // sees nothing. The switch path solves it by flushing first; the close path cannot
+        // suspend, so it declines to delete instead. An empty draft that survives is litter;
+        // a deleted one that was not empty is gone for good.
+        if (editorReportedEdits) return
+        val current = screenState.value as? ScreenState.Ready ?: return
+        appScope.launch {
+            deleteQuickCaptureDraftIfEmpty.async(
+                DeleteQuickCaptureDraftIfEmpty.Params(space = current.space, draft = current.draft)
+            ).fold(
+                onSuccess = { deleted ->
+                    if (deleted) Timber.d("Quick capture: deleted empty draft on close")
+                },
+                onFailure = { Timber.w(it, "Quick capture: empty-draft cleanup failed") }
+            )
+        }
     }
 
     class Factory @Inject constructor(
@@ -1072,7 +1163,9 @@ class QuickCaptureViewModel(
         private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
         private val typeSuggestionEngine: TypeSuggestionEngine,
         private val fetchQuickCaptureDraft: FetchQuickCaptureDraft,
-        private val searchQuickCaptureDrafts: SearchQuickCaptureDrafts
+        private val searchQuickCaptureDrafts: SearchQuickCaptureDrafts,
+        private val deleteQuickCaptureDraftIfEmpty: DeleteQuickCaptureDraftIfEmpty,
+        @Named(APP_COROUTINE_SCOPE) private val appScope: CoroutineScope
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -1093,7 +1186,9 @@ class QuickCaptureViewModel(
                 spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
                 typeSuggestionEngine = typeSuggestionEngine,
                 fetchQuickCaptureDraft = fetchQuickCaptureDraft,
-                searchQuickCaptureDrafts = searchQuickCaptureDrafts
+                searchQuickCaptureDrafts = searchQuickCaptureDrafts,
+                deleteQuickCaptureDraftIfEmpty = deleteQuickCaptureDraftIfEmpty,
+                appScope = appScope
             ) as T
         }
     }
@@ -1102,6 +1197,14 @@ class QuickCaptureViewModel(
         const val QUICK_CAPTURE_DRAFT_SUBSCRIPTION = "quick-capture-draft-subscription"
         private const val SOMETHING_WENT_WRONG = "Something went wrong. Please, try again."
         private const val SPACES_AWAIT_TIMEOUT_MS = 3_000L
+        /**
+         * Must match ConfigModule.DEFAULT_APP_COROUTINE_SCOPE. Duplicated rather than
+         * imported because that constant lives in :app, which :presentation cannot depend
+         * on. Dagger matches qualifiers by string, so a divergence fails the build with
+         * MissingBinding rather than misbehaving at runtime.
+         */
+        const val APP_COROUTINE_SCOPE = "Default application coroutine scope"
+
         private val DRAFT_VALIDATION_KEYS = listOf(
             Relations.ID,
             Relations.IS_DELETED,

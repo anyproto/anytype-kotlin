@@ -91,8 +91,8 @@ window. The editor keeps the capped column, because a full width line of text is
 `contentColumnMaxWidth()` holds the rule.
 
 `MainActivity.setupContentColumnWidth()` also sets the backdrop. The widgets screen, the
-collection screen, and the vault show the wallpaper of the space through their content, so the
-root paints the wallpaper there. Every other screen paints an opaque background over the column.
+collection screen, the vault, and the chat show the wallpaper of the space through their content,
+so the root paints the wallpaper there. Every other screen paints an opaque background over the column.
 The wallpaper then reaches the eye only in the strip beside a capped column. The root paints
 `@color/background_primary` there: white in the light theme, black in the dark theme.
 `showsWallpaper()` holds the rule.

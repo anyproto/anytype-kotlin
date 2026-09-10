@@ -640,9 +640,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     /**
-     * The root paints the backdrop of the window. The widgets screen, the collection screen, and
-     * the vault show the wallpaper of the space through their content, so the root paints the
-     * wallpaper there. Every other screen paints an opaque background over the content column. The
+     * The root paints the backdrop of the window. The widgets screen, the collection screen, the
+     * vault, and the chat show the wallpaper of the space through their content, so the root paints
+     * the wallpaper there. Every other screen paints an opaque background over the content column. The
      * wallpaper then reaches the eye only in the strip beside a capped column. The root paints the
      * plain backdrop there: white in the light theme, black in the dark theme.
      */

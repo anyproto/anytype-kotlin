@@ -87,7 +87,7 @@ class ContentColumnWidthTest {
     }
 
     @Test
-    fun `should paint the plain backdrop on the chat`() {
-        assertFalse(showsWallpaper(R.id.chatScreen))
+    fun `should show the wallpaper on the chat`() {
+        assertTrue(showsWallpaper(R.id.chatScreen))
     }
 }

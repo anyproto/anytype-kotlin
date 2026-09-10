@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -251,6 +252,24 @@ fun VaultScreenContent(
             onCreateSpaceClicked = onCreateSpaceClicked
         )
     } else {
+        val firstSpaceId = filteredPinnedSpaces.firstOrNull()?.space?.id
+            ?: filteredMainSpaces.firstOrNull()?.space?.id
+        SideEffect {
+            // Read the last measured viewport before the new items are laid out. At the top,
+            // keep index zero instead of following the old first space's key to its new index.
+            // Requesting the next measure avoids a corrective scroll after a displaced frame
+            // and preserves animateItem placement animations. Elsewhere, keep key anchoring.
+            val previousFirstSpaceId = lazyListState.layoutInfo.visibleItemsInfo
+                .firstOrNull { it.index == 0 }?.key
+            if (previousFirstSpaceId != null && previousFirstSpaceId != firstSpaceId &&
+                !lazyListState.canScrollBackward &&
+                !lazyListState.isScrollInProgress &&
+                !reorderableLazyListState.isAnyItemDragging
+            ) {
+                lazyListState.requestScrollToItem(0)
+            }
+        }
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.sets
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.text.InputType
@@ -10,6 +11,7 @@ import android.view.ContextThemeWrapper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.view.inputmethod.EditorInfo.IME_ACTION_DONE
 import android.view.inputmethod.EditorInfo.IME_ACTION_GO
 import android.widget.FrameLayout
@@ -25,16 +27,22 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionContext
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.children
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -48,6 +56,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil3.load
 import com.anytypeio.anytype.R
@@ -79,10 +88,12 @@ import com.anytypeio.anytype.core_ui.widgets.dv.ObjectSetTitle
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerEditWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerLayoutWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewersWidget
+import com.anytypeio.anytype.core_ui.widgets.dv.scroll.MotionOrigin
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
 import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.applyBottomEdgeToEdgeInsets
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -92,7 +103,6 @@ import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
-import com.anytypeio.anytype.core_utils.ext.smoothScrollToFirst
 import com.anytypeio.anytype.core_utils.ext.startMarketPageOrWeb
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
@@ -152,6 +162,7 @@ import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_T
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_KEY
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import javax.inject.Inject
+import java.util.WeakHashMap
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -177,6 +188,48 @@ open class ObjectSetFragment :
     // while composition is still pending.
     private val createObjectSheetVisible = androidx.compose.runtime.mutableStateOf(false)
     private var isSheetHostInstalled = false
+
+    // UI-only, scoped to this object. Never retain renderers or their animation state.
+    private val viewerAnchors = linkedMapOf<Id, Bundle>()
+    private var activeViewer: Viewer? = null
+    private var paginationPageCount = 0
+    private var pendingAnchor: Bundle? = null
+    private var pendingAnchorInputGeneration = 0L
+    private var pendingReveal: Id? = null
+    private var pendingRevealInputGeneration = 0L
+    private var pendingPositionPreDraw: ViewTreeObserver.OnPreDrawListener? = null
+    private var submissionGeneration = 0L
+    private var committedViewerId: Id? = null
+    private var retainedHeaderProgress = 0f
+    private var retainedBoardState: Bundle? = null
+    private var retainedViewerId: Id? = null
+    private var retainedPageIndex = 0
+    private var activeViewerPageIndex = 0
+    private var pageToRestore: Int? = null
+    private var lastContentSelection: Pair<Id?, Long>? = null
+    private var hasCover = false
+    private var headerReadOnly = false
+    private var headerEditing = false
+    private var headerImeVisible: Boolean? = null
+    private var headerImeLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+    private var headerImeObservation: Runnable? = null
+    private var headerImeObservationPosted = false
+    private var externalHeaderEditing = false
+    private var externalBottomInset = 0
+    private var applyExternalBottomInset: ((Int) -> Unit)? = null
+    private var clearExternalHeaderFocus: (() -> Unit)? = null
+    private var externalHeaderCompositionContext: CompositionContext? = null
+    private val externalHeaderContent = mutableStateOf<(@Composable () -> Unit)?>(null)
+    private val externalHeaderSemanticsHidden = mutableStateOf(false)
+    private var externalHeaderCompositionInstalled = false
+    private var titleInReadMode: Boolean? = null
+    private var renderedCoverButtons: Boolean? = null
+    private var renderedAccessibilityActions = -1
+    private val headerAccessibility = WeakHashMap<View, Int>()
+    private val headerAccessibilityBounds = Rect()
+    private val embedded: Boolean get() = arguments?.getBoolean(EMBEDDED_KEY) == true
+    private val hasExternalHeader: Boolean get() = arguments?.getBoolean(EXTERNAL_HEADER_KEY) == true
+    private val hasNativeHeader: Boolean get() = !embedded && !hasExternalHeader
 
     // Controls
 
@@ -273,6 +326,20 @@ open class ObjectSetFragment :
         super.onCreate(savedInstanceState)
         setupOnBackPressedDispatcher()
         titleTextWatcher = DefaultTextWatcher { vm.onTitleChanged(it.toString()) }
+        savedInstanceState?.getBundle(SCROLL_STATE_KEY)?.let { state ->
+            if (state.getString("object") == ctx && state.getString("space") == space) {
+                retainedHeaderProgress = state.getFloat("header")
+                retainedBoardState = state.getBundle("board")
+                retainedViewerId = state.getString("activeViewer")
+                retainedPageIndex = state.getInt("page").coerceAtLeast(0)
+                pageToRestore = retainedPageIndex
+                state.getBundle("viewers")?.let { viewers ->
+                    viewers.keySet().take(MAX_RETAINED_VIEWERS).forEach { id ->
+                        viewers.getBundle(id)?.let { viewerAnchors[id] = it }
+                    }
+                }
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -288,7 +355,7 @@ open class ObjectSetFragment :
         binding.fabCreate.isVisible = true
 
         title.clearFocus()
-        binding.root.setTransitionListener(transitionListener)
+        setupScrollHost()
 
         addNewButton.setOnClickListener { vm.proceedWithDataViewObjectCreate() }
         addNewIconButton.setOnButtonClickListener { vm.proceedWithDataViewObjectCreate() }
@@ -304,11 +371,10 @@ open class ObjectSetFragment :
                     DataViewInfo.TYPE.INIT -> {}
                 }
             }
-            subscribe(title.editorActionEvents(actionHandler)) {
-                title.apply {
-                    hideKeyboard()
-                    clearFocus()
-                    vm.hideTitleToolbar()
+            if (hasNativeHeader) {
+                viewLifecycleOwner.lifecycleScope.subscribe(title.editorActionEvents(actionHandler)) {
+                    title.hideKeyboard()
+                    finishHeaderEditing()
                 }
             }
             subscribe(topBackButton.clicks().throttleFirst()) { vm.onBackButtonClicked() }
@@ -436,16 +502,31 @@ open class ObjectSetFragment :
             vm.onTaskCheckboxClicked(id)
         }
 
-        title.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
-            vm.onTitleFocusChanged(hasFocus)
-        }
+        if (hasNativeHeader) {
+            title.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+                vm.onTitleFocusChanged(hasFocus)
+                updateHeaderEditing()
+            }
 
-        with(tvDescription) {
-            syncFocusWithImeVisibility()
-            addTextChangedListener(tvDescriptionTextWatcher)
-            imeOptions = IME_ACTION_DONE
-            setRawInputType(InputType.TYPE_CLASS_TEXT)
+            with(tvDescription) {
+                syncFocusWithImeVisibility()
+                imeOptions = IME_ACTION_DONE
+                setRawInputType(InputType.TYPE_CLASS_TEXT)
+                onFocusChangeListener = View.OnFocusChangeListener { _, _ -> updateHeaderEditing() }
+                setOnEditorActionListener { _, action, _ ->
+                    if (action != IME_ACTION_DONE) false else {
+                        hideKeyboard()
+                        finishHeaderEditing()
+                        true
+                    }
+                }
+            }
+        } else {
+            // These duplicate fields never own editing or UI state on a Type page.
+            title.isSaveEnabled = false
+            tvDescription.isSaveEnabled = false
         }
+        setupHeaderImeObservation()
 
         setFragmentResultListener(BaseObjectTypeChangeFragment.OBJECT_TYPE_REQUEST_KEY) { _, bundle ->
             val query = bundle.getString(BaseObjectTypeChangeFragment.OBJECT_TYPE_URL_KEY)
@@ -479,7 +560,7 @@ open class ObjectSetFragment :
             setContent {
                 ViewersWidget(
                     state = vm.viewersWidgetState.collectAsStateWithLifecycle().value,
-                    action = vm::onViewersWidgetAction,
+                    action = ::onViewersWidgetAction,
                 )
             }
         }
@@ -510,8 +591,8 @@ open class ObjectSetFragment :
                 ObjectSetTitle(
                     isVisible = vm.isTitleToolbarVisible.collectAsStateWithLifecycle().value,
                     doneAction = {
-                        vm.hideTitleToolbar()
                         hideKeyboard()
+                        finishHeaderEditing()
                     }
                 )
             }
@@ -558,7 +639,7 @@ open class ObjectSetFragment :
         // floating action buttons. The object-set screen has no inline IME
         // text input near the FABs, so we don't sync their translation to
         // the keyboard — they're allowed to be covered if an IME appears.
-        title.syncFocusWithImeVisibility()
+        if (hasNativeHeader) title.syncFocusWithImeVisibility()
         binding.viewerEditWidget.syncTranslationWithImeVisibility(
             dispatchMode = DISPATCH_MODE_STOP
         )
@@ -571,6 +652,293 @@ open class ObjectSetFragment :
         binding.setObjectNameSheet.syncTranslationWithImeVisibility(
             dispatchMode = DISPATCH_MODE_STOP
         )
+    }
+
+    override fun onApplyWindowRootInsets() {
+        if (embedded && !hasExternalHeader) return
+        val bottomControls = listOf(binding.fabSearchOnPage, binding.fabCreate,
+            binding.viewerEditWidget, binding.viewerLayoutWidget, binding.templatesWidget,
+            binding.titleWidget, binding.syncStatusWidget)
+            .map { it to (it.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin }
+        val paginatorHeight = binding.paginatorToolbar.layoutParams.height
+        val listBottomPadding = binding.listView.paddingBottom
+        val galleryBottomPadding = binding.galleryView.paddingBottom
+        val viewBinding = binding
+        val rows = rvRows
+        val rowsBottomPadding = (80 * resources.displayMetrics.density).toInt()
+        val applyBottomInset: (Int) -> Unit = { bottom ->
+            bottomControls.forEach { (view, margin) ->
+                view.updateLayoutParams<ViewGroup.MarginLayoutParams> { bottomMargin = margin + bottom }
+            }
+            viewBinding.paginatorToolbar.updateLayoutParams { height = paginatorHeight + bottom }
+            viewBinding.paginatorToolbar.updatePadding(bottom = bottom)
+            rows.updatePadding(bottom = rowsBottomPadding + bottom)
+            viewBinding.listView.updatePadding(bottom = listBottomPadding + bottom)
+            viewBinding.galleryView.updatePadding(bottom = galleryBottomPadding + bottom)
+            viewBinding.boardView.setBottomContentInset(bottom)
+            viewBinding.bottomSystemBarProtection.updateLayoutParams { height = bottom }
+        }
+        if (hasExternalHeader) {
+            // Compose owns the type page's insets and forwards the bottom clearance.
+            applyExternalBottomInset = applyBottomInset
+            applyBottomInset(externalBottomInset)
+        } else {
+            viewBinding.root.applyBottomEdgeToEdgeInsets(onBottomInset = applyBottomInset)
+        }
+    }
+
+    fun setExternalBottomInset(pixels: Int) {
+        val bottom = pixels.coerceAtLeast(0)
+        if (externalBottomInset == bottom) return
+        externalBottomInset = bottom
+        applyExternalBottomInset?.invoke(bottom)
+    }
+
+    private fun setupHeaderImeObservation() {
+        if (embedded && !hasExternalHeader) return
+        val root = binding.root
+        headerImeObservation = Runnable {
+            if (!hasBinding || binding.root !== root) return@Runnable
+            headerImeObservationPosted = false
+            if (!headerEditing) return@Runnable
+            // On API <30 visible bounds can change after inset dispatch, and an ancestor
+            // may consume the dispatch. Sample fresh root insets after layout instead.
+            val visible = ViewCompat.getRootWindowInsets(root)
+                ?.isVisible(WindowInsetsCompat.Type.ime()) ?: return@Runnable
+            val dismissed = headerImeVisible == true && !visible
+            headerImeVisible = visible
+            if (dismissed) finishHeaderEditing()
+        }
+        headerImeLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+            scheduleHeaderImeObservation()
+        }.also(root.viewTreeObserver::addOnGlobalLayoutListener)
+    }
+
+    private fun scheduleHeaderImeObservation() {
+        if (!headerEditing || headerImeObservationPosted) return
+        val observation = headerImeObservation ?: return
+        headerImeObservationPosted = true
+        binding.root.post(observation)
+    }
+
+    private fun setupScrollHost() {
+        val host = binding.scrollHost
+        topToolbar.setBackgroundColor(requireContext().getColor(R.color.background_primary))
+        host.embeddedMode = embedded && !hasExternalHeader
+        host.excludeNestedScrollTarget = binding.boardView
+        host.setStableViewportChild(binding.boardView, binding.boardView::setViewportTopInset)
+        host.eligibleNestedScrollTarget = { target ->
+            target === rvRows || target === binding.listView || target === binding.galleryView
+        }
+        host.onGeometryChanging = { binding.boardView.cancelDrag() }
+        host.onHeaderChanged = ::renderHeaderScrollState
+        binding.boardView.scrollCoordinator = if (host.embeddedMode) null else host.coordinator
+        retainedBoardState?.let(binding.boardView::restoreScrollState)
+        host.coordinator.restoreProgress(if (host.embeddedMode) 0f else retainedHeaderProgress)
+        topToolbar.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+            if (hasBinding && binding.scrollHost === host) {
+                host.pinHeight = if (host.embeddedMode || !topToolbar.isVisible) 0
+                    else toolbarPinHeight()
+            }
+        }
+        host.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
+            if (hasBinding && binding.scrollHost === host) renderHeaderScrollState()
+        }
+        listOf(rvRows, binding.listView, binding.galleryView).forEach { recycler ->
+            // Stable object anchors below replace RecyclerView's index-only hierarchy state.
+            recycler.isSaveEnabled = false
+        }
+        rvRows.updatePadding(bottom = (80 * resources.displayMetrics.density).toInt())
+        rvRows.clipToPadding = false
+        applyEmbeddedMode()
+        installExternalHeaderComposition()
+        renderHeaderScrollState()
+    }
+
+    /** The Type page supplies its header while retaining its own fixed navigation/insets. */
+    fun bindExternalHeader(compositionContext: CompositionContext, content: @Composable () -> Unit) {
+        check(hasExternalHeader) { "External header content requires externalHeader=true" }
+        if (externalHeaderCompositionContext !== compositionContext && hasBinding) {
+            binding.externalHeader.setParentCompositionContext(compositionContext)
+        }
+        externalHeaderCompositionContext = compositionContext
+        externalHeaderContent.value = content
+        if (hasBinding) installExternalHeaderComposition()
+    }
+
+    fun clearExternalHeader(compositionContext: CompositionContext) {
+        if (externalHeaderCompositionContext !== compositionContext) return
+        externalHeaderContent.value = null
+        externalHeaderCompositionContext = null
+        externalHeaderEditing = false
+        clearExternalHeaderFocus = null
+        if (hasBinding) {
+            binding.externalHeader.disposeComposition()
+            binding.externalHeader.setParentCompositionContext(null)
+            externalHeaderCompositionInstalled = false
+            updateHeaderEditing()
+        }
+    }
+
+    fun onExternalHeaderEditingChanged(editing: Boolean, clearFocus: (() -> Unit)? = null) {
+        if (!hasBinding || !hasExternalHeader) return
+        externalHeaderEditing = editing
+        clearExternalHeaderFocus = clearFocus.takeIf { editing }
+        updateHeaderEditing()
+    }
+
+    private fun installExternalHeaderComposition() {
+        if (!hasExternalHeader || externalHeaderCompositionInstalled) return
+        val compositionContext = externalHeaderCompositionContext ?: return
+        binding.externalHeader.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setParentCompositionContext(compositionContext)
+            setContent {
+                // Native ancestor clipping does not prune this Compose owner's virtual
+                // accessibility tree. Keep its Android visibility and composition intact.
+                Box(
+                    modifier = Modifier.fillMaxWidth().then(
+                        if (externalHeaderSemanticsHidden.value) Modifier.clearAndSetSemantics {}
+                        else Modifier
+                    )
+                ) {
+                    externalHeaderContent.value?.invoke()
+                }
+            }
+        }
+        externalHeaderCompositionInstalled = true
+    }
+
+    private fun applyEmbeddedMode() {
+        val localHeaderHidden = hasExternalHeader || embedded || vm.currentViewer.value is DataViewViewState.TypeSet
+        val outerOwnsHeader = localHeaderHidden && !hasExternalHeader
+        binding.scrollHost.embeddedMode = outerOwnsHeader
+        binding.boardView.scrollCoordinator = if (outerOwnsHeader) null else binding.scrollHost.coordinator
+        if (!hasExternalHeader) binding.externalHeader.gone()
+        if (localHeaderHidden) {
+            header.gone()
+            topToolbar.gone()
+        }
+        binding.scrollHost.pinHeight = if (localHeaderHidden || !topToolbar.isVisible) 0
+            else toolbarPinHeight()
+    }
+
+    private fun toolbarPinHeight(): Int = if (topToolbar.isLaidOut)
+        (topToolbar.bottom - binding.scrollHost.top).coerceAtLeast(0)
+    else topToolbar.layoutParams.height.coerceAtLeast(0)
+
+    private fun updateHeaderEditing() {
+        val editing = if (hasExternalHeader) externalHeaderEditing
+            else hasNativeHeader && !headerReadOnly && (title.hasFocus() || tvDescription.hasFocus())
+        val coordinator = binding.scrollHost.coordinator
+        if (editing && !headerEditing) {
+            binding.boardView.cancelDrag()
+            coordinator.setExpanded(true)
+        }
+        headerEditing = editing
+        if (!editing) headerImeVisible = null
+        coordinator.setBlocked(MotionOrigin.Editing, editing)
+        renderHeaderScrollState()
+        scheduleHeaderImeObservation()
+    }
+
+    private fun finishHeaderEditing() {
+        clearExternalHeaderFocus?.invoke()
+        binding.root.requestFocus()
+        title.clearFocus()
+        tvDescription.clearFocus()
+        vm.hideTitleToolbar()
+        updateHeaderEditing()
+    }
+
+    private fun renderHeaderScrollState() {
+        val host = binding.scrollHost
+        val coordinator = host.coordinator
+        val collapsed = coordinator.range > 0f && coordinator.offset >= coordinator.range
+        if (hasExternalHeader) {
+            binding.externalHeader.visible()
+            externalHeaderSemanticsHidden.value = collapsed
+        } else if (hasNativeHeader) {
+            renderNativeHeaderScrollState(collapsed)
+        }
+        val actionTarget = if (hasExternalHeader) dataViewHeader else topToolbar
+        val expand = AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_EXPAND
+        val collapse = AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_COLLAPSE
+        val actions = if (host.embeddedMode || coordinator.range == 0f || coordinator.isBlocked) 0
+            else (if (coordinator.offset > 0f) 1 else 0) or
+                (if (coordinator.offset < coordinator.range) 2 else 0)
+        if (renderedAccessibilityActions == actions) return
+        renderedAccessibilityActions = actions
+        ViewCompat.removeAccessibilityAction(actionTarget, expand.id)
+        ViewCompat.removeAccessibilityAction(actionTarget, collapse.id)
+        if (actions != 0) {
+            if (actions and 1 != 0) {
+                ViewCompat.replaceAccessibilityAction(actionTarget, expand,
+                    getString(R.string.dataview_expand_header)) { _, _ ->
+                    binding.boardView.cancelDrag()
+                    coordinator.setExpanded(true)
+                    true
+                }
+            }
+            if (actions and 2 != 0) {
+                ViewCompat.replaceAccessibilityAction(actionTarget, collapse,
+                    getString(R.string.dataview_collapse_header)) { _, _ ->
+                    binding.boardView.cancelDrag()
+                    coordinator.setExpanded(false)
+                    true
+                }
+            }
+        }
+    }
+
+    private fun renderNativeHeaderScrollState(collapsed: Boolean) {
+        val host = binding.scrollHost
+        val coordinator = host.coordinator
+        val progress = coordinator.progress
+        topToolbar.background?.alpha = (progress * DRAWABLE_ALPHA_FULL).toInt()
+        val coverButtons = hasCover && !collapsed
+        if (renderedCoverButtons != coverButtons) {
+            renderedCoverButtons = coverButtons
+            topToolbarThreeDotsButton.setBackgroundResource(
+                if (coverButtons) R.drawable.rect_object_menu_button_default else R.drawable.bg_nav_circular_button
+            )
+            topToolbarStatusContainer.setBackgroundResource(
+                if (coverButtons) R.drawable.rect_object_menu_button_default else 0
+            )
+            topToolbarThreeDotsIcon.imageTintList = if (coverButtons)
+                ColorStateList.valueOf(Color.WHITE) else null
+        }
+        topToolbarThreeDotsButton.background?.alpha = if (coverButtons)
+            ((1f - progress) * DRAWABLE_ALPHA_FULL).toInt() else DRAWABLE_ALPHA_FULL
+        topToolbarStatusContainer.background?.alpha = ((1f - progress) * DRAWABLE_ALPHA_FULL).toInt()
+        val readMode = headerReadOnly || collapsed
+        if (titleInReadMode != readMode) {
+            titleInReadMode = readMode
+            title.pauseTextWatchers {
+                if (readMode) title.enableReadMode() else title.enableEditMode()
+            }
+        }
+        title.isEnabled = !headerReadOnly
+        tvDescription.isEnabled = !headerReadOnly
+        topToolbarTitle.importantForAccessibility = if (collapsed)
+            View.IMPORTANT_FOR_ACCESSIBILITY_AUTO else View.IMPORTANT_FOR_ACCESSIBILITY_NO
+        header.importantForAccessibility = if (collapsed || host.embeddedMode)
+            View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS else View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+        updateHeaderAccessibility(header)
+    }
+
+    private fun updateHeaderAccessibility(parent: ViewGroup) {
+        parent.children.forEach { child ->
+            val original = headerAccessibility.getOrPut(child) { child.importantForAccessibility }
+            child.getDrawingRect(headerAccessibilityBounds)
+            binding.scrollHost.offsetDescendantRectToMyCoords(child, headerAccessibilityBounds)
+            val occluded = child.height > 0 &&
+                headerAccessibilityBounds.bottom <= binding.scrollHost.pinHeight
+            child.importantForAccessibility = if (occluded)
+                View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS else original
+            // A partially visible featured group can still contain fully hidden actions.
+            if (child is ViewGroup) updateHeaderAccessibility(child)
+        }
     }
 
     private fun setupGridAdapters() {
@@ -628,7 +996,7 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun setupDataViewViewState(state: DataViewViewState) {
+    private fun setupDataViewViewState(state: DataViewViewState, pageIndex: Int) {
         @Suppress("SENSELESS_COMPARISON")
         if (state == null) {
             Timber.w("ObjectSetFragment: vm.currentViewer emitted null")
@@ -715,7 +1083,7 @@ open class ObjectSetFragment :
                 setupNewButtons(state.isCreateObjectAllowed)
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
-                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed)
+                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed, pageIndex = pageIndex)
             }
             is DataViewViewState.Set.NoQuery -> {
                 topToolbarThreeDotsButton.visible()
@@ -785,7 +1153,7 @@ open class ObjectSetFragment :
                 }
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
-                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed)
+                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed, pageIndex = pageIndex)
                 dataViewInfo.hide()
             }
             DataViewViewState.Init -> {
@@ -825,7 +1193,7 @@ open class ObjectSetFragment :
                 }
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
-                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed)
+                setViewer(viewer = state.viewer, canCreateObject = state.isCreateObjectAllowed, pageIndex = pageIndex)
                 dataViewInfo.hide()
             }
             is DataViewViewState.TypeSet.NoItems -> {
@@ -875,6 +1243,8 @@ open class ObjectSetFragment :
                 setViewer(viewer = null)
             }
         }
+        applyEmbeddedMode()
+        renderHeaderScrollState()
     }
 
     private fun setCurrentViewerName(title: String?) {
@@ -905,7 +1275,37 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun setViewer(viewer: Viewer?, canCreateObject: Boolean = false) {
+    private fun setViewer(viewer: Viewer?, canCreateObject: Boolean = false, pageIndex: Int = 0) {
+        val changedViewer = activeViewer?.id != viewer?.id || activeViewer?.javaClass != viewer?.javaClass
+        if (changedViewer) {
+            saveActiveViewerAnchor()
+            binding.scrollHost.cancelMotion()
+            binding.boardView.cancelDrag()
+            listOf(rvRows, binding.listView, binding.galleryView).forEach { it.stopScroll() }
+            committedViewerId = null
+            pendingReveal = null
+            pendingAnchor = viewer?.let { viewerAnchors[it.id] ?: bundleOf("index" to 0) }
+            pendingAnchorInputGeneration = binding.scrollHost.coordinator.inputGeneration
+        } else if (activeViewer is Viewer.GalleryView && viewer is Viewer.GalleryView &&
+            (activeViewer as Viewer.GalleryView).largeCards != viewer.largeCards) {
+            binding.scrollHost.cancelMotion()
+            binding.galleryView.stopScroll()
+            saveActiveViewerAnchor()
+            pendingAnchor = viewerAnchors[viewer.id]
+            pendingAnchorInputGeneration = binding.scrollHost.coordinator.inputGeneration
+        }
+        activeViewer = viewer
+        updatePaginatorVisibility()
+        if (retainedViewerId == null) viewer?.let { retainedViewerId = it.id }
+        val submission = ++submissionGeneration
+        val onCommitted: () -> Unit = {
+            if (hasBinding && submission == submissionGeneration && activeViewer?.id == viewer?.id) {
+                committedViewerId = viewer?.id
+                activeViewerPageIndex = pageIndex
+                applyPendingContentPosition()
+            }
+        }
+        binding.gridContainer.root.isVisible = viewer is Viewer.GridView
         when (viewer) {
             is Viewer.GridView -> {
                 with(binding) {
@@ -919,7 +1319,7 @@ open class ObjectSetFragment :
                     boardView.clear()
                 }
                 viewerGridHeaderAdapter.submitList(viewer.columns)
-                viewerGridAdapter.submitList(viewer.rows)
+                viewerGridAdapter.submitList(viewer.rows, onCommitted)
             }
             is Viewer.GalleryView -> {
                 viewerGridHeaderAdapter.submitList(emptyList())
@@ -932,7 +1332,8 @@ open class ObjectSetFragment :
                     galleryView.visible()
                     galleryView.setViews(
                         views = viewer.items,
-                        largeCards = viewer.largeCards
+                        largeCards = viewer.largeCards,
+                        onCommitted = onCommitted
                     )
                     boardView.gone()
                     boardView.clear()
@@ -947,7 +1348,7 @@ open class ObjectSetFragment :
                     galleryView.gone()
                     galleryView.clear()
                     listView.visible()
-                    listView.setViews(viewer.items)
+                    listView.setViews(viewer.items, onCommitted)
                     boardView.gone()
                     boardView.clear()
                 }
@@ -1014,35 +1415,134 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun scrollToObject(objectId: Id) {
-        val viewer = when (val state = vm.currentViewer.value) {
-            is DataViewViewState.Collection.Default -> state.viewer
-            is DataViewViewState.Set.Default -> state.viewer
-            is DataViewViewState.TypeSet.Default -> state.viewer
-            else -> null
+    private fun updatePaginatorVisibility() {
+        // Kanban loads more records within each column, without a shared page selector.
+        binding.paginatorToolbar.isVisible = paginationPageCount > 1 && activeViewer !is Viewer.Board
+    }
+
+    private fun activeRecyclerView(): RecyclerView? = when (activeViewer) {
+        is Viewer.GridView -> rvRows
+        is Viewer.ListView -> binding.listView
+        is Viewer.GalleryView -> binding.galleryView
+        else -> null
+    }
+
+    private fun committedObjectIds(): List<Id> = when (activeViewer) {
+        is Viewer.GridView -> viewerGridAdapter.currentList.map { it.id }
+        is Viewer.ListView -> binding.listView.currentItems.map { it.objectId }
+        is Viewer.GalleryView -> binding.galleryView.currentItems.map { it.objectId }
+        else -> emptyList()
+    }
+
+    private fun saveActiveViewerAnchor() {
+        val viewer = activeViewer ?: return
+        if (viewer is Viewer.Board) {
+            retainedBoardState = binding.boardView.saveScrollState()
+            return
         }
-        when (viewer) {
-            is Viewer.GridView -> {
-                rvRows.smoothScrollToFirst(viewer.rows) { it.id == objectId }
-            }
-
-            is Viewer.GalleryView -> {
-                binding.galleryView.smoothScrollToFirst(viewer.items) { it.objectId == objectId }
-            }
-
-            is Viewer.ListView -> {
-                binding.listView.smoothScrollToFirst(viewer.items) { it.objectId == objectId }
-            }
-
-            else -> { /* no scroll for unsupported views */
-            }
+        if (committedViewerId != viewer.id || pendingAnchor != null) return
+        val recycler = activeRecyclerView() ?: return
+        val manager = recycler.layoutManager as? LinearLayoutManager ?: return
+        val position = manager.findFirstVisibleItemPosition()
+        val ids = committedObjectIds()
+        val id = ids.getOrNull(position) ?: return
+        val item = manager.findViewByPosition(position) ?: return
+        val snapshot = bundleOf(
+            "id" to id,
+            "before" to ids.getOrNull(position - 1),
+            "after" to ids.getOrNull(position + 1),
+            "index" to position,
+            "page" to activeViewerPageIndex,
+            "offset" to (manager.getDecoratedTop(item) - recycler.paddingTop),
+            "x" to if (viewer is Viewer.GridView) binding.gridContainer.root.scrollX else 0
+        )
+        viewerAnchors.remove(viewer.id)
+        viewerAnchors[viewer.id] = snapshot
+        while (viewerAnchors.size > MAX_RETAINED_VIEWERS) {
+            viewerAnchors.remove(viewerAnchors.keys.first())
         }
     }
 
+    private fun applyPendingContentPosition() {
+        if (pendingAnchor == null && pendingReveal == null) return
+        val recycler = activeRecyclerView() ?: return
+        val viewerId = activeViewer?.id ?: return
+        val submission = submissionGeneration
+        val host = binding.scrollHost
+        pendingPositionPreDraw?.let { host.viewTreeObserver.removeOnPreDrawListener(it) }
+        pendingPositionPreDraw = ViewTreeObserver.OnPreDrawListener {
+            pendingPositionPreDraw?.let { host.viewTreeObserver.removeOnPreDrawListener(it) }
+            pendingPositionPreDraw = null
+            if (!hasBinding || submission != submissionGeneration || activeViewer?.id != viewerId) {
+                return@OnPreDrawListener true
+            }
+            val coordinator = host.coordinator
+            if (pendingAnchorInputGeneration != coordinator.inputGeneration) pendingAnchor = null
+            if (pendingRevealInputGeneration != coordinator.inputGeneration) pendingReveal = null
+            val ids = committedObjectIds()
+            if (ids.isEmpty()) return@OnPreDrawListener true // Loading is not an anchor at the top.
+            val manager = recycler.layoutManager as? LinearLayoutManager ?: return@OnPreDrawListener true
+            val reveal = pendingReveal
+            if (reveal != null) {
+                val position = ids.indexOf(reveal)
+                if (position < 0) return@OnPreDrawListener true // Wait for the created record's submission.
+                pendingReveal = null
+                pendingAnchor = null
+                if (binding.viewerViewport.height == 0) coordinator.setExpanded(false)
+                val token = coordinator.begin("reveal:$viewerId", MotionOrigin.ProgrammaticReveal)
+                recycler.stopScroll()
+                manager.scrollToPositionWithOffset(position, 0)
+                coordinator.end(token)
+                // The requested position is applied on the next layout. Suppress the old frame.
+                return@OnPreDrawListener false
+            }
+            val anchor = pendingAnchor ?: return@OnPreDrawListener true
+            pendingAnchor = null
+            val position = sequenceOf("id", "after", "before")
+                .mapNotNull { key -> anchor.getString(key)?.let(ids::indexOf)?.takeIf { it >= 0 } }
+                .firstOrNull() ?: anchor.getInt("index").coerceIn(0, ids.lastIndex)
+            val token = coordinator.begin("restore:$viewerId", MotionOrigin.Restoration)
+            manager.scrollToPositionWithOffset(position,
+                anchor.getInt("offset").coerceIn(-recycler.height, recycler.height))
+            if (activeViewer is Viewer.GridView) {
+                binding.gridContainer.root.scrollTo(anchor.getInt("x").coerceAtLeast(0), 0)
+            }
+            coordinator.end(token)
+            false
+        }
+        host.viewTreeObserver.addOnPreDrawListener(pendingPositionPreDraw)
+        host.invalidate()
+    }
+
+    private fun scrollToObject(objectId: Id) {
+        if (activeRecyclerView() == null) return
+        binding.scrollHost.cancelMotion()
+        pendingReveal = objectId
+        pendingRevealInputGeneration = binding.scrollHost.coordinator.inputGeneration
+        applyPendingContentPosition()
+    }
+
+    private fun onViewersWidgetAction(action: ViewersWidgetUi.Action) {
+        val target = when (action) {
+            is ViewersWidgetUi.Action.SetActive -> action.id
+            is ViewersWidgetUi.Action.OnMove -> action.currentViews.firstOrNull()?.id
+            else -> null
+        }
+        val page = if (target != null && target != activeViewer?.id) {
+            saveActiveViewerAnchor()
+            viewerAnchors[target]?.getInt("page")?.coerceAtLeast(0) ?: 0
+        } else null
+        vm.onViewersWidgetAction(action, restoredPage = page)
+    }
+
     private fun bindHeader(header: SetOrCollectionHeaderState.Default) {
+        if (!hasNativeHeader) return
         setupHeaderMargins(header)
 
-        title.isEnabled = !header.isReadOnlyMode
+        headerReadOnly = header.isReadOnlyMode
+        title.isEnabled = !headerReadOnly
+        tvDescription.isEnabled = !headerReadOnly
+        updateHeaderEditing()
 
         if (title.text.toString() != header.title.text) {
             title.pauseTextWatchers {
@@ -1091,6 +1591,8 @@ open class ObjectSetFragment :
             coverImage = header.title.coverImage
         )
 
+        renderHeaderScrollState()
+        binding.scrollHost.invalidateGeometry()
         if (tvDescription.hasFocus()) return
 
         val description = header.description
@@ -1201,23 +1703,15 @@ open class ObjectSetFragment :
     }
 
     private fun onObjectCoverUpdated() {
-        topToolbarThreeDotsButton.apply {
-            setBackgroundResource(R.drawable.rect_object_menu_button_default)
-        }
-        topToolbarStatusContainer.apply {
-            setBackgroundResource(R.drawable.rect_object_menu_button_default)
-        }
-        if (binding.root.currentState == R.id.start) {
-            topToolbarThreeDotsIcon.apply {
-                imageTintList = ColorStateList.valueOf(Color.WHITE)
-            }
-        }
+        hasCover = true
+        renderHeaderScrollState()
+        binding.scrollHost.invalidateGeometry()
     }
 
     private fun onCoverRemoved() {
-        topToolbarThreeDotsButton.setBackgroundResource(R.drawable.bg_nav_circular_button)
-        topToolbarThreeDotsIcon.imageTintList = null
-        topToolbarStatusContainer.background = null
+        hasCover = false
+        renderHeaderScrollState()
+        binding.scrollHost.invalidateGeometry()
     }
 
     private fun observeCommands(command: ObjectSetCommand) {
@@ -1518,57 +2012,39 @@ open class ObjectSetFragment :
         }
     }
 
-    private val transitionListener = object : MotionLayout.TransitionListener {
-        override fun onTransitionStarted(motionLayout: MotionLayout?, startId: Int, endId: Int) {}
-        override fun onTransitionChange(
-            view: MotionLayout?,
-            start: Int,
-            end: Int,
-            progress: Float
-        ) {
-        }
-
-        override fun onTransitionTrigger(view: MotionLayout?, id: Int, pos: Boolean, prog: Float) {}
-        override fun onTransitionCompleted(motionLayout: MotionLayout?, id: Int) {
-            if (id == R.id.start) {
-                title.pauseTextWatchers { title.enableEditMode() }
-                topToolbarThreeDotsButton.apply {
-                    if (background != null) {
-                        background?.alpha = DRAWABLE_ALPHA_FULL
-                        topToolbarThreeDotsIcon.apply {
-                            imageTintList = ColorStateList.valueOf(Color.WHITE)
-                        }
-                    }
-                }
-                topToolbarStatusContainer.apply {
-                    if (background != null) {
-                        background?.alpha = DRAWABLE_ALPHA_FULL
-                    }
-                }
-            }
-            if (id == R.id.end) {
-                title.pauseTextWatchers { title.enableReadMode() }
-                topToolbarThreeDotsIcon.apply {
-                    imageTintList = null
-                }
-                topToolbarThreeDotsButton.apply {
-                    background?.alpha = DRAWABLE_ALPHA_ZERO
-                }
-                topToolbarStatusContainer.apply {
-                    background?.alpha = DRAWABLE_ALPHA_ZERO
-                }
-            }
-        }
-    }
-
     override fun onStart() {
         super.onStart()
+        // combine's collector may start later; a retained VM already owns any pending selection.
+        vm.selectedViewerId?.let { retainedViewerId = it }
 
-        title.addTextChangedListener(titleTextWatcher)
+        pageToRestore?.let { page ->
+            // Select the saved fixed page before any record subscription or anchor attempt.
+            vm.onPaginatorToolbarNumberClicked(number = page, isSelected = false)
+            pageToRestore = null
+        }
+
+        if (hasNativeHeader) {
+            // Hierarchy restoration has finished; restoring text must not persist an edit.
+            title.addTextChangedListener(titleTextWatcher)
+            tvDescription.addTextChangedListener(tvDescriptionTextWatcher)
+        }
 
         // fabCreate stays visible. NavPanelState.isCreateEnabled is consumed
         // directly inside the fabCreate ComposeView (see onViewCreated) to gate
         // its click and dim it in read-only contexts.
+
+        jobs += lifecycleScope.subscribe(vm.contentSelection) { selection ->
+            if (lastContentSelection != null && lastContentSelection != selection) {
+                saveActiveViewerAnchor()
+                pendingAnchor = null
+                pendingReveal = null
+                binding.boardView.cancelDrag()
+                binding.scrollHost.cancelMotion()
+                listOf(rvRows, binding.listView, binding.galleryView).forEach { it.stopScroll() }
+            }
+            selection.first?.let { retainedViewerId = it }
+            lastContentSelection = selection
+        }
 
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.header) { header ->
@@ -1586,7 +2062,9 @@ open class ObjectSetFragment :
                 }
             }
         }
-        jobs += lifecycleScope.subscribe(vm.currentViewer) { setupDataViewViewState(it) }
+        jobs += lifecycleScope.subscribe(vm.viewerContent) { content ->
+            vm.renderedPageIndex(content)?.let { page -> setupDataViewViewState(content.state, page) }
+        }
         jobs += lifecycleScope.subscribe(vm.error) { err ->
             if (err.isNullOrEmpty())
                 binding.tvError.gone()
@@ -1596,12 +2074,10 @@ open class ObjectSetFragment :
             }
         }
         jobs += lifecycleScope.subscribe(vm.pagination) { (index, count) ->
+            retainedPageIndex = index
+            paginationPageCount = count
             binding.paginatorToolbar.set(count = count, index = index)
-            if (count > 1) {
-                binding.paginatorToolbar.visible()
-            } else {
-                binding.paginatorToolbar.gone()
-            }
+            updatePaginatorVisibility()
         }
         jobs += lifecycleScope.subscribe(vm.featured) { featured ->
             if (featured != null) {
@@ -1623,19 +2099,95 @@ open class ObjectSetFragment :
             routeUploadSnackbar(mainVm, variant)
         }
 
-        vm.onStart(view = view)
+        vm.onStart(view = retainedViewerId ?: view)
     }
 
     override fun onStop() {
+        retainScrollState()
+        binding.boardView.cancelDrag()
+        binding.scrollHost.cancelMotion()
         super.onStop()
         title.removeTextChangedListener(titleTextWatcher)
+        tvDescription.removeTextChangedListener(tvDescriptionTextWatcher)
         vm.onStop()
     }
 
     override fun onDestroyView() {
+        applyExternalBottomInset = null
+        retainScrollState()
+        title.onFocusChangeListener = null
+        tvDescription.onFocusChangeListener = null
+        tvDescription.setOnEditorActionListener(null)
+        headerImeLayoutListener?.let(binding.root.viewTreeObserver::removeOnGlobalLayoutListener)
+        headerImeObservation?.let(binding.root::removeCallbacks)
+        headerImeLayoutListener = null
+        headerImeObservation = null
+        headerImeObservationPosted = false
+        headerImeVisible = null
+        binding.externalHeader.disposeComposition()
+        binding.externalHeader.setParentCompositionContext(null)
+        externalHeaderCompositionInstalled = false
+        externalHeaderEditing = false
+        clearExternalHeaderFocus = null
+        pendingPositionPreDraw?.let { binding.scrollHost.viewTreeObserver.removeOnPreDrawListener(it) }
+        pendingPositionPreDraw = null
+        binding.scrollHost.onHeaderChanged = null
+        binding.scrollHost.onGeometryChanging = null
+        binding.scrollHost.cancelMotion()
+        binding.scrollHost.setStableViewportChild(null)
+        binding.boardView.clear()
+        activeViewer = null
+        paginationPageCount = 0
+        lastContentSelection = null
+        committedViewerId = null
+        pendingAnchor = null
+        pendingReveal = null
+        submissionGeneration++
+        titleInReadMode = null
+        renderedCoverButtons = null
+        renderedAccessibilityActions = -1
+        headerAccessibility.clear()
+        headerEditing = false
         viewerGridAdapter.clear()
         isSheetHostInstalled = false
         super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        externalHeaderContent.value = null
+        externalHeaderCompositionContext = null
+        super.onDestroy()
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        // TextInputWidget also restores its own edit/read mode from the hierarchy.
+        titleInReadMode = null
+        renderHeaderScrollState()
+        updateHeaderEditing()
+    }
+
+    private fun retainScrollState() {
+        saveActiveViewerAnchor()
+        vm.selectedViewerId?.let { retainedViewerId = it }
+        retainedPageIndex = vm.selectedPageIndex
+        retainedHeaderProgress = binding.scrollHost.coordinator.savedProgress
+        retainedBoardState = binding.boardView.saveScrollState()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        if (hasBinding) retainScrollState()
+        val viewers = Bundle().apply { viewerAnchors.forEach { (id, snapshot) -> putBundle(id, snapshot) } }
+        outState.putBundle(SCROLL_STATE_KEY, bundleOf(
+            "object" to ctx,
+            "space" to space,
+            "header" to retainedHeaderProgress,
+            "activeViewer" to retainedViewerId,
+            "page" to retainedPageIndex,
+            "board" to retainedBoardState,
+            "viewers" to viewers
+        ))
+        super.onSaveInstanceState(outState)
     }
 
     private fun setupOnBackPressedDispatcher() {
@@ -1860,19 +2412,25 @@ open class ObjectSetFragment :
         const val CONTEXT_ID_KEY = "arg.object_set.context"
         const val SPACE_ID_KEY = "arg.object_set.space-id"
         private const val INITIAL_VIEW_ID_KEY = "arg.object_set.initial-view"
+        private const val EMBEDDED_KEY = "arg.object_set.embedded"
+        private const val EXTERNAL_HEADER_KEY = "arg.object_set.external_header"
+        private const val SCROLL_STATE_KEY = "object_set.scroll_state"
+        private const val MAX_RETAINED_VIEWERS = 16
         val EMPTY_TAG = null
-        const val DEFAULT_ANIM_DURATION = 300L
         const val DRAWABLE_ALPHA_FULL = 255
-        const val DRAWABLE_ALPHA_ZERO = 0
 
         fun args(
             ctx: Id,
             space: Id,
-            view: Id? = null
+            view: Id? = null,
+            embedded: Boolean = false,
+            externalHeader: Boolean = false
         ) = bundleOf(
             CONTEXT_ID_KEY to ctx,
             SPACE_ID_KEY to space,
-            INITIAL_VIEW_ID_KEY to view
+            INITIAL_VIEW_ID_KEY to view,
+            EMBEDDED_KEY to embedded,
+            EXTERNAL_HEADER_KEY to externalHeader
         )
     }
 }

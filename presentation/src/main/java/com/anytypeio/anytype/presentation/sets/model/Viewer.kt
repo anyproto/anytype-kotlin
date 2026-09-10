@@ -136,7 +136,11 @@ sealed class Viewer {
     data class Board(
         override val id: String,
         override val title: String,
-        val columns: List<Column> = emptyList()
+        val columns: List<Column> = emptyList(),
+        /** A group id can recur under another relation (for example the empty group). */
+        val groupingKey: String? = null,
+        /** Includes hidden groups; null while the group subscription has not supplied data. */
+        val knownColumnIds: Set<String>? = null
     ) : Viewer() {
         data class Column(
             val id: String,
@@ -146,7 +150,9 @@ sealed class Viewer {
             val backgroundColor: String? = null,
             val cards: List<Card> = emptyList(),
             /** Total records in this column on the backend (may exceed [cards] when paged). */
-            val count: Int = 0
+            val count: Int = 0,
+            /** False before the first per-column record response; zero is not yet a final count. */
+            val hasLoadedRecords: Boolean = true
         )
         data class Card(
             val objectId: Id,

@@ -1,20 +1,32 @@
 package com.anytypeio.anytype.core_ui.widgets.dv.board
 
+import androidx.compose.animation.rememberSplineBasedDecay
+import androidx.compose.foundation.gestures.Orientation
+
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.MutatePriority
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitLongPressOrCancellation
+import androidx.compose.foundation.gestures.drag
+import androidx.compose.foundation.gestures.stopScroll
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.gestures.scrollBy
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +36,8 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.withFrameNanos
@@ -39,6 +53,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
+import androidx.compose.ui.input.pointer.changedToUp
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
@@ -50,8 +70,14 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import kotlin.math.roundToInt
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.launch
+import com.anytypeio.anytype.core_ui.widgets.dv.scroll.DataviewScrollCoordinator
+import com.anytypeio.anytype.core_ui.widgets.dv.scroll.MotionOrigin
+import com.anytypeio.anytype.core_ui.widgets.dv.scroll.dataviewBoardTouchObserver
+import com.anytypeio.anytype.core_ui.widgets.dv.scroll.dataviewHeaderScrollEmitter
 
-private const val AUTO_SCROLL_STEP_PX = 18f
 private val COLUMN_WIDTH = 280.dp
 
 /**
@@ -61,7 +87,7 @@ private val COLUMN_WIDTH = 280.dp
  * its own column reorders it ([onCardReordered]).
  */
 @Composable
-fun BoardScreen(
+internal fun BoardScreen(
     board: Viewer.Board,
     onCardClick: (Id) -> Unit,
     onCardMoved: (cardId: Id, sourceColumnId: String, targetColumnId: String, targetOrderedIds: List<Id>?) -> Unit,
@@ -69,237 +95,323 @@ fun BoardScreen(
     onColumnLoadMore: (columnId: String) -> Unit,
     canCreateObject: Boolean = false,
     onCreateInColumn: (columnId: String) -> Unit = {},
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    scrollCoordinator: DataviewScrollCoordinator? = null,
+    scrollStore: BoardScrollStore = remember { BoardScrollStore() },
+    registerDragCancellation: ((() -> Unit) -> Unit) = {},
+    registerDragValidation: (((Viewer.Board) -> Unit) -> Unit) = {},
+    bottomContentInset: androidx.compose.ui.unit.Dp = 0.dp
 ) {
-    if (board.columns.isEmpty()) {
-        Box(
-            modifier = modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = stringResource(id = R.string.dataview_board_no_objects),
-                style = BodyCalloutRegular,
-                color = colorResource(id = R.color.text_tertiary),
-                textAlign = TextAlign.Center
-            )
-        }
-        return
+    val scrollKey = board.scrollKey()
+    val dragState = remember(scrollKey) { BoardDragState() }
+    val savedRow = remember(scrollKey, scrollStore) { scrollStore.anchor(scrollKey, null) }
+    val restoreGeneration = remember(scrollKey, scrollStore) {
+        scrollCoordinator?.inputGeneration ?: scrollStore.inputGeneration
     }
-
-    val dragState = remember { BoardDragState() }
-    val lazyRowState = rememberLazyListState()
+    val lazyRowState = remember(scrollKey) {
+        LazyListState(
+            if (savedRow == null) 0 else resolveBoardAnchor(savedRow, board.columns.map { it.id }),
+            savedRow?.offset ?: 0
+        )
+    }
+    val rowFlingDecay = rememberSplineBasedDecay<Float>()
+    val rowFling = remember(scrollKey, rowFlingDecay) { BoardFlingBehavior(rowFlingDecay) }
+    var rowRestored by remember(scrollKey) { mutableStateOf(savedRow == null || board.columns.isNotEmpty()) }
+    val scope = rememberCoroutineScope()
     val density = LocalDensity.current
     var boardCoords by remember { mutableStateOf<LayoutCoordinates?>(null) }
-
-    // Read live across recompositions so the long-lived (key = Unit) drag gesture below
-    // never captures a stale board or callback — a board re-emit must not interrupt a drag.
+    var boardWidth by remember { mutableIntStateOf(0) }
     val currentBoard by rememberUpdatedState(board)
     val currentOnCardMoved by rememberUpdatedState(onCardMoved)
     val currentOnCardReordered by rememberUpdatedState(onCardReordered)
-
-    // Single derived target-column id so columns don't each rescan bounds per frame.
+    val currentCoordinator by rememberUpdatedState(scrollCoordinator)
+    val stopDrag: () -> Unit = {
+        dragState.stop()
+        currentCoordinator?.setBlocked(MotionOrigin.CardDrag, false)
+    }
+    val currentStopDrag by rememberUpdatedState(stopDrag)
+    DisposableEffect(scrollKey, scrollStore) {
+        registerDragCancellation { currentStopDrag() }
+        registerDragValidation { next ->
+            val dragged = dragState.draggedCard
+            if (dragged != null && next.columns.none { column ->
+                    column.id == dragState.sourceColumnId &&
+                        column.cards.any { it.objectId == dragged.objectId }
+                }) currentStopDrag()
+        }
+        scrollStore.register(scrollKey, null) {
+            if (!rowRestored && savedRow != null &&
+                restoreGeneration == (scrollCoordinator?.inputGeneration ?: scrollStore.inputGeneration)
+            ) savedRow else rowScrollAnchor(lazyRowState, currentBoard.columns.map { it.id })
+        }
+        onDispose {
+            currentStopDrag()
+            registerDragCancellation {}
+            registerDragValidation {}
+            scrollStore.unregister(scrollKey, null)
+        }
+    }
+    LaunchedEffect(board.columns, dragState.draggedCard?.objectId) {
+        val dragged = dragState.draggedCard
+        if (dragged != null && board.columns.none { column ->
+                column.id == dragState.sourceColumnId && column.cards.any { it.objectId == dragged.objectId }
+            }) currentStopDrag()
+    }
+    LaunchedEffect(scrollKey, board.columns.size, savedRow) {
+        if (!rowRestored && savedRow != null && board.columns.isNotEmpty() &&
+            restoreGeneration == (scrollCoordinator?.inputGeneration ?: scrollStore.inputGeneration) &&
+            !lazyRowState.isScrollInProgress
+        ) {
+            lazyRowState.scrollToItem(resolveBoardAnchor(savedRow, board.columns.map { it.id }), savedRow.offset)
+            rowRestored = true
+        }
+    }
     val targetColumnId by remember {
         derivedStateOf { if (dragState.isDragging) dragState.targetColumnId() else null }
     }
-
     val onDrop: () -> Unit = {
-        val card = dragState.draggedCard
-        val source = dragState.sourceColumnId
-        val target = dragState.targetColumnId()
-        if (card != null && source != null && target != null) {
-            if (target == source) {
-                val column = currentBoard.columns.find { it.id == target }
-                // Only persist a reorder when the column is fully loaded — otherwise we'd write a
-                // page-truncated order over the backend's full one (mirrors the cross-column guard).
-                if (column != null && isColumnFullyLoaded(column.cards.size, column.count)) {
-                    val newIds = reorderedIds(column, card.objectId, dragState.cardBounds, dragState.pointer)
-                    if (newIds != column.cards.map { it.objectId }) {
-                        currentOnCardReordered(target, newIds)
+        try {
+            val card = dragState.draggedCard
+            val source = dragState.sourceColumnId
+            val target = dragState.targetColumnId()
+            val targetColumn = currentBoard.columns.find { it.id == target }
+            if (card != null && source != null && target != null && targetColumn != null) {
+                val visible = dragState.visibleCardBounds()
+                val insertion = boardInsertionIndex(
+                    targetColumn, card.objectId, dragState.pointer, visible,
+                    dragState.cardViewports[target], dragState.endInsertionBounds[target]
+                )
+                val full = targetColumn.hasLoadedRecords && isColumnFullyLoaded(targetColumn.cards.size, targetColumn.count)
+                if (target == source) {
+                    if (full && insertion != null) {
+                        val ids = targetColumn.cards.map { it.objectId }.filter { it != card.objectId }.toMutableList()
+                        ids.add(insertion.coerceIn(0, ids.size), card.objectId)
+                        if (ids != targetColumn.cards.map { it.objectId }) currentOnCardReordered(target, ids)
                     }
-                }
-            } else {
-                // Persist the drop position in the target column, but only when it's fully
-                // loaded — otherwise we'd write a page-truncated order over the backend's full one.
-                val targetColumn = currentBoard.columns.find { it.id == target }
-                val targetOrder = if (targetColumn != null && isColumnFullyLoaded(targetColumn.cards.size, targetColumn.count)) {
-                    val ids = targetColumn.cards.map { it.objectId }
-                    val index = reorderInsertIndex(ids, dragState.pointer.y) { id ->
-                        dragState.cardBounds[id]?.let { it.top + it.height / 2f }
-                    }
-                    ids.toMutableList().apply { add(index.coerceIn(0, size), card.objectId) }
                 } else {
-                    null
+                    val order = if (full && insertion != null) {
+                        targetColumn.cards.map { it.objectId }.toMutableList().apply {
+                            add(insertion.coerceIn(0, size), card.objectId)
+                        }
+                    } else null
+                    currentOnCardMoved(card.objectId, source, target, order)
                 }
-                currentOnCardMoved(card.objectId, source, target, targetOrder)
+            }
+        } finally { currentStopDrag() }
+    }
+    val currentOnDrop by rememberUpdatedState(onDrop)
+    val stopRow: () -> Unit = {
+        scrollStore.onUserInput()
+        scope.launch(start = CoroutineStart.UNDISPATCHED) { lazyRowState.stopScroll(MutatePriority.Default) }
+        if (scrollCoordinator == null) {
+            dragState.columnListStates.values.forEach { state ->
+                scope.launch(start = CoroutineStart.UNDISPATCHED) { state.stopScroll(MutatePriority.PreventUserInput) }
             }
         }
-        dragState.stop()
     }
+    val currentStopRow by rememberUpdatedState(stopRow)
+    val observeInput = remember(scrollCoordinator, scrollStore) {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+                if (source == NestedScrollSource.UserInput) {
+                    scrollStore.onUserInput()
+                    if (available.x != 0f) scrollCoordinator?.cancel()
+                }
+                return Offset.Zero
+            }
+        }
+    }
+    // Null coordinator is the embedded screen: only its existing outer header owns scrolling.
+    val route = if (scrollCoordinator == null) {
+        Modifier.nestedScroll(rememberNestedScrollInteropConnection())
+    } else Modifier.dataviewBoardTouchObserver(scrollCoordinator) { currentStopRow() }
 
     Box(
-        modifier = modifier
-            .fillMaxSize()
-            .onGloballyPositioned { boardCoords = it }
-            // The drag gesture lives on the stable board container, not inside a card's
-            // LazyColumn item: disposing/rebinding a card on a background re-emit can no
-            // longer cancel an in-flight drag. Keyed on Unit so it survives recomposition.
+        modifier = modifier.fillMaxSize().then(route).nestedScroll(observeInput)
+            .onGloballyPositioned {
+                boardCoords = it
+                if (boardWidth != it.size.width) boardWidth = it.size.width
+            }
             .pointerInput(Unit) {
                 val edge = 56.dp.toPx()
-                detectDragGesturesAfterLongPress(
-                    onDragStart = { startOffset ->
-                        val hit = findCardAt(startOffset, currentBoard.columns, dragState.cardBounds)
-                        val rect = hit?.let { dragState.cardBounds[it.card.objectId] }
-                        if (hit != null && rect != null) {
-                            dragState.start(
-                                card = hit.card,
-                                columnId = hit.columnId,
-                                topLeft = rect.topLeft,
-                                pointer = startOffset,
-                                size = IntSize(rect.width.roundToInt(), rect.height.roundToInt())
-                            )
+                awaitEachGesture {
+                    try {
+                        val down = awaitFirstDown(requireUnconsumed = false)
+                        if (currentCoordinator == null) currentStopRow()
+                        // Reject labels/gutters/occluded cards BEFORE long-press recognition
+                        // commits automatic consumption. A hold there can still become scroll.
+                        if (findCardAt(down.position, currentBoard.columns, dragState.visibleCardBounds()) == null) {
+                            return@awaitEachGesture
                         }
-                    },
-                    onDrag = { change, dragAmount ->
-                        if (dragState.isDragging) {
-                            change.consume()
-                            dragState.drag(
-                                delta = dragAmount,
-                                boardWidth = boardCoords?.size?.width ?: 0,
-                                boardHeight = boardCoords?.size?.height ?: 0,
-                                edge = edge
-                            )
-                        }
-                    },
-                    onDragEnd = { if (dragState.isDragging) onDrop() },
-                    onDragCancel = { dragState.stop() }
-                )
+                        val held = awaitLongPressOrCancellation(down.id) ?: return@awaitEachGesture
+                        val hit = findCardAt(held.position, currentBoard.columns, dragState.visibleCardBounds())
+                            ?: return@awaitEachGesture
+                        val rect = dragState.cardBounds[hit.card.objectId] ?: return@awaitEachGesture
+                        currentCoordinator?.setBlocked(MotionOrigin.CardDrag, true)
+                        dragState.start(hit.card, hit.columnId, rect.topLeft, held.position,
+                            IntSize(rect.width.roundToInt(), rect.height.roundToInt()))
+                        if (drag(held.id) { change ->
+                                if (dragState.isDragging) {
+                                    dragState.drag(change.positionChange(), boardCoords?.size?.width ?: 0,
+                                        boardCoords?.size?.height ?: 0, edge)
+                                    change.consume()
+                                }
+                            }) {
+                            currentEvent.changes.forEach { if (it.changedToUp()) it.consume() }
+                            if (dragState.isDragging) currentOnDrop()
+                        } else currentStopDrag()
+                    } catch (cancelled: CancellationException) {
+                        currentStopDrag()
+                        throw cancelled
+                    }
+                }
             }
     ) {
-        LazyRow(
-            state = lazyRowState,
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            userScrollEnabled = !dragState.isDragging
-        ) {
-            items(
-                items = board.columns,
-                key = { it.id }
-            ) { column ->
-                DisposableEffect(column.id) {
-                    onDispose { dragState.columnBounds.remove(column.id) }
+        Column(Modifier.fillMaxSize()) {
+            Spacer(Modifier.fillMaxWidth().height(12.dp).backgroundInput(scrollCoordinator, scrollKey, !dragState.isDragging))
+            if (board.columns.isEmpty()) {
+                Box(Modifier.weight(1f).fillMaxWidth().backgroundInput(scrollCoordinator, scrollKey, !dragState.isDragging),
+                    contentAlignment = Alignment.Center) {
+                    Text(stringResource(R.string.dataview_board_no_objects), style = BodyCalloutRegular,
+                        color = colorResource(R.color.text_tertiary), textAlign = TextAlign.Center)
                 }
-                BoardColumnContent(
-                    column = column,
-                    dragState = dragState,
-                    targetColumnId = targetColumnId,
-                    boardCoordsProvider = { boardCoords },
-                    onCardClick = onCardClick,
-                    onColumnLoadMore = onColumnLoadMore,
-                    canCreateObject = canCreateObject,
-                    onCreateInColumn = onCreateInColumn,
-                    modifier = Modifier
-                        .width(COLUMN_WIDTH)
-                        .wrapContentHeight(Alignment.Top)
-                        .onGloballyPositioned { coords ->
-                            val board = boardCoords
-                            if (board != null && coords.isAttached) {
-                                dragState.columnBounds[column.id] = board.localBoundingBoxOf(coords)
-                            }
+            } else {
+                val widthDp = with(density) { boardWidth.toDp() }
+                val trailingSpace = maxOf(16.dp, widthDp - 16.dp - COLUMN_WIDTH * board.columns.size - 12.dp * (board.columns.size - 1))
+                LazyRow(
+                    state = lazyRowState,
+                    modifier = Modifier.weight(1f).fillMaxWidth()
+                        .boardFlingTouchObserver(rowFling, Orientation.Horizontal),
+                    flingBehavior = rowFling,
+                    userScrollEnabled = !dragState.isDragging
+                ) {
+                    itemsIndexed(board.columns, key = { _, column -> column.id }) { index, column ->
+                        DisposableEffect(column.id) { onDispose { dragState.columnBounds.remove(column.id) } }
+                        Row(Modifier.fillMaxHeight()) {
+                            if (index == 0) Spacer(Modifier.width(16.dp).fillMaxHeight()
+                                .backgroundInput(scrollCoordinator, scrollKey, !dragState.isDragging))
+                            BoardColumnContent(
+                                column = column,
+                                dragState = dragState,
+                                targetColumnId = targetColumnId,
+                                boardCoordsProvider = { boardCoords },
+                                onCardClick = onCardClick,
+                                onColumnLoadMore = onColumnLoadMore,
+                                canCreateObject = canCreateObject,
+                                onCreateInColumn = onCreateInColumn,
+                                viewerId = scrollKey,
+                                coordinator = scrollCoordinator,
+                                scrollStore = scrollStore,
+                                bottomContentInset = bottomContentInset,
+                                modifier = Modifier.width(COLUMN_WIDTH).fillMaxHeight().onGloballyPositioned { coords ->
+                                    val boardCoordinates = boardCoords
+                                    if (boardCoordinates != null && coords.isAttached) {
+                                        dragState.columnBounds[column.id] = boardCoordinates.localBoundingBoxOf(coords)
+                                    }
+                                }
+                            )
+                            Spacer(Modifier.width(if (index == board.columns.lastIndex) trailingSpace else 12.dp)
+                                .fillMaxHeight().backgroundInput(scrollCoordinator, scrollKey, !dragState.isDragging))
                         }
-                )
+                    }
+                }
             }
         }
-
-        // Insertion indicator while reordering within a column.
         if (dragState.isDragging) {
-            val source = dragState.sourceColumnId
             val target = targetColumnId
             val draggedId = dragState.draggedCard?.objectId
-            if (target != null && target == source && draggedId != null) {
-                val column = board.columns.find { it.id == target }
-                val colRect = dragState.columnBounds[target]
-                if (column != null && colRect != null) {
-                    val pad = with(density) { 8.dp.toPx() }
-                    Box(
-                        modifier = Modifier
-                            .zIndex(2f)
-                            // Read pointer / cardBounds in the layout phase (the offset
-                            // lambda), not in composition — otherwise every drag frame
-                            // recomposes the whole board. Park off-screen when the column has
-                            // no insertion line (no other cards).
-                            .offset {
-                                val y = insertionY(column, draggedId, dragState.cardBounds, dragState.pointer)
-                                if (y != null) {
-                                    IntOffset((colRect.left + pad).roundToInt(), (y - 1f).roundToInt())
-                                } else {
-                                    IntOffset(0, -10_000)
-                                }
-                            }
-                            .width(with(density) { (colRect.width - 2 * pad).toDp() })
-                            .height(2.dp)
-                            .background(colorResource(id = R.color.text_primary))
-                    )
-                }
+            val column = board.columns.find { it.id == target }
+            val colRect = target?.let(dragState.columnBounds::get)
+            if (column != null && colRect != null && draggedId != null && column.hasLoadedRecords && isColumnFullyLoaded(column.cards.size, column.count)) {
+                val pad = with(density) { 8.dp.toPx() }
+                Box(Modifier.zIndex(2f).offset {
+                    val visible = dragState.visibleCardBounds()
+                    val end = target?.let(dragState.endInsertionBounds::get)
+                    val insertion = boardInsertionIndex(column, draggedId, dragState.pointer, visible,
+                        target?.let(dragState.cardViewports::get), end)
+                    val y = when {
+                        insertion == null -> null
+                        end?.contains(dragState.pointer) == true -> end.top
+                        else -> insertionY(column, draggedId, visible, dragState.pointer)
+                    }
+                    if (y != null) IntOffset((colRect.left + pad).roundToInt(), (y - 1f).roundToInt()) else IntOffset(0, -10_000)
+                }.width(with(density) { (colRect.width - 2 * pad).toDp() }).height(2.dp)
+                    .background(colorResource(R.color.text_primary)))
             }
         }
-
-        // Floating overlay for the card being dragged.
         val dragged = dragState.draggedCard
         if (dragged != null && dragState.cardSize.width > 0) {
-            val w = with(density) { dragState.cardSize.width.toDp() }
-            val h = with(density) { dragState.cardSize.height.toDp() }
-            Box(
-                modifier = Modifier
-                    .zIndex(3f)
-                    .offset { dragState.cardTopLeft.round() }
-                    .size(width = w, height = h)
-                    .shadow(8.dp, RoundedCornerShape(8.dp))
-            ) {
-                BoardCardItem(
-                    card = dragged,
-                    onClick = {},
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .alpha(0.97f)
-                )
+            Box(Modifier.zIndex(3f).offset { dragState.cardTopLeft.round() }
+                .size(with(density) { dragState.cardSize.width.toDp() }, with(density) { dragState.cardSize.height.toDp() })
+                .shadow(8.dp, RoundedCornerShape(8.dp))) {
+                BoardCardItem(dragged, onClick = {}, modifier = Modifier.fillMaxSize().alpha(0.97f))
             }
         }
     }
-
-    // Auto-scroll the row while a dragged card hovers near either edge.
     LaunchedEffect(dragState.autoScroll) {
-        val dir = dragState.autoScroll
-        if (dir != 0) {
+        val direction = dragState.autoScroll
+        if (direction != 0) {
             lazyRowState.scroll {
-                while (
-                    (dir > 0 && lazyRowState.canScrollForward) ||
-                    (dir < 0 && lazyRowState.canScrollBackward)
-                ) {
-                    withFrameNanos { }
-                    scrollBy(dir * AUTO_SCROLL_STEP_PX)
+                var previous = withFrameNanos { it }
+                while (dragState.isDragging && ((direction > 0 && lazyRowState.canScrollForward) ||
+                            (direction < 0 && lazyRowState.canScrollBackward))) {
+                    val frame = withFrameNanos { it }
+                    scrollBy(boardAutoScrollDistance(direction, density.density, frame - previous))
+                    previous = frame
                 }
             }
         }
     }
-
-    // Auto-scroll the hovered column vertically while a dragged card hovers near its top/bottom,
-    // so a card can be dropped at an off-screen position in a tall column.
     LaunchedEffect(dragState.verticalAutoScroll, targetColumnId) {
-        val dir = dragState.verticalAutoScroll
-        val listState = targetColumnId?.let { dragState.columnListStates[it] }
-        if (dir != 0 && listState != null) {
-            listState.scroll {
-                while (
-                    (dir > 0 && listState.canScrollForward) ||
-                    (dir < 0 && listState.canScrollBackward)
-                ) {
-                    withFrameNanos { }
-                    scrollBy(dir * AUTO_SCROLL_STEP_PX)
+        val direction = dragState.verticalAutoScroll
+        val state = targetColumnId?.let(dragState.columnListStates::get)
+        if (direction != 0 && state != null) {
+            val autoScroll: suspend () -> Unit = {
+                state.scroll {
+                    var previous = withFrameNanos { it }
+                    while (dragState.isDragging && ((direction > 0 && state.canScrollForward) ||
+                                (direction < 0 && state.canScrollBackward))) {
+                        val frame = withFrameNanos { it }
+                        scrollBy(boardAutoScrollDistance(direction, density.density, frame - previous))
+                        previous = frame
+                    }
                 }
             }
+            val connection = targetColumnId?.let(dragState.columnScrollConnections::get)
+            if (connection != null) connection.withOrigin(MotionOrigin.DragAutoScroll, autoScroll) else autoScroll()
         }
     }
+}
+
+@Composable
+private fun Modifier.backgroundInput(coordinator: DataviewScrollCoordinator?, viewerId: String, enabled: Boolean): Modifier {
+    return if (coordinator != null) dataviewHeaderScrollEmitter(coordinator, viewerId, enabled)
+    else scrollable(rememberScrollableState { 0f }, Orientation.Vertical, enabled = enabled)
+}
+
+/** Background/header entry is not an implicit append; end insertion has its own visible item. */
+internal fun boardInsertionIndex(
+    column: Viewer.Board.Column,
+    draggedId: String,
+    pointer: Offset,
+    visibleBounds: Map<String, Rect>,
+    viewport: Rect?,
+    endBounds: Rect?
+): Int? {
+    if (viewport?.contains(pointer) != true) return null
+    val remaining = column.cards.map { it.objectId }.filter { it != draggedId }
+    if (column.hasLoadedRecords && isColumnFullyLoaded(column.cards.size, column.count) && endBounds?.contains(pointer) == true) {
+        return remaining.size
+    }
+    val visible = remaining.mapNotNull(visibleBounds::get)
+    val first = visible.firstOrNull() ?: return null
+    val last = visible.last()
+    if (pointer.y < first.top || pointer.y > last.bottom) return null
+    val index = reorderInsertIndex(remaining, pointer.y) { id -> visibleBounds[id]?.center?.y }
+    val lastVisibleIndex = remaining.indexOfLast { it in visibleBounds }
+    // Crossing the midpoint of the last measured card means after that card, not after
+    // every unmeasured card below the viewport. Only the explicit end item can append.
+    return index.coerceAtMost(lastVisibleIndex + 1)
 }
 
 /**
@@ -311,7 +423,8 @@ internal fun shouldLoadMore(
     totalItemsCount: Int,
     canPaginate: Boolean,
     threshold: Int
-): Boolean = canPaginate && lastVisibleIndex >= totalItemsCount - threshold
+): Boolean = canPaginate && lastVisibleIndex >= 0 && totalItemsCount > 0 &&
+    lastVisibleIndex >= totalItemsCount - threshold
 
 /**
  * Whether a column's [loadedCards] cover its full backend [count]. Only a fully-loaded column
@@ -342,22 +455,6 @@ internal fun findCardAt(
         }
     }
     return null
-}
-
-/** Builds the new ordered ids for [column] with [draggedId] moved to the pointer position. */
-private fun reorderedIds(
-    column: Viewer.Board.Column,
-    draggedId: Id,
-    cardBounds: Map<String, Rect>,
-    pointer: Offset
-): List<Id> {
-    val remaining = column.cards.map { it.objectId }.filter { it != draggedId }
-    val insertIndex = reorderInsertIndex(remaining, pointer.y) { id ->
-        cardBounds[id]?.let { it.top + it.height / 2f }
-    }
-    val result = remaining.toMutableList()
-    result.add(insertIndex.coerceIn(0, result.size), draggedId)
-    return result
 }
 
 /**

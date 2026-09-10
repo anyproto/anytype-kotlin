@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--typography, buttons 05.04-->
-<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
@@ -11,83 +11,113 @@
     android:clipToPadding="false"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    app:layoutDescription="@xml/fragment_object_set_scene"
     tools:context="com.anytypeio.anytype.ui.sets.ObjectSetFragment">
 
-    <include
-        android:id="@+id/objectHeader"
-        layout="@layout/layout_object_set_header"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <include
-        android:id="@+id/dataViewHeader"
-        layout="@layout/layout_object_set_dv_header"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/default_collection_dv_header_height"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/objectHeader" />
-
-    <View
-        android:id="@+id/controlDivider2"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/data_view_divider_height"
-        android:background="@color/shape_primary"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dataViewHeader" />
-
-    <include
-        android:id="@+id/gridContainer"
-        layout="@layout/item_viewer_container"
+    <com.anytypeio.anytype.core_ui.widgets.dv.scroll.DataviewScrollHost
+        android:id="@+id/scrollHost"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/paginatorToolbar"
-        app:layout_constraintTop_toBottomOf="@+id/controlDivider2"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewWidget
-        android:id="@+id/galleryView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:paddingTop="10dp"
-        app:layout_constraintBottom_toTopOf="@id/paginatorToolbar"
-        app:layout_constraintTop_toBottomOf="@+id/controlDivider2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <FrameLayout
+            android:id="@+id/headerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
 
-    <com.anytypeio.anytype.core_ui.widgets.dv.ListViewWidget
-        android:id="@+id/listView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:paddingStart="@dimen/dp_20"
-        android:paddingEnd="@dimen/dp_20"
-        app:layout_constraintBottom_toTopOf="@id/paginatorToolbar"
-        app:layout_constraintTop_toBottomOf="@+id/controlDivider2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+            <include
+                android:id="@+id/objectHeader"
+                layout="@layout/layout_object_set_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
 
-    <com.anytypeio.anytype.core_ui.widgets.dv.board.BoardViewWidget
-        android:id="@+id/boardView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@id/paginatorToolbar"
-        app:layout_constraintTop_toBottomOf="@+id/controlDivider2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+            <androidx.compose.ui.platform.ComposeView
+                android:id="@+id/externalHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/background_primary">
+
+            <include
+                android:id="@+id/dataViewHeader"
+                layout="@layout/layout_object_set_dv_header"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/default_collection_dv_header_height" />
+
+            <View
+                android:id="@+id/controlDivider2"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/data_view_divider_height"
+                android:background="@color/shape_primary"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/viewerViewport"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipChildren="true"
+            android:background="@color/background_primary">
+
+            <include
+                android:id="@+id/gridContainer"
+                layout="@layout/item_viewer_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <com.anytypeio.anytype.core_ui.widgets.dv.GalleryViewWidget
+                android:id="@+id/galleryView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingTop="10dp"
+                android:paddingBottom="80dp"
+                android:clipToPadding="false" />
+
+            <com.anytypeio.anytype.core_ui.widgets.dv.ListViewWidget
+                android:id="@+id/listView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:paddingStart="@dimen/dp_20"
+                android:paddingEnd="@dimen/dp_20"
+                android:paddingBottom="80dp"
+                android:clipToPadding="false" />
+
+            <com.anytypeio.anytype.core_ui.widgets.dv.board.BoardViewWidget
+                android:id="@+id/boardView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/unsupportedViewError"
+                style="@style/dataViewUnsupportedViewErrorStyle"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:visibility="gone" />
+
+            <com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
+                android:id="@+id/dataViewInfo"
+                android:layout_width="match_parent"
+                android:layout_height="190dp"
+                android:visibility="invisible" />
+        </FrameLayout>
+    </com.anytypeio.anytype.core_ui.widgets.dv.scroll.DataviewScrollHost>
 
     <com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewPaginatorToolbar
         android:id="@+id/paginatorToolbar"
         android:layout_width="0dp"
         android:layout_height="@dimen/default_toolbar_height"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -102,26 +132,12 @@
         app:layout_constraintStart_toStartOf="parent"
         tools:visibility="invisible" />
 
-    <TextView
-        android:id="@+id/unsupportedViewError"
-        style="@style/dataViewUnsupportedViewErrorStyle"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:gravity="center"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/gridContainer"
-        android:visibility="gone"
-        tools:visibility="visible" />
-
     <com.anytypeio.anytype.core_ui.widgets.toolbar.ObjectTopToolbar
         android:id="@+id/topToolbar"
         android:layout_width="0dp"
         android:layout_height="44dp"
         android:clickable="true"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -133,21 +149,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/topToolbar" />
 
-    <com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
-        android:id="@+id/dataViewInfo"
+    <View
+        android:id="@+id/bottomSystemBarProtection"
         android:layout_width="0dp"
-        android:layout_height="190dp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_bottom_system_bar_protection"
+        android:importantForAccessibility="no"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dataViewHeader"
-        tools:visibility="visible" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- DROID-4508: Two Compose bottom-bar buttons mirroring the editor —
-         Search (left) + Create (right). The same circular look
-         (CircularFabButton, background_primary, subtle shadow, no border) is
-         applied in ObjectSetFragment. Constraints are duplicated in
-         fragment_object_set_scene.xml for both motion states. -->
+    <!-- Search and Create stay fixed while the header and viewport move. -->
     <androidx.compose.ui.platform.ComposeView
         android:id="@+id/fabSearchOnPage"
         android:layout_width="wrap_content"
@@ -241,4 +253,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-</androidx.constraintlayout.motion.widget.MotionLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

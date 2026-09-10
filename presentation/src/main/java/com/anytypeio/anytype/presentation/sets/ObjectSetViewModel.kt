@@ -281,6 +281,8 @@ class ObjectSetViewModel(
     }
 
     val pagination get() = paginator.pagination
+    val selectedViewerId: Id? get() = session.currentViewerId.value
+    val selectedPageIndex: Int get() = (paginator.offset.value / DEFAULT_LIMIT).toInt().coerceAtLeast(0)
 
     private val jobs = mutableListOf<Job>()
 
@@ -300,6 +302,49 @@ class ObjectSetViewModel(
     private val _currentViewer: MutableStateFlow<DataViewViewState> =
         MutableStateFlow(DataViewViewState.Init)
     val currentViewer = _currentViewer
+    // Each committed subscription publishes a distinct wrapper, even when its visible
+    // content equals the previous page or filter result and currentViewer conflates it.
+    class ViewerContentState(
+        val state: DataViewViewState,
+        val viewerId: Id?,
+        val pageIndex: Int
+    )
+    private val _viewerContent = MutableStateFlow(ViewerContentState(DataViewViewState.Init, null, 0))
+    val viewerContent = _viewerContent.asStateFlow()
+    private var renderedFingerprint: SubscriptionFingerprint? = null
+
+    /** A recreated screen must not restore old records against a newly requested page. */
+    suspend fun renderedPageIndex(content: ViewerContentState): Int? {
+        if (content !== _viewerContent.value) return null
+        val fingerprint = renderedFingerprint
+            ?: return content.pageIndex.takeIf { content.state === DataViewViewState.Init }
+        val requested = Query(stateReducer.state.value, paginator.offset.value, session.currentViewerId.value)
+        val expected = requested.subscriptionFingerprint()
+        if (content !== _viewerContent.value || renderedFingerprint != fingerprint ||
+            requested.state !== stateReducer.state.value || requested.offset != paginator.offset.value ||
+            requested.currentViewerId != session.currentViewerId.value
+        ) return null
+        return content.pageIndex.takeIf { fingerprint == expected }
+    }
+
+    private fun publishViewer(rendered: RenderedSubscription) {
+        renderedFingerprint = rendered.fingerprint
+        _currentViewer.value = rendered.state
+        _viewerContent.value = ViewerContentState(
+            state = rendered.state,
+            viewerId = rendered.fingerprint.viewerId,
+            pageIndex = (rendered.fingerprint.offset / DEFAULT_LIMIT).toInt().coerceAtLeast(0)
+        )
+    }
+    val contentSelection = combine(session.currentViewerId, paginator.offset) { viewer, offset ->
+        viewer to offset
+    }.distinctUntilChanged()
+
+    // A selected viewer can change before its RPC completes. Keep the records and the
+    // subscription which produced them atomic, so old IDs are never rendered as the new viewer.
+    private val subscriptionResult = MutableStateFlow(
+        SubscriptionResult(fingerprint = null, state = DataViewState.Init)
+    )
 
     /**
      * Loaded options (label + color) for the active board's group relation, keyed
@@ -784,13 +829,14 @@ class ObjectSetViewModel(
                 .distinctUntilChanged { old, new ->
                     old.second == new.second
                 }
-                .flatMapLatest { (query, _) ->
+                .flatMapLatest { (query, fingerprint) ->
                 val activeViewer = query.state.dataViewStateOrNull()?.viewerByIdOrFirst(query.currentViewerId)
                 if (activeViewer?.type == DVViewerType.BOARD && isKanbanEnabled.value) {
                     // An enabled board is driven entirely by per-column record subscriptions
                     // (subscribeToBoardRecords), not the single flat 50-record window. When the
                     // experimental flag is off the board is unsupported, so the normal sub runs.
-                    return@flatMapLatest flowOf(DataViewState.Loaded(objects = emptyList(), dependencies = emptyList()))
+                    return@flatMapLatest flowOf(SubscriptionResult(fingerprint,
+                        DataViewState.Loaded(objects = emptyList(), dependencies = emptyList())))
                 }
                 when (query.state) {
                     is ObjectState.DataView.Collection -> {
@@ -846,17 +892,22 @@ class ObjectSetViewModel(
                         Timber.d("subscribeToObjectState, NEW STATE, ${query.state}")
                         emptyFlow()
                     }
-                }
-            }.onEach { dataViewState ->
+                }.map { SubscriptionResult(fingerprint, it) }
+            }.onEach { result ->
+                val dataViewState = result.state
                 if (dataViewState is DataViewState.Loaded) {
                     Timber.d("subscribeToObjectState, New index size: ${dataViewState.objects.size}")
                 }
                 database.update(dataViewState)
+                subscriptionResult.value = result
             }
                 .catch { error ->
                     Timber.e("subscribeToObjectState error : $error")
-                    _currentViewer.value =
+                    publishViewer(RenderedSubscription(
+                        Query(stateReducer.state.value, paginator.offset.value, session.currentViewerId.value)
+                            .subscriptionFingerprint(),
                         DataViewViewState.Error("Error while getting objects:\n${error.message}")
+                    ))
                 }
                 .collect()
         }
@@ -1266,22 +1317,42 @@ class ObjectSetViewModel(
         Timber.d("subscribeToDataViewViewer, START SUBSCRIPTION by ctx:[${vmParams.ctx}]")
         viewModelScope.launch {
             combine(
-                database.index,
+                subscriptionResult,
                 stateReducer.state,
-                session.currentViewerId,
+                contentSelection,
                 permission,
                 renderTrigger
-            ) { dataViewState, objectState, currentViewId, permission, _ ->
-                processViewState(dataViewState, objectState, currentViewId, permission)
+            ) { result, objectState, selection, permission, _ ->
+                val (currentViewId, offset) = selection
+                val expected = Query(objectState, offset, currentViewId).subscriptionFingerprint()
+                val awaitingRecords = expected.isInitialized && expected.viewerId != null &&
+                    (expected.kind == "collection" || expected.sources.isNotEmpty())
+                if (awaitingRecords && result.fingerprint != expected) {
+                    // Preserve the previous viewer until this subscription has authoritative data.
+                    // In particular, do not resolve a saved B anchor against A's stale record IDs.
+                    null
+                } else {
+                    RenderedSubscription(expected, processViewState(
+                        if (result.fingerprint == expected) result.state else DataViewState.Init,
+                        objectState, currentViewId, permission
+                    ))
+                }
             }
+                .filterNotNull()
                 .distinctUntilChanged()
                 // Building the view state maps every row × column of the current page —
                 // keep that work off the main thread; only the state assignment below
                 // runs on Main.
                 .flowOn(viewStateDispatcher)
-                .collect { viewState ->
+                .collect { rendered ->
+                val current = Query(stateReducer.state.value, paginator.offset.value, session.currentViewerId.value)
+                if (rendered.fingerprint != current.subscriptionFingerprint() ||
+                    current.state !== stateReducer.state.value || current.offset != paginator.offset.value ||
+                    current.currentViewerId != session.currentViewerId.value
+                ) return@collect
+                val viewState = rendered.state
                 Timber.d("subscribeToDataViewViewer, newViewerState:[%s]", viewState::class.simpleName)
-                _currentViewer.value = viewState
+                publishViewer(rendered)
                 pendingScrollToObject.value?.let { objectId ->
                     pendingScrollToObject.value = null
                     dispatch(ObjectSetCommand.ScrollToObject(objectId))
@@ -4232,7 +4303,7 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
     //endregion
 
     // region VIEWS
-    fun onViewersWidgetAction(action: ViewersWidgetUi.Action) {
+    fun onViewersWidgetAction(action: ViewersWidgetUi.Action, restoredPage: Int? = null) {
         Timber.d("onViewersWidgetAction, action:[$action]")
         val state = stateReducer.state.value.dataViewState() ?: return
         when (action) {
@@ -4296,12 +4367,14 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
                             }
                         )
                     )
+                    restoredPage?.let { paginator.offset.value = it.coerceAtLeast(0).toLong() * DEFAULT_LIMIT }
                     session.currentViewerId.value = action.currentViews.firstOrNull()?.id
                 }
             }
             is ViewersWidgetUi.Action.SetActive -> {
                 val startTime = System.currentTimeMillis()
                 viewModelScope.launch {
+                    restoredPage?.let { paginator.offset.value = it.coerceAtLeast(0).toLong() * DEFAULT_LIMIT }
                     onEvent(ViewerEvent.SetActive(
                         viewer = action.id,
                         onResult = {
@@ -5044,6 +5117,16 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
      * with equal fingerprints produce an identical subscription, so cancelling and
      * re-creating it would only waste a middleware round-trip.
      */
+    private data class SubscriptionResult(
+        val fingerprint: SubscriptionFingerprint?,
+        val state: DataViewState
+    )
+
+    private data class RenderedSubscription(
+        val fingerprint: SubscriptionFingerprint,
+        val state: DataViewViewState
+    )
+
     private data class SubscriptionFingerprint(
         val kind: String,
         val isInitialized: Boolean,

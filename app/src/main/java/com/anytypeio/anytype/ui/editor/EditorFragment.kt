@@ -53,6 +53,8 @@ import androidx.core.view.doOnPreDraw
 import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
+import com.anytypeio.anytype.core_utils.ext.applyBottomEdgeToEdgeInsets
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -1162,6 +1164,24 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 visible()
             }
+        }
+    }
+
+    override fun onApplyWindowRootInsets() {
+        val bottomControls = listOf(binding.toolbar, binding.markupToolbar,
+            binding.mentionSuggesterToolbar, binding.scrollAndMoveBottomAction, binding.slashWidget,
+            binding.fabSearchOnPage, binding.fabCreate, binding.panels, binding.btnSelectTemplate,
+            binding.chooseTypeWidget, binding.syncStatusWidget, binding.editorDatePicker,
+            binding.discussionButton, binding.attachToChatPanel)
+            .map { it to (it.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin }
+        val contentBottomPadding = binding.recycler.paddingBottom
+        val viewBinding = binding
+        viewBinding.root.applyBottomEdgeToEdgeInsets { bottom ->
+            bottomControls.forEach { (view, margin) ->
+                view.updateLayoutParams<ViewGroup.MarginLayoutParams> { bottomMargin = margin + bottom }
+            }
+            viewBinding.recycler.updatePadding(bottom = contentBottomPadding + bottom)
+            viewBinding.bottomSystemBarProtection.updateLayoutParams { height = bottom }
         }
     }
 

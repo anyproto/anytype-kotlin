@@ -197,6 +197,14 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+    <View
+        android:id="@+id/bottomSystemBarProtection"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="bottom"
+        android:background="@drawable/bg_bottom_system_bar_protection"
+        android:importantForAccessibility="no" />
+
     <androidx.compose.ui.platform.ComposeView
         android:id="@+id/fabSearchOnPage"
         android:layout_width="wrap_content"

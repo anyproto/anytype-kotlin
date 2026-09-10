@@ -328,7 +328,10 @@ dependencies {
         exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-debug"
     }
 
-    debugImplementation libs.fragmentTesting
+    // Keep FragmentScenario's test runtime in the instrumentation APK. Putting it in
+    // debug pins older androidx.test dependencies through AGP consistent resolution.
+    androidTestImplementation libs.fragmentTesting
+    debugImplementation "androidx.fragment:fragment-testing-manifest:${libs.versions.fragmentVersion.get()}"
     debugImplementation libs.composeTooling
     implementation libs.composeToolingPreview
 }

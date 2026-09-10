@@ -203,7 +203,8 @@ fun rememberDataviewColumnScrollConnection(
             owner = "compose:$viewerId:${columnId ?: "background"}",
             decay = decay,
             scope = scope,
-            stopNativeScroll = { scrollableState.stopScroll(MutatePriority.PreventUserInput) }
+            // Cancellation of an old fling must never outrank the incoming finger drag.
+            stopNativeScroll = { scrollableState.stopScroll(MutatePriority.Default) }
         )
     }
     DisposableEffect(connection) { onDispose(connection::dispose) }

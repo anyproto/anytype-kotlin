@@ -25,6 +25,88 @@ import org.junit.runner.RunWith
 /** Tests the integrated production Board, retaining native pointer and animation handling. */
 @RunWith(AndroidJUnit4::class)
 class DataviewBoardHarnessTest {
+    @Test fun repeatedHorizontalSwipeAcceleratesBetweenColumns() = withBoard(0) { scenario ->
+        lateinit var fixture: DataviewBoardHarnessFragment
+        scenario.onFragment {
+            fixture = it
+            it.model = it.model.copy(columns = List(12) { index ->
+                it.column(0).copy(id = "column-$index", label = "Runtime column $index")
+            })
+            it.board.setBoard(it.model)
+            it.host.coordinator.setExpanded(false)
+        }
+        textBounds("Runtime column 0")
+        perform("swipe again during horizontal board inertia", fixture) { ui, view ->
+            val bounds = checkDataviewMain { Rect().also { assertTrue(view.getGlobalVisibleRect(it)) } }
+            val x = bounds.left + bounds.width() * .75f
+            val y = bounds.top + bounds.height() * .6f
+            fun position(): Int = checkDataviewMain {
+                requireNotNull(fixture.board.saveScrollState().getBundle(fixture.model.id)?.getBundle("row")).let {
+                    val index = it.getInt("index")
+                    index * fixture.px(292) + it.getInt("offset") + if (index > 0) fixture.px(16) else 0
+                }
+            }
+            fun flingTravel(): Int {
+                val downTime = SystemClock.uptimeMillis()
+                fun inject(action: Int, nextX: Float) {
+                    val event = MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), action, nextX, y, 0)
+                    try { assertTrue(ui.injectMotionEvent(event)) } finally { event.recycle() }
+                }
+                inject(MotionEvent.ACTION_DOWN, x)
+                repeat(6) { step ->
+                    ui.loopMainThreadForAtLeast(16)
+                    inject(MotionEvent.ACTION_MOVE, x - fixture.px(100) * (step + 1) / 6f)
+                }
+                inject(MotionEvent.ACTION_UP, x - fixture.px(100))
+                val start = position()
+                ui.loopMainThreadForAtLeast(80)
+                return position() - start
+            }
+            val first = flingTravel()
+            val second = flingTravel()
+            assertTrue("First horizontal swipe must fling: $first", first > fixture.px(10))
+            assertTrue("Repeated horizontal swipe must accelerate, first=$first second=$second", second > first * 1.15f)
+            assertEquals(fixture.host.coordinator.range, fixture.host.coordinator.offset, 0f)
+            assertEquals(0, fixture.persistedMoves)
+        }
+    }
+
+    @Test fun repeatedSameDirectionSwipeAcceleratesColumn() = withBoard(100) { scenario ->
+        lateinit var fixture: DataviewBoardHarnessFragment
+        scenario.onFragment { fixture = it; it.host.coordinator.setExpanded(false) }
+        val pitch = textBounds("Runtime card A-1").top - textBounds("Runtime card A-0").top
+        assertTrue(pitch > 0)
+        perform("swipe again during column inertia", fixture) { ui, view ->
+            val bounds = checkDataviewMain { Rect().also { assertTrue(view.getGlobalVisibleRect(it)) } }
+            val x = bounds.left + fixture.px(130).toFloat()
+            val y = bounds.top + bounds.height() * .75f
+            fun position(): Int = checkDataviewMain {
+                requireNotNull(fixture.anchor()).let { it.getInt("index") * pitch + it.getInt("offset") }
+            }
+            fun flingTravel(): Int {
+                val downTime = SystemClock.uptimeMillis()
+                fun inject(action: Int, nextY: Float) {
+                    val event = MotionEvent.obtain(downTime, SystemClock.uptimeMillis(), action, x, nextY, 0)
+                    try { assertTrue(ui.injectMotionEvent(event)) } finally { event.recycle() }
+                }
+                inject(MotionEvent.ACTION_DOWN, y)
+                repeat(6) { step ->
+                    ui.loopMainThreadForAtLeast(16)
+                    inject(MotionEvent.ACTION_MOVE, y - fixture.px(100) * (step + 1) / 6f)
+                }
+                inject(MotionEvent.ACTION_UP, y - fixture.px(100))
+                val start = position()
+                ui.loopMainThreadForAtLeast(80)
+                return position() - start
+            }
+            val first = flingTravel()
+            val second = flingTravel()
+            assertTrue("First swipe must fling: $first", first > fixture.px(10))
+            assertTrue("Repeated swipe must accelerate, first=$first second=$second", second > first * 1.15f)
+            assertEquals(0, fixture.persistedMoves)
+        }
+    }
+
     @Test fun labelLongHoldThenSwipeStillScrolls() = nonCardHoldScroll("label", count = 100)
     @Test fun gutterLongHoldThenSwipeStillScrolls() = nonCardHoldScroll("gutter", count = 100)
     @Test fun emptyReadOnlyLongHoldThenSwipeStillScrolls() = nonCardHoldScroll("empty", count = 0)

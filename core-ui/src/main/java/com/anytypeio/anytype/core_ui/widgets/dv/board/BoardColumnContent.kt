@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.widgets.dv.board
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -104,6 +105,8 @@ internal fun BoardColumnContent(
         val index = if (saved?.id == null || initialIds.isEmpty()) 0 else resolveBoardAnchor(saved, initialIds) + 1
         LazyListState(index, saved?.offset ?: 0)
     }
+    val flingDecay = rememberSplineBasedDecay<Float>()
+    val columnFling = remember(viewerId, column.id, flingDecay) { BoardFlingBehavior(flingDecay) }
     val connection = if (coordinator != null) {
         rememberDataviewColumnScrollConnection(coordinator, viewerId, column.id, listState)
     } else null
@@ -184,6 +187,7 @@ internal fun BoardColumnContent(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .background(background)
+            .boardFlingTouchObserver(columnFling)
             .then(input)
             .fillMaxSize()
             .onGloballyPositioned { coords ->
@@ -194,6 +198,7 @@ internal fun BoardColumnContent(
                 }
             },
         userScrollEnabled = !dragState.isDragging,
+        flingBehavior = columnFling,
         contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 88.dp + bottomContentInset),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {

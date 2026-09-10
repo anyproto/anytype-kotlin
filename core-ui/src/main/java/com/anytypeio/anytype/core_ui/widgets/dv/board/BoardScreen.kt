@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.core_ui.widgets.dv.board
 
+import androidx.compose.animation.rememberSplineBasedDecay
+import androidx.compose.foundation.gestures.Orientation
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -7,7 +10,6 @@ import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitLongPressOrCancellation
 import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.gestures.stopScroll
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.gestures.scrollBy
@@ -112,6 +114,8 @@ internal fun BoardScreen(
             savedRow?.offset ?: 0
         )
     }
+    val rowFlingDecay = rememberSplineBasedDecay<Float>()
+    val rowFling = remember(scrollKey, rowFlingDecay) { BoardFlingBehavior(rowFlingDecay) }
     var rowRestored by remember(scrollKey) { mutableStateOf(savedRow == null || board.columns.isNotEmpty()) }
     val scope = rememberCoroutineScope()
     val density = LocalDensity.current
@@ -198,7 +202,7 @@ internal fun BoardScreen(
     val currentOnDrop by rememberUpdatedState(onDrop)
     val stopRow: () -> Unit = {
         scrollStore.onUserInput()
-        scope.launch(start = CoroutineStart.UNDISPATCHED) { lazyRowState.stopScroll(MutatePriority.PreventUserInput) }
+        scope.launch(start = CoroutineStart.UNDISPATCHED) { lazyRowState.stopScroll(MutatePriority.Default) }
         if (scrollCoordinator == null) {
             dragState.columnListStates.values.forEach { state ->
                 scope.launch(start = CoroutineStart.UNDISPATCHED) { state.stopScroll(MutatePriority.PreventUserInput) }
@@ -276,7 +280,9 @@ internal fun BoardScreen(
                 val trailingSpace = maxOf(16.dp, widthDp - 16.dp - COLUMN_WIDTH * board.columns.size - 12.dp * (board.columns.size - 1))
                 LazyRow(
                     state = lazyRowState,
-                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    modifier = Modifier.weight(1f).fillMaxWidth()
+                        .boardFlingTouchObserver(rowFling, Orientation.Horizontal),
+                    flingBehavior = rowFling,
                     userScrollEnabled = !dragState.isDragging
                 ) {
                     itemsIndexed(board.columns, key = { _, column -> column.id }) { index, column ->

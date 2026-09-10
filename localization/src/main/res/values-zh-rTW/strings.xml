@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="dataview_expand_header">Expand object header</string>
+    <string name="dataview_collapse_header">Collapse object header</string>
     <string name="about">關於</string>
     <string name="app_version">應用程式版本</string>
     <string name="library">資料庫</string>

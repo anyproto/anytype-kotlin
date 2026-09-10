@@ -1,24 +1,24 @@
 package com.anytypeio.anytype.ui.primitives
 
-import android.os.Build
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -28,10 +28,10 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.compose.AndroidFragment
-import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.BottomSyncStatus
 import com.anytypeio.anytype.feature_object_type.ui.TopBarContent
@@ -179,21 +179,21 @@ private fun MainContentSet(
     onTypeEvent: (TypeEvent) -> Unit,
     objectSetFragment: MutableState<ObjectSetFragment?>
 ) {
-    val contentModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-        Modifier
-            .windowInsetsPadding(WindowInsets.navigationBars)
-            .fillMaxSize()
-            .padding(top = paddingValues.calculateTopPadding())
-            .consumeWindowInsets(PaddingValues(top = paddingValues.calculateTopPadding()))
-    } else {
-        Modifier
-            .fillMaxSize()
-            .padding(paddingValues)
-            .consumeWindowInsets(paddingValues)
-    }
+    // The fragment applies the bottom inset to controls and scroll content, not its viewport.
+    val contentModifier = Modifier
+        .fillMaxSize()
+        .padding(top = paddingValues.calculateTopPadding())
+        .consumeWindowInsets(PaddingValues(top = paddingValues.calculateTopPadding()))
 
     val compositionContext = rememberCompositionContext()
     val fragment = objectSetFragment.value
+    val density = LocalDensity.current
+    val navigationBottom = WindowInsets.navigationBars.getBottom(density)
+    val imeBottom = WindowInsets.ime.getBottom(density)
+    // AndroidFragment does not receive insets consumed by its Compose host.
+    // The host owns IME padding; forward only the remaining navigation clearance.
+    val bottomClearance = (navigationBottom - imeBottom).coerceAtLeast(0)
+    SideEffect { fragment?.setExternalBottomInset(bottomClearance) }
     val headerContent by rememberUpdatedState<@Composable () -> Unit> {
         TypeHeader(
             uiIconState = uiIconState,

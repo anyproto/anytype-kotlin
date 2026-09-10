@@ -40,6 +40,7 @@ class BoardViewWidget @JvmOverloads constructor(
     private var cancelActiveDrag: () -> Unit = {}
     private var validateActiveDrag: (Viewer.Board) -> Unit = {}
     private var viewportInsetPixels by mutableIntStateOf(0)
+    private var bottomContentInsetPixels by mutableIntStateOf(0)
 
     /** Null in embedded mode: the external header receives the single View interop stream. */
     var scrollCoordinator: DataviewScrollCoordinator? by mutableStateOf(null)
@@ -72,6 +73,7 @@ class BoardViewWidget @JvmOverloads constructor(
                     onCreateInColumn = onCreateInColumn,
                     scrollCoordinator = scrollCoordinator,
                     scrollStore = scrollStore,
+                    bottomContentInset = with(LocalDensity.current) { bottomContentInsetPixels.toDp() },
                     registerDragCancellation = { cancelActiveDrag = it },
                     registerDragValidation = { validateActiveDrag = it }
                 ) }
@@ -82,6 +84,10 @@ class BoardViewWidget @JvmOverloads constructor(
     /** Paired with DataviewScrollHost's fixed Android-origin child geometry. */
     fun setViewportTopInset(pixels: Int) {
         viewportInsetPixels = pixels.coerceAtLeast(0)
+    }
+
+    fun setBottomContentInset(pixels: Int) {
+        bottomContentInsetPixels = pixels.coerceAtLeast(0)
     }
 
     fun setBoard(board: Viewer.Board) {

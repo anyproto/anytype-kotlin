@@ -97,7 +97,8 @@ internal fun BoardScreen(
     scrollCoordinator: DataviewScrollCoordinator? = null,
     scrollStore: BoardScrollStore = remember { BoardScrollStore() },
     registerDragCancellation: ((() -> Unit) -> Unit) = {},
-    registerDragValidation: (((Viewer.Board) -> Unit) -> Unit) = {}
+    registerDragValidation: (((Viewer.Board) -> Unit) -> Unit) = {},
+    bottomContentInset: androidx.compose.ui.unit.Dp = 0.dp
 ) {
     val scrollKey = board.scrollKey()
     val dragState = remember(scrollKey) { BoardDragState() }
@@ -295,6 +296,7 @@ internal fun BoardScreen(
                                 viewerId = scrollKey,
                                 coordinator = scrollCoordinator,
                                 scrollStore = scrollStore,
+                                bottomContentInset = bottomContentInset,
                                 modifier = Modifier.width(COLUMN_WIDTH).fillMaxHeight().onGloballyPositioned { coords ->
                                     val boardCoordinates = boardCoords
                                     if (boardCoordinates != null && coords.isAttached) {
@@ -308,7 +310,6 @@ internal fun BoardScreen(
                     }
                 }
             }
-            Spacer(Modifier.fillMaxWidth().height(12.dp).backgroundInput(scrollCoordinator, scrollKey, !dragState.isDragging))
         }
         if (dragState.isDragging) {
             val target = targetColumnId

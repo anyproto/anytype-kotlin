@@ -93,6 +93,7 @@ import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
 import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.applyBottomEdgeToEdgeInsets
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.dimen
@@ -191,6 +192,7 @@ open class ObjectSetFragment :
     // UI-only, scoped to this object. Never retain renderers or their animation state.
     private val viewerAnchors = linkedMapOf<Id, Bundle>()
     private var activeViewer: Viewer? = null
+    private var paginationPageCount = 0
     private var pendingAnchor: Bundle? = null
     private var pendingAnchorInputGeneration = 0L
     private var pendingReveal: Id? = null
@@ -213,6 +215,8 @@ open class ObjectSetFragment :
     private var headerImeObservation: Runnable? = null
     private var headerImeObservationPosted = false
     private var externalHeaderEditing = false
+    private var externalBottomInset = 0
+    private var applyExternalBottomInset: ((Int) -> Unit)? = null
     private var clearExternalHeaderFocus: (() -> Unit)? = null
     private var externalHeaderCompositionContext: CompositionContext? = null
     private val externalHeaderContent = mutableStateOf<(@Composable () -> Unit)?>(null)
@@ -651,8 +655,43 @@ open class ObjectSetFragment :
     }
 
     override fun onApplyWindowRootInsets() {
-        // The embedded type page already applies Scaffold/system-bar insets.
-        if (!embedded) super.onApplyWindowRootInsets()
+        if (embedded && !hasExternalHeader) return
+        val bottomControls = listOf(binding.fabSearchOnPage, binding.fabCreate,
+            binding.viewerEditWidget, binding.viewerLayoutWidget, binding.templatesWidget,
+            binding.titleWidget, binding.syncStatusWidget)
+            .map { it to (it.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin }
+        val paginatorHeight = binding.paginatorToolbar.layoutParams.height
+        val listBottomPadding = binding.listView.paddingBottom
+        val galleryBottomPadding = binding.galleryView.paddingBottom
+        val viewBinding = binding
+        val rows = rvRows
+        val rowsBottomPadding = (80 * resources.displayMetrics.density).toInt()
+        val applyBottomInset: (Int) -> Unit = { bottom ->
+            bottomControls.forEach { (view, margin) ->
+                view.updateLayoutParams<ViewGroup.MarginLayoutParams> { bottomMargin = margin + bottom }
+            }
+            viewBinding.paginatorToolbar.updateLayoutParams { height = paginatorHeight + bottom }
+            viewBinding.paginatorToolbar.updatePadding(bottom = bottom)
+            rows.updatePadding(bottom = rowsBottomPadding + bottom)
+            viewBinding.listView.updatePadding(bottom = listBottomPadding + bottom)
+            viewBinding.galleryView.updatePadding(bottom = galleryBottomPadding + bottom)
+            viewBinding.boardView.setBottomContentInset(bottom)
+            viewBinding.bottomSystemBarProtection.updateLayoutParams { height = bottom }
+        }
+        if (hasExternalHeader) {
+            // Compose owns the type page's insets and forwards the bottom clearance.
+            applyExternalBottomInset = applyBottomInset
+            applyBottomInset(externalBottomInset)
+        } else {
+            viewBinding.root.applyBottomEdgeToEdgeInsets(onBottomInset = applyBottomInset)
+        }
+    }
+
+    fun setExternalBottomInset(pixels: Int) {
+        val bottom = pixels.coerceAtLeast(0)
+        if (externalBottomInset == bottom) return
+        externalBottomInset = bottom
+        applyExternalBottomInset?.invoke(bottom)
     }
 
     private fun setupHeaderImeObservation() {
@@ -1256,6 +1295,7 @@ open class ObjectSetFragment :
             pendingAnchorInputGeneration = binding.scrollHost.coordinator.inputGeneration
         }
         activeViewer = viewer
+        updatePaginatorVisibility()
         if (retainedViewerId == null) viewer?.let { retainedViewerId = it.id }
         val submission = ++submissionGeneration
         val onCommitted: () -> Unit = {
@@ -1373,6 +1413,11 @@ open class ObjectSetFragment :
                 }
             }
         }
+    }
+
+    private fun updatePaginatorVisibility() {
+        // Kanban loads more records within each column, without a shared page selector.
+        binding.paginatorToolbar.isVisible = paginationPageCount > 1 && activeViewer !is Viewer.Board
     }
 
     private fun activeRecyclerView(): RecyclerView? = when (activeViewer) {
@@ -2030,12 +2075,9 @@ open class ObjectSetFragment :
         }
         jobs += lifecycleScope.subscribe(vm.pagination) { (index, count) ->
             retainedPageIndex = index
+            paginationPageCount = count
             binding.paginatorToolbar.set(count = count, index = index)
-            if (count > 1) {
-                binding.paginatorToolbar.visible()
-            } else {
-                binding.paginatorToolbar.gone()
-            }
+            updatePaginatorVisibility()
         }
         jobs += lifecycleScope.subscribe(vm.featured) { featured ->
             if (featured != null) {
@@ -2071,6 +2113,7 @@ open class ObjectSetFragment :
     }
 
     override fun onDestroyView() {
+        applyExternalBottomInset = null
         retainScrollState()
         title.onFocusChangeListener = null
         tvDescription.onFocusChangeListener = null
@@ -2094,6 +2137,7 @@ open class ObjectSetFragment :
         binding.scrollHost.setStableViewportChild(null)
         binding.boardView.clear()
         activeViewer = null
+        paginationPageCount = 0
         lastContentSelection = null
         committedViewerId = null
         pendingAnchor = null

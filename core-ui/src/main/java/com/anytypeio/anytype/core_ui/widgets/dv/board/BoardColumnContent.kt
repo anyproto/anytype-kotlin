@@ -82,7 +82,8 @@ internal fun BoardColumnContent(
     modifier: Modifier = Modifier,
     viewerId: String = "preview",
     coordinator: DataviewScrollCoordinator? = null,
-    scrollStore: BoardScrollStore? = null
+    scrollStore: BoardScrollStore? = null,
+    bottomContentInset: androidx.compose.ui.unit.Dp = 0.dp
 ) {
     val isDropTarget = dragState.isDragging &&
         dragState.sourceColumnId != column.id && targetColumnId == column.id
@@ -110,7 +111,7 @@ internal fun BoardColumnContent(
     val currentLoadMore by rememberUpdatedState(onColumnLoadMore)
     var restored by remember(viewerId, column.id) { mutableStateOf(initialResolved) }
     val restoreIds = remember(column.cards) { column.cards.map { it.objectId } }
-    val bottomClearance = with(LocalDensity.current) { 88.dp.toPx() }
+    val bottomClearance = with(LocalDensity.current) { (88.dp + bottomContentInset).toPx() }
     var listBounds by remember { mutableStateOf<Rect?>(null) }
     var labelBottom by remember { mutableStateOf<Float?>(null) }
 
@@ -193,7 +194,7 @@ internal fun BoardColumnContent(
                 }
             },
         userScrollEnabled = !dragState.isDragging,
-        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 88.dp),
+        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 88.dp + bottomContentInset),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         stickyHeader(key = "board-label:${column.id}", contentType = "label") { _ ->
@@ -235,7 +236,7 @@ internal fun BoardColumnContent(
         items(column.cards, key = { "$BOARD_CARD_KEY_PREFIX${it.objectId}" }, contentType = { "card" }) { card ->
             BoardCard(card, column.id, dragState, boardCoordsProvider, onCardClick)
         }
-        if (column.hasLoadedRecords && isColumnFullyLoaded(column.cards.size, column.count)) {
+        if (!canCreateObject && column.hasLoadedRecords && isColumnFullyLoaded(column.cards.size, column.count)) {
             item(key = "board-end:${column.id}", contentType = "insertion") {
                 Spacer(Modifier.fillMaxWidth().height(24.dp).onGloballyPositioned { coords ->
                     val board = boardCoordsProvider()
@@ -248,7 +249,20 @@ internal fun BoardColumnContent(
         }
         if (canCreateObject) {
             item(key = "board-add:${column.id}", contentType = "add") {
-                BoardAddCardButton(onClick = { onCreateInColumn(column.id) })
+                val fullyLoaded = column.hasLoadedRecords && isColumnFullyLoaded(column.cards.size, column.count)
+                // The create row doubles as the end drop target, without an extra spacer.
+                BoardAddCardButton(
+                    onClick = { onCreateInColumn(column.id) },
+                    modifier = Modifier.onGloballyPositioned { coords ->
+                        val board = boardCoordsProvider()
+                        if (fullyLoaded && board != null && coords.isAttached) {
+                            dragState.endInsertionBounds[column.id] = board.localBoundingBoxOf(coords)
+                        }
+                    }
+                )
+                DisposableEffect(column.id, fullyLoaded) {
+                    onDispose { dragState.endInsertionBounds.remove(column.id) }
+                }
             }
         }
         if (!column.hasLoadedRecords || canPaginate.value) {
@@ -306,11 +320,11 @@ private fun BoardCard(
  * new object whose group value matches this column (wired in [BoardColumnContent]).
  */
 @Composable
-private fun BoardAddCardButton(onClick: () -> Unit) {
+private fun BoardAddCardButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     // Matches Figma "Gallery Card" (node 10521:24257): a card-shaped tile with a centered
     // 24dp plus, white fill, subtle transparent-secondary border, 16dp corners.
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(colorResource(id = R.color.background_primary))

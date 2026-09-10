@@ -880,6 +880,7 @@ message Rpc {
                         FAILED_TO_WRITE_CONFIG = 105;
                         FAILED_TO_CREATE_LOCAL_REPO = 106;
                         ACCOUNT_CREATION_IS_CANCELED = 107;
+                        ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
 
                         CONFIG_FILE_NOT_FOUND = 200;
                         CONFIG_FILE_INVALID = 201;
@@ -986,6 +987,35 @@ message Rpc {
             }
         }
 
+        // RecoveryState serves the folded account start-up status
+        // (Event.Account.Recovery.Snapshot) from the same state the
+        // Event.Account.Recovery.Update stream is emitted from. Lock-free with
+        // respect to AccountSelect, so it can be called while that RPC blocks,
+        // and total: call it whenever you like. Before any run it returns the
+        // idle snapshot (runId empty, phase NotStarted); ACCOUNT_IS_NOT_RUNNING
+        // is kept for wire compatibility and is never returned.
+        message RecoveryState {
+            message Request {
+            }
+
+            message Response {
+                Error error = 1;
+                anytype.Event.Account.Recovery.Snapshot snapshot = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0; // No error
+                        UNKNOWN_ERROR = 1; // Any other errors
+                        BAD_INPUT = 2;
+                        ACCOUNT_IS_NOT_RUNNING = 101;
+                    }
+                }
+            }
+        }
+
         message Migrate {
             message Request {
                 string id = 1; // Id of a selected account
@@ -1007,8 +1037,8 @@ message Rpc {
 
                         ACCOUNT_NOT_FOUND = 101;
                         CANCELED = 102;
-                        NOT_ENOUGH_FREE_SPACE = 103;
-                        // TODO: [storage] Add specific error codes for migration problems
+                        NOT_ENOUGH_FREE_SPACE = 103; // TODO: [storage] Add specific error codes for migration problems
+                        ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
                     }
                 }
             }
@@ -1237,6 +1267,7 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         DIFFERENT_ACCOUNT = 3;
+                        ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
                     }
                 }
             }

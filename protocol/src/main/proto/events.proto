@@ -24,6 +24,7 @@ message Event {
       Account.Update accountUpdate = 203;
       Account.LinkChallenge accountLinkChallenge = 204;
       Account.LinkChallengeHide accountLinkChallengeHide = 205;
+      Account.Recovery.Update accountRecoveryUpdate = 206;
 
       Object.Details.Set objectDetailsSet = 16;
       Object.Details.Amend objectDetailsAmend = 50;
@@ -247,6 +248,287 @@ message Event {
     message LinkChallengeHide {
       string challenge =
           1; // verify code before hiding to protect from MITM attacks
+    }
+
+    // Recovery is the account start-up status stream (GO-7471): a
+    // recovery-scoped, monotonic event log covering every app open, from the
+    // first millisecond of AccountSelect until every space has published its
+    // load result. Rpc.Account.RecoveryState serves the folded Snapshot from
+    // the same state, so push and pull cannot drift. Clients apply Updates
+    // with the same runId and id == last+1; on a gap or a new runId they
+    // re-pull the snapshot. Every payload is a level, never a delta.
+    message Recovery {
+      // ModeUnknown is the zero value and is never emitted: an unset field
+      // must not read as a cold recovery, the worse failure direction.
+      enum Mode {
+        ModeUnknown = 0;
+        ColdRecovery = 1; // fresh device: the account repo did not exist
+        WarmStart = 2;    // the repo existed
+        NewAccount = 3;   // account creation paths
+      }
+      // NOT monotone: the phase is derived from the run's current condition
+      // and moves back when that condition regresses (losing the last node
+      // connection mid-fetch goes FetchingAccount -> Connecting; the
+      // WaitingForNetwork overlay returns to the phase it interrupted).
+      // Clients must render the phase last received rather than dropping
+      // backward transitions. Only Done and Failed are terminal.
+      // Phases may be skipped (a warm start never enters FetchingAccount);
+      // clients must accept any forward jump.
+      enum Phase {
+        LookingForPeers = 0;
+        Connecting = 1;
+        FetchingAccount = 2;
+        LoadingSpaces = 3;
+        Done = 4;
+        WaitingForNetwork = 5; // calm, auto-retrying resting state; not an error screen
+        Failed = 6;            // account-level fatal; AccountSelect itself failed
+        // NotStarted is the idle snapshot's phase: no recovery run has begun
+        // in this process (Snapshot.runId is empty). A new number on purpose:
+        // the zero value would read as LookingForPeers before anything happens.
+        NotStarted = 7;
+      }
+      enum ErrorClass {
+        None = 0;
+        NoNetwork = 1;
+        PeerUnreachable = 2;
+        IncompatibleVersion = 3;
+        NotAuthorized = 4;
+        SpaceDeleted = 5;
+        AccountDeleted = 6;
+        AccountNotFound = 7;
+        RateLimited = 8;
+        StorageLimit = 9; // reserved, no producer yet
+        Unexpected = 10;
+      }
+      enum PeerKind {
+        LocalPeer = 0;
+        NetworkNode = 1;
+      }
+      enum Direction {
+        Outbound = 0;
+        Inbound = 1;
+      }
+      enum SpaceKind {
+        Regular = 0;
+        Tech = 1;
+      }
+      // Loaded = the space controller published LocalStatusOk: mandatory
+      // objects fetched, tree sync started. Object-level progress after that
+      // is on Event.Space.SyncStatus.Update.
+      enum SpaceState {
+        Queued = 0;
+        Pulling = 1;
+        Loading = 2;
+        Loaded = 3;
+        Error = 4;
+        // Removed: the space left this run (deleted or removed while
+        // recovering); drop it from the list, it is excluded from counters
+        Removed = 5;
+        // Stalled: the run settled around this space but it never published a
+        // load result. Not terminal — the load may still complete, and the
+        // state will change again if it does — so Finished does not fire while
+        // a space is stalled. Render it as a determinate stall with a retry
+        // ("79 of 80 loaded, 1 stalled"), never as ongoing progress.
+        Stalled = 6;
+      }
+      enum DiscoveryState {
+        Possible = 0;
+        NoInterfaces = 1;
+        Restricted = 2;
+      }
+      // LocalPeersState is the fold's headline for the LAN layer, derived from
+      // every LocalPeer's dial state and space-exchange answer. The negative
+      // verdict surfaces only once every connected LAN peer has answered and
+      // none holds the account; one positive answer flips it at once.
+      enum LocalPeersState {
+        NoLocalPeers = 0;
+        LocalPeersConnecting = 1;   // discovered, dialing, or connected and awaiting the exchange
+        LocalPeersUnreachable = 2;  // every discovered peer failed to connect
+        AccountNotOnLocalPeers = 3; // every connected peer answered: it does not hold the account
+        AccountOnLocalPeer = 4;     // at least one peer holds the account's tech space
+      }
+
+      // ErrorInfo (not "Error": enum values and nested messages share the
+      // enclosing scope, and SpaceState.Error already takes that name)
+      message ErrorInfo {
+        ErrorClass class = 1;
+        bool retryable = 2;
+        // raw error text for logs/diagnostics; clients may log it, must never
+        // headline it
+        string debugMessage = 3;
+      }
+
+      message Update {
+        string runId = 1;      // random per run; a change means "new run, reset"
+        int64 id = 2;          // monotonic within runId, starts at 1; gap => re-pull
+        int64 timestampMs = 3; // unix ms
+        oneof payload {
+          Started started = 10;
+          PhaseChanged phaseChanged = 11;
+          LocalDiscoveryState localDiscoveryState = 12;
+          PeerDiscovered peerDiscovered = 13;
+          DialStarted dialStarted = 14;
+          PeerConnected peerConnected = 15;
+          DialFailed dialFailed = 16;
+          PeerDisconnected peerDisconnected = 17;
+          AccountFetchStarted accountFetchStarted = 18;
+          AccountFetchError accountFetchError = 19;
+          AccountReady accountReady = 20;
+          SpaceDiscovered spaceDiscovered = 21;
+          SpaceStateChanged spaceStateChanged = 22;
+          Finished finished = 23;
+          // sent only to a newly attached session: snapshot-on-subscribe
+          Snapshot snapshot = 24;
+          PeerSpaceExchange peerSpaceExchange = 25;
+          LocalPeersStateChanged localPeersStateChanged = 26;
+        }
+      }
+
+      message Started {
+        Mode mode = 1;
+        string networkId = 2;
+      }
+      message PhaseChanged {
+        Phase phase = 1;
+        Phase fromPhase = 2;
+        int64 previousPhaseDurationMs = 3;
+        ErrorInfo error = 4; // set for WaitingForNetwork and Failed
+      }
+      message LocalDiscoveryState { DiscoveryState state = 1; }
+      message PeerDiscovered {
+        string peerId = 1;
+        repeated string addrs = 2; // display only
+        PeerKind kind = 3;
+        repeated string nodeTypes = 4;
+      }
+      message DialStarted {
+        string peerId = 1;
+        PeerKind kind = 2;
+        repeated string nodeTypes = 3; // nodeconf node types, e.g. coordinator, tree, file
+        int32 addrsCount = 4;
+      }
+      message PeerConnected {
+        string peerId = 1;
+        PeerKind kind = 2;
+        repeated string nodeTypes = 3;
+        Direction direction = 4;
+        string addr = 5;      // display only; never compare across directions
+        string transport = 6; // scheme as any-sync reports it: quic, yamux, ...
+        uint32 protoVersion = 7;
+        int64 durationMs = 8; // 0 = unknown (inbound)
+        int32 openConnections = 9;
+      }
+      message DialFailed {
+        string peerId = 1;
+        PeerKind kind = 2;
+        repeated string nodeTypes = 3;
+        ErrorInfo error = 4;
+        int32 attempt = 5; // dials observed since the last Connected
+        int64 durationMs = 6;
+      }
+      message PeerDisconnected {
+        string peerId = 1;
+        PeerKind kind = 2;
+        int32 openConnections = 3;
+        repeated string nodeTypes = 4;
+      }
+      // PeerSpaceExchange reports what the space exchange with a LAN peer
+      // said — a fact, not a verdict: whether the peer holds this account's
+      // tech space and how many spaces it shares. exchanged=false means no
+      // answer is known (the peer was dropped from the peer store).
+      message PeerSpaceExchange {
+        string peerId = 1;
+        bool exchanged = 2;
+        bool hasAccountSpace = 3;
+        int32 sharedSpaceCount = 4;
+      }
+      message LocalPeersStateChanged {
+        LocalPeersState state = 1;
+        LocalPeersState fromState = 2;
+      }
+      message AccountFetchStarted {
+        string spaceId = 1;
+        string peerId = 2; // empty = waiting for a peer
+        int32 attempt = 3; // pull rounds started; a new round means "still trying"
+      }
+      message AccountFetchError {
+        string peerId = 1;
+        ErrorInfo error = 2;
+        int32 attempt = 3;
+      }
+      message AccountReady { int64 durationMs = 1; } // since Started; UI may start
+      message SpaceDiscovered {
+        string spaceId = 1;
+        string spaceViewId = 2;
+        SpaceKind kind = 3;
+      }
+      message SpaceStateChanged {
+        string spaceId = 1;
+        SpaceState state = 2;
+        SpaceState fromState = 3;
+        ErrorInfo error = 4;
+        int32 attempt = 5; // pull attempts, a level
+      }
+      message Finished {
+        int32 spacesTotal = 1;
+        int32 spacesLoaded = 2;
+        int32 spacesFailed = 3;
+        int64 totalDurationMs = 4;
+        // true: the SpaceView set was confirmed against the network ("no more
+        // spaces to download"); false: the completeness gate opened on its
+        // stall bound and no completeness claim may be made — keep relying on
+        // the SpaceView subscription for spaces that appear later
+        bool viewsConfirmed = 5;
+      }
+
+      // Folded state. Served by Rpc.Account.RecoveryState and pushed once to
+      // each new session. The RPC is total: before any run it returns the
+      // idle snapshot (runId empty, phase NotStarted) rather than an error.
+      message Snapshot {
+        string runId = 1; // empty: no run has begun, ignore the rest
+        int64 lastEventId = 2;
+        Mode mode = 3;
+        string networkId = 4;
+        int64 startedAtMs = 5;
+        Phase phase = 6;
+        int64 phaseStartedAtMs = 7;
+        bool done = 8;
+        ErrorInfo error = 9; // account-level only
+        DiscoveryState discovery = 10;
+        bool accountFetchStarted = 11;
+        bool accountReady = 12;
+        repeated Peer peers = 13;
+        repeated Space spaces = 14;
+        int32 spacesTotal = 15;
+        int32 spacesLoaded = 16;
+        int32 spacesFailed = 17;
+        bool viewsConfirmed = 18; // meaningful once done; see Finished
+        int32 accountFetchAttempt = 19;
+        ErrorInfo accountFetchError = 20; // last failed pull; cleared at AccountReady
+        LocalPeersState localPeers = 21;
+        message Peer {
+          string peerId = 1;
+          PeerKind kind = 2;
+          repeated string nodeTypes = 3;
+          int32 openConnections = 4;
+          string transport = 5;
+          uint32 protoVersion = 6;
+          int32 dialAttempts = 7;
+          ErrorInfo lastError = 8;
+          bool discoveredLocally = 9;
+          bool exchanged = 10; // a space exchange answered; the two fields below apply
+          bool hasAccountSpace = 11;
+          int32 sharedSpaceCount = 12;
+        }
+        message Space {
+          string spaceId = 1;
+          string spaceViewId = 2;
+          SpaceKind kind = 3;
+          SpaceState state = 4;
+          ErrorInfo error = 5;
+          int32 attempt = 6;
+        }
+      }
     }
   }
 

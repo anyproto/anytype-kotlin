@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -37,7 +36,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -83,8 +81,7 @@ internal fun BoardColumnContent(
     modifier: Modifier = Modifier,
     viewerId: String = "preview",
     coordinator: DataviewScrollCoordinator? = null,
-    scrollStore: BoardScrollStore? = null,
-    bottomContentInset: androidx.compose.ui.unit.Dp = 0.dp
+    scrollStore: BoardScrollStore? = null
 ) {
     val isDropTarget = dragState.isDragging &&
         dragState.sourceColumnId != column.id && targetColumnId == column.id
@@ -114,16 +111,16 @@ internal fun BoardColumnContent(
     val currentLoadMore by rememberUpdatedState(onColumnLoadMore)
     var restored by remember(viewerId, column.id) { mutableStateOf(initialResolved) }
     val restoreIds = remember(column.cards) { column.cards.map { it.objectId } }
-    val bottomClearance = with(LocalDensity.current) { (88.dp + bottomContentInset).toPx() }
     var listBounds by remember { mutableStateOf<Rect?>(null) }
     var labelBottom by remember { mutableStateOf<Float?>(null) }
 
+    // The column ends where its content ends, and the board reserves the strip of the floating
+    // buttons. Every card of the tinted area is therefore visible, and a card stays grabbable
+    // down to the last pixel of the column.
     fun updateViewport() {
         val bounds = listBounds ?: return
         val top = (labelBottom ?: bounds.top).coerceIn(bounds.top, bounds.bottom)
-        dragState.cardViewports[column.id] = Rect(
-            bounds.left, top, bounds.right, (bounds.bottom - bottomClearance).coerceAtLeast(top)
-        )
+        dragState.cardViewports[column.id] = Rect(bounds.left, top, bounds.right, bounds.bottom)
     }
 
     DisposableEffect(viewerId, column.id, listState, connection) {
@@ -184,12 +181,13 @@ internal fun BoardColumnContent(
     } else Modifier
     LazyColumn(
         state = listState,
+        // No height modifier: the list keeps the height of its content, up to the height of
+        // the board. The tinted background therefore ends under the last item.
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .background(background)
             .boardFlingTouchObserver(columnFling)
             .then(input)
-            .fillMaxSize()
             .onGloballyPositioned { coords ->
                 val board = boardCoordsProvider()
                 if (board != null && coords.isAttached) {
@@ -199,7 +197,7 @@ internal fun BoardColumnContent(
             },
         userScrollEnabled = !dragState.isDragging,
         flingBehavior = columnFling,
-        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 88.dp + bottomContentInset),
+        contentPadding = PaddingValues(start = 8.dp, end = 8.dp, bottom = 8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         stickyHeader(key = "board-label:${column.id}", contentType = "label") { _ ->

@@ -14,6 +14,7 @@ import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -79,6 +81,9 @@ import com.anytypeio.anytype.core_ui.widgets.dv.scroll.dataviewBoardTouchObserve
 import com.anytypeio.anytype.core_ui.widgets.dv.scroll.dataviewHeaderScrollEmitter
 
 private val COLUMN_WIDTH = 280.dp
+
+/** Room for the floating search and create buttons under the last card of a column. */
+private val BOTTOM_CONTROLS_CLEARANCE = 88.dp
 
 /**
  * Kanban board with drag-and-drop. Columns are laid out in a horizontally
@@ -290,26 +295,44 @@ internal fun BoardScreen(
                         Row(Modifier.fillMaxHeight()) {
                             if (index == 0) Spacer(Modifier.width(16.dp).fillMaxHeight()
                                 .backgroundInput(scrollCoordinator, scrollKey, !dragState.isDragging))
-                            BoardColumnContent(
-                                column = column,
-                                dragState = dragState,
-                                targetColumnId = targetColumnId,
-                                boardCoordsProvider = { boardCoords },
-                                onCardClick = onCardClick,
-                                onColumnLoadMore = onColumnLoadMore,
-                                canCreateObject = canCreateObject,
-                                onCreateInColumn = onCreateInColumn,
-                                viewerId = scrollKey,
-                                coordinator = scrollCoordinator,
-                                scrollStore = scrollStore,
-                                bottomContentInset = bottomContentInset,
-                                modifier = Modifier.width(COLUMN_WIDTH).fillMaxHeight().onGloballyPositioned { coords ->
+                            // The slot keeps the full height of the board. It is the drop
+                            // target of a dragged card, so a drop below a short column still
+                            // reaches the column.
+                            BoxWithConstraints(
+                                Modifier.width(COLUMN_WIDTH).fillMaxHeight().onGloballyPositioned { coords ->
                                     val boardCoordinates = boardCoords
                                     if (boardCoordinates != null && coords.isAttached) {
                                         dragState.columnBounds[column.id] = boardCoordinates.localBoundingBoxOf(coords)
                                     }
                                 }
-                            )
+                            ) {
+                                // The list keeps the height of its content, and it stops above
+                                // the floating buttons and above the system bar.
+                                val listMaxHeight = (maxHeight - BOTTOM_CONTROLS_CLEARANCE - bottomContentInset)
+                                    .coerceAtLeast(0.dp)
+                                Column(Modifier.fillMaxSize()) {
+                                    BoardColumnContent(
+                                        column = column,
+                                        dragState = dragState,
+                                        targetColumnId = targetColumnId,
+                                        boardCoordsProvider = { boardCoords },
+                                        onCardClick = onCardClick,
+                                        onColumnLoadMore = onColumnLoadMore,
+                                        canCreateObject = canCreateObject,
+                                        onCreateInColumn = onCreateInColumn,
+                                        viewerId = scrollKey,
+                                        coordinator = scrollCoordinator,
+                                        scrollStore = scrollStore,
+                                        modifier = Modifier.fillMaxWidth().heightIn(max = listMaxHeight)
+                                    )
+                                    // The spacer holds every point under the list, exactly as a
+                                    // gutter does: a vertical drag reaches the header, and a
+                                    // horizontal drag reaches the row. A hold and swipe under a
+                                    // short column therefore still scrolls.
+                                    Spacer(Modifier.fillMaxWidth().weight(1f)
+                                        .backgroundInput(scrollCoordinator, scrollKey, !dragState.isDragging))
+                                }
+                            }
                             Spacer(Modifier.width(if (index == board.columns.lastIndex) trailingSpace else 12.dp)
                                 .fillMaxHeight().backgroundInput(scrollCoordinator, scrollKey, !dragState.isDragging))
                         }

@@ -99,8 +99,7 @@ internal fun BoardScreen(
     scrollCoordinator: DataviewScrollCoordinator? = null,
     scrollStore: BoardScrollStore = remember { BoardScrollStore() },
     registerDragCancellation: ((() -> Unit) -> Unit) = {},
-    registerDragValidation: (((Viewer.Board) -> Unit) -> Unit) = {},
-    bottomContentInset: androidx.compose.ui.unit.Dp = 0.dp
+    registerDragValidation: (((Viewer.Board) -> Unit) -> Unit) = {}
 ) {
     val scrollKey = board.scrollKey()
     val dragState = remember(scrollKey) { BoardDragState() }
@@ -290,26 +289,35 @@ internal fun BoardScreen(
                         Row(Modifier.fillMaxHeight()) {
                             if (index == 0) Spacer(Modifier.width(16.dp).fillMaxHeight()
                                 .backgroundInput(scrollCoordinator, scrollKey, !dragState.isDragging))
-                            BoardColumnContent(
-                                column = column,
-                                dragState = dragState,
-                                targetColumnId = targetColumnId,
-                                boardCoordsProvider = { boardCoords },
-                                onCardClick = onCardClick,
-                                onColumnLoadMore = onColumnLoadMore,
-                                canCreateObject = canCreateObject,
-                                onCreateInColumn = onCreateInColumn,
-                                viewerId = scrollKey,
-                                coordinator = scrollCoordinator,
-                                scrollStore = scrollStore,
-                                bottomContentInset = bottomContentInset,
-                                modifier = Modifier.width(COLUMN_WIDTH).fillMaxHeight().onGloballyPositioned { coords ->
+                            // The slot keeps the full height of the board. It is the drop
+                            // target of a dragged card, so a drop below a short column still
+                            // reaches the column. Only the tinted list hugs its own content,
+                            // and the spacer below it carries the header input of the gutters.
+                            Column(
+                                Modifier.width(COLUMN_WIDTH).fillMaxHeight().onGloballyPositioned { coords ->
                                     val boardCoordinates = boardCoords
                                     if (boardCoordinates != null && coords.isAttached) {
                                         dragState.columnBounds[column.id] = boardCoordinates.localBoundingBoxOf(coords)
                                     }
                                 }
-                            )
+                            ) {
+                                BoardColumnContent(
+                                    column = column,
+                                    dragState = dragState,
+                                    targetColumnId = targetColumnId,
+                                    boardCoordsProvider = { boardCoords },
+                                    onCardClick = onCardClick,
+                                    onColumnLoadMore = onColumnLoadMore,
+                                    canCreateObject = canCreateObject,
+                                    onCreateInColumn = onCreateInColumn,
+                                    viewerId = scrollKey,
+                                    coordinator = scrollCoordinator,
+                                    scrollStore = scrollStore,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Spacer(Modifier.fillMaxWidth().weight(1f)
+                                    .backgroundInput(scrollCoordinator, scrollKey, !dragState.isDragging))
+                            }
                             Spacer(Modifier.width(if (index == board.columns.lastIndex) trailingSpace else 12.dp)
                                 .fillMaxHeight().backgroundInput(scrollCoordinator, scrollKey, !dragState.isDragging))
                         }

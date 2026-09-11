@@ -17,7 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.widgets.dv.scroll.DataviewScrollCoordinator
+
+/** Room for the floating search and create buttons under the board. */
+private val BOTTOM_CONTROLS_CLEARANCE = 88.dp
 
 /**
  * Hosts the Kanban [BoardScreen] as a single, persistent composition — the same pattern
@@ -61,7 +65,15 @@ class BoardViewWidget @JvmOverloads constructor(
     override fun Content() {
         // The Android owner stays at a fixed screen origin so native Compose velocity
         // tracking sees physical pointer movement. Only this finite inner viewport moves.
-        Box(Modifier.fillMaxSize().padding(top = with(LocalDensity.current) { viewportInsetPixels.toDp() })) {
+        // The bottom padding holds the board above the system bar and above the floating
+        // buttons, so a full column ends with a visible corner instead of a cut edge.
+        val density = LocalDensity.current
+        Box(
+            Modifier.fillMaxSize().padding(
+                top = with(density) { viewportInsetPixels.toDp() },
+                bottom = with(density) { bottomContentInsetPixels.toDp() } + BOTTOM_CONTROLS_CLEARANCE
+            )
+        ) {
             boardState?.let { current ->
                 key(current.scrollKey()) { BoardScreen(
                     board = current,
@@ -73,7 +85,6 @@ class BoardViewWidget @JvmOverloads constructor(
                     onCreateInColumn = onCreateInColumn,
                     scrollCoordinator = scrollCoordinator,
                     scrollStore = scrollStore,
-                    bottomContentInset = with(LocalDensity.current) { bottomContentInsetPixels.toDp() },
                     registerDragCancellation = { cancelActiveDrag = it },
                     registerDragValidation = { validateActiveDrag = it }
                 ) }

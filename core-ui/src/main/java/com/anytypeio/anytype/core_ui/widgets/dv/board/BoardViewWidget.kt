@@ -61,6 +61,8 @@ class BoardViewWidget @JvmOverloads constructor(
     override fun Content() {
         // The Android owner stays at a fixed screen origin so native Compose velocity
         // tracking sees physical pointer movement. Only this finite inner viewport moves.
+        // The board keeps the full height: the bottom strip still scrolls the board, and
+        // [BoardScreen] reserves that strip inside each column instead.
         Box(Modifier.fillMaxSize().padding(top = with(LocalDensity.current) { viewportInsetPixels.toDp() })) {
             boardState?.let { current ->
                 key(current.scrollKey()) { BoardScreen(

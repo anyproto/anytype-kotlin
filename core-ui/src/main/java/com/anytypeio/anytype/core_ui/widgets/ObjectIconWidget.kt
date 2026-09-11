@@ -489,11 +489,14 @@ fun TypeIcon.getDrawableAndTintColor(context: Context): Pair<Int, Int> {
     val icon = this
     return when (icon) {
         is ObjectIcon.TypeIcon.Default -> {
+            // A newer client can send an icon name that this APK does not hold. TypeIconView
+            // then shows the puzzle piece in the default color. The View screens must agree,
+            // otherwise the same object shows an icon in Compose and nothing here.
             val resId = CustomIconDrawables.getDrawableRes(icon.rawValue)
             if (resId != null) {
                 resId to context.getColor(icon.color.colorRes())
             } else {
-                0 to 0
+                R.drawable.ci_extension_puzzle to context.getColor(CustomIconColor.DEFAULT.colorRes())
             }
         }
 

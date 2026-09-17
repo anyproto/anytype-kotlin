@@ -3,6 +3,7 @@ package anytype.model;
 option go_package = "pkg/lib/pb/model";
 
 import "google/protobuf/struct.proto";
+import "export_report.proto";
 
 message SmartBlockSnapshotBase {
     repeated Block blocks = 1;
@@ -732,14 +733,34 @@ message Account {
             string appName = 2; // either from process or specified manually when creating
             string appKey = 4;
             int64 createdAt = 5;
-            int64 expireAt = 6;
+            int64 expireAt = 6; // unix timestamp in seconds after which the key stops authenticating; 0 means the key never expires
             LocalApiScope scope = 7;
             bool isActive = 8;
+            AppGrant grant = 9; // unset means an unscoped (legacy) key; only JsonAPI-scope keys may carry one
         }
         enum LocalApiScope {
             Limited = 0; // Used in WebClipper; AccountSelect(to be deprecated), ObjectSearch, ObjectShow, ObjectCreate, ObjectCreateFromURL, BlockPreview, BlockPaste, BroadcastPayloadEvent
             JsonAPI = 1; // JSON API only, no direct grpc api calls allowed
             Full = 2; // Full access, not available via LocalLink
+        }
+        message AppGrant {
+            // spaceIds are the spaces the key may touch; empty only when
+            // allSpaces is set — exactly one of the two must be present
+            repeated string spaceIds = 1;
+            Perm perm = 2;
+            // allSpaces grants every space in the account, including spaces
+            // created after the grant was made (dynamic — GitHub's "All
+            // repositories" semantics). The JSON API still excludes the tech
+            // space; reaching it requires listing it explicitly in spaceIds.
+            bool allSpaces = 3;
+            // Perm is nested so its Go constants (AccountAuthAppGrant_Read) can
+            // never be misread as the key scopes (AccountAuth_JsonAPI et al.) —
+            // grant verbs and key scopes are unrelated enums about different
+            // authorization layers.
+            enum Perm {
+                Read = 0; // the zero value is the narrowest permission, so an unset perm never widens
+                ReadWrite = 1;
+            }
         }
     }
 
@@ -1149,11 +1170,18 @@ message Notification {
         string spaceId = 4;
         string name = 5;
         string spaceName = 6;
+        // id of the import report page listing per-object issues; empty when the run was clean (importv2)
+        string reportObjectId = 7;
+        // number of issues recorded during the run, for "imported with N issues" UI (importv2)
+        int64 issuesCount = 8;
     }
 
     message Export {
         Code errorCode = 2;
         model.Export.Format exportType = 3;
+        ExportReport report = 4;
+        // Selected destination directory for this local export.
+        string path = 5;
         enum Code {
             NULL = 0;
             UNKNOWN_ERROR = 1;
@@ -1232,6 +1260,11 @@ message Export {
         DOT = 3;
         SVG = 4;
         GRAPH_JSON = 5;
+        // AnyBlockV2 is the native AnyBlock v2 bundle (pkg/lib/anyblockjson
+        // format/v2/SPEC.md): a directory of `<id>.anyblock.json` documents beside an
+        // index.json and properties.json. Additive — existing values keep
+        // their numbers, so a client that does not know it is unaffected.
+        AnyBlockV2 = 6;
     }
 }
 

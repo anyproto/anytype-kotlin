@@ -125,8 +125,9 @@ enum class EventGroup {
                 message.accountUpdate != null ||
                 message.accountConfigUpdate != null ||
                 message.accountDetails != null ||
-                message.accountLinkChallenge != null ||
-                message.accountLinkChallengeHide != null
+                message.accountLinkApprovalRequest != null ||
+                message.accountLinkApprovalHide != null ||
+                message.accountRecoveryUpdate != null
             ) {
                 mask = mask or ACCOUNT.bit
             }

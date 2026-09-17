@@ -25,6 +25,13 @@ import kotlin.math.roundToInt
  * Three children: measured object header, pinned dataview controls, finite viewer viewport.
  * The fixed toolbar and bottom controls belong to the enclosing screen. Header measurements
  * are reused during scrolling; only the real viewer viewport changes size.
+ *
+ * A vertical drag on the header collapses and expands it, as it does on an AppBarLayout.
+ * Children see every pointer event first. The host claims the drag only after the child
+ * under the finger has received the move that crossed slop without asking to keep the
+ * gesture through [requestDisallowInterceptTouchEvent]. RecyclerView asks once it drags,
+ * and a Compose owner asks once one of its pointer input handlers consumes movement, so
+ * scrollables and selection drags keep their gesture while a tap target does not.
  */
 open class DataviewScrollHost @JvmOverloads constructor(
     context: Context,
@@ -77,6 +84,8 @@ open class DataviewScrollHost @JvmOverloads constructor(
     private var downY = 0f
     private var lastY = 0f
     private var directEligible = false
+    private var childClaimed = false
+    private var hostOwnsStream = false
     private var dragging = false
     private var directSession: DataviewScrollCoordinator.Session? = null
     private var velocityTracker: VelocityTracker? = null
@@ -137,6 +146,7 @@ open class DataviewScrollHost @JvmOverloads constructor(
         nativeTouchInProgress = false
         cancelMotion()
         coordinator.endTouch()
+        releaseVelocityTracker()
         super.onDetachedFromWindow()
     }
 
@@ -356,6 +366,7 @@ open class DataviewScrollHost @JvmOverloads constructor(
                 coordinator.endTouch()
                 return false
             }
+            beginDirectCandidate(event)
         }
         if (ignoreTouchUntilDown) return true
         touchDownTime = event.downTime
@@ -363,15 +374,24 @@ open class DataviewScrollHost @JvmOverloads constructor(
         touchX = event.x
         touchY = event.y
         touchSource = event.source
+        if (directEligible) velocityTracker?.addMovement(event)
         return try {
-            super.dispatchTouchEvent(event)
+            val handled = super.dispatchTouchEvent(event)
+            claimAfterChildren(event) || handled
         } finally {
             if (event.actionMasked == MotionEvent.ACTION_UP || event.actionMasked == MotionEvent.ACTION_CANCEL) {
                 touchInProgress = false
                 nativeTouchInProgress = false
                 coordinator.endTouch()
+                releaseVelocityTracker()
             }
         }
+    }
+
+    override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+        // A child that started its own drag keeps the stream for the rest of the gesture.
+        childClaimed = disallowIntercept
+        super.requestDisallowInterceptTouchEvent(disallowIntercept)
     }
 
     private fun cancelHeldNativeTouchForGeometry() {
@@ -403,31 +423,54 @@ open class DataviewScrollHost @JvmOverloads constructor(
         return super.dispatchGenericMotionEvent(event)
     }
 
-    override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
-        if (event.actionMasked == MotionEvent.ACTION_DOWN) {
-            downX = event.x
-            downY = event.y
-            lastY = event.y
-            dragging = false
-            directEligible = !embeddedMode && !coordinator.isBlocked && isHeaderBackground(event.x, event.y)
-        }
-        // A Compose editor can acquire focus and block scrolling while handling DOWN,
-        // after this parent's initial hit test. Keep its subsequent selection events.
-        if (coordinator.isBlocked) {
+    private fun beginDirectCandidate(event: MotionEvent) {
+        downX = event.x
+        downY = event.y
+        lastY = event.y
+        dragging = false
+        childClaimed = false
+        hostOwnsStream = false
+        directEligible = !embeddedMode && !coordinator.isBlocked && isHeaderBackground(event.x, event.y)
+        releaseVelocityTracker()
+        if (directEligible) velocityTracker = VelocityTracker.obtain()
+    }
+
+    /**
+     * The child under the finger has just received this move. It keeps the gesture when it
+     * asked to, or when it began editing while handling the down; otherwise the host takes
+     * the stream in the same event so that no travel is lost.
+     */
+    private fun claimAfterChildren(event: MotionEvent): Boolean {
+        if (event.actionMasked != MotionEvent.ACTION_MOVE || hostOwnsStream || dragging || !directEligible) return false
+        if (coordinator.isBlocked || childClaimed) {
             directEligible = false
             return false
         }
-        if (event.actionMasked == MotionEvent.ACTION_MOVE && directEligible && !dragging) {
-            val dy = event.y - downY
-            val dx = event.x - downX
-            if (abs(dx) > configuration.scaledTouchSlop && abs(dx) > abs(dy)) directEligible = false
-            if (abs(dy) > configuration.scaledTouchSlop && abs(dy) > abs(dx)) {
-                startDirect()
-                lastY = downY + if (dy < 0) -configuration.scaledTouchSlop else configuration.scaledTouchSlop
-                return true
-            }
+        if (!directSlopCrossed(event)) return false
+        cancelChildStream()
+        startDirect(event)
+        dragDirect(event)
+        return true
+    }
+
+    /** Vertical travel past slop starts the drag; horizontal travel past slop declines it. */
+    private fun directSlopCrossed(event: MotionEvent): Boolean {
+        val dy = event.y - downY
+        val dx = event.x - downX
+        if (abs(dx) > configuration.scaledTouchSlop && abs(dx) > abs(dy)) directEligible = false
+        return directEligible && abs(dy) > configuration.scaledTouchSlop && abs(dy) > abs(dx)
+    }
+
+    private fun cancelChildStream() {
+        val cancel = MotionEvent.obtain(
+            touchDownTime, touchEventTime, MotionEvent.ACTION_CANCEL, touchX, touchY, 0
+        ).apply { source = touchSource }
+        try {
+            super.dispatchTouchEvent(cancel)
+        } finally {
+            cancel.recycle()
         }
-        return dragging
+        hostOwnsStream = true
     }
 
     private fun isHeaderBackground(x: Float, y: Float): Boolean {
@@ -451,9 +494,10 @@ open class DataviewScrollHost @JvmOverloads constructor(
 
     private fun interactiveAt(view: View, x: Float, y: Float): Boolean {
         if (view.visibility != VISIBLE || x < 0 || y < 0 || x >= view.width || y >= view.height) return false
-        // Native child traversal cannot inspect Compose click targets or text selection.
-        // The Compose owner must handle its own header gestures without interception.
-        if (view is AbstractComposeView) return true
+        // Native traversal cannot see Compose click targets or text selection. The owner
+        // arbitrates them itself and asks to keep a gesture only once a handler consumes
+        // movement, so the host treats it as background and lets that request decide.
+        if (view is AbstractComposeView) return false
         if (view is ViewGroup) {
             for (index in view.childCount - 1 downTo 0) {
                 val child = view.getChildAt(index)
@@ -464,48 +508,42 @@ open class DataviewScrollHost @JvmOverloads constructor(
             (view is TextView && view.isTextSelectable)
     }
 
-    private fun startDirect() {
+    private fun startDirect(event: MotionEvent) {
         directSession = coordinator.begin("header", integerPixels = true, cancel = ::stopDirectMotion)
         dragging = true
-        velocityTracker?.recycle()
-        velocityTracker = VelocityTracker.obtain()
+        lastY = downY + if (event.y < downY) -configuration.scaledTouchSlop else configuration.scaledTouchSlop
         parent?.requestDisallowInterceptTouchEvent(true)
     }
 
+    private fun dragDirect(event: MotionEvent) {
+        val delta = (lastY - event.y).roundToInt()
+        directSession?.let { consumeDirect(delta, it) }
+        lastY -= delta
+    }
+
+    private fun flingDirect() {
+        velocityTracker?.computeCurrentVelocity(1000, configuration.scaledMaximumFlingVelocity.toFloat())
+        val velocity = -(velocityTracker?.yVelocity ?: 0f).roundToInt()
+        dragging = false
+        lastFlingY = coordinator.offset.roundToInt()
+        scroller.fling(0, lastFlingY, 0, velocity, 0, 0, 0, coordinator.range.roundToInt())
+        ViewCompat.postInvalidateOnAnimation(this)
+    }
+
+    /** No child took the down, so the host owns the stream from the start. */
     override fun onTouchEvent(event: MotionEvent): Boolean {
         if (coordinator.isBlocked) directEligible = false
         if (!directEligible) return false
-        velocityTracker?.addMovement(event)
         when (event.actionMasked) {
-            MotionEvent.ACTION_DOWN -> return true
+            MotionEvent.ACTION_DOWN -> hostOwnsStream = true
             MotionEvent.ACTION_MOVE -> {
                 if (!dragging) {
-                    val dy = event.y - downY
-                    val dx = event.x - downX
-                    if (abs(dx) > configuration.scaledTouchSlop && abs(dx) > abs(dy)) {
-                        directEligible = false
-                        return false
-                    }
-                    if (abs(dy) <= configuration.scaledTouchSlop) return true
-                    startDirect()
-                    lastY = downY + if (dy < 0) -configuration.scaledTouchSlop else configuration.scaledTouchSlop
+                    if (!directSlopCrossed(event)) return directEligible
+                    startDirect(event)
                 }
-                val delta = (lastY - event.y).roundToInt()
-                directSession?.let { consumeDirect(delta, it) }
-                lastY -= delta
+                dragDirect(event)
             }
-            MotionEvent.ACTION_UP -> {
-                if (dragging) {
-                    velocityTracker?.computeCurrentVelocity(1000, configuration.scaledMaximumFlingVelocity.toFloat())
-                    val velocity = -(velocityTracker?.yVelocity ?: 0f).roundToInt()
-                    dragging = false
-                    lastFlingY = coordinator.offset.roundToInt()
-                    scroller.fling(0, lastFlingY, 0, velocity, 0, 0, 0, coordinator.range.roundToInt())
-                    ViewCompat.postInvalidateOnAnimation(this)
-                }
-                velocityTracker?.recycle()
-                velocityTracker = null
-            }
+            MotionEvent.ACTION_UP -> if (dragging) flingDirect()
             MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_POINTER_DOWN -> {
                 directSession?.let(coordinator::cancel)
                 stopDirectMotion()
@@ -520,6 +558,8 @@ open class DataviewScrollHost @JvmOverloads constructor(
             coordinator.consumePostScroll(delta.toFloat(), token)).roundToInt()
 
     override fun computeScroll() {
+        // Frames drawn during the drag find an idle scroller; the fling begins at release.
+        if (dragging) return
         val token = directSession ?: return
         if (!coordinator.isCurrent(token)) { stopDirectMotion(); return }
         if (scroller.computeScrollOffset()) {
@@ -537,6 +577,9 @@ open class DataviewScrollHost @JvmOverloads constructor(
         scroller.abortAnimation()
         directSession = null
         dragging = false
+    }
+
+    private fun releaseVelocityTracker() {
         velocityTracker?.recycle()
         velocityTracker = null
     }

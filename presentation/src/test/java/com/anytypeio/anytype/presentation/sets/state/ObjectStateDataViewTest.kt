@@ -11,7 +11,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import org.junit.Test
 
-class ObjectStateIsCollectionTest {
+class ObjectStateDataViewTest {
 
     @Test
     fun `a collection object holds its own objects`() {
@@ -70,6 +70,21 @@ class ObjectStateIsCollectionTest {
         assertFalse(state.isCollection(dataView.id))
     }
 
+    @Test
+    fun `a type object shows the objects of its own type`() {
+        assertTrue(objectState(layout = Layout.OBJECT_TYPE).isTypeSet)
+    }
+
+    @Test
+    fun `a set object is not a type set`() {
+        assertFalse(objectState(layout = Layout.SET).isTypeSet)
+    }
+
+    @Test
+    fun `a page hosting an inline block is not a type set`() {
+        assertFalse(objectState(layout = Layout.BASIC).isTypeSet)
+    }
+
     private val root = MockDataFactory.randomUuid()
 
     private fun dataView(
@@ -87,8 +102,8 @@ class ObjectStateIsCollectionTest {
     )
 
     /**
-     * The subclass carries no meaning for [ObjectState.DataView.isCollection] and is on its way
-     * out, so every case above is stated as a set.
+     * The subclass carries no meaning for the predicates under test and is on its way out, so
+     * every case above is stated as a set.
      */
     private fun objectState(
         layout: Layout,

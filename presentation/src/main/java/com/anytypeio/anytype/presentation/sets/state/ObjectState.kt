@@ -31,9 +31,15 @@ sealed class ObjectState {
 
         abstract val hasObjectLayoutConflict: Boolean
 
+        /** Whether the object is a type showing the objects of that type. */
+        val isTypeSet: Boolean
+            get() = details.getObject(root)?.layout == ObjectType.Layout.OBJECT_TYPE
+
+
         /**
-         * Whether the given data view holds its own objects instead of querying sources.
-         * Falls back to the block when the layout has not caught up with a conversion.
+         * Whether the given data view holds its own objects instead of querying
+         * sources. Falls back to the block when the layout has not caught up with
+         * a conversion.
          */
         fun isCollection(blockId: Id): Boolean {
             val rootLayout = details.getObject(root)?.layout
@@ -108,7 +114,8 @@ sealed class ObjectState {
 
     companion object {
         /**
-         * Layouts of the objects that own a data view. Anything else hosts it inline.
+         * Layouts of the objects that own a data view. Anything else hosts it
+         * inline.
          */
         private val DATA_VIEW_LAYOUTS = setOf(
             ObjectType.Layout.SET,

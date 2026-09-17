@@ -109,7 +109,7 @@ class ObjectStateDataViewTest {
         layout: Layout,
         blocks: List<Block> = emptyList(),
         targets: Map<Id, Layout> = emptyMap()
-    ) = ObjectState.DataView.Set(
+    ) = ObjectState.DataView(
         root = root,
         blocks = blocks,
         details = ObjectViewDetails(

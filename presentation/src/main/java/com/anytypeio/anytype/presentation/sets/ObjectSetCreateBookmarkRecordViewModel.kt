@@ -47,8 +47,8 @@ class ObjectSetCreateBookmarkRecordViewModel(
     private suspend fun proceedWithCreatingBookmarkObject(input: String) {
         if (urlValidator.isValid(url = input)) {
             val state = objectState.value.dataViewState() ?: return
-            when (state) {
-                is ObjectState.DataView.Collection -> {
+            when {
+                state.isCollection(state.shownBlockId) -> {
                     val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                     val prefilled = viewer.prefillNewObjectDetails(
                         dateProvider = dateProvider,
@@ -61,7 +61,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
                     ) { bookmarkObj -> addBookmarkToCollection(bookmarkObj) }
                 }
 
-                is ObjectState.DataView.Set -> {
+                !state.isTypeSet -> {
                     val setOf = state.getSetOfValue(state.root)
                     if (state.isSetByRelation(setOf)) {
                         val sourceDetails = state.details.details[setOf.firstOrNull()]
@@ -91,7 +91,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
                     }
                 }
 
-                is ObjectState.DataView.TypeSet -> {
+                else -> {
                     val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                     val prefilled = viewer.prefillNewObjectDetails(
                         dateProvider = dateProvider,

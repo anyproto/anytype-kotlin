@@ -185,7 +185,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
             val first = awaitItem()
 
             assertEquals(
-                expected = ObjectState.DataView.Collection(
+                expected = ObjectState.DataView(
                     root = root,
                     blocks = listOf(
                         objectCollection.header,
@@ -273,7 +273,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
             )
 
             assertEquals(
-                expected = ObjectState.DataView.Collection(
+                expected = ObjectState.DataView(
                     root = root,
                     blocks = listOf(
                         objectCollection.header,

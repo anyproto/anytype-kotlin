@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
+import com.anytypeio.anytype.presentation.sets.shownBlockId
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 
 /**
@@ -92,7 +93,7 @@ fun ObjectState.DataView.isCreateObjectAllowed(objectType: ObjectWrapper.Type? =
         return false
     }
 
-    if (this is ObjectState.DataView.Collection) {
+    if (isCollection(shownBlockId)) {
         return true
     }
 

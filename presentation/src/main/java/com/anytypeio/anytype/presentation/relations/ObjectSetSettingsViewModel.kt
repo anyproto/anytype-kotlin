@@ -137,10 +137,9 @@ class ObjectSetSettingsViewModel(
 
     fun onEditButtonClicked() {
         val state = objectState.value.dataViewState() ?: return
-        when (state) {
-            is ObjectState.DataView.Collection -> screenState.value = ScreenState.EDIT
-            is ObjectState.DataView.Set -> screenState.value = ScreenState.EDIT
-            is ObjectState.DataView.TypeSet -> {
+        when {
+            !state.isTypeSet -> screenState.value = ScreenState.EDIT
+            else -> {
                 viewModelScope.launch {
                     commands.emit(Command.OpenTypePropertiesScreen)
                 }
@@ -157,14 +156,14 @@ class ObjectSetSettingsViewModel(
 
     fun onAddButtonClicked() {
         val state = objectState.value.dataViewState() ?: return
-        when (state) {
-            is ObjectState.DataView.Collection, is ObjectState.DataView.Set -> {
+        when {
+            !state.isTypeSet -> {
                 viewModelScope.launch {
                     commands.emit(Command.OpenRelationAddToDataView)
                 }
             }
 
-            is ObjectState.DataView.TypeSet -> {
+            else -> {
                 viewModelScope.launch {
                     commands.emit(Command.OpenTypePropertiesScreen)
                 }

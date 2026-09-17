@@ -103,7 +103,7 @@ class ObjectSetSettingsViewModelTest {
             content = dataView,
             fields = Block.Fields.empty()
         )
-        val state = ObjectState.DataView.Set(
+        val state = ObjectState.DataView(
             root = "root-id",
             blocks = listOf(block)
         )
@@ -182,7 +182,7 @@ class ObjectSetSettingsViewModelTest {
             content = dataView,
             fields = Block.Fields.empty()
         )
-        val state = ObjectState.DataView.Set(
+        val state = ObjectState.DataView(
             root = "root-id",
             blocks = listOf(block)
         )
@@ -261,7 +261,7 @@ class ObjectSetSettingsViewModelTest {
             content = dataView,
             fields = Block.Fields.empty()
         )
-        val state = ObjectState.DataView.Set(
+        val state = ObjectState.DataView(
             root = "root-id",
             blocks = listOf(block)
         )
@@ -312,7 +312,7 @@ class ObjectSetSettingsViewModelTest {
             content = dataView,
             fields = Block.Fields.empty()
         )
-        val state = ObjectState.DataView.Set(
+        val state = ObjectState.DataView(
             root = "root-id",
             blocks = listOf(block)
         )
@@ -598,7 +598,7 @@ class ObjectSetSettingsViewModelTest {
         viewerRelations: List<ViewerRelation>,
         relationLinks: List<RelationLink>,
         blockId: String = "block-id"
-    ): ObjectState.DataView.Set {
+    ): ObjectState.DataView {
         val viewer = Viewer(
             id = viewerId,
             name = "Test Viewer",
@@ -617,7 +617,7 @@ class ObjectSetSettingsViewModelTest {
             content = dataView,
             fields = Block.Fields.empty()
         )
-        return ObjectState.DataView.Set(
+        return ObjectState.DataView(
             root = "root-id",
             blocks = listOf(block)
         )

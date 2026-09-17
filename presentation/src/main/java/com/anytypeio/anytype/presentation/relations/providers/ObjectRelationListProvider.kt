@@ -33,15 +33,7 @@ interface ObjectRelationListProvider {
         override fun getDetails(): ObjectViewDetails = mapDetails(objectStates.value)
 
         private fun mapDetails(state: ObjectState) = when (state) {
-            is ObjectState.DataView.Collection -> {
-                state.details
-            }
-
-            is ObjectState.DataView.Set -> {
-                state.details
-            }
-
-            is ObjectState.DataView.TypeSet -> {
+            is ObjectState.DataView -> {
                 state.details
             }
 

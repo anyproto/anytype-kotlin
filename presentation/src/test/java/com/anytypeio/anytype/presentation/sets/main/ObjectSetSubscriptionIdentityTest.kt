@@ -57,7 +57,7 @@ class ObjectSetSubscriptionIdentityTest : ObjectSetViewModelTestSetup() {
             dependencies = emptyList(), subscriptions = listOf("test")
         )
         val delayedB = CompletableDeferred<DataViewState>()
-        whenever(dataViewSubscription.startObjectCollectionSubscription(
+        whenever(dataViewSubscription.startDataViewSubscription(
             any(), any(), any(), any(), any(), any(), any()
         )).thenAnswer { invocation ->
             if (invocation.getArgument<String?>(4) == "b") flow<DataViewState> { emit(delayedB.await()) }
@@ -89,7 +89,7 @@ class ObjectSetSubscriptionIdentityTest : ObjectSetViewModelTestSetup() {
         objectStore.merge(objects = listOf(StubObject(id = "page-three-anchor")),
             dependencies = emptyList(), subscriptions = listOf("test"))
         val offsets = mutableListOf<Long>()
-        whenever(dataViewSubscription.startObjectCollectionSubscription(
+        whenever(dataViewSubscription.startDataViewSubscription(
             any(), any(), any(), any(), any(), any(), any()
         )).thenAnswer { invocation ->
             offsets += invocation.getArgument<Long>(5)
@@ -111,7 +111,7 @@ class ObjectSetSubscriptionIdentityTest : ObjectSetViewModelTestSetup() {
         objectStore.merge(objects = listOf(StubObject(id = "a-anchor"), StubObject(id = "b-anchor")),
             dependencies = emptyList(), subscriptions = listOf("test"))
         val requests = mutableListOf<Pair<String?, Long>>()
-        whenever(dataViewSubscription.startObjectCollectionSubscription(
+        whenever(dataViewSubscription.startDataViewSubscription(
             any(), any(), any(), any(), any(), any(), any()
         )).thenAnswer { invocation ->
             val viewer = invocation.getArgument<String?>(4)
@@ -146,7 +146,7 @@ class ObjectSetSubscriptionIdentityTest : ObjectSetViewModelTestSetup() {
         objectStore.merge(objects = listOf(StubObject(id = "a-anchor"), StubObject(id = "b-anchor")),
             dependencies = emptyList(), subscriptions = listOf("test"))
         val delayedB = CompletableDeferred<DataViewState>()
-        whenever(dataViewSubscription.startObjectCollectionSubscription(
+        whenever(dataViewSubscription.startDataViewSubscription(
             any(), any(), any(), any(), any(), any(), any()
         )).thenAnswer { invocation ->
             if (invocation.getArgument<String?>(4) == "b") flow<DataViewState> { emit(delayedB.await()) }
@@ -188,7 +188,7 @@ class ObjectSetSubscriptionIdentityTest : ObjectSetViewModelTestSetup() {
         objectStore.merge(objects = listOf(StubObject(id = "old-anchor"), StubObject(id = "new-anchor")),
             dependencies = emptyList(), subscriptions = listOf("test"))
         val delayedPage = CompletableDeferred<DataViewState>()
-        whenever(dataViewSubscription.startObjectCollectionSubscription(
+        whenever(dataViewSubscription.startDataViewSubscription(
             any(), any(), any(), any(), any(), any(), any()
         )).thenAnswer { invocation ->
             if (invocation.getArgument<Long>(5) == 3L * ObjectSetConfig.DEFAULT_LIMIT)
@@ -216,7 +216,7 @@ class ObjectSetSubscriptionIdentityTest : ObjectSetViewModelTestSetup() {
         objectStore.merge(objects = listOf(StubObject(id = "shared-anchor")),
             dependencies = emptyList(), subscriptions = listOf("test"))
         val delayedPage = CompletableDeferred<DataViewState>()
-        whenever(dataViewSubscription.startObjectCollectionSubscription(
+        whenever(dataViewSubscription.startDataViewSubscription(
             any(), any(), any(), any(), any(), any(), any()
         )).thenAnswer { invocation ->
             if (invocation.getArgument<Long>(5) == 3L * ObjectSetConfig.DEFAULT_LIMIT)

@@ -151,7 +151,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             assertIs<ObjectState.Init>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-            assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+            assertIs<ObjectState.DataView>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Set.NoQuery>(viewerFlow.awaitItem())
         }
     }
@@ -182,7 +182,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             assertIs<ObjectState.Init>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-            assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+            assertIs<ObjectState.DataView>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Set.NoView>(viewerFlow.awaitItem())
         }
 
@@ -215,7 +215,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             assertIs<ObjectState.Init>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-            assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+            assertIs<ObjectState.DataView>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Set.Default>(viewerFlow.awaitItem())
         }
 
@@ -246,7 +246,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
 
             // ASSERT STATES
             assertIs<ObjectState.Init>(stateFlow.awaitItem())
-            assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+            assertIs<ObjectState.DataView>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
             assertIs<DataViewViewState.Set.NoItems>(viewerFlow.awaitItem())
         }
@@ -320,7 +320,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             assertIs<ObjectState.Init>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-            assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+            assertIs<ObjectState.DataView>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Set.Default>(viewerFlow.awaitItem())
 
             stateFlow.ensureAllEventsConsumed()
@@ -398,7 +398,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             assertIs<ObjectState.Init>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-            assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+            assertIs<ObjectState.DataView>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Set.NoQuery>(viewerFlow.awaitItem())
 
             stateFlow.ensureAllEventsConsumed()
@@ -447,7 +447,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
 
                 // ASSERT STATES
                 assertIs<ObjectState.Init>(stateFlow.awaitItem())
-                assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+                assertIs<ObjectState.DataView>(stateFlow.awaitItem())
                 assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
                 val item = viewerFlow.awaitItem()

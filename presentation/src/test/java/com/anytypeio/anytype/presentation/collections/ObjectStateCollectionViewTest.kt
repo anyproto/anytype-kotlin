@@ -73,7 +73,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             assertIs<ObjectState.Init>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-            assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
+            assertIs<ObjectState.DataView>(stateFlow.awaitItem())
 
             assertEquals(
                 expected = mockObjectCollection.details.details[mockObjectCollection.root]?.getSingleValue(
@@ -110,7 +110,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             assertIs<ObjectState.Init>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-            assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
+            assertIs<ObjectState.DataView>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Collection.NoView>(viewerFlow.awaitItem())
 
             viewerFlow.expectNoEvents()
@@ -152,7 +152,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             assertIs<ObjectState.Init>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-            assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
+            assertIs<ObjectState.DataView>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
         }
     }
@@ -192,7 +192,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             assertIs<ObjectState.Init>(stateFlow.awaitItem())
             assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
-            assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
+            assertIs<ObjectState.DataView>(stateFlow.awaitItem())
             //assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
             assertIs<DataViewViewState.Collection.Default>(viewerFlow.awaitItem())
         }
@@ -607,7 +607,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                 // ASSERT STATES
                 assertIs<ObjectState.Init>(stateFlow.awaitItem())
                 assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
-                assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
+                assertIs<ObjectState.DataView>(stateFlow.awaitItem())
 
                 val item = viewerFlow.awaitItem()
                 assertIs<DataViewViewState.Collection.NoItems>(item)
@@ -676,7 +676,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                 // ASSERT STATES
                 assertIs<ObjectState.Init>(stateFlow.awaitItem())
                 assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
-                assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
+                assertIs<ObjectState.DataView>(stateFlow.awaitItem())
 
                 val item = viewerFlow.awaitItem()
                 assertIs<DataViewViewState.Collection.NoItems>(item)
@@ -747,7 +747,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                 // ASSERT STATES
                 assertIs<ObjectState.Init>(stateFlow.awaitItem())
                 assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
-                assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
+                assertIs<ObjectState.DataView>(stateFlow.awaitItem())
 
                 val item = viewerFlow.awaitItem()
                 assertIs<DataViewViewState.Collection.NoItems>(item)
@@ -814,7 +814,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                 // ASSERT STATES
                 assertIs<ObjectState.Init>(stateFlow.awaitItem())
                 assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
-                assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
+                assertIs<ObjectState.DataView>(stateFlow.awaitItem())
 
                 val item = viewerFlow.awaitItem()
                 assertIs<DataViewViewState.Collection.NoItems>(item)

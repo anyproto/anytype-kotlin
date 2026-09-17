@@ -658,17 +658,9 @@ class ObjectSetViewModel(
     }
 
     private suspend fun proceedWithSyncingTypeRelations(state: ObjectState.DataView) {
-        val typeId = when (state) {
-            is ObjectState.DataView.TypeSet -> {
-                // For TypeSet, the context is the type itself
-                vmParams.ctx
-            }
-            is ObjectState.DataView.Set,
-            is ObjectState.DataView.Collection -> {
-                // Sets and Collections don't need type relation syncing
-                return
-            }
-        }
+        // Only a type set syncs type relations, and its context is the type itself.
+        if (!state.isTypeSet) return
+        val typeId = vmParams.ctx
 
         val type = storeOfObjectTypes.get(typeId) ?: return
 
@@ -838,60 +830,21 @@ class ObjectSetViewModel(
                     return@flatMapLatest flowOf(SubscriptionResult(fingerprint,
                         DataViewState.Loaded(objects = emptyList(), dependencies = emptyList())))
                 }
-                when (query.state) {
-                    is ObjectState.DataView.Collection -> {
-                        Timber.d("subscribeToObjectState, NEW COLLECTION STATE")
-                        if (query.state.isInitialized) {
-                            dataViewSubscription.startObjectCollectionSubscription(
-                                space = vmParams.space.id,
-                                context = vmParams.ctx,
-                                collection = vmParams.ctx,
-                                state = query.state,
-                                currentViewerId = query.currentViewerId,
-                                offset = query.offset,
-                                storeOfRelations = storeOfRelations
-                            )
-                        } else {
-                            emptyFlow()
-                        }
-                    }
-
-                    is ObjectState.DataView.Set -> {
-                        Timber.d("subscribeToObjectState, NEW SET STATE")
-                        if (query.state.isInitialized) {
-                            dataViewSubscription.startObjectSetSubscription(
-                                space = vmParams.space.id,
-                                context = vmParams.ctx,
-                                state = query.state,
-                                currentViewerId = query.currentViewerId,
-                                offset = query.offset,
-                                storeOfRelations = storeOfRelations
-                            )
-                        } else {
-                            emptyFlow()
-                        }
-                    }
-
-                    is ObjectState.DataView.TypeSet -> {
-                        Timber.d("subscribeToObjectState, NEW TYPE SET STATE")
-                        if (query.state.isInitialized) {
-                            dataViewSubscription.startObjectTypeSetSubscription(
-                                space = vmParams.space.id,
-                                context = vmParams.ctx,
-                                state = query.state,
-                                currentViewerId = query.currentViewerId,
-                                offset = query.offset,
-                                storeOfRelations = storeOfRelations
-                            )
-                        } else {
-                            emptyFlow()
-                        }
-                    }
-
-                    else -> {
-                        Timber.d("subscribeToObjectState, NEW STATE, ${query.state}")
-                        emptyFlow()
-                    }
+                val state = query.state
+                if (state is ObjectState.DataView && state.isInitialized) {
+                    Timber.d("subscribeToObjectState, NEW DATA VIEW STATE")
+                    dataViewSubscription.startDataViewSubscription(
+                        space = vmParams.space.id,
+                        context = vmParams.ctx,
+                        state = state,
+                        blockId = state.shownBlockId,
+                        currentViewerId = query.currentViewerId,
+                        offset = query.offset,
+                        storeOfRelations = storeOfRelations
+                    )
+                } else {
+                    Timber.d("subscribeToObjectState, NEW STATE, $state")
+                    emptyFlow()
                 }.map { SubscriptionResult(fingerprint, it) }
             }.onEach { result ->
                 val dataViewState = result.state
@@ -1026,22 +979,13 @@ class ObjectSetViewModel(
             addAll(viewer.filters.updateFormatForSubscription(storeOfRelations).removeUnsupportedFilters())
             addAll(defaultDataViewFilters())
         }
-        val sources: List<String>
-        val collection: Id?
-        when (state) {
-            is ObjectState.DataView.Collection -> {
-                sources = emptyList()
-                collection = vmParams.ctx
-            }
-            is ObjectState.DataView.Set -> {
-                sources = state.filterOutDeletedAndMissingObjects(state.getSetOfValue(vmParams.ctx))
-                collection = null
-            }
-            is ObjectState.DataView.TypeSet -> {
-                sources = state.filterOutDeletedAndMissingObjects(state.getSetOfValue(vmParams.ctx))
-                collection = null
-            }
+        val isCollection = state.isCollection(state.shownBlockId)
+        val sources = if (isCollection) {
+            emptyList()
+        } else {
+            state.filterOutDeletedAndMissingObjects(state.getSetOfValue(vmParams.ctx))
         }
+        val collection = if (isCollection) vmParams.ctx else null
         return BoardGroupSubscriptionContainer.Params(
             space = vmParams.space,
             subscription = vmParams.ctx + BoardGroupSubscriptionContainer.SUBSCRIPTION_POSTFIX,
@@ -1123,22 +1067,13 @@ class ObjectSetViewModel(
                 )
             )
         }.updateWithRelationFormat(storeOfRelations)
-        val sources: List<String>
-        val collection: Id?
-        when (state) {
-            is ObjectState.DataView.Collection -> {
-                sources = emptyList()
-                collection = vmParams.ctx
-            }
-            is ObjectState.DataView.Set -> {
-                sources = state.filterOutDeletedAndMissingObjects(state.getSetOfValue(vmParams.ctx))
-                collection = null
-            }
-            is ObjectState.DataView.TypeSet -> {
-                sources = state.filterOutDeletedAndMissingObjects(state.getSetOfValue(vmParams.ctx))
-                collection = null
-            }
+        val isCollection = state.isCollection(state.shownBlockId)
+        val sources = if (isCollection) {
+            emptyList()
+        } else {
+            state.filterOutDeletedAndMissingObjects(state.getSetOfValue(vmParams.ctx))
         }
+        val collection = if (isCollection) vmParams.ctx else null
         val columns = columnQueries.map { query ->
             BoardRecordsSubscriptionContainer.Column(
                 subscription = vmParams.ctx + "-board-records-" + query.columnId,
@@ -1367,22 +1302,24 @@ class ObjectSetViewModel(
         currentViewId: String?,
         permission: SpaceMemberPermissions?
     ): DataViewViewState {
-        return when (objectState) {
-            is ObjectState.DataView.Collection -> processCollectionState(
+        return when {
+            objectState !is ObjectState.DataView -> when (objectState) {
+                ObjectState.Init -> DataViewViewState.Init
+                else -> DataViewViewState.Error(msg = "Wrong layout, couldn't open object")
+            }
+            objectState.isTypeSet -> processTypeSetState(
                 dataViewState = dataViewState,
                 objectState = objectState,
                 currentViewId = currentViewId,
                 permission = permission
             )
-            is ObjectState.DataView.Set -> processSetState(
+            objectState.isCollection(objectState.shownBlockId) -> processCollectionState(
                 dataViewState = dataViewState,
                 objectState = objectState,
                 currentViewId = currentViewId,
                 permission = permission
             )
-            ObjectState.Init -> DataViewViewState.Init
-            ObjectState.ErrorLayout -> DataViewViewState.Error(msg = "Wrong layout, couldn't open object")
-            is ObjectState.DataView.TypeSet -> processTypeSetState(
+            else -> processSetState(
                 dataViewState = dataViewState,
                 objectState = objectState,
                 currentViewId = currentViewId,
@@ -1433,7 +1370,7 @@ class ObjectSetViewModel(
 
     private suspend fun processCollectionState(
         dataViewState: DataViewState,
-        objectState: ObjectState.DataView.Collection,
+        objectState: ObjectState.DataView,
         currentViewId: String?,
         permission: SpaceMemberPermissions?
     ): DataViewViewState {
@@ -1502,7 +1439,7 @@ class ObjectSetViewModel(
 
     private suspend fun processSetState(
         dataViewState: DataViewState,
-        objectState: ObjectState.DataView.Set,
+        objectState: ObjectState.DataView,
         currentViewId: String?,
         permission: SpaceMemberPermissions?
     ): DataViewViewState {
@@ -1602,7 +1539,7 @@ class ObjectSetViewModel(
 
     private suspend fun processTypeSetState(
         dataViewState: DataViewState,
-        objectState: ObjectState.DataView.TypeSet,
+        objectState: ObjectState.DataView,
         currentViewId: String?,
         permission: SpaceMemberPermissions?
     ): DataViewViewState {
@@ -1690,7 +1627,7 @@ class ObjectSetViewModel(
     }
 
     private suspend fun renderViewer(
-        objectState: ObjectState.DataView.Collection,
+        objectState: ObjectState.DataView,
         dataViewState: DataViewState.Loaded,
         dvViewer: DVViewer?,
         relations: List<ObjectWrapper.Relation>
@@ -2026,7 +1963,8 @@ class ObjectSetViewModel(
             val canMoveToBin = isOwnerOrEditor && !hasDeleteRestriction
 
             // Check if current state is a Collection AND user has edit permission
-            val isCollection = stateReducer.state.value is ObjectState.DataView.Collection
+            val isCollection = stateReducer.state.value.dataViewStateOrNull()
+                ?.let { it.isCollection(it.shownBlockId) } == true
             val canRemoveFromCollection = isCollection && isOwnerOrEditor
 
             dispatch(
@@ -2353,16 +2291,16 @@ class ObjectSetViewModel(
                     // Groups not loaded or no group relation: create without a group value (lands in "No value").
                     emptyMap()
                 }
-                when (state) {
-                    is ObjectState.DataView.Collection ->
-                        proceedWithAddingObjectToCollection(extraPrefilled = extraPrefilled)
-                    is ObjectState.DataView.TypeSet ->
+                when {
+                    state.isTypeSet ->
                         proceedWithCreatingObjectTypeSetObject(
                             currentState = state,
                             templateChosenBy = null,
                             extraPrefilled = extraPrefilled
                         )
-                    is ObjectState.DataView.Set ->
+                    state.isCollection(state.shownBlockId) ->
+                        proceedWithAddingObjectToCollection(extraPrefilled = extraPrefilled)
+                    else ->
                         proceedWithCreatingSetObject(
                             currentState = state,
                             templateChosenBy = null,
@@ -2568,7 +2506,7 @@ class ObjectSetViewModel(
     }
 
     private suspend fun proceedWithCreatingObjectTypeSetObject(
-        currentState: ObjectState.DataView.TypeSet,
+        currentState: ObjectState.DataView,
         templateChosenBy: String?,
         extraPrefilled: Map<Key, Any?> = emptyMap()
     ) {
@@ -3410,33 +3348,25 @@ class ObjectSetViewModel(
                 when (clicked.relation) {
                     is ObjectRelationView.ObjectType.Base -> {
                         val state = stateReducer.state.value.dataViewState() ?: return
-                        when (state) {
-                            is ObjectState.DataView.Collection -> {
-                                //do nothing
-                            }
-                            is ObjectState.DataView.Set -> {
-                                if (isOwnerOrEditor) {
-                                    val setOfValue = state.getSetOfValue(vmParams.ctx)
-                                    val command =
-                                        if (state.isSetByRelation(setOfValue = setOfValue)) {
-                                            ObjectSetCommand.Modal.ShowObjectSetRelationPopupMenu(
-                                                ctx = clicked.relation.id,
-                                                anchor = clicked.viewId
-                                            )
-                                        } else {
-                                            ObjectSetCommand.Modal.ShowObjectSetTypePopupMenu(
-                                                ctx = clicked.relation.id,
-                                                anchor = clicked.viewId
-                                            )
-                                        }
-                                    dispatch(command)
-                                } else {
-                                    dispatch(ObjectSetCommand.ShowOnlyAccessError)
-                                }
-                            }
-
-                            is ObjectState.DataView.TypeSet -> {
-                                //do nothing
+                        // Only a set queries by type or relation, so only a set offers the menu.
+                        if (!state.isTypeSet && !state.isCollection(state.shownBlockId)) {
+                            if (isOwnerOrEditor) {
+                                val setOfValue = state.getSetOfValue(vmParams.ctx)
+                                val command =
+                                    if (state.isSetByRelation(setOfValue = setOfValue)) {
+                                        ObjectSetCommand.Modal.ShowObjectSetRelationPopupMenu(
+                                            ctx = clicked.relation.id,
+                                            anchor = clicked.viewId
+                                        )
+                                    } else {
+                                        ObjectSetCommand.Modal.ShowObjectSetTypePopupMenu(
+                                            ctx = clicked.relation.id,
+                                            anchor = clicked.viewId
+                                        )
+                                    }
+                                dispatch(command)
+                            } else {
+                                dispatch(ObjectSetCommand.ShowOnlyAccessError)
                             }
                         }
                     }
@@ -4618,23 +4548,23 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
 
         viewModelScope.launch {
             try {
-                when (state) {
-                    is ObjectState.DataView.Collection -> {
+                when {
+                    state.isTypeSet -> {
+                        proceedWithCreatingObjectTypeSetObject(
+                            currentState = state,
+                            templateChosenBy = templateId
+                        )
+                    }
+
+                    state.isCollection(state.shownBlockId) -> {
                         proceedWithAddingObjectToCollection(
                             typeChosenByUser = typeChosenBy,
                             templateChosenBy = templateId
                         )
                     }
 
-                    is ObjectState.DataView.Set -> {
+                    else -> {
                         proceedWithCreatingSetObject(
-                            currentState = state,
-                            templateChosenBy = templateId
-                        )
-                    }
-
-                    is ObjectState.DataView.TypeSet -> {
-                        proceedWithCreatingObjectTypeSetObject(
                             currentState = state,
                             templateChosenBy = templateId
                         )
@@ -5151,16 +5081,10 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
         val dataView = state as? ObjectState.DataView
         val isInitialized = dataView?.isInitialized == true
         val viewer = if (isInitialized) dataView?.viewerByIdOrFirst(currentViewerId) else null
-        val sources = if (isInitialized) {
-            when (dataView) {
-                is ObjectState.DataView.Set -> dataView.filterOutDeletedAndMissingObjects(
-                    dataView.getSetOfValue(vmParams.ctx)
-                )
-                is ObjectState.DataView.TypeSet -> dataView.filterOutDeletedAndMissingObjects(
-                    dataView.getSetOfValue(vmParams.ctx)
-                )
-                else -> emptyList()
-            }
+        val sources = if (dataView != null && isInitialized &&
+            !dataView.isCollection(dataView.shownBlockId)
+        ) {
+            dataView.filterOutDeletedAndMissingObjects(dataView.getSetOfValue(vmParams.ctx))
         } else {
             emptyList()
         }
@@ -5189,11 +5113,11 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
         }
         val resolvedFormats = formatKeys.map { key -> storeOfRelations.getByKey(key)?.format }
         return SubscriptionFingerprint(
-            kind = when (dataView) {
-                is ObjectState.DataView.Collection -> "collection"
-                is ObjectState.DataView.Set -> "set"
-                is ObjectState.DataView.TypeSet -> "typeSet"
-                null -> "none"
+            kind = when {
+                dataView == null -> "none"
+                dataView.isTypeSet -> "typeSet"
+                dataView.isCollection(dataView.shownBlockId) -> "collection"
+                else -> "set"
             },
             isInitialized = isInitialized,
             viewerId = viewer?.id,

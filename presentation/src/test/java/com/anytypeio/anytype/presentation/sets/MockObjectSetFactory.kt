@@ -86,7 +86,7 @@ object MockObjectSetFactory {
 
         val blocks = listOf(title, dataView)
 
-        return ObjectState.DataView.Set(
+        return ObjectState.DataView(
             root = root,
             blocks = blocks,
             details = ObjectViewDetails.EMPTY

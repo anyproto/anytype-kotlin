@@ -26,23 +26,7 @@ class DataViewObjectRelationProvider(
             state
         }.flatMapLatest { state ->
             when (state) {
-                is ObjectState.DataView.Collection -> {
-                    val objectKeys = state.dataViewContent.relationLinks.map { it.key }
-                    flow {
-                        objectKeys.mapNotNull {
-                            storeOfRelations.getByKey(it)
-                        }
-                    }
-                }
-                is ObjectState.DataView.Set -> {
-                    val objectKeys = state.dataViewContent.relationLinks.map { it.key }
-                    flow {
-                        objectKeys.mapNotNull {
-                            storeOfRelations.getByKey(it)
-                        }
-                    }
-                }
-                is ObjectState.DataView.TypeSet -> {
+                is ObjectState.DataView -> {
                     val objectKeys = state.dataViewContent.relationLinks.map { it.key }
                     flow {
                         objectKeys.mapNotNull {
@@ -70,15 +54,7 @@ class SetOrCollectionRelationProvider(
             state
         }.flatMapLatest { state ->
             when (state) {
-                is ObjectState.DataView.Collection -> {
-                    val objectKeys = state.details.details[id]?.keys.orEmpty()
-                    flow {
-                        objectKeys.mapNotNull {
-                            storeOfRelations.getByKey(it)
-                        }
-                    }
-                }
-                is ObjectState.DataView.Set -> {
+                is ObjectState.DataView -> {
                     val objectKeys = state.details.details[id]?.keys.orEmpty()
                     flow {
                         objectKeys.mapNotNull {

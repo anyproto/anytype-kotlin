@@ -257,6 +257,63 @@ class DataviewBoardHarnessTest {
         }
     }
 
+    @Test fun tallColumnRunsUnderBottomControlsAndLastCardScrollsAboveThem() = withBoard(100) { scenario ->
+        lateinit var fixture: DataviewBoardHarnessFragment
+        val board = Rect()
+        scenario.onFragment { fixture = it; assertTrue(it.board.getGlobalVisibleRect(board)) }
+        val stripTop = board.bottom - fixture.px(88)
+        // Edge to edge: a long column runs under the floating controls, so cards show in the strip.
+        val deepest = visibleCardBottoms().max()
+        assertTrue("cards end at $deepest, the control strip starts at $stripTop", deepest > stripTop)
+        // The bottom content padding lets the last card scroll above the controls.
+        scrollColumnToEnd()
+        val last = textBounds("Runtime card A-99")
+        assertTrue("last card ends at ${last.bottom}, the control strip starts at $stripTop", last.bottom <= stripTop)
+    }
+
+    private fun accessibilityNodes(): List<android.view.accessibility.AccessibilityNodeInfo> {
+        val nodes = mutableListOf<android.view.accessibility.AccessibilityNodeInfo>()
+        fun collect(node: android.view.accessibility.AccessibilityNodeInfo?) {
+            if (node == null) return
+            nodes.add(node)
+            for (index in 0 until node.childCount) collect(node.getChild(index))
+        }
+        collect(InstrumentationRegistry.getInstrumentation().uiAutomation.rootInActiveWindow)
+        return nodes
+    }
+
+    private fun android.view.accessibility.AccessibilityNodeInfo.isCard(): Boolean =
+        text?.toString().orEmpty().startsWith("Runtime card ")
+
+    /** Compose publishes its accessibility nodes lazily, so an empty first read is retried. */
+    private fun visibleCardBottoms(): List<Int> {
+        val deadline = SystemClock.uptimeMillis() + 5_000
+        do {
+            val bottoms = accessibilityNodes()
+                .filter { it.isVisibleToUser && it.isCard() }
+                .map { Rect().also(it::getBoundsInScreen).bottom }
+            if (bottoms.isNotEmpty()) return bottoms
+            SystemClock.sleep(50)
+        } while (SystemClock.uptimeMillis() < deadline)
+        throw AssertionError("No visible card accessibility nodes")
+    }
+
+    /** Pages the column down through its accessibility scroll action until it exposes no more. */
+    private fun scrollColumnToEnd() {
+        repeat(60) {
+            val nodes = accessibilityNodes()
+            fun hasCard(node: android.view.accessibility.AccessibilityNodeInfo): Boolean =
+                node.isCard() || (0 until node.childCount).any { index -> node.getChild(index)?.let(::hasCard) == true }
+            val list = nodes.lastOrNull { node ->
+                node.actionList.any { it.id == android.view.accessibility.AccessibilityNodeInfo.ACTION_SCROLL_FORWARD } &&
+                    node.className == "android.view.View" && hasCard(node) && !node.isCard()
+            } ?: return
+            if (!list.performAction(android.view.accessibility.AccessibilityNodeInfo.ACTION_SCROLL_FORWARD)) return
+            InstrumentationRegistry.getInstrumentation().waitForIdleSync()
+            SystemClock.sleep(400)
+        }
+    }
+
     private fun textBounds(text: String): Rect {
         val deadline = SystemClock.uptimeMillis() + 5_000
         do {

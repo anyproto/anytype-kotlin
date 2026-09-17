@@ -132,19 +132,9 @@ class DefaultObjectStateReducer : ObjectStateReducer {
     private fun handleShowObject(event: Command.ShowObject): ObjectState {
         val objectState = when (val layout = event.details[event.root]?.getSingleValue<Double>(
             Relations.LAYOUT)?.toInt()) {
-            ObjectType.Layout.COLLECTION.code -> ObjectState.DataView.Collection(
-                root = event.root,
-                blocks = event.blocks,
-                details = ObjectViewDetails(event.details),
-                dataViewRestrictions = event.dataViewRestrictions
-            )
-            ObjectType.Layout.SET.code -> ObjectState.DataView.Set(
-                root = event.root,
-                blocks = event.blocks,
-                details = ObjectViewDetails(event.details),
-                dataViewRestrictions = event.dataViewRestrictions
-            )
-            ObjectType.Layout.OBJECT_TYPE.code -> ObjectState.DataView.TypeSet(
+            ObjectType.Layout.COLLECTION.code,
+            ObjectType.Layout.SET.code,
+            ObjectType.Layout.OBJECT_TYPE.code -> ObjectState.DataView(
                 root = event.root,
                 blocks = event.blocks,
                 details = ObjectViewDetails(event.details),
@@ -166,15 +156,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             content.copy(viewers = content.viewers.updateOrAdd(event))
         }
         return when (state) {
-            is ObjectState.DataView.Collection -> state.updateBlockContent(
-                target = event.target,
-                blockContentUpdate = updateBlockContent
-            )
-            is ObjectState.DataView.Set -> state.updateBlockContent(
-                target = event.target,
-                blockContentUpdate = updateBlockContent
-            )
-            is ObjectState.DataView.TypeSet -> state.updateBlockContent(
+            is ObjectState.DataView -> state.updateBlockContent(
                 target = event.target,
                 blockContentUpdate = updateBlockContent
             )
@@ -197,15 +179,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             )
         }
         return when (state) {
-            is ObjectState.DataView.Collection -> state.updateBlockContent(
-                target = event.target,
-                blockContentUpdate = updateBlockContent
-            )
-            is ObjectState.DataView.Set -> state.updateBlockContent(
-                target = event.target,
-                blockContentUpdate = updateBlockContent
-            )
-            is ObjectState.DataView.TypeSet -> state.updateBlockContent(
+            is ObjectState.DataView -> state.updateBlockContent(
                 target = event.target,
                 blockContentUpdate = updateBlockContent
             )
@@ -228,15 +202,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             )
         }
         return when (state) {
-            is ObjectState.DataView.Collection -> state.updateBlockContent(
-                target = event.dv,
-                blockContentUpdate = updateBlockContent
-            )
-            is ObjectState.DataView.Set -> state.updateBlockContent(
-                target = event.dv,
-                blockContentUpdate = updateBlockContent
-            )
-            is ObjectState.DataView.TypeSet -> state.updateBlockContent(
+            is ObjectState.DataView -> state.updateBlockContent(
                 target = event.dv,
                 blockContentUpdate = updateBlockContent
             )
@@ -257,15 +223,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             )
         }
         return when (state) {
-            is ObjectState.DataView.Collection -> state.updateBlockContent(
-                target = event.dv,
-                blockContentUpdate = updateBlockContent
-            )
-            is ObjectState.DataView.Set -> state.updateBlockContent(
-                target = event.dv,
-                blockContentUpdate = updateBlockContent
-            )
-            is ObjectState.DataView.TypeSet -> state.updateBlockContent(
+            is ObjectState.DataView -> state.updateBlockContent(
                 target = event.dv,
                 blockContentUpdate = updateBlockContent
             )
@@ -286,15 +244,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             })
         }
         return when (state) {
-            is ObjectState.DataView.Collection -> state.updateBlockContent(
-                target = event.dv,
-                blockContentUpdate = updateBlockContent
-            )
-            is ObjectState.DataView.Set -> state.updateBlockContent(
-                target = event.dv,
-                blockContentUpdate = updateBlockContent
-            )
-            is ObjectState.DataView.TypeSet -> state.updateBlockContent(
+            is ObjectState.DataView -> state.updateBlockContent(
                 target = event.dv,
                 blockContentUpdate = updateBlockContent
             )
@@ -313,15 +263,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             content.copy(targetObjectId = event.targetObjectId)
         }
         return when (state) {
-            is ObjectState.DataView.Collection -> state.updateBlockContent(
-                target = event.dv,
-                blockContentUpdate = updateBlockContent
-            )
-            is ObjectState.DataView.Set -> state.updateBlockContent(
-                target = event.dv,
-                blockContentUpdate = updateBlockContent
-            )
-            is ObjectState.DataView.TypeSet -> state.updateBlockContent(
+            is ObjectState.DataView -> state.updateBlockContent(
                 target = event.dv,
                 blockContentUpdate = updateBlockContent
             )
@@ -336,32 +278,12 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         val updateBlockContent = { content: Block.Content.DataView ->
             content.copy(isCollection = event.isCollection)
         }
+        // The block carries the answer now, so converting a set no longer changes the state type.
         return when (state) {
-            is ObjectState.DataView.Collection -> state.updateBlockContent(
+            is ObjectState.DataView -> state.updateBlockContent(
                 target = event.dv,
                 blockContentUpdate = updateBlockContent
             )
-            is ObjectState.DataView.Set -> {
-                val blocks = state.blocks.map { block ->
-                    val content = block.content
-                    if (block.id == event.dv && content is Block.Content.DataView) {
-                        block.copy(
-                            content = content.copy(
-                                isCollection = event.isCollection
-                            )
-                        )
-                    } else {
-                        block
-                    }
-                }
-                ObjectState.DataView.Collection(
-                    root = state.root,
-                    blocks = blocks,
-                    details = state.details,
-                    objectRestrictions = state.objectRestrictions,
-                    dataViewRestrictions = state.dataViewRestrictions
-                )
-            }
             else -> state
         }
     }
@@ -377,9 +299,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             )
         }
         return when (state) {
-            is ObjectState.DataView.Collection -> state.updateBlockContent(event.dv, update)
-            is ObjectState.DataView.Set -> state.updateBlockContent(event.dv, update)
-            is ObjectState.DataView.TypeSet -> state.updateBlockContent(event.dv, update)
+            is ObjectState.DataView -> state.updateBlockContent(event.dv, update)
             else -> state
         }
     }
@@ -401,9 +321,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             )
         }
         return when (state) {
-            is ObjectState.DataView.Collection -> state.updateBlockContent(event.dv, update)
-            is ObjectState.DataView.Set -> state.updateBlockContent(event.dv, update)
-            is ObjectState.DataView.TypeSet -> state.updateBlockContent(event.dv, update)
+            is ObjectState.DataView -> state.updateBlockContent(event.dv, update)
             else -> state
         }
     }
@@ -435,15 +353,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             })
         }
         return when (state) {
-            is ObjectState.DataView.Collection -> state.updateBlockContent(
-                target = event.block,
-                blockContentUpdate = updateBlockContent
-            )
-            is ObjectState.DataView.Set -> state.updateBlockContent(
-                target = event.block,
-                blockContentUpdate = updateBlockContent
-            )
-            is ObjectState.DataView.TypeSet -> state.updateBlockContent(
+            is ObjectState.DataView -> state.updateBlockContent(
                 target = event.block,
                 blockContentUpdate = updateBlockContent
             )
@@ -459,25 +369,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         event: Command.Details.Set
     ): ObjectState {
         return when (state) {
-            is ObjectState.DataView.Collection -> {
-                state.copy(
-                    details = ObjectViewDetails(
-                        details = state.details.details.toMutableMap().apply {
-                            put(event.target, event.details)
-                        }
-                    )
-                )
-            }
-            is ObjectState.DataView.Set -> {
-                state.copy(
-                    details = ObjectViewDetails(
-                        details = state.details.details.toMutableMap().apply {
-                            put(event.target, event.details)
-                        }
-                    )
-                )
-            }
-            is ObjectState.DataView.TypeSet -> {
+            is ObjectState.DataView -> {
                 state.copy(
                     details = ObjectViewDetails(
                         details = state.details.details.toMutableMap().apply {
@@ -498,23 +390,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         event: Command.Details.Amend
     ): ObjectState {
         return when (state) {
-            is ObjectState.DataView.Collection -> state.copy(
-                details = state.details.copy(
-                    details = state.details.details.amend(
-                        target = event.target,
-                        slice = event.details
-                    )
-                )
-            )
-            is ObjectState.DataView.Set -> state.copy(
-                details = state.details.copy(
-                    details = state.details.details.amend(
-                        target = event.target,
-                        slice = event.details
-                    )
-                )
-            )
-            is ObjectState.DataView.TypeSet -> state.copy(
+            is ObjectState.DataView -> state.copy(
                 details = state.details.copy(
                     details = state.details.details.amend(
                         target = event.target,
@@ -534,23 +410,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         event: Command.Details.Unset
     ): ObjectState {
         return when (state) {
-            is ObjectState.DataView.Collection -> state.copy(
-                details = state.details.copy(
-                    details = state.details.details.unset(
-                        target = event.target,
-                        keys = event.keys
-                    )
-                )
-            )
-            is ObjectState.DataView.Set -> state.copy(
-                details = state.details.copy(
-                    details = state.details.details.unset(
-                        target = event.target,
-                        keys = event.keys
-                    )
-                )
-            )
-            is ObjectState.DataView.TypeSet -> state.copy(
+            is ObjectState.DataView -> state.copy(
                 details = state.details.copy(
                     details = state.details.details.unset(
                         target = event.target,
@@ -570,19 +430,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         event: Command.UpdateStructure
     ): ObjectState {
         return when (state) {
-            is ObjectState.DataView.Collection -> state.copy(
-                blocks = state.blocks.replace(
-                    replacement = { target -> target.copy(children = event.children) },
-                    target = { block -> block.id == event.id }
-                )
-            )
-            is ObjectState.DataView.Set -> state.copy(
-                blocks = state.blocks.replace(
-                    replacement = { target -> target.copy(children = event.children) },
-                    target = { block -> block.id == event.id }
-                )
-            )
-            is ObjectState.DataView.TypeSet -> state.copy(
+            is ObjectState.DataView -> state.copy(
                 blocks = state.blocks.replace(
                     replacement = { target -> target.copy(children = event.children) },
                     target = { block -> block.id == event.id }
@@ -597,9 +445,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
      */
     private fun handleAddBlock(state: ObjectState, event: Command.AddBlock): ObjectState {
         return when (state) {
-            is ObjectState.DataView.Collection -> state.copy(blocks = state.blocks + event.blocks)
-            is ObjectState.DataView.Set -> state.copy(blocks = state.blocks + event.blocks)
-            is ObjectState.DataView.TypeSet -> state.copy(blocks = state.blocks + event.blocks)
+            is ObjectState.DataView -> state.copy(blocks = state.blocks + event.blocks)
             ObjectState.Init -> state
             ObjectState.ErrorLayout -> state
         }
@@ -610,13 +456,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         event: Command.DataView.UpdateConflictState
     ): ObjectState {
         return when (state) {
-            is ObjectState.DataView.Collection -> state.copy(
-                hasObjectLayoutConflict = event.hasConflict
-            )
-            is ObjectState.DataView.Set -> state.copy(
-                hasObjectLayoutConflict = event.hasConflict
-            )
-            is ObjectState.DataView.TypeSet -> state.copy(
+            is ObjectState.DataView -> state.copy(
                 hasObjectLayoutConflict = event.hasConflict
             )
             else -> state
@@ -637,9 +477,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             }
         }
         return when (this) {
-            is ObjectState.DataView.Collection -> copy(blocks = updatedBlocks)
-            is ObjectState.DataView.Set -> copy(blocks = updatedBlocks)
-            is ObjectState.DataView.TypeSet -> copy(blocks = updatedBlocks)
+            is ObjectState.DataView -> copy(blocks = updatedBlocks)
         }
     }
 

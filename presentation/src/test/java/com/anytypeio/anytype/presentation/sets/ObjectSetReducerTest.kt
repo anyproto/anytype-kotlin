@@ -186,7 +186,7 @@ class ObjectSetReducerTest {
             children = listOf()
         )
 
-        val expected = ObjectState.DataView.Set(
+        val expected = ObjectState.DataView(
             root = context,
             blocks = listOf(title, expectedDataView),
             details = details
@@ -325,7 +325,7 @@ class ObjectSetReducerTest {
             children = listOf()
         )
 
-        val expected = ObjectState.DataView.Set(
+        val expected = ObjectState.DataView(
             root = context,
             blocks = listOf(title, expectedDataView),
             details = details
@@ -469,7 +469,7 @@ class ObjectSetReducerTest {
                 children = listOf()
             )
 
-            val expected = ObjectState.DataView.Set(
+            val expected = ObjectState.DataView(
                 root = context,
                 blocks = listOf(title, expectedDataView),
                 details = details
@@ -582,7 +582,7 @@ class ObjectSetReducerTest {
                 children = listOf()
             )
 
-            val expected = ObjectState.DataView.Set(
+            val expected = ObjectState.DataView(
                 root = context,
                 blocks = listOf(title, expectedDataView),
                 details = details
@@ -690,7 +690,7 @@ class ObjectSetReducerTest {
                 children = listOf()
             )
 
-            val expected = ObjectState.DataView.Set(
+            val expected = ObjectState.DataView(
                 root = context,
                 blocks = listOf(title, expectedDataView),
                 details = details
@@ -790,7 +790,7 @@ class ObjectSetReducerTest {
             children = listOf()
         )
 
-        val expected = ObjectState.DataView.Set(
+        val expected = ObjectState.DataView(
             root = context,
             blocks = listOf(title, expectedDataView),
             details = details
@@ -869,7 +869,7 @@ class ObjectSetReducerTest {
             children = listOf()
         )
 
-        val expected = ObjectState.DataView.Set(
+        val expected = ObjectState.DataView(
             root = context,
             blocks = listOf(title, expectedDataView),
             details = details

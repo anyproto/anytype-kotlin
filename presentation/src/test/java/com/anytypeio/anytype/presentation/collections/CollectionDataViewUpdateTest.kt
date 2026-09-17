@@ -72,7 +72,7 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
             assertIs<ObjectState.Init>(first)
 
             val second = awaitItem()
-            assertIs<ObjectState.DataView.Collection>(second)
+            assertIs<ObjectState.DataView>(second)
 
             //after payload
             val eventDVUpdate = Event.Command.DataView.UpdateView(
@@ -114,7 +114,7 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
             )
 
             val third = awaitItem()
-            assertIs<ObjectState.DataView.Collection>(third)
+            assertIs<ObjectState.DataView>(third)
             assertEquals(
                 expected = listOf(newSort),
                 actual = third.dataViewContent.viewers.first().sorts

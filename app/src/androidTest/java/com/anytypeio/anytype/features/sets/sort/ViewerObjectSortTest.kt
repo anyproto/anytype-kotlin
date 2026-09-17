@@ -120,7 +120,7 @@ class ViewerObjectSortTest {
             selections = emptyList()
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(

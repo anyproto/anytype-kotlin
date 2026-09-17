@@ -96,7 +96,7 @@ class ObjectRelationDateValueTest {
             source = Relation.Source.values().random()
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(
@@ -159,7 +159,7 @@ class ObjectRelationDateValueTest {
             relation.key to valueDate
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(
@@ -218,7 +218,7 @@ class ObjectRelationDateValueTest {
             source = Relation.Source.values().random()
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(
@@ -282,7 +282,7 @@ class ObjectRelationDateValueTest {
             relation.key to valueDate
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(
@@ -341,7 +341,7 @@ class ObjectRelationDateValueTest {
             source = Relation.Source.values().random()
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(
@@ -401,7 +401,7 @@ class ObjectRelationDateValueTest {
             source = Relation.Source.values().random()
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(
@@ -474,7 +474,7 @@ class ObjectRelationDateValueTest {
             source = Relation.Source.values().random()
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(

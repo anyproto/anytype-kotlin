@@ -103,7 +103,7 @@ class DisplayRelationNumberValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(
@@ -154,7 +154,7 @@ class DisplayRelationNumberValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(
@@ -205,7 +205,7 @@ class DisplayRelationNumberValueTest {
             type = Block.Content.DataView.Viewer.Type.GRID
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(

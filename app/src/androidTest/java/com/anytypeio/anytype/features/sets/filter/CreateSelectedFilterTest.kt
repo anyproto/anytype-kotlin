@@ -158,7 +158,7 @@ class CreateSelectedFilterTest {
                 )
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(dv)
         )
@@ -228,7 +228,7 @@ class CreateSelectedFilterTest {
                 )
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(dv)
         )

@@ -983,7 +983,7 @@ class ObjectSetViewModel(
         val sources = if (isCollection) {
             emptyList()
         } else {
-            state.filterOutDeletedAndMissingObjects(state.getSetOfValue(vmParams.ctx))
+            state.filterOutDeletedAndMissingObjects(state.setOfValue(state.shownBlockId))
         }
         val collection = if (isCollection) vmParams.ctx else null
         return BoardGroupSubscriptionContainer.Params(
@@ -1071,7 +1071,7 @@ class ObjectSetViewModel(
         val sources = if (isCollection) {
             emptyList()
         } else {
-            state.filterOutDeletedAndMissingObjects(state.getSetOfValue(vmParams.ctx))
+            state.filterOutDeletedAndMissingObjects(state.setOfValue(state.shownBlockId))
         }
         val collection = if (isCollection) vmParams.ctx else null
         val columns = columnQueries.map { query ->
@@ -1392,7 +1392,7 @@ class ObjectSetViewModel(
             }
             is DataViewState.Loaded -> {
                 _dvViews.value = objectState.dataViewState()?.toViewersView(
-                    ctx = vmParams.ctx,
+                    blockId = objectState.shownBlockId,
                     session = session,
                     storeOfRelations = storeOfRelations,
                     stringResourceProvider = stringResourceProvider,
@@ -1445,7 +1445,7 @@ class ObjectSetViewModel(
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
-        val setOfValue = objectState.getSetOfValue(ctx = vmParams.ctx)
+        val setOfValue = objectState.setOfValue(blockId = objectState.shownBlockId)
         val query = objectState.filterOutDeletedAndMissingObjects(query = setOfValue)
         val viewer = objectState.viewerByIdOrFirst(currentViewId)
 
@@ -1466,7 +1466,7 @@ class ObjectSetViewModel(
             }
             is DataViewState.Loaded -> {
                 _dvViews.value = objectState.dataViewState()?.toViewersView(
-                    ctx = vmParams.ctx,
+                    blockId = objectState.shownBlockId,
                     session = session,
                     storeOfRelations = storeOfRelations,
                     stringResourceProvider = stringResourceProvider,
@@ -1513,7 +1513,7 @@ class ObjectSetViewModel(
                     render.isEmpty() -> {
                         if (!missingGroupBy && isBoardAwaitingGroups(render)) return DataViewViewState.Init
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
-                            vmParams.ctx, viewer, storeOfObjectTypes
+                            objectState.shownBlockId, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.Set.NoItems(
                             title = render.title,
@@ -1524,7 +1524,7 @@ class ObjectSetViewModel(
                     }
                     else -> {
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
-                            vmParams.ctx, viewer, storeOfObjectTypes
+                            objectState.shownBlockId, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.Set.Default(
                             viewer = render,
@@ -1545,7 +1545,7 @@ class ObjectSetViewModel(
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
-        val setOfValue = objectState.getSetOfValue(ctx = vmParams.ctx)
+        val setOfValue = objectState.setOfValue(blockId = objectState.shownBlockId)
         val query = objectState.filterOutDeletedAndMissingObjects(query = setOfValue)
         val viewer = objectState.viewerByIdOrFirst(currentViewId)
 
@@ -1560,7 +1560,7 @@ class ObjectSetViewModel(
             }
             is DataViewState.Loaded -> {
                 _dvViews.value = objectState.dataViewState()?.toViewersView(
-                    ctx = vmParams.ctx,
+                    blockId = objectState.shownBlockId,
                     session = session,
                     storeOfRelations = storeOfRelations,
                     stringResourceProvider = stringResourceProvider,
@@ -1602,7 +1602,7 @@ class ObjectSetViewModel(
                     render.isEmpty() -> {
                         if (!missingGroupBy && isBoardAwaitingGroups(render)) return DataViewViewState.Init
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
-                            vmParams.ctx, viewer, storeOfObjectTypes
+                            objectState.shownBlockId, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.TypeSet.NoItems(
                             title = render.title,
@@ -1613,7 +1613,7 @@ class ObjectSetViewModel(
                     }
                     else -> {
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
-                            vmParams.ctx, viewer, storeOfObjectTypes
+                            objectState.shownBlockId, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.TypeSet.Default(
                             viewer = render,
@@ -2406,7 +2406,7 @@ class ObjectSetViewModel(
             val dvBlock = currentState.dataViewBlock.id
 
             val (resolvedType, defaultTemplate) = currentState.getActiveViewTypeAndTemplate(
-                ctx = vmParams.ctx,
+                blockId = currentState.shownBlockId,
                 activeView = viewer,
                 storeOfObjectTypes = storeOfObjectTypes,
                 onDeletedTypeDetected = { deletedViewer ->
@@ -2555,7 +2555,7 @@ class ObjectSetViewModel(
         val dvBlock = state.dataViewBlock.id
 
         val (resolvedType, defaultTemplate) = state.getActiveViewTypeAndTemplate(
-            ctx = vmParams.ctx,
+            blockId = state.shownBlockId,
             activeView = viewer,
             storeOfObjectTypes = storeOfObjectTypes,
             onDeletedTypeDetected = { deletedViewer ->
@@ -3351,7 +3351,7 @@ class ObjectSetViewModel(
                         // Only a set queries by type or relation, so only a set offers the menu.
                         if (!state.isTypeSet && !state.isCollection(state.shownBlockId)) {
                             if (isOwnerOrEditor) {
-                                val setOfValue = state.getSetOfValue(vmParams.ctx)
+                                val setOfValue = state.setOfValue(state.shownBlockId)
                                 val command =
                                     if (state.isSetByRelation(setOfValue = setOfValue)) {
                                         ObjectSetCommand.Modal.ShowObjectSetRelationPopupMenu(
@@ -3572,7 +3572,7 @@ class ObjectSetViewModel(
             }
 
             val (type, _) = dataView.getActiveViewTypeAndTemplate(
-                ctx = vmParams.ctx,
+                blockId = dataView.shownBlockId,
                 activeView = viewer,
                 storeOfObjectTypes = storeOfObjectTypes,
                 onDeletedTypeDetected = { deletedViewer ->
@@ -3729,7 +3729,7 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
                     }
 
                     val (type, template) = dataView.getActiveViewTypeAndTemplate(
-                        ctx = vmParams.ctx,
+                        blockId = dataView.shownBlockId,
                         activeView = viewer,
                         storeOfObjectTypes = storeOfObjectTypes,
                         onDeletedTypeDetected = { deletedViewer ->
@@ -5084,7 +5084,7 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
         val sources = if (dataView != null && isInitialized &&
             !dataView.isCollection(dataView.shownBlockId)
         ) {
-            dataView.filterOutDeletedAndMissingObjects(dataView.getSetOfValue(vmParams.ctx))
+            dataView.filterOutDeletedAndMissingObjects(dataView.setOfValue(dataView.shownBlockId))
         } else {
             emptyList()
         }

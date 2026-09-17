@@ -13,7 +13,7 @@ import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDataViewFilters
 import com.anytypeio.anytype.presentation.sets.filterOutDeletedAndMissingObjects
-import com.anytypeio.anytype.presentation.sets.getSetOfValue
+import com.anytypeio.anytype.presentation.sets.setOfValue
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.extension.removeUnsupportedFilters
 import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
@@ -67,7 +67,7 @@ class DefaultDataViewSubscription(
         val sources = if (isCollection) {
             emptyList()
         } else {
-            val setOfValue = state.getSetOfValue(ctx = context)
+            val setOfValue = state.setOfValue(blockId = blockId)
             if (setOfValue.isEmpty()) {
                 Timber.w("Data view subscription: setOf value is empty, proceed without subscription")
                 return emptyFlow()

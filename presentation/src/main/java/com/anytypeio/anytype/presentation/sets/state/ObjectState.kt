@@ -42,18 +42,24 @@ sealed class ObjectState {
          * a conversion.
          */
         fun isCollection(blockId: Id): Boolean {
-            val rootLayout = details.getObject(root)?.layout
-            if (rootLayout == ObjectType.Layout.COLLECTION) return true
+            if (details.getObject(root)?.layout == ObjectType.Layout.COLLECTION) return true
             val content = blocks.firstOrNull { it.id == blockId }?.content ?: return false
             if (content !is DV) {
                 Timber.e("Block $blockId of object $root is not a data view block")
                 return false
             }
-            if (rootLayout !in DATA_VIEW_LAYOUTS) {
-                val target = details.getObject(content.targetObjectId)
-                if (target != null) return target.layout == ObjectType.Layout.COLLECTION
-            }
+            val target = details.getObject(content.targetObjectId)
+            if (target != null) return target.layout == ObjectType.Layout.COLLECTION
             return content.isCollection
+        }
+
+        /**
+         * The object whose query the given data view shows, null when no such block is here.
+         * A data view that points at no other object belongs to this one.
+         */
+        fun source(blockId: Id): Id? {
+            val content = blocks.firstOrNull { it.id == blockId }?.content as? DV ?: return null
+            return content.targetObjectId.ifEmpty { root }
         }
     }
 
@@ -68,16 +74,6 @@ sealed class ObjectState {
     }
 
     companion object {
-        /**
-         * Layouts of the objects that own a data view. Anything else hosts it
-         * inline.
-         */
-        private val DATA_VIEW_LAYOUTS = setOf(
-            ObjectType.Layout.SET,
-            ObjectType.Layout.COLLECTION,
-            ObjectType.Layout.OBJECT_TYPE
-        )
-
         const val VIEW_DEFAULT_OBJECT_TYPE = ObjectTypeIds.PAGE
         val VIEW_TYPE_UNSUPPORTED = DVViewerType.BOARD
     }

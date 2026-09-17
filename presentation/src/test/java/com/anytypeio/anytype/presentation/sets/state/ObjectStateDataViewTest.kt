@@ -7,7 +7,9 @@ import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubDataViewView
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import org.junit.Test
 
@@ -83,6 +85,42 @@ class ObjectStateDataViewTest {
     @Test
     fun `a page hosting an inline block is not a type set`() {
         assertFalse(objectState(layout = Layout.BASIC).isTypeSet)
+    }
+
+    @Test
+    fun `a standalone data view queries the object it belongs to`() {
+        val dataView = dataView()
+        val state = objectState(layout = Layout.SET, blocks = listOf(dataView))
+
+        assertEquals(root, state.source(dataView.id))
+    }
+
+    @Test
+    fun `an inline block queries the object it targets`() {
+        val target = MockDataFactory.randomUuid()
+        val dataView = dataView(target = target)
+        val state = objectState(
+            layout = Layout.BASIC,
+            blocks = listOf(dataView),
+            targets = mapOf(target to Layout.SET)
+        )
+
+        assertEquals(target, state.source(dataView.id))
+    }
+
+    @Test
+    fun `a block with no target queries the object it belongs to`() {
+        val dataView = dataView()
+        val state = objectState(layout = Layout.BASIC, blocks = listOf(dataView))
+
+        assertEquals(root, state.source(dataView.id))
+    }
+
+    @Test
+    fun `an unknown block has no source`() {
+        val state = objectState(layout = Layout.SET)
+
+        assertNull(state.source(MockDataFactory.randomUuid()))
     }
 
     private val root = MockDataFactory.randomUuid()

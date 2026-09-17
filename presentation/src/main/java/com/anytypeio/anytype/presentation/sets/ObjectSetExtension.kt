@@ -312,9 +312,11 @@ fun List<DVViewerRelation>.updateViewerRelations(updates: List<DVViewerRelationU
 val ObjectState.DataView.shownBlockId: Id
     get() = blocks.firstOrNull { it.content is DV }?.id.orEmpty()
 
-fun ObjectState.DataView.getSetOfValue(ctx: Id): List<Id> {
-    return details.getObject(ctx)?.setOf.orEmpty()
-}
+/**
+ * Ids of the types or relations the given data view queries.
+ */
+fun ObjectState.DataView.setOfValue(blockId: Id): List<Id> =
+    source(blockId)?.let { details.getObject(it)?.setOf }.orEmpty()
 
 fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): List<Id> {
     return query.filter(::isValidObject)
@@ -386,15 +388,15 @@ fun ObjectWrapper.Basic.toTemplateView(
 }
 
 suspend fun ObjectState.DataView.toViewersView(
-    ctx: Id,
+    blockId: Id,
     session: ObjectSetSession,
     storeOfRelations: StoreOfRelations,
     stringResourceProvider: StringResourceProvider,
     kanbanEnabled: Boolean = false
 ): List<ViewerView> {
     val viewers = dataViewContent.viewers
-    val setOfValue = getSetOfValue(ctx)
-    val mapped = if (usesViewerDefaultObjectType(setOfValue)) {
+    val setOfValue = setOfValue(blockId)
+    val mapped = if (usesViewerDefaultObjectType(blockId, setOfValue)) {
         mapViewers(
             defaultObjectType = { it.defaultObjectType },
             viewers = viewers,
@@ -451,14 +453,14 @@ fun DVViewer.isActiveViewer(index: Int, session: ObjectSetSession): Boolean {
 }
 
 suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
-    ctx: Id,
+    blockId: Id,
     activeView: DVViewer?,
     storeOfObjectTypes: StoreOfObjectTypes,
     onDeletedTypeDetected: suspend (DVViewer) -> Unit = {}
 ): Pair<ObjectWrapper.Type?, Id?> {
     if (activeView == null) return Pair(null, null)
-    val setOfValue = getSetOfValue(ctx)
-    if (usesViewerDefaultObjectType(setOfValue)) {
+    val setOfValue = setOfValue(blockId)
+    if (usesViewerDefaultObjectType(blockId, setOfValue)) {
         return resolveTypeAndActiveViewTemplate(
             activeView,
             storeOfObjectTypes,
@@ -555,15 +557,18 @@ fun resolveTemplateForDataViewObject(
 fun ObjectState.DataView.isChangingDefaultTypeAvailable(): Boolean = when {
     isCollection(shownBlockId) -> true
     isTypeSet -> false
-    else -> isSetByRelation(setOfValue = getSetOfValue(root))
+    else -> isSetByRelation(setOfValue = setOfValue(shownBlockId))
 }
 
 /**
  * Whether the viewer's own default object type applies, rather than the single type the data
  * view queries. A collection has no query, and a set by relation can hold any type.
  */
-private fun ObjectState.DataView.usesViewerDefaultObjectType(setOfValue: List<Id>): Boolean = when {
-    isCollection(shownBlockId) -> true
+private fun ObjectState.DataView.usesViewerDefaultObjectType(
+    blockId: Id,
+    setOfValue: List<Id>
+): Boolean = when {
+    isCollection(blockId) -> true
     isTypeSet -> false
     else -> isSetByRelation(setOfValue = setOfValue)
 }

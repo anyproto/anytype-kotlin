@@ -11,7 +11,7 @@ fun StubDataView(
     id: Id = MockDataFactory.randomUuid(),
     views: List<DVViewer> = emptyList(),
     relationLinks: List<RelationLink> = emptyList(),
-    targetObjectId: Id = MockDataFactory.randomUuid(),
+    targetObjectId: Id = "",
     isCollection: Boolean = false,
     objectOrder: List<ObjectOrder> = emptyList()
 ): Block = Block(

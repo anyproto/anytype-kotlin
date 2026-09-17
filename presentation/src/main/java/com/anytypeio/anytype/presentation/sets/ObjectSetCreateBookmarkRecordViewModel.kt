@@ -62,7 +62,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
                 }
 
                 !state.isTypeSet -> {
-                    val setOf = state.getSetOfValue(state.root)
+                    val setOf = state.setOfValue(state.shownBlockId)
                     if (state.isSetByRelation(setOf)) {
                         val sourceDetails = state.details.details[setOf.firstOrNull()]
                         if (sourceDetails != null && sourceDetails.isNotEmpty()) {

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -93,7 +94,7 @@ fun ViewersWidget(
             dragHandle = { DragHandle() },
             content = {
                 ViewersWidgetContent(
-                    modifier = Modifier.padding(bottom = 168.dp),
+                    modifier = Modifier,
                     state = state,
                     action = action
                 )
@@ -203,8 +204,22 @@ private fun ViewersWidgetContent(
                 }
             }
         }
+
+        // The sheet hugs its content, so a fixed reserve below the list would win the
+        // space in a window too short to hold both, and the list is what would shrink.
+        // A weighted spacer takes only what the list leaves, so the list keeps its
+        // height in landscape and the sheet looks unchanged wherever the room is there.
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(max = BOTTOM_RESERVE)
+                .weight(1f, fill = false)
+        )
     }
 }
+
+/** Empty room under the view list, given up to the list when the window is short. */
+private val BOTTOM_RESERVE = 168.dp
 
 @Composable
 private fun Item(

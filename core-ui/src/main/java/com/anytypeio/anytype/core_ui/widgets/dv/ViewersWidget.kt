@@ -10,11 +10,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
@@ -40,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -110,6 +111,26 @@ fun DragHandle() {
         Dragger()
         Spacer(modifier = Modifier.height(6.dp))
     }
+}
+
+/**
+ * Empty room under the list of a sheet. The sheet hugs its content, so a fixed reserve would
+ * win the space in a short window, such as a phone in landscape, and the list would shrink.
+ * This spacer takes only what the list leaves, up to [height], so the list keeps its rows and
+ * the sheet keeps its shape wherever the room is there.
+ *
+ * The weight gives the spacer 0..leftover, and [Modifier.height] clamps [height] into that
+ * range. Do not use heightIn(max) here: a Spacer measures to zero unless its height is fixed,
+ * and fill = true fixes it to the whole leftover, which heightIn cannot reduce.
+ */
+@Composable
+fun ColumnScope.SheetBottomReserve(height: Dp) {
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(height)
+            .weight(1f, fill = false)
+    )
 }
 
 @Composable
@@ -205,16 +226,7 @@ private fun ViewersWidgetContent(
             }
         }
 
-        // The sheet hugs its content, so a fixed reserve below the list would win the
-        // space in a window too short to hold both, and the list is what would shrink.
-        // A weighted spacer takes only what the list leaves, so the list keeps its
-        // height in landscape and the sheet looks unchanged wherever the room is there.
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(max = BOTTOM_RESERVE)
-                .weight(1f, fill = false)
-        )
+        SheetBottomReserve(height = BOTTOM_RESERVE)
     }
 }
 

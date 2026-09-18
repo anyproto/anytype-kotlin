@@ -92,7 +92,7 @@ private fun ColumnScope.Content(
         state = lazyListState,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 12.dp, bottom = 250.dp)
+            .padding(top = 12.dp)
     ) {
         items(
             count = uiState.imagePreviewItems.size,
@@ -114,6 +114,7 @@ private fun ColumnScope.Content(
             }
         }
     }
+    SheetBottomReserve(height = 250.dp)
 }
 
 @Composable

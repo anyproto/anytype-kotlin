@@ -82,7 +82,7 @@ private fun ColumnScope.GroupByContent(
         state = lazyListState,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 12.dp, bottom = 250.dp)
+            .padding(top = 12.dp)
     ) {
         items(
             count = uiState.groupByItems.size,
@@ -98,6 +98,7 @@ private fun ColumnScope.GroupByContent(
             }
         }
     }
+    SheetBottomReserve(height = 250.dp)
 }
 
 @Composable

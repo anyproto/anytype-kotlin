@@ -4,6 +4,7 @@ option go_package = "pb";
 
 import "models.proto";
 import "localstore.proto";
+import "export_report.proto";
 
 import "events.proto";
 import "google/protobuf/struct.proto";
@@ -790,6 +791,12 @@ message Rpc {
                 string token = 2;
                 string appToken = 3; // in case of mnemonic auth, need to be persisted by client
                 string accountId = 4; // temp, should be replaced with AccountInfo message
+                model.Account.Auth.LocalApiScope accountScope = 5; // scope of the session; for appKey auth it is the app link's scope
+                string appName = 6; // for appKey auth, the app name recorded when the app link was created
+                int64 appExpireAt = 7; // for appKey auth, the app link's expiration unix timestamp; 0 means the key never expires
+                model.Account.Auth.AppGrant grant = 8; // for appKey auth, the app link's grant; unset means an unscoped key
+                string appHash = 9; // for appKey auth, the app link's identity (the hash ListApps and RevokeApp use)
+                int64 appCreatedAt = 10; // for appKey auth, the app link's creation unix timestamp; 0 means unknown (pre-hash-era link)
 
                 message Error {
                     Code code = 1;
@@ -801,6 +808,7 @@ message Rpc {
                         BAD_INPUT = 2;
 
                         APP_TOKEN_NOT_FOUND_IN_THE_CURRENT_ACCOUNT = 101; // means the client logged into another account or the account directory has been cleaned
+                        APP_TOKEN_EXPIRED = 102; // the app link's expireAt has passed; the key must be re-issued
                     }
                 }
             }
@@ -1352,10 +1360,26 @@ message Rpc {
         }
 
         message LocalLink {
+            // deprecated: pairing a gRPC session via the local-link challenge
+            // is being removed; authenticate through the JSON API instead.
             message NewChallenge {
                 message Request {
                     string appName = 1; // just for info, not secure to rely on
                     model.Account.Auth.LocalApiScope scope = 2;
+                    // requestedGrant (3) is gone: an app cannot know space ids
+                    // before pairing, so a space-listed request was
+                    // unimplementable by the clients the field existed for.
+                    // The grant is the USER's decision now, collected by the
+                    // approval prompt — see ApproveChallenge.grant.
+                    reserved 3;
+                    reserved "requestedGrant";
+                    // the permission the app declares it needs. It pre-fills
+                    // the approval prompt's permission control and is never a
+                    // ceiling — the human approving decides. Read is the zero
+                    // value, so "asked for read" and "asked for nothing" are
+                    // indistinguishable by design (both render the safe
+                    // default).
+                    model.Account.Auth.AppGrant.Perm requestedPerm = 4;
                 }
 
                 message Response {
@@ -1386,6 +1410,7 @@ message Rpc {
                     Error error = 1;
                     string sessionToken = 2; // ephemeral token for the session
                     string appKey = 3;  // persistent key, that can be used to restore session via CreateSession
+                    model.Account.Auth.AppGrant grant = 4; // the user's approved grant persisted with the app key; unset for an unscoped key
 
                     message Error {
                         Code code = 1;
@@ -1400,6 +1425,57 @@ message Rpc {
                             INVALID_CHALLENGE_ID = 102;
                             CHALLENGE_ATTEMPTS_EXCEEDED = 103;
                             INCORRECT_ANSWER = 104;
+                            // the user has not approved this challenge yet, so
+                            // no code exists to compare against
+                            CHALLENGE_NOT_APPROVED = 105;
+                        }
+                    }
+                }
+            }
+            // ApproveChallenge is the user's decision on a pending challenge.
+            // It is the only call that mints the code, and it answers the
+            // caller rather than broadcasting, so the code never reaches
+            // sessions other than the one that approved.
+            //
+            // The pending challenge is addressed by the caller it came from,
+            // which is what the prompt showed the user. Only one challenge can
+            // be pending per caller, so the pair is unambiguous, and it is the
+            // durable identity a future "always allow" would key on.
+            //
+            // Desktop UI only: it must never be listed in noAuthMethods or
+            // limitedScopeMethods, so authorization admits full scope alone.
+            message ApproveChallenge {
+                message Request {
+                    // both taken verbatim from the ClientInfo of the
+                    // LinkApprovalRequest event being answered; either may be empty
+                    string processPath = 1;
+                    string origin = 2;
+                    bool allow = 3;
+                    // the user's grant decision, persisted verbatim into the
+                    // app link on solve. Required when allow is true and the
+                    // challenge scope is JsonAPI, forbidden otherwise —
+                    // BAD_INPUT either way around. Ignored when allow is
+                    // false.
+                    model.Account.Auth.AppGrant grant = 4;
+                }
+
+                message Response {
+                    Error error = 1;
+                    string challenge = 2; // the 4-digit code; empty when allow is false
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+
+                            ACCOUNT_IS_NOT_RUNNING = 101;
+                            // nothing pending for this caller: never requested,
+                            // already decided, or expired
+                            NO_PENDING_CHALLENGE = 102;
                         }
                     }
                 }
@@ -1443,6 +1519,30 @@ message Rpc {
                             NULL = 0;
                             UNKNOWN_ERROR = 1;
                             BAD_INPUT = 2;
+
+                            ACCOUNT_IS_NOT_RUNNING = 101;
+                        }
+                    }
+                }
+            }
+            message UpdateApp {
+                message Request {
+                    string appHash = 1;
+                    model.Account.Auth.AppGrant grant = 2; // the new grant; unset clears the scoping (widen-requires-re-consent is the caller's contract)
+                }
+
+                message Response {
+                    Error error = 1;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                            NOT_FOUND = 3;
 
                             ACCOUNT_IS_NOT_RUNNING = 101;
                         }
@@ -2529,6 +2629,9 @@ message Rpc {
                 int32 limit = 5;
                 // keys to return in records; empty = all
                 repeated string keys = 6;
+                // Optional allowlist applied before querying stores. Empty
+                // means all user spaces; callers with no access must not query.
+                repeated string spaceIds = 7;
             }
 
             message Response {
@@ -3316,6 +3419,7 @@ message Rpc {
                 string path = 2;
                 int32 succeed = 4;
                 ResponseEvent event = 3;
+                anytype.model.ExportReport report = 5;
 
                 message Error {
                     Code code = 1;
@@ -3345,6 +3449,7 @@ message Rpc {
                 Error error = 1;
                 string result = 2;
                 ResponseEvent event = 3;
+                anytype.model.ExportReport report = 4;
 
                 message Error {
                     Code code = 1;
@@ -3380,6 +3485,16 @@ message Rpc {
                 bool noProgress = 12;
                 bool isMigration = 13;
                 bool isNewSpace = 15;
+                // optional BYOK LLM enrichment of the imported structure (importv2);
+                // absent = feature off, import runs with built-in rules only
+                AIParams aiParams = 16;
+
+                message AIParams {
+                    // OpenAI-compatible provider; feature is off when endpoint and model are empty
+                    AI.ProviderConfig config = 1;
+                    // allow sample property values and page titles in the analysis prompt (default: schema only)
+                    bool includeContentSamples = 2;
+                }
 
                 message NotionParams {
                     string apiKey = 1;
@@ -3518,6 +3633,72 @@ message Rpc {
                     Html = 2;
                     Txt = 3;
                 };
+            }
+        }
+
+        // ImportRunStatus reports one importv2 run by its durable importId
+        // (returned nowhere yet client-side; discover via ImportRunList).
+        // Live runs are served from the running engine's surface; dormant
+        // runs — a crashed process's dir awaiting the sweep, a suspended
+        // run — are served from the manifest and the ledger alone, which is
+        // what makes the poll restart-proof (a server-side
+        // operator polls job state instead of holding a session stream open
+        // across sidecar restarts).
+        message ImportRunStatus {
+            message Request {
+                string importId = 1;
+            }
+
+            // Run pairs the statistic payload with the durable lifecycle
+            // state and liveness.
+            message Run {
+                anytype.Event.Import.Statistic status = 1;
+                // the manifest lifecycle state (running | fetched |
+                // materializing | suspended | compensating | completed |
+                // failed)
+                string manifestState = 2;
+                // an engine in this process is running it right now
+                bool live = 3;
+            }
+
+            message Response {
+                Error error = 1;
+                Run run = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        NOT_FOUND = 3;
+                    }
+                }
+            }
+        }
+
+        // ImportRunList enumerates every known importv2 run — live ones and
+        // dormant run dirs. A sibling RPC rather than an empty-id overload
+        // of ImportRunStatus by design.
+        message ImportRunList {
+            message Request {}
+
+            message Response {
+                Error error = 1;
+                repeated Rpc.Object.ImportRunStatus.Run runs = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
             }
         }
 
@@ -4976,6 +5157,59 @@ message Rpc {
                         // ...
                     }
                 }
+            }
+        }
+
+        // ListModels validates a provider config (base URL + token) and
+        // returns the models it offers. A successful response already proves
+        // the endpoint is reachable and the token works, so there is no
+        // separate "validate" RPC: the model list IS the validation result,
+        // and the Error codes below (ENDPOINT_NOT_REACHABLE, AUTH_REQUIRED,
+        // ...) tell the caller what to fix.
+        //
+        // config.model is ignored: at this point the caller does not know
+        // which model to use yet.
+        message ListModels {
+            message Request {
+                ProviderConfig config = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated Model models = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        RATE_LIMIT_EXCEEDED = 100;
+                        ENDPOINT_NOT_REACHABLE = 101;
+                        MODEL_NOT_FOUND = 102;
+                        AUTH_REQUIRED = 103;
+                        // ...
+                    }
+                }
+            }
+
+            // Model is one catalog entry, trimmed to what a client-side model
+            // picker needs: an id to send back as ProviderConfig.model, plus
+            // whatever attribution the provider gives alongside it.
+            //
+            // For OPENAI the list is pre-filtered to models usable for chat
+            // completions (see FilterChatModels in core/ai/llmclient). For
+            // every other provider it is returned as-is: OLLAMA, LMSTUDIO and
+            // LLAMACPP only ever list what the user chose to pull/load onto
+            // that server, so there is nothing irrelevant to filter out, and
+            // no capability field to filter by even if there were (see
+            // FilterChatModels' doc comment for the evidence).
+            message Model {
+                string id = 1;
+                string ownedBy = 2;
             }
         }
 
@@ -9306,6 +9540,7 @@ message Rpc {
                 repeated model.ChatMessage messages = 2;
                 model.ChatState chatState = 3;
                 int32 messageCount = 4;  // Total number of non-deleted messages in the chat
+                int32 lifetimeMessageCount = 5;  // Total number of messages added since the chat was created, including deleted messages
                 message Error {
                     Code code = 1;
                     string description = 2;

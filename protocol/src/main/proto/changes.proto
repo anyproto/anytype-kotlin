@@ -21,6 +21,14 @@ message Change {
     uint32 version = 8;
     // business-level type of change applied to object
     uint32 changeType = 9;
+    // integrationName is the RAW app name of the paired API key that
+    // authored this change — exactly as the app link recorded it, never
+    // normalized (normalization is many-to-one and lossy; the DELETE
+    // ownership rule compares this value exactly). Stamped by heart from
+    // the authenticated session — never accepted from a request. Bounded
+    // at key issuance (domain.MaxIntegrationNameLen). Empty for changes
+    // not authored through an API key.
+    string integrationName = 10;
 
     message Snapshot {
         // logId -> lastChangeId
@@ -188,6 +196,9 @@ message ChangeNoSnapshot {
     uint32 version = 8;
     // business-level type of change applied to object
     uint32 changeType = 9;
+    // integrationName mirrors Change.integrationName (the two messages share
+    // wire numbers by design; 1/2/5 are historical — do not reuse).
+    string integrationName = 10;
 }
 
 message StoreChange {

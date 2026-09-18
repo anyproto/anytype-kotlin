@@ -10,6 +10,8 @@ import android.view.InputDevice
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
+import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.EditText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.AbstractComposeView
@@ -372,6 +374,129 @@ class DataviewScrollHostTest {
         }
         assertTrue(host.coordinator.offset > held, "offset ${host.coordinator.offset} <= $held")
         assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_CANCEL), owner.actions)
+    }
+
+    @Test fun `controls row background collapses under a vertical drag`() {
+        layout()
+        pointer(MotionEvent.ACTION_DOWN, 260f, 0)
+        pointer(MotionEvent.ACTION_MOVE, 190f, 16)
+        pointer(MotionEvent.ACTION_MOVE, 120f, 32)
+        assertEquals(140f - slop, host.coordinator.offset)
+        pointer(MotionEvent.ACTION_UP, 120f, 48)
+    }
+
+    @Test fun `button in the controls row keeps a tap and yields a vertical drag`() {
+        // A click is posted, so the host must be attached for it to run.
+        val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
+        activity.setContentView(host)
+        var clicks = 0
+        val button = Recorder(context).apply {
+            isClickable = true
+            setOnClickListener { clicks++ }
+        }
+        host.removeViewAt(1)
+        host.addView(LinearLayout(context).apply { addView(button, LinearLayout.LayoutParams(200, 40)) }, 1, ViewGroup.LayoutParams(-1, 40))
+        layout()
+        pointer(MotionEvent.ACTION_DOWN, 260f, 0)
+        pointer(MotionEvent.ACTION_UP, 260f, 16)
+        shadowOf(Looper.getMainLooper()).idle()
+        assertEquals(1, clicks)
+        assertEquals(0f, host.coordinator.offset)
+
+        layout()
+        pointer(MotionEvent.ACTION_DOWN, 260f, 100)
+        pointer(MotionEvent.ACTION_MOVE, 190f, 116)
+        pointer(MotionEvent.ACTION_MOVE, 120f, 132)
+        pointer(MotionEvent.ACTION_UP, 120f, 148)
+        shadowOf(Looper.getMainLooper()).idle()
+        assertEquals(1, clicks)
+        assertEquals(140f - slop, host.coordinator.offset)
+        assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_UP, MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_CANCEL), button.actions)
+    }
+
+    @Test fun `viewer chrome that scrolls only horizontally yields a vertical drag while rows keep theirs`() {
+        val columns = recordingRecycler(LinearLayoutManager(context, RecyclerView.HORIZONTAL, false), itemWidth = 100, itemHeight = 60)
+        val rows = recordingRecycler(LinearLayoutManager(context), itemWidth = -1, itemHeight = 48)
+        val table = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            addView(columns, LinearLayout.LayoutParams(800, 60))
+            addView(rows, LinearLayout.LayoutParams(800, -1))
+        }
+        (host.getChildAt(2) as FrameLayout).addView(HorizontalScrollView(context).apply { addView(table) }, ViewGroup.LayoutParams(-1, -1))
+        layout()
+        // The column header row sits at the top of the viewport and cannot scroll vertically.
+        pointer(MotionEvent.ACTION_DOWN, 314f, 0)
+        pointer(MotionEvent.ACTION_MOVE, 244f, 16)
+        pointer(MotionEvent.ACTION_MOVE, 174f, 32)
+        pointer(MotionEvent.ACTION_UP, 174f, 48)
+        assertEquals(140f - slop, host.coordinator.offset)
+        assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_CANCEL), columns.actions)
+
+        // The rows below are a nested scroll target: they keep the stream and feed the host.
+        host.coordinator.restoreProgress(0f)
+        layout()
+        pointer(MotionEvent.ACTION_DOWN, 500f, 100)
+        pointer(MotionEvent.ACTION_MOVE, 430f, 116)
+        pointer(MotionEvent.ACTION_MOVE, 360f, 132)
+        assertTrue(host.coordinator.offset > 0f)
+        assertFalse(rows.actions.contains(MotionEvent.ACTION_CANCEL))
+        pointer(MotionEvent.ACTION_UP, 360f, 148)
+    }
+
+    @Test fun `board surface keeps a vertical drag at every point`() {
+        val board = Recorder(context, consumes = true)
+        (host.getChildAt(2) as FrameLayout).addView(board, ViewGroup.LayoutParams(-1, -1))
+        host.excludeNestedScrollTarget = board
+        host.setStableViewportChild(board)
+        layout()
+        pointer(MotionEvent.ACTION_DOWN, 400f, 0)
+        pointer(MotionEvent.ACTION_MOVE, 330f, 16)
+        pointer(MotionEvent.ACTION_MOVE, 260f, 32)
+        pointer(MotionEvent.ACTION_UP, 260f, 48)
+        assertEquals(0f, host.coordinator.offset)
+        assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP), board.actions)
+    }
+
+    @Test fun `native vertical scroller in the viewer keeps its drag`() {
+        val scroller = ScrollView(context).apply { addView(View(context).apply { minimumHeight = 2000 }) }
+        (host.getChildAt(2) as FrameLayout).addView(scroller, ViewGroup.LayoutParams(-1, -1))
+        layout()
+        pointer(MotionEvent.ACTION_DOWN, 400f, 0)
+        pointer(MotionEvent.ACTION_MOVE, 330f, 16)
+        pointer(MotionEvent.ACTION_MOVE, 260f, 32)
+        pointer(MotionEvent.ACTION_UP, 260f, 48)
+        assertEquals(0f, host.coordinator.offset)
+        assertTrue(scroller.scrollY > 0)
+    }
+
+    private fun recordingRecycler(manager: LinearLayoutManager, itemWidth: Int, itemHeight: Int): RecordingRecycler =
+        RecordingRecycler(context).apply {
+            layoutManager = manager
+            adapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                override fun getItemCount() = 100
+                override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+                    object : RecyclerView.ViewHolder(View(context).apply {
+                        layoutParams = RecyclerView.LayoutParams(itemWidth, itemHeight)
+                    }) {}
+                override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) = Unit
+            }
+        }
+
+    private class RecordingRecycler(context: Context) : RecyclerView(context) {
+        val actions = mutableListOf<Int>()
+        override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+            actions.add(event.actionMasked)
+            return super.dispatchTouchEvent(event)
+        }
+    }
+
+    /** A native child that records its stream; [consumes] models a surface that owns every event. */
+    private class Recorder(context: Context, private val consumes: Boolean = false) : View(context) {
+        val actions = mutableListOf<Int>()
+        override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+            actions.add(event.actionMasked)
+            return super.dispatchTouchEvent(event) || consumes
+        }
     }
 
     private val slop: Float get() = ViewConfiguration.get(context).scaledTouchSlop.toFloat()

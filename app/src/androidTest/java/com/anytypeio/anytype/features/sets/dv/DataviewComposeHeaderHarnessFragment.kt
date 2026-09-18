@@ -3,11 +3,15 @@ package com.anytypeio.anytype.features.sets.dv
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.HorizontalScrollView
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
@@ -45,53 +49,68 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.widgets.dv.scroll.DataviewScrollHost
 
 /**
- * Backend-free fixture of the type screen's shape: a Compose object header above pinned
- * controls and native rows, inside the production host. The header is sized after the first
- * layout so that the rows keep only a thin strip, the geometry a phone shows in landscape.
- * Each header region records its bounds, the container records the pointer stream it
- * receives, and the host records every request to keep a gesture, so a test can tell
- * whether the host claimed a drag or left it to Compose.
+ * Backend-free fixture of the type screen's shape inside the production host: a Compose
+ * object header, the native pinned controls row (view selector, filter icon, New button)
+ * and the grid's chrome (a horizontally scrolling column header row above native rows).
+ * The header is sized after the first layout so that the rows keep only a thin strip,
+ * the geometry a phone shows in landscape. Every region records its bounds or is exposed
+ * as a view, each of the three children records the pointer stream it receives, and the
+ * host records every request to keep a gesture, so a test can tell whether the host
+ * claimed a drag or left it to the child under the finger.
  */
 class DataviewComposeHeaderHarnessFragment : Fragment() {
     lateinit var host: DataviewScrollHost
         private set
     lateinit var composeView: ComposeView
         private set
+    lateinit var viewSelector: TextView
+        private set
+    lateinit var filterIcon: View
+        private set
+    lateinit var controlsSpacer: View
+        private set
+    lateinit var newButton: TextView
+        private set
+    lateinit var horizontalScroll: HorizontalScrollView
+        private set
+    lateinit var columns: RecyclerView
+        private set
     lateinit var rows: RecyclerView
         private set
     val regionBounds = mutableMapOf<String, Rect>()
     val headerActions = mutableListOf<Int>()
+    val controlsActions = mutableListOf<Int>()
+    val viewportActions = mutableListOf<Int>()
     /** Every event the host received: action, y in the host, and the offset once handled. */
     val hostEvents = mutableListOf<Triple<Int, Float, Float>>()
     var disallowRequests = 0
         private set
     var chipClicks = 0
         private set
+    var selectorClicks = 0
+        private set
+    var filterClicks = 0
+        private set
+    var newClicks = 0
+        private set
+    var columnClicks = 0
+        private set
     var chipScroll: ScrollState? = null
         private set
     var listState: LazyListState? = null
         private set
     val rowsStripPx: Int get() = px(ROWS_STRIP_DP)
+    /** The column header row and its divider, which the viewport shows above the rows. */
+    val viewportChromePx: Int get() = px(COLUMN_ROW_DP) + px(1)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val context = requireContext()
-        rows = RecyclerView(context).apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = FixtureAdapter(context)
-        }
         composeView = ComposeView(context).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         }
-        val header = object : FrameLayout(context) {
-            override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-                headerActions.add(event.actionMasked)
-                return super.dispatchTouchEvent(event)
-            }
-        }.apply { addView(composeView, ViewGroup.LayoutParams(-1, -1)) }
-        val controls = TextView(context).apply {
-            text = "Pinned dataview controls"
-            setBackgroundColor(Color.WHITE)
-        }
+        val header = Recording(context, headerActions).apply { addView(composeView, ViewGroup.LayoutParams(-1, -1)) }
+        val controls = Recording(context, controlsActions).apply { addView(buildControls(context)) }
+        val viewport = Recording(context, viewportActions).apply { addView(buildGrid(context), ViewGroup.LayoutParams(-1, -1)) }
         host = object : DataviewScrollHost(context) {
             override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
                 if (disallowIntercept) disallowRequests++
@@ -105,14 +124,77 @@ class DataviewComposeHeaderHarnessFragment : Fragment() {
             // The type screen keeps its toolbar outside the host, so nothing is pinned.
             pinHeight = 0
             addView(header, ViewGroup.LayoutParams(-1, px(240)))
-            addView(controls, ViewGroup.LayoutParams(-1, px(48)))
-            addView(FrameLayout(context).apply { addView(rows, ViewGroup.LayoutParams(-1, -1)) }, ViewGroup.LayoutParams(-1, -1))
+            addView(controls, ViewGroup.LayoutParams(-1, ViewGroup.LayoutParams.WRAP_CONTENT))
+            addView(viewport, ViewGroup.LayoutParams(-1, -1))
         }
         host.doOnLayout {
-            header.layoutParams = header.layoutParams.apply { height = host.height - px(48) - rowsStripPx }
+            header.layoutParams = header.layoutParams.apply {
+                height = host.height - controls.height - viewportChromePx - rowsStripPx
+            }
             host.invalidateGeometry()
         }
         return host
+    }
+
+    /** The pinned row: view selector, filter icon, empty background, New button, divider. */
+    private fun buildControls(context: Context): View {
+        viewSelector = TextView(context).apply {
+            text = "All objects"
+            gravity = Gravity.CENTER_VERTICAL
+            setPadding(px(20), 0, px(8), 0)
+            setOnClickListener { selectorClicks++ }
+        }
+        filterIcon = View(context).apply {
+            setBackgroundColor(Color.DKGRAY)
+            setOnClickListener { filterClicks++ }
+        }
+        controlsSpacer = View(context)
+        newButton = TextView(context).apply {
+            text = "New"
+            gravity = Gravity.CENTER
+            setBackgroundColor(Color.LTGRAY)
+            setOnClickListener { newClicks++ }
+        }
+        val row = LinearLayout(context).apply {
+            orientation = LinearLayout.HORIZONTAL
+            addView(viewSelector, LinearLayout.LayoutParams(-2, -1))
+            addView(filterIcon, LinearLayout.LayoutParams(px(24), px(24)).apply { gravity = Gravity.CENTER_VERTICAL })
+            addView(controlsSpacer, LinearLayout.LayoutParams(0, -1, 1f))
+            addView(newButton, LinearLayout.LayoutParams(px(64), px(28)).apply {
+                gravity = Gravity.CENTER_VERTICAL
+                marginEnd = px(20)
+            })
+        }
+        return LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setBackgroundColor(Color.WHITE)
+            addView(row, LinearLayout.LayoutParams(-1, px(CONTROLS_ROW_DP)))
+            addView(View(context).apply { setBackgroundColor(Color.GRAY) }, LinearLayout.LayoutParams(-1, px(1)))
+        }
+    }
+
+    /** The grid's chrome as production nests it: a horizontal scroller over columns and rows. */
+    private fun buildGrid(context: Context): View {
+        columns = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+            adapter = ColumnAdapter(context)
+        }
+        rows = RecyclerView(context).apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = RowAdapter(context)
+        }
+        val tableWidth = px(COLUMN_WIDTH_DP) * COLUMN_COUNT
+        val table = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            addView(columns, LinearLayout.LayoutParams(tableWidth, px(COLUMN_ROW_DP)))
+            addView(View(context).apply { setBackgroundColor(Color.GRAY) }, LinearLayout.LayoutParams(tableWidth, px(1)))
+            addView(rows, LinearLayout.LayoutParams(tableWidth, -1))
+        }
+        horizontalScroll = HorizontalScrollView(context).apply {
+            isFillViewport = true
+            addView(RelativeLayout(context).apply { addView(table, ViewGroup.LayoutParams(tableWidth, -1)) })
+        }
+        return horizontalScroll
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -146,12 +228,12 @@ class DataviewComposeHeaderHarnessFragment : Fragment() {
                     ) { Text("Chip $index") }
                 }
             }
-            LazyColumn(state = list, modifier = Modifier.region(LIST).fillMaxWidth().height(96.dp)) {
+            LazyColumn(state = list, modifier = Modifier.region(LIST).fillMaxWidth().height(72.dp)) {
                 items((0 until 60).toList(), key = { it }) { index ->
                     Text("Line $index", Modifier.height(24.dp).fillMaxWidth())
                 }
             }
-            SelectionContainer(Modifier.region(SELECTABLE).fillMaxWidth().height(40.dp)) {
+            SelectionContainer(Modifier.region(SELECTABLE).fillMaxWidth().height(32.dp)) {
                 Text("Selectable header text that a long press selects")
             }
             Spacer(Modifier.weight(1f).fillMaxWidth())
@@ -163,20 +245,44 @@ class DataviewComposeHeaderHarnessFragment : Fragment() {
 
     private fun px(dp: Int): Int = (dp * resources.displayMetrics.density).toInt()
 
-    private class FixtureAdapter(private val context: Context) : RecyclerView.Adapter<FixtureHolder>() {
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = FixtureHolder(TextView(context).apply {
-            layoutParams = RecyclerView.LayoutParams(-1, (56 * context.resources.displayMetrics.density).toInt())
+    /** A wrapper that records the pointer stream its child receives. */
+    private class Recording(context: Context, private val actions: MutableList<Int>) : FrameLayout(context) {
+        override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+            actions.add(event.actionMasked)
+            return super.dispatchTouchEvent(event)
+        }
+    }
+
+    private inner class ColumnAdapter(private val context: Context) : RecyclerView.Adapter<Holder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = Holder(TextView(context).apply {
+            layoutParams = RecyclerView.LayoutParams(px(COLUMN_WIDTH_DP), px(COLUMN_ROW_DP))
+            gravity = Gravity.CENTER_VERTICAL
+            setOnClickListener { columnClicks++ }
         })
-        override fun onBindViewHolder(holder: FixtureHolder, position: Int) {
+        override fun onBindViewHolder(holder: Holder, position: Int) {
+            holder.text.text = "Column $position"
+        }
+        override fun getItemCount(): Int = COLUMN_COUNT
+    }
+
+    private inner class RowAdapter(private val context: Context) : RecyclerView.Adapter<Holder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = Holder(TextView(context).apply {
+            layoutParams = RecyclerView.LayoutParams(-1, px(56))
+        })
+        override fun onBindViewHolder(holder: Holder, position: Int) {
             holder.text.text = "Native record $position"
         }
         override fun getItemCount(): Int = 200
     }
 
-    private class FixtureHolder(val text: TextView) : RecyclerView.ViewHolder(text)
+    private class Holder(val text: TextView) : RecyclerView.ViewHolder(text)
 
     companion object {
         const val ROWS_STRIP_DP = 17
+        const val CONTROLS_ROW_DP = 48
+        const val COLUMN_ROW_DP = 40
+        const val COLUMN_WIDTH_DP = 120
+        const val COLUMN_COUNT = 8
         const val BACKGROUND = "background"
         const val CHIP = "chip"
         const val LIST = "list"

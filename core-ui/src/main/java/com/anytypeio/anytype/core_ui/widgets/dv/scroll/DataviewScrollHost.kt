@@ -26,7 +26,8 @@ import kotlin.math.roundToInt
  * The fixed toolbar and bottom controls belong to the enclosing screen. Header measurements
  * are reused during scrolling; only the real viewer viewport changes size.
  *
- * A vertical drag on the header collapses and expands it, as it does on an AppBarLayout.
+ * A vertical drag on the header, on the pinned controls or on viewer chrome that cannot
+ * scroll vertically collapses and expands the header, as it does on an AppBarLayout.
  * Children see every pointer event first. The host claims the drag only after the child
  * under the finger has received the move that crossed slop without asking to keep the
  * gesture through [requestDisallowInterceptTouchEvent]. RecyclerView asks once it drags,
@@ -477,17 +478,38 @@ open class DataviewScrollHost @JvmOverloads constructor(
         if (childCount != 3 || y < paddingTop + pinHeight) return false
         val surface = when {
             y < controlsTop -> getChildAt(0)
-            y >= viewportTop && !hasScrollSurface(getChildAt(2)) -> getChildAt(2)
-            else -> return false
+            y < viewportTop -> getChildAt(1)
+            else -> getChildAt(2)
         }
-        return !interactiveAt(surface, x - surface.left, y - surface.top)
+        val localX = x - surface.left
+        val localY = y - surface.top
+        // The object header keeps its editable text and native controls to itself. The
+        // controls row and the viewer's chrome behave like an app bar: only something that
+        // owns vertical travel under the finger keeps a vertical drag, a button does not.
+        return if (surface === getChildAt(0)) !interactiveAt(surface, localX, localY)
+            else !verticalScrollSurfaceAt(surface, localX, localY)
     }
 
-    private fun hasScrollSurface(view: View): Boolean {
-        if (view.visibility != VISIBLE) return false
+    /**
+     * Whether something under the point owns vertical travel: the board at every point,
+     * a nested scroll target, or any native view that can scroll vertically. A Compose
+     * owner arbitrates its own content and asks to keep a gesture only once a handler
+     * consumes movement, so it counts as background here.
+     */
+    private fun verticalScrollSurfaceAt(view: View, x: Float, y: Float): Boolean {
+        if (view.visibility != VISIBLE || x < 0 || y < 0 || x >= view.width || y >= view.height) return false
         if (view === excludeNestedScrollTarget || eligibleNestedScrollTarget(view)) return true
-        if (view is ViewGroup) for (index in 0 until view.childCount) {
-            if (hasScrollSurface(view.getChildAt(index))) return true
+        if (view is AbstractComposeView) return false
+        if (view is RecyclerView) {
+            if (view.layoutManager?.canScrollVertically() == true) return true
+        } else if (view.canScrollVertically(1) || view.canScrollVertically(-1)) {
+            return true
+        }
+        if (view is ViewGroup) {
+            for (index in view.childCount - 1 downTo 0) {
+                val child = view.getChildAt(index)
+                if (verticalScrollSurfaceAt(child, x - child.left + view.scrollX, y - child.top + view.scrollY)) return true
+            }
         }
         return false
     }

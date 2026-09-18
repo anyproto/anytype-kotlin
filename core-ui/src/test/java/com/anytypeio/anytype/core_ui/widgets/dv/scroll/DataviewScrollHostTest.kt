@@ -4,12 +4,17 @@ import android.content.Context
 import android.app.Activity
 import android.os.Looper
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
 import android.view.InputDevice
 import android.view.MotionEvent
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
+import android.widget.LinearLayout
+import android.widget.ScrollView
 import android.widget.EditText
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +26,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.Robolectric
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowSystemClock
+import java.time.Duration
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -274,19 +281,267 @@ class DataviewScrollHostTest {
         assertEquals(0f, host.coordinator.offset)
     }
 
-    @Test fun `wrapped Compose header is opaque to native background interception`() {
-        layout()
-        val compose = ComposeView(context)
-        val container = FrameLayout(context).apply { addView(compose) }
+    @Test fun `Compose header background collapses under a vertical drag`() {
+        val container = UnmeasuredSlot(context).apply { addView(ComposeView(context)) }
         host.removeViewAt(0)
         host.addView(container, 0, ViewGroup.LayoutParams(-1, 244))
-        // Only native hit testing is under test; no Compose runtime is needed to know
-        // that this owner may contain clickable controls and editable text.
-        container.layout(0, 0, 400, 244)
-        compose.layout(0, 0, 400, 244)
-        for ((action, y) in listOf(MotionEvent.ACTION_DOWN to 200f, MotionEvent.ACTION_MOVE to 100f)) {
-            val event = MotionEvent.obtain(0, 16, action, 100f, y, 0)
-            try { assertFalse(host.onInterceptTouchEvent(event)) } finally { event.recycle() }
+        layout()
+        // An uncomposed owner hits no pointer input node, so it declines the down like a
+        // plain background. The drag must then belong to the host, not to the activity.
+        pointer(MotionEvent.ACTION_DOWN, 200f, 0)
+        pointer(MotionEvent.ACTION_MOVE, 120f, 16)
+        pointer(MotionEvent.ACTION_MOVE, 60f, 32)
+        assertEquals(140f - slop, host.coordinator.offset)
+        pointer(MotionEvent.ACTION_UP, 60f, 48)
+    }
+
+    @Test fun `Compose pointer target that never claims the gesture yields a vertical drag`() {
+        val owner = composeOwner(hitsPointerInput = true)
+        pointer(MotionEvent.ACTION_DOWN, 200f, 0)
+        assertEquals(listOf(MotionEvent.ACTION_DOWN), owner.actions)
+        pointer(MotionEvent.ACTION_MOVE, 120f, 16)
+        // The owner saw the move first and did not ask to keep the gesture: the host
+        // claims it in the same event, cancels the owner, and travels past slop at once.
+        assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_CANCEL), owner.actions)
+        assertEquals(80f - slop, host.coordinator.offset)
+        pointer(MotionEvent.ACTION_MOVE, 60f, 32)
+        assertEquals(140f - slop, host.coordinator.offset)
+        pointer(MotionEvent.ACTION_UP, 60f, 48)
+        assertEquals(3, owner.actions.size)
+    }
+
+    @Test fun `Compose owner that consumes movement keeps its gesture`() {
+        val owner = composeOwner(hitsPointerInput = true).apply { consumesMovement = true }
+        pointer(MotionEvent.ACTION_DOWN, 200f, 0)
+        pointer(MotionEvent.ACTION_MOVE, 120f, 16)
+        pointer(MotionEvent.ACTION_MOVE, 60f, 32)
+        pointer(MotionEvent.ACTION_UP, 60f, 48)
+        assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP), owner.actions)
+        assertEquals(0f, host.coordinator.offset)
+    }
+
+    @Test fun `Compose pointer target keeps a horizontal drag`() {
+        val owner = composeOwner(hitsPointerInput = true)
+        pointer(MotionEvent.ACTION_DOWN, 200f, 0, x = 100f)
+        pointer(MotionEvent.ACTION_MOVE, 205f, 16, x = 200f)
+        pointer(MotionEvent.ACTION_MOVE, 150f, 32, x = 300f)
+        pointer(MotionEvent.ACTION_UP, 150f, 48, x = 300f)
+        assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP), owner.actions)
+        assertEquals(0f, host.coordinator.offset)
+    }
+
+    @Test fun `Compose owner entering editing on down keeps its remaining pointer stream`() {
+        val owner = composeOwner(hitsPointerInput = true).apply {
+            onDown = { host.coordinator.setBlocked(MotionOrigin.Editing, true) }
+        }
+        pointer(MotionEvent.ACTION_DOWN, 200f, 0)
+        pointer(MotionEvent.ACTION_MOVE, 120f, 16)
+        pointer(MotionEvent.ACTION_UP, 120f, 32)
+        assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP), owner.actions)
+        assertEquals(0f, host.coordinator.offset)
+    }
+
+    @Test fun `frames drawn during a header drag keep the drag alive`() {
+        val owner = composeOwner(hitsPointerInput = true)
+        pointer(MotionEvent.ACTION_DOWN, 200f, 0)
+        pointer(MotionEvent.ACTION_MOVE, 130f, 16)
+        assertEquals(70f - slop, host.coordinator.offset)
+        // Every frame calls computeScroll while the finger is still down and no fling runs.
+        host.computeScroll()
+        pointer(MotionEvent.ACTION_MOVE, 60f, 32)
+        host.computeScroll()
+        pointer(MotionEvent.ACTION_MOVE, -10f, 48)
+        assertEquals(210f - slop, host.coordinator.offset)
+        assertFalse(host.coordinator.isIdle)
+        pointer(MotionEvent.ACTION_UP, -10f, 64)
+        assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_CANCEL), owner.actions)
+    }
+
+    @Test fun `header release flings with the velocity of the whole pointer stream`() {
+        val owner = composeOwner(hitsPointerInput = true)
+        pointer(MotionEvent.ACTION_DOWN, 200f, 0)
+        pointer(MotionEvent.ACTION_MOVE, 180f, 8)
+        pointer(MotionEvent.ACTION_MOVE, 160f, 16)
+        val held = host.coordinator.offset
+        pointer(MotionEvent.ACTION_UP, 160f, 24)
+        assertEquals(40f - slop, held)
+        // The owner held the first move, so only the down and two moves carried velocity.
+        // The release must still fling with the travel of the whole stream.
+        repeat(20) {
+            ShadowSystemClock.advanceBy(Duration.ofMillis(16))
+            host.computeScroll()
+            layout()
+        }
+        assertTrue(host.coordinator.offset > held, "offset ${host.coordinator.offset} <= $held")
+        assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_CANCEL), owner.actions)
+    }
+
+    @Test fun `controls row background collapses under a vertical drag`() {
+        layout()
+        pointer(MotionEvent.ACTION_DOWN, 260f, 0)
+        pointer(MotionEvent.ACTION_MOVE, 190f, 16)
+        pointer(MotionEvent.ACTION_MOVE, 120f, 32)
+        assertEquals(140f - slop, host.coordinator.offset)
+        pointer(MotionEvent.ACTION_UP, 120f, 48)
+    }
+
+    @Test fun `button in the controls row keeps a tap and yields a vertical drag`() {
+        // A click is posted, so the host must be attached for it to run.
+        val activity = Robolectric.buildActivity(Activity::class.java).setup().get()
+        activity.setContentView(host)
+        var clicks = 0
+        val button = Recorder(context).apply {
+            isClickable = true
+            setOnClickListener { clicks++ }
+        }
+        host.removeViewAt(1)
+        host.addView(LinearLayout(context).apply { addView(button, LinearLayout.LayoutParams(200, 40)) }, 1, ViewGroup.LayoutParams(-1, 40))
+        layout()
+        pointer(MotionEvent.ACTION_DOWN, 260f, 0)
+        pointer(MotionEvent.ACTION_UP, 260f, 16)
+        shadowOf(Looper.getMainLooper()).idle()
+        assertEquals(1, clicks)
+        assertEquals(0f, host.coordinator.offset)
+
+        layout()
+        pointer(MotionEvent.ACTION_DOWN, 260f, 100)
+        pointer(MotionEvent.ACTION_MOVE, 190f, 116)
+        pointer(MotionEvent.ACTION_MOVE, 120f, 132)
+        pointer(MotionEvent.ACTION_UP, 120f, 148)
+        shadowOf(Looper.getMainLooper()).idle()
+        assertEquals(1, clicks)
+        assertEquals(140f - slop, host.coordinator.offset)
+        assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_UP, MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_CANCEL), button.actions)
+    }
+
+    @Test fun `viewer chrome that scrolls only horizontally yields a vertical drag while rows keep theirs`() {
+        val columns = recordingRecycler(LinearLayoutManager(context, RecyclerView.HORIZONTAL, false), itemWidth = 100, itemHeight = 60)
+        val rows = recordingRecycler(LinearLayoutManager(context), itemWidth = -1, itemHeight = 48)
+        val table = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            addView(columns, LinearLayout.LayoutParams(800, 60))
+            addView(rows, LinearLayout.LayoutParams(800, -1))
+        }
+        (host.getChildAt(2) as FrameLayout).addView(HorizontalScrollView(context).apply { addView(table) }, ViewGroup.LayoutParams(-1, -1))
+        layout()
+        // The column header row sits at the top of the viewport and cannot scroll vertically.
+        pointer(MotionEvent.ACTION_DOWN, 314f, 0)
+        pointer(MotionEvent.ACTION_MOVE, 244f, 16)
+        pointer(MotionEvent.ACTION_MOVE, 174f, 32)
+        pointer(MotionEvent.ACTION_UP, 174f, 48)
+        assertEquals(140f - slop, host.coordinator.offset)
+        assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_CANCEL), columns.actions)
+
+        // The rows below are a nested scroll target: they keep the stream and feed the host.
+        host.coordinator.restoreProgress(0f)
+        layout()
+        pointer(MotionEvent.ACTION_DOWN, 500f, 100)
+        pointer(MotionEvent.ACTION_MOVE, 430f, 116)
+        pointer(MotionEvent.ACTION_MOVE, 360f, 132)
+        assertTrue(host.coordinator.offset > 0f)
+        assertFalse(rows.actions.contains(MotionEvent.ACTION_CANCEL))
+        pointer(MotionEvent.ACTION_UP, 360f, 148)
+    }
+
+    @Test fun `board surface keeps a vertical drag at every point`() {
+        val board = Recorder(context, consumes = true)
+        (host.getChildAt(2) as FrameLayout).addView(board, ViewGroup.LayoutParams(-1, -1))
+        host.excludeNestedScrollTarget = board
+        host.setStableViewportChild(board)
+        layout()
+        pointer(MotionEvent.ACTION_DOWN, 400f, 0)
+        pointer(MotionEvent.ACTION_MOVE, 330f, 16)
+        pointer(MotionEvent.ACTION_MOVE, 260f, 32)
+        pointer(MotionEvent.ACTION_UP, 260f, 48)
+        assertEquals(0f, host.coordinator.offset)
+        assertEquals(listOf(MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_MOVE, MotionEvent.ACTION_UP), board.actions)
+    }
+
+    @Test fun `native vertical scroller in the viewer keeps its drag`() {
+        val scroller = ScrollView(context).apply { addView(View(context).apply { minimumHeight = 2000 }) }
+        (host.getChildAt(2) as FrameLayout).addView(scroller, ViewGroup.LayoutParams(-1, -1))
+        layout()
+        pointer(MotionEvent.ACTION_DOWN, 400f, 0)
+        pointer(MotionEvent.ACTION_MOVE, 330f, 16)
+        pointer(MotionEvent.ACTION_MOVE, 260f, 32)
+        pointer(MotionEvent.ACTION_UP, 260f, 48)
+        assertEquals(0f, host.coordinator.offset)
+        assertTrue(scroller.scrollY > 0)
+    }
+
+    private fun recordingRecycler(manager: LinearLayoutManager, itemWidth: Int, itemHeight: Int): RecordingRecycler =
+        RecordingRecycler(context).apply {
+            layoutManager = manager
+            adapter = object : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                override fun getItemCount() = 100
+                override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+                    object : RecyclerView.ViewHolder(View(context).apply {
+                        layoutParams = RecyclerView.LayoutParams(itemWidth, itemHeight)
+                    }) {}
+                override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) = Unit
+            }
+        }
+
+    private class RecordingRecycler(context: Context) : RecyclerView(context) {
+        val actions = mutableListOf<Int>()
+        override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+            actions.add(event.actionMasked)
+            return super.dispatchTouchEvent(event)
+        }
+    }
+
+    /** A native child that records its stream; [consumes] models a surface that owns every event. */
+    private class Recorder(context: Context, private val consumes: Boolean = false) : View(context) {
+        val actions = mutableListOf<Int>()
+        override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+            actions.add(event.actionMasked)
+            return super.dispatchTouchEvent(event) || consumes
+        }
+    }
+
+    private val slop: Float get() = ViewConfiguration.get(context).scaledTouchSlop.toFloat()
+
+    private fun pointer(action: Int, y: Float, time: Long, x: Float = 100f) {
+        val event = MotionEvent.obtain(0, time, action, x, y, 0).apply { source = InputDevice.SOURCE_TOUCHSCREEN }
+        try { host.dispatchTouchEvent(event) } finally { event.recycle() }
+        layout()
+    }
+
+    private fun composeOwner(hitsPointerInput: Boolean): ComposeOwnerStub {
+        val owner = ComposeOwnerStub(context, hitsPointerInput)
+        val container = UnmeasuredSlot(context).apply { addView(owner) }
+        host.removeViewAt(0)
+        host.addView(container, 0, ViewGroup.LayoutParams(-1, 244))
+        layout()
+        return owner
+    }
+
+    /** Lays its child out at its own size: measuring an unattached Compose owner would compose. */
+    private class UnmeasuredSlot(context: Context) : ViewGroup(context) {
+        override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) =
+            setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), MeasureSpec.getSize(heightMeasureSpec))
+        override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+            for (index in 0 until childCount) getChildAt(index).layout(0, 0, r - l, b - t)
+        }
+    }
+
+    /**
+     * Models AndroidComposeView's contract without a composition: the return value says
+     * whether a pointer input node was hit, and the parent is asked to stop intercepting
+     * only once a handler consumes movement, never on the down.
+     */
+    private class ComposeOwnerStub(context: Context, private val hitsPointerInput: Boolean) : AbstractComposeView(context) {
+        val actions = mutableListOf<Int>()
+        var consumesMovement = false
+        var onDown: () -> Unit = {}
+        @Composable override fun Content() = Unit
+        override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+            actions.add(event.actionMasked)
+            if (event.actionMasked == MotionEvent.ACTION_DOWN) onDown()
+            if (consumesMovement && event.actionMasked == MotionEvent.ACTION_MOVE) {
+                parent.requestDisallowInterceptTouchEvent(true)
+            }
+            return hitsPointerInput
         }
     }
 

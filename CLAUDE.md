@@ -126,6 +126,12 @@ ModalBottomSheet(
 )
 ```
 
+**A sheet must fit a short window.** A phone in landscape is about 411dp tall. Put
+`verticalScroll` on sheet content with rows that can be taller than that. For empty space under a
+list, call `ColumnScope.SheetBottomReserve(height)` from `core_ui/widgets/dv/ViewersWidget.kt`.
+Do not use a fixed bottom padding: it takes the space first, and the list shrinks to one row. Do
+not write a weighted `Spacer` with `heightIn(max = …)`: the `Spacer` then gets a zero height.
+
 ### Testing
 - Unit tests: Follow patterns in existing test directories
 - Use Robolectric for Android unit tests

@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchDefaults
@@ -85,7 +87,14 @@ fun ViewerLayoutWidget(
                 var currentCoordinates: Rect by remember {
                     mutableStateOf(Rect.Zero)
                 }
-                Box(modifier = Modifier.fillMaxWidth()) {
+                // A landscape phone is too short for every row, most of all with the Kanban
+                // rows. The scroll sits on the Box, not on the rows: the card size menu is
+                // placed at a fixed offset in this Box, so it moves together with its row.
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                ) {
                     ViewerLayoutContent(
                         modifier = Modifier
                             .fillMaxWidth()

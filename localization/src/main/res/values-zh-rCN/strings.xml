@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="dataview_expand_header">Expand object header</string>
-    <string name="dataview_collapse_header">Collapse object header</string>
+    <string name="dataview_expand_header">展开对象标题</string>
+    <string name="dataview_collapse_header">折叠对象标题</string>
     <string name="about">关于</string>
     <string name="app_version">应用版本</string>
     <string name="library">文库</string>
@@ -21,11 +21,11 @@
     <string name="experimental_features_compact_vault_description">隐藏库中已读频道的消息预览</string>
     <string name="experimental_features_kanban">看板面板</string>
     <string name="experimental_features_kanban_description">为集合和合集启用看板布局</string>
-    <string name="experimental_features_quick_capture">Quick capture</string>
+    <string name="experimental_features_quick_capture">快速记录</string>
     <string name="experimental_features_quick_capture_description">Pencil button on the vault for capturing a thought into any space</string>
     <string name="experimental_features_quick_capture_ai">Quick capture type suggestions</string>
     <string name="experimental_features_quick_capture_ai_description">On-device AI suggests the object type while you write. Requires a supported device</string>
-    <string name="quick_capture">Quick capture</string>
+    <string name="quick_capture">快速记录</string>
     <string name="quick_capture_created_in">%1$s created in %2$s</string>
     <string name="quick_capture_clear_draft">Clear draft</string>
     <string name="quick_capture_clear_draft_confirmation">Clear this draft? This cannot be undone.</string>
@@ -2292,10 +2292,10 @@
     <string name="search_v2_focus_person_header">Search objects created in Channels</string>
     <string name="search_v2_one_to_one_caption">1-1 Channel</string>
     <string name="search_v2_messages_tutorial_hint">Looking for a message?</string>
-    <string name="search_v2_messages_tutorial_button">Search messages</string>
+    <string name="search_v2_messages_tutorial_button">搜索消息</string>
     <string name="search_v2_create_channel">创建频道</string>
-    <string name="search_v2_could_not_open_object">Could not open object</string>
+    <string name="search_v2_could_not_open_object">无法打开对象</string>
     <string name="search_v2_recently_edited">最近编辑的文档</string>
-    <string name="search_v2_recently_created">Recently created</string>
-    <string name="search_v2_filter_by">Filter by %1$s</string>
+    <string name="search_v2_recently_created">最近创建</string>
+    <string name="search_v2_filter_by">按 %1$s 筛选</string>
 </resources>

@@ -3973,16 +3973,43 @@ message Rpc {
     }
 
     message ObjectType {
-        message Relation {
+        // Property keeps a type's property lists, its dataview relationLinks and
+        // its views consistent in one apply, so the client no longer has to do
+        // it lazily in three calls.
+        message Property {
             message Add {
                 message Request {
-                    string objectTypeUrl = 1;
-                    repeated string relationKeys = 2;
+                    // Which of the type's recommended lists the property joins.
+                    // The fourth list, recommendedFileRelations, is absent by
+                    // design: it is derived from a fixed set of file-metadata
+                    // keys on the four file types, and a value written there is
+                    // overwritten the next time those types are revised.
+                    enum Section {
+                        Recommended = 0;
+                        Featured = 1;
+                        Hidden = 2;
+                        reserved 3; // was File
+                    }
+                    string objectTypeId = 1;
+                    // an existing property key; empty means "mint one" from name + format
+                    string key = 2;
+                    // required when key is empty
+                    string name = 3;
+                    // required when key is empty
+                    anytype.model.RelationFormat format = 4;
+                    Section section = 5;
+                    // the isVisible the new column gets in every view
+                    bool enableInViews = 6;
                 }
 
                 message Response {
                     Error error = 1;
-                    repeated anytype.model.Relation relations = 2;
+                    // the resolved-or-minted property key
+                    string key = 2;
+                    // the relation object's id
+                    string propertyId = 3;
+                    // the views that gained a column
+                    repeated string viewIds = 4;
 
                     message Error {
                         Code code = 1;
@@ -4000,12 +4027,14 @@ message Rpc {
             }
             message Remove {
                 message Request {
-                    string objectTypeUrl = 1;
-                    repeated string relationKeys = 2;
+                    string objectTypeId = 1;
+                    string key = 2;
                 }
 
                 message Response {
                     Error error = 1;
+                    // the views left untouched because they group, sort or filter by the property
+                    repeated string inUseViewIds = 2;
 
                     message Error {
                         Code code = 1;
@@ -4024,7 +4053,12 @@ message Rpc {
         }
 
         message Recommended {
+            // Deprecated: replaces the whole list and touches neither the
+            // dataview relationLinks nor the views, so a caller must do its own
+            // read-modify-write and the type is left half-consistent. Use
+            // ObjectTypePropertyAdd / ObjectTypePropertyRemove instead.
             message RelationsSet {
+                option deprecated = true;
                 message Request {
                     string typeObjectId = 1;
                     repeated string relationObjectIds = 2;
@@ -4048,7 +4082,12 @@ message Rpc {
                 }
             }
 
+            // Deprecated: replaces the whole list and touches neither the
+            // dataview relationLinks nor the views, so a caller must do its own
+            // read-modify-write and the type is left half-consistent. Use
+            // ObjectTypePropertyAdd / ObjectTypePropertyRemove instead.
             message FeaturedRelationsSet {
+                option deprecated = true;
                 message Request {
                     string typeObjectId = 1;
                     repeated string relationObjectIds = 2;

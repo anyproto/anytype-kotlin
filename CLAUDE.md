@@ -85,10 +85,10 @@ fills the window. `MainActivity` sets the width on the root view of a fragment w
 builds the view. Two screens share the container during a navigation, so a maximum width on the
 container changes the shape of the screen that the user still sees.
 
-Two screens are an exception, on a phone and on a tablet: the set screen and the type screen fill
-the whole window. These screens show a data view, and a Kanban board needs every pixel of the
-window. The editor keeps the capped column, because a full width line of text is hard to read.
-`contentColumnMaxWidth()` holds the rule.
+Three screens are an exception, on a phone and on a tablet: the set screen, the type screen, and
+the editor fill the whole window. The set screen and the type screen show a data view, and a Kanban
+board needs every pixel of the window. The editor uses the empty space for its text: a capped
+column leaves wide empty margins on a tablet. `contentColumnMaxWidth()` holds the rule.
 
 `MainActivity.setupContentColumnWidth()` also sets the backdrop. The widgets screen, the
 collection screen, the vault, and the chat show the wallpaper of the space through their content,

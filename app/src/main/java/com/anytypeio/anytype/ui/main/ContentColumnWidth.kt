@@ -12,12 +12,15 @@ const val NO_MAX_WIDTH = 0
  * The destinations that fill the whole window. The rule holds on a phone and on a tablet.
  *
  * The set screen and the type screen show a data view: a grid, a gallery, or a Kanban board. The
- * reader compares the columns of a board side by side, so the board needs the whole window. The
- * editor keeps the capped column, because a full width line of text is hard to read.
+ * reader compares the columns of a board side by side, so the board needs the whole window.
+ *
+ * The editor also fills the window. A capped column leaves wide empty margins beside the text on a
+ * tablet, and a wide tablet gets wider margins. The editor holds its text off the edges by itself.
  */
 private val FULL_WIDTH_DESTINATIONS = setOf(
     R.id.objectSetScreen,
-    R.id.objectTypeScreen
+    R.id.objectTypeScreen,
+    R.id.pageScreen
 )
 
 /**

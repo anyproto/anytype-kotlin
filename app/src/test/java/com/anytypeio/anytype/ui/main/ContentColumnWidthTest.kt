@@ -11,9 +11,9 @@ class ContentColumnWidthTest {
     private val capped = 1800
 
     @Test
-    fun `should cap the editor`() {
+    fun `should not cap the editor`() {
         assertEquals(
-            capped,
+            NO_MAX_WIDTH,
             contentColumnMaxWidth(
                 destinationId = R.id.pageScreen,
                 cappedWidthPx = capped

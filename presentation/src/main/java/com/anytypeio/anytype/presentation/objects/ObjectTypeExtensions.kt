@@ -15,7 +15,6 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
-import com.anytypeio.anytype.presentation.sets.shownBlockId
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 
 /**
@@ -87,13 +86,16 @@ fun canCreateObjectOfType(objectType: ObjectWrapper.Type?): Boolean {
     return createObjectLayouts.contains(objectType?.recommendedLayout)
 }
 
-fun ObjectState.DataView.isCreateObjectAllowed(objectType: ObjectWrapper.Type? = null): Boolean {
+fun ObjectState.DataView.isCreateObjectAllowed(
+    blockId: Id,
+    objectType: ObjectWrapper.Type? = null
+): Boolean {
     val dataViewRestrictions = dataViewRestrictions.firstOrNull()?.restrictions
     if (dataViewRestrictions?.contains(DataViewRestriction.CREATE_OBJECT) == true) {
         return false
     }
 
-    if (isCollection(shownBlockId)) {
+    if (isCollection(blockId)) {
         return true
     }
 

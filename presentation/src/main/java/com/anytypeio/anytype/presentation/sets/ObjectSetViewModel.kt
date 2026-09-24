@@ -1416,7 +1416,7 @@ class ObjectSetViewModel(
                     )
                     viewer.isEmpty() -> {
                         if (!missingGroupBy && isBoardAwaitingGroups(viewer)) return DataViewViewState.Init
-                        val isCreateObjectAllowed = objectState.isCreateObjectAllowed() && permission?.isOwnerOrEditor() == true
+                        val isCreateObjectAllowed = objectState.isCreateObjectAllowed(objectState.blockId) && permission?.isOwnerOrEditor() == true
                         DataViewViewState.Collection.NoItems(
                             title = viewer.title,
                             isCreateObjectAllowed = isCreateObjectAllowed,
@@ -1425,7 +1425,7 @@ class ObjectSetViewModel(
                         )
                     }
                     else -> {
-                        val isCreateObjectAllowed = objectState.isCreateObjectAllowed() && permission?.isOwnerOrEditor() == true
+                        val isCreateObjectAllowed = objectState.isCreateObjectAllowed(objectState.blockId) && permission?.isOwnerOrEditor() == true
                         DataViewViewState.Collection.Default(
                             viewer = viewer,
                             isCreateObjectAllowed = isCreateObjectAllowed,
@@ -1517,7 +1517,7 @@ class ObjectSetViewModel(
                         )
                         DataViewViewState.Set.NoItems(
                             title = render.title,
-                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType) && (permission?.isOwnerOrEditor() == true),
+                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(objectState.blockId, defType) && (permission?.isOwnerOrEditor() == true),
                             isEditingViewAllowed = permission?.isOwnerOrEditor() == true,
                             isBoardGroupByRequired = missingGroupBy
                         )
@@ -1528,7 +1528,7 @@ class ObjectSetViewModel(
                         )
                         DataViewViewState.Set.Default(
                             viewer = render,
-                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType) && (permission?.isOwnerOrEditor() == true),
+                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(objectState.blockId, defType) && (permission?.isOwnerOrEditor() == true),
                             isEditingViewAllowed = permission?.isOwnerOrEditor() == true
                         )
                     }
@@ -1606,7 +1606,7 @@ class ObjectSetViewModel(
                         )
                         DataViewViewState.TypeSet.NoItems(
                             title = render.title,
-                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType) && (permission?.isOwnerOrEditor() == true),
+                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(objectState.blockId, defType) && (permission?.isOwnerOrEditor() == true),
                             isEditingViewAllowed = permission?.isOwnerOrEditor() == true,
                             isBoardGroupByRequired = missingGroupBy
                         )
@@ -1617,7 +1617,7 @@ class ObjectSetViewModel(
                         )
                         DataViewViewState.TypeSet.Default(
                             viewer = render,
-                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType) && (permission?.isOwnerOrEditor() == true),
+                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(objectState.blockId, defType) && (permission?.isOwnerOrEditor() == true),
                             isEditingViewAllowed = permission?.isOwnerOrEditor() == true
                         )
                     }

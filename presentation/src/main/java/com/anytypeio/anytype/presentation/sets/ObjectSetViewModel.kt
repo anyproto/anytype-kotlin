@@ -466,6 +466,18 @@ class ObjectSetViewModel(
                     state to permission
                 }
                 .collectLatest { (state, permission) ->
+                    val inlineBlock = vmParams.dataViewBlockId
+                    if (inlineBlock != null) {
+                        // The page's title, cover and relations are not this data view's.
+                        featured.value = null
+                        _header.value = state.inlineHeader(
+                            blockId = inlineBlock,
+                            urlBuilder = urlBuilder,
+                            storeOfObjectTypes = storeOfObjectTypes
+                        )
+                        _discussionButtonState.value = DiscussionButtonState.Hidden
+                        return@collectLatest
+                    }
                     val featuredBlock = toFeaturedPropertiesViews(
                         objectId = vmParams.ctx,
                         urlBuilder = urlBuilder,

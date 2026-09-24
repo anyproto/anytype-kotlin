@@ -40,6 +40,9 @@ import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.core_utils.ext.orNull
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
@@ -89,6 +92,34 @@ suspend fun ObjectState.DataView.header(
     } else {
         return SetOrCollectionHeaderState.None
     }
+}
+
+/**
+ * Header of a screen showing an inline data view: the name and icon of the object it queries,
+ * read-only, without the cover or description of the page hosting it.
+ */
+suspend fun ObjectState.DataView.inlineHeader(
+    blockId: Id,
+    urlBuilder: UrlBuilder,
+    storeOfObjectTypes: StoreOfObjectTypes
+): SetOrCollectionHeaderState {
+    val wrapper = source(blockId)?.let { details.getObject(it) }
+        ?: return SetOrCollectionHeaderState.None
+    return SetOrCollectionHeaderState.Default(
+        title = BlockView.Title.Basic(
+            id = blockId,
+            text = wrapper.name.orEmpty(),
+            emoji = wrapper.iconEmoji.orNull(),
+            image = wrapper.iconImage?.takeIf { it.isNotBlank() }?.let { urlBuilder.medium(it) },
+            icon = wrapper.objectIcon(
+                builder = urlBuilder,
+                objType = storeOfObjectTypes.getTypeOfObject(wrapper)
+            ),
+            mode = BlockView.Mode.READ
+        ),
+        description = SetOrCollectionHeaderState.Description.None,
+        isReadOnlyMode = true
+    )
 }
 
 fun List<DVRecord>.update(new: List<DVRecord>): List<DVRecord> {

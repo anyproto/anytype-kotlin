@@ -114,7 +114,9 @@ interface AppNavigation {
         data class OpenSetOrCollection(
             val target: Id,
             val space: Id,
-            val isPopUpToDashboard: Boolean = false
+            val isPopUpToDashboard: Boolean = false,
+            /** The inline data view block to show, null when [target] owns its data view. */
+            val dataViewBlockId: Id? = null
         ) : Command()
 
         data class OpenDateObject(

@@ -96,7 +96,7 @@ class DefaultDataViewSubscription(
 
         val params = DataViewSubscriptionContainer.Params(
             space = SpaceId(space),
-            collection = if (isCollection) context else null,
+            collection = if (isCollection) state.source(blockId) else null,
             subscription = getDataViewSubscriptionId(context),
             sorts = sorts,
             filters = filters,

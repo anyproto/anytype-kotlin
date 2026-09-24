@@ -985,7 +985,7 @@ class ObjectSetViewModel(
         } else {
             state.filterOutDeletedAndMissingObjects(state.setOfValue(state.blockId))
         }
-        val collection = if (isCollection) vmParams.ctx else null
+        val collection = if (isCollection) state.source(state.blockId) else null
         return BoardGroupSubscriptionContainer.Params(
             space = vmParams.space,
             subscription = vmParams.ctx + BoardGroupSubscriptionContainer.SUBSCRIPTION_POSTFIX,
@@ -1073,7 +1073,7 @@ class ObjectSetViewModel(
         } else {
             state.filterOutDeletedAndMissingObjects(state.setOfValue(state.blockId))
         }
-        val collection = if (isCollection) vmParams.ctx else null
+        val collection = if (isCollection) state.source(state.blockId) else null
         val columns = columnQueries.map { query ->
             BoardRecordsSubscriptionContainer.Column(
                 subscription = vmParams.ctx + "-board-records-" + query.columnId,
@@ -2055,8 +2055,10 @@ class ObjectSetViewModel(
     fun onRemoveFromCollection(targetId: Id) {
         Timber.d("onRemoveFromCollection, id:[$targetId]")
         viewModelScope.launch {
+            val state = stateReducer.state.value.dataViewState() ?: return@launch
+            val collection = state.source(state.blockId) ?: return@launch
             val params = RemoveObjectFromCollection.Params(
-                collectionId = vmParams.ctx,
+                collectionId = collection,
                 objectIdsToRemove = listOf(targetId)
             )
             removeObjectFromCollection.async(params).fold(
@@ -2605,9 +2607,10 @@ class ObjectSetViewModel(
                 )
             )
         } else {
+            val collection = state.source(state.blockId) ?: return
             proceedWithCreatingDataViewObject(createObjectParams) { result ->
                 val params = AddObjectToCollection.Params(
-                    ctx = vmParams.ctx,
+                    ctx = collection,
                     after = "",
                     targets = listOf(result.objectId)
                 )
@@ -3494,8 +3497,10 @@ class ObjectSetViewModel(
         Timber.d("onObjectSetQueryPicked, query:[$query]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
+            val state = stateReducer.state.value.dataViewState() ?: return@launch
+            val set = state.source(state.blockId) ?: return@launch
             val params = SetQueryToObjectSet.Params(
-                ctx = vmParams.ctx,
+                ctx = set,
                 query = query
             )
             setQueryToObjectSet.async(params).fold(
@@ -3517,7 +3522,9 @@ class ObjectSetViewModel(
 
     fun proceedWithConvertingToCollection() {
         val startTime = System.currentTimeMillis()
-        val params = ConvertObjectToCollection.Params(ctx = vmParams.ctx)
+        val state = stateReducer.state.value.dataViewState() ?: return
+        val set = state.source(state.blockId) ?: return
+        val params = ConvertObjectToCollection.Params(ctx = set)
         viewModelScope.launch {
             objectToCollection.async(params).fold(
                 onFailure = { error -> Timber.e(error, "Error convert object to collection") },

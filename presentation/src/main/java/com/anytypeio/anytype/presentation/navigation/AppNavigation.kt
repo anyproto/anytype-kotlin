@@ -13,7 +13,8 @@ interface AppNavigation {
         target: Id,
         space: Id,
         view: Id? = null,
-        isPopUpToDashboard: Boolean = false
+        isPopUpToDashboard: Boolean = false,
+        dataViewBlockId: Id? = null
     )
     fun openChat(target: Id, space: Id, popUpToVault: Boolean = true)
     fun openDiscussion(target: Id, space: Id)
@@ -114,7 +115,9 @@ interface AppNavigation {
         data class OpenSetOrCollection(
             val target: Id,
             val space: Id,
-            val isPopUpToDashboard: Boolean = false
+            val isPopUpToDashboard: Boolean = false,
+            /** The inline data view block to show, null when [target] owns its data view. */
+            val dataViewBlockId: Id? = null
         ) : Command()
 
         data class OpenDateObject(

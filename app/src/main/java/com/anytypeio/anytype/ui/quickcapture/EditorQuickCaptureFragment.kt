@@ -112,6 +112,9 @@ class EditorQuickCaptureFragment : EditorFragment() {
         when (command) {
             is AppNavigation.Command.OpenObject -> openOutside(command.target, command.space)
             is AppNavigation.Command.LaunchDocument -> openOutside(command.target, command.space)
+            // For an inline data view the target is the draft itself: it opens full screen, where
+            // the inline block opens with its own views. Opening it directly would bypass the
+            // space switch done by the shared-object route.
             is AppNavigation.Command.OpenSetOrCollection -> openOutside(command.target, command.space)
             is AppNavigation.Command.LaunchObjectSet -> openOutside(command.target, command.space)
             is AppNavigation.Command.OpenChat -> openOutside(command.target, command.space, isChat = true)

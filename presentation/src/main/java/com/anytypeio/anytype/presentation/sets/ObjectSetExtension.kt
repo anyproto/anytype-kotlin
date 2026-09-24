@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVFilterUpdate
@@ -39,6 +40,9 @@ import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.core_utils.ext.orNull
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
@@ -90,6 +94,34 @@ suspend fun ObjectState.DataView.header(
     }
 }
 
+/**
+ * Header of a screen showing an inline data view: the name and icon of the object it queries,
+ * read-only, without the cover or description of the page hosting it.
+ */
+suspend fun ObjectState.DataView.inlineHeader(
+    blockId: Id,
+    urlBuilder: UrlBuilder,
+    storeOfObjectTypes: StoreOfObjectTypes
+): SetOrCollectionHeaderState {
+    val wrapper = source(blockId)?.let { details.getObject(it) }
+        ?: return SetOrCollectionHeaderState.None
+    return SetOrCollectionHeaderState.Default(
+        title = BlockView.Title.Basic(
+            id = blockId,
+            text = wrapper.name.orEmpty(),
+            emoji = wrapper.iconEmoji.orNull(),
+            image = wrapper.iconImage?.takeIf { it.isNotBlank() }?.let { urlBuilder.medium(it) },
+            icon = wrapper.objectIcon(
+                builder = urlBuilder,
+                objType = storeOfObjectTypes.getTypeOfObject(wrapper)
+            ),
+            mode = BlockView.Mode.READ
+        ),
+        description = SetOrCollectionHeaderState.Description.None,
+        isReadOnlyMode = true
+    )
+}
+
 fun List<DVRecord>.update(new: List<DVRecord>): List<DVRecord> {
     val update = new.associateBy { rec -> rec[ID_KEY] as String }
     val result = mutableListOf<DVRecord>()
@@ -134,7 +166,7 @@ fun ObjectState.DataView.viewerAndIndexById(currentViewerId: String?): Pair<DVVi
     }
 }
 
-fun ObjectState.DataView.Collection.getObjectOrderIds(currentViewerId: String): List<Id> {
+fun ObjectState.DataView.getObjectOrderIds(currentViewerId: String): List<Id> {
     return dataViewContent.objectOrders.find { it.view == currentViewerId }?.ids ?: emptyList()
 }
 
@@ -303,19 +335,25 @@ fun List<DVViewerRelation>.updateViewerRelations(updates: List<DVViewerRelationU
     return relations
 }
 
-fun ObjectState.DataView.Set.getSetOfValue(ctx: Id): List<Id> {
-    return details.getObject(ctx)?.setOf.orEmpty()
-}
+/**
+ * Id of the data view block the screen shows, empty while the object is still loading.
+ * Objects that own their data view hold exactly one; a page hosting inline blocks will name
+ * the one it opened instead.
+ */
+val ObjectState.DataView.shownBlockId: Id
+    get() = blocks.firstOrNull { it.content is DV }?.id.orEmpty()
 
-fun ObjectState.DataView.TypeSet.getSetOfValue(ctx: Id): List<Id> {
-    return details.getObject(ctx)?.setOf.orEmpty()
-}
+/**
+ * Ids of the types or relations the given data view queries.
+ */
+fun ObjectState.DataView.setOfValue(blockId: Id): List<Id> =
+    source(blockId)?.let { details.getObject(it)?.setOf }.orEmpty()
 
 fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): List<Id> {
     return query.filter(::isValidObject)
 }
 
-fun ObjectState.DataView.Set.isSetByRelation(setOfValue: List<Id>): Boolean {
+fun ObjectState.DataView.isSetByRelation(setOfValue: List<Id>): Boolean {
     if (setOfValue.isEmpty()) return false
     val wrapper = details.getObject(setOfValue.first())
     return wrapper?.layout == ObjectType.Layout.RELATION
@@ -381,52 +419,30 @@ fun ObjectWrapper.Basic.toTemplateView(
 }
 
 suspend fun ObjectState.DataView.toViewersView(
-    ctx: Id,
+    blockId: Id,
     session: ObjectSetSession,
     storeOfRelations: StoreOfRelations,
     stringResourceProvider: StringResourceProvider,
     kanbanEnabled: Boolean = false
 ): List<ViewerView> {
     val viewers = dataViewContent.viewers
-    val mapped = when (this) {
-        is ObjectState.DataView.Collection -> mapViewers(
+    val setOfValue = setOfValue(blockId)
+    val mapped = if (usesViewerDefaultObjectType(blockId, setOfValue)) {
+        mapViewers(
             defaultObjectType = { it.defaultObjectType },
             viewers = viewers,
             session = session,
             storeOfRelations = storeOfRelations,
             stringResourceProvider = stringResourceProvider
         )
-        is ObjectState.DataView.Set -> {
-            val setOfValue = getSetOfValue(ctx)
-            if (isSetByRelation(setOfValue = setOfValue)) {
-                mapViewers(
-                    defaultObjectType = { it.defaultObjectType },
-                    viewers = viewers,
-                    session = session,
-                    storeOfRelations = storeOfRelations,
-                    stringResourceProvider = stringResourceProvider
-                )
-            } else {
-                mapViewers(
-                    defaultObjectType = { setOfValue.firstOrNull() },
-                    viewers = viewers,
-                    session = session,
-                    storeOfRelations = storeOfRelations,
-                    stringResourceProvider = stringResourceProvider
-                )
-            }
-        }
-
-        is ObjectState.DataView.TypeSet -> {
-            val setOfValue = getSetOfValue(ctx)
-            mapViewers(
-                defaultObjectType = { setOfValue.firstOrNull() },
-                viewers = viewers,
-                session = session,
-                storeOfRelations = storeOfRelations,
-                stringResourceProvider = stringResourceProvider
-            )
-        }
+    } else {
+        mapViewers(
+            defaultObjectType = { setOfValue.firstOrNull() },
+            viewers = viewers,
+            session = session,
+            storeOfRelations = storeOfRelations,
+            stringResourceProvider = stringResourceProvider
+        )
     }
     // The BOARD (Kanban) viewer is "unsupported" only while the experimental flag is off.
     return if (kanbanEnabled) {
@@ -468,60 +484,31 @@ fun DVViewer.isActiveViewer(index: Int, session: ObjectSetSession): Boolean {
 }
 
 suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
-    ctx: Id,
+    blockId: Id,
     activeView: DVViewer?,
     storeOfObjectTypes: StoreOfObjectTypes,
     onDeletedTypeDetected: suspend (DVViewer) -> Unit = {}
 ): Pair<ObjectWrapper.Type?, Id?> {
     if (activeView == null) return Pair(null, null)
-    when (this) {
-        is ObjectState.DataView.Collection -> {
-            return resolveTypeAndActiveViewTemplate(
-                activeView,
-                storeOfObjectTypes,
-                onDeletedTypeDetected
-            )
-        }
-        is ObjectState.DataView.Set -> {
-            val setOfValue = getSetOfValue(ctx)
-            return if (isSetByRelation(setOfValue = setOfValue)) {
-                resolveTypeAndActiveViewTemplate(
-                    activeView,
-                    storeOfObjectTypes,
-                    onDeletedTypeDetected
-                )
-            } else {
-                val setOf = setOfValue.firstOrNull()
-                if (setOf.isNullOrBlank()) {
-                    Timber.d("Set by type setOf param is null or empty, not possible to get Type and Template")
-                    Pair(null, null)
-                } else {
-                    val defaultSetObjectType = details.getTypeObject(setOf)
-                    if (activeView.defaultTemplate.isNullOrEmpty()) {
-                        val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
-                        Pair(defaultSetObjectType, defaultTemplateId)
-                    } else {
-                        Pair(defaultSetObjectType, activeView.defaultTemplate)
-                    }
-                }
-            }
-        }
-
-        is ObjectState.DataView.TypeSet -> {
-            val setOfValue = getSetOfValue(ctx)
-            val setOf = setOfValue.firstOrNull()
-            return if (setOf.isNullOrBlank()) {
-                Timber.d("Set by type setOf param is null or empty, not possible to get Type and Template")
-                Pair(null, null)
-            } else {
-                val defaultSetObjectType = details.getTypeObject(setOf)
-                if (activeView.defaultTemplate.isNullOrEmpty()) {
-                    val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
-                    Pair(defaultSetObjectType, defaultTemplateId)
-                } else {
-                    Pair(defaultSetObjectType, activeView.defaultTemplate)
-                }
-            }
+    val setOfValue = setOfValue(blockId)
+    if (usesViewerDefaultObjectType(blockId, setOfValue)) {
+        return resolveTypeAndActiveViewTemplate(
+            activeView,
+            storeOfObjectTypes,
+            onDeletedTypeDetected
+        )
+    }
+    val setOf = setOfValue.firstOrNull()
+    return if (setOf.isNullOrBlank()) {
+        Timber.d("Set by type setOf param is null or empty, not possible to get Type and Template")
+        Pair(null, null)
+    } else {
+        val defaultSetObjectType = details.getTypeObject(setOf)
+        if (activeView.defaultTemplate.isNullOrEmpty()) {
+            val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
+            Pair(defaultSetObjectType, defaultTemplateId)
+        } else {
+            Pair(defaultSetObjectType, activeView.defaultTemplate)
         }
     }
 }
@@ -598,15 +585,23 @@ fun resolveTemplateForDataViewObject(
     }
 }
 
-fun ObjectState.DataView.isChangingDefaultTypeAvailable(): Boolean {
-    return when (this) {
-        is ObjectState.DataView.Collection -> true
-        is ObjectState.DataView.Set -> {
-            val setOfValue = getSetOfValue(root)
-            isSetByRelation(setOfValue = setOfValue)
-        }
-        is ObjectState.DataView.TypeSet -> false
-    }
+fun ObjectState.DataView.isChangingDefaultTypeAvailable(): Boolean = when {
+    isCollection(shownBlockId) -> true
+    isTypeSet -> false
+    else -> isSetByRelation(setOfValue = setOfValue(shownBlockId))
+}
+
+/**
+ * Whether the viewer's own default object type applies, rather than the single type the data
+ * view queries. A collection has no query, and a set by relation can hold any type.
+ */
+private fun ObjectState.DataView.usesViewerDefaultObjectType(
+    blockId: Id,
+    setOfValue: List<Id>
+): Boolean = when {
+    isCollection(blockId) -> true
+    isTypeSet -> false
+    else -> isSetByRelation(setOfValue = setOfValue)
 }
 
 suspend fun DVViewer.prefillNewObjectDetails(

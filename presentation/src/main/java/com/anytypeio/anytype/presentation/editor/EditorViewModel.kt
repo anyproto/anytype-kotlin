@@ -4604,7 +4604,7 @@ class EditorViewModel(
                 }
             }
             is Content.DataView -> {
-                proceedWithOpeningDataViewBlock(dv = content)
+                proceedWithOpeningDataViewBlock(blockId = blockLinkId, dv = content)
             }
             else -> {
                 sendToast("Couldn't find the target of the link")
@@ -4612,14 +4612,17 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithOpeningDataViewBlock(dv: Content.DataView) {
+    private fun proceedWithOpeningDataViewBlock(blockId: Id, dv: Content.DataView) {
         if (dv.targetObjectId.isNotEmpty()) {
             val targetSpace =
                 orchestrator.stores.details.current().getObject(dv.targetObjectId)?.spaceId
                     ?: vmParams.space.id
+            // The page is the context, so the screen shows this block's own views and any
+            // change to them is written back to the block, as on desktop.
             proceedWithOpeningDataViewObject(
-                target = dv.targetObjectId,
-                space = SpaceId(targetSpace)
+                target = vmParams.ctx,
+                space = SpaceId(targetSpace),
+                dataViewBlockId = blockId
             )
             viewModelScope.sendAnalyticsOpenAsObject(
                 analytics = analytics,
@@ -6145,7 +6148,8 @@ class EditorViewModel(
     fun proceedWithOpeningDataViewObject(
         target: Id,
         space: SpaceId,
-        isPopUpToDashboard: Boolean = false
+        isPopUpToDashboard: Boolean = false,
+        dataViewBlockId: Id? = null
     ) {
         viewModelScope.launch {
             closePage.async(
@@ -6161,7 +6165,8 @@ class EditorViewModel(
                             OpenSetOrCollection(
                                 target = target,
                                 space = space.id,
-                                isPopUpToDashboard
+                                isPopUpToDashboard,
+                                dataViewBlockId = dataViewBlockId
                             )
                         )
                     )
@@ -6172,7 +6177,8 @@ class EditorViewModel(
                             OpenSetOrCollection(
                                 target = target,
                                 space = space.id,
-                                isPopUpToDashboard
+                                isPopUpToDashboard,
+                                dataViewBlockId = dataViewBlockId
                             )
                         )
                     )

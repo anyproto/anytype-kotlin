@@ -105,7 +105,7 @@ class DisplayObjectRelationTextValueTest {
             source = Relation.Source.values().random()
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(
@@ -169,7 +169,7 @@ class DisplayObjectRelationTextValueTest {
             source = Relation.Source.values().random()
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(
@@ -235,7 +235,7 @@ class DisplayObjectRelationTextValueTest {
             source = Relation.Source.values().random()
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(
@@ -301,7 +301,7 @@ class DisplayObjectRelationTextValueTest {
             source = Relation.Source.values().random()
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(
@@ -365,7 +365,7 @@ class DisplayObjectRelationTextValueTest {
             source = Relation.Source.values().random()
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(
@@ -430,7 +430,7 @@ class DisplayObjectRelationTextValueTest {
             source = Relation.Source.values().random()
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(

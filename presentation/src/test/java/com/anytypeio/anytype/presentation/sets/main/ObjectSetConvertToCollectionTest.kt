@@ -13,6 +13,9 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
+import com.anytypeio.anytype.presentation.sets.shownBlockId
 import kotlin.test.assertIs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -91,7 +94,8 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
             assertIs<ObjectState.Init>(firstState)
 
             val secondState = stateFlow.awaitItem()
-            assertIs<ObjectState.DataView.Set>(secondState)
+            assertIs<ObjectState.DataView>(secondState)
+            assertFalse(secondState.isCollection(secondState.shownBlockId))
 
             viewModel.proceedWithConvertingToCollection()
 
@@ -109,7 +113,8 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
             )
 
             val thirdState = stateFlow.awaitItem()
-            assertIs<ObjectState.DataView.Collection>(thirdState)
+            assertIs<ObjectState.DataView>(thirdState)
+            assertTrue(thirdState.isCollection(thirdState.shownBlockId))
 
             advanceUntilIdle()
 

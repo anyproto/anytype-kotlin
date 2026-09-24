@@ -806,6 +806,8 @@ object ObjectSetModule {
 
 data class DefaultComponentParam(
     val ctx: Id,
-    val space: Space
+    val space: Space,
+    /** Set only by the object set screen, for the inline data view block it shows. */
+    val dataViewBlockId: Id? = null
 )
 

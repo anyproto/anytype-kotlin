@@ -172,7 +172,7 @@ class ModifyTagFilterTest {
             type = Block.Content.DataView.Viewer.Type.values().random()
         )
 
-        state.value = ObjectState.DataView.Set(
+        state.value = ObjectState.DataView(
             root = root,
             blocks = listOf(
                 Block(

@@ -29,8 +29,14 @@ class ObjectSetCreateBookmarkRecordViewModel(
     private val addObjectToCollection: AddObjectToCollection,
     private val session: ObjectSetSession,
     private val storeOfRelations: StoreOfRelations,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val params: ObjectSetViewModel.Params
 ) : SetDataViewObjectNameViewModelBase() {
+
+    /** The data view block the set screen shows. */
+    private val ObjectState.DataView.blockId: Id
+        get() = params.dataViewBlockId ?: shownBlockId
+
 
     override fun onActionDone(input: String) {
         viewModelScope.launch {
@@ -47,8 +53,8 @@ class ObjectSetCreateBookmarkRecordViewModel(
     private suspend fun proceedWithCreatingBookmarkObject(input: String) {
         if (urlValidator.isValid(url = input)) {
             val state = objectState.value.dataViewState() ?: return
-            when (state) {
-                is ObjectState.DataView.Collection -> {
+            when {
+                state.isCollection(state.blockId) -> {
                     val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                     val prefilled = viewer.prefillNewObjectDetails(
                         dateProvider = dateProvider,
@@ -61,8 +67,8 @@ class ObjectSetCreateBookmarkRecordViewModel(
                     ) { bookmarkObj -> addBookmarkToCollection(bookmarkObj) }
                 }
 
-                is ObjectState.DataView.Set -> {
-                    val setOf = state.getSetOfValue(state.root)
+                !state.isTypeSet -> {
+                    val setOf = state.setOfValue(state.blockId)
                     if (state.isSetByRelation(setOf)) {
                         val sourceDetails = state.details.details[setOf.firstOrNull()]
                         if (sourceDetails != null && sourceDetails.isNotEmpty()) {
@@ -91,7 +97,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
                     }
                 }
 
-                is ObjectState.DataView.TypeSet -> {
+                else -> {
                     val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                     val prefilled = viewer.prefillNewObjectDetails(
                         dateProvider = dateProvider,
@@ -110,8 +116,9 @@ class ObjectSetCreateBookmarkRecordViewModel(
 
     private suspend fun addBookmarkToCollection(bookmarkObj: Id) {
         val state = objectState.value.dataViewState() ?: return
+        val collection = state.source(state.blockId) ?: return
         val params = AddObjectToCollection.Params(
-            ctx = state.root,
+            ctx = collection,
             after = "",
             targets = listOf(bookmarkObj)
         )
@@ -167,7 +174,8 @@ class ObjectSetCreateBookmarkRecordViewModel(
         private val addObjectToCollection: AddObjectToCollection,
         private val session: ObjectSetSession,
         private val storeOfRelations: StoreOfRelations,
-        private val dateProvider: DateProvider
+        private val dateProvider: DateProvider,
+        private val params: ObjectSetViewModel.Params
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -180,7 +188,8 @@ class ObjectSetCreateBookmarkRecordViewModel(
                 addObjectToCollection = addObjectToCollection,
                 session = session,
                 storeOfRelations = storeOfRelations,
-                dateProvider = dateProvider
+                dateProvider = dateProvider,
+                params = params
             ) as T
         }
     }

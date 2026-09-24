@@ -86,13 +86,16 @@ fun canCreateObjectOfType(objectType: ObjectWrapper.Type?): Boolean {
     return createObjectLayouts.contains(objectType?.recommendedLayout)
 }
 
-fun ObjectState.DataView.isCreateObjectAllowed(objectType: ObjectWrapper.Type? = null): Boolean {
+fun ObjectState.DataView.isCreateObjectAllowed(
+    blockId: Id,
+    objectType: ObjectWrapper.Type? = null
+): Boolean {
     val dataViewRestrictions = dataViewRestrictions.firstOrNull()?.restrictions
     if (dataViewRestrictions?.contains(DataViewRestriction.CREATE_OBJECT) == true) {
         return false
     }
 
-    if (this is ObjectState.DataView.Collection) {
+    if (isCollection(blockId)) {
         return true
     }
 

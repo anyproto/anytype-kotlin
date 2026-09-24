@@ -138,7 +138,7 @@ class SetObjectFeaturedPropertiesTest {
 
         val featuredBlock = StubFeatured()
 
-        val objectState = ObjectState.DataView.Set(
+        val objectState = ObjectState.DataView(
             root = objectSet.id,
             blocks = listOf(featuredBlock),
             details = ObjectViewDetails(
@@ -242,7 +242,7 @@ class SetObjectFeaturedPropertiesTest {
 
         val featuredBlock = StubFeatured()
 
-        val objectState = ObjectState.DataView.Set(
+        val objectState = ObjectState.DataView(
             root = objectSet.id,
             blocks = listOf(featuredBlock),
             details = ObjectViewDetails(
@@ -349,7 +349,7 @@ class SetObjectFeaturedPropertiesTest {
 
         val featuredBlock = StubFeatured()
 
-        val objectState = ObjectState.DataView.Set(
+        val objectState = ObjectState.DataView(
             root = objectSet.id,
             blocks = listOf(featuredBlock),
             details = ObjectViewDetails(
@@ -461,7 +461,7 @@ class SetObjectFeaturedPropertiesTest {
 
             val featuredBlock = StubFeatured()
 
-            val objectState = ObjectState.DataView.Set(
+            val objectState = ObjectState.DataView(
                 root = objectSet.id,
                 blocks = listOf(featuredBlock),
                 details = ObjectViewDetails(

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetCreateBookmarkRecordViewModel
+import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -46,7 +47,8 @@ object ObjectSetCreateBookmarkRecordModule {
         addObjectToCollection: AddObjectToCollection,
         session: ObjectSetSession,
         storeOfRelations: StoreOfRelations,
-        dateProvider: DateProvider
+        dateProvider: DateProvider,
+        params: ObjectSetViewModel.Params
     ) = ObjectSetCreateBookmarkRecordViewModel.Factory(
         createBookmarkObject = createBookmarkObject,
         urlValidator = urlValidator,
@@ -56,7 +58,8 @@ object ObjectSetCreateBookmarkRecordModule {
         addObjectToCollection = addObjectToCollection,
         session = session,
         storeOfRelations = storeOfRelations,
-        dateProvider = dateProvider
+        dateProvider = dateProvider,
+        params = params
     )
 
     @JvmStatic

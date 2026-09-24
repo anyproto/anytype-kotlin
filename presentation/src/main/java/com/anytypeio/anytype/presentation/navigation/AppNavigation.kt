@@ -13,7 +13,8 @@ interface AppNavigation {
         target: Id,
         space: Id,
         view: Id? = null,
-        isPopUpToDashboard: Boolean = false
+        isPopUpToDashboard: Boolean = false,
+        dataViewBlockId: Id? = null
     )
     fun openChat(target: Id, space: Id, popUpToVault: Boolean = true)
     fun openDiscussion(target: Id, space: Id)

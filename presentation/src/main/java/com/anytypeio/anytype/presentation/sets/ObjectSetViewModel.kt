@@ -837,7 +837,7 @@ class ObjectSetViewModel(
                         space = vmParams.space.id,
                         context = vmParams.ctx,
                         state = state,
-                        blockId = state.shownBlockId,
+                        blockId = state.blockId,
                         currentViewerId = query.currentViewerId,
                         offset = query.offset,
                         storeOfRelations = storeOfRelations
@@ -979,11 +979,11 @@ class ObjectSetViewModel(
             addAll(viewer.filters.updateFormatForSubscription(storeOfRelations).removeUnsupportedFilters())
             addAll(defaultDataViewFilters())
         }
-        val isCollection = state.isCollection(state.shownBlockId)
+        val isCollection = state.isCollection(state.blockId)
         val sources = if (isCollection) {
             emptyList()
         } else {
-            state.filterOutDeletedAndMissingObjects(state.setOfValue(state.shownBlockId))
+            state.filterOutDeletedAndMissingObjects(state.setOfValue(state.blockId))
         }
         val collection = if (isCollection) vmParams.ctx else null
         return BoardGroupSubscriptionContainer.Params(
@@ -1067,11 +1067,11 @@ class ObjectSetViewModel(
                 )
             )
         }.updateWithRelationFormat(storeOfRelations)
-        val isCollection = state.isCollection(state.shownBlockId)
+        val isCollection = state.isCollection(state.blockId)
         val sources = if (isCollection) {
             emptyList()
         } else {
-            state.filterOutDeletedAndMissingObjects(state.setOfValue(state.shownBlockId))
+            state.filterOutDeletedAndMissingObjects(state.setOfValue(state.blockId))
         }
         val collection = if (isCollection) vmParams.ctx else null
         val columns = columnQueries.map { query ->
@@ -1313,7 +1313,7 @@ class ObjectSetViewModel(
                 currentViewId = currentViewId,
                 permission = permission
             )
-            objectState.isCollection(objectState.shownBlockId) -> processCollectionState(
+            objectState.isCollection(objectState.blockId) -> processCollectionState(
                 dataViewState = dataViewState,
                 objectState = objectState,
                 currentViewId = currentViewId,
@@ -1392,7 +1392,7 @@ class ObjectSetViewModel(
             }
             is DataViewState.Loaded -> {
                 _dvViews.value = objectState.dataViewState()?.toViewersView(
-                    blockId = objectState.shownBlockId,
+                    blockId = objectState.blockId,
                     session = session,
                     storeOfRelations = storeOfRelations,
                     stringResourceProvider = stringResourceProvider,
@@ -1445,7 +1445,7 @@ class ObjectSetViewModel(
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
-        val setOfValue = objectState.setOfValue(blockId = objectState.shownBlockId)
+        val setOfValue = objectState.setOfValue(blockId = objectState.blockId)
         val query = objectState.filterOutDeletedAndMissingObjects(query = setOfValue)
         val viewer = objectState.viewerByIdOrFirst(currentViewId)
 
@@ -1466,7 +1466,7 @@ class ObjectSetViewModel(
             }
             is DataViewState.Loaded -> {
                 _dvViews.value = objectState.dataViewState()?.toViewersView(
-                    blockId = objectState.shownBlockId,
+                    blockId = objectState.blockId,
                     session = session,
                     storeOfRelations = storeOfRelations,
                     stringResourceProvider = stringResourceProvider,
@@ -1513,7 +1513,7 @@ class ObjectSetViewModel(
                     render.isEmpty() -> {
                         if (!missingGroupBy && isBoardAwaitingGroups(render)) return DataViewViewState.Init
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
-                            objectState.shownBlockId, viewer, storeOfObjectTypes
+                            objectState.blockId, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.Set.NoItems(
                             title = render.title,
@@ -1524,7 +1524,7 @@ class ObjectSetViewModel(
                     }
                     else -> {
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
-                            objectState.shownBlockId, viewer, storeOfObjectTypes
+                            objectState.blockId, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.Set.Default(
                             viewer = render,
@@ -1545,7 +1545,7 @@ class ObjectSetViewModel(
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
-        val setOfValue = objectState.setOfValue(blockId = objectState.shownBlockId)
+        val setOfValue = objectState.setOfValue(blockId = objectState.blockId)
         val query = objectState.filterOutDeletedAndMissingObjects(query = setOfValue)
         val viewer = objectState.viewerByIdOrFirst(currentViewId)
 
@@ -1560,7 +1560,7 @@ class ObjectSetViewModel(
             }
             is DataViewState.Loaded -> {
                 _dvViews.value = objectState.dataViewState()?.toViewersView(
-                    blockId = objectState.shownBlockId,
+                    blockId = objectState.blockId,
                     session = session,
                     storeOfRelations = storeOfRelations,
                     stringResourceProvider = stringResourceProvider,
@@ -1602,7 +1602,7 @@ class ObjectSetViewModel(
                     render.isEmpty() -> {
                         if (!missingGroupBy && isBoardAwaitingGroups(render)) return DataViewViewState.Init
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
-                            objectState.shownBlockId, viewer, storeOfObjectTypes
+                            objectState.blockId, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.TypeSet.NoItems(
                             title = render.title,
@@ -1613,7 +1613,7 @@ class ObjectSetViewModel(
                     }
                     else -> {
                         val (defType, _) = objectState.getActiveViewTypeAndTemplate(
-                            objectState.shownBlockId, viewer, storeOfObjectTypes
+                            objectState.blockId, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.TypeSet.Default(
                             viewer = render,
@@ -1964,7 +1964,7 @@ class ObjectSetViewModel(
 
             // Check if current state is a Collection AND user has edit permission
             val isCollection = stateReducer.state.value.dataViewStateOrNull()
-                ?.let { it.isCollection(it.shownBlockId) } == true
+                ?.let { it.isCollection(it.blockId) } == true
             val canRemoveFromCollection = isCollection && isOwnerOrEditor
 
             dispatch(
@@ -2298,7 +2298,7 @@ class ObjectSetViewModel(
                             templateChosenBy = null,
                             extraPrefilled = extraPrefilled
                         )
-                    state.isCollection(state.shownBlockId) ->
+                    state.isCollection(state.blockId) ->
                         proceedWithAddingObjectToCollection(extraPrefilled = extraPrefilled)
                     else ->
                         proceedWithCreatingSetObject(
@@ -2406,7 +2406,7 @@ class ObjectSetViewModel(
             val dvBlock = currentState.dataViewBlock.id
 
             val (resolvedType, defaultTemplate) = currentState.getActiveViewTypeAndTemplate(
-                blockId = currentState.shownBlockId,
+                blockId = currentState.blockId,
                 activeView = viewer,
                 storeOfObjectTypes = storeOfObjectTypes,
                 onDeletedTypeDetected = { deletedViewer ->
@@ -2555,7 +2555,7 @@ class ObjectSetViewModel(
         val dvBlock = state.dataViewBlock.id
 
         val (resolvedType, defaultTemplate) = state.getActiveViewTypeAndTemplate(
-            blockId = state.shownBlockId,
+            blockId = state.blockId,
             activeView = viewer,
             storeOfObjectTypes = storeOfObjectTypes,
             onDeletedTypeDetected = { deletedViewer ->
@@ -3349,9 +3349,9 @@ class ObjectSetViewModel(
                     is ObjectRelationView.ObjectType.Base -> {
                         val state = stateReducer.state.value.dataViewState() ?: return
                         // Only a set queries by type or relation, so only a set offers the menu.
-                        if (!state.isTypeSet && !state.isCollection(state.shownBlockId)) {
+                        if (!state.isTypeSet && !state.isCollection(state.blockId)) {
                             if (isOwnerOrEditor) {
-                                val setOfValue = state.setOfValue(state.shownBlockId)
+                                val setOfValue = state.setOfValue(state.blockId)
                                 val command =
                                     if (state.isSetByRelation(setOfValue = setOfValue)) {
                                         ObjectSetCommand.Modal.ShowObjectSetRelationPopupMenu(
@@ -3572,7 +3572,7 @@ class ObjectSetViewModel(
             }
 
             val (type, _) = dataView.getActiveViewTypeAndTemplate(
-                blockId = dataView.shownBlockId,
+                blockId = dataView.blockId,
                 activeView = viewer,
                 storeOfObjectTypes = storeOfObjectTypes,
                 onDeletedTypeDetected = { deletedViewer ->
@@ -3729,7 +3729,7 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
                     }
 
                     val (type, template) = dataView.getActiveViewTypeAndTemplate(
-                        blockId = dataView.shownBlockId,
+                        blockId = dataView.blockId,
                         activeView = viewer,
                         storeOfObjectTypes = storeOfObjectTypes,
                         onDeletedTypeDetected = { deletedViewer ->
@@ -4556,7 +4556,7 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
                         )
                     }
 
-                    state.isCollection(state.shownBlockId) -> {
+                    state.isCollection(state.blockId) -> {
                         proceedWithAddingObjectToCollection(
                             typeChosenByUser = typeChosenBy,
                             templateChosenBy = templateId
@@ -5029,9 +5029,18 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
         const val BOARD_SUBSCRIPTION_ERROR_MSG = "Couldn't load the board. Please reopen the object."
     }
 
+    /**
+     * The data view block this screen shows: the one it was opened with, or the only one the
+     * object owns.
+     */
+    private val ObjectState.DataView.blockId: Id
+        get() = vmParams.dataViewBlockId ?: shownBlockId
+
     data class Params(
         val ctx: Id,
-        val space: SpaceId
+        val space: SpaceId,
+        /** The inline data view block this screen shows, null when [ctx] owns its data view. */
+        val dataViewBlockId: Id? = null
     )
 
     data class Query(
@@ -5082,9 +5091,9 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
         val isInitialized = dataView?.isInitialized == true
         val viewer = if (isInitialized) dataView?.viewerByIdOrFirst(currentViewerId) else null
         val sources = if (dataView != null && isInitialized &&
-            !dataView.isCollection(dataView.shownBlockId)
+            !dataView.isCollection(dataView.blockId)
         ) {
-            dataView.filterOutDeletedAndMissingObjects(dataView.setOfValue(dataView.shownBlockId))
+            dataView.filterOutDeletedAndMissingObjects(dataView.setOfValue(dataView.blockId))
         } else {
             emptyList()
         }
@@ -5116,7 +5125,7 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
             kind = when {
                 dataView == null -> "none"
                 dataView.isTypeSet -> "typeSet"
-                dataView.isCollection(dataView.shownBlockId) -> "collection"
+                dataView.isCollection(dataView.blockId) -> "collection"
                 else -> "set"
             },
             isInitialized = isInitialized,

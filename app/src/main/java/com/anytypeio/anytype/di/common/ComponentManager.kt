@@ -421,7 +421,8 @@ class ComponentManager(
             .withParams(
                 ObjectSetViewModel.Params(
                     ctx = param.ctx,
-                    space = param.space
+                    space = param.space,
+                    dataViewBlockId = param.dataViewBlockId
                 )
             )
             .build()

@@ -313,6 +313,7 @@ open class ObjectSetFragment :
     }
 
     private val ctx: Id get() = argString(CONTEXT_ID_KEY)
+    private val dataViewBlockId: Id? get() = argOrNull<String>(DATA_VIEW_BLOCK_ID_KEY)
     private val space: Id get() = arg<String>(SPACE_ID_KEY)
     private val view: Id? get() = argOrNull<Id>(INITIAL_VIEW_ID_KEY)
 
@@ -2343,7 +2344,8 @@ open class ObjectSetFragment :
                 key = ctx,
                 param = DefaultComponentParam(
                     ctx = ctx,
-                    space = SpaceId(space)
+                    space = SpaceId(space),
+                    dataViewBlockId = dataViewBlockId
                 )
             )
             .inject(this)
@@ -2411,6 +2413,7 @@ open class ObjectSetFragment :
     companion object {
         const val CONTEXT_ID_KEY = "arg.object_set.context"
         const val SPACE_ID_KEY = "arg.object_set.space-id"
+        const val DATA_VIEW_BLOCK_ID_KEY = "arg.object_set.data-view-block"
         private const val INITIAL_VIEW_ID_KEY = "arg.object_set.initial-view"
         private const val EMBEDDED_KEY = "arg.object_set.embedded"
         private const val EXTERNAL_HEADER_KEY = "arg.object_set.external_header"
@@ -2424,10 +2427,12 @@ open class ObjectSetFragment :
             space: Id,
             view: Id? = null,
             embedded: Boolean = false,
-            externalHeader: Boolean = false
+            externalHeader: Boolean = false,
+            dataViewBlockId: Id? = null
         ) = bundleOf(
             CONTEXT_ID_KEY to ctx,
             SPACE_ID_KEY to space,
+            DATA_VIEW_BLOCK_ID_KEY to dataViewBlockId,
             INITIAL_VIEW_ID_KEY to view,
             EMBEDDED_KEY to embedded,
             EXTERNAL_HEADER_KEY to externalHeader

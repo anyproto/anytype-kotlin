@@ -31,8 +31,8 @@ private val FULL_WIDTH_DESTINATIONS = setOf(
  * only in the strip beside a capped column, which reads as a defect.
  *
  * The vault is not in this set. The vault belongs to no space, and it paints an opaque
- * background. A tap on a space makes that space active before the space screen appears, so a
- * wallpaper on the vault would change color under the vault.
+ * background. A tap on a space makes that space active before the space screen appears. A
+ * wallpaper on the vault would then change color under the vault.
  */
 private val WALLPAPER_DESTINATIONS = setOf(
     R.id.homeScreen,

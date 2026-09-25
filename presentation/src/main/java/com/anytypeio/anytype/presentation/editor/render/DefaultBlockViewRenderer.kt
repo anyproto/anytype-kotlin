@@ -2261,13 +2261,19 @@ class DefaultBlockViewRenderer @Inject constructor(
                 builder = urlBuilder,
                 objType = storeOfObjectTypes.getTypeOfObject(targetSet)
             )
+            // A type shows its plural name, like the header of the type screen.
+            val title = if (targetSet.layout == ObjectType.Layout.OBJECT_TYPE) {
+                fieldParser.getObjectNameOrPluralsForTypes(targetSet, useUntitled = false)
+            } else {
+                targetSet.name
+            }
             val isSetNoQuery = targetSet.setOf.all { it.isBlank() }
             if (isSetNoQuery && !content.isCollection) {
                 return BlockView.DataView.EmptyData(
                     id = block.id,
                     decorations = decorations,
                     isSelected = isSelected,
-                    title = targetSet.name,
+                    title = title,
                     background = background,
                     icon = icon,
                     isCollection = isCollection
@@ -2277,7 +2283,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     id = block.id,
                     decorations = decorations,
                     isSelected = isSelected,
-                    title = targetSet.name,
+                    title = title,
                     background = background,
                     icon = icon,
                     isCollection = isCollection

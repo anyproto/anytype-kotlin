@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -15,12 +16,13 @@ import com.jraska.livedata.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import kotlin.test.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 
-class EditorInlineDataViewOpenTest : EditorPresentationTestSetup() {
+class EditorInlineDataViewTest : EditorPresentationTestSetup() {
 
     @get:Rule
     val rule = InstantTaskExecutorRule()
@@ -97,6 +99,36 @@ class EditorInlineDataViewOpenTest : EditorPresentationTestSetup() {
         }
     }
 
+    @Test
+    fun `should show plural name when inline query targets a type`() = runTest {
+        stubPageWithInlineDataView(
+            target = MockDataFactory.randomUuid(),
+            targetLayout = ObjectType.Layout.OBJECT_TYPE
+        )
+
+        val vm = buildViewModel()
+        vm.onStart(id = root, space = defaultSpace)
+        advanceUntilIdle()
+
+        val card = vm.views.filterIsInstance<BlockView.DataView>().single()
+        assertEquals(expected = "Tasks", actual = card.title)
+    }
+
+    @Test
+    fun `should show name when inline query targets a set`() = runTest {
+        stubPageWithInlineDataView(
+            target = MockDataFactory.randomUuid(),
+            targetLayout = ObjectType.Layout.SET
+        )
+
+        val vm = buildViewModel()
+        vm.onStart(id = root, space = defaultSpace)
+        advanceUntilIdle()
+
+        val card = vm.views.filterIsInstance<BlockView.DataView>().single()
+        assertEquals(expected = "Task", actual = card.title)
+    }
+
     private fun stubPageWithInlineDataView(
         target: String,
         targetLayout: ObjectType.Layout
@@ -134,7 +166,8 @@ class EditorInlineDataViewOpenTest : EditorPresentationTestSetup() {
                     ),
                     target to mapOf(
                         Relations.ID to target,
-                        Relations.NAME to "Tasks",
+                        Relations.NAME to "Task",
+                        Relations.PLURAL_NAME to "Tasks",
                         Relations.LAYOUT to targetLayout.code.toDouble(),
                         Relations.SPACE_ID to defaultSpace
                     )

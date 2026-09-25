@@ -72,8 +72,8 @@ class ContentColumnWidthTest {
     }
 
     @Test
-    fun `should show the wallpaper on the vault`() {
-        assertTrue(showsWallpaper(R.id.vaultScreen))
+    fun `should paint the plain backdrop on the vault`() {
+        assertFalse(showsWallpaper(R.id.vaultScreen))
     }
 
     @Test

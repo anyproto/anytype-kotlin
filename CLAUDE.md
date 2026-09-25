@@ -91,15 +91,17 @@ board needs every pixel of the window. The editor uses the empty space for its t
 column leaves wide empty margins on a tablet. `contentColumnMaxWidth()` holds the rule.
 
 `MainActivity.setupContentColumnWidth()` also sets the backdrop. The widgets screen, the
-collection screen, the vault, and the chat show the wallpaper of the space through their content,
-so the root paints the wallpaper there. Every other screen paints an opaque background over the column.
+collection screen, and the chat show the wallpaper of the space through their content, so the root
+paints the wallpaper there. The vault belongs to no space: it always gets the plain backdrop. Every other screen paints an opaque background over the column.
 The wallpaper then reaches the eye only in the strip beside a capped column. The root paints
 `@color/background_primary` there: white in the light theme, black in the dark theme.
 `showsWallpaper()` holds the rule.
 
 The moment of a change matters. The navigation controller reports a new destination before the
-new screen appears, and the old screen holds the window during the animation. The wallpaper
-therefore returns at once. The plain backdrop waits until the fragment manager destroys the view
+new screen appears, and the old screen holds the window during the animation. The backdrop
+therefore never changes on the destination. The wallpaper returns when the fragment builds the view
+of the new screen. A tap on a space in the vault makes the space active first, so an earlier
+wallpaper paints the strips beside the vault. The plain backdrop waits until the fragment manager destroys the view
 of the old screen, which happens when the exit animation ends. Do not use the resumed state of the
 new screen for this: a destination with an enter animation resumes while the animation runs.
 

@@ -4614,13 +4614,25 @@ class EditorViewModel(
 
     private fun proceedWithOpeningDataViewBlock(dv: Content.DataView) {
         if (dv.targetObjectId.isNotEmpty()) {
-            val targetSpace =
-                orchestrator.stores.details.current().getObject(dv.targetObjectId)?.spaceId
-                    ?: vmParams.space.id
-            proceedWithOpeningDataViewObject(
-                target = dv.targetObjectId,
-                space = SpaceId(targetSpace)
-            )
+            val target = orchestrator.stores.details.current().getObject(dv.targetObjectId)
+            val targetSpace = target?.spaceId ?: vmParams.space.id
+            if (target?.layout == ObjectType.Layout.OBJECT_TYPE) {
+                // An inline query with a type as its source targets the type object.
+                // Only the type screen shows the header of a type.
+                navigate(
+                    EventWrapper(
+                        OpenTypeObject(
+                            target = dv.targetObjectId,
+                            space = targetSpace
+                        )
+                    )
+                )
+            } else {
+                proceedWithOpeningDataViewObject(
+                    target = dv.targetObjectId,
+                    space = SpaceId(targetSpace)
+                )
+            }
             viewModelScope.sendAnalyticsOpenAsObject(
                 analytics = analytics,
                 type = EventsDictionary.Type.dataView

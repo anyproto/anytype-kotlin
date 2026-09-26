@@ -29,7 +29,8 @@ sealed class Intent {
             val targetContext: Id,
             val blocks: List<Id>,
             val position: Position,
-            val onSuccess: (() -> Unit)? = null
+            val onSuccess: (() -> Unit)? = null,
+            val onFailure: (() -> Unit)? = null
         ) : Document()
 
         class TurnIntoDocument(

@@ -466,6 +466,7 @@ class Orchestrator(
                         },
                         onFailure = {
                             Timber.e(it, "Error while moving blocks")
+                            intent.onFailure?.invoke()
                         }
                     )
                 }

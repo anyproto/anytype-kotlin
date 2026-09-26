@@ -20,23 +20,37 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_utils.R
 
 /**
- * Width of the single content column, in pixels.
+ * Width of the content column that holds the receiver, in pixels.
  *
- * The activity layout caps the column at [R.dimen.max_content_width] and centers it. Therefore
- * `resources.displayMetrics.widthPixels` overstates the space on a tablet and on a phone in
- * landscape. A view that sizes itself from the display becomes wider than the column that holds
- * it. Call this on the container that owns the space instead.
+ * The receiver reports its own size when it has one. Before the first measure pass the nearest
+ * ancestor with a size stands in, because the ancestor already holds the column. A view without
+ * such an ancestor, for example an item that a holder binds before the list adds it, falls back
+ * to the display width.
  *
- * The receiver reports its own size when it has one. Before the first measure pass the value
- * falls back to the display width, capped by the same dimension.
+ * The fallback does not cap the width at [R.dimen.max_content_width]. Every caller lives in the
+ * editor, on the set screen, or on the type screen, and these screens fill the window (see
+ * `FULL_WIDTH_DESTINATIONS` in the app module). A cap under-reported the width there, and a
+ * relation value then ellipsized at half of 600dp on a tablet. A caller in a capped column must
+ * read an ancestor that has a size, because the display is wider than the column there.
  */
 fun View.contentWidth(): Int =
     measuredWidth.takeIf { it > 0 }
         ?: width.takeIf { it > 0 }
-        ?: minOf(
-            resources.displayMetrics.widthPixels,
-            resources.getDimensionPixelSize(R.dimen.max_content_width)
-        )
+        ?: sizedAncestorWidth()
+        ?: resources.displayMetrics.widthPixels
+
+/**
+ * The width of the nearest ancestor that has a size, or null when no ancestor has one.
+ */
+private fun View.sizedAncestorWidth(): Int? {
+    var candidate = parent as? View
+    while (candidate != null) {
+        val width = candidate.measuredWidth.takeIf { it > 0 } ?: candidate.width.takeIf { it > 0 }
+        if (width != null) return width
+        candidate = candidate.parent as? View
+    }
+    return null
+}
 
 /**
  * Width of the visible area for a view inside a horizontally scrolling container, in pixels.

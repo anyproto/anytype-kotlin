@@ -511,8 +511,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
      * wallpaper through its content until then. The resumed state of the new screen is not the
      * signal: a destination with an enter animation resumes while the animation runs.
      *
-     * The wallpaper is the exception: it returns as soon as the controller reports a destination
-     * that shows it, because the screen that enters already needs it.
+     * The wallpaper returns when the fragment builds the view of a screen that shows it, because
+     * the screen that enters already needs it. The controller reports the destination earlier,
+     * while the old screen still holds the window, so that moment is too early.
      */
     private fun setupContentColumnWidth() {
         runCatching {
@@ -535,6 +536,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                         if (f is DialogFragment) return
                         val target = currentScreenDestinationId() ?: return
                         applyScreenWidth(v, target)
+                        if (showsWallpaper(target)) applyBackdrop()
                     }
 
                     override fun onFragmentViewDestroyed(fm: FragmentManager, f: Fragment) {
@@ -578,13 +580,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     /**
-     * The wallpaper returns at once, because the new screen shows it through the content. The
-     * plain backdrop waits for the old screen to leave the window. See the fragment callback in
-     * [setupContentColumnWidth].
+     * The backdrop does not change here. The wallpaper waits for the view of the new screen, and
+     * the plain backdrop waits for the old screen to leave the window. See the fragment callbacks
+     * in [setupContentColumnWidth].
      */
     private fun applyDestination(destinationId: Int) {
         currentDestinationId = destinationId
-        if (showsWallpaper(destinationId)) applyBackdrop()
     }
 
     /**
@@ -640,9 +641,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     /**
-     * The root paints the backdrop of the window. The widgets screen, the collection screen, the
-     * vault, and the chat show the wallpaper of the space through their content, so the root paints
-     * the wallpaper there. Every other screen paints an opaque background over the content column. The
+     * The root paints the backdrop of the window. The widgets screen, the collection screen, and
+     * the chat show the wallpaper of the space through their content, so the root paints the
+     * wallpaper there. Every other screen paints an opaque background over the content column. The
      * wallpaper then reaches the eye only in the strip beside a capped column. The root paints the
      * plain backdrop there: white in the light theme, black in the dark theme.
      */

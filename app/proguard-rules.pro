@@ -16,10 +16,10 @@
 # debugging stack traces.
 #-keepattributes SourceFile,LineNumberTable
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
--dontobfuscate
+# Obfuscation is on. Google Play flags a bundle with 0% obfuscated DEX code
+# (Play Console > Release dashboard > "DEX code optimization is below our threshold").
+# Line numbers stay (see the firebase block below); the file name collapses to "SourceFile".
+-renamesourcefileattribute SourceFile
 
 
 ##---------------Begin: proguard configuration for Gson  ----------

@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -57,18 +58,34 @@ class EditorTabKeyTest : EditorPresentationTestSetup() {
         children = children.map { it.id }
     )
 
-    private fun pressTab(block: Block, isShift: Boolean) {
+    private fun pressTab(block: Block, isShift: Boolean, times: Int = 1) {
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)
         vm.onBlockFocusChanged(id = block.id, hasFocus = true)
-        vm.onKeyPressedEvent(
-            KeyPressedEvent.OnTabKeyEvent(
-                target = block.id,
-                text = block.content<Block.Content.Text>().text,
-                marks = emptyList(),
-                isShift = isShift
+        repeat(times) {
+            vm.onKeyPressedEvent(
+                KeyPressedEvent.OnTabKeyEvent(
+                    target = block.id,
+                    text = block.content<Block.Content.Text>().text,
+                    marks = emptyList(),
+                    isShift = isShift
+                )
             )
-        )
+        }
+    }
+
+    private fun verifyMove(block: Block, target: Block, position: Position) {
+        verifyBlocking(move, times(1)) {
+            async(
+                params = Move.Params(
+                    context = root,
+                    targetContext = root,
+                    targetId = target.id,
+                    blockIds = listOf(block.id),
+                    position = position
+                )
+            )
+        }
     }
 
     @Test
@@ -147,6 +164,60 @@ class EditorTabKeyTest : EditorPresentationTestSetup() {
         pressTab(block = a, isShift = true)
 
         verifyBlocking(move, never()) { async(any()) }
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `tab moves the block into a quote or a callout`() {
+        listOf(Block.Content.Text.Style.QUOTE, Block.Content.Text.Style.CALLOUT).forEach { style ->
+            val a = text(style = style)
+            val b = text()
+            stubOpenDocument(listOf(page(a, b), a, b))
+
+            pressTab(block = b, isShift = false)
+
+            verifyMove(block = b, target = a, position = Position.INNER)
+            clearPendingCoroutines()
+        }
+    }
+
+    @Test
+    fun `tab does nothing for a header`() {
+        val a = text()
+        val b = text(style = Block.Content.Text.Style.H2)
+        stubOpenDocument(listOf(page(a, b), a, b))
+
+        pressTab(block = b, isShift = false)
+
+        verifyBlocking(move, never()) { async(any()) }
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `tab does nothing when the object restricts blocks`() {
+        val a = text()
+        val b = text()
+        stubOpenDocument(
+            document = listOf(page(a, b), a, b),
+            objectRestrictions = listOf(ObjectRestriction.BLOCKS)
+        )
+
+        pressTab(block = b, isShift = false)
+
+        verifyBlocking(move, never()) { async(any()) }
+        clearPendingCoroutines()
+    }
+
+    @Test
+    fun `a second tab waits until the first move is applied`() {
+        val a = text()
+        val b = text()
+        stubOpenDocument(listOf(page(a, b), a, b))
+
+        // The stubbed move returns no events, so the structure does not change.
+        pressTab(block = b, isShift = false, times = 2)
+
+        verifyMove(block = b, target = a, position = Position.INNER)
         clearPendingCoroutines()
     }
 

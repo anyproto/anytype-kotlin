@@ -144,7 +144,8 @@ class TextInputWidget : AppCompatEditText {
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         val watcher = tabKeyWatcher
         if (isTabKey(keyCode, event) && watcher != null && !inReadMode) {
-            watcher.invoke(event.isShiftPressed)
+            // A held key moves the block one level only.
+            if (event.repeatCount == 0) watcher.invoke(event.isShiftPressed)
             return true
         }
         return super.onKeyDown(keyCode, event)

@@ -2056,13 +2056,34 @@ class EditorViewModel(
         val block = blocks.first { it.id == target }
         val content = block.content<Content.Text>()
 
-        // Skip the pre-split save flush when nothing actually changed —
-        // a redundant set-text is a last-writer-wins write that can stomp
-        // a concurrent peer edit.
+        flushTextBeforeStructureChange(target, text, marks)
+
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Text.Split(
+                    context = context,
+                    block = block,
+                    range = range,
+                    isToggled = if (content.isToggle()) renderer.isToggled(target) else null,
+                    style = content.style
+                )
+            )
+        }
+    }
+
+    /**
+     * Writes the latest text of [target] before an operation that changes the block structure.
+     * The flush is skipped when nothing actually changed — a redundant set-text is a
+     * last-writer-wins write that can stomp a concurrent peer edit.
+     */
+    private fun flushTextBeforeStructureChange(
+        target: Id,
+        text: String,
+        marks: List<Content.Text.Mark>
+    ) {
         val isFlushRedundant = isTextSameAsSynced(target, text, marks)
 
-        val update = blocks.updateTextContent(target, text, marks)
-        orchestrator.stores.document.update(update)
+        orchestrator.stores.document.update(blocks.updateTextContent(target, text, marks))
 
         viewModelScope.launch {
             orchestrator.proxies.saves.send(null)
@@ -2080,18 +2101,6 @@ class EditorViewModel(
                     )
                 )
             }
-        }
-
-        viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Text.Split(
-                    context = context,
-                    block = block,
-                    range = range,
-                    isToggled = if (content.isToggle()) renderer.isToggled(target) else null,
-                    style = content.style
-                )
-            )
         }
     }
 
@@ -7456,6 +7465,144 @@ class EditorViewModel(
                 )
                 viewModelScope.sendAnalyticsSetTitleEvent(analytics)
             }
+            is KeyPressedEvent.OnTabKeyEvent -> {
+                proceedWithTabKeyEvent(
+                    target = event.target,
+                    text = event.text,
+                    marks = event.marks,
+                    isShift = event.isShift
+                )
+            }
+        }
+    }
+
+    /**
+     * The Tab move that the middleware has not applied to [blocks] yet.
+     * The next Tab waits for it: until then, [blocks] shows the old structure.
+     */
+    private var pendingTabMove: PendingTabMove? = null
+
+    private class PendingTabMove(val block: Id, val from: Id)
+
+    /**
+     * Tab moves the block into its previous sibling, as the last child.
+     * Shift+Tab moves the block out of its parent, directly below the parent.
+     * The desktop client uses the same rules. A move that the structure does not permit does nothing.
+     */
+    private fun proceedWithTabKeyEvent(
+        target: Id,
+        text: String,
+        marks: List<Content.Text.Mark>,
+        isShift: Boolean
+    ) {
+        if (mode != EditorMode.Edit) return
+        // The block does not exist in the middleware yet: there is nothing to move.
+        if (target == VIRTUAL_TRAILING_BLOCK_ID) return
+        if (orchestrator.stores.objectRestrictions.current().contains(ObjectRestriction.BLOCKS)) {
+            sendToast(NOT_ALLOWED_FOR_OBJECT)
+            return
+        }
+        val fork = identityFork
+        if (fork != null && target == fork.oldId) {
+            // Replace in flight — replay the tab against the forked block.
+            fork.text = text
+            fork.marks = marks
+            fork.onForked += { id -> proceedWithTabKeyEvent(id, text, marks, isShift) }
+            return
+        }
+        val id = forkRedirectOrNull(target) ?: target
+
+        pendingTabMove?.let { pending ->
+            if (blocks.find { it.children.contains(pending.block) }?.id == pending.from) {
+                Timber.d("Tab is ignored: the previous move is not applied yet")
+                return
+            }
+            pendingTabMove = null
+        }
+
+        val block = blocks.find { it.id == id } ?: return
+        if (!block.isIndentable()) return
+        val parent = blocks.find { it.children.contains(id) } ?: return
+
+        val (moveTarget, position) = if (isShift) {
+            // A child of the page root or of a layout block has no parent to leave.
+            if (!parent.canHaveChildren()) return
+            parent to Position.BOTTOM
+        } else {
+            val index = parent.children.indexOf(id)
+            if (index <= 0) return
+            val previous = blocks.find { it.id == parent.children[index.dec()] } ?: return
+            if (!previous.canHaveChildren()) return
+            previous to Position.INNER
+        }
+
+        flushTextBeforeStructureChange(id, text, marks)
+
+        // Keep the caret where it is: the move re-renders the block.
+        val selection = orchestrator.stores.textSelection.current()
+        if (selection.id == target || selection.id == id) {
+            orchestrator.stores.focus.update(
+                Editor.Focus(
+                    target = Editor.Focus.Target.Block(id),
+                    cursor = selection.selection?.let { Editor.Cursor.Range(it) }
+                )
+            )
+        }
+
+        val pending = PendingTabMove(block = id, from = parent.id)
+        pendingTabMove = pending
+
+        viewModelScope.launch {
+            orchestrator.proxies.intents.send(
+                Intent.Document.Move(
+                    context = context,
+                    target = moveTarget.id,
+                    targetContext = context,
+                    blocks = listOf(id),
+                    position = position,
+                    onSuccess = {
+                        // Open a closed toggle, so that the moved block stays visible.
+                        // The refresh that the move payload starts shows the new state.
+                        val isToggle = (moveTarget.content as? Content.Text)?.isToggle() == true
+                        if (position == Position.INNER && isToggle && !renderer.isToggled(moveTarget.id)) {
+                            renderer.onToggleChanged(moveTarget.id)
+                        }
+                    },
+                    onFailure = {
+                        if (pendingTabMove === pending) pendingTabMove = null
+                    }
+                )
+            )
+        }
+    }
+
+    /**
+     * Tab can move this block. Title, description, header, and code blocks stay at their level.
+     */
+    private fun Block.isIndentable(): Boolean {
+        val content = content as? Content.Text ?: return false
+        return when (content.style) {
+            Content.Text.Style.TITLE,
+            Content.Text.Style.DESCRIPTION,
+            Content.Text.Style.CODE_SNIPPET -> false
+            else -> !content.isHeader()
+        }
+    }
+
+    /**
+     * Tab can move a block into this block.
+     */
+    private fun Block.canHaveChildren(): Boolean {
+        val content = content as? Content.Text ?: return false
+        return when (content.style) {
+            Content.Text.Style.P,
+            Content.Text.Style.BULLET,
+            Content.Text.Style.NUMBERED,
+            Content.Text.Style.CHECKBOX,
+            Content.Text.Style.TOGGLE,
+            Content.Text.Style.QUOTE,
+            Content.Text.Style.CALLOUT -> true
+            else -> false
         }
     }
 

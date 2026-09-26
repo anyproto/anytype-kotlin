@@ -436,6 +436,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             onSlashEvent = vm::onSlashTextWatcherEvent,
             onBackPressedCallback = { vm.onBackPressedCallback() },
             onKeyPressedEvent = vm::onKeyPressedEvent,
+            isTabKeyEnabled = true,
             onDragAndDropTrigger = { vh: RecyclerView.ViewHolder, event: MotionEvent? ->
                 dndDelegate.handleDragAndDropTrigger(vh, event)
             },

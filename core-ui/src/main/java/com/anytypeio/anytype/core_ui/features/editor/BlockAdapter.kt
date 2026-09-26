@@ -133,6 +133,7 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.core_utils.text.OnNewLineActionListener
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
+import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType.LongClick
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
@@ -243,6 +244,11 @@ class BlockAdapter(
     private val onSlashEvent: (SlashEvent) -> Unit = {},
     private val onBackPressedCallback: () -> Boolean,
     private val onKeyPressedEvent: (KeyPressedEvent) -> Unit = {},
+    /**
+     * True when Tab and Shift+Tab from a hardware keyboard move the block.
+     * When false, Tab keeps the default behavior: it moves the focus to the next view.
+     */
+    private val isTabKeyEnabled: Boolean = false,
     private val onDragAndDropTrigger: (RecyclerView.ViewHolder, event: MotionEvent?) -> Boolean = { _, _ -> true},
     private val onDragListener: View.OnDragListener,
     private val lifecycle: Lifecycle,
@@ -995,6 +1001,20 @@ class BlockAdapter(
                 val pos = holder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
                     onTextInputClicked(blocks[pos].id)
+                }
+            }
+            if (isTabKeyEnabled) {
+                holder.content.tabKeyWatcher = { isShift ->
+                    holder.withBlock<BlockView.Text> { item ->
+                        onKeyPressedEvent(
+                            KeyPressedEvent.OnTabKeyEvent(
+                                target = item.id,
+                                text = item.text,
+                                marks = item.marks.map { it.mark() },
+                                isShift = isShift
+                            )
+                        )
+                    }
                 }
             }
             holder.content.selectionWatcher = { selection ->

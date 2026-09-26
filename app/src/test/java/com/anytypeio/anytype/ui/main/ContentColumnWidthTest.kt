@@ -11,9 +11,9 @@ class ContentColumnWidthTest {
     private val capped = 1800
 
     @Test
-    fun `should cap the editor`() {
+    fun `should not cap the editor`() {
         assertEquals(
-            capped,
+            NO_MAX_WIDTH,
             contentColumnMaxWidth(
                 destinationId = R.id.pageScreen,
                 cappedWidthPx = capped
@@ -72,8 +72,8 @@ class ContentColumnWidthTest {
     }
 
     @Test
-    fun `should show the wallpaper on the vault`() {
-        assertTrue(showsWallpaper(R.id.vaultScreen))
+    fun `should paint the plain backdrop on the vault`() {
+        assertFalse(showsWallpaper(R.id.vaultScreen))
     }
 
     @Test

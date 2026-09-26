@@ -7456,6 +7456,92 @@ class EditorViewModel(
                 )
                 viewModelScope.sendAnalyticsSetTitleEvent(analytics)
             }
+            is KeyPressedEvent.OnTabKeyEvent -> {
+                proceedWithTabKeyEvent(
+                    target = event.target,
+                    text = event.text,
+                    marks = event.marks,
+                    isShift = event.isShift
+                )
+            }
+        }
+    }
+
+    /**
+     * Tab moves the block into its previous sibling, as the last child.
+     * Shift+Tab moves the block out of its parent, directly below the parent.
+     * The desktop client does the same. A move that the structure does not permit does nothing.
+     */
+    private fun proceedWithTabKeyEvent(
+        target: Id,
+        text: String,
+        marks: List<Content.Text.Mark>,
+        isShift: Boolean
+    ) {
+        if (mode != EditorMode.Edit) return
+        // The block does not exist in the middleware yet: there is nothing to move.
+        if (target == VIRTUAL_TRAILING_BLOCK_ID) return
+        val fork = identityFork
+        if (fork != null && target == fork.oldId) return
+        val id = forkRedirectOrNull(target) ?: target
+
+        val parent = blocks.find { it.children.contains(id) } ?: return
+
+        val (moveTarget, position) = if (isShift) {
+            // A child of the page root or of a layout block has no text parent to leave.
+            if (parent.id == context || parent.content !is Content.Text) return
+            parent.id to Position.BOTTOM
+        } else {
+            val index = parent.children.indexOf(id)
+            if (index <= 0) return
+            val previous = blocks.find { it.id == parent.children[index.dec()] } ?: return
+            if (previous.content !is Content.Text || !previous.supportNesting()) return
+            // Open a closed toggle, so that the block stays visible after the move.
+            if (previous.content<Content.Text>().isToggle() && !renderer.isToggled(previous.id)) {
+                renderer.onToggleChanged(previous.id)
+            }
+            previous.id to Position.INNER
+        }
+
+        // Skip the flush when nothing changed. A redundant set-text is a
+        // last-writer-wins write that can stomp a concurrent peer edit.
+        val isFlushRedundant = isTextSameAsSynced(id, text, marks)
+
+        orchestrator.stores.document.update(blocks.updateTextContent(id, text, marks))
+
+        // Keep the caret where it is: the move re-renders the block.
+        val selection = orchestrator.stores.textSelection.current()
+        if (selection.id == id) {
+            orchestrator.stores.focus.update(
+                Editor.Focus(
+                    target = Editor.Focus.Target.Block(id),
+                    cursor = selection.selection?.let { Editor.Cursor.Range(it) }
+                )
+            )
+        }
+
+        viewModelScope.launch {
+            orchestrator.proxies.saves.send(null)
+            orchestrator.proxies.changes.send(null)
+            if (!isFlushRedundant) {
+                orchestrator.proxies.intents.send(
+                    Intent.Text.UpdateText(
+                        context = context,
+                        target = id,
+                        marks = marks,
+                        text = text
+                    )
+                )
+            }
+            orchestrator.proxies.intents.send(
+                Intent.Document.Move(
+                    context = context,
+                    target = moveTarget,
+                    targetContext = context,
+                    blocks = listOf(id),
+                    position = position
+                )
+            )
         }
     }
 

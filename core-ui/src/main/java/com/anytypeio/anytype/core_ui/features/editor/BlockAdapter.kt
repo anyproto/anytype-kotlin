@@ -133,6 +133,7 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.core_utils.text.OnNewLineActionListener
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
+import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType.LongClick
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
@@ -995,6 +996,18 @@ class BlockAdapter(
                 val pos = holder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
                     onTextInputClicked(blocks[pos].id)
+                }
+            }
+            holder.content.tabKeyWatcher = { isShift ->
+                holder.withBlock<BlockView.Text> { item ->
+                    onKeyPressedEvent(
+                        KeyPressedEvent.OnTabKeyEvent(
+                            target = item.id,
+                            text = item.text,
+                            marks = item.marks.map { it.mark() },
+                            isShift = isShift
+                        )
+                    )
                 }
             }
             holder.content.selectionWatcher = { selection ->

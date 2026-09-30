@@ -2266,7 +2266,7 @@
     <string name="search_v2_hint">搜索</string>
     <string name="search_v2_chip_in_space">In %1$s</string>
     <string name="search_v2_chip_channels">空间</string>
-    <string name="search_v2_chip_messages">Messages</string>
+    <string name="search_v2_chip_messages">消息</string>
     <string name="search_v2_chip_by_me">By me</string>
     <string name="search_v2_chip_by_name">By %1$s</string>
     <string name="search_v2_chip_media">媒体</string>
@@ -2274,10 +2274,10 @@
     <string name="search_v2_chip_bookmarks">书签</string>
     <string name="search_v2_chip_collections">合集</string>
     <string name="search_v2_chip_queries">集合</string>
-    <string name="search_v2_chip_chats">Chats</string>
+    <string name="search_v2_chip_chats">聊天</string>
     <string name="search_v2_chip_types">类型</string>
-    <string name="search_v2_chip_people">People</string>
-    <string name="search_v2_section_recent_messages">Recent Messages</string>
+    <string name="search_v2_chip_people">人员</string>
+    <string name="search_v2_section_recent_messages">最近的消息</string>
     <string name="search_v2_section_objects">对象</string>
     <string name="search_v2_person_member_in_one">member in 1 Channel</string>
     <string name="search_v2_person_member_in">member in %1$d Channels</string>

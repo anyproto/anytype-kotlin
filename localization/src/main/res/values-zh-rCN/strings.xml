@@ -38,8 +38,8 @@
     <string name="quick_capture_drafts_elsewhere">You have drafts in other spaces</string>
     <string name="quick_capture_move_or_new_title">Take your draft to %1$s?</string>
     <string name="quick_capture_move_or_new_message">You haven\'t edited this draft since opening it. Move it, or start a new one in %1$s.</string>
-    <string name="quick_capture_move_or_new_move">Move draft</string>
-    <string name="quick_capture_move_or_new_start">Start new draft</string>
+    <string name="quick_capture_move_or_new_move">移动草稿</string>
+    <string name="quick_capture_move_or_new_start">开始新草稿</string>
     <string name="quick_capture_send">发送</string>
     <string name="account">库</string>
     <string name="reset_account">重置库</string>
@@ -1756,7 +1756,7 @@
     <string name="version_history_error_get_members">获取成员时出现错误</string>
     <string name="new_object">新对象</string>
     <string name="vault_my_spaces">我的频道</string>
-    <string name="vault_search_hint">Search everything</string>
+    <string name="vault_search_hint">搜索全部</string>
     <string name="vault_unread_section_title">未读</string>
     <string name="vault_all_section_title">所有</string>
     <string name="vault_pinned_section_title">置顶</string>

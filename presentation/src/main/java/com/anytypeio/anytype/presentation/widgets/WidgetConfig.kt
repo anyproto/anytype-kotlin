@@ -35,7 +35,8 @@ object WidgetConfig {
     /**
      * The limit comes from the widget block, and any client can set it.
      * The desktop client offers more options (for example 30 and 50) than this client knows,
-     * so every positive limit is valid. The default applies only when the limit is not set.
+     * so every positive limit is valid, up to [MAX_LIMIT].
+     * The default applies only when the limit is not set.
      */
     fun resolveListWidgetLimit(
         isCompact: Boolean,
@@ -43,17 +44,18 @@ object WidgetConfig {
         limit: Int
     ) : Int {
         return when {
-            limit > NO_LIMIT -> limit
+            limit > NO_LIMIT -> limit.coerceAtMost(MAX_LIMIT)
             isCompact || isGallery -> DEFAULT_COMPACT_LIST_LIMIT
             else -> DEFAULT_LIST_LIMIT
         }
     }
 
     fun resolveTreeWidgetLimit(limit: Int) : Int {
-        return if (limit > NO_LIMIT) limit else DEFAULT_TREE_LIMIT
+        return if (limit > NO_LIMIT) limit.coerceAtMost(MAX_LIMIT) else DEFAULT_TREE_LIMIT
     }
 
     const val NO_LIMIT = 0
+    const val MAX_LIMIT = 50
     const val DEFAULT_LIST_LIMIT = 4
     const val DEFAULT_COMPACT_LIST_LIMIT = 6
     const val DEFAULT_TREE_LIMIT = 6

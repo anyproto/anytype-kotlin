@@ -41,4 +41,17 @@ class WidgetConfigLimitTest {
             WidgetConfig.resolveTreeWidgetLimit(WidgetConfig.NO_LIMIT)
         )
     }
+
+    @Test
+    fun `limit above the maximum falls back to the maximum`() {
+        assertEquals(
+            WidgetConfig.MAX_LIMIT,
+            WidgetConfig.resolveListWidgetLimit(isCompact = true, limit = 10_000)
+        )
+        assertEquals(
+            WidgetConfig.MAX_LIMIT,
+            WidgetConfig.resolveListWidgetLimit(isCompact = false, limit = 51)
+        )
+        assertEquals(WidgetConfig.MAX_LIMIT, WidgetConfig.resolveTreeWidgetLimit(10_000))
+    }
 }

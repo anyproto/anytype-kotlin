@@ -40,6 +40,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.GetCurrentParticipantId
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
@@ -275,7 +276,8 @@ object ObjectSetModule {
         addDiscussion: AddDiscussion,
         userSettingsRepository: UserSettingsRepository,
         backHistoryDelegate: BackHistoryDelegate,
-        exitToVaultDelegate: ExitToVaultDelegate
+        exitToVaultDelegate: ExitToVaultDelegate,
+        getCurrentParticipantId: GetCurrentParticipantId
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -331,7 +333,8 @@ object ObjectSetModule {
         addDiscussion = addDiscussion,
         userSettingsRepository = userSettingsRepository,
         backHistoryDelegate = backHistoryDelegate,
-        exitToVaultDelegate = exitToVaultDelegate
+        exitToVaultDelegate = exitToVaultDelegate,
+        getCurrentParticipantId = getCurrentParticipantId
     )
 
     @JvmStatic
@@ -460,7 +463,9 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideObjectStateReducer(): ObjectStateReducer = DefaultObjectStateReducer()
+    fun provideObjectStateReducer(
+        params: ObjectSetViewModel.Params
+    ): ObjectStateReducer = DefaultObjectStateReducer(inlineBlockId = params.blockId)
 
     @JvmStatic
     @Provides
@@ -806,6 +811,7 @@ object ObjectSetModule {
 
 data class DefaultComponentParam(
     val ctx: Id,
-    val space: Space
+    val space: Space,
+    val blockId: Id? = null
 )
 

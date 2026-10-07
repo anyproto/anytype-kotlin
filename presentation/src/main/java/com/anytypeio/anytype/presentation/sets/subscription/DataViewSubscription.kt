@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDataViewFilters
+import com.anytypeio.anytype.presentation.sets.FilterValueTemplates
 import com.anytypeio.anytype.presentation.sets.filterOutDeletedAndMissingObjects
 import com.anytypeio.anytype.presentation.sets.getSetOfValue
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -30,7 +31,8 @@ interface DataViewSubscription {
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        templates: FilterValueTemplates = FilterValueTemplates.NONE
     ): Flow<DataViewState>
 
     suspend fun startObjectCollectionSubscription(
@@ -40,7 +42,8 @@ interface DataViewSubscription {
         state: ObjectState.DataView.Collection,
         currentViewerId: Id?,
         offset: Long,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        templates: FilterValueTemplates = FilterValueTemplates.NONE
     ): Flow<DataViewState>
 
     suspend fun startObjectTypeSetSubscription(
@@ -49,7 +52,8 @@ interface DataViewSubscription {
         state: ObjectState.DataView.TypeSet,
         currentViewerId: Id?,
         offset: Long,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        templates: FilterValueTemplates = FilterValueTemplates.NONE
     ): Flow<DataViewState>
 
     suspend fun unsubscribe(ids: List<Id>)
@@ -66,7 +70,8 @@ class DefaultDataViewSubscription(
         state: ObjectState.DataView.Collection,
         currentViewerId: Id?,
         offset: Long,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        templates: FilterValueTemplates
     ): Flow<DataViewState> {
         if (context.isEmpty() || collection.isEmpty()) {
             Timber.w("Data view collection subscription: context or collection is empty")
@@ -78,7 +83,7 @@ class DefaultDataViewSubscription(
             return emptyFlow()
         }
         val filters = buildList {
-            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations).removeUnsupportedFilters())
+            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations, templates).removeUnsupportedFilters())
             addAll(defaultDataViewFilters())
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
@@ -109,7 +114,8 @@ class DefaultDataViewSubscription(
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        templates: FilterValueTemplates
     ): Flow<DataViewState> {
         if (context.isEmpty()) {
             Timber.w("Data view set subscription: context is empty")
@@ -137,7 +143,7 @@ class DefaultDataViewSubscription(
         }
 
         val filters = buildList {
-            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations).removeUnsupportedFilters())
+            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations, templates).removeUnsupportedFilters())
             addAll(defaultDataViewFilters())
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
@@ -166,7 +172,8 @@ class DefaultDataViewSubscription(
         state: ObjectState.DataView.TypeSet,
         currentViewerId: Id?,
         offset: Long,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        templates: FilterValueTemplates
     ): Flow<DataViewState> {
         if (context.isEmpty()) {
             Timber.w("Data view TypeSet subscription: context is empty")
@@ -194,7 +201,7 @@ class DefaultDataViewSubscription(
         }
 
         val filters = buildList {
-            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations).removeUnsupportedFilters())
+            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations, templates).removeUnsupportedFilters())
             addAll(defaultDataViewFilters())
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }

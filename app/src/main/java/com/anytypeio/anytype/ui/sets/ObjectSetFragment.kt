@@ -315,6 +315,7 @@ open class ObjectSetFragment :
     private val ctx: Id get() = argString(CONTEXT_ID_KEY)
     private val space: Id get() = arg<String>(SPACE_ID_KEY)
     private val view: Id? get() = argOrNull<Id>(INITIAL_VIEW_ID_KEY)
+    private val blockId: Id? get() = argOrNull<Id>(BLOCK_ID_KEY)
 
     lateinit var titleTextWatcher: DefaultTextWatcher
 
@@ -2343,7 +2344,8 @@ open class ObjectSetFragment :
                 key = ctx,
                 param = DefaultComponentParam(
                     ctx = ctx,
-                    space = SpaceId(space)
+                    space = SpaceId(space),
+                    blockId = blockId
                 )
             )
             .inject(this)
@@ -2414,6 +2416,7 @@ open class ObjectSetFragment :
         private const val INITIAL_VIEW_ID_KEY = "arg.object_set.initial-view"
         private const val EMBEDDED_KEY = "arg.object_set.embedded"
         private const val EXTERNAL_HEADER_KEY = "arg.object_set.external_header"
+        private const val BLOCK_ID_KEY = "arg.object_set.block_id"
         private const val SCROLL_STATE_KEY = "object_set.scroll_state"
         private const val MAX_RETAINED_VIEWERS = 16
         val EMPTY_TAG = null
@@ -2424,13 +2427,15 @@ open class ObjectSetFragment :
             space: Id,
             view: Id? = null,
             embedded: Boolean = false,
-            externalHeader: Boolean = false
+            externalHeader: Boolean = false,
+            blockId: Id? = null
         ) = bundleOf(
             CONTEXT_ID_KEY to ctx,
             SPACE_ID_KEY to space,
             INITIAL_VIEW_ID_KEY to view,
             EMBEDDED_KEY to embedded,
-            EXTERNAL_HEADER_KEY to externalHeader
+            EXTERNAL_HEADER_KEY to externalHeader,
+            BLOCK_ID_KEY to blockId
         )
     }
 }

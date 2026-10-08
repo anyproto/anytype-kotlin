@@ -26,7 +26,13 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 
-class DefaultObjectStateReducer : ObjectStateReducer {
+/**
+ * @param inlineBlockId the id of an inline query block of a page, when the screen shows that
+ * block instead of a set, a collection, or a type. See [ObjectState.DataView.inlineBlockId].
+ */
+class DefaultObjectStateReducer(
+    private val inlineBlockId: Id? = null
+) : ObjectStateReducer {
 
     private val eventChannel: Channel<List<Event>> = Channel()
     override val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
@@ -130,6 +136,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
      * @see Command.ShowObject
      */
     private fun handleShowObject(event: Command.ShowObject): ObjectState {
+        if (inlineBlockId != null) return handleShowInlineBlock(event, inlineBlockId)
         val objectState = when (val layout = event.details[event.root]?.getSingleValue<Double>(
             Relations.LAYOUT)?.toInt()) {
             ObjectType.Layout.COLLECTION.code -> ObjectState.DataView.Collection(
@@ -156,6 +163,39 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             }
         }
         return objectState
+    }
+
+    /**
+     * The root is a page. Only the inline query block [blockId] matters: a target set or type
+     * gives a [ObjectState.DataView.Set], and a target collection gives a
+     * [ObjectState.DataView.Collection]. A type target never becomes a TypeSet: a TypeSet
+     * edits the type itself, and here the views belong to the block.
+     */
+    private fun handleShowInlineBlock(event: Command.ShowObject, blockId: Id): ObjectState {
+        val block = event.blocks.find { it.id == blockId }
+        val content = block?.content as? Block.Content.DataView
+        if (content == null) {
+            Timber.e("Inline query block $blockId not found in ${event.root}")
+            return ObjectState.ErrorLayout
+        }
+        val details = ObjectViewDetails(event.details)
+        return if (content.isCollection) {
+            ObjectState.DataView.Collection(
+                root = event.root,
+                blocks = event.blocks,
+                details = details,
+                dataViewRestrictions = event.dataViewRestrictions,
+                inlineBlockId = blockId
+            )
+        } else {
+            ObjectState.DataView.Set(
+                root = event.root,
+                blocks = event.blocks,
+                details = details,
+                dataViewRestrictions = event.dataViewRestrictions,
+                inlineBlockId = blockId
+            )
+        }
     }
 
     /**
@@ -342,6 +382,14 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 blockContentUpdate = updateBlockContent
             )
             is ObjectState.DataView.Set -> {
+                // On a page, another inline query can change. Only the block of this screen
+                // turns the screen into a collection.
+                if (state.inlineBlockId != null && state.inlineBlockId != event.dv) {
+                    return state.updateBlockContent(
+                        target = event.dv,
+                        blockContentUpdate = updateBlockContent
+                    )
+                }
                 val blocks = state.blocks.map { block ->
                     val content = block.content
                     if (block.id == event.dv && content is Block.Content.DataView) {
@@ -359,7 +407,8 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                     blocks = blocks,
                     details = state.details,
                     objectRestrictions = state.objectRestrictions,
-                    dataViewRestrictions = state.dataViewRestrictions
+                    dataViewRestrictions = state.dataViewRestrictions,
+                    inlineBlockId = state.inlineBlockId
                 )
             }
             else -> state

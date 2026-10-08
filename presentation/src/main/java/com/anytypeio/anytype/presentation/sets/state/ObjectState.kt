@@ -22,11 +22,31 @@ sealed class ObjectState {
         abstract val objectRestrictions: List<ObjectRestriction>
         abstract val dataViewRestrictions: List<DataViewRestrictions>
 
-        abstract val dataViewContent: DV
-        abstract val dataViewBlock: Block
-        abstract val viewers: List<DVViewer>
-
         abstract val hasObjectLayoutConflict: Boolean
+
+        /**
+         * The id of an inline query block when the screen shows that block of a page, else null.
+         * The page is then [root]: the block holds the views, and its target holds the source.
+         */
+        abstract val inlineBlockId: Id?
+
+        val isInline: Boolean get() = inlineBlockId != null
+
+        /**
+         * The object that defines the records: the set, the collection, or the type itself.
+         * For an inline query, the target of the block.
+         */
+        val sourceObjectId: Id
+            get() = if (inlineBlockId != null) dataViewContent.targetObjectId else root
+
+        override val isInitialized: Boolean
+            get() = blocks.any { it.isScreenDataView() }
+        val dataViewBlock: Block get() = blocks.first { it.isScreenDataView() }
+        val dataViewContent: DV get() = dataViewBlock.content as DV
+        val viewers: List<DVViewer> get() = dataViewContent.viewers
+
+        private fun Block.isScreenDataView(): Boolean =
+            content is DV && (inlineBlockId == null || id == inlineBlockId)
 
         data class Set(
             override val root: Id,
@@ -35,13 +55,8 @@ sealed class ObjectState {
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
             override val hasObjectLayoutConflict: Boolean = false,
-        ) : DataView() {
-
-            override val isInitialized get() = blocks.any { it.content is DV }
-            override val dataViewBlock get() = blocks.first { it.content is DV }
-            override val dataViewContent get() = dataViewBlock.content as DV
-            override val viewers get() = dataViewContent.viewers
-        }
+            override val inlineBlockId: Id? = null,
+        ) : DataView()
 
         data class Collection(
             override val root: Id,
@@ -50,13 +65,8 @@ sealed class ObjectState {
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
             override val hasObjectLayoutConflict: Boolean = false,
-        ) : DataView() {
-
-            override val isInitialized get() = blocks.any { it.content is DV }
-            override val dataViewBlock get() = blocks.first { it.content is DV }
-            override val dataViewContent get() = dataViewBlock.content as DV
-            override val viewers get() = dataViewContent.viewers
-        }
+            override val inlineBlockId: Id? = null,
+        ) : DataView()
 
         data class TypeSet(
             override val root: Id,
@@ -65,13 +75,8 @@ sealed class ObjectState {
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
             override val hasObjectLayoutConflict: Boolean = false,
-        ) : DataView() {
-
-            override val isInitialized get() = blocks.any { it.content is DV }
-            override val dataViewBlock get() = blocks.first { it.content is DV }
-            override val dataViewContent get() = dataViewBlock.content as DV
-            override val viewers get() = dataViewContent.viewers
-        }
+            override val inlineBlockId: Id? = null,
+        ) : DataView()
     }
 
     object Init : ObjectState() {

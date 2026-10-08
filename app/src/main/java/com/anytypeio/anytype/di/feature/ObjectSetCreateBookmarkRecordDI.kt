@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.multiplayer.GetCurrentParticipantId
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -46,7 +47,8 @@ object ObjectSetCreateBookmarkRecordModule {
         addObjectToCollection: AddObjectToCollection,
         session: ObjectSetSession,
         storeOfRelations: StoreOfRelations,
-        dateProvider: DateProvider
+        dateProvider: DateProvider,
+        getCurrentParticipantId: GetCurrentParticipantId
     ) = ObjectSetCreateBookmarkRecordViewModel.Factory(
         createBookmarkObject = createBookmarkObject,
         urlValidator = urlValidator,
@@ -56,7 +58,8 @@ object ObjectSetCreateBookmarkRecordModule {
         addObjectToCollection = addObjectToCollection,
         session = session,
         storeOfRelations = storeOfRelations,
-        dateProvider = dateProvider
+        dateProvider = dateProvider,
+        getCurrentParticipantId = getCurrentParticipantId
     )
 
     @JvmStatic

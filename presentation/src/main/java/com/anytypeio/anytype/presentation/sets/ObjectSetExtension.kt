@@ -183,16 +183,62 @@ private fun transformFilterWithFormat(filter: DVFilter, format: RelationFormat?)
  * inside filter groups — without the correct format, downstream checks like
  * `isSupportedForSubscription` may incorrectly discard valid filters.
  */
-suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOfRelations): List<DVFilter> {
+suspend fun List<DVFilter>.updateFormatForSubscription(
+    storeOfRelations: StoreOfRelations,
+    templates: FilterValueTemplates = FilterValueTemplates.NONE
+): List<DVFilter> {
     return map { filter ->
         if (filter.isAdvanced()) {
-            val updatedNested = filter.nestedFilters.updateFormatForSubscription(storeOfRelations)
+            val updatedNested = filter.nestedFilters.updateFormatForSubscription(
+                storeOfRelations = storeOfRelations,
+                templates = templates
+            )
             filter.copy(nestedFilters = updatedNested)
         } else {
             val relation = storeOfRelations.getByKey(filter.relation)
-            transformFilterWithFormat(filter, relation?.format)
+            transformFilterWithFormat(filter.resolveValueTemplates(templates), relation?.format)
         }
     }
+}
+
+/**
+ * The values for the placeholders that a filter value can hold instead of an object id.
+ * The middleware does not replace them: a placeholder that reaches it matches nothing.
+ *
+ * @property objectId replaces [FilterValueTemplates.THIS_OBJECT]: the object that shows the
+ * view. That is the page for an inline query, else the set itself.
+ * @property participantId replaces [FilterValueTemplates.CURRENT_USER].
+ * A null value keeps the placeholder.
+ */
+data class FilterValueTemplates(
+    val objectId: Id?,
+    val participantId: Id?
+) {
+    fun resolve(value: String): String = when (value) {
+        THIS_OBJECT -> objectId ?: value
+        CURRENT_USER -> participantId ?: value
+        else -> value
+    }
+
+    companion object {
+        const val THIS_OBJECT = "_filter_template_1_"
+        const val CURRENT_USER = "_filter_template_2_"
+        val NONE = FilterValueTemplates(objectId = null, participantId = null)
+    }
+}
+
+/**
+ * Replaces the placeholders in the value of this filter. Use the result only for a subscription
+ * or for the details of a new object: the saved view keeps the placeholder.
+ */
+fun DVFilter.resolveValueTemplates(templates: FilterValueTemplates): DVFilter {
+    if (templates == FilterValueTemplates.NONE) return this
+    val resolved = when (val v = value) {
+        is String -> templates.resolve(v)
+        is List<*> -> v.map { item -> if (item is String) templates.resolve(item) else item }
+        else -> return this
+    }
+    return if (resolved == value) this else copy(value = resolved)
 }
 
 /**
@@ -303,15 +349,30 @@ fun List<DVViewerRelation>.updateViewerRelations(updates: List<DVViewerRelationU
     return relations
 }
 
-fun ObjectState.DataView.Set.getSetOfValue(ctx: Id): List<Id> {
-    return details.getObject(ctx)?.setOf.orEmpty()
-}
+/**
+ * The source of the records. For an inline query, [ctx] is the page and the source comes from
+ * the target of the block: the setOf of a set, or the id of a type.
+ */
+fun ObjectState.DataView.Set.getSetOfValue(ctx: Id): List<Id> = resolveSetOfValue(ctx)
 
-fun ObjectState.DataView.TypeSet.getSetOfValue(ctx: Id): List<Id> {
-    return details.getObject(ctx)?.setOf.orEmpty()
+fun ObjectState.DataView.TypeSet.getSetOfValue(ctx: Id): List<Id> = resolveSetOfValue(ctx)
+
+private fun ObjectState.DataView.resolveSetOfValue(ctx: Id): List<Id> {
+    if (!isInline) return details.getObject(ctx)?.setOf.orEmpty()
+    val source = sourceObjectId
+    if (source.isEmpty()) return emptyList()
+    val target = details.getObject(source)
+    return if (target?.layout == ObjectType.Layout.OBJECT_TYPE) {
+        listOf(source)
+    } else {
+        target?.setOf.orEmpty()
+    }
 }
 
 fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): List<Id> {
+    // The page of an inline query does not always carry the details of the types and the
+    // properties of its target set. Drop only the ones known to be deleted.
+    if (isInline) return query.filter { id -> details.getObject(id)?.isDeleted != true }
     return query.filter(::isValidObject)
 }
 
@@ -611,10 +672,11 @@ fun ObjectState.DataView.isChangingDefaultTypeAvailable(): Boolean {
 
 suspend fun DVViewer.prefillNewObjectDetails(
     storeOfRelations: StoreOfRelations,
-    dateProvider: DateProvider
+    dateProvider: DateProvider,
+    templates: FilterValueTemplates = FilterValueTemplates.NONE
 ): Struct =
     buildMap {
-        filters.forEach { filter ->
+        filters.map { it.resolveValueTemplates(templates) }.forEach { filter ->
             val relationObject = storeOfRelations.getByKey(filter.relation) ?: return@forEach
             if (!relationObject.isReadonlyValue && PermittedConditions.contains(
                     filter.condition
@@ -644,7 +706,8 @@ suspend fun DVViewer.prefillNewObjectDetails(
 suspend fun DVViewer.resolveSetByRelationPrefilledObjectData(
     storeOfRelations: StoreOfRelations,
     dateProvider: DateProvider,
-    objSetByRelation: ObjectWrapper.Relation
+    objSetByRelation: ObjectWrapper.Relation,
+    templates: FilterValueTemplates = FilterValueTemplates.NONE
 ): Struct {
     val prefillWithSetOf = buildMap {
         val relationFormat = objSetByRelation.relationFormat
@@ -653,7 +716,8 @@ suspend fun DVViewer.resolveSetByRelationPrefilledObjectData(
     }
     val prefillNewObjectDetails = prefillNewObjectDetails(
         storeOfRelations = storeOfRelations,
-        dateProvider = dateProvider
+        dateProvider = dateProvider,
+        templates = templates
     )
     return prefillWithSetOf + prefillNewObjectDetails
 }

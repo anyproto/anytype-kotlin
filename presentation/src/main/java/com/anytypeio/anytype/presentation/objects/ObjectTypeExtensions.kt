@@ -87,7 +87,10 @@ fun canCreateObjectOfType(objectType: ObjectWrapper.Type?): Boolean {
 }
 
 fun ObjectState.DataView.isCreateObjectAllowed(objectType: ObjectWrapper.Type? = null): Boolean {
-    val dataViewRestrictions = dataViewRestrictions.firstOrNull()?.restrictions
+    // A page can hold more than one inline query: take the entry of the block on the screen.
+    val entry = inlineBlockId?.let { id -> dataViewRestrictions.firstOrNull { it.block == id } }
+        ?: dataViewRestrictions.firstOrNull()
+    val dataViewRestrictions = entry?.restrictions
     if (dataViewRestrictions?.contains(DataViewRestriction.CREATE_OBJECT) == true) {
         return false
     }

@@ -3,15 +3,15 @@ package com.anytypeio.anytype.middleware.discovery
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import service.AndroidDiscoveryProxy
 import service.DiscoveryObserver
+import service.DiscoveryProxy
 import timber.log.Timber
 
 class MDNSDelegate(
     private val scope: CoroutineScope,
     private val dispatcher: CoroutineDispatcher,
     private val resolver: MDNSResolver
-) : AndroidDiscoveryProxy {
+) : DiscoveryProxy {
 
     private var isStarted = false
 

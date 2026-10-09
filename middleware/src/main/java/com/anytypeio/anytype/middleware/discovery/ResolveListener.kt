@@ -13,9 +13,14 @@ class ResolveListener(
 
     override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
         try {
-            semaphore.release()
+            observer.observeNsdError(
+                errorCode,
+                "NSD service resolve failed: ${serviceInfo.serviceName}"
+            )
         } catch (e: Exception) {
-            Timber.e(e, "Error while releasing semaphore")
+            Timber.e(e, "Error while reporting NSD resolve failure")
+        } finally {
+            releaseSemaphore()
         }
     }
 
@@ -29,9 +34,18 @@ class ResolveListener(
                     serviceInfo.port
                 )
             )
-            semaphore.release()
         } catch (e: Exception) {
             Timber.e(e, "Error after onServiceResolved")
+        } finally {
+            releaseSemaphore()
+        }
+    }
+
+    private fun releaseSemaphore() {
+        try {
+            semaphore.release()
+        } catch (e: Exception) {
+            Timber.e(e, "Error while releasing semaphore")
         }
     }
 }

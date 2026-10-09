@@ -27,6 +27,7 @@ class MDNSResolver(
                 lock.acquire()
 
                 discoveryListener.registerObserver(observer)
+                registrationListener.registerObserver(observer)
                 val serviceInfo = collectNsdServiceInfo(observer)
 
                 nsdManager.apply {
@@ -49,6 +50,7 @@ class MDNSResolver(
                 isStarted = false
 
                 discoveryListener.unregisterObserver()
+                registrationListener.unregisterObserver()
 
                 nsdManager.apply {
                     unregisterService(registrationListener)

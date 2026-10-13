@@ -13,8 +13,7 @@ internal class NsdServiceInfoSubscription(
     service: NsdServiceInfo,
     executor: Executor,
     private val onUpdated: (NsdServiceInfo) -> Unit,
-    private val onFailed: (Int) -> Unit,
-    private val onUnregistered: () -> Unit
+    private val onFailed: (Int) -> Unit
 ) : NsdManager.ServiceInfoCallback, AutoCloseable {
 
     // Callbacks and close run on the same discovery event queue.
@@ -29,8 +28,8 @@ internal class NsdServiceInfoSubscription(
     }
 
     override fun onServiceLost() {
-        // An unscoped subscription can observe several networks and this callback has no
-        // network identity. DiscoveryListener is the authority for presence and generations.
+        // An unscoped subscription observes every network and this callback has no network
+        // identity. DiscoveryListener is the authority for presence.
     }
 
     override fun onServiceInfoCallbackRegistrationFailed(errorCode: Int) {
@@ -42,7 +41,6 @@ internal class NsdServiceInfoSubscription(
 
     override fun onServiceInfoCallbackUnregistered() {
         closed = true
-        onUnregistered()
     }
 
     override fun close() {

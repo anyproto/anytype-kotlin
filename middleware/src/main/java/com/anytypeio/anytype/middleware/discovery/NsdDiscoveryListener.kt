@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.middleware.discovery
 
 import android.annotation.SuppressLint
+import android.net.Network
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import java.util.concurrent.Executor
@@ -22,13 +23,14 @@ class NsdDiscoveryListener internal constructor(
     constructor(scope: CoroutineScope, dispatcher: CoroutineDispatcher, nsdManager: NsdManager) :
         this(scope, dispatcher, nsdManager, AndroidNsdServiceInfoReader())
 
-    // State changes and reports to heart share one queue. A resolve cannot pass its generation
+    // State changes and reports to heart share one queue. An update cannot pass its source
     // check, race a loss, and then publish stale addresses after observeLost.
     private val events = Channel<() -> Unit>(Channel.UNLIMITED)
     private var observer: DiscoveryObserver? = null
     private val resolveSemaphore = Semaphore(1)
     private val discoveredPeers = DiscoveredPeers()
-    private val subscriptions = mutableMapOf<DiscoveredPeers.Resolution, AutoCloseable>()
+    // One subscription per peer id. It reports the peer on every network.
+    private val subscriptions = mutableMapOf<String, AutoCloseable>()
     private val callbackExecutor = Executor { callback -> dispatch { callback.run() } }
 
     init {
@@ -44,7 +46,7 @@ class NsdDiscoveryListener internal constructor(
             } finally {
                 observer = null
                 discoveredPeers.clear()
-                closeObsoleteSubscriptions()
+                closeSubscriptions()
             }
         }.invokeOnCompletion { events.cancel() }
     }
@@ -52,7 +54,7 @@ class NsdDiscoveryListener internal constructor(
     fun registerObserver(observer: DiscoveryObserver) {
         dispatch {
             discoveredPeers.clear()
-            closeObsoleteSubscriptions()
+            closeSubscriptions()
             this.observer = observer
         }
     }
@@ -61,7 +63,7 @@ class NsdDiscoveryListener internal constructor(
         dispatch {
             observer = null
             discoveredPeers.clear()
-            closeObsoleteSubscriptions()
+            closeSubscriptions()
         }
     }
 
@@ -71,10 +73,15 @@ class NsdDiscoveryListener internal constructor(
 
     override fun onServiceFound(service: NsdServiceInfo) {
         dispatch {
-            if (observer == null) return@dispatch
-            val resolution = discoveredPeers.found(service.serviceName, serviceInfoReader.network(service))
-            closeObsoleteSubscriptions()
-            resolve(service, resolution)
+            val observer = observer ?: return@dispatch
+            val network = serviceInfoReader.network(service)
+            val found = discoveredPeers.found(service.serviceName, network)
+            found.publish?.let { observer.observeChange(it) }
+            if (serviceInfoReader.supportsUpdates()) {
+                subscribe(service, found.source)
+            } else {
+                resolve(service, found.source, network)
+            }
         }
     }
 
@@ -84,12 +91,20 @@ class NsdDiscoveryListener internal constructor(
             val observer = observer ?: return@dispatch
             val loss = discoveredPeers.lost(service.serviceName, serviceInfoReader.network(service))
                 ?: return@dispatch
-            closeObsoleteSubscriptions()
             if (loss.peerLost) {
+                closeSubscription(service.serviceName)
                 observer.observeLost(service.serviceName)
-            } else {
-                loss.remaining?.let { observer.observeChange(it) }
-                loss.refresh?.let { resolve(serviceInfoReader.unscoped(service), it) }
+                return@dispatch
+            }
+            loss.publish?.let { observer.observeChange(it) }
+            loss.refresh?.let { refresh ->
+                if (serviceInfoReader.supportsUpdates()) {
+                    // A new subscription replays the current records of every network.
+                    closeSubscription(service.serviceName)
+                    subscribe(service, refresh)
+                } else {
+                    resolve(serviceInfoReader.unscoped(service), refresh, null)
+                }
             }
         }
     }
@@ -109,33 +124,34 @@ class NsdDiscoveryListener internal constructor(
     }
 
     @SuppressLint("NewApi") // Reader capability includes API 34 and the T extension 7 backport.
-    private fun resolve(service: NsdServiceInfo, resolution: DiscoveredPeers.Resolution) {
-        if (serviceInfoReader.supportsUpdates()) {
-            if (subscriptions.containsKey(resolution)) return
-            try {
-                subscriptions[resolution] = NsdServiceInfoSubscription(
-                    nsdManager = nsdManager,
-                    // A null public network can still carry a hidden interface index. The shared
-                    // anonymous subscription must be unbound from the very first sighting.
-                    service = if (resolution.network == null) serviceInfoReader.unscoped(service) else service,
-                    executor = callbackExecutor,
-                    onUpdated = { onResolved(resolution, it) },
-                    onFailed = { code ->
-                        subscriptions.remove(resolution)
-                        onResolveFailed(resolution, code)
-                    },
-                    onUnregistered = { subscriptions.remove(resolution) }
-                )
-            } catch (e: Exception) {
-                Timber.e(e, "Error subscribing to NSD service updates")
-                onResolveFailed(resolution, NsdManager.FAILURE_INTERNAL_ERROR)
-            }
-            return
+    private fun subscribe(service: NsdServiceInfo, source: DiscoveredPeers.Source) {
+        if (subscriptions.containsKey(source.peerId)) return
+        try {
+            subscriptions[source.peerId] = NsdServiceInfoSubscription(
+                nsdManager = nsdManager,
+                // A discovered service can carry a hidden interface index that binds the
+                // subscription to that interface. The peer's subscription must stay unbound.
+                service = serviceInfoReader.unscoped(service),
+                executor = callbackExecutor,
+                // Each update describes one network, and the update itself names it.
+                onUpdated = { update -> onUpdated(source, serviceInfoReader.network(update), update) },
+                onFailed = { code ->
+                    // A failure arrives only while the subscription is open: the entry is this one.
+                    subscriptions.remove(source.peerId)
+                    onResolveFailed(source, code)
+                }
+            )
+        } catch (e: Exception) {
+            Timber.e(e, "Error subscribing to NSD service updates")
+            onResolveFailed(source, NsdManager.FAILURE_INTERNAL_ERROR)
         }
+    }
+
+    private fun resolve(service: NsdServiceInfo, source: DiscoveredPeers.Source, network: Network?) {
         scope.launch(dispatcher) {
             resolveSemaphore.acquire()
             val submitted = dispatch {
-                if (!discoveredPeers.isCurrent(resolution)) {
+                if (!discoveredPeers.isCurrent(source)) {
                     resolveSemaphore.release()
                     return@dispatch
                 }
@@ -144,45 +160,47 @@ class NsdDiscoveryListener internal constructor(
                         service,
                         ResolveListener(
                             semaphore = resolveSemaphore,
-                            onResolved = { resolved -> dispatch { onResolved(resolution, resolved) } },
-                            onFailed = { _, code -> dispatch { onResolveFailed(resolution, code) } }
+                            // A legacy resolve answers for the sighting it was started for.
+                            onResolved = { resolved -> dispatch { onUpdated(source, network, resolved) } },
+                            onFailed = { _, code -> dispatch { onResolveFailed(source, code) } }
                         )
                     )
                 } catch (e: Exception) {
                     resolveSemaphore.release()
                     Timber.e(e, "Error starting NSD resolve")
-                    onResolveFailed(resolution, NsdManager.FAILURE_INTERNAL_ERROR)
+                    onResolveFailed(source, NsdManager.FAILURE_INTERNAL_ERROR)
                 }
             }
             if (!submitted) resolveSemaphore.release()
         }
     }
 
-    private fun onResolved(resolution: DiscoveredPeers.Resolution, service: NsdServiceInfo) {
+    private fun onUpdated(source: DiscoveredPeers.Source, network: Network?, service: NsdServiceInfo) {
         val observer = observer ?: return
-        if (!discoveredPeers.isCurrent(resolution)) return
-        discoveredPeers.resolved(resolution, serviceInfoReader.addresses(service), service.port)
+        discoveredPeers.updated(source, network, serviceInfoReader.addresses(service), service.port)
             ?.let { observer.observeChange(it) }
     }
 
-    private fun onResolveFailed(resolution: DiscoveredPeers.Resolution, code: Int) {
-        if (discoveredPeers.isCurrent(resolution)) {
-            observer?.observeNsdError(code, "NSD service resolve failed: ${resolution.peerId}")
+    private fun onResolveFailed(source: DiscoveredPeers.Source, code: Int) {
+        if (discoveredPeers.isCurrent(source)) {
+            observer?.observeNsdError(code, "NSD service resolve failed: ${source.peerId}")
         }
     }
 
-    private fun closeObsoleteSubscriptions() {
-        val iterator = subscriptions.iterator()
-        while (iterator.hasNext()) {
-            val (resolution, subscription) = iterator.next()
-            if (!discoveredPeers.isCurrent(resolution)) {
-                iterator.remove()
-                try {
-                    subscription.close()
-                } catch (e: Exception) {
-                    Timber.e(e, "Error unsubscribing from NSD service updates")
-                }
-            }
+    private fun closeSubscription(peerId: String) {
+        subscriptions.remove(peerId)?.let(::closeQuietly)
+    }
+
+    private fun closeSubscriptions() {
+        subscriptions.values.forEach(::closeQuietly)
+        subscriptions.clear()
+    }
+
+    private fun closeQuietly(subscription: AutoCloseable) {
+        try {
+            subscription.close()
+        } catch (e: Exception) {
+            Timber.e(e, "Error unsubscribing from NSD service updates")
         }
     }
 

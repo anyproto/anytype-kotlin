@@ -4,11 +4,13 @@ import android.net.Network
 import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import java.util.concurrent.Executor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import org.junit.After
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -37,7 +39,8 @@ class DiscoveryObserverCallbacksTest {
         val callback: NsdManager.ServiceInfoCallback
     )
     private val subscriptions = mutableListOf<Subscription>()
-    private val listener = NsdDiscoveryListener(scope, dispatcher, manager, reader)
+    // The background scope reports an exception that escapes the event queue when runTest ends.
+    private val listener = NsdDiscoveryListener(scope.backgroundScope, dispatcher, manager, reader)
     private val service = service()
 
     init {
@@ -52,23 +55,24 @@ class DiscoveryObserverCallbacksTest {
         listener.registerObserver(observer)
     }
 
-    @After
-    fun tearDown() {
-        scope.cancel()
-    }
+    private fun test(body: suspend TestScope.() -> Unit) = scope.runTest(testBody = body)
 
     private fun flush() = dispatcher.scheduler.runCurrent()
 
-    private fun Subscription.updated(service: NsdServiceInfo = this.service) {
-        executor.execute { callback.onServiceUpdated(service) }
+    private fun Subscription.updated(update: NsdServiceInfo = this.service) {
+        executor.execute { callback.onServiceUpdated(update) }
         flush()
     }
 
-    private fun service(network: Network? = null, addresses: List<String> = listOf("192.168.1.2")): NsdServiceInfo {
+    private fun service(
+        network: Network? = null,
+        addresses: List<String> = listOf("192.168.1.2"),
+        port: Int = 62654
+    ): NsdServiceInfo {
         val info = mock<NsdServiceInfo> {
             on { serviceName }.thenReturn("peer-id")
             on { serviceType }.thenReturn("_anytype._tcp")
-            on { port }.thenReturn(62654)
+            on { this.port }.thenReturn(port)
         }
         whenever(reader.network(info)).thenReturn(network)
         whenever(reader.addresses(info)).thenReturn(addresses)
@@ -77,7 +81,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `loss before queued resolution skips the request and reports lost`() {
+    fun `loss before queued resolution skips the request and reports lost`() = test {
         listener.onServiceFound(service)
         listener.onServiceLost(service)
         flush()
@@ -88,7 +92,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `resolve completing after loss does not bring the peer back`() {
+    fun `resolve completing after loss does not bring the peer back`() = test {
         listener.onServiceFound(service)
         flush()
         listener.onServiceLost(service)
@@ -102,7 +106,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `rediscovery accepts only the new resolve and does not stall behind the old one`() {
+    fun `rediscovery accepts only the new resolve and does not stall behind the old one`() = test {
         listener.onServiceFound(service)
         flush()
         listener.onServiceLost(service)
@@ -125,7 +129,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `partial network loss updates the full address list without reporting the peer lost`() {
+    fun `partial network loss updates the full address list without reporting the peer lost`() = test {
         val wifi = service(mock(), listOf("192.168.1.2", "fe80::2%wlan0"))
         val ethernet = service(mock(), listOf("10.0.0.2", "192.168.1.2"))
         listener.onServiceFound(wifi)
@@ -151,7 +155,71 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `anonymous partial loss invalidates old resolves and re-resolves surviving sightings`() {
+    fun `losing the only resolved network while an unresolved one stays retracts its addresses`() = test {
+        val wifi = service(mock(), listOf("192.168.1.2"))
+        val ethernet = service(mock(), listOf("10.0.0.2"))
+        listener.onServiceFound(wifi)
+        listener.onServiceFound(ethernet)
+        flush()
+        pending[0].second.onServiceResolved(wifi)
+        flush()
+        pending[1].second.onResolveFailed(ethernet, NsdManager.FAILURE_INTERNAL_ERROR)
+        flush()
+
+        listener.onServiceLost(wifi)
+        flush()
+        listener.onServiceLost(ethernet)
+        flush()
+
+        inOrder(observer) {
+            verify(observer).observeChange(DiscoveryResult("192.168.1.2", "peer-id", 62654))
+            verify(observer).observeError(-1, "NSD service resolve failed: peer-id (NsdManager errorCode=0)")
+            verify(observer).observeChange(DiscoveryResult("", "peer-id", 62654))
+            verify(observer).observeLost("peer-id")
+        }
+        verifyNoMoreInteractions(observer)
+    }
+
+    @Test
+    fun `the latest port applies to every published address`() = test {
+        val wifi = service(mock(), listOf("192.168.1.2"), port = 4006)
+        val ethernet = service(mock(), listOf("10.0.0.2"), port = 4007)
+        listener.onServiceFound(wifi)
+        listener.onServiceFound(ethernet)
+        flush()
+        pending[0].second.onServiceResolved(wifi)
+        flush()
+        pending[1].second.onServiceResolved(ethernet)
+        flush()
+
+        inOrder(observer) {
+            verify(observer).observeChange(DiscoveryResult("192.168.1.2", "peer-id", 4006))
+            verify(observer).observeChange(DiscoveryResult("192.168.1.2,10.0.0.2", "peer-id", 4007))
+        }
+        verifyNoMoreInteractions(observer)
+    }
+
+    @Test
+    fun `legacy anonymous resolve replaces the previous address instead of accumulating`() = test {
+        val firstInterface = service(addresses = listOf("192.168.1.2"))
+        val secondInterface = service(addresses = listOf("10.0.0.2"))
+        listener.onServiceFound(firstInterface)
+        listener.onServiceFound(secondInterface)
+        flush()
+        pending[0].second.onServiceResolved(firstInterface)
+        flush()
+        pending[1].second.onServiceResolved(secondInterface)
+        flush()
+
+        inOrder(observer) {
+            verify(observer).observeChange(DiscoveryResult("192.168.1.2", "peer-id", 62654))
+            verify(observer).observeChange(DiscoveryResult("10.0.0.2", "peer-id", 62654))
+        }
+        verifyNoMoreInteractions(observer)
+    }
+
+    @Test
+    fun `anonymous partial loss invalidates old resolves and re-resolves surviving sightings`() = test {
         val unscoped = service(addresses = listOf("10.0.0.2"))
         whenever(reader.unscoped(service)).thenReturn(unscoped)
         listener.onServiceFound(service)
@@ -175,7 +243,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `stopping and restarting with the same observer still invalidates in flight resolves`() {
+    fun `stopping and restarting with the same observer still invalidates in flight resolves`() = test {
         listener.onServiceFound(service)
         flush()
         listener.unregisterObserver()
@@ -193,7 +261,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `stale resolve failures after loss are also ignored`() {
+    fun `stale resolve failures after loss are also ignored`() = test {
         listener.onServiceFound(service)
         flush()
         listener.onServiceLost(service)
@@ -207,7 +275,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `discovery failures report nonzero codes with the original platform code`() {
+    fun `discovery failures report nonzero codes with the original platform code`() = test {
         listener.onStartDiscoveryFailed("_anytype._tcp", NsdManager.FAILURE_INTERNAL_ERROR)
         listener.onStopDiscoveryFailed("_anytype._tcp", NsdManager.FAILURE_OPERATION_NOT_RUNNING)
         flush()
@@ -219,7 +287,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `discovery callbacks are ignored after observer removal`() {
+    fun `discovery callbacks are ignored after observer removal`() = test {
         listener.unregisterObserver()
         listener.onServiceLost(service)
         listener.onStartDiscoveryFailed("_anytype._tcp", NsdManager.FAILURE_INTERNAL_ERROR)
@@ -230,7 +298,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `queued discovery does not resolve after observer removal`() {
+    fun `queued discovery does not resolve after observer removal`() = test {
         listener.onServiceFound(service)
         listener.unregisterObserver()
         flush()
@@ -239,7 +307,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `successful registration clears a previously reported error`() {
+    fun `successful registration clears a previously reported error`() = test {
         val registration = NsdRegistrationListener()
         registration.registerObserver(observer)
         registration.onRegistrationFailed(service, NsdManager.FAILURE_INTERNAL_ERROR)
@@ -254,7 +322,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `registration callbacks are ignored after observer removal`() {
+    fun `registration callbacks are ignored after observer removal`() = test {
         val registration = NsdRegistrationListener()
         registration.registerObserver(observer)
         registration.unregisterObserver()
@@ -266,7 +334,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `resolve failure reports the error and releases the next resolve`() {
+    fun `resolve failure reports the error and releases the next resolve`() = test {
         listener.onServiceFound(service)
         listener.onServiceFound(service)
         flush()
@@ -278,7 +346,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `synchronous resolve failure does not block later discovery`() {
+    fun `synchronous resolve failure does not block later discovery`() = test {
         doThrow(IllegalArgumentException("NSD rejected request"))
             .doAnswer {
                 pending += it.getArgument<NsdServiceInfo>(0) to it.getArgument<NsdManager.ResolveListener>(1)
@@ -293,7 +361,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `resolve callback exceptions still release the next resolve`() {
+    fun `resolve callback exceptions still release the next resolve`() = test {
         val semaphore = Semaphore(permits = 1, acquiredPermits = 1)
         val callback = ResolveListener(semaphore, { error("Callback stopped") }, { _, _ -> error("Callback stopped") })
 
@@ -305,15 +373,15 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `continuous updates include IPv6 addresses arriving after the first response`() {
+    fun `continuous updates include IPv6 addresses arriving after the first response`() = test {
         whenever(reader.supportsUpdates()).thenReturn(true)
         val discovered = service(mock(), listOf("192.168.1.2"))
         listener.onServiceFound(discovered)
         flush()
-        subscriptions.single().updated()
+        subscriptions.single().updated(discovered)
 
         whenever(reader.addresses(discovered)).thenReturn(listOf("192.168.1.2", "fe80::2%wlan0"))
-        subscriptions.single().updated()
+        subscriptions.single().updated(discovered)
 
         inOrder(observer) {
             verify(observer).observeChange(DiscoveryResult("192.168.1.2", "peer-id", 62654))
@@ -323,28 +391,45 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `network loss closes only its subscription and rejects late updates`() {
+    fun `an unchanged update is not published again`() = test {
         whenever(reader.supportsUpdates()).thenReturn(true)
-        val wifi = service(mock(), listOf("192.168.1.2"))
-        val ethernet = service(mock(), listOf("10.0.0.2"))
-        listener.onServiceFound(wifi)
-        listener.onServiceFound(ethernet)
+        listener.onServiceFound(service)
         flush()
-        subscriptions[0].updated()
-        subscriptions[1].updated()
 
-        listener.onServiceLost(wifi)
-        flush()
-        subscriptions[0].updated()
-        verify(manager).unregisterServiceInfoCallback(subscriptions[0].callback)
-        verify(manager, never()).unregisterServiceInfoCallback(subscriptions[1].callback)
-        listener.onServiceLost(ethernet)
-        flush()
-        subscriptions[1].updated()
+        subscriptions.single().updated()
+        subscriptions.single().updated()
 
+        verify(observer).observeChange(DiscoveryResult("192.168.1.2", "peer-id", 62654))
+        verifyNoMoreInteractions(observer)
+    }
+
+    @Test
+    fun `one unscoped subscription serves every network of a peer`() = test {
+        whenever(reader.supportsUpdates()).thenReturn(true)
+        val wifi = mock<Network>()
+        val discoveredOnWifi = service(wifi, listOf("192.168.1.2"))
+        val discoveredOnTether = service(null, listOf("10.0.0.2"))
+        val unscoped = service()
+        whenever(reader.unscoped(discoveredOnWifi)).thenReturn(unscoped)
+        listener.onServiceFound(discoveredOnWifi)
+        listener.onServiceFound(discoveredOnTether)
+        flush()
+
+        val subscription = subscriptions.single()
+        assertEquals(unscoped, subscription.service)
+        subscription.updated(discoveredOnWifi)
+        subscription.updated(discoveredOnTether)
+        listener.onServiceLost(discoveredOnWifi)
+        flush()
+        verify(manager, never()).unregisterServiceInfoCallback(any())
+        listener.onServiceLost(discoveredOnTether)
+        flush()
+
+        verify(manager).unregisterServiceInfoCallback(subscription.callback)
         inOrder(observer) {
             verify(observer).observeChange(DiscoveryResult("192.168.1.2", "peer-id", 62654))
             verify(observer).observeChange(DiscoveryResult("192.168.1.2,10.0.0.2", "peer-id", 62654))
+            // The Wi-Fi address reached the shared subscription, but it leaves with Wi-Fi.
             verify(observer).observeChange(DiscoveryResult("10.0.0.2", "peer-id", 62654))
             verify(observer).observeLost("peer-id")
         }
@@ -352,7 +437,66 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `unscoped service callback loss cannot claim the whole peer disappeared`() {
+    fun `an anonymous update replaces the previous anonymous addresses`() = test {
+        whenever(reader.supportsUpdates()).thenReturn(true)
+        listener.onServiceFound(service)
+        flush()
+
+        subscriptions.single().updated(service(addresses = listOf("192.168.1.2", "fe80::1%3")))
+        subscriptions.single().updated(service(addresses = listOf("192.168.1.2", "fe80::2%3")))
+
+        inOrder(observer) {
+            verify(observer).observeChange(DiscoveryResult("192.168.1.2,fe80::1%3", "peer-id", 62654))
+            verify(observer).observeChange(DiscoveryResult("192.168.1.2,fe80::2%3", "peer-id", 62654))
+        }
+        verifyNoMoreInteractions(observer)
+    }
+
+    @Test
+    fun `an update that arrives before discovery reports its network is published when it does`() = test {
+        whenever(reader.supportsUpdates()).thenReturn(true)
+        val ethernet = mock<Network>()
+        val discoveredOnEthernet = service(ethernet, listOf("10.0.0.2"))
+        listener.onServiceFound(service)
+        flush()
+
+        subscriptions.single().updated(discoveredOnEthernet)
+        verifyNoInteractions(observer)
+        listener.onServiceFound(discoveredOnEthernet)
+        flush()
+
+        verify(observer).observeChange(DiscoveryResult("10.0.0.2", "peer-id", 62654))
+        verifyNoMoreInteractions(observer)
+        assertEquals(1, subscriptions.size)
+    }
+
+    @Test
+    fun `anonymous partial loss replaces the subscription and ignores the old one`() = test {
+        whenever(reader.supportsUpdates()).thenReturn(true)
+        val unscoped = service()
+        whenever(reader.unscoped(service)).thenReturn(unscoped)
+        listener.onServiceFound(service)
+        listener.onServiceFound(service)
+        flush()
+        val old = subscriptions.single()
+        old.updated(service(addresses = listOf("192.168.1.2")))
+
+        listener.onServiceLost(service)
+        flush()
+        old.updated(service(addresses = listOf("172.16.0.9")))
+        subscriptions[1].updated(service(addresses = listOf("10.0.0.2")))
+
+        verify(manager).unregisterServiceInfoCallback(old.callback)
+        assertEquals(unscoped, subscriptions[1].service)
+        inOrder(observer) {
+            verify(observer).observeChange(DiscoveryResult("192.168.1.2", "peer-id", 62654))
+            verify(observer).observeChange(DiscoveryResult("10.0.0.2", "peer-id", 62654))
+        }
+        verifyNoMoreInteractions(observer)
+    }
+
+    @Test
+    fun `unscoped service callback loss cannot claim the whole peer disappeared`() = test {
         whenever(reader.supportsUpdates()).thenReturn(true)
         listener.onServiceFound(service)
         listener.onServiceFound(service)
@@ -368,7 +512,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `observer removal closes subscriptions and same observer restart rejects old updates`() {
+    fun `observer removal closes subscriptions and same observer restart rejects old updates`() = test {
         whenever(reader.supportsUpdates()).thenReturn(true)
         listener.onServiceFound(service)
         flush()
@@ -386,7 +530,7 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `subscription registration failure reports a nonzero error and allows rediscovery`() {
+    fun `subscription registration failure reports a nonzero error and allows rediscovery`() = test {
         whenever(reader.supportsUpdates()).thenReturn(true)
         listener.onServiceFound(service)
         flush()
@@ -405,62 +549,15 @@ class DiscoveryObserverCallbacksTest {
     }
 
     @Test
-    fun `anonymous partial loss replaces the subscription without losing known routes`() {
+    fun `cancelling the discovery scope closes live subscriptions`() = test {
         whenever(reader.supportsUpdates()).thenReturn(true)
-        val unscoped = service(addresses = listOf("10.0.0.2"))
-        whenever(reader.unscoped(service)).thenReturn(unscoped)
-        listener.onServiceFound(service)
-        listener.onServiceFound(service)
-        flush()
-        val old = subscriptions.single()
-        old.updated(service)
-        whenever(reader.addresses(service)).thenReturn(listOf("10.0.0.2"))
-        old.updated(service)
-
-        listener.onServiceLost(service)
-        flush()
-        old.updated()
-        subscriptions[1].updated()
-
-        verify(manager).unregisterServiceInfoCallback(old.callback)
-        assertEquals(unscoped, subscriptions[1].service)
-        verify(observer, never()).observeLost(any())
-        verify(observer).observeChange(DiscoveryResult("192.168.1.2", "peer-id", 62654))
-        // Before and after the refresh, both previously known paths remain available.
-        verify(observer, org.mockito.kotlin.times(3))
-            .observeChange(DiscoveryResult("192.168.1.2,10.0.0.2", "peer-id", 62654))
-    }
-
-    @Test
-    fun `anonymous interfaces share an unscoped subscription from the first sighting`() {
-        whenever(reader.supportsUpdates()).thenReturn(true)
-        val firstInterface = service(addresses = listOf("192.168.1.2"))
-        val secondInterface = service(addresses = listOf("10.0.0.2"))
-        val unscoped = service()
-        whenever(reader.unscoped(firstInterface)).thenReturn(unscoped)
-        listener.onServiceFound(firstInterface)
-        listener.onServiceFound(secondInterface)
+        val discoveryScope = CoroutineScope(dispatcher + Job())
+        val cancellable = NsdDiscoveryListener(discoveryScope, dispatcher, manager, reader)
+        cancellable.registerObserver(observer)
+        cancellable.onServiceFound(service)
         flush()
 
-        val subscription = subscriptions.single()
-        assertEquals(unscoped, subscription.service)
-        subscription.updated(firstInterface)
-        subscription.updated(secondInterface)
-
-        inOrder(observer) {
-            verify(observer).observeChange(DiscoveryResult("192.168.1.2", "peer-id", 62654))
-            verify(observer).observeChange(DiscoveryResult("192.168.1.2,10.0.0.2", "peer-id", 62654))
-        }
-        verifyNoMoreInteractions(observer)
-    }
-
-    @Test
-    fun `cancelling the discovery scope closes live subscriptions`() {
-        whenever(reader.supportsUpdates()).thenReturn(true)
-        listener.onServiceFound(service)
-        flush()
-
-        scope.cancel()
+        discoveryScope.cancel()
         flush()
 
         verify(manager).unregisterServiceInfoCallback(subscriptions.single().callback)

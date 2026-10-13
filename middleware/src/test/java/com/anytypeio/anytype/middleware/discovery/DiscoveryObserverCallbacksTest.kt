@@ -67,10 +67,11 @@ class DiscoveryObserverCallbacksTest {
     private fun service(
         network: Network? = null,
         addresses: List<String> = listOf("192.168.1.2"),
-        port: Int = 62654
+        port: Int = 62654,
+        name: String = "peer-id"
     ): NsdServiceInfo {
         val info = mock<NsdServiceInfo> {
-            on { serviceName }.thenReturn("peer-id")
+            on { serviceName }.thenReturn(name)
             on { serviceType }.thenReturn("_anytype._tcp")
             on { this.port }.thenReturn(port)
         }
@@ -216,6 +217,100 @@ class DiscoveryObserverCallbacksTest {
             verify(observer).observeChange(DiscoveryResult("10.0.0.2", "peer-id", 62654))
         }
         verifyNoMoreInteractions(observer)
+    }
+
+    @Test
+    fun `a partial anonymous loss keeps the pending resolve of another network`() = test {
+        val wifi = service(mock(), listOf("192.168.1.2"))
+        val tether = service(null, listOf("10.0.0.2"))
+        listener.onServiceFound(wifi)
+        listener.onServiceFound(tether)
+        listener.onServiceFound(tether)
+        flush()
+
+        listener.onServiceLost(tether)
+        flush()
+        pending[0].second.onServiceResolved(wifi)
+        flush()
+
+        verify(observer).observeChange(DiscoveryResult("192.168.1.2", "peer-id", 62654))
+        verifyNoMoreInteractions(observer)
+    }
+
+    @Test
+    fun `a resolve that completes after its network is lost is not published when the network returns`() = test {
+        val wifiNetwork = mock<Network>()
+        val ethernet = service(mock(), listOf("10.0.0.2"))
+        val wifi = service(wifiNetwork, listOf("192.168.1.2"))
+        listener.onServiceFound(ethernet)
+        listener.onServiceFound(wifi)
+        flush()
+        pending[0].second.onServiceResolved(ethernet)
+        flush()
+
+        listener.onServiceLost(wifi)
+        flush()
+        pending[1].second.onServiceResolved(wifi)
+        flush()
+        val wifiAgain = service(wifiNetwork, listOf("192.168.1.3"))
+        listener.onServiceFound(wifiAgain)
+        flush()
+        pending[2].second.onServiceResolved(wifiAgain)
+        flush()
+
+        inOrder(observer) {
+            verify(observer).observeChange(DiscoveryResult("10.0.0.2", "peer-id", 62654))
+            verify(observer).observeChange(DiscoveryResult("10.0.0.2,192.168.1.3", "peer-id", 62654))
+        }
+        verifyNoMoreInteractions(observer)
+    }
+
+    @Test
+    fun `an unscoped refresh answered from a known network leaves the anonymous route in place`() = test {
+        val wifi = service(mock(), listOf("192.168.1.2"))
+        val tether = service(null, listOf("10.0.0.2"))
+        listener.onServiceFound(wifi)
+        flush()
+        pending[0].second.onServiceResolved(wifi)
+        flush()
+        listener.onServiceFound(tether)
+        listener.onServiceFound(tether)
+        flush()
+        pending[1].second.onServiceResolved(tether)
+        flush()
+        pending[2].second.onServiceResolved(tether)
+        flush()
+
+        val refresh = service()
+        whenever(reader.unscoped(tether)).thenReturn(refresh)
+        listener.onServiceLost(tether)
+        flush()
+        assertEquals(refresh, pending[3].first)
+        // The platform answers an unscoped query from any interface and names the one it used.
+        pending[3].second.onServiceResolved(wifi)
+        flush()
+        listener.onServiceLost(wifi)
+        flush()
+
+        inOrder(observer) {
+            verify(observer).observeChange(DiscoveryResult("192.168.1.2", "peer-id", 62654))
+            verify(observer).observeChange(DiscoveryResult("192.168.1.2,10.0.0.2", "peer-id", 62654))
+            verify(observer).observeChange(DiscoveryResult("10.0.0.2", "peer-id", 62654))
+        }
+        verifyNoMoreInteractions(observer)
+    }
+
+    @Test
+    fun `a scoped resolve answers for the network it was started for`() = test {
+        val wifi = service(mock(), listOf("192.168.1.2"))
+        val reportedElsewhere = service(mock(), listOf("192.168.1.2"))
+        listener.onServiceFound(wifi)
+        flush()
+
+        pending[0].second.onServiceResolved(reportedElsewhere)
+        flush()
+
+        verify(observer).observeChange(DiscoveryResult("192.168.1.2", "peer-id", 62654))
     }
 
     @Test
@@ -546,6 +641,56 @@ class DiscoveryObserverCallbacksTest {
         verify(observer).observeError(-1, "NSD service resolve failed: peer-id (NsdManager errorCode=0)")
         assertEquals(2, subscriptions.size)
         verify(manager, never()).unregisterServiceInfoCallback(failed.callback)
+    }
+
+    @Test
+    fun `a network found again after its loss waits for a fresh update`() = test {
+        whenever(reader.supportsUpdates()).thenReturn(true)
+        val wifi = service(mock(), listOf("192.168.1.2"))
+        val ethernet = service(mock(), listOf("10.0.0.2"))
+        listener.onServiceFound(wifi)
+        listener.onServiceFound(ethernet)
+        flush()
+        subscriptions.single().updated(wifi)
+        subscriptions.single().updated(ethernet)
+
+        listener.onServiceLost(wifi)
+        flush()
+        listener.onServiceFound(wifi)
+        flush()
+
+        inOrder(observer) {
+            verify(observer).observeChange(DiscoveryResult("192.168.1.2", "peer-id", 62654))
+            verify(observer).observeChange(DiscoveryResult("192.168.1.2,10.0.0.2", "peer-id", 62654))
+            verify(observer).observeChange(DiscoveryResult("10.0.0.2", "peer-id", 62654))
+        }
+        verifyNoMoreInteractions(observer)
+    }
+
+    @Test
+    fun `a registration failure removes only the subscription of its own peer`() = test {
+        whenever(reader.supportsUpdates()).thenReturn(true)
+        val first = service(name = "first-peer")
+        val second = service(name = "second-peer")
+        listener.onServiceFound(first)
+        listener.onServiceFound(second)
+        flush()
+        val failed = subscriptions[1]
+        failed.executor.execute {
+            failed.callback.onServiceInfoCallbackRegistrationFailed(NsdManager.FAILURE_INTERNAL_ERROR)
+        }
+        flush()
+
+        listener.onServiceFound(second)
+        listener.onServiceFound(first)
+        flush()
+        subscriptions[0].updated(first)
+
+        // Only the failed peer subscribes again; the other peer keeps its subscription.
+        assertEquals(listOf(first, second, second), subscriptions.map { it.service })
+        verify(observer).observeError(-1, "NSD service resolve failed: second-peer (NsdManager errorCode=0)")
+        verify(observer).observeChange(DiscoveryResult("192.168.1.2", "first-peer", 62654))
+        verify(manager, never()).unregisterServiceInfoCallback(any())
     }
 
     @Test

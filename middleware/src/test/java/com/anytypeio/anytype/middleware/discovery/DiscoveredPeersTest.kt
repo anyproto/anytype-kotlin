@@ -17,10 +17,10 @@ class DiscoveredPeersTest {
 
     @Test
     fun `peer is lost only when its last network disappears`() {
-        val source = peers.found("peer", wifi).source
+        peers.found("peer", wifi)
         peers.found("peer", ethernet)
-        peers.updated(source, wifi, listOf("192.168.1.2"), 62654)
-        peers.updated(source, ethernet, listOf("10.0.0.2"), 62654)
+        peers.updated("peer", wifi, listOf("192.168.1.2"), 62654)
+        peers.updated("peer", ethernet, listOf("10.0.0.2"), 62654)
 
         val loss = peers.lost("peer", wifi)!!
 
@@ -32,30 +32,30 @@ class DiscoveredPeersTest {
 
     @Test
     fun `an update replaces the addresses of its network`() {
-        val source = peers.found("peer", wifi).source
-        peers.updated(source, wifi, listOf("192.168.1.2", "fe80::2%3"), 62654)
+        peers.found("peer", wifi)
+        peers.updated("peer", wifi, listOf("192.168.1.2", "fe80::2%3"), 62654)
 
-        val result = peers.updated(source, wifi, listOf("192.168.1.3"), 62654)
+        val result = peers.updated("peer", wifi, listOf("192.168.1.3"), 62654)
 
         assertEquals(DiscoveryResult("192.168.1.3", "peer", 62654), result)
     }
 
     @Test
     fun `an anonymous update replaces the anonymous addresses`() {
-        val source = peers.found("peer", null).source
-        peers.updated(source, null, listOf("192.168.1.2", "fe80::1%3"), 62654)
+        peers.found("peer", null)
+        peers.updated("peer", null, listOf("192.168.1.2", "fe80::1%3"), 62654)
 
-        val result = peers.updated(source, null, listOf("192.168.1.2", "fe80::2%3"), 62654)
+        val result = peers.updated("peer", null, listOf("192.168.1.2", "fe80::2%3"), 62654)
 
         assertEquals(DiscoveryResult("192.168.1.2,fe80::2%3", "peer", 62654), result)
     }
 
     @Test
     fun `a known network update leaves with that network while the anonymous route stays`() {
-        val source = peers.found("peer", wifi).source
+        peers.found("peer", wifi)
         peers.found("peer", null)
-        peers.updated(source, wifi, listOf("192.168.1.2"), 62654)
-        peers.updated(source, null, listOf("10.0.0.2"), 62654)
+        peers.updated("peer", wifi, listOf("192.168.1.2"), 62654)
+        peers.updated("peer", null, listOf("10.0.0.2"), 62654)
 
         val loss = peers.lost("peer", wifi)!!
 
@@ -64,26 +64,98 @@ class DiscoveredPeersTest {
 
     @Test
     fun `an update for a network that is not present yet is published once it is found`() {
-        val source = peers.found("peer", null).source
+        peers.found("peer", null)
 
-        assertNull(peers.updated(source, ethernet, listOf("10.0.0.2"), 62654))
+        assertNull(peers.updated("peer", ethernet, listOf("10.0.0.2"), 62654))
         assertEquals(DiscoveryResult("10.0.0.2", "peer", 62654), peers.found("peer", ethernet).publish)
     }
 
     @Test
-    fun `partial anonymous loss keeps the anonymous addresses until the refresh replaces them`() {
-        val source = peers.found("peer", null).source
+    fun `an update for an unknown peer is ignored`() {
+        assertNull(peers.updated("peer", wifi, listOf("192.168.1.2"), 62654))
+        assertNull(peers.found("peer", wifi).publish)
+    }
+
+    @Test
+    fun `a lost network found again waits for its next report`() {
+        peers.found("peer", wifi)
         peers.found("peer", null)
-        peers.updated(source, null, listOf("192.168.1.2"), 62654)
+        peers.updated("peer", wifi, listOf("192.168.1.2"), 62654)
+        peers.updated("peer", null, listOf("10.0.0.2"), 62654)
+
+        assertEquals(DiscoveryResult("10.0.0.2", "peer", 62654), peers.lost("peer", wifi)!!.publish)
+        assertNull(peers.found("peer", wifi).publish)
+        assertEquals(DiscoveryResult("", "peer", 62654), peers.lost("peer", null)!!.publish)
+        assertNull(peers.found("peer", null).publish)
+    }
+
+    @Test
+    fun `the last anonymous loss drops the anonymous addresses`() {
+        peers.found("peer", wifi)
+        peers.found("peer", null)
+        peers.updated("peer", wifi, listOf("192.168.1.2"), 62654)
+        peers.updated("peer", null, listOf("10.0.0.2"), 62654)
+
+        assertEquals(DiscoveryResult("192.168.1.2", "peer", 62654), peers.lost("peer", null)!!.publish)
+        assertNull(peers.found("peer", null).publish)
+    }
+
+    @Test
+    fun `a legacy resolve answers for the sighting it was started for`() {
+        val sighting = peers.found("peer", wifi).sighting
+
+        val result = peers.resolved(sighting, ethernet, listOf("192.168.1.2"), 62654)
+
+        assertEquals(DiscoveryResult("192.168.1.2", "peer", 62654), result)
+        assertTrue(peers.lost("peer", wifi)!!.peerLost)
+    }
+
+    @Test
+    fun `an unscoped resolve answered from a present network updates that network`() {
+        peers.found("peer", wifi)
+        val anonymous = peers.found("peer", null).sighting
+        peers.updated("peer", null, listOf("10.0.0.2"), 62654)
+
+        val result = peers.resolved(anonymous, wifi, listOf("192.168.1.2"), 62654)
+
+        assertEquals(DiscoveryResult("10.0.0.2,192.168.1.2", "peer", 62654), result)
+        assertNull(peers.resolved(anonymous, ethernet, listOf("172.16.0.2"), 62654))
+    }
+
+    @Test
+    fun `a resolve for a lost network is rejected even after the network returns`() {
+        peers.found("peer", ethernet)
+        val old = peers.found("peer", wifi).sighting
+        peers.lost("peer", wifi)
+
+        assertNull(peers.resolved(old, null, listOf("192.168.1.2"), 62654))
+        val current = peers.found("peer", wifi).sighting
+        assertNull(peers.resolved(old, null, listOf("192.168.1.2"), 62654))
+        assertEquals(
+            DiscoveryResult("192.168.1.3", "peer", 62654),
+            peers.resolved(current, null, listOf("192.168.1.3"), 62654)
+        )
+    }
+
+    @Test
+    fun `partial anonymous loss refreshes only the anonymous sighting`() {
+        val known = peers.found("peer", wifi).sighting
+        val anonymous = peers.found("peer", null).sighting
+        peers.found("peer", null)
+        peers.resolved(anonymous, null, listOf("10.0.0.2"), 62654)
 
         val loss = peers.lost("peer", null)!!
 
         assertFalse(loss.peerLost)
         assertNull(loss.publish)
-        assertNull(peers.updated(source, null, listOf("172.16.0.9"), 62654))
+        assertNull(peers.resolved(anonymous, null, listOf("172.16.0.9"), 62654))
         assertEquals(
-            DiscoveryResult("10.0.0.2", "peer", 62654),
-            peers.updated(loss.refresh!!, null, listOf("10.0.0.2"), 62654)
+            DiscoveryResult("10.0.0.2,192.168.1.2", "peer", 62654),
+            peers.resolved(known, null, listOf("192.168.1.2"), 62654)
+        )
+        assertEquals(
+            DiscoveryResult("10.0.0.3,192.168.1.2", "peer", 62654),
+            peers.resolved(loss.refresh!!, null, listOf("10.0.0.3"), 62654)
         )
     }
 
@@ -107,30 +179,40 @@ class DiscoveredPeersTest {
 
     @Test
     fun `the latest port applies to every address`() {
-        val source = peers.found("peer", wifi).source
+        peers.found("peer", wifi)
         peers.found("peer", ethernet)
-        peers.updated(source, wifi, listOf("192.168.1.2"), 4006)
+        peers.updated("peer", wifi, listOf("192.168.1.2"), 4006)
 
-        val result = peers.updated(source, ethernet, listOf("10.0.0.2"), 4007)
+        val result = peers.updated("peer", ethernet, listOf("10.0.0.2"), 4007)
 
         assertEquals(DiscoveryResult("192.168.1.2,10.0.0.2", "peer", 4007), result)
-        assertNull(peers.updated(source, wifi, listOf("192.168.1.2"), 4007))
+        assertNull(peers.updated("peer", wifi, listOf("192.168.1.2"), 4007))
+    }
+
+    @Test
+    fun `a report without a port keeps the last known port`() {
+        peers.found("peer", wifi)
+        peers.updated("peer", wifi, listOf("192.168.1.2"), 4006)
+
+        val result = peers.updated("peer", wifi, listOf("192.168.1.3"), 0)
+
+        assertEquals(DiscoveryResult("192.168.1.3", "peer", 4006), result)
     }
 
     @Test
     fun `losing the only resolved network retracts its addresses once`() {
-        val source = peers.found("peer", wifi).source
+        peers.found("peer", wifi)
         peers.found("peer", ethernet)
-        peers.updated(source, wifi, listOf("192.168.1.2"), 62654)
+        peers.updated("peer", wifi, listOf("192.168.1.2"), 62654)
 
         val loss = peers.lost("peer", wifi)!!
 
         assertFalse(loss.peerLost)
         assertEquals(DiscoveryResult("", "peer", 62654), loss.publish)
-        assertNull(peers.updated(source, ethernet, emptyList(), 62654))
+        assertNull(peers.updated("peer", ethernet, emptyList(), 62654))
         assertEquals(
             DiscoveryResult("10.0.0.2", "peer", 62654),
-            peers.updated(source, ethernet, listOf("10.0.0.2"), 62654)
+            peers.updated("peer", ethernet, listOf("10.0.0.2"), 62654)
         )
     }
 
@@ -147,77 +229,78 @@ class DiscoveredPeersTest {
 
     @Test
     fun `an empty update removes the addresses of its network`() {
-        val source = peers.found("peer", wifi).source
+        peers.found("peer", wifi)
         peers.found("peer", ethernet)
-        peers.updated(source, wifi, listOf("192.168.1.2"), 62654)
-        peers.updated(source, ethernet, listOf("10.0.0.2"), 62654)
+        peers.updated("peer", wifi, listOf("192.168.1.2"), 62654)
+        peers.updated("peer", ethernet, listOf("10.0.0.2"), 62654)
 
-        val result = peers.updated(source, wifi, listOf(""), 62654)
+        val result = peers.updated("peer", wifi, listOf(""), 62654)
 
         assertEquals(DiscoveryResult("10.0.0.2", "peer", 62654), result)
     }
 
     @Test
     fun `an unchanged snapshot is not published again`() {
-        val source = peers.found("peer", wifi).source
-        peers.updated(source, wifi, listOf("192.168.1.2"), 62654)
+        peers.found("peer", wifi)
+        peers.updated("peer", wifi, listOf("192.168.1.2"), 62654)
 
-        assertNull(peers.updated(source, wifi, listOf("192.168.1.2"), 62654))
+        assertNull(peers.updated("peer", wifi, listOf("192.168.1.2"), 62654))
         assertNull(peers.found("peer", wifi).publish)
     }
 
     @Test
     fun `addresses keep the order in which networks first reported them`() {
-        val source = peers.found("peer", wifi).source
+        peers.found("peer", wifi)
         peers.found("peer", ethernet)
-        peers.updated(source, ethernet, listOf("10.0.0.2", "192.168.1.2"), 62654)
+        peers.updated("peer", ethernet, listOf("10.0.0.2", "192.168.1.2"), 62654)
 
-        val result = peers.updated(source, wifi, listOf("192.168.1.2", "fe80::2%3", ""), 62654)
+        val result = peers.updated("peer", wifi, listOf("192.168.1.2", "fe80::2%3", ""), 62654)
 
         assertEquals(DiscoveryResult("10.0.0.2,192.168.1.2,fe80::2%3", "peer", 62654), result)
     }
 
     @Test
-    fun `an update cannot revive a peer after its last network is lost`() {
-        val source = peers.found("peer", wifi).source
+    fun `nothing revives a peer after its last network is lost`() {
+        val sighting = peers.found("peer", wifi).sighting
         peers.lost("peer", wifi)
 
-        assertFalse(peers.isCurrent(source))
-        assertNull(peers.updated(source, wifi, listOf("192.168.1.2"), 62654))
+        assertFalse(peers.isCurrent(sighting))
+        assertNull(peers.resolved(sighting, null, listOf("192.168.1.2"), 62654))
+        assertNull(peers.updated("peer", wifi, listOf("192.168.1.2"), 62654))
     }
 
     @Test
-    fun `rediscovery does not accept an update from the previous presence`() {
-        val old = peers.found("peer", null).source
+    fun `rediscovery does not accept a resolve from the previous presence`() {
+        val old = peers.found("peer", null).sighting
         peers.lost("peer", null)
-        val current = peers.found("peer", null).source
+        val current = peers.found("peer", null).sighting
 
-        assertNull(peers.updated(old, null, listOf("192.168.1.1"), 62654))
+        assertNull(peers.resolved(old, null, listOf("192.168.1.1"), 62654))
         assertEquals(
             DiscoveryResult("192.168.1.2", "peer", 62654),
-            peers.updated(current, null, listOf("192.168.1.2"), 62654)
+            peers.resolved(current, null, listOf("192.168.1.2"), 62654)
         )
     }
 
     @Test
-    fun `clearing a session invalidates pending updates even when the same peer returns`() {
-        val old = peers.found("peer", wifi).source
+    fun `clearing a session invalidates pending resolves even when the same peer returns`() {
+        val old = peers.found("peer", wifi).sighting
         peers.clear()
-        val current = peers.found("peer", wifi).source
+        val current = peers.found("peer", wifi).sighting
 
-        assertNull(peers.updated(old, wifi, listOf("192.168.1.1"), 62654))
+        assertNull(peers.resolved(old, null, listOf("192.168.1.1"), 62654))
         assertFalse(peers.isCurrent(old))
         assertTrue(peers.isCurrent(current))
     }
 
     @Test
     fun `unknown losses do not remove another network or peer`() {
-        val source = peers.found("peer", wifi).source
+        val sighting = peers.found("peer", wifi).sighting
 
         assertNull(peers.lost("peer", ethernet))
         assertNull(peers.lost("peer", null))
         assertNull(peers.lost("another-peer", wifi))
-        assertTrue(peers.isCurrent(source))
+        assertTrue(peers.isCurrent(sighting))
         assertNotNull(peers.lost("peer", wifi))
     }
 }

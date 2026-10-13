@@ -55,13 +55,12 @@ internal class DiscoveredPeers {
     }
 
     // A legacy resolve answers for the network of its sighting. An unscoped refresh can be
-    // answered on any interface, and then the result names the network it came from.
+    // answered on any interface. An answer from a known network says nothing about the
+    // anonymous route, and that network's own resolve owns its addresses.
     fun resolved(sighting: Sighting, network: Network?, addresses: List<String>, port: Int): DiscoveryResult? {
         if (!isCurrent(sighting)) return null
-        val peer = peers.getValue(sighting.peerId)
-        val key = sighting.network ?: network
-        if (key != null && key !in peer.networks) return null
-        return store(peer, key, addresses, port)
+        if (sighting.network == null && network != null) return null
+        return store(peers.getValue(sighting.peerId), sighting.network, addresses, port)
     }
 
     fun lost(peerId: String, network: Network?): Loss? {

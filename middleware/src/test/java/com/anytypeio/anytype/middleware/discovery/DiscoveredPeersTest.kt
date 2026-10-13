@@ -111,15 +111,14 @@ class DiscoveredPeersTest {
     }
 
     @Test
-    fun `an unscoped resolve answered from a present network updates that network`() {
-        peers.found("peer", wifi)
+    fun `an unscoped resolve answered from a known network changes nothing`() {
+        val known = peers.found("peer", wifi).sighting
         val anonymous = peers.found("peer", null).sighting
-        peers.updated("peer", null, listOf("10.0.0.2"), 62654)
+        peers.resolved(known, null, listOf("192.168.1.2"), 62654)
+        peers.resolved(anonymous, null, listOf("10.0.0.2"), 62654)
 
-        val result = peers.resolved(anonymous, wifi, listOf("192.168.1.2"), 62654)
-
-        assertEquals(DiscoveryResult("10.0.0.2,192.168.1.2", "peer", 62654), result)
-        assertNull(peers.resolved(anonymous, ethernet, listOf("172.16.0.2"), 62654))
+        assertNull(peers.resolved(anonymous, wifi, listOf("192.168.1.9"), 62654))
+        assertEquals(DiscoveryResult("192.168.1.2", "peer", 62654), peers.lost("peer", null)!!.publish)
     }
 
     @Test

@@ -9,11 +9,16 @@ interface AppNavigation {
 
     fun openSpaceSettings()
 
+    /**
+     * @param blockId the id of an inline query block of the page [target]. The screen then
+     * shows that block instead of the object.
+     */
     fun openObjectSet(
         target: Id,
         space: Id,
         view: Id? = null,
-        isPopUpToDashboard: Boolean = false
+        isPopUpToDashboard: Boolean = false,
+        blockId: Id? = null
     )
     fun openChat(target: Id, space: Id, popUpToVault: Boolean = true)
     fun openDiscussion(target: Id, space: Id)
@@ -115,6 +120,15 @@ interface AppNavigation {
             val target: Id,
             val space: Id,
             val isPopUpToDashboard: Boolean = false
+        ) : Command()
+
+        /**
+         * Opens the inline query block [blockId] of the page [ctx] on the set screen.
+         */
+        data class OpenDataViewBlock(
+            val ctx: Id,
+            val blockId: Id,
+            val space: Id
         ) : Command()
 
         data class OpenDateObject(

@@ -114,6 +114,7 @@ class EditorQuickCaptureFragment : EditorFragment() {
             is AppNavigation.Command.LaunchDocument -> openOutside(command.target, command.space)
             is AppNavigation.Command.OpenSetOrCollection -> openOutside(command.target, command.space)
             is AppNavigation.Command.LaunchObjectSet -> openOutside(command.target, command.space)
+            is AppNavigation.Command.OpenDataViewBlock -> openOutside(command.ctx, command.space)
             is AppNavigation.Command.OpenChat -> openOutside(command.target, command.space, isChat = true)
             is AppNavigation.Command.OpenDiscussion -> openOutside(command.target, command.space, isChat = true)
             is AppNavigation.Command.OpenDateObject -> openOutside(command.objectId, command.space)

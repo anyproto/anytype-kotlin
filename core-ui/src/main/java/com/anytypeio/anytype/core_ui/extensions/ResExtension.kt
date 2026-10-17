@@ -154,18 +154,18 @@ fun RelativeDate.getPrettyName(
     isTimeIncluded: Boolean = false,
     resources: Resources
 ): String = when (this) {
-    is RelativeDate.Other -> {
-        if (isTimeIncluded) {
-            "$formattedDate $formattedTime"
-        } else {
-            formattedDate
-        }
-    }
+    is RelativeDate.Other -> formattedDate.withTime(isTimeIncluded, formattedTime)
     is RelativeDate.Today -> resources.getString(R.string.today)
+        .withTime(isTimeIncluded, formattedTime)
     is RelativeDate.Tomorrow -> resources.getString(R.string.tomorrow)
+        .withTime(isTimeIncluded, formattedTime)
     is RelativeDate.Yesterday -> resources.getString(R.string.yesterday)
+        .withTime(isTimeIncluded, formattedTime)
     RelativeDate.Empty -> ""
 }
+
+private fun String.withTime(isTimeIncluded: Boolean, formattedTime: String): String =
+    if (isTimeIncluded && formattedTime.isNotEmpty()) "$this $formattedTime" else this
 
 @ColorRes
 fun CustomIconColor.colorRes() = when (this) {

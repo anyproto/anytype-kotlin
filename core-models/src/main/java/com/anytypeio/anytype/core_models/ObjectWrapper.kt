@@ -305,6 +305,12 @@ sealed class ObjectWrapper {
 
         val relationFormatObjectTypes get() = getValues<Id>(RELATION_FORMAT_OBJECT_TYPES)
 
+        /**
+         * True when values of this date relation keep the time of day, not only the date.
+         */
+        val includeTime: Boolean
+            get() = getSingleValue<Boolean>(Relations.RELATION_FORMAT_INCLUDE_TIME) == true
+
         val type: List<Id> get() = getValues(Relations.TYPE)
 
         val isValid get() =

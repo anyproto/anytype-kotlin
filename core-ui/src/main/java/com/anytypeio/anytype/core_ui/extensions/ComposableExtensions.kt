@@ -130,14 +130,15 @@ fun getLocalizedDayName(dayOfWeek: DayOfWeekCustom): String {
 }
 
 @Composable
-fun RelativeDate.getPrettyName(): String {
-    return when (this) {
-        is RelativeDate.Today -> stringResource(id = R.string.today)
-        is RelativeDate.Tomorrow -> stringResource(id = R.string.tomorrow)
-        is RelativeDate.Yesterday -> stringResource(id = R.string.yesterday)
-        is RelativeDate.Other -> this.formattedDate
-        RelativeDate.Empty -> ""
+fun RelativeDate.getPrettyName(isTimeIncluded: Boolean = false): String {
+    val (date, time) = when (this) {
+        is RelativeDate.Today -> stringResource(id = R.string.today) to formattedTime
+        is RelativeDate.Tomorrow -> stringResource(id = R.string.tomorrow) to formattedTime
+        is RelativeDate.Yesterday -> stringResource(id = R.string.yesterday) to formattedTime
+        is RelativeDate.Other -> formattedDate to formattedTime
+        RelativeDate.Empty -> return ""
     }
+    return if (isTimeIncluded && time.isNotEmpty()) "$date $time" else date
 }
 
 @Composable

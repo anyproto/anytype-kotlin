@@ -1,8 +1,11 @@
 package com.anytypeio.anytype.feature_search.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,12 +52,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -69,7 +74,10 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -705,7 +713,11 @@ private fun SearchResultsList(
                             is SearchResultView.ObjectRow -> ObjectRow(
                                 row = row,
                                 onClick = { viewModel.onResultClicked(row) },
-                                onDrill = { viewModel.onObjectDrill(row) }
+                                onDrill = { viewModel.onObjectDrill(row) },
+                                menuEnabled = viewModel.showsObjectMenu &&
+                                        row.layout == ObjectType.Layout.BOOKMARK,
+                                onOpenAsObject = { viewModel.onOpenAsObject(row) },
+                                onOpenInBrowser = { viewModel.onOpenInBrowser(row) }
                             )
                             is SearchResultView.MessageRow -> MessageRow(
                                 row = row,
@@ -873,79 +885,177 @@ private fun PersonRow(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ObjectRow(
     row: SearchResultView.ObjectRow,
     onClick: () -> Unit,
-    onDrill: () -> Unit
+    onDrill: () -> Unit,
+    menuEnabled: Boolean = false,
+    onOpenAsObject: () -> Unit = {},
+    onOpenInBrowser: () -> Unit = {}
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick() }
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        ListWidgetObjectIcon(
-            icon = row.icon,
-            iconSize = 48.dp,
+    val haptic = LocalHapticFeedback.current
+    var menuExpanded by remember { mutableStateOf(false) }
+    Box {
+        Row(
             modifier = Modifier
-        )
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 12.dp)
+                .fillMaxWidth()
+                .combinedClickable(
+                    onClick = onClick,
+                    // A tap on a bookmark opens its URL; the long press is the
+                    // only way to open the bookmark itself (#3364).
+                    onLongClick = if (menuEnabled) {
+                        {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            menuExpanded = true
+                        }
+                    } else {
+                        null
+                    }
+                )
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = highlighted(row.name, row.nameHighlights),
-                style = PreviewTitle2Medium,
-                color = colorResource(R.color.text_primary),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+            ListWidgetObjectIcon(
+                icon = row.icon,
+                iconSize = 48.dp,
+                modifier = Modifier
             )
-            val snippet = row.snippet
-            if (!snippet.isNullOrBlank()) {
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 12.dp)
+            ) {
                 Text(
-                    text = highlighted(snippet, row.snippetHighlights),
-                    style = Relations3,
+                    text = highlighted(row.name, row.nameHighlights),
+                    style = PreviewTitle2Medium,
                     color = colorResource(R.color.text_primary),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                val typeName = row.typeName
-                if (!typeName.isNullOrBlank()) {
+                val snippet = row.snippet
+                if (!snippet.isNullOrBlank()) {
                     Text(
-                        text = typeName,
+                        text = highlighted(snippet, row.snippetHighlights),
                         style = Relations3,
-                        color = colorResource(R.color.text_secondary),
-                        maxLines = 1
-                    )
-                }
-                val spaceName = row.spaceName
-                if (!spaceName.isNullOrBlank()) {
-                    if (!typeName.isNullOrBlank()) {
-                        Text(
-                            text = " · ",
-                            style = Relations3,
-                            color = colorResource(R.color.text_secondary)
-                        )
-                    }
-                    Text(
-                        text = stringResource(Loc.string.search_v2_in_space_caption, spaceName),
-                        style = Relations3,
-                        color = colorResource(R.color.text_secondary),
+                        color = colorResource(R.color.text_primary),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    val typeName = row.typeName
+                    if (!typeName.isNullOrBlank()) {
+                        Text(
+                            text = typeName,
+                            style = Relations3,
+                            color = colorResource(R.color.text_secondary),
+                            maxLines = 1
+                        )
+                    }
+                    val spaceName = row.spaceName
+                    if (!spaceName.isNullOrBlank()) {
+                        if (!typeName.isNullOrBlank()) {
+                            Text(
+                                text = " · ",
+                                style = Relations3,
+                                color = colorResource(R.color.text_secondary)
+                            )
+                        }
+                        Text(
+                            text = stringResource(Loc.string.search_v2_in_space_caption, spaceName),
+                            style = Relations3,
+                            color = colorResource(R.color.text_secondary),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
+            if (row.drill != null) {
+                DrillAffordance(row.name, onDrill)
             }
         }
-        if (row.drill != null) {
-            DrillAffordance(row.name, onDrill)
+        if (menuEnabled) {
+            ObjectRowMenu(
+                expanded = menuExpanded,
+                showOpenInBrowser = row.navigation is OpenObjectNavigation.OpenBookmarkUrl,
+                onDismiss = { menuExpanded = false },
+                onOpenAsObject = {
+                    menuExpanded = false
+                    onOpenAsObject()
+                },
+                onOpenInBrowser = {
+                    menuExpanded = false
+                    onOpenInBrowser()
+                }
+            )
         }
     }
+}
+
+@Composable
+private fun ObjectRowMenu(
+    expanded: Boolean,
+    showOpenInBrowser: Boolean,
+    onDismiss: () -> Unit,
+    onOpenAsObject: () -> Unit,
+    onOpenInBrowser: () -> Unit
+) {
+    DropdownMenu(
+        modifier = Modifier.width(254.dp),
+        expanded = expanded,
+        onDismissRequest = onDismiss,
+        // The default M3 menu surface ignores the app palette and renders as
+        // a bare white square in dark theme.
+        containerColor = colorResource(R.color.background_secondary),
+        shape = RoundedCornerShape(12.dp),
+        tonalElevation = 8.dp,
+        offset = DpOffset(x = 16.dp, y = 8.dp)
+    ) {
+        ObjectRowMenuItem(
+            text = stringResource(Loc.string.all_content_item_menu_open),
+            icon = R.drawable.ic_dropdown_menu_open_in_full,
+            onClick = onOpenAsObject
+        )
+        if (showOpenInBrowser) {
+            ObjectRowMenuItem(
+                text = stringResource(Loc.string.open_in_browser),
+                icon = R.drawable.ic_dropdown_menu_language,
+                onClick = onOpenInBrowser
+            )
+        }
+    }
+}
+
+@Composable
+private fun ObjectRowMenuItem(
+    text: String,
+    icon: Int,
+    onClick: () -> Unit
+) {
+    DropdownMenuItem(
+        onClick = onClick,
+        text = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    style = BodyRegular,
+                    color = colorResource(R.color.text_primary),
+                    text = text
+                )
+                Image(
+                    painter = painterResource(id = icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+    )
 }
 
 @Composable

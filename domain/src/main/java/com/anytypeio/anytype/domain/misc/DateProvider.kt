@@ -24,6 +24,21 @@ interface DateProvider {
     fun getTimestampForNextYearAtStartOfYear(): TimeInSeconds
     fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis
     fun adjustFromStartOfDayInUserTimeZoneToUTC(timeInMillis: TimeInMillis): TimeInSeconds
+
+    /**
+     * @return the hour (0-23) and the minute of [timestamp] in the user time zone.
+     */
+    fun getLocalHourAndMinute(timestamp: TimeInSeconds): Pair<Int, Int>
+
+    /**
+     * @param [pickerDateMillis] a date as the date picker reports it: midnight UTC of that date.
+     * @return that date at [hour]:[minute] in the user time zone.
+     */
+    fun combineDateAndTimeInUserTimeZone(
+        pickerDateMillis: TimeInMillis,
+        hour: Int,
+        minute: Int
+    ): TimeInSeconds
     fun formatToDateString(timestamp: Long, pattern: String): String
     fun formatTimestampToDateAndTime(
         timestamp: TimeInMillis,

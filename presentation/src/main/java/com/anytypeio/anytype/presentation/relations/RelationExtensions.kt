@@ -89,7 +89,8 @@ suspend fun ObjectWrapper.Relation.view(
                 featured = isFeatured,
                 readOnly = relation.isReadonlyValue,
                 system = relation.key.isSystemKey(),
-                relativeDate = fieldDate?.relativeDate
+                relativeDate = fieldDate?.relativeDate,
+                isTimeIncluded = relation.includeTime
             )
         }
         RelationFormat.STATUS -> {

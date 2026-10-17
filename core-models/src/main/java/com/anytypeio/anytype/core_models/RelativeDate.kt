@@ -12,17 +12,20 @@ sealed class RelativeDate {
 
     data class Today(
         override val initialTimeInMillis: TimeInMillis,
-        override val dayOfWeek: DayOfWeekCustom
+        override val dayOfWeek: DayOfWeekCustom,
+        val formattedTime: String = ""
     ) : RelativeDate()
 
     data class Tomorrow(
         override val initialTimeInMillis: TimeInMillis,
-        override val dayOfWeek: DayOfWeekCustom
+        override val dayOfWeek: DayOfWeekCustom,
+        val formattedTime: String = ""
     ) : RelativeDate()
 
     data class Yesterday(
         override val initialTimeInMillis: TimeInMillis,
-        override val dayOfWeek: DayOfWeekCustom
+        override val dayOfWeek: DayOfWeekCustom,
+        val formattedTime: String = ""
     ) : RelativeDate()
 
     data class Other(

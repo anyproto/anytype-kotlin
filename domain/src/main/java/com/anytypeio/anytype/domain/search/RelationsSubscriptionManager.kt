@@ -114,6 +114,7 @@ class RelationsSubscriptionManager @Inject constructor(
                 Relations.RELATION_READ_ONLY_VALUE,
                 Relations.RELATION_DEFAULT_VALUE,
                 Relations.RELATION_FORMAT_OBJECT_TYPES,
+                Relations.RELATION_FORMAT_INCLUDE_TIME,
                 Relations.SOURCE_OBJECT
             ),
             ignoreWorkspace = true

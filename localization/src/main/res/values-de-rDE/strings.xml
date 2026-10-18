@@ -1659,8 +1659,8 @@
     </plurals>
     <string name="sync_status_p2p">P2P-Verbindung</string>
     <plurals name="sync_status_p2p_devices">
-        <item quantity="one">%1$d Gerät getrennt</item>
-        <item quantity="other">%1$d Geräte getrennt</item>
+        <item quantity="one">%1$d Gerät verbunden</item>
+        <item quantity="other">%1$d Geräte verbunden</item>
     </plurals>
     <string name="sync_status_p2p_disabled">Verbindung nicht möglich</string>
     <string name="sync_status_p2p_restricted">Eingeschränkt. Überprüfe die Geräteeinstellungen.</string>

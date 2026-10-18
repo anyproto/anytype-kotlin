@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="dataview_expand_header">Expand object header</string>
-    <string name="dataview_collapse_header">Collapse object header</string>
+    <string name="dataview_expand_header">Espandi l\'intestazione dell\'oggetto</string>
+    <string name="dataview_collapse_header">Comprimi l\'intestazione dell\'oggetto</string>
     <string name="about">Informazioni </string>
     <string name="app_version">Versione applicazione</string>
     <string name="library">Libreria</string>
@@ -19,13 +19,13 @@
     <string name="experimental_features">Funzionalità Sperimentali</string>
     <string name="experimental_features_compact_vault">Modalità cassaforte compatta</string>
     <string name="experimental_features_compact_vault_description">Nasconde le anteprime dei messaggi per i canali letti nella cassaforte</string>
-    <string name="experimental_features_kanban">Kanban board</string>
-    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
-    <string name="experimental_features_quick_capture">Quick capture</string>
-    <string name="experimental_features_quick_capture_description">Pencil button on the vault for capturing a thought into any space</string>
-    <string name="experimental_features_quick_capture_ai">Quick capture type suggestions</string>
-    <string name="experimental_features_quick_capture_ai_description">On-device AI suggests the object type while you write. Requires a supported device</string>
-    <string name="quick_capture">Quick capture</string>
+    <string name="experimental_features_kanban">Bacheca Kanban</string>
+    <string name="experimental_features_kanban_description">Abilita il layout di Kanban (board) per set e collezioni</string>
+    <string name="experimental_features_quick_capture">Acquisizione rapida</string>
+    <string name="experimental_features_quick_capture_description">Pulsante matita sulla cassaforte per catturare un pensiero in qualsiasi spazio</string>
+    <string name="experimental_features_quick_capture_ai">Suggerimenti tipo di acquisizione rapida</string>
+    <string name="experimental_features_quick_capture_ai_description">L\'IA sul dispositivo suggerisce il tipo di oggetto mentre scrivi. Richiede un dispositivo supportato</string>
+    <string name="quick_capture">Acquisizione rapida</string>
     <string name="quick_capture_created_in">%1$s created in %2$s</string>
     <string name="quick_capture_clear_draft">Clear draft</string>
     <string name="quick_capture_clear_draft_confirmation">Clear this draft? This cannot be undone.</string>

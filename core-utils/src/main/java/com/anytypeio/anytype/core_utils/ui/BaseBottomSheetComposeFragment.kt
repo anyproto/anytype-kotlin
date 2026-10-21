@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.core_utils.R
-import com.anytypeio.anytype.core_utils.ext.fixBottomSheetNavigationBarGap
 import com.anytypeio.anytype.core_utils.ext.LONG_THROTTLE_DURATION
+import com.anytypeio.anytype.core_utils.ext.applyContentWidthCap
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -59,6 +59,7 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
+        applyContentWidthCap()
         if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) {
             expand()
         }
@@ -105,7 +106,6 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dialog?.window?.attributes?.windowAnimations = R.style.DefaultBottomDialogAnimation
-        fixBottomSheetNavigationBarGap()
     }
 
     override fun onDestroy() {

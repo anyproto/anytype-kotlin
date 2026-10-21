@@ -67,12 +67,15 @@ class GalleryViewWidget @JvmOverloads constructor(
         galleryViewAdapter.submitList(emptyList())
     }
 
+    val currentItems: List<Viewer.GalleryView.Item> get() = galleryViewAdapter.currentList
+
     fun setViews(
         views: List<Viewer.GalleryView.Item>,
-        largeCards: Boolean = false
+        largeCards: Boolean = false,
+        onCommitted: (() -> Unit)? = null
     ) {
-        galleryViewAdapter.submitList(views)
         setupCardSize(largeCards)
+        galleryViewAdapter.submitList(views) { onCommitted?.invoke() }
     }
 
     private fun setupCardSize(largeCards: Boolean) {

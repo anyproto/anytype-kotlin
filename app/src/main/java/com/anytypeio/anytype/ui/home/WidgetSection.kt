@@ -33,6 +33,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -70,6 +72,7 @@ import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ObjectTypesGroupWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.getAnimatedRotation
 import com.anytypeio.anytype.ui.widgets.types.getPrettyName
 import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
@@ -603,65 +606,79 @@ fun WidgetEditModeButton(
 
 @Composable
 fun SpaceObjectTypesSectionHeader(
-    mode: InteractionMode,
+    isExpanded: Boolean,
     onSectionClicked: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .noRippleClickable { onSectionClicked() }
-    ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 20.dp, bottom = 12.dp),
-            text = stringResource(R.string.widgets_section_object_types),
-            style = Title2,
-            color = colorResource(id = R.color.text_transparent_secondary)
-        )
-    }
+    CollapsibleWidgetSectionHeader(
+        title = stringResource(R.string.widgets_section_object_types),
+        isExpanded = isExpanded,
+        onSectionClicked = onSectionClicked
+    )
 }
 
 @Composable
 fun UnreadSectionHeader(
+    isExpanded: Boolean,
     onSectionClicked: () -> Unit,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .noRippleClickable { onSectionClicked() }
-    ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 20.dp, bottom = 12.dp),
-            text = stringResource(R.string.widgets_section_unread),
-            style = Title2,
-            color = colorResource(id = R.color.text_transparent_secondary)
-        )
-    }
+    CollapsibleWidgetSectionHeader(
+        title = stringResource(R.string.widgets_section_unread),
+        isExpanded = isExpanded,
+        onSectionClicked = onSectionClicked
+    )
 }
 
 @Composable
 fun MyFavoritesSectionHeader(
+    isExpanded: Boolean,
     onSectionClicked: () -> Unit,
 ) {
+    CollapsibleWidgetSectionHeader(
+        title = stringResource(R.string.widgets_section_my_favorites),
+        isExpanded = isExpanded,
+        onSectionClicked = onSectionClicked
+    )
+}
+
+@Composable
+private fun CollapsibleWidgetSectionHeader(
+    title: String,
+    isExpanded: Boolean,
+    onSectionClicked: () -> Unit
+) {
+    val color = colorResource(R.color.text_transparent_secondary)
+    val rotation = getAnimatedRotation(isExpanded)
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp)
             .noRippleClickable { onSectionClicked() }
     ) {
-        Text(
+        Row(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 20.dp, bottom = 12.dp),
-            text = stringResource(R.string.widgets_section_my_favorites),
-            style = Title2,
-            color = colorResource(id = R.color.text_transparent_secondary)
-        )
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp, bottom = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                style = Title2,
+                color = color,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
+            )
+            Image(
+                painter = painterResource(R.drawable.ic_widget_tree_expand),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(color),
+                modifier = Modifier
+                    .padding(start = 8.dp)
+                    .size(18.dp)
+                    .graphicsLayer { rotationZ = rotation.value }
+            )
+        }
     }
 }
 
@@ -939,23 +956,14 @@ private fun sh.calvin.reorderable.ReorderableScope.MyFavoriteRow(
 
 @Composable
 fun RecentlyEditedSectionHeader(
+    isExpanded: Boolean,
     onSectionClicked: () -> Unit,
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .noRippleClickable { onSectionClicked() }
-    ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(start = 20.dp, bottom = 12.dp),
-            text = stringResource(R.string.widgets_section_recently_edited),
-            style = Title2,
-            color = colorResource(id = R.color.text_transparent_secondary)
-        )
-    }
+    CollapsibleWidgetSectionHeader(
+        title = stringResource(R.string.widgets_section_recently_edited),
+        isExpanded = isExpanded,
+        onSectionClicked = onSectionClicked
+    )
 }
 
 /**

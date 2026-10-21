@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
 import com.anytypeio.anytype.feature_object_type.ui.header.TopToolbar
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryMenuState
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -25,7 +26,8 @@ fun TopBarContent(
     uiSyncStatusBadgeState: UiSyncStatusBadgeState,
     uiTitleState: UiTitleState,
     uiIconState: UiIconState,
-    onTypeEvent: (TypeEvent) -> Unit
+    onTypeEvent: (TypeEvent) -> Unit,
+    backHistoryMenu: BackHistoryMenuState = BackHistoryMenuState.Hidden
 ) {
     // Use windowInsetsPadding if running on a recent SDK
     val modifier = Modifier
@@ -37,7 +39,8 @@ fun TopBarContent(
             uiSyncStatusBadgeState = uiSyncStatusBadgeState,
             uiTitleState = uiTitleState,
             uiIconState = uiIconState,
-            onTypeEvent = onTypeEvent
+            onTypeEvent = onTypeEvent,
+            backHistoryMenu = backHistoryMenu
         )
     }
 }

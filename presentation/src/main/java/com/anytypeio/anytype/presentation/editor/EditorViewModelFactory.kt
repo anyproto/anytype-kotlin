@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.domain.ai.TypeSuggestionEngine
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
@@ -52,6 +53,8 @@ import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -109,7 +112,10 @@ open class EditorViewModelFactory @Inject constructor(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val urlHelper: UrlHelper,
     private val addDiscussion: AddDiscussion,
-    private val getChatMessages: GetChatMessages
+    private val getChatMessages: GetChatMessages,
+    private val backHistoryDelegate: BackHistoryDelegate,
+    private val exitToVaultDelegate: ExitToVaultDelegate,
+    private val typeSuggestionEngine: TypeSuggestionEngine = TypeSuggestionEngine.NoOp
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -165,7 +171,10 @@ open class EditorViewModelFactory @Inject constructor(
             spaceViews = spaceViews,
             urlHelper = urlHelper,
             addDiscussion = addDiscussion,
-            getChatMessages = getChatMessages
+            getChatMessages = getChatMessages,
+            backHistoryDelegate = backHistoryDelegate,
+            exitToVaultDelegate = exitToVaultDelegate,
+            typeSuggestionEngine = typeSuggestionEngine
         ) as T
     }
 }

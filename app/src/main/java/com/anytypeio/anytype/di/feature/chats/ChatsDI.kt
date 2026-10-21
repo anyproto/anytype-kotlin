@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -27,15 +28,17 @@ import com.anytypeio.anytype.domain.notifications.SetChatNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.feature_chats.presentation.ChatSearchDelegate
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.NavigationBackStackInspector
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.defaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
@@ -46,10 +49,13 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import javax.inject.Named
+import kotlinx.coroutines.CoroutineScope
 
 @Component(
     dependencies = [ChatComponentDependencies::class],
     modules = [
+        ChatContainerModule::class,
         ChatModule::class,
         ChatModule.Declarations::class
     ]
@@ -107,9 +113,17 @@ object ChatModule {
     @JvmStatic
     @PerScreen
     @Provides
-    fun provideChatSearchDelegate(
-        impl: ChatSearchDelegate.Default
-    ): ChatSearchDelegate = impl
+    fun provideBackHistoryDelegate(
+        inspector: NavigationBackStackInspector,
+        searchObjects: SearchObjects,
+        fieldParser: FieldParser,
+        dispatchers: AppCoroutineDispatchers
+    ): BackHistoryDelegate = BackHistoryDelegate.Default(
+        inspector = inspector,
+        searchObjects = searchObjects,
+        fieldParser = fieldParser,
+        dispatchers = dispatchers
+    )
 
     @Module
     interface Declarations {
@@ -122,6 +136,7 @@ object ChatModule {
 }
 
 interface ChatComponentDependencies : ComponentDependencies {
+    @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
     fun blockRepository(): BlockRepository
     fun authRepo(): AuthRepository
     fun appCoroutineDispatchers(): AppCoroutineDispatchers
@@ -148,4 +163,5 @@ interface ChatComponentDependencies : ComponentDependencies {
     fun payloadDelegator(): PayloadDelegator
     fun fieldParser(): FieldParser
     fun deepLinkResolver(): DeepLinkResolver
+    fun navigationBackStackInspector(): NavigationBackStackInspector
 }

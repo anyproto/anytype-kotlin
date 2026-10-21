@@ -21,7 +21,7 @@ import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.extensions.setCircularShape
 import com.anytypeio.anytype.core_ui.extensions.setCorneredShape
-import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget.Companion.DRAWABLE_DIR
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.custom_icons.CustomIconDrawables
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -40,7 +40,6 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     companion object {
         const val DEFAULT_SIZE = 28
-        const val DRAWABLE_DIR = "drawable"
     }
 
     val binding = WidgetObjectIconBinding.inflate(
@@ -480,40 +479,34 @@ class ObjectIconWidget @JvmOverloads constructor(
     }
 }
 
+/**
+ * Returns the drawable and the tint color for a type icon.
+ *
+ * [CustomIconDrawables] names every drawable statically, which keeps the icon set safe from
+ * the resource shrinker of the release build. Do not resolve an icon by name here.
+ */
 fun TypeIcon.getDrawableAndTintColor(context: Context): Pair<Int, Int> {
     val icon = this
     return when (icon) {
         is ObjectIcon.TypeIcon.Default -> {
-            val resId = context.resources.getIdentifier(
-                icon.drawableResId,
-                DRAWABLE_DIR,
-                context.packageName
-            )
-            if (resId != 0) {
+            // A newer client can send an icon name that this APK does not hold. TypeIconView
+            // then shows the puzzle piece in the default color. The View screens must agree,
+            // otherwise the same object shows an icon in Compose and nothing here.
+            val resId = CustomIconDrawables.getDrawableRes(icon.rawValue)
+            if (resId != null) {
                 resId to context.getColor(icon.color.colorRes())
             } else {
-                0 to 0
+                R.drawable.ci_extension_puzzle to context.getColor(CustomIconColor.DEFAULT.colorRes())
             }
         }
 
         ObjectIcon.TypeIcon.Deleted -> 0 to 0
         is ObjectIcon.TypeIcon.Emoji -> 0 to 0
         is ObjectIcon.TypeIcon.Fallback -> {
-            val resId = context.resources.getIdentifier(
-                icon.drawableResId,
-                DRAWABLE_DIR,
-                context.packageName
-            )
-            if (resId != 0) {
-                resId to context.getColor(CustomIconColor.Transparent.colorRes())
-            } else {
-                val defaultFallback = ObjectIcon.TypeIcon.Fallback.DEFAULT
-                context.resources.getIdentifier(
-                    defaultFallback.drawableResId,
-                    DRAWABLE_DIR,
-                    context.packageName
-                ) to context.getColor(CustomIconColor.Transparent.colorRes())
-            }
+            // ci_extension_puzzle is the drawable of Fallback.DEFAULT_FALLBACK_ICON.
+            val resId = CustomIconDrawables.getDrawableRes(icon.rawValue)
+                ?: R.drawable.ci_extension_puzzle
+            resId to context.getColor(CustomIconColor.Transparent.colorRes())
         }
     }
 }

@@ -73,6 +73,11 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
 
     override suspend fun clearCurrentSpace() = cache.clearCurrentSpace()
 
+    override suspend fun setLastBackgroundedAt(timeInSeconds: Long) =
+        cache.setLastBackgroundedAt(timeInSeconds)
+
+    override suspend fun getLastBackgroundedAt(): Long? = cache.getLastBackgroundedAt()
+
     override suspend fun setLastOpenedObject(id: Id, space: SpaceId) {
         cache.setLastOpenedObject(id, space)
     }
@@ -170,6 +175,14 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         cache.setHasSeenCreateSpaceBadge(hasSeen)
     }
 
+    override suspend fun getHasSeenVaultSearchHighlight(): Boolean {
+        return cache.getHasSeenVaultSearchHighlight()
+    }
+
+    override suspend fun setHasSeenVaultSearchHighlight(hasSeen: Boolean) {
+        cache.setHasSeenVaultSearchHighlight(hasSeen)
+    }
+
     override suspend fun getRunProfilerOnStartup(): Boolean {
         return cache.getRunProfilerOnStartup()
     }
@@ -196,6 +209,18 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
 
     override fun observeCompactModeEnabled(): Flow<Boolean> {
         return cache.observeCompactModeEnabled()
+    }
+
+    override suspend fun getKanbanEnabled(): Boolean {
+        return cache.getKanbanEnabled()
+    }
+
+    override suspend fun setKanbanEnabled(enabled: Boolean) {
+        cache.setKanbanEnabled(enabled)
+    }
+
+    override fun observeKanbanEnabled(): Flow<Boolean> {
+        return cache.observeKanbanEnabled()
     }
 
     override suspend fun getFileDownloadLimit(): FileDownloadLimit {
@@ -268,5 +293,69 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
 
     override fun observeInviteMembersDismissed(space: SpaceId): Flow<Boolean> {
         return cache.observeInviteMembersDismissed(space)
+    }
+
+    override suspend fun setQuickCaptureDraft(space: SpaceId, obj: Id) {
+        cache.setQuickCaptureDraft(space, obj)
+    }
+
+    override suspend fun getQuickCaptureDraft(space: SpaceId): Id? {
+        return cache.getQuickCaptureDraft(space)
+    }
+
+    override suspend fun getQuickCaptureDrafts(): Map<Id, Id> {
+        return cache.getQuickCaptureDrafts()
+    }
+
+    override suspend fun clearQuickCaptureDraft(space: SpaceId) {
+        cache.clearQuickCaptureDraft(space)
+    }
+
+    override suspend fun setSpaceLastInteraction(space: SpaceId, timestamp: Long) {
+        cache.setSpaceLastInteraction(space, timestamp)
+    }
+
+    override suspend fun getSpaceLastInteractions(): Map<Id, Long> {
+        return cache.getSpaceLastInteractions()
+    }
+
+    override suspend fun getVaultSortKeys(): Map<Id, Long> {
+        return cache.getVaultSortKeys()
+    }
+
+    override suspend fun setVaultSortKeys(keys: Map<Id, Long>) {
+        cache.setVaultSortKeys(keys)
+    }
+
+    override suspend fun setQuickCaptureLastSpace(space: Id) {
+        cache.setQuickCaptureLastSpace(space)
+    }
+
+    override suspend fun getQuickCaptureLastSpace(): Id? {
+        return cache.getQuickCaptureLastSpace()
+    }
+
+    override suspend fun getQuickCaptureEnabled(): Boolean {
+        return cache.getQuickCaptureEnabled()
+    }
+
+    override suspend fun setQuickCaptureEnabled(enabled: Boolean) {
+        cache.setQuickCaptureEnabled(enabled)
+    }
+
+    override fun observeQuickCaptureEnabled(): Flow<Boolean> {
+        return cache.observeQuickCaptureEnabled()
+    }
+
+    override suspend fun getQuickCaptureAiEnabled(): Boolean {
+        return cache.getQuickCaptureAiEnabled()
+    }
+
+    override suspend fun setQuickCaptureAiEnabled(enabled: Boolean) {
+        cache.setQuickCaptureAiEnabled(enabled)
+    }
+
+    override fun observeQuickCaptureAiEnabled(): Flow<Boolean> {
+        return cache.observeQuickCaptureAiEnabled()
     }
 }

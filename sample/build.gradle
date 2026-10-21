@@ -7,16 +7,18 @@ plugins {
 }
 
 android {
-    compileSdk = 35
+    def config = rootProject.ext
+
+    compileSdk = config.compile_sdk
 
     defaultConfig {
         applicationId = "com.anytypeio.anytype.sample"
-        minSdk = 26
-        targetSdk = 35
+        minSdk = config.min_sdk
+        targetSdk = config.target_sdk
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = config.test_runner
     }
 
     buildTypes {

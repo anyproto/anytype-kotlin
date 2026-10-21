@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
@@ -50,7 +51,7 @@ fun VaultOneToOneSpaceCard(
     attachmentPreviews: List<AttachmentPreview> = emptyList(),
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.OneToOneSpace,
-    expandedSpaceId: String? = null,
+    isMenuExpanded: Boolean = false,
     isLastMessageOutgoing: Boolean = false,
     isLastMessageSynced: Boolean = true,
     isCompactMode: Boolean = false,
@@ -125,7 +126,7 @@ fun VaultOneToOneSpaceCard(
 
         // Include dropdown menu inside the card
         SpaceActionsDropdownMenu(
-            expanded = expandedSpaceId == spaceView.space.id,
+            expanded = isMenuExpanded,
             onDismiss = onDismissMenu,
             menuShape = SpaceNotificationMenuShape.DmToggle,
             currentNotificationMode = spaceView.spaceNotificationState,
@@ -194,7 +195,7 @@ private fun ContentOneToOne(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(24.dp),
+                .heightIn(min = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             TitleRow(

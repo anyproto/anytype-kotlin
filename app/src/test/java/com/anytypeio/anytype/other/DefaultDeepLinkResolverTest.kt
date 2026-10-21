@@ -156,6 +156,43 @@ class DefaultDeepLinkResolverTest {
     }
 
     @Test
+    fun `resolve returns DeepLinkToMembership with code for membership code deep link`() {
+        // Given
+        val code = "KJ419-01091-13933-321ZV-ONYEE"
+        val deeplink = "anytype://membership?code=$code"
+
+        // When
+        val result = deepLinkResolver.resolve(deeplink)
+
+        // Then
+        assertEquals(
+            DeepLinkResolver.Action.DeepLinkToMembership(
+                tierId = null,
+                code = code
+            ),
+            result
+        )
+    }
+
+    @Test
+    fun `resolve returns DeepLinkToMembership with null code for plain membership deep link`() {
+        // Given
+        val deeplink = "anytype://membership"
+
+        // When
+        val result = deepLinkResolver.resolve(deeplink)
+
+        // Then
+        assertEquals(
+            DeepLinkResolver.Action.DeepLinkToMembership(
+                tierId = null,
+                code = null
+            ),
+            result
+        )
+    }
+
+    @Test
     fun `resolve returns Unknown for unrecognized deep links`() {
         // Given
         val deeplink = "anytype://some_random_path"

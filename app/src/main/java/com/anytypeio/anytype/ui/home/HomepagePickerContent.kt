@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
@@ -62,9 +63,9 @@ fun HomepagePickerBottomSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     ModalBottomSheet(
+        sheetMaxWidth = contentWidthDp(),
         modifier = Modifier
             .navigationBarsPadding()
-            .fillMaxWidth()
             .wrapContentHeight()
             .padding(horizontal = 8.dp),
         onDismissRequest = onDismiss,

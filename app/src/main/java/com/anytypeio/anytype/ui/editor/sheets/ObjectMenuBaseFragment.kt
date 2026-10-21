@@ -59,6 +59,7 @@ abstract class ObjectMenuBaseFragment :
     private val isReadOnly get() = arg<Boolean>(IS_READ_ONLY_KEY)
     private val isTemplate get() = argOrNull<Boolean>(IS_TEMPLATE_KEY)
     private val fromName get() = argOrNull<String?>(FROM_NAME)
+    private val isQuickCapture get() = argOrNull<Boolean>(IS_QUICK_CAPTURE_KEY) == true
 
     abstract val vm: ObjectMenuViewModelBase
 
@@ -125,7 +126,8 @@ abstract class ObjectMenuBaseFragment :
         proceed(vm.commands.throttleFirst()) { command -> execute(command) }
         proceed(vm.options) { options -> renderOptions(options) }
 
-        if (BuildConfig.DEBUG) {
+        // Diagnostics have no place in the trimmed quick-capture menu, debug builds included.
+        if (BuildConfig.DEBUG && !isQuickCapture) {
             binding.debugGoroutines.visible()
             binding.debugGoroutinesDivider.visible()
         }
@@ -138,7 +140,8 @@ abstract class ObjectMenuBaseFragment :
             isFavorite = isFavorite,
             isLocked = isLocked,
             isTemplate = isTemplate == true,
-            isReadOnly = isReadOnly
+            isReadOnly = isReadOnly,
+            isQuickCapture = isQuickCapture
         )
     }
 
@@ -416,6 +419,7 @@ abstract class ObjectMenuBaseFragment :
         const val FROM_NAME = "arg.doc-menu-bottom-sheet.from-name"
         const val COMING_SOON_MSG = "Coming soon..."
         const val IS_TEMPLATE_KEY = "arg.doc-menu-bottom-sheet.is-template"
+        const val IS_QUICK_CAPTURE_KEY = "arg.doc-menu-bottom-sheet.is-quick-capture"
     }
 
     interface DocumentMenuActionReceiver {

@@ -1,5 +1,5 @@
 [versions]
-middlewareVersion = "v0.50.4"
+middlewareVersion = "v0.51.6"
 kotlinVersion = "2.2.10"
 kspVersion = "2.3.4"
 
@@ -47,7 +47,8 @@ gsonVersion = '2.11.0'
 betterLinkMethodVersion = '2.2.0'
 picktVersion = '2.0.5'
 mlkitBarcodeScanningVersion = '17.3.0'
-cameraxVersion = '1.3.4'
+mlkitGenAiPromptVersion = '1.0.0-beta4'
+cameraxVersion = '1.4.2'
 urlcleanerVersion = '0.4.0'
 katexVersion = '1.0.2'
 robolectricLatestVersion = '4.11.1'
@@ -62,7 +63,7 @@ dataStoreVersion = '1.1.4'
 amplitudeVersion = '3.35.1'
 coilComposeVersion = '3.2.0'
 telephotoZoomableVersion = '0.18.0'
-sentryVersion = '7.13.0'
+sentryVersion = '8.42.0'
 firebaseBomVersion = "33.13.0"
 
 composeQrCodeVersion = '1.0.1'
@@ -135,6 +136,7 @@ gson = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
 pickT = { module = "com.github.HBiSoft:PickiT", version.ref = "picktVersion" }
 mlkit-barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkitBarcodeScanningVersion" }
+mlkit-genai-prompt = { module = "com.google.mlkit:genai-prompt", version.ref = "mlkitGenAiPromptVersion" }
 camerax-core = { module = "androidx.camera:camera-core", version.ref = "cameraxVersion" }
 camerax-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraxVersion" }
 camerax-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraxVersion" }
@@ -164,7 +166,7 @@ sentry = { module = "io.sentry:sentry-android", version.ref = "sentryVersion" }
 sentryTimber = { module = "io.sentry:sentry-android-timber", version.ref = "sentryVersion" }
 navigationCompose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }
 composeQrCode = { module = "com.lightspark:compose-qr-code", version.ref = "composeQrCodeVersion" }
-playBilling = { module = "com.android.billingclient:billing", version = "7.1.1" }
+playBilling = { module = "com.android.billingclient:billing", version = "9.1.0" }
 fragmentCompose = { group = "androidx.fragment", name = "fragment-compose", version.ref = "fragmentComposeVersion" }
 firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
 firebaseMessaging = { module = "com.google.firebase:firebase-messaging"}

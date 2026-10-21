@@ -31,6 +31,7 @@ import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
+import com.anytypeio.anytype.domain.vault.SetVaultSearchHighlightSeen
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
@@ -69,6 +70,7 @@ class VaultViewModelFactory @Inject constructor(
     private val getSpaceWallpapers: GetSpaceWallpapers,
     private val shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge,
     private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
+    private val setVaultSearchHighlightSeen: SetVaultSearchHighlightSeen,
     private val appInfo: AppInfo,
     private val searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity,
     private val createSpace: CreateSpace,
@@ -112,6 +114,7 @@ class VaultViewModelFactory @Inject constructor(
         getSpaceWallpapers = getSpaceWallpapers,
         shouldShowCreateSpaceBadge = shouldShowCreateSpaceBadge,
         setCreateSpaceBadgeSeen = setCreateSpaceBadgeSeen,
+        setVaultSearchHighlightSeen = setVaultSearchHighlightSeen,
         appInfo = appInfo,
         searchOneToOneChatByIdentity = searchOneToOneChatByIdentity,
         createSpace = createSpace,

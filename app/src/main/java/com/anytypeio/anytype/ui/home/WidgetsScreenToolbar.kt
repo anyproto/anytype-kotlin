@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -34,13 +35,21 @@ fun HomeScreenToolbar(
             iconRes = R.drawable.ic_default_top_back,
             onClick = onBackButtonClicked,
             contentDescription = stringResource(R.string.content_desc_back_button),
-            size = buttonSize
+            size = buttonSize,
+            showBorder = false,
+            elevation = 2.dp,
+            iconSize = 24.dp,
+            backgroundColor = colorResource(id = R.color.background_secondary),
         )
         CircularFabButton(
             iconRes = R.drawable.ic_space_list_dots,
             onClick = onSpaceSettingsClicked,
             contentDescription = stringResource(R.string.space_settings),
-            size = buttonSize
+            size = buttonSize,
+            showBorder = false,
+            elevation = 2.dp,
+            iconSize = 24.dp,
+            backgroundColor = colorResource(id = R.color.background_secondary),
         )
     }
 }

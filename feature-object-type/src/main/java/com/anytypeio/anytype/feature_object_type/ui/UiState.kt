@@ -23,6 +23,10 @@ sealed class ObjectTypeCommand {
 
     data object Back : ObjectTypeCommand()
 
+    data object ExitToVault : ObjectTypeCommand()
+
+    data class PopToBackStackEntry(val entryId: String) : ObjectTypeCommand()
+
     data class OpenTemplate(
         val templateId: Id,
         val typeId: Id,

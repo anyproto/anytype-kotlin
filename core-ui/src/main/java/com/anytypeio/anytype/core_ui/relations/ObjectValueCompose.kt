@@ -186,8 +186,18 @@ fun RelationsViewEmpty(
                 title = stringResource(id = R.string.object_values_empty_title),
                 style = BodyCalloutMedium
             )
+            val limitedTo = state.limitedToTypeNames
             AlertDescription(
-                description = stringResource(id = R.string.object_values_empty_description),
+                description = if (limitedTo != null) {
+                    // Name the restriction instead of leaving the user guessing why the
+                    // list is empty (DROID-4554).
+                    stringResource(
+                        id = R.string.object_values_empty_description_limited,
+                        limitedTo
+                    )
+                } else {
+                    stringResource(id = R.string.object_values_empty_description)
+                },
                 style = BodyCalloutMedium
             )
         }

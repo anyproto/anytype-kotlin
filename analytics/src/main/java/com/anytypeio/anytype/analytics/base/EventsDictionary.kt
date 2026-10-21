@@ -329,6 +329,11 @@ object EventsDictionary {
     const val clickMembership = "ClickMembership"
     const val changePlan = "ChangePlan"
 
+    // Membership code redemption
+    const val screenMembershipCode = "ScreenMembershipCode" // props: route('Stripe'|'settings-membership')
+    const val clickMembershipCode = "ClickMembershipCode"
+    const val activateMembershipCode = "ActivateMembershipCode"
+
     //region --- Chats ---
 
     // Screen + open
@@ -411,6 +416,11 @@ object EventsDictionary {
         CONTACT_US("ContactUs")
     }
 
+    enum class MembershipCodeRoute(val value: String) {
+        STRIPE("Stripe"),
+        SETTINGS_MEMBERSHIP("settings-membership")
+    }
+
     enum class ScreenOnboardingStep(val value: String) {
         SOUL("Soul"),
         PHRASE("Phrase"),
@@ -459,6 +469,7 @@ object EventsDictionary {
         const val featuredRelations = "FeaturedRelations"
         const val objectRoute = "Object"
         const val typeRoute = "Type"
+        const val quickCapture = "QuickCapture"
     }
 
     object Type {

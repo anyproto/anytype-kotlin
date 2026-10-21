@@ -23,7 +23,9 @@ import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
+import com.anytypeio.anytype.domain.vault.SetVaultSearchHighlightSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
@@ -35,6 +37,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -42,6 +45,9 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -2046,6 +2052,98 @@ class VaultViewModelTest {
                 assertEquals(0, spaceView.unreadMentionCount)
             }
         }
+    }
+
+    //endregion
+
+    //region Search highlight
+
+    private fun stubSettings(hasSeenSearchHighlight: Boolean): UserSettingsRepository = mock {
+        on { observeCompactModeEnabled() }.thenReturn(flowOf(false))
+        on { observeQuickCaptureEnabled() }.thenReturn(flowOf(false))
+        onBlocking { getVaultSortKeys() }.thenReturn(emptyMap())
+        onBlocking { getHasSeenVaultSearchHighlight() }.thenReturn(hasSeenSearchHighlight)
+    }
+
+    private fun createViewModelForSearchHighlight(
+        settings: UserSettingsRepository,
+        setVaultSearchHighlightSeen: SetVaultSearchHighlightSeen
+    ): VaultViewModel {
+        whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(emptyList()))
+        whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+            flowOf(ChatPreviewContainer.PreviewState.Ready(emptyList()))
+        )
+        whenever(userPermissionProvider.all()).thenReturn(flowOf(emptyMap()))
+        whenever(notificationPermissionManager.permissionState()).thenReturn(
+            MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+        )
+        return VaultViewModelFabric.create(
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            chatPreviewContainer = chatPreviewContainer,
+            userPermissionProvider = userPermissionProvider,
+            notificationPermissionManager = notificationPermissionManager,
+            getSpaceWallpaper = getSpaceWallpapers,
+            chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+            participantSubscriptionContainer = participantSubscriptionContainer,
+            userSettingsRepository = settings,
+            setVaultSearchHighlightSeen = setVaultSearchHighlightSeen
+        )
+    }
+
+    @Test
+    fun `search highlight is shown while it has not been seen`() = runTest {
+        val viewModel = createViewModelForSearchHighlight(
+            settings = stubSettings(hasSeenSearchHighlight = false),
+            setVaultSearchHighlightSeen = mock()
+        )
+        advanceUntilIdle()
+
+        assertTrue(viewModel.showSearchHighlight.value)
+    }
+
+    @Test
+    fun `search highlight stays hidden once it has been seen`() = runTest {
+        val viewModel = createViewModelForSearchHighlight(
+            settings = stubSettings(hasSeenSearchHighlight = true),
+            setVaultSearchHighlightSeen = mock()
+        )
+        advanceUntilIdle()
+
+        assertFalse(viewModel.showSearchHighlight.value)
+    }
+
+    @Test
+    fun `tapping the highlighted search bar hides the highlight and persists it as seen`() = runTest {
+        val setSeen = mock<SetVaultSearchHighlightSeen> {
+            onBlocking { async(Unit) }.thenReturn(Resultat.Success(Unit))
+        }
+        val viewModel = createViewModelForSearchHighlight(
+            settings = stubSettings(hasSeenSearchHighlight = false),
+            setVaultSearchHighlightSeen = setSeen
+        )
+        advanceUntilIdle()
+        assertTrue(viewModel.showSearchHighlight.value)
+
+        viewModel.onSearchBarClicked()
+        advanceUntilIdle()
+
+        assertFalse(viewModel.showSearchHighlight.value)
+        verify(setSeen, times(1)).async(Unit)
+    }
+
+    @Test
+    fun `tapping the search bar without a highlight does not touch settings`() = runTest {
+        val setSeen = mock<SetVaultSearchHighlightSeen>()
+        val viewModel = createViewModelForSearchHighlight(
+            settings = stubSettings(hasSeenSearchHighlight = true),
+            setVaultSearchHighlightSeen = setSeen
+        )
+        advanceUntilIdle()
+
+        viewModel.onSearchBarClicked()
+        advanceUntilIdle()
+
+        verifyNoInteractions(setSeen)
     }
 
     //endregion

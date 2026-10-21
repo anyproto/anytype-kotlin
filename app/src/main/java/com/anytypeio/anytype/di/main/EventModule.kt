@@ -19,11 +19,13 @@ import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.AccountStatusMiddlewareChannel
+import com.anytypeio.anytype.middleware.interactor.DefaultMiddlewareEventRegistrar
 import com.anytypeio.anytype.middleware.interactor.EventHandler
 import com.anytypeio.anytype.middleware.interactor.EventHandlerChannel
 import com.anytypeio.anytype.middleware.interactor.EventHandlerChannelImpl
 import com.anytypeio.anytype.middleware.interactor.FileLimitsMiddlewareChannel
 import com.anytypeio.anytype.middleware.interactor.MiddlewareEventChannel
+import com.anytypeio.anytype.middleware.interactor.MiddlewareEventRegistrar
 import com.anytypeio.anytype.middleware.interactor.MiddlewareProtobufLogger
 import com.anytypeio.anytype.middleware.interactor.MiddlewareSubscriptionEventChannel
 import com.anytypeio.anytype.middleware.interactor.SyncAndP2PStatusEventsStoreImpl
@@ -104,8 +106,12 @@ object EventModule {
     @Provides
     @Singleton
     fun provideSubscriptionEventRemoteChannel(
-        proxy: EventProxy
-    ): SubscriptionEventRemoteChannel = MiddlewareSubscriptionEventChannel(events = proxy)
+        proxy: EventProxy,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
+    ): SubscriptionEventRemoteChannel = MiddlewareSubscriptionEventChannel(
+        events = proxy,
+        scope = scope
+    )
 
     @JvmStatic
     @Provides
@@ -128,13 +134,20 @@ object EventModule {
         logger: MiddlewareProtobufLogger,
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         channel: EventHandlerChannel,
-        syncP2PStore: SyncAndP2PStatusEventsStore
+        syncP2PStore: SyncAndP2PStatusEventsStore,
+        registrar: MiddlewareEventRegistrar
     ): EventProxy = EventHandler(
         scope = scope,
         logger = logger,
         channel = channel,
-        syncP2PStore = syncP2PStore
+        syncP2PStore = syncP2PStore,
+        registrar = registrar
     )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideMiddlewareEventRegistrar(): MiddlewareEventRegistrar = DefaultMiddlewareEventRegistrar()
 
     @JvmStatic
     @Provides

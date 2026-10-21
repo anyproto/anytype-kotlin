@@ -44,15 +44,27 @@ class PushKeyProviderImpl @Inject constructor(
         Timber.d("PushKeyProvider stop called")
     }
 
+    /**
+     * Read-modify-write of [PREF_PUSH_KEYS]. Safe without synchronization because it is invoked
+     * only from the single sequential collector in [start] (which cancels any prior job before
+     * relaunching), and this class is the only writer of that pref. Calling it from another
+     * thread/coroutine concurrently could lose updates.
+     */
     private fun savePushKey(id: String?, value: String?) {
-        val storedKeys = getStoredPushKeys().toMutableMap()
+        if (id.isNullOrEmpty() || value.isNullOrEmpty()) return
 
-        if (!value.isNullOrEmpty() && !id.isNullOrEmpty()) {
-            storedKeys[id] = PushKey(id = id, value = value)
+        val storedKeys = getStoredPushKeys()
+
+        // Skip redundant disk writes: the same key is re-emitted on every space-view
+        // amend during cold start. Only persist when the value actually changed.
+        if (storedKeys[id]?.value == value) return
+
+        val updated = storedKeys.toMutableMap().apply {
+            put(id, PushKey(id = id, value = value))
         }
 
         sharedPreferences.edit().apply {
-            putString(PREF_PUSH_KEYS, json.encodeToString(storedKeys))
+            putString(PREF_PUSH_KEYS, json.encodeToString(updated))
             apply()
         }
     }

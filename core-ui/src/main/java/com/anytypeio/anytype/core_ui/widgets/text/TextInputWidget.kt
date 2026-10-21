@@ -84,6 +84,12 @@ class TextInputWidget : AppCompatEditText {
      */
     var backButtonWatcher: (() -> Boolean)? = null
 
+    /**
+     * Receives Tab (false) and Shift+Tab (true) from a hardware keyboard.
+     * Without a watcher, Tab keeps the default behavior: it moves the focus to the next view.
+     */
+    var tabKeyWatcher: ((isShift: Boolean) -> Unit)? = null
+
     private var isSelectionWatcherBlocked = false
 
     private var inputAction: BlockView.InputAction = DEFAULT_INPUT_WIDGET_ACTION
@@ -133,6 +139,26 @@ class TextInputWidget : AppCompatEditText {
         } else {
             super.onKeyPreIme(keyCode, event)
         }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        val watcher = tabKeyWatcher
+        if (isTabKey(keyCode, event) && watcher != null && !inReadMode) {
+            // A held key moves the block one level only.
+            if (event.repeatCount == 0) watcher.invoke(event.isShiftPressed)
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
+        if (isTabKey(keyCode, event) && tabKeyWatcher != null && !inReadMode) return true
+        return super.onKeyUp(keyCode, event)
+    }
+
+    private fun isTabKey(keyCode: Int, event: KeyEvent): Boolean {
+        return keyCode == KeyEvent.KEYCODE_TAB
+                && (event.hasNoModifiers() || event.hasModifiers(KeyEvent.META_SHIFT_ON))
     }
 
     private fun setupHighlightHelpers(context: Context, attrs: AttributeSet) {

@@ -66,16 +66,17 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEve
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterObjectsByIds
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterSearchObjects
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.scan
@@ -105,13 +106,23 @@ class GlobalSearchViewModel @Inject constructor(
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val userInput = MutableStateFlow("")
-    private val searchQuery = userInput
-        .take(1)
-        .onCompletion {
-            emitAll(userInput.drop(1).debounce(DEFAULT_DEBOUNCE_DURATION).distinctUntilChanged())
-        }
 
     private val mode = MutableStateFlow<Mode>(Mode.Default)
+
+    /**
+     * Emits the current mode together with the debounced query. When the mode changes,
+     * the query flow is restarted and re-reads the current [userInput] immediately,
+     * so mode transitions never fire a search with a stale (pre-debounce) query.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val searchParams = mode.flatMapLatest { mode ->
+        userInput
+            .take(1)
+            .onCompletion {
+                emitAll(userInput.drop(1).debounce(DEFAULT_DEBOUNCE_DURATION).distinctUntilChanged())
+            }
+            .map { query -> mode to query }
+    }
 
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
     val commands = MutableSharedFlow<SearchCommand>()
@@ -198,12 +209,7 @@ class GlobalSearchViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun proceedWithInitialState(initial: ViewState) {
-        combine(
-            mode,
-            searchQuery
-        ) { mode, query ->
-            mode to query
-        }.flatMapLatest { (mode, query) ->
+        searchParams.flatMapLatest { (mode, query) ->
             when(mode) {
                 is Mode.Default -> {
                     buildDefaultSearchFlow(query = query, space = vmParams.space)
@@ -270,6 +276,7 @@ class GlobalSearchViewModel @Inject constructor(
                     )
                 }
                 is Resultat.Success -> {
+                    val types = storeOfObjectTypes.getAll()
                     ViewState.Related(
                         target = mode.target,
                         views = result.value.mapNotNull {
@@ -277,14 +284,15 @@ class GlobalSearchViewModel @Inject constructor(
                                 storeOfRelations = storeOfRelations,
                                 storeOfObjectTypes = storeOfObjectTypes,
                                 urlBuilder = urlBuilder,
-                                fieldParser = fieldParser
+                                fieldParser = fieldParser,
+                                types = types
                             )
                         },
                         isLoading = false
                     )
                 }
             }
-        }
+        }.flowOn(Dispatchers.Default)
 
     private fun relatedSearchFlowParams(
         query: String,
@@ -358,20 +366,22 @@ class GlobalSearchViewModel @Inject constructor(
                     )
                 }
                 is Resultat.Success -> {
+                    val types = storeOfObjectTypes.getAll()
                     ViewState.Default(
                         views = result.value.mapNotNull {
                             it.view(
                                 storeOfRelations = storeOfRelations,
                                 storeOfObjectTypes = storeOfObjectTypes,
                                 urlBuilder = urlBuilder,
-                                fieldParser = fieldParser
+                                fieldParser = fieldParser,
+                                types = types
                             )
                         },
                         isLoading = false
                     )
                 }
             }
-        }
+        }.flowOn(Dispatchers.Default)
 
 
     fun onQueryChanged(query: String) {
@@ -776,13 +786,14 @@ suspend fun Command.SearchWithMeta.Result.view(
     storeOfObjectTypes: StoreOfObjectTypes,
     storeOfRelations: StoreOfRelations,
     urlBuilder: UrlBuilder,
-    fieldParser: FieldParser
+    fieldParser: FieldParser,
+    types: List<ObjectWrapper.Type>? = null
 ) : GlobalSearchItemView? {
     if (wrapper.spaceId == null) return null
     if (wrapper.layout == null) return null
     val (_, typeName) = fieldParser.getObjectTypeIdAndName(
         objectWrapper = wrapper,
-        types = storeOfObjectTypes.getAll()
+        types = types ?: storeOfObjectTypes.getAll()
     )
     val meta = metas.firstOrNull()
     return GlobalSearchItemView(

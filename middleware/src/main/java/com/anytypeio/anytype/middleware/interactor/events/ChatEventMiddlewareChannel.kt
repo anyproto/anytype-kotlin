@@ -1,4 +1,5 @@
 package com.anytypeio.anytype.middleware.interactor.events
+import com.anytypeio.anytype.middleware.EventGroup
 
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -18,7 +19,7 @@ class ChatEventMiddlewareChannel(
 
     override fun observe(chat: Id): Flow<List<Event.Command.Chats>> {
         return eventProxy
-            .flow()
+            .flow(EventGroup.CHAT)
             .filter { it.contextId == chat }
             .mapNotNull { item ->
                 item.messages.mapNotNull { msg -> msg.payload(contextId = item.contextId) }
@@ -29,7 +30,7 @@ class ChatEventMiddlewareChannel(
 
     override fun subscribe(subscription: Id): Flow<List<Event.Command.Chats>> {
         return eventProxy
-            .flow()
+            .flow(EventGroup.CHAT)
             .mapNotNull { item ->
                 item.messages.mapNotNull { msg ->
                     msg.payload(subscription = subscription, contextId = item.contextId)

@@ -14,6 +14,7 @@ licensee {
     allow("Apache-2.0")
     allow("MIT")
     allow("BSD-3-Clause")
+    allow("CC0-1.0") // Reactive Streams, via ML Kit GenAI
 
     // Google/Android SDK Terms
     allowUrl("https://developer.android.com/studio/terms.html") {
@@ -207,6 +208,7 @@ dependencies {
     implementation project(':clipboard')
     implementation project(':core-utils')
     implementation project(':core-ui')
+    implementation project(':core-ai')
     implementation project(':library-page-icon-picker-widget')
     implementation project(':library-emojifier')
     implementation project(':analytics')
@@ -221,6 +223,7 @@ dependencies {
     implementation project(':feature-object-type')
     implementation project(':feature-properties')
     implementation project(':feature-vault')
+    implementation project(':feature-search')
     implementation project(':feature-create-object')
     implementation project(':feature-os-widgets')
 
@@ -326,7 +329,10 @@ dependencies {
         exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-debug"
     }
 
-    debugImplementation libs.fragmentTesting
+    // Keep FragmentScenario's test runtime in the instrumentation APK. Putting it in
+    // debug pins older androidx.test dependencies through AGP consistent resolution.
+    androidTestImplementation libs.fragmentTesting
+    debugImplementation "androidx.fragment:fragment-testing-manifest:${libs.versions.fragmentVersion.get()}"
     debugImplementation libs.composeTooling
     implementation libs.composeToolingPreview
 }

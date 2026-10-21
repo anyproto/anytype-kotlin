@@ -947,7 +947,10 @@ class DateObjectViewModelTest {
             createObject = createObject,
             setObjectListIsArchived = setObjectListIsArchived,
             getDateObjectByTimestamp = getDateObjectByTimestamp,
-            spaceViews = spacedViews
+            spaceViews = spacedViews,
+            searchObjects = mock(),
+            backHistoryDelegate = mock(),
+            exitToVaultDelegate = mock()
         )
     }
 }

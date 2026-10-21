@@ -11,6 +11,7 @@ import com.anytypeio.anytype.di.feature.history.VersionHistoryComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToObjectSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectSubComponent
+import com.anytypeio.anytype.domain.ai.TypeSuggestionEngine
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.UpdateDivider
@@ -82,6 +83,7 @@ import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.SetRelationKey
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.table.CreateTable
 import com.anytypeio.anytype.domain.table.CreateTableColumn
@@ -108,6 +110,9 @@ import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.NavigationBackStackInspector
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.Interactor
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
@@ -295,7 +300,10 @@ object EditorSessionModule {
         spaceViews: SpaceViewSubscriptionContainer,
         urlHelper: UrlHelper,
         addDiscussion: AddDiscussion,
-        getChatMessages: GetChatMessages
+        getChatMessages: GetChatMessages,
+        backHistoryDelegate: BackHistoryDelegate,
+        exitToVaultDelegate: ExitToVaultDelegate,
+        typeSuggestionEngine: TypeSuggestionEngine
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -347,7 +355,36 @@ object EditorSessionModule {
         spaceViews = spaceViews,
         urlHelper = urlHelper,
         addDiscussion = addDiscussion,
-        getChatMessages = getChatMessages
+        getChatMessages = getChatMessages,
+        backHistoryDelegate = backHistoryDelegate,
+        exitToVaultDelegate = exitToVaultDelegate,
+        typeSuggestionEngine = typeSuggestionEngine
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideBackHistoryDelegate(
+        inspector: NavigationBackStackInspector,
+        searchObjects: SearchObjects,
+        fieldParser: FieldParser,
+        dispatchers: AppCoroutineDispatchers
+    ): BackHistoryDelegate = BackHistoryDelegate.Default(
+        inspector = inspector,
+        searchObjects = searchObjects,
+        fieldParser = fieldParser,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideExitToVaultDelegate(
+        spaceManager: SpaceManager,
+        clearLastOpenedSpace: ClearLastOpenedSpace
+    ): ExitToVaultDelegate = ExitToVaultDelegate.Default(
+        spaceManager = spaceManager,
+        clearLastOpenedSpace = clearLastOpenedSpace
     )
 
     @JvmStatic

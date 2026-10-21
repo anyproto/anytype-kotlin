@@ -154,6 +154,8 @@ interface ParticipantSubscriptionContainer {
                         Relations.IDENTITY_PROFILE_LINK,
                         Relations.NAME,
                         Relations.GLOBAL_NAME,
+                        Relations.ICON_IMAGE,
+                        Relations.ICON_OPTION,
                         Relations.PARTICIPANT_STATUS,
                         Relations.PARTICIPANT_PERMISSIONS
                     ),

@@ -523,7 +523,9 @@ open class EditorTestSetup {
             spaceViews = spacedViews,
             urlHelper = urlHelper,
             addDiscussion = mock(),
-            getChatMessages = mock()
+            getChatMessages = mock(),
+            backHistoryDelegate = mock(),
+            exitToVaultDelegate = mock()
         )
     }
 

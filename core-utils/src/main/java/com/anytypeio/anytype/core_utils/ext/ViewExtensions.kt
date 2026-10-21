@@ -116,6 +116,15 @@ val Activity.statusBarHeight: Int
         return rectangle.top
     }
 
+/**
+ * True when the caret is already collapsed at [position]. Callers use this to skip a
+ * redundant [EditText.setSelection]: re-setting the same selection notifies the IME about
+ * a caret move it did not ask for, which can terminate an in-progress composition
+ * (Hangul/Kana/Pinyin) mid-syllable.
+ */
+fun EditText.isCaretAt(position: Int): Boolean =
+    selectionStart == position && selectionEnd == position
+
 fun EditText.showKeyboard() {
     post {
         this.apply {

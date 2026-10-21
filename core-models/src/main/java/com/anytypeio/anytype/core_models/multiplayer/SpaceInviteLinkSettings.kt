@@ -11,9 +11,20 @@ sealed class SpaceInviteLinkAccessLevel {
     data class LinkDisabled(val possibleToUpdate: Boolean = true) : SpaceInviteLinkAccessLevel()
 
     /**
-     * Editor access - users can edit the space content
+     * Invite exists but is held by the space owner — its cid and key sync only to the
+     * owner's devices. This is what a non-owner member sees: there is no link to render.
      */
-    data class EditorAccess(val link: String) : SpaceInviteLinkAccessLevel() {
+    data object HeldByOwner : SpaceInviteLinkAccessLevel()
+
+    /**
+     * Editor access - users can edit the space content
+     *
+     * @property isShared true when the invite is shared within the space (every member can see and share it)
+     */
+    data class EditorAccess(
+        val link: String,
+        val isShared: Boolean = false
+    ) : SpaceInviteLinkAccessLevel() {
         companion object {
             val EMPTY = EditorAccess("")
         }
@@ -21,8 +32,13 @@ sealed class SpaceInviteLinkAccessLevel {
 
     /**
      * Viewer access - users can only view the space content
+     *
+     * @property isShared true when the invite is shared within the space (every member can see and share it)
      */
-    data class ViewerAccess(val link: String) : SpaceInviteLinkAccessLevel() {
+    data class ViewerAccess(
+        val link: String,
+        val isShared: Boolean = false
+    ) : SpaceInviteLinkAccessLevel() {
         companion object {
             val EMPTY = ViewerAccess("")
         }
@@ -30,12 +46,40 @@ sealed class SpaceInviteLinkAccessLevel {
 
     /**
      * Request access - users need approval to join
+     *
+     * @property isShared true when the invite is shared within the space (every member can see and share it)
      */
-    data class RequestAccess(val link: String) : SpaceInviteLinkAccessLevel() {
+    data class RequestAccess(
+        val link: String,
+        val isShared: Boolean = false
+    ) : SpaceInviteLinkAccessLevel() {
         companion object {
             val EMPTY = RequestAccess("")
         }
     }
+
+    /**
+     * True when there is an active invite shared within the space.
+     */
+    val isSharedWithinSpace: Boolean
+        get() = when (this) {
+            is EditorAccess -> isShared
+            is ViewerAccess -> isShared
+            is RequestAccess -> isShared
+            is LinkDisabled, is HeldByOwner -> false
+        }
+
+    /**
+     * The invite link when there is one to render on this device, null otherwise.
+     * An invite held by the owner has no link on a member's device — never render it.
+     */
+    val linkOrNull: String?
+        get() = when (this) {
+            is EditorAccess -> link.ifEmpty { null }
+            is ViewerAccess -> link.ifEmpty { null }
+            is RequestAccess -> link.ifEmpty { null }
+            is LinkDisabled, is HeldByOwner -> null
+        }
 
     /**
      * Checks if changing to the new access level requires user confirmation
@@ -49,6 +93,7 @@ sealed class SpaceInviteLinkAccessLevel {
             is ViewerAccess -> this !is EditorAccess
             is RequestAccess -> true // Always needs confirmation
             is LinkDisabled -> true // Always needs confirmation
+            is HeldByOwner -> false // Never a selection target
         }
     }
 }

@@ -11,7 +11,7 @@
         android:layout_height="@dimen/nav_circular_button_size"
         android:layout_marginStart="16dp"
         android:background="@drawable/bg_nav_circular_button"
-        android:elevation="20dp"
+        android:elevation="2dp"
         tools:targetApi="28">
 
         <ImageView
@@ -28,9 +28,9 @@
         android:layout_width="@dimen/nav_circular_button_size"
         android:layout_height="@dimen/nav_circular_button_size"
         android:layout_gravity="end"
-        android:layout_marginEnd="60dp"
+        android:layout_marginEnd="64dp"
         android:background="@drawable/bg_nav_circular_button"
-        android:elevation="20dp"
+        android:elevation="2dp"
         tools:targetApi="28">
 
         <com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
@@ -47,11 +47,11 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginStart="64dp"
-        android:layout_marginEnd="120dp"
+        android:layout_marginStart="68dp"
+        android:layout_marginEnd="116dp"
         android:paddingHorizontal="8dp"
         android:background="@drawable/bg_nav_pill_container"
-        android:elevation="20dp">
+        android:elevation="2dp">
 
         <LinearLayout
             android:id="@+id/titleContainer"
@@ -112,7 +112,7 @@
         android:layout_gravity="end"
         android:layout_marginEnd="12dp"
         android:background="@drawable/bg_nav_circular_button"
-        android:elevation="20dp"
+        android:elevation="2dp"
         tools:targetApi="28">
 
         <ImageView

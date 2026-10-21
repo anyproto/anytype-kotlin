@@ -12,6 +12,8 @@ interface AuthRemote {
     suspend fun selectAccount(command: Command.AccountSelect): AccountSetup
     suspend fun createAccount(command: Command.AccountCreate): AccountSetup
 
+    suspend fun preloadRemainingSpaces()
+
     suspend fun migrateAccount(account: Id, path: String)
     suspend fun cancelAccountMigration(account: Id)
 

@@ -31,7 +31,13 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 @Composable
 fun ExperimentalFeaturesScreen(
     isCompactModeEnabled: Boolean,
-    onCompactModeToggled: (Boolean) -> Unit
+    onCompactModeToggled: (Boolean) -> Unit,
+    isKanbanEnabled: Boolean,
+    onKanbanToggled: (Boolean) -> Unit,
+    isQuickCaptureEnabled: Boolean,
+    onQuickCaptureToggled: (Boolean) -> Unit,
+    isQuickCaptureAiEnabled: Boolean,
+    onQuickCaptureAiToggled: (Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -61,6 +67,33 @@ fun ExperimentalFeaturesScreen(
             description = stringResource(R.string.experimental_features_compact_vault_description),
             isEnabled = isCompactModeEnabled,
             onToggle = onCompactModeToggled
+        )
+
+        Divider()
+
+        ToggleItemWithDescription(
+            title = stringResource(R.string.experimental_features_kanban),
+            description = stringResource(R.string.experimental_features_kanban_description),
+            isEnabled = isKanbanEnabled,
+            onToggle = onKanbanToggled
+        )
+
+        Divider()
+
+        ToggleItemWithDescription(
+            title = stringResource(R.string.experimental_features_quick_capture),
+            description = stringResource(R.string.experimental_features_quick_capture_description),
+            isEnabled = isQuickCaptureEnabled,
+            onToggle = onQuickCaptureToggled
+        )
+
+        Divider()
+
+        ToggleItemWithDescription(
+            title = stringResource(R.string.experimental_features_quick_capture_ai),
+            description = stringResource(R.string.experimental_features_quick_capture_ai_description),
+            isEnabled = isQuickCaptureAiEnabled,
+            onToggle = onQuickCaptureAiToggled
         )
 
         Divider()
@@ -108,6 +141,12 @@ private fun ToggleItemWithDescription(
 fun ExperimentalFeaturesScreenPreview() {
     ExperimentalFeaturesScreen(
         isCompactModeEnabled = false,
-        onCompactModeToggled = {}
+        onCompactModeToggled = {},
+        isKanbanEnabled = false,
+        onKanbanToggled = {},
+        isQuickCaptureEnabled = false,
+        onQuickCaptureToggled = {},
+        isQuickCaptureAiEnabled = false,
+        onQuickCaptureAiToggled = {}
     )
 }

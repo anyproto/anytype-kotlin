@@ -88,7 +88,7 @@ class SyncAndP2PStatusEventsStoreImplTest {
             store.p2pStatus.test {
                 val firstItem = awaitItem()
                 assertEquals(mapOf(), firstItem)
-                channel.emit(initialEvent)
+                channel.dispatch(initialEvent)
                 assertEquals(
                     expected = mapOf(
                         spaceId1 to P2PStatusUpdate.Update(
@@ -114,7 +114,7 @@ class SyncAndP2PStatusEventsStoreImplTest {
                     ),
                     actual = awaitItem()
                 )
-                channel.emit(event1)
+                channel.dispatch(event1)
                 assertEquals(
                     expected = mapOf(
                         spaceId1 to P2PStatusUpdate.Update(
@@ -130,7 +130,7 @@ class SyncAndP2PStatusEventsStoreImplTest {
                     ),
                     actual = awaitItem()
                 )
-                channel.emit(event2)
+                channel.dispatch(event2)
                 assertEquals(
                     expected = mapOf(
                         spaceId1 to P2PStatusUpdate.Update(
@@ -208,7 +208,7 @@ class SyncAndP2PStatusEventsStoreImplTest {
                 val firstItem = awaitItem()
                 assertEquals(mapOf(), firstItem)
 
-                channel.emit(initialEvent)
+                channel.dispatch(initialEvent)
 
                 assertEquals(
                     expected = mapOf(
@@ -243,7 +243,7 @@ class SyncAndP2PStatusEventsStoreImplTest {
                     actual = awaitItem()
                 )
 
-                channel.emit(event1)
+                channel.dispatch(event1)
 
                 assertEquals(
                     expected = mapOf(

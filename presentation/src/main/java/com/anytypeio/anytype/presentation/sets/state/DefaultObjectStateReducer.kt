@@ -4,7 +4,9 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Event.Command
+import com.anytypeio.anytype.core_models.Event.Command.DataView.ObjectOrderUpdate.SliceOperation
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.amend
@@ -104,6 +106,12 @@ class DefaultObjectStateReducer : ObjectStateReducer {
             }
             is Command.DataView.UpdateConflictState -> {
                 handleUpdateConflictState(state, event)
+            }
+            is Command.DataView.GroupOrderUpdate -> {
+                handleGroupOrderUpdate(state, event)
+            }
+            is Command.DataView.ObjectOrderUpdate -> {
+                handleObjectOrderUpdate(state, event)
             }
 
             else -> {
@@ -354,6 +362,48 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                     dataViewRestrictions = state.dataViewRestrictions
                 )
             }
+            else -> state
+        }
+    }
+
+    private fun handleGroupOrderUpdate(
+        state: ObjectState,
+        event: Command.DataView.GroupOrderUpdate
+    ): ObjectState {
+        val incoming = event.groupOrder
+        val update = { content: Block.Content.DataView ->
+            content.copy(
+                groupOrders = content.groupOrders.filterNot { it.viewId == incoming.viewId } + incoming
+            )
+        }
+        return when (state) {
+            is ObjectState.DataView.Collection -> state.updateBlockContent(event.dv, update)
+            is ObjectState.DataView.Set -> state.updateBlockContent(event.dv, update)
+            is ObjectState.DataView.TypeSet -> state.updateBlockContent(event.dv, update)
+            else -> state
+        }
+    }
+
+    private fun handleObjectOrderUpdate(
+        state: ObjectState,
+        event: Command.DataView.ObjectOrderUpdate
+    ): ObjectState {
+        val update = { content: Block.Content.DataView ->
+            val current = content.objectOrders
+                .find { it.view == event.viewId && it.group == event.groupId }
+                ?.ids
+                .orEmpty()
+            val updatedIds = current.applySliceChanges(event.changes)
+            content.copy(
+                objectOrders = content.objectOrders
+                    .filterNot { it.view == event.viewId && it.group == event.groupId } +
+                    ObjectOrder(view = event.viewId, group = event.groupId, ids = updatedIds)
+            )
+        }
+        return when (state) {
+            is ObjectState.DataView.Collection -> state.updateBlockContent(event.dv, update)
+            is ObjectState.DataView.Set -> state.updateBlockContent(event.dv, update)
+            is ObjectState.DataView.TypeSet -> state.updateBlockContent(event.dv, update)
             else -> state
         }
     }
@@ -622,4 +672,34 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         state.value = ObjectState.Init
         _effects.tryEmit(emptyList())
     }
+}
+
+/**
+ * Applies an [Command.DataView.ObjectOrderUpdate]'s slice [changes] to an ordered id list.
+ * Extracted as a pure, testable function. For ADD/MOVE the items are inserted after
+ * [SliceChange.afterId]; when `afterId` is empty **or not present** in the list, they go to
+ * the top — matching the backend's reconciliation (anytype-heart) rather than appending.
+ */
+internal fun List<Id>.applySliceChanges(
+    changes: List<Command.DataView.ObjectOrderUpdate.SliceChange>
+): List<Id> {
+    var result = this
+    for (change in changes) {
+        result = when (change.operation) {
+            SliceOperation.ADD, SliceOperation.MOVE -> {
+                val without = result.filterNot { it in change.ids }
+                val insertAt = when {
+                    change.afterId.isEmpty() -> 0
+                    // Unknown anchor → top, matching the backend (anytype-heart) rather than
+                    // appending to the bottom.
+                    else -> without.indexOf(change.afterId).let { if (it < 0) 0 else it + 1 }
+                }
+                without.toMutableList().apply { addAll(insertAt, change.ids) }
+            }
+            SliceOperation.REMOVE -> result.filterNot { it in change.ids }
+            SliceOperation.REPLACE -> change.ids
+            SliceOperation.NONE -> result
+        }
+    }
+    return result
 }

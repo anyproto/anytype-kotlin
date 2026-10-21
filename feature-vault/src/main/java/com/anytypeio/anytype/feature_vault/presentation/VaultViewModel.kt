@@ -65,6 +65,7 @@ import com.anytypeio.anytype.domain.spaces.SetHomepage
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
+import com.anytypeio.anytype.domain.vault.SetVaultSearchHighlightSeen
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
@@ -75,25 +76,31 @@ import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -134,6 +141,7 @@ class VaultViewModel(
     private val getSpaceWallpapers: GetSpaceWallpapers,
     private val shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge,
     private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
+    private val setVaultSearchHighlightSeen: SetVaultSearchHighlightSeen,
     private val appInfo: AppInfo,
     private val searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity,
     private val createSpace: CreateSpace,
@@ -164,6 +172,14 @@ class VaultViewModel(
     // Track whether to show the blue dot badge on "Create a new space" button
     val showCreateSpaceBadge = MutableStateFlow(false)
 
+    /**
+     * One-time breathing glow on the search bar that points existing users at the
+     * search now that it covers every space. Splash pre-marks it as seen when the
+     * device has no account, so only users who upgraded into this build see it.
+     * Hidden, and persisted as seen, on the first tap.
+     */
+    val showSearchHighlight = MutableStateFlow(false)
+
     val isLocalOnly: Boolean
         get() = networkModeProvider.get().networkMode == NetworkMode.LOCAL
 
@@ -177,13 +193,42 @@ class VaultViewModel(
     // step, so we know to reopen it when the user presses back on CreateSpace.
     private var didShowSelectMembersForGroupCreation = false
 
-    private val previewFlow: StateFlow<ChatPreviewContainer.PreviewState> =
+    /**
+     * The vault's view of chat previews.
+     *
+     * Deliberately NOT gated on [ChatPreviewContainer.PreviewState.Ready]: the vault
+     * paints as soon as the space list is available and enriches when previews land,
+     * because Chat.SubscribeToMessagePreviews can take many seconds on a cold start
+     * with many spaces.
+     *
+     * [items] retains the last loaded previews across a Loading blip. The container
+     * resets to Loading whenever the account restarts — including on a plain
+     * configuration change, via MainViewModel.onRestore() — and this ViewModel
+     * survives that, so treating Loading as "no previews" would blank every chat row
+     * mid-session for the duration of the RPC.
+     */
+    private data class PreviewSnapshot(
+        val items: List<Chat.Preview>,
+        val hasLoadedOnce: Boolean
+    )
+
+    private val previewFlow: StateFlow<PreviewSnapshot> =
         chatPreviewContainer.observePreviewsWithAttachments()
-            .filterIsInstance<ChatPreviewContainer.PreviewState.Ready>() // wait until ready
+            .scan(PreviewSnapshot(items = emptyList(), hasLoadedOnce = false)) { previous, state ->
+                when (state) {
+                    is ChatPreviewContainer.PreviewState.Ready -> PreviewSnapshot(
+                        items = state.items,
+                        hasLoadedOnce = true
+                    )
+                    // Keep the previews we already have rather than blanking the rows.
+                    ChatPreviewContainer.PreviewState.Loading -> previous
+                }
+            }
+            .distinctUntilChanged()
             .stateIn(
                 viewModelScope,
                 SharingStarted.Eagerly,
-                ChatPreviewContainer.PreviewState.Loading
+                PreviewSnapshot(items = emptyList(), hasLoadedOnce = false)
             )
 
     private val spaceFlow: StateFlow<List<ObjectWrapper.SpaceView>> =
@@ -222,8 +267,37 @@ class VaultViewModel(
     // The Config.id is the account identity used as message creator
     private val accountIdentityFlow: StateFlow<Id?> = MutableStateFlow(configStorage.getAccountId())
 
+    /**
+     * spaceId -> last chat message date (unix seconds) as persisted by the last
+     * session. Used as the sort key for spaces whose chat preview has not arrived
+     * yet, so the cold-start vault paints in the order the user last saw instead
+     * of falling back to join/creation date and then re-shuffling.
+     */
+    @Volatile
+    private var cachedSortKeys: Map<Id, Long>? = null
+
+    private suspend fun sortKeyFallback(): Map<Id, Long> {
+        cachedSortKeys?.let { return it }
+        val loaded = runCatching { userSettingsRepository.getVaultSortKeys() }
+            .onFailure { Timber.w(it, "Failed to read cached vault sort keys") }
+            .getOrDefault(emptyMap())
+        cachedSortKeys = loaded
+        return loaded
+    }
+
     private val _uiState = MutableStateFlow<VaultUiState>(VaultUiState.Loading)
     val uiState: StateFlow<VaultUiState> = _uiState.asStateFlow()
+
+    /**
+     * True while chat previews are still in flight. The vault now renders before they
+     * arrive, so without this the screen looks complete — every card present, no
+     * message text, no unread badges — and the user cannot tell "still loading" from
+     * "every channel is empty and read".
+     */
+    val isEnrichingPreviews: StateFlow<Boolean> = previewFlow
+        .map { !it.hasLoadedOnce }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, true)
 
     val isCompactMode: StateFlow<Boolean> = userSettingsRepository
         .observeCompactModeEnabled()
@@ -275,7 +349,7 @@ class VaultViewModel(
         Timber.i("VaultViewModel - init started")
         combine(
             combine(
-                previewFlow.filterIsInstance<ChatPreviewContainer.PreviewState.Ready>(),
+                previewFlow,
                 spaceFlow,
                 permissionsFlow
             ) { previews, spaces, perms -> Triple(previews, spaces, perms) },
@@ -285,26 +359,93 @@ class VaultViewModel(
                 participantsFlow,
                 accountIdentityFlow
             ) { _, chatDetails, participants, accountIdentity -> Triple(chatDetails, participants, accountIdentity) }
-        ) { (previews, spaces, perms), (chatDetails, participants, accountIdentity) ->
-            transformToVaultSpaceViews(spaces, previews.items, perms, chatDetails, participants, accountIdentity)
-        }.onEach { sections ->
-            val previousState = _uiState.value
-
-            // Check if we should preserve drag order during backend transactions
-            val isDuringBackendTransaction = pendingPinnedSpacesOrder != null
-            val isBackendRemovingSpaces = isDuringBackendTransaction &&
-                previousState is VaultUiState.Sections &&
-                sections.pinnedSpaces.size < previousState.pinnedSpaces.size
-            val shouldPreserveDragOrder = isDuringBackendTransaction && isBackendRemovingSpaces
-
-            if (shouldPreserveDragOrder) {
-                Timber.d("VaultViewModel - ⚡ Preserving drag order during backend UNSET transaction (preventing space removal)")
-                // Don't update the UI state - keep the current drag order visible
-            } else {
-                Timber.d("VaultViewModel - 🎨 Updating UI state with new sections, pinned spaces: ${sections.pinnedSpaces.size}")
-                _uiState.value = sections
+        ) { first, second -> first to second }
+            // spaceFlow and the space container are both seeded with an empty list, so
+            // the combine fires once with no spaces before the subscription delivers.
+            // Publishing that seed paints an empty vault — measured on device at up to
+            // ~950ms before the real list replaced it. Hold Loading until real spaces
+            // arrive, or until previews go Ready so a genuinely empty vault still
+            // resolves off the spinner.
+            .filter { (first, _) ->
+                val (previews, spaces, perms) = first
+                // Permissions decide whether a space's menu offers "Delete space" or
+                // "Leave space", and both confirmations route to the same Space.Delete
+                // call — so for an owner, painting before permissions are known offers
+                // the leave wording ("removed from your devices") for an action that
+                // destroys the space for every member. permissionsFlow is derived from
+                // the space list and cannot precede it, so waiting on it here costs a
+                // little first-paint latency and removes that hazard.
+                (spaces.isNotEmpty() && perms.isNotEmpty()) || previews.hasLoadedOnce
             }
-        }
+            // Throttle-latest: the very first vault state passes through without delay;
+            // afterwards, bursts of upstream events (chat previews, space views,
+            // permissions) are coalesced into at most one rebuild per
+            // VAULT_STATE_THROTTLE_MS window, always using the latest values. Unlike
+            // debounce, a sustained burst cannot starve UI updates — an emission is
+            // guaranteed at least once per window.
+            .conflate()
+            .transform { value ->
+                emit(value)
+                delay(VAULT_STATE_THROTTLE_MS)
+            }
+            .map { (first, second) ->
+                val (previews, spaces, perms) = first
+                val (chatDetails, participants, accountIdentity) = second
+                val sections = transformToVaultSpaceViews(
+                    spaces,
+                    previews.items,
+                    perms,
+                    chatDetails,
+                    participants,
+                    accountIdentity
+                )
+                reuseUnchangedSpaceViews(sections)
+            }
+            .flowOn(Dispatchers.Default)
+            .onEach { sections ->
+                val previousState = _uiState.value
+
+                // Check if we should preserve drag order during backend transactions
+                val isDuringBackendTransaction = pendingPinnedSpacesOrder != null
+                val isBackendRemovingSpaces = isDuringBackendTransaction &&
+                    previousState is VaultUiState.Sections &&
+                    sections.pinnedSpaces.size < previousState.pinnedSpaces.size
+                val shouldPreserveDragOrder = isDuringBackendTransaction && isBackendRemovingSpaces
+
+                if (shouldPreserveDragOrder) {
+                    Timber.d("VaultViewModel - ⚡ Preserving drag order during backend UNSET transaction (preventing space removal)")
+                    // Don't update the UI state - keep the current drag order visible
+                } else {
+                    Timber.d("VaultViewModel - 🎨 Updating UI state with new sections, pinned spaces: ${sections.pinnedSpaces.size}")
+                    _uiState.value = sections
+                }
+            }
+            .launchIn(viewModelScope)
+
+        // Cache the per-space last-message dates so the next cold start can paint the
+        // vault in this order before Chat.SubscribeToMessagePreviews returns.
+        previewFlow
+            .filter { it.hasLoadedOnce }
+            .map { snapshot ->
+                snapshot.items
+                    .groupBy { it.space.id }
+                    .mapValues { (_, previews) ->
+                        previews.maxOf { it.message?.createdAt ?: 0L }
+                    }
+                    .filterValues { it > 0L }
+            }
+            .distinctUntilChanged()
+            .debounce(VAULT_SORT_KEY_PERSIST_DEBOUNCE_MS)
+            .onEach { keys ->
+                // An empty map is ambiguous: ChatPreviewContainer swallows an RPC
+                // failure and publishes Ready(emptyList()), which is indistinguishable
+                // from an account with no chats. Never let that clear what we have.
+                if (keys.isEmpty()) return@onEach
+                cachedSortKeys = keys
+                runCatching { userSettingsRepository.setVaultSortKeys(keys) }
+                    .onFailure { Timber.w(it, "Failed to persist vault sort keys") }
+            }
+            .flowOn(Dispatchers.Default)
             .launchIn(viewModelScope)
 
         // Track notification permission status for profile icon badge
@@ -342,6 +483,15 @@ class VaultViewModel(
                     showCreateSpaceBadge.value = false
                 }
             )
+        }
+
+        viewModelScope.launch {
+            showSearchHighlight.value = runCatching {
+                !userSettingsRepository.getHasSeenVaultSearchHighlight()
+            }.getOrElse { e ->
+                Timber.w(e, "Error checking vault search highlight visibility")
+                false
+            }
         }
 
         // Sync spaces to OS home screen widget (debounced to avoid excessive updates)
@@ -401,6 +551,9 @@ class VaultViewModel(
             Timber.w("Failed to fetch space wallpapers")
             emptyMap()
         }
+
+        // Cached last-message dates, used to order spaces whose preview is still in flight.
+        val sortKeyFallback = sortKeyFallback()
 
         // Index chatPreviews by space.id for O(1) lookup, selecting most recent per space
         val chatPreviewMap = chatPreviews.groupBy { it.space.id }
@@ -505,7 +658,9 @@ class VaultViewModel(
 
         // Sort unpinned spaces by effective date (descending), then by creation date (descending)
         val sortedUnpinnedSpaces = unpinnedSpaces.sortedWith(
-            compareByDescending<VaultSpaceView> { calculateEffectiveDate(it) ?: 0L }
+            compareByDescending<VaultSpaceView> {
+                calculateEffectiveDate(it, sortKeyFallback, chatPreviewMap.keys) ?: 0L
+            }
                 .thenByDescending { it.space.getSingleValue<Double>(Relations.CREATED_DATE) ?: 0.0 }
         )
 
@@ -516,14 +671,51 @@ class VaultViewModel(
     }
 
     /**
+     * Reuses previous [VaultSpaceView] instances when their content is unchanged,
+     * so unchanged cards keep referential identity and Compose can skip them.
+     */
+    private fun reuseUnchangedSpaceViews(sections: VaultUiState.Sections): VaultUiState.Sections {
+        val previous = _uiState.value as? VaultUiState.Sections ?: return sections
+        val previousById = (previous.pinnedSpaces + previous.mainSpaces).associateBy { it.space.id }
+        if (previousById.isEmpty()) return sections
+        val reuse: (List<VaultSpaceView>) -> List<VaultSpaceView> = { items ->
+            items.map { item ->
+                val old = previousById[item.space.id]
+                if (old != null && old == item) old else item
+            }
+        }
+        return VaultUiState.Sections(
+            pinnedSpaces = reuse(sections.pinnedSpaces),
+            mainSpaces = reuse(sections.mainSpaces)
+        )
+    }
+
+    /**
      * Calculates the effective date for a space by taking the maximum of lastMessageDate and spaceJoinDate.
+     * When a space's chat preview has not arrived yet, lastMessageDate falls back to
+     * the value cached from the previous session ([sortKeyFallback]) so the cold-start
+     * order matches what the user last saw.
+     *
+     * The fallback applies only to spaces absent from [spacesWithPreview]. Once a
+     * preview has arrived for a space it is the truth, including when it carries no
+     * message at all (the last message was deleted) — otherwise a stale cached date
+     * would keep that space floating near the top forever.
+     *
      * - If both lastMessageDate and spaceJoinDate are available, return the maximum
      * - If only one is available, return that one
      * - If neither is available, fallback to createdDate
      * - If createdDate is also unavailable, return null
      */
-    private fun calculateEffectiveDate(space: VaultSpaceView): Long? {
+    private fun calculateEffectiveDate(
+        space: VaultSpaceView,
+        sortKeyFallback: Map<Id, Long> = emptyMap(),
+        spacesWithPreview: Set<Id> = emptySet()
+    ): Long? {
+        val targetSpaceId = space.space.targetSpaceId
         val lastMessageDate = space.lastMessageDate
+            ?: targetSpaceId
+                ?.takeIf { it !in spacesWithPreview }
+                ?.let { sortKeyFallback[it] }
         val spaceJoinDate = space.space.spaceJoinDate?.toLong()
         val createdDate = space.space.getSingleValue<Double>(Relations.CREATED_DATE)?.toLong()
 
@@ -552,8 +744,12 @@ class VaultViewModel(
             space.isOneToOneSpace -> {
                 createOneToOneSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
             }
-            // Data space with chat preview → VaultSpaceView.DataSpaceWithChat
-            chatPreview != null -> {
+            // Data space that HAS a chat → VaultSpaceView.DataSpaceWithChat.
+            // Keyed off the space's own chatId rather than the presence of a preview,
+            // so a chat space keeps the same card type (and height) whether or not its
+            // preview has arrived yet — otherwise every chat row would swap card type
+            // when Chat.SubscribeToMessagePreviews finally returns.
+            !space.chatId.isNullOrEmpty() || chatPreview != null -> {
                 createDataSpaceWithChatView(space, chatPreview, unreadCounts, chatNames, permissions, wallpapers, participantsByIdentity, accountIdentity)
             }
             // Data space without chat preview → VaultSpaceView.DataSpace
@@ -609,9 +805,7 @@ class VaultViewModel(
         val attachmentPreviews = if (chatPreview != null && message != null) {
             message.attachments?.map { attachment ->
                 val dependency = chatPreview.dependencies.find { it.id == attachment.target }
-                val preview = mapToAttachmentPreview(attachment, dependency, urlBuilder, fieldParser, storeOfObjectTypes)
-                Timber.d("Created attachment preview: $preview for attachment: $attachment")
-                preview
+                mapToAttachmentPreview(attachment, dependency, urlBuilder, fieldParser, storeOfObjectTypes)
             } ?: emptyList()
         } else {
             emptyList()
@@ -679,7 +873,7 @@ class VaultViewModel(
      */
     private suspend fun createDataSpaceWithChatView(
         space: ObjectWrapper.SpaceView,
-        chatPreview: Chat.Preview,
+        chatPreview: Chat.Preview?,
         unreadCounts: UnreadCounts?,
         chatNames: List<String>,
         permissions: Map<Id, SpaceMemberPermissions>,
@@ -714,7 +908,9 @@ class VaultViewModel(
             isOwner = isOwner,
             chatNotificationState = calculateChatNotificationState(
                 chatSpace = space,
-                chatId = chatPreview.chat
+                // Preview may not have arrived yet; the space's own chatId identifies
+                // the same chat. Empty string falls through to the space-level mode.
+                chatId = chatPreview?.chat ?: space.chatId.orEmpty()
             ),
             wallpaper = wallpaperResult,
             spaceNotificationState = space.spacePushNotificationMode,
@@ -786,6 +982,7 @@ class VaultViewModel(
                 },
                 onSuccess = { config ->
                     Timber.d("Selected space: $targetSpace")
+                    markSpaceInteraction(SpaceId(targetSpace))
                     proceedWithSavingCurrentSpace(
                         targetSpace = SpaceId(targetSpace),
                         config = config,
@@ -797,6 +994,101 @@ class VaultViewModel(
             Timber.e("Missing target space")
         }
     }
+
+    private suspend fun markSpaceInteraction(space: SpaceId) {
+        runCatching {
+            userSettingsRepository.setSpaceLastInteraction(
+                space = space,
+                timestamp = System.currentTimeMillis()
+            )
+        }.onFailure {
+            Timber.w(it, "Failed to persist space interaction for ${space.id}")
+        }
+    }
+
+    //region Quick capture
+
+    /**
+     * The pencil entry point shows only when the feature flag is on and at least one
+     * editable (owner/writer) non-1:1 space exists — 1:1 spaces are conversations, not
+     * capture targets, and are never auto-selected (handoff §3).
+     */
+    val showQuickCapture: StateFlow<Boolean> = combine(
+        userSettingsRepository.observeQuickCaptureEnabled(),
+        spaceFlow,
+        permissionsFlow
+    ) { enabled, spaces, permissions ->
+        enabled && spaces.any { view ->
+            val target = view.targetSpaceId
+            view.isActive && target != null && !view.isOneToOneSpace &&
+                permissions[target]?.isOwnerOrEditor() == true
+        }
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    data class QuickCaptureSuccess(
+        val objectId: Id,
+        val spaceId: Id,
+        val typeName: String,
+        val spaceName: String
+    )
+
+    val quickCaptureSuccess = MutableStateFlow<QuickCaptureSuccess?>(null)
+    private var quickCaptureBannerJob: Job? = null
+
+    fun onQuickCaptureClicked() {
+        viewModelScope.launch {
+            commands.emit(VaultCommand.OpenQuickCapture)
+        }
+    }
+
+    fun onQuickCaptureObjectPublished(
+        objectId: Id,
+        spaceId: Id,
+        typeName: String,
+        spaceName: String
+    ) {
+        quickCaptureBannerJob?.cancel()
+        quickCaptureSuccess.value = QuickCaptureSuccess(
+            objectId = objectId,
+            spaceId = spaceId,
+            typeName = typeName,
+            spaceName = spaceName
+        )
+        quickCaptureBannerJob = viewModelScope.launch {
+            delay(QUICK_CAPTURE_BANNER_DURATION_MS)
+            quickCaptureSuccess.value = null
+        }
+    }
+
+    fun onQuickCaptureBannerDismissed() {
+        quickCaptureBannerJob?.cancel()
+        quickCaptureSuccess.value = null
+    }
+
+    fun onQuickCaptureBannerClicked() {
+        val banner = quickCaptureSuccess.value ?: return
+        onQuickCaptureBannerDismissed()
+        viewModelScope.launch {
+            onDeepLinkToObjectAwait(
+                obj = banner.objectId,
+                space = SpaceId(banner.spaceId),
+                switchSpaceIfObjectFound = true
+            ).collect { result ->
+                when (result) {
+                    is DeepLinkToObjectDelegate.Result.Error -> {
+                        Timber.w("Quick capture banner: could not open object: $result")
+                        navigations.emit(VaultNavigation.ShowError("Could not open object"))
+                    }
+                    is DeepLinkToObjectDelegate.Result.Success -> {
+                        markSpaceInteraction(SpaceId(banner.spaceId))
+                        proceedWithNavigation(result.obj.navigation())
+                    }
+                }
+            }
+        }
+    }
+
+    //endregion
 
     fun onSettingsClicked() {
         viewModelScope.launch {
@@ -823,6 +1115,18 @@ class VaultViewModel(
                 showCreateSpaceBadge.value = false
                 Timber.d("Create space badge dismissed")
             }
+        }
+    }
+
+    fun onSearchBarClicked() {
+        if (!showSearchHighlight.value) return
+        // Hide first so a slow write never leaves the glow up behind the search screen.
+        showSearchHighlight.value = false
+        viewModelScope.launch {
+            setVaultSearchHighlightSeen.async(Unit).fold(
+                onSuccess = { Timber.d("Vault search highlight marked as seen") },
+                onFailure = { e -> Timber.w(e, "Error marking vault search highlight as seen") }
+            )
         }
     }
 
@@ -1120,7 +1424,8 @@ class VaultViewModel(
                 is DeepLinkResolver.Action.DeepLinkToMembership -> {
                     commands.emit(
                         VaultCommand.Deeplink.MembershipScreen(
-                            tierId = deeplink.tierId
+                            tierId = deeplink.tierId,
+                            code = deeplink.code
                         )
                     )
                 }
@@ -1709,6 +2014,7 @@ class VaultViewModel(
             },
             onSuccess = { config ->
                 Timber.d("Selected space: ${spaceId.id}")
+                markSpaceInteraction(spaceId)
                 proceedWithSavingCurrentSpace(
                     targetSpace = spaceId,
                     config = config,
@@ -1721,8 +2027,11 @@ class VaultViewModel(
     //endregion
 
     companion object {
+        private const val VAULT_STATE_THROTTLE_MS = 100L
+        private const val VAULT_SORT_KEY_PERSIST_DEBOUNCE_MS = 1_000L
         private const val OS_WIDGET_SYNC_DEBOUNCE_MS = 2000L
         private const val ONE_TO_ONE_HOMEPAGE_POLL_DELAY_MS = 100L
         private const val ONE_TO_ONE_HOMEPAGE_MAX_ATTEMPTS = 30
+        private const val QUICK_CAPTURE_BANNER_DURATION_MS = 6_000L
     }
 }

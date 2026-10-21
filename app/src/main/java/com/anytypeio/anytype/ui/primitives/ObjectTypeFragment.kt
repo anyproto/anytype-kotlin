@@ -40,6 +40,7 @@ import com.anytypeio.anytype.feature_object_type.ui.icons.ChangeIconScreen
 import com.anytypeio.anytype.feature_object_type.ui.menu.ObjectTypeMenu
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
+import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -80,6 +81,22 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         findNavController().popBackStack()
                     }.onFailure { e ->
                         Timber.e(e, "Error while exiting back from object type screen")
+                    }
+                }
+
+                ObjectTypeCommand.ExitToVault -> {
+                    runCatching {
+                        navigation().exitToVault()
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while exiting to vault from object type screen")
+                    }
+                }
+
+                is ObjectTypeCommand.PopToBackStackEntry -> {
+                    runCatching {
+                        navigation().popToBackStackEntry(command.entryId)
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while popping to back-history entry from object type screen")
                     }
                 }
 
@@ -153,7 +170,8 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     objectId = objectId,
                     space = space,
                     view = view,
-                    onTypeEvent = vm::onTypeEvent
+                    onTypeEvent = vm::onTypeEvent,
+                    backHistoryMenu = vm.backHistoryMenu.collectAsStateWithLifecycle().value
                 )
                 if (showPropertiesScreen) {
                     FieldsMainScreen(

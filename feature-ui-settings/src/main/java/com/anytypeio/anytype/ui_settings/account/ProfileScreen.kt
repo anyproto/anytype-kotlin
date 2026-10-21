@@ -50,8 +50,6 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
@@ -78,8 +76,10 @@ import com.anytypeio.anytype.core_ui.foundation.Option
 import com.anytypeio.anytype.core_ui.foundation.OptionMembership
 import com.anytypeio.anytype.core_ui.foundation.OptionWithBadge
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.AvatarTitle
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.ui_settings.R
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -127,13 +127,6 @@ fun ProfileSettingsScreen(
                 clearProfileImage = clearProfileImage,
                 onIdentityClicked = onIdentityClicked,
                 onShowQrCodeClicked = onShowQrCodeClicked
-            )
-        }
-        item {
-            Spacer(
-                modifier = Modifier
-                    .height(10.dp)
-                    .padding(top = 4.dp)
             )
         }
         item {
@@ -284,7 +277,7 @@ private fun LogoutButton(
             .height(52.dp)
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .clickable {
+            .noRippleClickable {
                 onLogoutClicked()
             },
         verticalAlignment = Alignment.CenterVertically,
@@ -488,7 +481,7 @@ fun ProfileNameBlock(
         Text(
             text = stringResource(id = R.string.name),
             color = colorResource(id = R.color.text_secondary),
-            fontSize = 13.sp
+            style = Caption1Regular
         )
         BasicTextField(
             value = nameValue.value,
@@ -499,9 +492,7 @@ fun ProfileNameBlock(
                 .fillMaxWidth()
                 .padding(top = 4.dp, end = 20.dp),
             enabled = true,
-            textStyle = TextStyle(
-                fontSize = 22.sp,
-                fontWeight = FontWeight.SemiBold,
+            textStyle = HeadlineHeading.copy(
                 color = colorResource(id = R.color.text_primary)
             ),
             keyboardOptions = KeyboardOptions(
@@ -567,7 +558,7 @@ fun BoxScope.ProfileTitleBlock(
                 .align(Alignment.CenterStart)
                 .padding(start = 16.dp)
                 .size(44.dp)
-                .clickable { onShowQrCodeClicked() },
+                .noRippleClickable { onShowQrCodeClicked() },
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -630,7 +621,7 @@ fun ProfileImageBlock(
             ) {
                 Text(
                     text = nameFirstChar,
-                    style = MaterialTheme.typography.h3.copy(
+                    style = AvatarTitle.copy(
                         color = colorResource(id = R.color.text_white),
                         fontSize = 64.sp
                     ),

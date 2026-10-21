@@ -302,6 +302,10 @@ fun AllContentMainScreen(
                         ),
                     iconRes = com.anytypeio.anytype.core_ui.R.drawable.ic_create_obj_32,
                     contentDescription = stringResource(id = R.string.create),
+                    backgroundColor = colorResource(id = R.color.background_secondary),
+                    elevation = 2.dp,
+                    showBorder = false,
+                    iconSize = 24.dp,
                     onClick = onAddDocClicked
                 )
             }

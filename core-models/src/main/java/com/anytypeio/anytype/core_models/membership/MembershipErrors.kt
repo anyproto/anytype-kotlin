@@ -74,4 +74,14 @@ sealed class MembershipErrors : Exception() {
         data class CacheError(override val message: String) : VerifyEmailCode()
         data class CanNotConnect(override val message: String) : VerifyEmailCode()
     }
+
+    sealed class CodeGetInfo : MembershipErrors() {
+        data class Null(override val message: String) : CodeGetInfo()
+        data class UnknownError(override val message: String) : CodeGetInfo()
+        data class BadInput(override val message: String) : CodeGetInfo()
+        data class NotLoggedIn(override val message: String) : CodeGetInfo()
+        data class PaymentNodeError(override val message: String) : CodeGetInfo()
+        data class CodeNotFound(override val message: String) : CodeGetInfo()
+        data class CodeAlreadyUsed(override val message: String) : CodeGetInfo()
+    }
 }

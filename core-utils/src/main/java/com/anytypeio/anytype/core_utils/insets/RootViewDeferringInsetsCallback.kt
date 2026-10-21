@@ -57,7 +57,9 @@ import androidx.core.view.WindowInsetsCompat
  */
 class RootViewDeferringInsetsCallback(
     val persistentInsetTypes: Int,
-    val deferredInsetTypes: Int
+    val deferredInsetTypes: Int,
+    /** When supplied, bottom controls/content own this inset instead of the root viewport. */
+    private val onPersistentBottomInset: ((Int) -> Unit)? = null
 ) : WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE),
     OnApplyWindowInsetsListener {
     init {
@@ -89,7 +91,12 @@ class RootViewDeferringInsetsCallback(
 
         // Finally we apply the resolved insets by setting them as padding
         val typeInsets = windowInsets.getInsets(types)
-        v.setPadding(typeInsets.left, typeInsets.top, typeInsets.right, typeInsets.bottom)
+        val persistentBottom = windowInsets.getInsets(persistentInsetTypes).bottom
+        val deferredBottomApplied = typeInsets.bottom > persistentBottom
+        val rootBottom = if (onPersistentBottomInset != null && !deferredBottomApplied) 0 else typeInsets.bottom
+        v.setPadding(typeInsets.left, typeInsets.top, typeInsets.right, rootBottom)
+        // Once the keyboard owns the root's bottom padding, controls need no extra nav-bar gap.
+        onPersistentBottomInset?.invoke(if (deferredBottomApplied) 0 else persistentBottom)
 
         // We return the new WindowInsetsCompat.CONSUMED to stop the insets being dispatched any
         // further into the view hierarchy. This replaces the deprecated

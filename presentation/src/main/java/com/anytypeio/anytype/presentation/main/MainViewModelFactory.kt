@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.AppShutdown
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.anytypeio.anytype.domain.auth.interactor.HasAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
@@ -18,8 +19,11 @@ import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugRunProfiler
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
+import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
+import com.anytypeio.anytype.domain.launch.RemainingSpacesPreloader
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.CrossSpaceObjectTypesContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
@@ -41,6 +45,7 @@ class MainViewModelFactory @Inject constructor(
     private val interceptAccountStatus: InterceptAccountStatus,
     private val logout: Logout,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
+    private val hasAccount: HasAccount,
     private val configStorage: ConfigStorage,
     private val localeProvider: LocaleProvider,
     private val notificationsProvider: NotificationsProvider,
@@ -64,9 +69,12 @@ class MainViewModelFactory @Inject constructor(
     private val chatPreviewContainer: ChatPreviewContainer,
     private val chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer,
     private val participantSubscriptionContainer: ParticipantSubscriptionContainer,
+    private val crossSpaceObjectTypesContainer: CrossSpaceObjectTypesContainer,
     private val userSettingsRepository: UserSettingsRepository,
     private val resolveSpaceHomepage: ResolveSpaceHomepage,
-    private val debugRunProfiler: DebugRunProfiler
+    private val debugRunProfiler: DebugRunProfiler,
+    private val preferredSpaceIdHolder: PreferredSpaceIdHolder,
+    private val remainingSpacesPreloader: RemainingSpacesPreloader
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -77,6 +85,7 @@ class MainViewModelFactory @Inject constructor(
         interceptAccountStatus = interceptAccountStatus,
         logout = logout,
         checkAuthorizationStatus = checkAuthorizationStatus,
+        hasAccount = hasAccount,
         configStorage = configStorage,
         localeProvider = localeProvider,
         notificationsProvider = notificationsProvider,
@@ -100,8 +109,11 @@ class MainViewModelFactory @Inject constructor(
         chatPreviewContainer = chatPreviewContainer,
         chatsDetailsSubscriptionContainer = chatsDetailsSubscriptionContainer,
         participantSubscriptionContainer = participantSubscriptionContainer,
+        crossSpaceObjectTypesContainer = crossSpaceObjectTypesContainer,
         userSettingsRepository = userSettingsRepository,
         resolveSpaceHomepage = resolveSpaceHomepage,
-        debugRunProfiler = debugRunProfiler
+        debugRunProfiler = debugRunProfiler,
+        preferredSpaceIdHolder = preferredSpaceIdHolder,
+        remainingSpacesPreloader = remainingSpacesPreloader
     ) as T
 }

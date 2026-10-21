@@ -11,7 +11,6 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeNumberOfSpaceMembers
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.BUILDER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.OLD_EXPLORER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.PIONEER_ID
@@ -426,14 +425,8 @@ class SpaceJoinRequestViewModel(
     }
 
     fun onUpgradeClicked() {
-        val activeTier = (_activeTier.value as? ActiveTierState.Success) ?: return
-        val isPossibleToUpgrade = activeTier.tierId.isPossibleToUpgradeNumberOfSpaceMembers()
         viewModelScope.launch {
-            if (isPossibleToUpgrade) {
-                _commands.emit(Command.NavigateToMembership)
-            } else {
-                _commands.emit(Command.NavigateToMembershipUpdate)
-            }
+            _commands.emit(Command.NavigateToMembership)
         }
     }
 
@@ -516,7 +509,6 @@ class SpaceJoinRequestViewModel(
 
     sealed class Command {
         data object NavigateToMembership : Command()
-        data object NavigateToMembershipUpdate : Command()
         data class ShowGenericMultiplayerError(val error: MultiplayerError.Generic) : Command()
     }
 }

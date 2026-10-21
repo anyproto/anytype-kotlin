@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -26,6 +27,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsageInfo
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectView
@@ -72,7 +74,9 @@ import com.anytypeio.anytype.middleware.mappers.config
 import com.anytypeio.anytype.middleware.mappers.core
 import com.anytypeio.anytype.middleware.mappers.mw
 import com.anytypeio.anytype.middleware.mappers.parse
+import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 import com.anytypeio.anytype.middleware.mappers.toCore
+import com.anytypeio.anytype.middleware.mappers.toCoreModelsGroup
 import com.anytypeio.anytype.middleware.mappers.toCoreLinkPreview
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModelSearchResults
@@ -106,7 +110,7 @@ class Middleware @Inject constructor(
             icon = command.icon.toLong(),
             networkMode = command.networkMode.toMiddlewareModel(),
             networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty(),
-            enableMembershipV2 = true
+            enableMembershipV2 = false
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.accountCreate(request) }
@@ -127,12 +131,23 @@ class Middleware @Inject constructor(
             networkMode = networkMode,
             networkCustomConfigFilePath = networkCustomConfigFilePath,
             preferYamuxTransport = command.preferYamuxTransport ?: false,
-            enableMembershipV2 = true
+            enableMembershipV2 = false,
+            preferredSpaceId = command.preferredSpaceId.orEmpty()
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.accountSelect(request) }
         logResponseIfDebug(response, time)
         return response.toAccountSetup()
+    }
+
+    @Throws(Exception::class)
+    fun accountPreloadRemainingSpaces() {
+        val request = Rpc.Account.PreloadRemainingSpaces.Request()
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue {
+            service.accountPreloadRemainingSpaces(request)
+        }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -280,6 +295,23 @@ class Middleware @Inject constructor(
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.blockDataViewViewSetPosition(request) }
+        logResponseIfDebug(response, time)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun blockDataViewObjectOrderUpdate(
+        ctx: Id,
+        dv: Id,
+        objectOrders: List<ObjectOrder>
+    ): Payload {
+        val request = Rpc.BlockDataview.ObjectOrder.Update.Request(
+            contextId = ctx,
+            blockId = dv,
+            objectOrders = objectOrders.map { it.toMiddlewareModel() }
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.blockDataViewObjectOrderUpdate(request) }
         logResponseIfDebug(response, time)
         return response.event.toPayload()
     }
@@ -1342,7 +1374,9 @@ class Middleware @Inject constructor(
             fullText = command.query,
             offset = command.offset,
             limit = command.limit,
-            keys = command.keys
+            keys = command.keys,
+            returnMeta = command.withMeta,
+            returnMetaRelationDetails = command.withMetaRelationDetails
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectSearchWithMeta(request) }
@@ -1402,6 +1436,55 @@ class Middleware @Inject constructor(
                     null
             },
             counter = response.counters?.parse()
+        )
+    }
+
+    @Throws(Exception::class)
+    fun objectGroupsSubscribe(
+        space: SpaceId,
+        subscription: Id,
+        relationKey: String,
+        filters: List<DVFilter>,
+        source: List<String>,
+        collection: Id?
+    ): List<DataViewGroup> {
+        val request = Rpc.Object.GroupsSubscribe.Request(
+            spaceId = space.id,
+            subId = subscription,
+            relationKey = relationKey,
+            filters = filters.map { it.toMiddlewareModel() },
+            source = source,
+            collectionId = collection.orEmpty()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectGroupsSubscribe(request) }
+        logResponseIfDebug(response, time)
+        return response.groups.map { it.toCoreModelsGroup() }
+    }
+
+    @Throws(Exception::class)
+    fun objectCrossSpaceSearch(
+        command: Command.CrossSpaceSearch
+    ): Command.CrossSpaceSearch.Result {
+        val request = Rpc.Object.CrossSpaceSearch.Request(
+            filters = command.filters.map { it.toMiddlewareModel() },
+            sorts = command.sorts.map { it.toMiddlewareModel() },
+            fullText = command.query,
+            offset = command.offset,
+            limit = command.limit,
+            keys = command.keys
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectCrossSpaceSearch(request) }
+        logResponseIfDebug(response, time)
+        return Command.CrossSpaceSearch.Result(
+            records = response.records.mapNotNull { record ->
+                if (record != null && record.isNotEmpty() && record.isValidObject())
+                    ObjectWrapper.Basic(record)
+                else
+                    null
+            },
+            allStoresLoaded = response.allStoresLoaded
         )
     }
 
@@ -2573,29 +2656,17 @@ class Middleware @Inject constructor(
     fun generateSpaceInviteLink(
         space: SpaceId,
         inviteType: InviteType?,
-        permissions: SpaceMemberPermissions?
+        permissions: SpaceMemberPermissions?,
+        shareWithinSpace: Boolean
     ): SpaceInviteLink {
-        val request = if (inviteType != null && permissions != null) {
-            Rpc.Space.InviteGenerate.Request(
-                spaceId = space.id,
-                inviteType = inviteType.toMiddleware(),
-                permissions = permissions.toMw()
-            )
-        } else if (inviteType != null) {
-            Rpc.Space.InviteGenerate.Request(
-                spaceId = space.id,
-                inviteType = inviteType.toMiddleware()
-            )
-        } else if (permissions != null) {
-            Rpc.Space.InviteGenerate.Request(
-                spaceId = space.id,
-                permissions = permissions.toMw()
-            )
-        } else {
-            Rpc.Space.InviteGenerate.Request(
-                spaceId = space.id
-            )
-        }
+        // Proto3 omits fields set to their default value, so passing the defaults
+        // for null inviteType/permissions is equivalent to not setting them.
+        val request = Rpc.Space.InviteGenerate.Request(
+            spaceId = space.id,
+            inviteType = inviteType?.toMiddleware() ?: anytype.model.InviteType.Member,
+            permissions = permissions?.toMw() ?: anytype.model.ParticipantPermissions.Reader,
+            shareWithinSpace = shareWithinSpace
+        )
 
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.spaceInviteGenerate(request) }
@@ -2761,7 +2832,8 @@ class Middleware @Inject constructor(
             fileKey = response.inviteFileKey,
             contentId = response.inviteCid,
             permissions = response.permissions.toCore(),
-            inviteType = response.inviteType.toCoreModel()
+            inviteType = response.inviteType.toCoreModel(),
+            heldByOwner = response.heldByOwner
         )
     }
 
@@ -2935,6 +3007,29 @@ class Middleware @Inject constructor(
     }
 
     @Throws
+    fun membershipCodeGetInfo(command: Command.Membership.CodeGetInfo): Int {
+        val request = Rpc.Membership.CodeGetInfo.Request(
+            code = command.code
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipCodeGetInfo(request) }
+        logResponseIfDebug(response, time)
+        return response.requestedTier
+    }
+
+    @Throws
+    fun membershipCodeRedeem(command: Command.Membership.CodeRedeem) {
+        val request = Rpc.Membership.CodeRedeem.Request(
+            code = command.code,
+            nsName = command.name,
+            nsNameType = command.nameType.toMw()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipCodeRedeem(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws
     fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData> {
         val request = Rpc.Membership.GetTiers.Request(
             noCache = command.noCache,
@@ -3104,16 +3199,12 @@ class Middleware @Inject constructor(
     fun chatSearch(command: Command.ChatCommand.SearchMessages): Command.ChatCommand.SearchMessages.Response {
         val request = Rpc.Chat.Search.Request(
             spaceId = command.space.id,
-            chatId = command.chat,
+            chatId = command.chat.orEmpty(),
             fullText = command.query,
             offset = command.offset,
             limit = command.limit,
-            sorts = listOf(
-                anytype.model.Search.Message.Sort(
-                    key = anytype.model.Search.Message.Sort.Key.ORDER_ID,
-                    type = anytype.model.Search.Message.Sort.Type.Desc
-                )
-            )
+            sorts = command.sorts.map { it.toMiddlewareModel() },
+            creators = command.creators
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.chatSearch(request) }
@@ -3129,7 +3220,8 @@ class Middleware @Inject constructor(
                     highlightRanges = result.highlightRanges.map { range ->
                         range.from..range.to
                     },
-                    message = message.core()
+                    message = message.core(),
+                    spaceId = result.spaceId
                 )
             }
         )
@@ -3239,9 +3331,10 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun setDeviceNetworkState(type: DeviceNetworkType) {
+    fun setDeviceNetworkState(type: DeviceNetworkType, networkId: String) {
         val request = Rpc.Device.NetworkState.Set.Request(
-            deviceNetworkType = type.mw()
+            deviceNetworkType = type.mw(),
+            networkId = networkId
         )
         //logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.deviceNetworkStateSet(request) }

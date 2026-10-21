@@ -20,7 +20,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.UrlBuilder
-import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeNumberOfSpaceMembers
 import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
@@ -103,6 +102,12 @@ class ShareSpaceViewModel(
     val members = MutableStateFlow<List<SpaceMemberView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
+    val currentUserPermissions = MutableStateFlow<SpaceMemberPermissions?>(null)
+
+    // Pending "Make admin?" confirmation for a member (null = hidden)
+    val makeAdminConfirmation = MutableStateFlow<SpaceMemberView?>(null)
+    // True while the promote-to-admin request is in flight (keeps the sheet open + shows loading)
+    val makeAdminLoading = MutableStateFlow(false)
     val spaceLimitsState = MutableStateFlow<SpaceLimitsState>(SpaceLimitsState.Init)
     val isLoadingInProgress = MutableStateFlow(false)
     val shareSpaceErrors = MutableStateFlow<ShareSpaceErrors>(ShareSpaceErrors.Hidden)
@@ -113,6 +118,10 @@ class ShareSpaceViewModel(
     val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
     val inviteLinkAccessLoading = MutableStateFlow(false)
     val inviteLinkConfirmationDialog = MutableStateFlow<SpaceInviteLinkAccessLevel?>(null)
+    // "Everyone in the space can share this invite" confirmation (one-way action)
+    val shareInviteConfirmationDialog = MutableStateFlow(false)
+    // Reset link confirmation: revoke + regenerate, old link stops working for everyone
+    val resetLinkConfirmationDialog = MutableStateFlow(false)
     val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
     val isMakePrivateEnabled = MutableStateFlow(false)
 
@@ -176,6 +185,7 @@ class ShareSpaceViewModel(
             permissions
                 .observe(space = vmParams.space)
                 .collect { permission ->
+                    currentUserPermissions.value = permission
                     isCurrentUserOwner.value = permission == OWNER
                     if (permission == OWNER) {
                         analytics.sendEvent(eventName = screenSettingsSpaceShare)
@@ -225,11 +235,12 @@ class ShareSpaceViewModel(
                 spaceLimits,
                 spaceViewFlow,
                 container.subscribe(spaceMembersSearchParams),
-                isCurrentUserOwner,
+                currentUserPermissions,
                 _activeTier.filterIsInstance<ActiveTierState.Success>()
-            ) { (sharedSpacesCount, sharedSpacesLimit), spaceView, membersResponse, isCurrentUserOwner, activeTier ->
+            ) { (sharedSpacesCount, sharedSpacesLimit), spaceView, membersResponse, currentUserPermissions, activeTier ->
                 CombineResult(
-                    isCurrentUserOwner = isCurrentUserOwner,
+                    isCurrentUserOwner = currentUserPermissions == OWNER,
+                    currentUserPermissions = currentUserPermissions,
                     spaceView = spaceView,
                     tierId = activeTier.tierId,
                     spaceMembers = membersResponse.toSpaceMembers(),
@@ -255,6 +266,7 @@ class ShareSpaceViewModel(
                     spaceView = spaceView,
                     urlBuilder = urlBuilder,
                     isCurrentUserOwner = result.isCurrentUserOwner,
+                    currentUserPermissions = result.currentUserPermissions,
                     account = account,
                     stringResourceProvider = stringResourceProvider
                 ).sortedByDescending { it.isUser }
@@ -270,24 +282,31 @@ class ShareSpaceViewModel(
     }
 
     private suspend fun generateInviteLink(
-        inviteType: InviteType? = null,
-        permissions: SpaceMemberPermissions? = null
+        inviteType: InviteType = InviteType.MEMBER,
+        permissions: SpaceMemberPermissions = SpaceMemberPermissions.READER,
+        shareWithinSpace: Boolean = false,
+        isNewLink: Boolean = true
     ) {
         generateSpaceInviteLink.async(
             params = GenerateSpaceInviteLink.Params(
                 space = vmParams.space,
                 inviteType = inviteType,
-                permissions = permissions
+                permissions = permissions,
+                shareWithinSpace = shareWithinSpace
             )
         ).fold(
             onSuccess = { inviteLink ->
                 Timber.d("Successfully generated invite link, link: ${inviteLink.scheme}")
 
-                // Analytics Event #1: ClickShareSpaceNewLink with type property
-                analytics.sendAnalyticsShareSpaceNewLink(
-                    inviteType = inviteType,
-                    permissions = permissions
-                )
+                // Analytics Event #1: ClickShareSpaceNewLink with type property.
+                // Skipped when the call merely re-publishes the existing invite
+                // (share-within-space): same cid, same key — no new link.
+                if (isNewLink) {
+                    analytics.sendAnalyticsShareSpaceNewLink(
+                        inviteType = inviteType,
+                        permissions = permissions
+                    )
+                }
 
                 proceedWithRequestCurrentInviteLink()
                 // Reset loading state and close confirmation dialog after successful generation
@@ -421,6 +440,57 @@ class ShareSpaceViewModel(
         )
     }
 
+    /**
+     * Owner tapped "Admin" in the member role selector. Promoting to Admin requires
+     * explicit confirmation; if the member is already an Admin this is a no-op.
+     */
+    fun onMakeAdminClicked(view: SpaceMemberView) {
+        Timber.d("onMakeAdminClicked, view: [$view]")
+        if (view.obj.permissions == SpaceMemberPermissions.ADMIN) return
+        makeAdminConfirmation.value = view
+    }
+
+    fun onMakeAdminDismissed() {
+        makeAdminConfirmation.value = null
+        makeAdminLoading.value = false
+    }
+
+    fun onMakeAdminAccepted(view: SpaceMemberView) {
+        // No space-limit guard here: the "Admin" role option is already gated by
+        // canChangeReaderToWriter in the member dropdown (see getParticipantInfo),
+        // so the confirmation only opens when promotion is allowed.
+        if (view.obj.permissions == SpaceMemberPermissions.ADMIN) {
+            makeAdminConfirmation.value = null
+            return
+        }
+        viewModelScope.launch {
+            // Keep the confirmation sheet open with a loading indicator until the
+            // request completes; this call can take a moment.
+            makeAdminLoading.value = true
+            changeSpaceMemberPermissions.async(
+                ChangeSpaceMemberPermissions.Params(
+                    space = vmParams.space,
+                    identity = view.obj.identity,
+                    permission = SpaceMemberPermissions.ADMIN
+                )
+            ).fold(
+                onFailure = { e ->
+                    Timber.e(e, "Error while promoting member to admin")
+                    makeAdminLoading.value = false
+                    proceedWithMultiplayerError(e)
+                },
+                onSuccess = {
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.changeSpaceMemberPermissions,
+                        props = Props(mapOf(EventsPropertiesKey.type to "Admin"))
+                    )
+                    makeAdminLoading.value = false
+                    makeAdminConfirmation.value = null
+                }
+            )
+        }
+    }
+
     fun onRemoveMemberClicked(
         view: SpaceMemberView
     ) {
@@ -452,6 +522,7 @@ class ShareSpaceViewModel(
                             e,
                             "Error while removing space member (identity: $identity, space: ${vmParams.space})"
                         )
+                        commands.emit(Command.DismissRemoveMemberWarning)
                         when (e) {
                             is java.net.SocketTimeoutException,
                             is java.net.UnknownHostException,
@@ -465,10 +536,12 @@ class ShareSpaceViewModel(
                     onSuccess = {
                         Timber.d("Successfully removed space member (identity: $identity, space: ${vmParams.space})")
                         analytics.sendEvent(eventName = removeSpaceMember)
+                        commands.emit(Command.DismissRemoveMemberWarning)
                     }
                 )
             } catch (e: Exception) {
                 Timber.e(e, "Unexpected error while removing space member")
+                commands.emit(Command.DismissRemoveMemberWarning)
                 sendToast("An unexpected error occurred. Please try again.")
             }
         }
@@ -492,6 +565,7 @@ class ShareSpaceViewModel(
     fun onContextActionClicked(view: SpaceMemberView, actionType: ActionType) {
         Timber.d("onContextActionClicked, view: [$view], actionType: $actionType")
         when (actionType) {
+            ActionType.MAKE_ADMIN -> onMakeAdminClicked(view)
             ActionType.CAN_VIEW -> onProceedWithChangingParticipantToViewer(view)
             ActionType.CAN_EDIT -> onProceedWithChangingParticipantToEditor(view)
             ActionType.REMOVE_MEMBER -> onRemoveMemberClicked(view)
@@ -501,14 +575,8 @@ class ShareSpaceViewModel(
 
     fun onIncentiveClicked() {
         Timber.d("onIncentiveClicked")
-        val activeTier = (_activeTier.value as? ActiveTierState.Success) ?: return
-        val isPossibleToUpgrade = activeTier.tierId.isPossibleToUpgradeNumberOfSpaceMembers()
         viewModelScope.launch {
-            if (isPossibleToUpgrade) {
-                commands.emit(Command.ShowMembershipScreen)
-            } else {
-                commands.emit(Command.ShowMembershipUpgradeScreen)
-            }
+            commands.emit(Command.ShowMembershipScreen)
         }
     }
 
@@ -526,6 +594,13 @@ class ShareSpaceViewModel(
     fun onInviteLinkAccessLevelSelected(newLevel: SpaceInviteLinkAccessLevel) {
         val currentLevel = inviteLinkAccessLevel.value
         Timber.d("onInviteLinkAccessLevelSelected, new level: $newLevel, current level: $currentLevel")
+        // A shared invite must not grant editor access without approval — mirror
+        // the middleware's INVITE_NOT_SHAREABLE so the UI never promises what
+        // the server refuses. The selector disables the option; this is a guard.
+        if (newLevel is SpaceInviteLinkAccessLevel.EditorAccess && currentLevel.isSharedWithinSpace) {
+            shareSpaceErrors.value = ShareSpaceErrors.InviteNotShareable
+            return
+        }
         if (currentLevel.needsConfirmationToChangeTo(newLevel)) {
             inviteLinkConfirmationDialog.value = newLevel
         } else {
@@ -640,8 +715,32 @@ class ShareSpaceViewModel(
         inviteLinkAccessLoading.value = true
         val currentLevel = inviteLinkAccessLevel.value
         val space = vmParams.space
+        // Once an invite is shared within the space, regenerations keep it shared —
+        // asking for shareWithinSpace = false on a shared invite is refused by
+        // the middleware (INVITE_ALREADY_SHARED). The only way back is a link reset.
+        val wasShared = currentLevel.isSharedWithinSpace
+
+        // Re-check at execution time (not only at selection time): the invite may
+        // have become shared between selection and confirmation. Bailing out here
+        // prevents revoking a live shared invite only to have the follow-up editor
+        // generate rejected with INVITE_NOT_SHAREABLE — which would leave the space
+        // with no invite at all.
+        if (newLevel is SpaceInviteLinkAccessLevel.EditorAccess && wasShared) {
+            inviteLinkAccessLoading.value = false
+            inviteLinkConfirmationDialog.value = null
+            shareSpaceErrors.value = ShareSpaceErrors.InviteNotShareable
+            return
+        }
 
         when (newLevel) {
+
+            is SpaceInviteLinkAccessLevel.HeldByOwner -> {
+                // Never a selection target — only owners manage the invite,
+                // and on the owner's device the link is always visible.
+                inviteLinkAccessLoading.value = false
+                inviteLinkConfirmationDialog.value = null
+                return
+            }
 
             is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                 revokeSpaceInviteLink.async(space).fold(
@@ -668,8 +767,9 @@ class ShareSpaceViewModel(
                         )
                     }
 
-                    is SpaceInviteLinkAccessLevel.EditorAccess -> {
-                        Timber.d("Invite link already has EDITOR access")
+                    is SpaceInviteLinkAccessLevel.EditorAccess,
+                    is SpaceInviteLinkAccessLevel.HeldByOwner -> {
+                        Timber.d("Invite link already has EDITOR access or is not manageable")
                         inviteLinkAccessLoading.value = false
                         inviteLinkConfirmationDialog.value = null
                         return
@@ -695,9 +795,12 @@ class ShareSpaceViewModel(
                         revokeSpaceInviteLink.async(space).fold(
                             onSuccess = {
                                 Timber.d("Successfully revoked invite link for REQUEST_ACCESS")
+                                // An editor invite can never be shared within the space —
+                                // always regenerate it owner-held.
                                 generateInviteLink(
                                     inviteType = InviteType.WITHOUT_APPROVE,
-                                    permissions = SpaceMemberPermissions.WRITER
+                                    permissions = SpaceMemberPermissions.WRITER,
+                                    shareWithinSpace = false
                                 )
                             },
                             onFailure = {
@@ -735,8 +838,9 @@ class ShareSpaceViewModel(
                         )
                     }
 
-                    is SpaceInviteLinkAccessLevel.ViewerAccess -> {
-                        Timber.d("Invite link already has VIEWER access")
+                    is SpaceInviteLinkAccessLevel.ViewerAccess,
+                    is SpaceInviteLinkAccessLevel.HeldByOwner -> {
+                        Timber.d("Invite link already has VIEWER access or is not manageable")
                         inviteLinkAccessLoading.value = false
                         inviteLinkConfirmationDialog.value = null
                         return
@@ -748,7 +852,8 @@ class ShareSpaceViewModel(
                                 Timber.d("Successfully revoked invite link for REQUEST_ACCESS")
                                 generateInviteLink(
                                     inviteType = InviteType.WITHOUT_APPROVE,
-                                    permissions = SpaceMemberPermissions.READER
+                                    permissions = SpaceMemberPermissions.READER,
+                                    shareWithinSpace = wasShared
                                 )
                             },
                             onFailure = {
@@ -767,16 +872,14 @@ class ShareSpaceViewModel(
                         generateInviteLink()
                     }
 
-                    is SpaceInviteLinkAccessLevel.EditorAccess -> {
-                        generateInviteLink()
-                    }
-
+                    is SpaceInviteLinkAccessLevel.EditorAccess,
                     is SpaceInviteLinkAccessLevel.ViewerAccess -> {
-                        generateInviteLink()
+                        generateInviteLink(shareWithinSpace = wasShared)
                     }
 
-                    is SpaceInviteLinkAccessLevel.RequestAccess -> {
-                        Timber.d("Invite link already has REQUEST_ACCESS")
+                    is SpaceInviteLinkAccessLevel.RequestAccess,
+                    is SpaceInviteLinkAccessLevel.HeldByOwner -> {
+                        Timber.d("Invite link already has REQUEST_ACCESS or is not manageable")
                         inviteLinkAccessLoading.value = false
                         inviteLinkConfirmationDialog.value = null
                         return
@@ -806,6 +909,9 @@ class ShareSpaceViewModel(
                     SpaceMemberPermissions.NO_PERMISSIONS
 
                 is SpaceInviteLinkAccessLevel.RequestAccess ->
+                    SpaceMemberPermissions.NO_PERMISSIONS
+
+                is SpaceInviteLinkAccessLevel.HeldByOwner ->
                     SpaceMemberPermissions.NO_PERMISSIONS
 
                 is SpaceInviteLinkAccessLevel.ViewerAccess ->
@@ -844,6 +950,118 @@ class ShareSpaceViewModel(
     private suspend fun proceedWithRequestCurrentInviteLink() {
         val params = GetCurrentInviteAccessLevel.Params(space = vmParams.space)
         getCurrentInviteAccessLevel.async(params).getOrNull()
+    }
+
+    /**
+     * Owner tapped the "Everyone in the space can share this invite" toggle.
+     * Sharing is one-way and needs an explicit confirmation; a no-approval editor
+     * invite cannot be shared at all (the switch is disabled in the UI).
+     */
+    fun onShareWithinSpaceClicked() {
+        val current = inviteLinkAccessLevel.value
+        Timber.d("onShareWithinSpaceClicked, current level: $current")
+        if (inviteLinkAccessLoading.value) return
+        when {
+            current.isSharedWithinSpace -> {
+                // One-way: a shared invite cannot be taken back — the switch is locked.
+                return
+            }
+            current is SpaceInviteLinkAccessLevel.EditorAccess -> {
+                // Anyone with such a link joins as an editor, without approval —
+                // only the owner may share it. The switch is disabled with a reason.
+                return
+            }
+            current is SpaceInviteLinkAccessLevel.ViewerAccess ||
+                    current is SpaceInviteLinkAccessLevel.RequestAccess -> {
+                shareInviteConfirmationDialog.value = true
+            }
+            else -> return
+        }
+    }
+
+    fun onShareWithinSpaceConfirmed() {
+        val current = inviteLinkAccessLevel.value
+        Timber.d("onShareWithinSpaceConfirmed, current level: $current")
+        val (inviteType, permissions) = when (current) {
+            is SpaceInviteLinkAccessLevel.ViewerAccess ->
+                InviteType.WITHOUT_APPROVE to SpaceMemberPermissions.READER
+            is SpaceInviteLinkAccessLevel.RequestAccess ->
+                InviteType.MEMBER to SpaceMemberPermissions.READER
+            else -> {
+                shareInviteConfirmationDialog.value = false
+                return
+            }
+        }
+        viewModelScope.launch {
+            // Keep the confirmation sheet open with a loading indicator until the
+            // request completes (same pattern as the make-admin confirmation).
+            inviteLinkAccessLoading.value = true
+            // Publishes the very same invite — same cid, same key. No new link is created.
+            generateInviteLink(
+                inviteType = inviteType,
+                permissions = permissions,
+                shareWithinSpace = true,
+                isNewLink = false
+            )
+            shareInviteConfirmationDialog.value = false
+        }
+    }
+
+    fun onShareWithinSpaceCancelled() {
+        shareInviteConfirmationDialog.value = false
+    }
+
+    /**
+     * Reset link: revoke, then generate a new invite of the same type and permissions
+     * with shareWithinSpace = false. The old link stops working for everyone holding it.
+     * This is the only way out of a shared invite.
+     */
+    fun onResetLinkClicked() {
+        Timber.d("onResetLinkClicked")
+        if (inviteLinkAccessLoading.value) return
+        resetLinkConfirmationDialog.value = true
+    }
+
+    fun onResetLinkCancelled() {
+        resetLinkConfirmationDialog.value = false
+    }
+
+    fun onResetLinkConfirmed() {
+        val current = inviteLinkAccessLevel.value
+        Timber.d("onResetLinkConfirmed, current level: $current")
+        val (inviteType, permissions) = when (current) {
+            is SpaceInviteLinkAccessLevel.EditorAccess ->
+                InviteType.WITHOUT_APPROVE to SpaceMemberPermissions.WRITER
+            is SpaceInviteLinkAccessLevel.ViewerAccess ->
+                InviteType.WITHOUT_APPROVE to SpaceMemberPermissions.READER
+            is SpaceInviteLinkAccessLevel.RequestAccess ->
+                InviteType.MEMBER to SpaceMemberPermissions.READER
+            else -> {
+                resetLinkConfirmationDialog.value = false
+                return
+            }
+        }
+        viewModelScope.launch {
+            // Keep the confirmation sheet open with a loading indicator until the
+            // revoke + regenerate round-trip completes.
+            inviteLinkAccessLoading.value = true
+            revokeSpaceInviteLink.async(vmParams.space).fold(
+                onSuccess = {
+                    Timber.d("Successfully revoked invite link on reset")
+                    generateInviteLink(
+                        inviteType = inviteType,
+                        permissions = permissions,
+                        shareWithinSpace = false
+                    )
+                },
+                onFailure = {
+                    Timber.e(it, "Failed to revoke invite link on reset")
+                    inviteLinkAccessLoading.value = false
+                    proceedWithMultiplayerError(it)
+                }
+            )
+            resetLinkConfirmationDialog.value = false
+        }
     }
 
     //endregion
@@ -885,6 +1103,14 @@ class ShareSpaceViewModel(
 
                 is MultiplayerError.Generic.NoSuchSpace -> {
                     shareSpaceErrors.value = ShareSpaceErrors.NoSuchSpace
+                }
+
+                is MultiplayerError.Generic.InviteAlreadyShared -> {
+                    shareSpaceErrors.value = ShareSpaceErrors.InviteAlreadyShared
+                }
+
+                is MultiplayerError.Generic.InviteNotShareable -> {
+                    shareSpaceErrors.value = ShareSpaceErrors.InviteNotShareable
                 }
             }
         } else {
@@ -975,12 +1201,12 @@ class ShareSpaceViewModel(
         data class ShareInviteLink(val link: String) : Command()
         data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
         data class ShowRemoveMemberWarning(val identity: Id, val name: String) : Command()
+        data object DismissRemoveMemberWarning : Command()
         data class ShowMultiplayerError(val error: MultiplayerError.Generic) : Command()
         data object ShowHowToShareSpace : Command()
         data object ToastPermission : Command()
         data object Dismiss : Command()
         data object ShowMembershipScreen : Command()
-        data object ShowMembershipUpgradeScreen : Command()
         data class OpenParticipantObject(val objectId: Id, val space: SpaceId) : Command()
         data object ShowManageSpacesScreen : Command()
     }
@@ -1007,6 +1233,7 @@ class ShareSpaceViewModel(
 
     data class CombineResult(
         val isCurrentUserOwner: Boolean,
+        val currentUserPermissions: SpaceMemberPermissions?,
         val spaceView: ObjectWrapper.SpaceView,
         val tierId: TierId,
         val spaceMembers: List<ObjectWrapper.SpaceMember>,
@@ -1034,6 +1261,7 @@ data class SpaceMemberView(
     )
 
     enum class ActionType {
+        MAKE_ADMIN,
         CAN_VIEW,
         CAN_EDIT,
         REMOVE_MEMBER,
@@ -1057,6 +1285,8 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
     canChangeWriterToReader: Boolean,
     canChangeReaderToWriter: Boolean,
     isCurrentUserOwner: Boolean,
+    currentUserPermissions: SpaceMemberPermissions?,
+    isUser: Boolean,
     stringResourceProvider: StringResourceProvider
 ): ParticipantInfo {
     return when (status) {
@@ -1065,14 +1295,56 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
             val statusText = when (permissions) {
                 SpaceMemberPermissions.READER -> stringResourceProvider.getMultiplayerViewer()
                 SpaceMemberPermissions.WRITER -> stringResourceProvider.getMultiplayerEditor()
+                SpaceMemberPermissions.ADMIN -> stringResourceProvider.getMultiplayerAdmin()
                 SpaceMemberPermissions.OWNER -> stringResourceProvider.getMultiplayerOwner()
                 SpaceMemberPermissions.NO_PERMISSIONS -> stringResourceProvider.getMultiplayerNoPermissions()
                 null -> null
             }
 
-            // Context actions are only available for non-owners when current user is owner
-            val contextActions = if (isCurrentUserOwner && permissions != SpaceMemberPermissions.OWNER) {
-                buildList {
+            // Role assignment (Admin/Editor/Viewer) is Owner-only.
+            // Removal: Owner can remove any non-owner; Admin can remove Editors/Viewers only.
+            // A member's own row never shows the role selector.
+            val isOwnerActor = currentUserPermissions == SpaceMemberPermissions.OWNER
+            val isAdminActor = currentUserPermissions == SpaceMemberPermissions.ADMIN
+            val showRoleOptions = isOwnerActor &&
+                    permissions != SpaceMemberPermissions.OWNER &&
+                    !isUser
+            val canRemoveTarget = when {
+                isUser -> false
+                permissions == SpaceMemberPermissions.OWNER -> false
+                isOwnerActor -> true
+                isAdminActor -> permissions == SpaceMemberPermissions.READER ||
+                        permissions == SpaceMemberPermissions.WRITER
+                else -> false
+            }
+            val contextActions = buildList {
+                if (showRoleOptions) {
+                    // Promote to Admin action
+                    add(
+                        ContextAction(
+                            title = stringResourceProvider.getMultiplayerAdmin(),
+                            isSelected = permissions == SpaceMemberPermissions.ADMIN,
+                            isDestructive = false,
+                            isEnabled = canChangeReaderToWriter ||
+                                    permissions == SpaceMemberPermissions.WRITER ||
+                                    permissions == SpaceMemberPermissions.ADMIN,
+                            actionType = ActionType.MAKE_ADMIN
+                        )
+                    )
+
+                    // Change to Editor action
+                    add(
+                        ContextAction(
+                            title = stringResourceProvider.getMultiplayerEditor(),
+                            isSelected = permissions == SpaceMemberPermissions.WRITER,
+                            isDestructive = false,
+                            isEnabled = canChangeReaderToWriter ||
+                                    permissions == SpaceMemberPermissions.WRITER ||
+                                    permissions == SpaceMemberPermissions.ADMIN,
+                            actionType = ActionType.CAN_EDIT
+                        )
+                    )
+
                     // Change to Viewer action
                     add(
                         ContextAction(
@@ -1083,19 +1355,10 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
                             actionType = ActionType.CAN_VIEW
                         )
                     )
+                }
 
-                    // Change to Editor action
-                    add(
-                        ContextAction(
-                            title = stringResourceProvider.getMultiplayerEditor(),
-                            isSelected = permissions == SpaceMemberPermissions.WRITER,
-                            isDestructive = false,
-                            isEnabled = canChangeReaderToWriter || permissions == SpaceMemberPermissions.WRITER,
-                            actionType = ActionType.CAN_EDIT
-                        )
-                    )
-
-                    // Remove Member action
+                // Remove Member action
+                if (canRemoveTarget) {
                     add(
                         ContextAction(
                             title = stringResourceProvider.getMultiplayerRemoveMember(),
@@ -1106,8 +1369,6 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
                         )
                     )
                 }
-            } else {
-                emptyList()
             }
 
             ParticipantInfo(statusText = statusText, contextActions = contextActions)
@@ -1173,6 +1434,8 @@ fun List<ObjectWrapper.SpaceMember>.toSpaceMemberView(
     spaceView: ObjectWrapper.SpaceView,
     urlBuilder: UrlBuilder,
     isCurrentUserOwner: Boolean,
+    currentUserPermissions: SpaceMemberPermissions? =
+        if (isCurrentUserOwner) SpaceMemberPermissions.OWNER else null,
     account: Id? = null,
     stringResourceProvider: StringResourceProvider
 ): List<SpaceMemberView> = mapNotNull { spaceMember ->
@@ -1192,6 +1455,8 @@ fun List<ObjectWrapper.SpaceMember>.toSpaceMemberView(
         canChangeWriterToReader = canChangeWriterToReader,
         canChangeReaderToWriter = canChangeReaderToWriter,
         isCurrentUserOwner = isCurrentUserOwner,
+        currentUserPermissions = currentUserPermissions,
+        isUser = isUser,
         stringResourceProvider = stringResourceProvider
     )
 
@@ -1257,6 +1522,18 @@ sealed class ShareSpaceErrors {
     data object IncorrectPermissions : ShareSpaceErrors()
     data object NoSuchSpace : ShareSpaceErrors()
     data object MakePrivateFailed : ShareSpaceErrors()
+
+    /**
+     * The current invite is already shared within the space and cannot be taken
+     * back into the owner's account. The only way out is a link reset.
+     */
+    data object InviteAlreadyShared : ShareSpaceErrors()
+
+    /**
+     * The invite lets anyone join with editor access without approval,
+     * so it cannot be shared within the space.
+     */
+    data object InviteNotShareable : ShareSpaceErrors()
     data class Error(val msg: String) : ShareSpaceErrors()
 }
 

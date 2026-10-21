@@ -43,6 +43,10 @@ class AuthDataRepository(
         }
     }
 
+    override suspend fun preloadRemainingSpaces() {
+        factory.remote.preloadRemainingSpaces()
+    }
+
     override suspend fun deleteAccount(): AccountStatus = factory.remote.deleteAccount()
     override suspend fun restoreAccount(): AccountStatus = factory.remote.restoreAccount()
 

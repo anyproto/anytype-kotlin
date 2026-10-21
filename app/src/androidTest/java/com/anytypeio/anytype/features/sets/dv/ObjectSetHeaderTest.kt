@@ -12,9 +12,7 @@ import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextConten
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
-import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -22,8 +20,6 @@ import org.junit.runner.RunWith
 @LargeTest
 class ObjectSetHeaderTest : TestObjectSetSetup() {
 
-    @get:Rule
-    val animationsRule = DisableAnimationsRule()
 
     override val title: Block = Block(
         id = MockDataFactory.randomUuid(),

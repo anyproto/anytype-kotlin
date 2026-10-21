@@ -3,7 +3,6 @@ package com.anytypeio.anytype.core_ui.features.sets
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -46,6 +44,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
@@ -83,10 +82,12 @@ fun SetObjectNameBottomSheet(
     }
 
     ModalBottomSheet(
+        sheetMaxWidth = contentWidthDp(),
+        // IME inset is applied once, on the inner content Box below (.imePadding()). Applying
+        // it here too double-counted the keyboard height and could leave the sheet mispositioned
+        // (intermittently not visible) while the IME animates in.
         modifier = Modifier
-            .windowInsetsPadding(WindowInsets.ime)
             .systemBarsPadding()
-            .fillMaxWidth()
             .wrapContentHeight(),
         onDismissRequest = onDismiss,
         sheetState = sheetState,

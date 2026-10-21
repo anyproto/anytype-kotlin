@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--
+        The window is wider than a phone in portrait. Cap the content column so a line of text
+        stays readable, and let the activity layout center it.
+    -->
+    <dimen name="max_content_width">600dp</dimen>
+
+</resources>

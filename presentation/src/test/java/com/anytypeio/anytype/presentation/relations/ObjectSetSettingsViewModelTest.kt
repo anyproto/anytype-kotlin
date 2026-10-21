@@ -358,6 +358,287 @@ class ObjectSetSettingsViewModelTest {
         assertEquals(emptyList(), viewModel.views.value)
     }
 
+    //region DROID-4543: relationLinks-only relations (e.g. TypeSet recommended properties)
+
+    @Test
+    fun `relationLinks-only relation is surfaced as an off toggle`() = runTest {
+        val viewerId = "viewer-id"
+        val statusKey = "6a5601ce421aa95962f43529"
+        storeOfRelations.merge(
+            listOf(
+                StubRelationObject(
+                    key = Relations.NAME,
+                    name = "Name",
+                    format = RelationFormat.LONG_TEXT,
+                    isHidden = false
+                ),
+                StubRelationObject(
+                    key = statusKey,
+                    name = "My daily status",
+                    format = RelationFormat.STATUS,
+                    isHidden = false
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        // Custom status is in relationLinks but NOT in viewerRelations.
+        val state = dataViewSetState(
+            viewerId = viewerId,
+            viewerRelations = listOf(ViewerRelation(key = Relations.NAME, isVisible = true)),
+            relationLinks = listOf(
+                RelationLink(key = Relations.NAME, format = RelationFormat.LONG_TEXT),
+                RelationLink(key = statusKey, format = RelationFormat.STATUS)
+            )
+        )
+        initViewModel(state)
+
+        // Act
+        viewModel.onStart(viewerId)
+        coroutineTestRule.advanceUntilIdle()
+
+        // Assert - appears after Name as an OFF toggle
+        val views = viewModel.views.value
+            .filterIsInstance<ViewerRelationListView.Relation>()
+            .map { it.view }
+        assertEquals(listOf(Relations.NAME, statusKey), views.map { it.key })
+        assertEquals(
+            SimpleRelationView(
+                key = statusKey,
+                title = "My daily status",
+                format = RelationFormat.STATUS,
+                isVisible = false,
+                isHidden = false,
+                isReadonly = false,
+                isDefault = false,
+                canToggleVisibility = true
+            ),
+            views.first { it.key == statusKey }
+        )
+    }
+
+    @Test
+    fun `relationLinks-only relations keep relationLinks order after viewer relations`() = runTest {
+        val viewerId = "viewer-id"
+        storeOfRelations.merge(
+            listOf(
+                StubRelationObject(key = Relations.NAME, name = "Name", format = RelationFormat.LONG_TEXT),
+                StubRelationObject(key = "missingA", name = "A", format = RelationFormat.NUMBER),
+                StubRelationObject(key = "missingB", name = "B", format = RelationFormat.NUMBER)
+            )
+        )
+        advanceUntilIdle()
+
+        val state = dataViewSetState(
+            viewerId = viewerId,
+            viewerRelations = listOf(ViewerRelation(key = Relations.NAME, isVisible = true)),
+            relationLinks = listOf(
+                RelationLink(key = Relations.NAME, format = RelationFormat.LONG_TEXT),
+                RelationLink(key = "missingA", format = RelationFormat.NUMBER),
+                RelationLink(key = "missingB", format = RelationFormat.NUMBER)
+            )
+        )
+        initViewModel(state)
+
+        viewModel.onStart(viewerId)
+        coroutineTestRule.advanceUntilIdle()
+
+        val keys = viewModel.views.value
+            .filterIsInstance<ViewerRelationListView.Relation>()
+            .map { it.view.key }
+        assertEquals(listOf(Relations.NAME, "missingA", "missingB"), keys)
+    }
+
+    @Test
+    fun `relationLinks-only hidden relation is not surfaced`() = runTest {
+        val viewerId = "viewer-id"
+        val hiddenKey = "hidden-status"
+        storeOfRelations.merge(
+            listOf(
+                StubRelationObject(key = Relations.NAME, name = "Name", format = RelationFormat.LONG_TEXT),
+                StubRelationObject(
+                    key = hiddenKey,
+                    name = "Hidden status",
+                    format = RelationFormat.STATUS,
+                    isHidden = true
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        val state = dataViewSetState(
+            viewerId = viewerId,
+            viewerRelations = listOf(ViewerRelation(key = Relations.NAME, isVisible = true)),
+            relationLinks = listOf(
+                RelationLink(key = Relations.NAME, format = RelationFormat.LONG_TEXT),
+                RelationLink(key = hiddenKey, format = RelationFormat.STATUS)
+            )
+        )
+        initViewModel(state)
+
+        viewModel.onStart(viewerId)
+        coroutineTestRule.advanceUntilIdle()
+
+        val keys = viewModel.views.value
+            .filterIsInstance<ViewerRelationListView.Relation>()
+            .map { it.view.key }
+        assertEquals(listOf(Relations.NAME), keys)
+    }
+
+    @Test
+    fun `relationLinks-only deleted or archived relation is not surfaced`() = runTest {
+        val viewerId = "viewer-id"
+        val deletedKey = "deleted-rel"
+        val archivedKey = "archived-rel"
+        storeOfRelations.merge(
+            listOf(
+                StubRelationObject(key = Relations.NAME, name = "Name", format = RelationFormat.LONG_TEXT),
+                StubRelationObject(
+                    key = deletedKey,
+                    name = "Deleted",
+                    format = RelationFormat.NUMBER,
+                    isHidden = false,
+                    isDeleted = true
+                ),
+                StubRelationObject(
+                    key = archivedKey,
+                    name = "Archived",
+                    format = RelationFormat.NUMBER,
+                    isHidden = false,
+                    isArchived = true
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        val state = dataViewSetState(
+            viewerId = viewerId,
+            viewerRelations = listOf(ViewerRelation(key = Relations.NAME, isVisible = true)),
+            relationLinks = listOf(
+                RelationLink(key = Relations.NAME, format = RelationFormat.LONG_TEXT),
+                RelationLink(key = deletedKey, format = RelationFormat.NUMBER),
+                RelationLink(key = archivedKey, format = RelationFormat.NUMBER)
+            )
+        )
+        initViewModel(state)
+
+        viewModel.onStart(viewerId)
+        coroutineTestRule.advanceUntilIdle()
+
+        val keys = viewModel.views.value
+            .filterIsInstance<ViewerRelationListView.Relation>()
+            .map { it.view.key }
+        assertEquals(listOf(Relations.NAME), keys)
+    }
+
+    @Test
+    fun `relationLinks-only system relation links is not surfaced`() = runTest {
+        val viewerId = "viewer-id"
+        storeOfRelations.merge(
+            listOf(
+                StubRelationObject(key = Relations.NAME, name = "Name", format = RelationFormat.LONG_TEXT),
+                StubRelationObject(
+                    key = Relations.LINKS,
+                    name = "Links",
+                    format = RelationFormat.OBJECT,
+                    isHidden = false
+                )
+            )
+        )
+        advanceUntilIdle()
+
+        val state = dataViewSetState(
+            viewerId = viewerId,
+            viewerRelations = listOf(ViewerRelation(key = Relations.NAME, isVisible = true)),
+            relationLinks = listOf(
+                RelationLink(key = Relations.NAME, format = RelationFormat.LONG_TEXT),
+                RelationLink(key = Relations.LINKS, format = RelationFormat.OBJECT)
+            )
+        )
+        initViewModel(state)
+
+        viewModel.onStart(viewerId)
+        coroutineTestRule.advanceUntilIdle()
+
+        val keys = viewModel.views.value
+            .filterIsInstance<ViewerRelationListView.Relation>()
+            .map { it.view.key }
+        assertEquals(listOf(Relations.NAME), keys)
+    }
+
+    @Test
+    fun `relation present in both viewerRelations and relationLinks appears once`() = runTest {
+        val viewerId = "viewer-id"
+        val customKey = "custom"
+        storeOfRelations.merge(
+            listOf(
+                StubRelationObject(key = customKey, name = "Custom", format = RelationFormat.NUMBER)
+            )
+        )
+        advanceUntilIdle()
+
+        val state = dataViewSetState(
+            viewerId = viewerId,
+            viewerRelations = listOf(ViewerRelation(key = customKey, isVisible = true)),
+            relationLinks = listOf(RelationLink(key = customKey, format = RelationFormat.NUMBER))
+        )
+        initViewModel(state)
+
+        viewModel.onStart(viewerId)
+        coroutineTestRule.advanceUntilIdle()
+
+        val keys = viewModel.views.value
+            .filterIsInstance<ViewerRelationListView.Relation>()
+            .map { it.view.key }
+        assertEquals(listOf(customKey), keys)
+    }
+
+    private fun dataViewSetState(
+        viewerId: String,
+        viewerRelations: List<ViewerRelation>,
+        relationLinks: List<RelationLink>,
+        blockId: String = "block-id"
+    ): ObjectState.DataView.Set {
+        val viewer = Viewer(
+            id = viewerId,
+            name = "Test Viewer",
+            type = Viewer.Type.GRID,
+            sorts = emptyList(),
+            filters = emptyList(),
+            viewerRelations = viewerRelations
+        )
+        val dataView = DataView(
+            viewers = listOf(viewer),
+            relationLinks = relationLinks
+        )
+        val block = Block(
+            id = blockId,
+            children = emptyList(),
+            content = dataView,
+            fields = Block.Fields.empty()
+        )
+        return ObjectState.DataView.Set(
+            root = "root-id",
+            blocks = listOf(block)
+        )
+    }
+
+    private fun initViewModel(state: ObjectState) {
+        objectState = MutableStateFlow(state)
+        viewModel = ObjectSetSettingsViewModel(
+            objectState = objectState,
+            dispatcher = dispatcher,
+            updateDataViewViewer = updateDataViewViewer,
+            storeOfRelations = storeOfRelations,
+            analytics = analytics,
+            deleteRelationFromDataView = deleteRelationFromDataView,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceManager = spaceManager
+        )
+    }
+
+    //endregion
+
     //region buildCompleteOrderPreservingHidden tests
 
     @Test

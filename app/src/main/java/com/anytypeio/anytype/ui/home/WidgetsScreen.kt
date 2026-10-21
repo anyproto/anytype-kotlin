@@ -22,6 +22,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -352,6 +353,7 @@ fun WidgetsScreen(
                                     key = SECTION_UNREAD,
                                 ) {
                                     UnreadSectionHeader(
+                                        isExpanded = !isUnreadSectionCollapsed,
                                         onSectionClicked = viewModel::onSectionUnreadClicked
                                     )
                                 }
@@ -418,7 +420,7 @@ fun WidgetsScreen(
                                 key = SECTION_OBJECT_TYPE,
                             ) {
                                 SpaceObjectTypesSectionHeader(
-                                    mode = mode,
+                                    isExpanded = !isObjectsSectionCollapsed,
                                     onSectionClicked = viewModel::onSectionTypesClicked
                                 )
                             }
@@ -461,6 +463,7 @@ fun WidgetsScreen(
                                     key = SECTION_RECENTLY_EDITED,
                                 ) {
                                     RecentlyEditedSectionHeader(
+                                        isExpanded = !isRecentlyEditedSectionCollapsed,
                                         onSectionClicked = viewModel::onSectionRecentlyEditedClicked
                                     )
                                 }
@@ -520,6 +523,7 @@ fun WidgetsScreen(
                                     key = SECTION_MY_FAVORITES,
                                 ) {
                                     MyFavoritesSectionHeader(
+                                        isExpanded = !isMyFavoritesSectionCollapsed,
                                         onSectionClicked = viewModel::onSectionMyFavoritesClicked
                                     )
                                 }
@@ -595,7 +599,11 @@ fun WidgetsScreen(
                     bottom = dimensionResource(R.dimen.nav_fab_margin),
                 )
             ,
+            elevation = 2.dp,
+            showBorder = false,
             size = fabSize,
+            iconSize = 24.dp,
+            backgroundColor = colorResource(id = R.color.background_secondary),
             onClick = viewModel::onSearchIconClicked,
         )
 
@@ -616,7 +624,11 @@ fun WidgetsScreen(
                         end = dimensionResource(R.dimen.nav_fab_margin),
                         bottom = dimensionResource(R.dimen.nav_fab_margin),
                     ),
+                elevation = 2.dp,
+                showBorder = false,
                 size = fabSize,
+                iconSize = 24.dp,
+                backgroundColor = colorResource(id = R.color.background_secondary),
                 onClick = viewModel::onCreateObjectMenuClicked,
             )
         }

@@ -65,7 +65,20 @@ fun Rpc.Membership.VerifyEmailCode.Response.Error.toCore(): MembershipErrors.Ver
     }
 }
 
+fun Rpc.Membership.CodeGetInfo.Response.Error.toCore(): MembershipErrors.CodeGetInfo {
+    return when (this.code) {
+        CodeGetInfoErrorCode.NULL -> MembershipErrors.CodeGetInfo.Null("Null error code")
+        CodeGetInfoErrorCode.UNKNOWN_ERROR -> MembershipErrors.CodeGetInfo.UnknownError(description)
+        CodeGetInfoErrorCode.BAD_INPUT -> MembershipErrors.CodeGetInfo.BadInput(description)
+        CodeGetInfoErrorCode.NOT_LOGGED_IN -> MembershipErrors.CodeGetInfo.NotLoggedIn(description)
+        CodeGetInfoErrorCode.PAYMENT_NODE_ERROR -> MembershipErrors.CodeGetInfo.PaymentNodeError(description)
+        CodeGetInfoErrorCode.CODE_NOT_FOUND -> MembershipErrors.CodeGetInfo.CodeNotFound(description)
+        CodeGetInfoErrorCode.CODE_ALREADY_USED -> MembershipErrors.CodeGetInfo.CodeAlreadyUsed(description)
+    }
+}
+
 typealias IsNameValidErrorCode = Rpc.Membership.IsNameValid.Response.Error.Code
 typealias ResolveNameErrorCode = Rpc.NameService.ResolveName.Response.Error.Code
 typealias GetVerificationEmailErrorCode = Rpc.Membership.GetVerificationEmail.Response.Error.Code
 typealias VerifyEmailErrorCode = Rpc.Membership.VerifyEmailCode.Response.Error.Code
+typealias CodeGetInfoErrorCode = Rpc.Membership.CodeGetInfo.Response.Error.Code

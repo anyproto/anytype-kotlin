@@ -9,12 +9,14 @@ class EventUnsetProcessor : SubscriptionEventProcessor<SubscriptionEvent.Unset> 
     override fun process(
         event: SubscriptionEvent.Unset,
         dataItems: MutableList<SubscriptionObject>
-    ): MutableList<SubscriptionObject> = dataItems.map {
-        if (it.id == event.target) {
-            SubscriptionObject(it.id, it.objectWrapper?.unset(event.keys))
-        } else {
-            it
+    ): MutableList<SubscriptionObject> = with(dataItems) {
+        for (index in indices) {
+            val item = get(index)
+            if (item.id == event.target) {
+                set(index, SubscriptionObject(item.id, item.objectWrapper?.unset(event.keys)))
+            }
         }
-    }.toMutableList()
+        return this
+    }
 
 }

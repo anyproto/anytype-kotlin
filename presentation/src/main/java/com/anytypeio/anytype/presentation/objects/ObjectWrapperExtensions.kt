@@ -255,7 +255,7 @@ suspend fun ObjectWrapper.Basic.statuses(
 ) : List<StatusView> {
     val result = mutableListOf<StatusView>()
     val keys : List<Id> = when(val value = map.getOrDefault(relation, null)) {
-        is Id -> listOf(id)
+        is Id -> listOf(value)
         is List<*> -> value.typeOf()
         else -> emptyList()
     }
@@ -280,7 +280,7 @@ suspend fun ObjectWrapper.Basic.tags(
 ) : List<TagView> {
     val result = mutableListOf<TagView>()
     val keys : List<Id> = when(val value = map.getOrDefault(relation, null)) {
-        is Id -> listOf(id)
+        is Id -> listOf(value)
         is List<*> -> value.typeOf()
         else -> emptyList()
     }
@@ -305,7 +305,7 @@ suspend fun ObjectWrapper.Basic.files(
 ) : List<FileView> {
     val result = mutableListOf<FileView>()
     val ids : List<Id> = when(val value = map.getOrDefault(relation, null)) {
-        is Id -> listOf(id)
+        is Id -> listOf(value)
         is List<*> -> value.typeOf()
         else -> emptyList()
     }

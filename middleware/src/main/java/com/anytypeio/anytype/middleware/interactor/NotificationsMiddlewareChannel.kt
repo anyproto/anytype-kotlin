@@ -1,4 +1,5 @@
 package com.anytypeio.anytype.middleware.interactor
+import com.anytypeio.anytype.middleware.EventGroup
 
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.data.auth.event.NotificationsRemoteChannel
@@ -13,7 +14,7 @@ class NotificationsMiddlewareChannel(
 ) : NotificationsRemoteChannel {
 
     override fun observe(): Flow<List<Notification.Event>> {
-        return eventsProxy.flow()
+        return eventsProxy.flow(EventGroup.NOTIFICATIONS)
             .mapNotNull { emission ->
                 emission.messages.mapNotNull { message ->
                     when {

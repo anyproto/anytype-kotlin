@@ -17,7 +17,10 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.GetObjectRelationListById
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.navigation.backstack.BackHistoryDelegate
+import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import javax.inject.Inject
 
 class DateObjectVMFactory @Inject constructor(
@@ -37,7 +40,10 @@ class DateObjectVMFactory @Inject constructor(
     private val fieldParser: FieldParser,
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val getDateObjectByTimestamp: GetDateObjectByTimestamp,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val searchObjects: SearchObjects,
+    private val backHistoryDelegate: BackHistoryDelegate,
+    private val exitToVaultDelegate: ExitToVaultDelegate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -59,6 +65,9 @@ class DateObjectVMFactory @Inject constructor(
             fieldParser = fieldParser,
             setObjectListIsArchived = setObjectListIsArchived,
             getDateObjectByTimestamp = getDateObjectByTimestamp,
-            spaceViews = spaceViews
+            spaceViews = spaceViews,
+            searchObjects = searchObjects,
+            backHistoryDelegate = backHistoryDelegate,
+            exitToVaultDelegate = exitToVaultDelegate
         ) as T
 }

@@ -30,9 +30,7 @@ abstract class BaseActionWidget<T> @JvmOverloads constructor(
             adapter = this@BaseActionWidget.adapter
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             addItemDecoration(
-                BaseActionWidgetItemDecoration(
-                    context
-                )
+                BaseActionWidgetItemDecoration()
             )
         }
     }

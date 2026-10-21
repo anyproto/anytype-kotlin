@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -69,8 +70,9 @@ fun LocalStorageScreen(
     Card(
         modifier = Modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .nestedScroll(rememberNestedScrollInteropConnection()),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
         backgroundColor = colorResource(id = R.color.background_primary)
     ) {
         Column(

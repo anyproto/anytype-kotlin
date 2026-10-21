@@ -36,7 +36,8 @@ interface DeepLinkResolver {
             )
         }
         data class DeepLinkToMembership(
-            val tierId: String?
+            val tierId: String?,
+            val code: String? = null
         ) : Action()
 
         data class InitiateOneToOneChat(

@@ -32,6 +32,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleImageBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleProfileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleTodoBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTitleVideoBinding
+import com.anytypeio.anytype.core_ui.extensions.contentWidth
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -80,15 +81,25 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             enableReadMode()
         } else {
             enableEditMode()
-            if (item.isFocused) setCursor(item)
             focus(item.isFocused)
         }
         content.pauseTextWatchers {
             if (!item.hint.isNullOrBlank()) {
                 content.hint = item.hint
             }
-            content.setText(item.text, TextView.BufferType.EDITABLE)
+            // Skip when the widget already shows this text: re-setting it would tear down
+            // the composing region and break IME composition mid-syllable. Same guard as
+            // the TEXT_CHANGED payload path below.
+            if (content.text.toString() != item.text) {
+                content.setText(item.text, TextView.BufferType.EDITABLE)
+            }
         }
+        // After the text, not before it. setCursor measures content.text, so on a first bind
+        // it used to read the widget's *previous* (empty) contents, decide the position was
+        // out of range, and silently drop it — leaving the caret at 0 on a title that has
+        // text. Only visible once something focused a non-empty title, which the base editor
+        // never does; quick capture reopening a saved draft is the first case.
+        if (item.mode != BlockView.Mode.READ && item.isFocused) setCursor(item)
         cover?.setOnClickListener { onCoverClicked() }
     }
 
@@ -641,7 +652,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     // Click event intentionally ignored
                 }
             )
-            content.setText(item.text)
+            if (content.text.toString() != item.text) {
+                content.setText(item.text)
+            }
 
             image.setOnClickListener {
                 clicked(ListenerType.Header.Image)
@@ -656,9 +669,6 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         }
 
         private fun loadImageWithCustomResize(imageView: ImageView, url: String) {
-            val displayMetrics = context.resources.displayMetrics
-            val screenWidth = displayMetrics.widthPixels
-
             val request = ImageRequest.Builder(context)
                 .data(url)
                 .listener(
@@ -675,9 +685,13 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 .target(object : Target {
                     override fun onSuccess(result: coil3.Image) {
                         if (result is android.graphics.drawable.BitmapDrawable) {
+                            // The image spans its own row, not the display. The row is measured
+                            // by the time the load finishes, so read the width here.
+                            val containerWidth = (imageView.parent as? View)?.contentWidth()
+                                ?: imageView.contentWidth()
                             val bitmap = result.bitmap
                             val aspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
-                            val calculatedHeight = (screenWidth / aspectRatio).toInt()
+                            val calculatedHeight = (containerWidth / aspectRatio).toInt()
 
                             val imageHeight = when {
                                 calculatedHeight < dpToPx(context, 188) -> dpToPx(context, 188)
@@ -686,7 +700,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                             }
 
                             imageView.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                                width = screenWidth
+                                width = containerWidth
                                 height = imageHeight
                             }
                             imageView.setImageDrawable(result)
@@ -735,7 +749,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                 onCoverClicked = {},
                 click = {}
             )
-            content.setText(item.text)
+            if (content.text.toString() != item.text) {
+                content.setText(item.text)
+            }
             setupPreview(onPlayClicked, item.videoUrl)
         }
 

@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -67,9 +68,9 @@ fun DeleteTypeAlertScreen(
     )
 
     ModalBottomSheet(
+        sheetMaxWidth = contentWidthDp(),
         modifier = Modifier
-            .padding(top = 60.dp)
-            .fillMaxWidth(),
+            .padding(top = 60.dp),
         dragHandle = {
             Column {
                 Spacer(modifier = Modifier.height(6.dp))

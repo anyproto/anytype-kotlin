@@ -299,9 +299,6 @@ class SpaceSettingsFragment : Fragment(), ObjectTypeSelectionListener {
                 Command.NavigateToMembership -> {
                     findNavController().navigate(R.id.paymentsScreen)
                 }
-                Command.NavigateToMembershipUpdate -> {
-                    findNavController().navigate(R.id.membershipUpdateScreen)
-                }
                 is Command.ExitToVault -> {
                     runCatching {
                         findNavController()

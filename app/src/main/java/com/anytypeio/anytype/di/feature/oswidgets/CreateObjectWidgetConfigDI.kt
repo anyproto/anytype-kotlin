@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
+import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -143,7 +144,8 @@ object CreateObjectWidgetConfigModule {
         spaceManager: SpaceManager,
         initialParamsProvider: InitialParamsProvider,
         userSettings: UserSettingsRepository,
-        awaitAccountStartManager: AwaitAccountStartManager
+        awaitAccountStartManager: AwaitAccountStartManager,
+        preferredSpaceIdHolder: PreferredSpaceIdHolder
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
@@ -151,7 +153,8 @@ object CreateObjectWidgetConfigModule {
         spaceManager = spaceManager,
         initialParamsProvider = initialParamsProvider,
         settings = userSettings,
-        awaitAccountStartManager = awaitAccountStartManager
+        awaitAccountStartManager = awaitAccountStartManager,
+        preferredSpaceIdHolder = preferredSpaceIdHolder
     )
 
     @JvmStatic
@@ -206,4 +209,5 @@ interface CreateObjectWidgetConfigDependencies : ComponentDependencies {
     fun metricsProvider(): InitialParamsProvider
     fun userSettingsRepository(): UserSettingsRepository
     fun awaitAccountStartManager(): AwaitAccountStartManager
+    fun preferredSpaceIdHolder(): PreferredSpaceIdHolder
 }

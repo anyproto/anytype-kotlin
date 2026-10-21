@@ -494,7 +494,11 @@ class CreateSpaceViewModel(
     )
 
     companion object {
-        private val CHAT_SPACE_INVITE_TYPE = InviteType.WITHOUT_APPROVE
-        private val CHAT_SPACE_DEFAULT_PERMISSIONS = SpaceMemberPermissions.WRITER
+        // Request-to-join is the default everywhere an invite is generated:
+        // members picked during space creation are added directly via
+        // addSpaceMembers and do not need an open invite. The invite left
+        // behind must never be a no-approval editor link.
+        private val CHAT_SPACE_INVITE_TYPE = InviteType.MEMBER
+        private val CHAT_SPACE_DEFAULT_PERMISSIONS = SpaceMemberPermissions.READER
     }
 }

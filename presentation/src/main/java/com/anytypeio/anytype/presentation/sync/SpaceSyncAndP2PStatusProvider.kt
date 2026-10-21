@@ -5,11 +5,13 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncUpdate
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.spaceIdOrNull
 import com.anytypeio.anytype.domain.workspace.SyncAndP2PStatusChannel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.mapNotNull
 import timber.log.Timber
 
 class SpaceSyncAndP2PStatusProviderImpl @Inject constructor(
@@ -19,12 +21,16 @@ class SpaceSyncAndP2PStatusProviderImpl @Inject constructor(
 
     override fun observe(): Flow<SpaceSyncAndP2PStatusState> =
         combine(
-            spaceManager.observe(),
+            // The active space id rather than its config: a space can be active without one
+            // (SpaceManager.activate, used by quick capture to skip Workspace.Open), and the
+            // id is all this needs. Driving it from the config flow left the sheet's sync
+            // badge blank in exactly that case.
+            spaceManager.state().mapNotNull { state -> state.spaceIdOrNull() },
             spaceSyncStatusChannel.p2pStatus(),
             spaceSyncStatusChannel.syncStatus()
         ) { activeSpace, p2pStatus, syncStatus ->
-            val p2PStatusUpdate = p2pStatus[activeSpace.space]
-            val spaceSyncUpdate = syncStatus[activeSpace.space]
+            val p2PStatusUpdate = p2pStatus[activeSpace.id]
+            val spaceSyncUpdate = syncStatus[activeSpace.id]
 
             if (p2PStatusUpdate == null && spaceSyncUpdate == null) {
                 SpaceSyncAndP2PStatusState.Init

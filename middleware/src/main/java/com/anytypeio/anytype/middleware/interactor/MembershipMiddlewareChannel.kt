@@ -1,4 +1,5 @@
 package com.anytypeio.anytype.middleware.interactor
+import com.anytypeio.anytype.middleware.EventGroup
 
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipTiers
@@ -14,7 +15,7 @@ class MembershipMiddlewareChannel(
 ): MembershipRemoteChannel {
 
     override fun observe(): Flow<List<Membership.Event>> {
-        return eventsProxy.flow()
+        return eventsProxy.flow(EventGroup.MEMBERSHIP)
             .mapNotNull { emission ->
                 emission.messages.mapNotNull { message ->
                     when {
@@ -37,7 +38,7 @@ class MembershipMiddlewareChannel(
     }
 
     override fun observeTiers(): Flow<List<MembershipTiers.Event>> {
-        return eventsProxy.flow()
+        return eventsProxy.flow(EventGroup.MEMBERSHIP)
             .mapNotNull { emission ->
                 emission.messages.mapNotNull { message ->
                     when {

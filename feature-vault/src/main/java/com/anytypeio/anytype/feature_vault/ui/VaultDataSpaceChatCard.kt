@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
@@ -52,7 +53,7 @@ fun VaultDataSpaceChatCard(
     spaceNotificationState: NotificationState,
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.DataSpaceWithChat,
-    expandedSpaceId: String? = null,
+    isMenuExpanded: Boolean = false,
     isLastMessageOutgoing: Boolean = false,
     isLastMessageSynced: Boolean = true,
     isCompactMode: Boolean = false,
@@ -129,7 +130,7 @@ fun VaultDataSpaceChatCard(
 
         // Include dropdown menu inside the card
         SpaceActionsDropdownMenu(
-            expanded = expandedSpaceId == spaceView.space.id,
+            expanded = isMenuExpanded,
             onDismiss = onDismissMenu,
             menuShape = spaceView.space.spaceType.notificationMenuShape(),
             currentNotificationMode = spaceView.spaceNotificationState,
@@ -192,7 +193,7 @@ private fun ContentDataSpaceChat(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(24.dp),
+                .heightIn(min = 24.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             TitleRow(

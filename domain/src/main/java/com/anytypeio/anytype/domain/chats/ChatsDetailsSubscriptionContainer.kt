@@ -149,6 +149,8 @@ interface ChatsDetailsSubscriptionContainer {
                     subscription = GLOBAL_CHATS_SUBSCRIPTION,
                     keys = listOf(
                         Relations.ID,
+                        // Search v2's Messages gate reads chat presence per space.
+                        Relations.SPACE_ID,
                         Relations.NAME,
                         Relations.PLURAL_NAME,
                         Relations.ICON_EMOJI,

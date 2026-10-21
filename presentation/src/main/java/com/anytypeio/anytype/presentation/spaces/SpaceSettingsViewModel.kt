@@ -533,7 +533,10 @@ class SpaceSettingsViewModel(
                                 )
                             }
 
-                            is SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                            is SpaceInviteLinkAccessLevel.LinkDisabled,
+                            is SpaceInviteLinkAccessLevel.HeldByOwner -> {
+                                // Held-by-owner: the invite exists, but this member's
+                                // device has no link to show — same as no link here.
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
                                     Members(
@@ -1351,7 +1354,6 @@ class SpaceSettingsViewModel(
         data object ShowLeaveSpaceWarning : Command()
         data object ShowShareLimitReachedError : Command()
         data object NavigateToMembership : Command()
-        data object NavigateToMembershipUpdate : Command()
         data object OpenWallpaperPicker : Command()
         data object ManageRemoteStorage : Command()
         data class OpenPropertiesScreen(val spaceId: SpaceId) : Command()

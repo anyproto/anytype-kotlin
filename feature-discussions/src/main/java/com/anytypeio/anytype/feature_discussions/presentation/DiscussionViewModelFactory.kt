@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_discussions.presentation
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_models.UrlBuilder
@@ -32,7 +33,8 @@ class DiscussionViewModelFactory @Inject constructor(
     private val subscription: StorelessSubscriptionContainer,
     private val uploadFile: UploadFile,
     private val preloadFile: PreloadFile,
-    private val copyFileToCacheDirectory: CopyFileToCacheDirectory
+    private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
+    private val context: Context
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = DiscussionViewModel(
@@ -51,6 +53,7 @@ class DiscussionViewModelFactory @Inject constructor(
         subscription = subscription,
         uploadFile = uploadFile,
         preloadFile = preloadFile,
-        copyFileToCacheDirectory = copyFileToCacheDirectory
+        copyFileToCacheDirectory = copyFileToCacheDirectory,
+        contentResolver = context.contentResolver
     ) as T
 }

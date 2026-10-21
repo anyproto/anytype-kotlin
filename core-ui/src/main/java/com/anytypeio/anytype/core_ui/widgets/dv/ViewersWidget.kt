@@ -10,6 +10,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -46,6 +48,7 @@ import androidx.constraintlayout.compose.Visibility
 import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.ViewCompat
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -79,10 +82,10 @@ fun ViewersWidget(
 
     if (state.showWidget) {
         ModalBottomSheet(
+            sheetMaxWidth = contentWidthDp(),
             modifier = Modifier
                 .windowInsetsPadding(WindowInsets.ime)
                 .padding(start = 8.dp, end = 8.dp, bottom = 30.dp)
-                .fillMaxWidth()
                 .wrapContentHeight(),
             scrimColor = colorResource(id = R.color.modal_screen_outside_background),
             containerColor = colorResource(id = R.color.background_secondary),
@@ -92,7 +95,7 @@ fun ViewersWidget(
             dragHandle = { DragHandle() },
             content = {
                 ViewersWidgetContent(
-                    modifier = Modifier.padding(bottom = 168.dp),
+                    modifier = Modifier,
                     state = state,
                     action = action
                 )
@@ -108,6 +111,26 @@ fun DragHandle() {
         Dragger()
         Spacer(modifier = Modifier.height(6.dp))
     }
+}
+
+/**
+ * Empty room under the list of a sheet. The sheet hugs its content, so a fixed reserve would
+ * win the space in a short window, such as a phone in landscape, and the list would shrink.
+ * This spacer takes only what the list leaves, up to [height], so the list keeps its rows and
+ * the sheet keeps its shape wherever the room is there.
+ *
+ * The weight gives the spacer 0..leftover, and [Modifier.height] clamps [height] into that
+ * range. Do not use heightIn(max) here: a Spacer measures to zero unless its height is fixed,
+ * and fill = true fixes it to the whole leftover, which heightIn cannot reduce.
+ */
+@Composable
+fun ColumnScope.SheetBottomReserve(height: Dp) {
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(height)
+            .weight(1f, fill = false)
+    )
 }
 
 @Composable
@@ -202,8 +225,13 @@ private fun ViewersWidgetContent(
                 }
             }
         }
+
+        SheetBottomReserve(height = BOTTOM_RESERVE)
     }
 }
+
+/** Empty room under the view list, given up to the list when the window is short. */
+private val BOTTOM_RESERVE = 168.dp
 
 @Composable
 private fun Item(

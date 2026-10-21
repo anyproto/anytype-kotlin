@@ -21,6 +21,7 @@ interface StringResourceProvider {
     fun getMultiplayerViewer(): String
     fun getMultiplayerEditor(): String
     fun getMultiplayerOwner(): String
+    fun getMultiplayerAdmin(): String
     fun getMultiplayerNoPermissions(): String
     fun getMultiplayerApproveRequest(): String
     fun getMultiplayerPending(): String
@@ -31,4 +32,6 @@ interface StringResourceProvider {
     fun getAdvancedFilterTitle(): String
     fun getDeletedTypeName(): String
     fun getChannelMembersSubtitle(editors: Int, writersLimit: Int, viewers: Int, readersLimit: Int): String
+    fun getKanbanEmptyColumnTitle(): String
+    fun getKanbanCheckboxGroupTitle(checked: Boolean): String
 }

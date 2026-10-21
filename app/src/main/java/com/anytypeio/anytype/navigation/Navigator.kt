@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.navigation
 
+import android.annotation.SuppressLint
 import androidx.annotation.IdRes
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
@@ -23,7 +24,7 @@ import com.anytypeio.anytype.ui.primitives.CreateTypeFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
-import com.anytypeio.anytype.ui.search.GlobalSearchFragment
+import com.anytypeio.anytype.ui.search.v2.SearchV2Fragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
@@ -206,12 +207,29 @@ class Navigator : AppNavigation {
         }
     }
 
+    @SuppressLint("RestrictedApi") // NavController.currentBackStack is RestrictTo(LIBRARY_GROUP); lint is non-fatal
+    override fun popToBackStackEntry(entryId: String) {
+        val controller = navController ?: return
+        runCatching {
+            val stack = controller.currentBackStack.value
+            if (stack.none { it.id == entryId }) {
+                Timber.w("popToBackStackEntry: entry $entryId no longer in back stack")
+                return
+            }
+            var guard = stack.size + 4
+            while (controller.currentBackStackEntry?.id != entryId && guard-- > 0) {
+                if (!controller.popBackStack()) break
+            }
+        }.onFailure {
+            Timber.e(it, "Error while popping to back stack entry")
+        }
+    }
+
     override fun openGlobalSearch(space: Id) {
+        // Unified search (search v2): in-space entry seeds the space scope token.
         navController?.navigate(
-            resId = R.id.globalSearchScreen,
-            args = GlobalSearchFragment.args(
-                space = space
-            )
+            resId = R.id.searchV2Screen,
+            args = SearchV2Fragment.args(space = space)
         )
     }
 

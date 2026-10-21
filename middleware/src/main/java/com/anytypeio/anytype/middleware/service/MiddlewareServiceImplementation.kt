@@ -126,6 +126,21 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun accountPreloadRemainingSpaces(
+        request: Rpc.Account.PreloadRemainingSpaces.Request
+    ): Rpc.Account.PreloadRemainingSpaces.Response {
+        val encoded = Service.accountPreloadRemainingSpaces(
+            Rpc.Account.PreloadRemainingSpaces.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Account.PreloadRemainingSpaces.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Account.PreloadRemainingSpaces.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun accountStop(request: Rpc.Account.Stop.Request): Rpc.Account.Stop.Response {
         val encoded = Service.accountStop(Rpc.Account.Stop.Request.ADAPTER.encode(request))
         val response = Rpc.Account.Stop.Response.ADAPTER.decode(encoded)
@@ -284,6 +299,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.BlockDataview.View.SetPosition.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.BlockDataview.View.SetPosition.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockDataViewObjectOrderUpdate(request: Rpc.BlockDataview.ObjectOrder.Update.Request): Rpc.BlockDataview.ObjectOrder.Update.Response {
+        val encoded = Service.blockDataviewObjectOrderUpdate(
+            Rpc.BlockDataview.ObjectOrder.Update.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockDataview.ObjectOrder.Update.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockDataview.ObjectOrder.Update.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response
@@ -1146,6 +1174,18 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun objectGroupsSubscribe(request: Rpc.Object.GroupsSubscribe.Request): Rpc.Object.GroupsSubscribe.Response {
+        val encoded =
+            Service.objectGroupsSubscribe(Rpc.Object.GroupsSubscribe.Request.ADAPTER.encode(request))
+        val response = Rpc.Object.GroupsSubscribe.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.GroupsSubscribe.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun objectSearchUnsubscribe(request: Rpc.Object.SearchUnsubscribe.Request): Rpc.Object.SearchUnsubscribe.Response {
         val encoded = Service.objectSearchUnsubscribe(
             Rpc.Object.SearchUnsubscribe.Request.ADAPTER.encode(request)
@@ -1991,6 +2031,12 @@ class MiddlewareServiceImplementation @Inject constructor(
                 Rpc.Space.InviteGenerate.Response.Error.Code.REQUEST_FAILED -> {
                     throw MultiplayerError.Generic.RequestFailed()
                 }
+                Rpc.Space.InviteGenerate.Response.Error.Code.INVITE_ALREADY_SHARED -> {
+                    throw MultiplayerError.Generic.InviteAlreadyShared()
+                }
+                Rpc.Space.InviteGenerate.Response.Error.Code.INVITE_NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.InviteNotShareable()
+                }
                 else -> throw Exception(error.description)
             }
         } else {
@@ -2462,6 +2508,40 @@ class MiddlewareServiceImplementation @Inject constructor(
         val error = response.error
         if (error != null && error.code != Rpc.Membership.VerifyEmailCode.Response.Error.Code.NULL) {
             throw error.toCore()
+        } else {
+            return response
+        }
+    }
+
+    override fun membershipCodeGetInfo(request: Rpc.Membership.CodeGetInfo.Request): Rpc.Membership.CodeGetInfo.Response {
+        val encoded = Service.membershipCodeGetInfo(
+            Rpc.Membership.CodeGetInfo.Request.ADAPTER.encode(request)
+        ) ?: return Rpc.Membership.CodeGetInfo.Response(
+            error = Rpc.Membership.CodeGetInfo.Response.Error(
+                code = Rpc.Membership.CodeGetInfo.Response.Error.Code.NULL
+            )
+        )
+        val response = Rpc.Membership.CodeGetInfo.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.CodeGetInfo.Response.Error.Code.NULL) {
+            throw error.toCore()
+        } else {
+            return response
+        }
+    }
+
+    override fun membershipCodeRedeem(request: Rpc.Membership.CodeRedeem.Request): Rpc.Membership.CodeRedeem.Response {
+        val encoded = Service.membershipCodeRedeem(
+            Rpc.Membership.CodeRedeem.Request.ADAPTER.encode(request)
+        ) ?: return Rpc.Membership.CodeRedeem.Response(
+            error = Rpc.Membership.CodeRedeem.Response.Error(
+                code = Rpc.Membership.CodeRedeem.Response.Error.Code.NULL
+            )
+        )
+        val response = Rpc.Membership.CodeRedeem.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Membership.CodeRedeem.Response.Error.Code.NULL) {
+            throw Exception(error.description)
         } else {
             return response
         }
@@ -2944,6 +3024,9 @@ class MiddlewareServiceImplementation @Inject constructor(
                 Rpc.Space.InviteChange.Response.Error.Code.REQUEST_FAILED -> {
                     throw MultiplayerError.Generic.RequestFailed()
                 }
+                Rpc.Space.InviteChange.Response.Error.Code.INVITE_NOT_SHAREABLE -> {
+                    throw MultiplayerError.Generic.InviteNotShareable()
+                }
                 else -> throw Exception(error.description)
             }
         } else {
@@ -3036,6 +3119,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.PushNotification.ResetIds.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.PushNotification.ResetIds.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectCrossSpaceSearch(request: Rpc.Object.CrossSpaceSearch.Request): Rpc.Object.CrossSpaceSearch.Response {
+        val encoded = Service.objectCrossSpaceSearch(
+            Rpc.Object.CrossSpaceSearch.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.CrossSpaceSearch.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.CrossSpaceSearch.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

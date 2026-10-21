@@ -3,9 +3,11 @@ package com.anytypeio.anytype.domain.search
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscription
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.spaceIdOrNull
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
@@ -27,13 +29,19 @@ class HasInstanceOfObjectTypeSubscriptionManager(
     fun onStart() {
         job?.cancel()
         job = scope.launch {
-            spaceManager.state().collect { state ->
+            spaceManager.state()
+                .distinctUntilChangedBy { state -> state.spaceIdOrNull() }
+                .collect { state ->
                 when (state) {
                     is SpaceManager.State.Space.Active -> {
                         // Active space: start observing type instances
                         container.start(space = SpaceId(state.config.space))
                     }
-                    is SpaceManager.State.Space.Idle,
+                    is SpaceManager.State.Space.Idle -> {
+                        // A space activated without Workspace.Open (quick capture): active
+                        // for every purpose this subscription has, which is the space id.
+                        container.start(space = state.space)
+                    }
                     is SpaceManager.State.NoSpace -> {
                         // No active space: stop observing
                         container.stop()

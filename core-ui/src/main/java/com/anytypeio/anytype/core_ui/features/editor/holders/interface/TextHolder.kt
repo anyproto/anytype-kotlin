@@ -5,6 +5,7 @@ import android.view.View
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.setTextColor
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+import com.anytypeio.anytype.core_utils.ext.isCaretAt
 import com.anytypeio.anytype.core_utils.text.BackspaceKeyDetector
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -36,7 +37,12 @@ interface TextHolder {
             val length = content.text?.length ?: 0
             val validCursor = cursor.coerceIn(0, length)
             if (length > 0 && validCursor <= length) {
-                content.setSelection(validCursor)
+                // Moving the caret to where it already is would notify the IME about a
+                // selection change it did not ask for, which can end an in-progress
+                // composition. Rebinds routinely re-apply an unchanged cursor.
+                if (!content.isCaretAt(validCursor)) {
+                    content.setSelection(validCursor)
+                }
             } else {
                 Timber.w("Invalid cursor position: cursor=$cursor, textLength=$length")
             }

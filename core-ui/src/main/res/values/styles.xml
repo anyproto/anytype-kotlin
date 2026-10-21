@@ -443,13 +443,6 @@
         <item name="android:background">@drawable/ic_tag_selected_selector</item>
     </style>
 
-    <style name="GridCellTagStyle" parent="TextView.ContentStyle.Relations.2">
-        <item name="android:background">@drawable/rect_dv_cell_tag_item</item>
-        <item name="android:singleLine">true</item>
-        <item name="android:maxLines">1</item>
-        <item name="android:ellipsize">end</item>
-    </style>
-
     <style name="ObjectDescriptionTextStyle" parent="TextView.ContentStyle.Relations.1">
         <item name="android:ellipsize">end</item>
         <item name="android:background">@null</item>
@@ -800,7 +793,10 @@
         <item name="cardElevation">0dp</item>
         <item name="rippleColor">@android:color/transparent</item>
         <item name="strokeColor">@color/shape_primary</item>
-        <item name="strokeWidth">0.5dp</item>
+        <!-- 1dp, not 0.5dp: the card has no fill, so this stroke is the only thing separating
+             neighbouring cards, and a sub-pixel line is antialiased down to roughly half alpha
+             — which is why the border read as almost invisible on light backgrounds. -->
+        <item name="strokeWidth">1dp</item>
         <item name="cardBackgroundColor">@android:color/transparent</item>
     </style>
 

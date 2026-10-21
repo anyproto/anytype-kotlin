@@ -2,8 +2,8 @@ package com.anytypeio.anytype.core_ui.tools
 
 import android.text.Editable
 import com.anytypeio.anytype.core_ui.BuildConfig
+import com.anytypeio.anytype.core_ui.tools.MentionHelper.getMentionSuggestPosition
 import com.anytypeio.anytype.core_ui.tools.MentionHelper.isMentionDeleted
-import com.anytypeio.anytype.core_ui.tools.MentionHelper.isMentionSuggestTriggered
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import timber.log.Timber
 
@@ -94,10 +94,15 @@ class MentionTextWatcher(
      * Send all text added after mention start position [mentionCharPosition]
      */
     private fun interceptMentionTriggered(text: CharSequence, start: Int, before: Int, count: Int) {
-        if (isMentionSuggestTriggered(text, start, count)) {
-            mentionCharPosition = start
-            mention = ""
+        val triggered = getMentionSuggestPosition(text, start, count)
+        if (triggered != NO_MENTION_POSITION) {
+            mentionCharPosition = triggered
+            // The trigger only matches when the inserted run ends with the mention char,
+            // so the query starts out as the mention char alone.
+            mention = MENTION_CHAR.toString()
             proceedWithMentionEvent(MentionTextWatcherState.Start(mentionCharPosition))
+            proceedWithMentionEvent(MentionTextWatcherState.Text(mention))
+            return
         }
 
         if (isMentionCharVisible()) {

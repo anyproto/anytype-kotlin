@@ -1,4 +1,5 @@
 package com.anytypeio.anytype
+import com.anytypeio.anytype.middleware.EventGroup
 
 import anytype.model.Block
 import com.anytypeio.anytype.core_models.Event
@@ -54,7 +55,7 @@ class MiddlewareEventChannelTest {
         val event = anytype.Event(contextId = context, messages = listOf(message))
 
         proxy.stub {
-            on { flow() } doReturn flowOf(event)
+            on { flow(EventGroup.EDITOR) } doReturn flowOf(event)
         }
 
         val expected = listOf(
@@ -92,7 +93,7 @@ class MiddlewareEventChannelTest {
             anytype.Event(contextId = MockDataFactory.randomUuid(), messages = listOf(message))
 
         proxy.stub {
-            on { flow() } doReturn flowOf(event)
+            on { flow(EventGroup.EDITOR) } doReturn flowOf(event)
         }
 
         runBlocking {
@@ -123,7 +124,7 @@ class MiddlewareEventChannelTest {
         val event = anytype.Event(contextId = context, messages = listOf(message))
 
         proxy.stub {
-            on { flow() } doReturn flowOf(event)
+            on { flow(EventGroup.EDITOR) } doReturn flowOf(event)
         }
 
         val expected = listOf(
@@ -172,7 +173,7 @@ class MiddlewareEventChannelTest {
         val event = anytype.Event(contextId = context, messages = listOf(message))
 
         proxy.stub {
-            on { flow() } doReturn flowOf(event)
+            on { flow(EventGroup.EDITOR) } doReturn flowOf(event)
         }
 
         val expected = listOf(
@@ -211,7 +212,7 @@ class MiddlewareEventChannelTest {
         val event = anytype.Event(contextId = context, messages = listOf(message))
 
         proxy.stub {
-            on { flow() } doReturn flowOf(event)
+            on { flow(EventGroup.EDITOR) } doReturn flowOf(event)
         }
 
         val expected = listOf(
@@ -245,7 +246,7 @@ class MiddlewareEventChannelTest {
         val event = anytype.Event(contextId = context, messages = listOf(message))
 
         proxy.stub {
-            on { flow() } doReturn flowOf(event)
+            on { flow(EventGroup.EDITOR) } doReturn flowOf(event)
         }
 
         val expected = listOf(
@@ -291,7 +292,7 @@ class MiddlewareEventChannelTest {
         val event = anytype.Event(contextId = context, messages = listOf(message))
 
         proxy.stub {
-            on { flow() } doReturn flowOf(event)
+            on { flow(EventGroup.EDITOR) } doReturn flowOf(event)
         }
 
         val expected = listOf(
@@ -333,7 +334,7 @@ class MiddlewareEventChannelTest {
         val event = anytype.Event(contextId = context, messages = listOf(message))
 
         proxy.stub {
-            on { flow() } doReturn flowOf(event)
+            on { flow(EventGroup.EDITOR) } doReturn flowOf(event)
         }
 
         val expected = listOf(

@@ -283,6 +283,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
                 ObjectType.Layout.COLLECTION,
                 ObjectType.Layout.DATE,
                 ObjectType.Layout.OBJECT_TYPE,
+                ObjectType.Layout.CHAT_DERIVED,
             )
         val unsupportedLayout = unsupportedLayouts.random()
         val objectUnsupportedLayout = ObjectWrapper.Basic(

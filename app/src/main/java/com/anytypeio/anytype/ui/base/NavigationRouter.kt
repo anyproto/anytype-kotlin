@@ -55,6 +55,9 @@ class NavigationRouter(
                 is AppNavigation.Command.ExitToDesktop -> navigation.exitToDesktop(command.space)
                 is AppNavigation.Command.ExitToVault -> navigation.exitToVault()
                 is AppNavigation.Command.ExitToSpaceHome -> navigation.exitToSpaceHome()
+                is AppNavigation.Command.PopToBackStackEntry -> navigation.popToBackStackEntry(
+                    entryId = command.entryId
+                )
                 is AppNavigation.Command.OpenGlobalSearch -> navigation.openGlobalSearch(
                     space = command.space
                 )

@@ -108,6 +108,27 @@ abstract class ObjectMenuViewModelBase(
     )
     val options: Flow<ObjectMenuOptionsProvider.Options> = _options
 
+    /**
+     * Quick capture shows a trimmed menu for the unpublished draft: nothing that
+     * publishes, links to or exposes it (spec: docs/quick-capture-android-spec.md §7).
+     * Keeps Properties / Icon / Cover / description toggle plus Undo-Redo.
+     */
+    protected var isQuickCapture: Boolean = false
+        private set
+
+    // Deliberately an allowlist (positive construction, not copy-with-overrides): a field
+    // added to Options later must NOT default to visible for an unpublished draft.
+    private fun ObjectMenuOptionsProvider.Options.restrictToQuickCapture() =
+        ObjectMenuOptionsProvider.Options(
+            hasIcon = hasIcon,
+            hasCover = hasCover,
+            hasRelations = hasRelations,
+            hasDescriptionShow = hasDescriptionShow,
+            hasDiagnosticsVisibility = false,
+            hasHistory = false,
+            hasObjectLayoutConflict = false
+        )
+
     abstract fun onIconClicked(ctx: Id, space: Id)
     abstract fun onCoverClicked(ctx: Id, space: Id)
     abstract fun onDescriptionClicked(ctx: Id, space: Id)
@@ -135,9 +156,11 @@ abstract class ObjectMenuViewModelBase(
         isArchived: Boolean,
         isLocked: Boolean,
         isTemplate: Boolean,
-        isReadOnly: Boolean
+        isReadOnly: Boolean,
+        isQuickCapture: Boolean = false
     ) {
         Timber.d("ObjectMenuViewModelBase, onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isLocked:[$isLocked], isReadOnly: [$isReadOnly]")
+        this.isQuickCapture = isQuickCapture
         viewModelScope.launch {
             combine(
                 pinnedWidgetBlockId,
@@ -146,7 +169,7 @@ abstract class ObjectMenuViewModelBase(
             ) { widgetId, isInMyFavorites, canTogglePin ->
                 Triple(widgetId, isInMyFavorites, canTogglePin)
             }.collect { (widgetId, isInMyFavorites, canTogglePin) ->
-                actions.value = buildActions(
+                val built = buildActions(
                     ctx = ctx,
                     isArchived = isArchived,
                     isFavorite = isFavorite,
@@ -157,11 +180,19 @@ abstract class ObjectMenuViewModelBase(
                     isInMyFavorites = isInMyFavorites,
                     canToggleChannelPin = canTogglePin
                 )
+                actions.value = if (isQuickCapture) {
+                    built.filter { action -> action == ObjectAction.UNDO_REDO }
+                } else {
+                    built
+                }
             }
         }
         jobs += viewModelScope.launch {
             menuOptionsProvider
                 .provide(ctx = ctx, isLocked = isLocked, isReadOnly = isReadOnly)
+                .map { options ->
+                    if (isQuickCapture) options.restrictToQuickCapture() else options
+                }
                 .distinctUntilChanged()
                 .collect(_options)
         }

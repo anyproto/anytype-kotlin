@@ -11,12 +11,19 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import javax.inject.Inject
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicReference
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flatMapLatest
@@ -25,21 +32,43 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
-class ChatContainer @Inject constructor(
+class ChatContainer(
     private val repo: BlockRepository,
     private val channel: ChatEventChannel,
     private val logger: Logger,
-    private val subscription: StorelessSubscriptionContainer
+    private val subscription: StorelessSubscriptionContainer,
+    private val readScope: CoroutineScope
 ) {
 
     private val lastMessages = LinkedHashMap<Id, ChatMessageMeta>()
 
     private val payloads = MutableSharedFlow<List<Event.Command.Chats>>()
     private val commands = MutableSharedFlow<Transformation.Commands>(replay = 0)
+    private val readSession = AtomicReference<ChatReadSession?>()
 
     private val attachments = MutableStateFlow<Set<Id>>(emptySet())
     private val replies = MutableStateFlow<Set<Id>>(emptySet())
+
+    /**
+     * Reply-target messages resolved for the currently tracked reply ids.
+     * Entries are kept in sync by [reduce]: an Update/Delete event for a cached
+     * reply target updates/removes the entry and bumps [replyCacheInvalidations],
+     * so [fetchReplies] re-emits the refreshed map even though the id set is unchanged.
+     */
+    private val replyMessageCache = ConcurrentHashMap<Id, Chat.Message>()
+    private val replyCacheInvalidations = MutableStateFlow(0L)
+
+    /**
+     * Reply-target ids the middleware is known not to return (e.g. quoted messages
+     * deleted before they were cached). Without this negative cache, such ids would
+     * stay "missing" forever and [fetchReplies] would re-issue a GetMessagesByIds
+     * round-trip for them on every emission. Pruned alongside [replyMessageCache]
+     * to the currently tracked ids.
+     */
+    private val knownMissingReplyTargets = ConcurrentHashMap.newKeySet<Id>()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun subscribeToAttachments(chat: Id, space: Space) : Flow<Map<Id, ObjectWrapper.Basic>> {
@@ -86,21 +115,38 @@ class ChatContainer @Inject constructor(
     }
 
     fun fetchReplies(chat: Id) : Flow<Map<Id, Chat.Message>> {
-        return replies
+        // Incremental cache: only newly tracked reply ids are fetched from the middleware
+        // instead of re-fetching the whole set whenever it changes. Edits and deletions
+        // of already-cached reply targets are applied directly by [reduce], which then
+        // bumps [replyCacheInvalidations] to trigger a re-emission of the map.
+        return combine(replies, replyCacheInvalidations) { ids, _ -> ids }
             .map { ids ->
-                if (ids.isNotEmpty()) {
-                    repo.getChatMessagesByIds(
+                val missing = ids.filter { id ->
+                    !replyMessageCache.containsKey(id) && id !in knownMissingReplyTargets
+                }
+                if (missing.isNotEmpty()) {
+                    val fetched = repo.getChatMessagesByIds(
                         command = Command.ChatCommand.GetMessagesByIds(
                             chat = chat,
-                            messages = ids.toList()
+                            messages = missing
                         )
                     )
-                } else {
-                    emptyList()
+                    fetched.forEach { msg ->
+                        replyMessageCache[msg.id] = msg
+                    }
+                    // Ids the middleware did not return can never resolve: tombstone
+                    // them so they are not re-requested on every subsequent emission.
+                    val returned = fetched.mapTo(mutableSetOf()) { it.id }
+                    missing.forEach { id ->
+                        if (id !in returned) knownMissingReplyTargets.add(id)
+                    }
                 }
+                // Drop replies which are no longer tracked by the current window.
+                replyMessageCache.keys.retainAll(ids)
+                knownMissingReplyTargets.retainAll(ids)
+                replyMessageCache.toMap()
             }
             .distinctUntilChanged()
-            .map { messages -> messages.associateBy { it.id } }
             .catch { e ->
                 emit(emptyMap()).also {
                     logger.logException(e, "DROID-2966 Error while fetching chat replies")
@@ -108,8 +154,8 @@ class ChatContainer @Inject constructor(
             }
     }
 
-    fun watchWhileTrackingAttachments(chat: Id): Flow<ChatStreamState> {
-        return watch(chat)
+    fun watchWhileTrackingAttachments(chat: Id, startAtMessage: Id? = null): Flow<ChatStreamState> {
+        return watch(chat, startAtMessage)
             .onEach { state ->
                 val messages = state.messages
                 val repliesIds = mutableSetOf<Id>()
@@ -126,6 +172,7 @@ class ChatContainer @Inject constructor(
     }
 
     suspend fun stop(chat: Id) {
+        val pendingReads = readSession.get()?.takeIf { it.chat == chat }?.close()
         runCatching {
             repo.unsubscribeChat(chat)
             repo.cancelObjectSearchSubscription(
@@ -139,141 +186,250 @@ class ChatContainer @Inject constructor(
         }.onSuccess {
             logger.logInfo("DROID-2966 Successfully unsubscribed from chat")
         }
+        // Unsubscribe before suspending: the subscription id is shared with a reopened
+        // screen. Only read receipts may outlive this stop call, never its unsubscribe.
+        withTimeoutOrNull(READ_EXIT_WAIT_MS) { pendingReads?.join() }
     }
 
-    fun watch(chat: Id): Flow<ChatStreamState> = flow {
-        val response = repo.subscribeLastChatMessages(
-            command = Command.ChatCommand.SubscribeLastMessages(
-                chat = chat,
-                limit = DEFAULT_CHAT_PAGING_SIZE
-            )
-        ).also { result ->
-            cacheLastMessages(result.messages)
-        }
-
-        val initialState = response.chatState ?: Chat.State()
-
-        var intent: Intent = Intent.None
-
-        var initialUnreadSectionMessageId: Id? = null
-
-        val initial = buildList {
-            if (initialState.hasUnReadMessages && !initialState.oldestMessageOrderId.isNullOrEmpty()) {
-                val lastUnreadMessage = response.messages.find { it.order == initialState.oldestMessageOrderId }
-                if (lastUnreadMessage != null) {
-                    // Last unread message is within the subscription results (the chat tail).
-                    intent = Intent.ScrollToMessage(
-                        id = lastUnreadMessage.id,
-                        smooth = false,
-                        startOfUnreadMessageSection = true
-                    )
-                    initialUnreadSectionMessageId = lastUnreadMessage.id
-                    addAll(response.messages)
-                } else {
-                    // Fetching the unread-messages window — un-read message section is not within the chat tail.
-                    val aroundUnread = loadAroundMessageOrder(
-                        chat = chat,
-                        order = initialState.oldestMessageOrderId.orEmpty()
-                    ).also { messages ->
-                        val target = messages.find { it.order == initialState.oldestMessageOrderId }
-                        if (target != null) {
-                            intent = Intent.ScrollToMessage(
-                                id = target.id,
-                                smooth = false,
-                                startOfUnreadMessageSection = true
-                            )
-                            initialUnreadSectionMessageId = target.id
-                        }
-                    }
-                    addAll(aroundUnread)
-                }
-            } else {
-                // Starting with the latest messages.
-                addAll(response.messages)
+    fun watch(chat: Id, startAtMessage: Id? = null): Flow<ChatStreamState> = flow {
+        coroutineScope {
+            val reads = ChatReadSession(chat, readScope, repo, logger)
+            readSession.set(reads)
+            try {
+                emitAll(watchMessages(chat, startAtMessage, reads))
+            } finally {
+                reads.close()
+                readSession.compareAndSet(reads, null)
             }
         }
+    }.catch { e ->
+        emit(ChatStreamState(emptyList()))
+        logger.logException(e, "DROID-2966 Exception occurred in the chat container: $chat")
+    }
 
-        val inputs: Flow<Transformation> = merge(
-            channel.observe(chat).map { Transformation.Events.Payload(it) },
-            payloads.map { Transformation.Events.Payload(it) },
-            commands
-        )
+    private fun watchMessages(chat: Id, startAtMessage: Id?, reads: ChatReadSession): Flow<ChatStreamState> = flow {
+        coroutineScope {
+            val scope = this
+            // Attach the event collector BEFORE the subscribe RPC: events arriving while the
+            // initial window is being built are buffered and replayed into the fold below
+            // instead of being dropped — events are only delivered to already-attached
+            // collectors. Replayed events which are already reflected in the initial window
+            // are deduplicated by the fold itself (see [reduce]).
+            //
+            // The buffer is deliberately UNLIMITED: a bounded buffer would have to drop
+            // events, which is never acceptable for sync-critical chat state. In practice
+            // the buffer only grows while the fold is busy (e.g. a paging RPC is in
+            // flight), so its size is bounded by the event rate during that short window.
+            val bufferedEvents = Channel<List<Event.Command.Chats>>(capacity = Channel.UNLIMITED)
+            scope.launch(start = CoroutineStart.UNDISPATCHED) {
+                channel.observe(chat).collect { events ->
+                    bufferedEvents.send(events)
+                }
+            }
 
-        emitAll(
-            inputs.scan(
-                initial = ChatStreamState(
-                    messages = initial,
-                    state = initialState,
-                    intent = intent,
-                    initialUnreadSectionMessageId = initialUnreadSectionMessageId
+            val response = repo.subscribeLastChatMessages(
+                command = Command.ChatCommand.SubscribeLastMessages(
+                    chat = chat,
+                    limit = DEFAULT_CHAT_PAGING_SIZE
                 )
-            ) { state, transform ->
-                when (transform) {
-                    Transformation.Commands.LoadPrevious -> {
-                        ChatStreamState(
-                            messages = loadThePreviousPage(state.messages, chat),
-                            intent = Intent.None,
-                            state = state.state
+            ).also { result ->
+                cacheLastMessages(result.messages)
+            }
+
+            val initialState = response.chatState ?: Chat.State()
+            var fetchedState = initialState
+            val onFetchedState: (Chat.State) -> Unit = { newState ->
+                if (ChatStateUtils.shouldApplyNewChatState(newState.order, fetchedState.order)) {
+                    fetchedState = newState
+                }
+            }
+            fun ChatStreamState.withFetchedState(): ChatStreamState =
+                if (ChatStateUtils.shouldApplyNewChatState(fetchedState.order, state.order)) {
+                    copy(state = fetchedState)
+                } else this
+
+            var intent: Intent = Intent.None
+
+            var initialUnreadSectionMessageId: Id? = null
+
+            // The window front for which history is known to be exhausted — avoids repeated
+            // empty round-trips when the user keeps bouncing off the top of the chat.
+            var noMoreMessagesBeforeOrder: Id? = null
+
+            // A requested start position (e.g. opening a search result at its message)
+            // wins over the unread-section positioning; on failure (message deleted
+            // between search and open) fall through to the default flow.
+            val aroundStart = if (startAtMessage != null) {
+                runCatching { loadAroundMessage(chat = chat, msg = startAtMessage, onState = onFetchedState) }
+                    .onFailure { logger.logWarning("DROID-2966 Could not load window around start message:\n${it.message}") }
+                    .getOrNull()
+            } else {
+                null
+            }
+
+            val initial = buildList {
+                if (aroundStart != null) {
+                    intent = Intent.ScrollToMessage(
+                        id = startAtMessage.orEmpty(),
+                        smooth = false,
+                        highlight = true
+                    )
+                    addAll(aroundStart)
+                } else if (initialState.hasUnReadMessages && !initialState.oldestMessageOrderId.isNullOrEmpty()) {
+                    val lastUnreadMessage = response.messages.find { it.order == initialState.oldestMessageOrderId }
+                    if (lastUnreadMessage != null) {
+                        // Last unread message is within the subscription results (the chat tail).
+                        intent = Intent.ScrollToMessage(
+                            id = lastUnreadMessage.id,
+                            smooth = false,
+                            startOfUnreadMessageSection = true
                         )
-                    }
-                    Transformation.Commands.LoadNext -> {
-                        ChatStreamState(
-                            messages = loadTheNextPage(state.messages, chat),
-                            intent = Intent.None,
-                            state = state.state,
-                            initialUnreadSectionMessageId = null
-                        )
-                    }
-                    is Transformation.Commands.LoadAround -> {
-                        val messages = try {
-                            loadAroundMessage(
-                                chat = chat,
-                                msg = transform.message
-                            )
-                        } catch (e: Exception) {
-                            logger.logException(e, "DROID-2966 Error while loading reply context")
-                            state.messages
+                        initialUnreadSectionMessageId = lastUnreadMessage.id
+                        addAll(response.messages)
+                    } else {
+                        // Fetching the unread-messages window — un-read message section is not within the chat tail.
+                        val aroundUnread = loadAroundMessageOrder(
+                            chat = chat,
+                            order = initialState.oldestMessageOrderId.orEmpty(),
+                            onState = onFetchedState
+                        ).also { messages ->
+                            val target = messages.find { it.order == initialState.oldestMessageOrderId }
+                            if (target != null) {
+                                intent = Intent.ScrollToMessage(
+                                    id = target.id,
+                                    smooth = false,
+                                    startOfUnreadMessageSection = true
+                                )
+                                initialUnreadSectionMessageId = target.id
+                            }
                         }
-                        ChatStreamState(
-                            messages = messages,
-                            intent = Intent.ScrollToMessage(
-                                id = transform.message,
-                                smooth = true,
-                                highlight = true
-                            ),
-                            state = state.state
-                        )
+                        addAll(aroundUnread)
                     }
-                    is Transformation.Commands.LoadEnd -> {
-                        logger.logInfo("DROID-2966 intent while load end: $intent")
-                        if (state.messages.isNotEmpty()) {
-                            if (state.state.hasUnReadMessages) {
-                                // Check if above the unread messages
-                                val oldestReadOrderId = state.state.oldestMessageOrderId
-                                val bottomMessage = state.messages.find {
-                                    it.id == transform.lastVisibleMessage
+                } else {
+                    // Starting with the latest messages.
+                    addAll(response.messages)
+                }
+            }
+
+            val inputs: Flow<Transformation> = merge(
+                bufferedEvents.consumeAsFlow().map { Transformation.Events.Payload(it) },
+                payloads.map { Transformation.Events.Payload(it) },
+                commands
+            )
+
+            emitAll(
+                inputs.scan(
+                    initial = ChatStreamState(
+                        messages = initial,
+                        state = initialState,
+                        intent = intent,
+                        initialUnreadSectionMessageId = initialUnreadSectionMessageId
+                    ).withFetchedState()
+                ) { state, transform ->
+                    val updated = when (transform) {
+                        Transformation.Commands.LoadPrevious -> {
+                            val first = state.messages.firstOrNull()
+                            if (first != null && first.order == noMoreMessagesBeforeOrder) {
+                                // Beginning of history was already reached for this window front —
+                                // skip the round-trip.
+                                state.copy(intent = Intent.None)
+                            } else {
+                                val previousPage = loadThePreviousPage(first, chat, onFetchedState)
+                                if (previousPage != null && previousPage.isEmpty() && first != null) {
+                                    noMoreMessagesBeforeOrder = first.order
                                 }
-                                if (bottomMessage != null && oldestReadOrderId != null) {
-                                    if (bottomMessage.order < oldestReadOrderId) {
-                                        // Scroll to the first unread message
-                                        val messages = try {
-                                            loadAroundMessageOrder(
-                                                chat = chat,
-                                                order = oldestReadOrderId
+                                // See loadTheNextPage: overlapping pages must not produce
+                                // duplicate ids in the window.
+                                val known = state.messages.mapTo(HashSet()) { it.id }
+                                ChatStreamState(
+                                    messages = (
+                                            previousPage.orEmpty().filter { known.add(it.id) } + state.messages
+                                            ).trimKeepingOldest(),
+                                    intent = Intent.None,
+                                    state = state.state,
+                                    initialUnreadSectionMessageId = state.initialUnreadSectionMessageId
+                                )
+                            }
+                        }
+                        Transformation.Commands.LoadNext -> {
+                            ChatStreamState(
+                                messages = loadTheNextPage(state.messages, chat, onFetchedState).trimKeepingNewest(),
+                                intent = Intent.None,
+                                state = state.state,
+                                // Preserved, mirroring LoadPrevious: the first forward page is
+                                // precisely where the unread messages are. The divider clears
+                                // itself once its anchor leaves the window, since the view model
+                                // only renders it for a message the window still holds.
+                                initialUnreadSectionMessageId = state.initialUnreadSectionMessageId
+                            )
+                        }
+                        is Transformation.Commands.LoadAround -> {
+                            val messages = try {
+                                loadAroundMessage(
+                                    chat = chat,
+                                    msg = transform.message,
+                                    onState = onFetchedState
+                                )
+                            } catch (e: Exception) {
+                                logger.logException(e, "DROID-2966 Error while loading reply context")
+                                state.messages
+                            }
+                            ChatStreamState(
+                                messages = messages,
+                                intent = Intent.ScrollToMessage(
+                                    id = transform.message,
+                                    smooth = true,
+                                    highlight = true
+                                ),
+                                state = state.state
+                            )
+                        }
+                        is Transformation.Commands.LoadEnd -> {
+                            logger.logInfo("DROID-2966 intent while load end: $intent")
+                            if (state.messages.isNotEmpty()) {
+                                if (state.state.hasUnReadMessages) {
+                                    // Check if above the unread messages
+                                    val oldestReadOrderId = state.state.oldestMessageOrderId
+                                    val bottomMessage = state.messages.find {
+                                        it.id == transform.lastVisibleMessage
+                                    }
+                                    if (bottomMessage != null && oldestReadOrderId != null) {
+                                        if (bottomMessage.order < oldestReadOrderId) {
+                                            // Scroll to the first unread message
+                                            val messages = try {
+                                                loadAroundMessageOrder(
+                                                    chat = chat,
+                                                    order = oldestReadOrderId,
+                                                    onState = onFetchedState
+                                                )
+                                            } catch (e: Exception) {
+                                                logger.logException(e, "DROID-2966 Error while loading reply context")
+                                                state.messages
+                                            }
+                                            ChatStreamState(
+                                                messages = messages,
+                                                intent = Intent.ScrollToBottom,
+                                                state = state.state,
+                                                initialUnreadSectionMessageId = initialUnreadSectionMessageId
                                             )
-                                        } catch (e: Exception) {
-                                            logger.logException(e, "DROID-2966 Error while loading reply context")
-                                            state.messages
+                                        } else {
+                                            val messages = try {
+                                                loadToEnd(chat, onFetchedState)
+                                            } catch (e: Exception) {
+                                                state.messages.also {
+                                                    logger.logException(e, "DROID-2966 Error while scrolling to bottom")
+                                                }
+                                            }
+                                            ChatStreamState(
+                                                messages = messages,
+                                                intent = Intent.ScrollToBottom,
+                                                state = state.state,
+                                                initialUnreadSectionMessageId = initialUnreadSectionMessageId
+                                            )
                                         }
-                                        ChatStreamState(
-                                            messages = messages,
-                                            intent = Intent.ScrollToBottom,
-                                            state = state.state,
-                                            initialUnreadSectionMessageId = initialUnreadSectionMessageId
-                                        )
                                     } else {
                                         val messages = try {
-                                            loadToEnd(chat)
+                                            loadToEnd(chat, onFetchedState)
                                         } catch (e: Exception) {
                                             state.messages.also {
                                                 logger.logException(e, "DROID-2966 Error while scrolling to bottom")
@@ -283,210 +439,125 @@ class ChatContainer @Inject constructor(
                                             messages = messages,
                                             intent = Intent.ScrollToBottom,
                                             state = state.state,
-                                            initialUnreadSectionMessageId = initialUnreadSectionMessageId
+                                            initialUnreadSectionMessageId = null
                                         )
                                     }
                                 } else {
-                                    val messages = try {
-                                        loadToEnd(chat)
-                                    } catch (e: Exception) {
-                                        state.messages.also {
-                                            logger.logException(e, "DROID-2966 Error while scrolling to bottom")
+                                    // TODO optimise by checking last message and last message in state
+                                    if (lastMessages.contains(transform.lastVisibleMessage)) {
+                                        // No need to paginate, just scroll to bottom.
+                                        state.copy(
+                                            intent = Intent.ScrollToBottom
+                                        )
+                                    } else {
+                                        val messages = try {
+                                            loadToEnd(chat, onFetchedState).also {
+                                                logger.logInfo("DROID-2966 Loaded chat tail because last message did not contained last visible message")
+                                            }
+                                        } catch (e: Exception) {
+                                            state.messages.also {
+                                                logger.logException(e, "DROID-2966 Error while scrolling to bottom")
+                                            }
                                         }
+                                        ChatStreamState(
+                                            messages = messages,
+                                            intent = Intent.ScrollToBottom,
+                                            state = state.state,
+                                            initialUnreadSectionMessageId = null
+                                        )
                                     }
-                                    ChatStreamState(
-                                        messages = messages,
-                                        intent = Intent.ScrollToBottom,
-                                        state = state.state,
-                                        initialUnreadSectionMessageId = null
-                                    )
                                 }
                             } else {
-                                // TODO optimise by checking last message and last message in state
-                                if (lastMessages.contains(transform.lastVisibleMessage)) {
-                                    // No need to paginate, just scroll to bottom.
-                                    state.copy(
-                                        intent = Intent.ScrollToBottom
-                                    )
-                                } else {
-                                    val messages = try {
-                                        loadToEnd(chat).also {
-                                            logger.logInfo("DROID-2966 Loaded chat tail because last message did not contained last visible message")
-                                        }
-                                    } catch (e: Exception) {
-                                        state.messages.also {
-                                            logger.logException(e, "DROID-2966 Error while scrolling to bottom")
-                                        }
-                                    }
-                                    ChatStreamState(
-                                        messages = messages,
-                                        intent = Intent.ScrollToBottom,
-                                        state = state.state,
-                                        initialUnreadSectionMessageId = null
-                                    )
-                                }
+                                state
                             }
-                        } else {
-                            state
                         }
-                    }
-                    is Transformation.Commands.GoToMention -> {
-                        if (state.state.hasUnReadMentions) {
-                            val oldestMentionOrderId = state.state.oldestMentionMessageOrderId
-                            val messages = try {
-                                loadAroundMessageOrder(
-                                    chat = chat,
-                                    order = oldestMentionOrderId.orEmpty()
-                                )
-                            } catch (e: Exception) {
-                                state.messages.also {
-                                    logger.logException(e, "DROID-2966 Error while loading mention context")
-                                }
-                            }
-                            runCatching {
-                                repo.readChatMessages(
-                                    command = Command.ChatCommand.ReadMessages(
+                        is Transformation.Commands.GoToMention -> {
+                            if (state.state.hasUnReadMentions) {
+                                val oldestMentionOrderId = state.state.oldestMentionMessageOrderId
+                                val messages = try {
+                                    loadAroundMessageOrder(
                                         chat = chat,
-                                        beforeOrderId = oldestMentionOrderId,
-                                        lastStateId = state.state.lastStateId,
-                                        isMention = true
+                                        order = oldestMentionOrderId.orEmpty(),
+                                        onState = onFetchedState
                                     )
+                                } catch (e: Exception) {
+                                    state.messages.also {
+                                        logger.logException(e, "DROID-2966 Error while loading mention context")
+                                    }
+                                }
+                                reads.readMention(oldestMentionOrderId.orEmpty(), state.withFetchedState().state)
+                                val target = messages.find { it.order == oldestMentionOrderId }
+                                ChatStreamState(
+                                    messages = messages,
+                                    intent = if (target != null)
+                                        Intent.ScrollToMessage(target.id, highlight = true)
+                                    else
+                                        Intent.None,
+                                    state = state.state
                                 )
-                            }.onFailure {
-                                logger.logWarning("DROID-2966 Error while reading mentions: ${it.message}")
-                            }.onSuccess {
-                                logger.logInfo("DROID-2966 Read mentions with success")
+                            } else {
+                                state
                             }
-                            val target = messages.find { it.order == oldestMentionOrderId }
-                            ChatStreamState(
-                                messages = messages,
-                                intent = if (target != null)
-                                    Intent.ScrollToMessage(target.id, highlight = true)
-                                else
-                                    Intent.None,
-                                state = state.state
+                        }
+                        is Transformation.Commands.ClearIntent -> {
+                            state.copy(
+                                intent = Intent.None
                             )
-                        } else {
-                            state
+                        }
+                        is Transformation.Events.Payload -> {
+                            var strandedTailMessage = false
+                            val reduced = state.reduce(transform.events) {
+                                strandedTailMessage = true
+                            }
+                            if (strandedTailMessage &&
+                                isParkedAtWindowTail(reduced.messages, reads.newestVisibleMessageId)
+                            ) {
+                                // DROID-4556: the user is parked at the newest edge of a window
+                                // detached from the chat tail. Nothing is below them to scroll
+                                // into and the window size never changes, so the UI's
+                                // bottom-reach detector never re-arms and the stranded message
+                                // can never enter the window through user-driven LoadNext
+                                // paging — the chat looks frozen until the user scrolls up and
+                                // back down.
+                                //
+                                // Extend the window forward here, through the same contiguous
+                                // paging path LoadNext uses, so no range is skipped.
+                                //
+                                // Exactly ONE page: a successful extension moves the window
+                                // tail past [newestVisibleMessageId], so a burst of stranded
+                                // messages cannot cascade into a round-trip per event, and the
+                                // size change re-arms the UI detector — handing paging back to
+                                // the user. Looping until attached would instead block the fold
+                                // on N round-trips and let trimKeepingNewest evict the history
+                                // under the user's scroll anchor.
+                                val extended = loadTheNextPage(reduced.messages, chat, onFetchedState)
+                                if (extended.size != reduced.messages.size) {
+                                    reduced.copy(messages = extended.trimKeepingNewest())
+                                } else {
+                                    // Empty page or a failed round-trip: the window tail has not
+                                    // moved, so the next incoming message retries.
+                                    reduced
+                                }
+                            } else {
+                                reduced
+                            }
                         }
                     }
-                    is Transformation.Commands.ClearIntent -> {
-                        state.copy(
-                            intent = Intent.None
-                        )
-                    }
-                    is Transformation.Commands.UpdateVisibleRange -> {
-                        val counterState = state.state
-                        val bottomVisibleMessage = state.messages.find { it.id == transform.from }
-                        if (bottomVisibleMessage != null) {
-                            // Reading messages older than bottomVisibleMessage
-                            readMessagesWithinVisibleRange(counterState, bottomVisibleMessage, chat)
-                            // Reading mentions older than bottomVisibleMessage
-                            readMentionsWithinVisibleRange(counterState, bottomVisibleMessage, chat)
-                        }
-                        state
-                    }
-                    is Transformation.Events.Payload -> {
-                        state.reduce(transform.events)
-                    }
-                }
-            }.onEach {
-                logger.logInfo("DROID-2966 New emission with intent: ${it.intent}")
-            }.distinctUntilChanged()
-        )
-    }.catch { e ->
-        emit(
-            value = ChatStreamState(emptyList())
-        ).also {
-            logger.logException(e, "DROID-2966 Exception occurred in the chat container: $chat")
-        }
-    }
-
-    /**
-     * Marks unread mention messages as read if they fall within the currently visible message range.
-     *
-     * This function checks whether there are any unread mention messages in the current chat state,
-     * and if the bottom-most visible message has an order ID greater than or equal to the order ID
-     * of the oldest unread mention. If so, it sends a command to mark those mentions as read.
-     *
-     * @param countersState The current state of the chat, including unread mention metadata.
-     * @param bottomVisibleMessage The lowest visible message in the current viewport.
-     * @param chat The ID of the chat where the messages are being read.
-     */
-    private suspend fun readMentionsWithinVisibleRange(
-        countersState: Chat.State,
-        bottomVisibleMessage: Chat.Message,
-        chat: Id
-    ) {
-        val oldestMentionOrderId = countersState.oldestMentionMessageOrderId
-        val bottomOrder = bottomVisibleMessage.order
-
-        if (
-            countersState.hasUnReadMentions &&
-            !oldestMentionOrderId.isNullOrEmpty() &&
-            bottomOrder >= oldestMentionOrderId
-        ) {
-            runCatching {
-                repo.readChatMessages(
-                    command = Command.ChatCommand.ReadMessages(
-                        chat = chat,
-                        beforeOrderId = bottomOrder,
-                        lastStateId = countersState.lastStateId.orEmpty(),
-                        isMention = true
-                    )
-                )
-            }.onFailure {
-                logger.logWarning("DROID-2966 Error while reading mentions: ${it.message}")
-            }.onSuccess {
-                logger.logInfo("DROID-2966 Read mentions with success")
-            }
-        }
-    }
-
-    /**
-     * Marks unread messages as read if they fall within the currently visible message range.
-     *
-     * This function checks whether there are any unread messages in the current chat state,
-     * and if the bottom-most visible message has an order ID greater than or equal to the order ID
-     * of the oldest unread message. If so, it sends a command to mark those messages as read.
-     *
-     * @param countersState The current state of the chat, including unread message metadata.
-     * @param bottomVisibleMessage The lowest visible message in the current viewport.
-     * @param chat The ID of the chat where the messages are being read.
-     */
-    private suspend fun readMessagesWithinVisibleRange(
-        countersState: Chat.State,
-        bottomVisibleMessage: Chat.Message,
-        chat: Id
-    ) {
-        val oldestMessageOrderId = countersState.oldestMessageOrderId
-        val bottomOrder = bottomVisibleMessage.order
-
-        if (
-            countersState.hasUnReadMessages &&
-            !oldestMessageOrderId.isNullOrEmpty() &&
-            bottomOrder >= oldestMessageOrderId
-        ) {
-            runCatching {
-                repo.readChatMessages(
-                    command = Command.ChatCommand.ReadMessages(
-                        chat = chat,
-                        beforeOrderId = bottomOrder,
-                        lastStateId = countersState.lastStateId.orEmpty()
-                    )
-                )
-            }.onFailure {
-                logger.logWarning("DROID-2966 Error while reading messages: ${it.message}")
-            }.onSuccess {
-                logger.logInfo("DROID-2966 Read messages with success")
-            }
+                    updated.withFetchedState()
+                }.map { state ->
+                    state.copy(readSnapshot = reads.snapshot(state))
+                }.onEach {
+                    logger.logInfo("DROID-2966 New emission with intent: ${it.intent}")
+                }.distinctUntilChanged()
+            )
         }
     }
 
     @Throws
     private suspend fun loadAroundMessage(
         chat: Id,
-        msg: Id
+        msg: Id,
+        onState: (Chat.State) -> Unit
     ): List<Chat.Message> {
 
         val replyMessage = repo.getChatMessagesByIds(
@@ -503,7 +574,7 @@ class ChatContainer @Inject constructor(
                     beforeOrderId = replyMessage.order,
                     limit = DEFAULT_CHAT_PAGING_SIZE / 2
                 )
-            ).messages
+            ).also { it.state?.let(onState) }.messages
 
             val loadedMessagesAfter = repo.getChatMessages(
                 Command.ChatCommand.GetMessages(
@@ -511,7 +582,7 @@ class ChatContainer @Inject constructor(
                     afterOrderId = replyMessage.order,
                     limit = DEFAULT_CHAT_PAGING_SIZE / 2
                 )
-            ).messages
+            ).also { it.state?.let(onState) }.messages
 
             return buildList {
                 addAll(loadedMessagesBefore)
@@ -526,7 +597,8 @@ class ChatContainer @Inject constructor(
     @Throws
     private suspend fun loadAroundMessageOrder(
         chat: Id,
-        order: Id
+        order: Id,
+        onState: (Chat.State) -> Unit
     ): List<Chat.Message> {
         val loadedMessagesBefore = repo.getChatMessages(
             Command.ChatCommand.GetMessages(
@@ -534,7 +606,7 @@ class ChatContainer @Inject constructor(
                 beforeOrderId = order,
                 limit = DEFAULT_CHAT_PAGING_SIZE / 2
             )
-        ).messages
+        ).also { it.state?.let(onState) }.messages
         val loadedMessagesAfter = repo.getChatMessages(
             Command.ChatCommand.GetMessages(
                 chat = chat,
@@ -542,7 +614,7 @@ class ChatContainer @Inject constructor(
                 limit = DEFAULT_CHAT_PAGING_SIZE / 2,
                 includeBoundary = true
             )
-        ).messages
+        ).also { it.state?.let(onState) }.messages
 
         return buildList {
             addAll(loadedMessagesBefore)
@@ -552,7 +624,8 @@ class ChatContainer @Inject constructor(
 
     private suspend fun loadTheNextPage(
         state: List<Chat.Message>,
-        chat: Id
+        chat: Id,
+        onState: (Chat.State) -> Unit
     ): List<Chat.Message> = try {
         val last = state.lastOrNull()
         if (last != null) {
@@ -563,7 +636,12 @@ class ChatContainer @Inject constructor(
                     limit = DEFAULT_CHAT_PAGING_SIZE
                 )
             )
-            state + next.messages
+            next.state?.let(onState)
+            // The window is rendered by a LazyColumn keyed on message id, and duplicate
+            // keys throw — so a page overlapping the window (e.g. one echoing the boundary
+            // message) must never introduce a duplicate.
+            val known = state.mapTo(HashSet()) { it.id }
+            state + next.messages.filter { known.add(it.id) }
         } else {
             state.also {
                 logger.logWarning("DROID-2966 The last message not found in chat")
@@ -575,33 +653,80 @@ class ChatContainer @Inject constructor(
         }
     }
 
+    /**
+     * Loads the page of messages preceding [first].
+     *
+     * @return the fetched page — possibly empty, meaning the beginning of history was reached —
+     * or null if there is no anchor message or the page could not be fetched.
+     */
     private suspend fun loadThePreviousPage(
-        state: List<Chat.Message>,
-        chat: Id
-    ): List<Chat.Message> = try {
-        val first = state.firstOrNull()
+        first: Chat.Message?,
+        chat: Id,
+        onState: (Chat.State) -> Unit
+    ): List<Chat.Message>? = try {
         if (first != null) {
-            val previous = repo.getChatMessages(
+            repo.getChatMessages(
                 Command.ChatCommand.GetMessages(
                     chat = chat,
                     beforeOrderId = first.order,
                     limit = DEFAULT_CHAT_PAGING_SIZE
                 )
-            )
-            previous.messages + state
+            ).also { it.state?.let(onState) }.messages
         } else {
-            state.also {
-                logger.logWarning("DROID-2966 The first message not found in chat")
-            }
+            logger.logWarning("DROID-2966 The first message not found in chat")
+            null
         }
     } catch (e: Exception) {
-        state.also {
-            logger.logException(e, "DROID-2966 Error while loading next page in chat: $chat")
-        }
+        logger.logException(e, "DROID-2966 Error while loading next page in chat: $chat")
+        null
+    }
+
+    /**
+     * Keeps the message window bounded by [MAX_CHAT_CACHE_SIZE]: every fold copy, equality
+     * check and UI mapping downstream scales with the window size, so the window must not
+     * grow unboundedly as pages are loaded.
+     */
+    private fun List<Chat.Message>.trimKeepingOldest(): List<Chat.Message> =
+        if (size > MAX_CHAT_CACHE_SIZE) take(MAX_CHAT_CACHE_SIZE) else this
+
+    private fun List<Chat.Message>.trimKeepingNewest(): List<Chat.Message> =
+        if (size > MAX_CHAT_CACHE_SIZE) takeLast(MAX_CHAT_CACHE_SIZE) else this
+
+    /**
+     * Whether the current message window includes the newest known chat message.
+     *
+     * The newest known message is taken from [lastMessages] — the cache of tail
+     * messages seen at subscribe time or via Add/Update events. When the window
+     * does not contain it — e.g. after [trimKeepingOldest] evicted the tail while
+     * paging back, or after [loadAroundMessage] replaced the window — appending a
+     * fresh message to the window would display it directly after a much older
+     * message, silently hiding the not-loaded range in between.
+     */
+    private fun isWindowAttachedToChatTail(window: List<Chat.Message>): Boolean {
+        if (window.isEmpty()) return true
+        val newestKnown = lastMessages.values.maxByOrNull { it.order } ?: return true
+        return window.any { it.id == newestKnown.id }
+    }
+
+    /**
+     * Whether the user is parked at the newest edge of [window] — with nothing below them
+     * left to scroll into.
+     *
+     * Conservative by design: while no visible range has been reported (the chat has just
+     * opened, or an initial scroll intent is still being applied) [newestVisibleMessageId]
+     * is null and the window is never auto-extended. A user reading old history is therefore
+     * never yanked by [trimKeepingNewest] evicting the messages under their scroll anchor.
+     */
+    private fun isParkedAtWindowTail(
+        window: List<Chat.Message>,
+        newestVisibleMessageId: Id?
+    ): Boolean {
+        if (newestVisibleMessageId == null || window.isEmpty()) return false
+        return window.last().id == newestVisibleMessageId
     }
 
     @Throws
-    private suspend fun loadToEnd(chat: Id): List<Chat.Message> {
+    private suspend fun loadToEnd(chat: Id, onState: (Chat.State) -> Unit): List<Chat.Message> {
         return repo.getChatMessages(
             Command.ChatCommand.GetMessages(
                 chat = chat,
@@ -609,84 +734,112 @@ class ChatContainer @Inject constructor(
                 afterOrderId = null,
                 limit = DEFAULT_CHAT_PAGING_SIZE
             )
-        ).messages
+        ).also { it.state?.let(onState) }.messages
     }
 
     suspend fun onPayload(events: List<Event.Command.Chats>) {
         payloads.emit(events)
     }
 
+    /**
+     * @param onTailMessageStranded invoked when a newly added message could not enter the
+     * window because the window is detached from the chat tail. The caller decides how to
+     * recover — see DROID-4556.
+     */
     fun ChatStreamState.reduce(
-        events: List<Event.Command.Chats>
+        events: List<Event.Command.Chats>,
+        onTailMessageStranded: () -> Unit = {}
     ): ChatStreamState {
         val messageList = this.messages.toMutableList()
         var countersState = this.state
         events.forEach { event ->
             when (event) {
                 is Event.Command.Chats.Add -> {
-                    if (!messageList.isInCurrentWindow(event.message.id)) {
+                    if (messageList.none { it.id == event.message.id }) {
                         val insertIndex = messageList.indexOfFirst { it.order > event.order }
                         if (insertIndex >= 0) {
                             messageList.add(insertIndex, event.message)
-                        } else {
+                        } else if (isWindowAttachedToChatTail(messageList)) {
                             messageList.add(event.message)
+                        } else {
+                            // The window is detached from the chat tail (older history is
+                            // being browsed after the newest edge was trimmed or the window was
+                            // replaced by a jump-to-message). Appending here would render the new
+                            // message right after a much older one, hiding the not-yet-loaded
+                            // range between them — and LoadNext would then paginate from the
+                            // appended message, permanently skipping that range. The message is
+                            // still tracked in [lastMessages] and will enter the window through
+                            // contiguous LoadNext paging or a LoadEnd reload of the tail.
+                            //
+                            // Neither of those is dispatched while the user sits at the window's
+                            // newest edge, so the caller is told the tail was stranded.
+                            onTailMessageStranded()
                         }
                     }
+                    // A (re)added message is fetchable again: clear any tombstone so
+                    // fetchReplies may resolve it as a reply target.
+                    knownMissingReplyTargets.remove(event.message.id)
                     // Tracking the last message in the chat tail
                     cacheLastMessage(event.message)
                 }
 
                 is Event.Command.Chats.Update -> {
-                    if (messageList.isInCurrentWindow(event.id)) {
-                        val index = messageList.indexOfFirst { it.id == event.message.id }
+                    val index = messageList.indexOfFirst { it.id == event.message.id }
+                    if (index != -1) {
                         messageList[index] = event.message
+                    }
+                    // Keep the reply-preview cache in sync when a quoted message is edited.
+                    if (replyMessageCache.replace(event.message.id, event.message) != null) {
+                        replyCacheInvalidations.value++
                     }
                     // Tracking the last message in the chat tail
                     cacheLastMessage(event.message)
                 }
 
                 is Event.Command.Chats.Delete -> {
-                    if (messageList.isInCurrentWindow(event.message)) {
-                        val index = messageList.indexOfFirst { it.id == event.message }
+                    val index = messageList.indexOfFirst { it.id == event.message }
+                    if (index != -1) {
                         messageList.removeAt(index)
+                    }
+                    // Drop the reply-preview cache entry when a quoted message is deleted,
+                    // and tombstone the id: the middleware can never return it again, so
+                    // fetchReplies must not keep re-requesting it.
+                    knownMissingReplyTargets.add(event.message)
+                    if (replyMessageCache.remove(event.message) != null) {
+                        replyCacheInvalidations.value++
                     }
                     // Tracking the last message in the chat tail
                     lastMessages.remove(event.message)
                 }
 
                 is Event.Command.Chats.UpdateReactions -> {
-                    if (messageList.isInCurrentWindow(event.id)) {
-                        val index = messageList.indexOfFirst { it.id == event.id }
-                        if (messageList[index].reactions != event.reactions) {
-                            messageList[index] = messageList[index].copy(reactions = event.reactions)
-                        }
+                    val index = messageList.indexOfFirst { it.id == event.id }
+                    if (index != -1 && messageList[index].reactions != event.reactions) {
+                        messageList[index] = messageList[index].copy(reactions = event.reactions)
                     }
                 }
 
                 is Event.Command.Chats.UpdateMentionReadStatus -> {
-                    val idsInWindow = event.messages.filter { messageList.isInCurrentWindow(it) }
-                    idsInWindow.forEach { id ->
+                    event.messages.forEach { id ->
                         val index = messageList.indexOfFirst { it.id == id }
-                        if (messageList[index].mentionRead != event.isRead) {
+                        if (index != -1 && messageList[index].mentionRead != event.isRead) {
                             messageList[index] = messageList[index].copy(mentionRead = event.isRead)
                         }
                     }
                 }
 
                 is Event.Command.Chats.UpdateMessageReadStatus -> {
-                    val idsInWindow = event.messages.filter { messageList.isInCurrentWindow(it) }
-                    idsInWindow.forEach { id ->
+                    event.messages.forEach { id ->
                         val index = messageList.indexOfFirst { it.id == id }
-                        if (messageList[index].read != event.isRead) {
+                        if (index != -1 && messageList[index].read != event.isRead) {
                             messageList[index] = messageList[index].copy(read = event.isRead)
                         }
                     }
                 }
                 is Event.Command.Chats.UpdateMessageSyncStatus -> {
-                    val idsInWindow = event.messages.filter { messageList.isInCurrentWindow(it) }
-                    idsInWindow.forEach { id ->
+                    event.messages.forEach { id ->
                         val index = messageList.indexOfFirst { it.id == id }
-                        if (messageList[index].synced != event.isSynced) {
+                        if (index != -1 && messageList[index].synced != event.isSynced) {
                             messageList[index] = messageList[index].copy(synced = event.isSynced)
                         }
                     }
@@ -715,6 +868,13 @@ class ChatContainer @Inject constructor(
         return ChatStreamState(
             messages = messageList,
             state = countersState,
+            // State/status events do not disturb the target's list position. Message
+            // changes can remove it or shift its index/date section, so cancel that
+            // scroll and let the UI's finally block restore visibility tracking.
+            intent = if (events.any {
+                    it is Event.Command.Chats.Add || it is Event.Command.Chats.Delete ||
+                        it is Event.Command.Chats.Update
+                }) Intent.None else intent,
             initialUnreadSectionMessageId = initialUnreadSectionMessageId
         )
     }
@@ -737,9 +897,11 @@ class ChatContainer @Inject constructor(
         commands.emit(Transformation.Commands.LoadEnd(msg))
     }
 
-    suspend fun onVisibleRangeChanged(from: Id, to: Id) {
-        logger.logInfo("DROID-2966 onVisibleRangeChanged")
-        commands.emit(Transformation.Commands.UpdateVisibleRange(from, to))
+    fun onVisibleRangeChanged(from: Id?, to: Id?, snapshot: ChatReadSnapshot? = null) {
+        // Record visibility before returning to the UI, so Back cannot overtake it.
+        // Null invalidates the viewport during programmatic scrolling or when no message
+        // qualifies; later state events must not read against an obsolete visible range.
+        readSession.get()?.visible(from.takeIf { to != null }, snapshot)
     }
 
     suspend fun onGoToMention() {
@@ -795,8 +957,6 @@ class ChatContainer @Inject constructor(
              */
             data class LoadEnd(val lastVisibleMessage: Id?): Commands()
 
-            data class UpdateVisibleRange(val from: Id, val to: Id) : Commands()
-
             data object ClearIntent : Commands()
 
             data object GoToMention : Commands()
@@ -804,6 +964,7 @@ class ChatContainer @Inject constructor(
     }
 
     companion object {
+        internal const val READ_EXIT_WAIT_MS = 1_000L
         const val DEFAULT_CHAT_PAGING_SIZE = 100
         // TODO reduce message size to reduce UI and VM overload.
         private const val MAX_CHAT_CACHE_SIZE = 1000
@@ -860,7 +1021,8 @@ class ChatContainer @Inject constructor(
         val messages: List<Chat.Message>,
         val state: Chat.State = Chat.State(),
         val intent: Intent = Intent.None,
-        val initialUnreadSectionMessageId: String? = null
+        val initialUnreadSectionMessageId: String? = null,
+        val readSnapshot: ChatReadSnapshot? = null
     )
 
     sealed class Intent {
@@ -881,8 +1043,4 @@ class ChatContainer @Inject constructor(
         data object ScrollToBottom : Intent()
         data object None : Intent()
     }
-}
-
-private fun List<Chat.Message>.isInCurrentWindow(id: Id): Boolean {
-    return this.any { it.id == id }
 }

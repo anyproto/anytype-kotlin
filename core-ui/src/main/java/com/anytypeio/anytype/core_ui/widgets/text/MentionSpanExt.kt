@@ -8,6 +8,7 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.Span
 import com.anytypeio.anytype.core_ui.common.isRangeValid
 import com.anytypeio.anytype.core_ui.extensions.disable
 import com.anytypeio.anytype.core_ui.widgets.text.setClickableSpan
@@ -247,7 +248,9 @@ fun Editable.proceedWithSettingMentionSpan(
 }
 
 fun Editable.setClickableSpan(click: ((String) -> Unit)?, mark: Markup.Mark.Mention) {
-    val clickableSpan = object : ClickableSpan() {
+    // Must implement Span, so that setMarkup()'s removeSpans<Span>() can clear it on rebind.
+    // Otherwise one ClickableSpan leaks per mention on every rebind of a recycled block.
+    val clickableSpan = object : ClickableSpan(), Span {
         override fun onClick(widget: View) {
             (widget as? TextInputWidget)?.disable()
             click?.invoke(mark.param)

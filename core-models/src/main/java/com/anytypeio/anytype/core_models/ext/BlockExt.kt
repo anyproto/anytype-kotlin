@@ -10,9 +10,14 @@ import com.anytypeio.anytype.core_models.ThemeColor
  * Maps blocks to its children using id as a key
  */
 fun List<Block>.asMap(): Map<Id, List<Block>> {
+    val index = HashMap<Id, Block>(size)
+    forEach { block ->
+        // Keeping the first occurrence in case of duplicated ids.
+        if (!index.containsKey(block.id)) index[block.id] = block
+    }
     val map: MutableMap<Id, List<Block>> = mutableMapOf()
     forEach { block ->
-        map[block.id] = block.children.mapNotNull { child -> find { it.id == child } }
+        map[block.id] = block.children.mapNotNull { child -> index[child] }
     }
     return map
 }

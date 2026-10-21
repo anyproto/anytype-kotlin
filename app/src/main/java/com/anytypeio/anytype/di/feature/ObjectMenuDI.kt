@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.spaceIdOrNull
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -60,6 +61,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 
 
 @Subcomponent(modules = [ObjectMenuModuleBase::class, ObjectMenuModule::class])
@@ -208,8 +210,12 @@ object ObjectMenuModule {
         observePersonalFavoriteTargets: ObservePersonalFavoriteTargets,
         userPermissionProvider: UserPermissionProvider
     ): ObjectMenuOptionsProvider {
-        val spaceIdFlow = spaceManager.observe()
-            .map { SpaceId(it.space) }
+        // From the state, not the config flow: a space can be active without a config
+        // (SpaceManager.activate, used by quick capture to skip Workspace.Open), and the
+        // config flow stays silent in that case — which would leave this menu, opened from
+        // the quick-capture sheet, with no space at all.
+        val spaceIdFlow = spaceManager.state()
+            .mapNotNull { it.spaceIdOrNull() }
             .distinctUntilChanged()
         val personalFavoriteTargets = spaceIdFlow.flatMapLatest { space ->
             observePersonalFavoriteTargets(space).map { it.toSet() }
@@ -405,8 +411,12 @@ object ObjectSetMenuModule {
             }
             .distinctUntilChanged()
 
-        val spaceIdFlow = spaceManager.observe()
-            .map { SpaceId(it.space) }
+        // From the state, not the config flow: a space can be active without a config
+        // (SpaceManager.activate, used by quick capture to skip Workspace.Open), and the
+        // config flow stays silent in that case — which would leave this menu, opened from
+        // the quick-capture sheet, with no space at all.
+        val spaceIdFlow = spaceManager.state()
+            .mapNotNull { it.spaceIdOrNull() }
             .distinctUntilChanged()
         val personalFavoriteTargets = spaceIdFlow.flatMapLatest { space ->
             observePersonalFavoriteTargets(space).map { it.toSet() }

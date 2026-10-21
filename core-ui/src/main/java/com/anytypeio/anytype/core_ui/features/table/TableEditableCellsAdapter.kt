@@ -85,6 +85,7 @@ class TableEditableCellsAdapter(
                 }
             }
             content.onFocusChangeListener = LockableFocusChangeListener { hasFocus ->
+                content.isCursorVisible = hasFocus
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
                     val block = items[pos].block

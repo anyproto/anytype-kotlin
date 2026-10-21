@@ -25,7 +25,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.views.BaseTwoButtonsDarkThemeAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
-import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.intents.SystemAction
@@ -33,6 +32,7 @@ import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.payments.playbilling.BillingClientLifecycle
+import com.anytypeio.anytype.payments.screens.ActivateCodeScreen
 import com.anytypeio.anytype.payments.screens.CodeScreen
 import com.anytypeio.anytype.payments.screens.MainMembershipScreen
 import com.anytypeio.anytype.payments.screens.WelcomeScreen
@@ -62,6 +62,7 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
     private lateinit var navController: NavHostController
 
     private val argTierId get() = argOrNull<String>(ARG_TIER_ID)
+    private val argCode get() = argOrNull<String>(ARG_CODE)
 
     @Inject
     lateinit var billingClientLifecycle: BillingClientLifecycle
@@ -139,6 +140,9 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
             bottomSheet(MembershipNavigation.Code.route) {
                 InitCodeScreen()
             }
+            bottomSheet(MembershipNavigation.ActivateCode.route) {
+                InitActivateCodeScreen()
+            }
             bottomSheet(MembershipNavigation.Welcome.route) {
                 InitWelcomeScreen()
             }
@@ -147,8 +151,6 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
 
     @Composable
     private fun InitMainScreen() {
-        skipCollapsed()
-        expand()
         MainMembershipScreen(
             state = vm.viewState.collectAsStateWithLifecycle().value,
             tierClicked = vm::onTierClicked,
@@ -178,6 +180,16 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
     }
 
     @Composable
+    private fun InitActivateCodeScreen() {
+        ActivateCodeScreen(
+            state = vm.activateCodeState.collectAsStateWithLifecycle().value,
+            textField = vm.activateCodeTextField,
+            action = vm::onTierAction,
+            onDismiss = vm::onDismissActivateCode
+        )
+    }
+
+    @Composable
     private fun InitWelcomeScreen() {
         WelcomeScreen(
             state = vm.welcomeState.collectAsStateWithLifecycle().value,
@@ -187,13 +199,16 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        skipCollapsed()
+        expand()
         vm.showTierOnStart(tierId = argTierId)
-        setupBottomSheetBehavior(DEFAULT_PADDING_TOP)
+        vm.showCodeOnStart(code = argCode)
         subscribe(vm.navigation) { command ->
             Timber.d("MembershipFragment command: $command")
             when (command) {
                 MembershipNavigation.Tier -> navController.navigate(MembershipNavigation.Tier.route)
                 MembershipNavigation.Code -> navController.navigate(MembershipNavigation.Code.route)
+                MembershipNavigation.ActivateCode -> navController.navigate(MembershipNavigation.ActivateCode.route)
                 MembershipNavigation.Welcome -> {
                     navController.popBackStack(MembershipNavigation.Main.route, false)
                     navController.navigate(MembershipNavigation.Welcome.route)
@@ -216,17 +231,6 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
                 }
 
                 MembershipNavigation.Main -> {}
-                is MembershipNavigation.OpenEmail -> {
-                    val mail = resources.getString(R.string.payments_email_to)
-                    val subject =
-                        resources.getString(R.string.payments_email_subject, command.accountId)
-                    val body = resources.getString(R.string.payments_email_body)
-                    val mailBody = mail +
-                            "?subject=$subject" +
-                            "&body=$body"
-                    proceedWithAction(SystemAction.MailTo(mailBody))
-                }
-
                 is MembershipNavigation.OpenErrorEmail -> {
                     val deviceModel = android.os.Build.MODEL
                     val osVersion = android.os.Build.VERSION.RELEASE
@@ -271,6 +275,10 @@ class MembershipFragment : BaseBottomSheetComposeFragment() {
 
     companion object {
         const val ARG_TIER_ID = "args.membership.tier"
-        fun args(tierId: String?) = bundleOf(ARG_TIER_ID to tierId)
+        const val ARG_CODE = "args.membership.code"
+        fun args(tierId: String?, code: String? = null) = bundleOf(
+            ARG_TIER_ID to tierId,
+            ARG_CODE to code
+        )
     }
 }

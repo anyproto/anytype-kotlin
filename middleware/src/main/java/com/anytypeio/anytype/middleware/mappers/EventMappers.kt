@@ -140,5 +140,7 @@ fun MDVViewFields.toCoreModels(): DVViewerFields {
         coverFit = coverFit,
         defaultTemplateId = defaultTemplateId,
         defaultObjectTypeId = defaultObjectTypeId,
+        groupRelationKey = groupRelationKey.ifEmpty { null },
+        groupBackgroundColors = groupBackgroundColors,
     )
 }

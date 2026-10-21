@@ -35,17 +35,17 @@ import com.anytypeio.anytype.core_models.ui.AccountProfile
 import com.anytypeio.anytype.core_models.ui.ObjectIcon.Profile.Avatar
 import com.anytypeio.anytype.core_models.ui.ProfileIconView
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
+import com.anytypeio.anytype.core_ui.foundation.breathingGlow
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_vault.R
-import com.anytypeio.anytype.feature_vault.presentation.VaultUiState
 
 @Composable
 fun VaultScreenTopToolbar(
     searchQuery: String,
     profile: AccountProfile,
-    uiState: VaultUiState,
+    isLoading: Boolean,
     showNotificationBadge: Boolean = false,
     showCreateSpaceBadge: Boolean = false,
     showCreateChannelMenu: Boolean = false,
@@ -57,64 +57,69 @@ fun VaultScreenTopToolbar(
     onJoinViaQrClicked: () -> Unit,
     onCreateChannelMenuDismissed: () -> Unit,
     onSettingsClicked: () -> Unit,
+    onSearchBarClicked: (() -> Unit)? = null,
+    showSearchHighlight: Boolean = false
 ) {
-    when (uiState) {
-        VaultUiState.Loading -> {
-            Column(
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .statusBarsPadding()
+    ) {
+        VaultScreenToolbar(
+            profile = profile,
+            showNotificationBadge = showNotificationBadge,
+            showCreateSpaceBadge = showCreateSpaceBadge,
+            showCreateChannelMenu = showCreateChannelMenu,
+            isLocalOnly = isLocalOnly,
+            onPlusClicked = onCreateChannelMenuClicked,
+            onPersonalClicked = onPersonalClicked,
+            onGroupClicked = onGroupClicked,
+            onJoinViaQrClicked = onJoinViaQrClicked,
+            onCreateChannelMenuDismissed = onCreateChannelMenuDismissed,
+            onSettingsClicked = onSettingsClicked,
+            isLoading = isLoading
+        )
+        // The bar is on screen from the first frame. It needs nothing from the
+        // space list, and hiding it while previews load (seconds on a cold
+        // start) read as the field being missing.
+        if (onSearchBarClicked != null) {
+            // The bar is a pure entry point into the unified search
+            // surface — tapping it opens search v2 instead of filtering
+            // the space cards in place.
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .statusBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 10.dp)
             ) {
-                VaultScreenToolbar(
-                    profile = profile,
-                    showNotificationBadge = showNotificationBadge,
-                    showCreateSpaceBadge = showCreateSpaceBadge,
-                    showCreateChannelMenu = showCreateChannelMenu,
-                    isLocalOnly = isLocalOnly,
-                    onPlusClicked = onCreateChannelMenuClicked,
-                    onPersonalClicked = onPersonalClicked,
-                    onGroupClicked = onGroupClicked,
-                    onJoinViaQrClicked = onJoinViaQrClicked,
-                    onCreateChannelMenuDismissed = onCreateChannelMenuDismissed,
-                    onSettingsClicked = onSettingsClicked,
-                    isLoading = true
-                )
-                Spacer(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(60.dp)
-                )
-            }
-        }
-
-        is VaultUiState.Sections -> {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .statusBarsPadding()
-            ) {
-                VaultScreenToolbar(
-                    profile = profile,
-                    showNotificationBadge = showNotificationBadge,
-                    showCreateSpaceBadge = showCreateSpaceBadge,
-                    showCreateChannelMenu = showCreateChannelMenu,
-                    isLocalOnly = isLocalOnly,
-                    onPlusClicked = onCreateChannelMenuClicked,
-                    onPersonalClicked = onPersonalClicked,
-                    onGroupClicked = onGroupClicked,
-                    onJoinViaQrClicked = onJoinViaQrClicked,
-                    onCreateChannelMenuDismissed = onCreateChannelMenuDismissed,
-                    onSettingsClicked = onSettingsClicked,
-                    isLoading = false
-                )
                 DefaultSearchBar(
-                    value = searchQuery,
+                    value = "",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 10.dp),
-                    onQueryChanged = onUpdateSearchQuery
+                        // One-time hint for existing users, started once the
+                        // vault has settled so it doesn't compete with the
+                        // loading spinner. The halo draws outside the bar, into
+                        // the 10dp vertical padding above.
+                        .breathingGlow(
+                            visible = showSearchHighlight && !isLoading,
+                            cornerRadius = 10.dp
+                        ),
+                    hint = R.string.vault_search_hint,
+                    onQueryChanged = {}
+                )
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .noRippleThrottledClickable { onSearchBarClicked() }
                 )
             }
+        } else {
+            DefaultSearchBar(
+                value = searchQuery,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                onQueryChanged = onUpdateSearchQuery
+            )
         }
     }
 }

@@ -143,10 +143,14 @@ fun ObjectState.DataView.Collection.getObjectOrderIds(currentViewerId: String): 
  *
  * For DATE formats: adds the relationFormat to the filter.
  * For OBJECT formats: adds the relationFormat and normalizes EQUAL condition to IN.
+ * For STATUS/TAG formats: adds the relationFormat so the option-id value is matched as a
+ * select value instead of falling back to `longtext` (which matches nothing) when the
+ * filter arrives without a format set (e.g. created on Desktop). SELECT conditions
+ * (In/AllIn/NotIn/Empty/NotEmpty) never use EQUAL, so no condition normalization is needed.
  *
  * @param filter the filter to transform.
  * @param format the relation format to apply (null means no transformation).
- * @return the transformed filter, or the original if format is null or not DATE/OBJECT.
+ * @return the transformed filter, or the original if format is null or not DATE/OBJECT/STATUS/TAG.
  */
 private fun transformFilterWithFormat(filter: DVFilter, format: RelationFormat?): DVFilter {
     return when (format) {
@@ -163,6 +167,9 @@ private fun transformFilterWithFormat(filter: DVFilter, format: RelationFormat?)
                     filter.condition
                 }
             )
+        }
+        RelationFormat.STATUS, RelationFormat.TAG -> {
+            filter.copy(relationFormat = format)
         }
         else -> filter
     }
@@ -329,7 +336,9 @@ fun DVViewer.updateFields(fields: DVViewerFields?): DVViewer {
         cardSize = fields.cardSize,
         coverFit = fields.coverFit,
         defaultTemplate = fields.defaultTemplateId,
-        defaultObjectType = fields.defaultObjectTypeId
+        defaultObjectType = fields.defaultObjectTypeId,
+        groupRelationKey = fields.groupRelationKey,
+        groupBackgroundColors = fields.groupBackgroundColors
     )
 }
 
@@ -338,6 +347,9 @@ fun Viewer.isEmpty(): Boolean =
         is Viewer.GalleryView -> this.items.isEmpty()
         is Viewer.GridView -> this.rows.isEmpty()
         is Viewer.ListView -> this.items.isEmpty()
+        // A board with columns is never "empty" — empty columns still render (with their
+        // per-column create affordance); only a board with no columns at all has nothing to show.
+        is Viewer.Board -> this.columns.isEmpty()
         is Viewer.Unsupported -> false
     }
 
@@ -372,10 +384,11 @@ suspend fun ObjectState.DataView.toViewersView(
     ctx: Id,
     session: ObjectSetSession,
     storeOfRelations: StoreOfRelations,
-    stringResourceProvider: StringResourceProvider
+    stringResourceProvider: StringResourceProvider,
+    kanbanEnabled: Boolean = false
 ): List<ViewerView> {
     val viewers = dataViewContent.viewers
-    return when (this) {
+    val mapped = when (this) {
         is ObjectState.DataView.Collection -> mapViewers(
             defaultObjectType = { it.defaultObjectType },
             viewers = viewers,
@@ -414,6 +427,12 @@ suspend fun ObjectState.DataView.toViewersView(
                 stringResourceProvider = stringResourceProvider
             )
         }
+    }
+    // The BOARD (Kanban) viewer is "unsupported" only while the experimental flag is off.
+    return if (kanbanEnabled) {
+        mapped.map { if (it.type == VIEW_TYPE_UNSUPPORTED) it.copy(isUnsupported = false) else it }
+    } else {
+        mapped
     }
 }
 

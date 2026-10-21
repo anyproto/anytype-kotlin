@@ -36,8 +36,14 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
+import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
+import com.anytypeio.anytype.domain.library.StoreSearchParams
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.search.BoardGroupSubscriptionContainer
+import com.anytypeio.anytype.domain.search.BoardRecordsSubscriptionContainer
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.discussions.AddDiscussion
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -241,6 +247,21 @@ open class ObjectSetViewModelTestSetup {
     lateinit var setDataViewProperties: SetDataViewProperties
 
     @Mock
+    lateinit var setDataViewObjectOrder: SetDataViewObjectOrder
+
+    @Mock
+    lateinit var boardGroupSubscriptionContainer: BoardGroupSubscriptionContainer
+
+    @Mock
+    lateinit var boardRecordsSubscriptionContainer: BoardRecordsSubscriptionContainer
+
+    @Mock
+    lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
+
+    @Mock
+    lateinit var userSettingsRepository: UserSettingsRepository
+
+    @Mock
     lateinit var emojiProvider: EmojiProvider
 
     @Mock
@@ -318,6 +339,16 @@ open class ObjectSetViewModelTestSetup {
         spacedViews.stub {
             onBlocking { get(space = SpaceId(defaultSpace)) } doReturn spaceView
         }
+        // Kanban is gated behind an experimental flag; default the tests to enabled so the
+        // board-specific tests exercise the live board. Tests that need it off override this.
+        userSettingsRepository.stub {
+            on { observeKanbanEnabled() } doReturn flowOf(true)
+        }
+        // Board option headers subscribe through the storeless container; default to no
+        // options so board tests render (tests exercising labels override this).
+        storelessSubscriptionContainer.stub {
+            on { subscribe(any<StoreSearchParams>()) } doReturn flowOf(emptyList())
+        }
     }
 
     fun givenViewModel(): ObjectSetViewModel {
@@ -367,12 +398,20 @@ open class ObjectSetViewModelTestSetup {
             deepLinkResolver = deepLinkResolver,
             removeObjectFromCollection = removeObjectFromCollection,
             setDataViewProperties = setDataViewProperties,
+            setDataViewObjectOrder = setDataViewObjectOrder,
+            boardGroupSubscriptionContainer = boardGroupSubscriptionContainer,
+            boardRecordsSubscriptionContainer = boardRecordsSubscriptionContainer,
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
             createBlock = createBlock,
             stringResourceProvider = stringResourceProvider,
             getDefaultObjectType = getDefaultObjectType,
-            addDiscussion = addDiscussion
+            addDiscussion = addDiscussion,
+            userSettingsRepository = userSettingsRepository,
+            backHistoryDelegate = mock(),
+            exitToVaultDelegate = mock(),
+            viewStateDispatcher = rule.dispatcher
         )
     }
 

@@ -42,6 +42,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<ShareSpaceViewModel> { factory }
 
+    private var removeMemberWarning: RemoveMemberWarning? = null
+
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,9 +66,21 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     inviteLinkAccessLevel = vm.inviteLinkAccessLevel.collectAsStateWithLifecycle().value,
                     inviteLinkAccessLoading = vm.inviteLinkAccessLoading.collectAsStateWithLifecycle().value,
                     confirmationDialogLevel = vm.inviteLinkConfirmationDialog.collectAsStateWithLifecycle().value,
+                    makeAdminConfirmation = vm.makeAdminConfirmation.collectAsStateWithLifecycle().value,
+                    makeAdminLoading = vm.makeAdminLoading.collectAsStateWithLifecycle().value,
+                    onMakeAdminConfirmed = vm::onMakeAdminAccepted,
+                    onMakeAdminCancelled = vm::onMakeAdminDismissed,
                     onInviteLinkAccessLevelSelected = vm::onInviteLinkAccessLevelSelected,
                     onInviteLinkAccessChangeConfirmed = vm::onInviteLinkAccessChangeConfirmed,
                     onInviteLinkAccessChangeCancel = vm::onInviteLinkAccessChangeCancel,
+                    shareInviteConfirmationDialog = vm.shareInviteConfirmationDialog.collectAsStateWithLifecycle().value,
+                    onShareWithinSpaceClicked = vm::onShareWithinSpaceClicked,
+                    onShareWithinSpaceConfirmed = vm::onShareWithinSpaceConfirmed,
+                    onShareWithinSpaceCancelled = vm::onShareWithinSpaceCancelled,
+                    resetLinkConfirmationDialog = vm.resetLinkConfirmationDialog.collectAsStateWithLifecycle().value,
+                    onResetLinkClicked = vm::onResetLinkClicked,
+                    onResetLinkConfirmed = vm::onResetLinkConfirmed,
+                    onResetLinkCancelled = vm::onResetLinkCancelled,
                     onCopyInviteLinkClicked = vm::onCopyInviteLinkClicked,
                     isCurrentUserOwner = vm.isCurrentUserOwner.collectAsStateWithLifecycle().value,
                     onMakePrivateClicked = vm::onMakePrivateClicked,
@@ -163,6 +177,22 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                             onDismissRequest = { vm.dismissShareSpaceErrors() }
                         )
                     }
+                    ShareSpaceErrors.InviteAlreadyShared -> {
+                        BaseAlertDialog(
+                            dialogText = stringResource(R.string.share_space_error_invite_already_shared),
+                            buttonText = stringResource(R.string.button_ok),
+                            onButtonClick = { vm.dismissShareSpaceErrors() },
+                            onDismissRequest = { vm.dismissShareSpaceErrors() }
+                        )
+                    }
+                    ShareSpaceErrors.InviteNotShareable -> {
+                        BaseAlertDialog(
+                            dialogText = stringResource(R.string.share_space_error_invite_not_shareable),
+                            buttonText = stringResource(R.string.button_ok),
+                            onButtonClick = { vm.dismissShareSpaceErrors() },
+                            onDismissRequest = { vm.dismissShareSpaceErrors() }
+                        )
+                    }
                 }
             }
         }
@@ -209,14 +239,17 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                 runCatching {
                     val dialog = RemoveMemberWarning.new(name = command.name)
                     dialog.onAccepted = {
-                        vm.onRemoveMemberAccepted(command.identity).also {
-                            dialog.dismiss()
-                        }
+                        vm.onRemoveMemberAccepted(command.identity)
                     }
+                    removeMemberWarning = dialog
                     dialog.show(childFragmentManager, null)
                 }.onFailure {
                     Timber.e(it, "Error while showing remove member warning")
                 }
+            }
+            is Command.DismissRemoveMemberWarning -> {
+                removeMemberWarning?.dismiss()
+                removeMemberWarning = null
             }
             is Command.Dismiss -> {
                 dismiss()
@@ -228,13 +261,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
             is Command.ShowMembershipScreen -> {
                 runCatching {
                     findNavController().navigate(R.id.paymentsScreen)
-                }.onFailure {
-                    Timber.e(it, "Error while navigation: $command")
-                }
-            }
-            is Command.ShowMembershipUpgradeScreen -> {
-                runCatching {
-                    findNavController().navigate(R.id.membershipUpdateScreen)
                 }.onFailure {
                     Timber.e(it, "Error while navigation: $command")
                 }
@@ -258,6 +284,12 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     }
                     is MultiplayerError.Generic.NoSuchSpace -> {
                         toast(resources.getString(R.string.share_space_error_no_such_space))
+                    }
+                    is MultiplayerError.Generic.InviteAlreadyShared -> {
+                        toast(resources.getString(R.string.share_space_error_invite_already_shared))
+                    }
+                    is MultiplayerError.Generic.InviteNotShareable -> {
+                        toast(resources.getString(R.string.share_space_error_invite_not_shareable))
                     }
                 }
             }

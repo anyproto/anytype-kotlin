@@ -1,0 +1,18 @@
+<!--
+  Placeholder badge for the "Make admin?" confirmation (DROID-4250).
+  Green person + gear. Replace with the exact asset exported from Figma
+  (file TupCOWb8sC9NcjtSToWIkS, node 25395:13716) when available.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="56dp"
+    android:height="56dp"
+    android:viewportWidth="56"
+    android:viewportHeight="56">
+  <path
+      android:pathData="M22,9 A7,7 0 1,1 22,23 A7,7 0 1,1 22,9 Z M35,45 H9 C9,36.7 14.8,30 22,30 C29.2,30 35,36.7 35,45 Z"
+      android:fillColor="@color/palette_system_green"/>
+  <path
+      android:fillType="evenOdd"
+      android:pathData="M53,42 L49.39,45.06 L49.78,49.78 L45.06,49.39 L42,53 L38.94,49.39 L34.22,49.78 L34.61,45.06 L31,42 L34.61,38.94 L34.22,34.22 L38.94,34.61 L42,31 L45.06,34.61 L49.78,34.22 L49.39,38.94 Z M46,42 A4,4 0 1,0 38,42 A4,4 0 1,0 46,42 Z"
+      android:fillColor="@color/palette_system_green"/>
+</vector>

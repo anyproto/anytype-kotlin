@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.TierId
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -50,9 +51,9 @@ fun WelcomeScreen(state: WelcomeState, onDismiss: () -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     if (state is WelcomeState.Initial) {
         ModalBottomSheet(
+            sheetMaxWidth = contentWidthDp(),
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp)
-                .fillMaxWidth()
                 .wrapContentHeight(),
             sheetState = sheetState,
             onDismissRequest = onDismiss,

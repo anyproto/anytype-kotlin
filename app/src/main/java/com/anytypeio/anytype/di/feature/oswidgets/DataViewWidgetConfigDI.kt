@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
+import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -105,7 +106,8 @@ object DataViewWidgetConfigModule {
         spaceManager: SpaceManager,
         initialParamsProvider: InitialParamsProvider,
         userSettings: UserSettingsRepository,
-        awaitAccountStartManager: AwaitAccountStartManager
+        awaitAccountStartManager: AwaitAccountStartManager,
+        preferredSpaceIdHolder: PreferredSpaceIdHolder
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
@@ -113,7 +115,8 @@ object DataViewWidgetConfigModule {
         spaceManager = spaceManager,
         initialParamsProvider = initialParamsProvider,
         settings = userSettings,
-        awaitAccountStartManager = awaitAccountStartManager
+        awaitAccountStartManager = awaitAccountStartManager,
+        preferredSpaceIdHolder = preferredSpaceIdHolder
     )
 
     @JvmStatic
@@ -156,4 +159,5 @@ interface DataViewWidgetConfigDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun metricsProvider(): InitialParamsProvider
     fun awaitAccountStartManager(): AwaitAccountStartManager
+    fun preferredSpaceIdHolder(): PreferredSpaceIdHolder
 }

@@ -41,6 +41,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipConstants.PRIVACY_
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.TERMS_OF_SERVICE
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.TierId
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
@@ -71,9 +72,9 @@ fun TierViewScreen(
     if (state is MembershipTierState.Visible) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ModalBottomSheet(
+            sheetMaxWidth = contentWidthDp(),
             modifier = Modifier
                 .padding(top = 30.dp)
-                .fillMaxWidth()
                 .wrapContentHeight(),
             sheetState = sheetState,
             containerColor = Color.Transparent,

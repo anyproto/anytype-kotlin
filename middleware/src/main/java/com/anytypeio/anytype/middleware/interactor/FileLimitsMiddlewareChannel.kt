@@ -1,4 +1,5 @@
 package com.anytypeio.anytype.middleware.interactor
+import com.anytypeio.anytype.middleware.EventGroup
 
 import com.anytypeio.anytype.core_models.FileLimitsEvent
 import com.anytypeio.anytype.data.auth.event.FileLimitsRemoteChannel
@@ -11,7 +12,7 @@ class FileLimitsMiddlewareChannel(
 ) : FileLimitsRemoteChannel {
 
     override fun observe(): Flow<List<FileLimitsEvent>> =
-        events.flow()
+        events.flow(EventGroup.FILE)
             .mapNotNull { emission ->
                 emission.messages.mapNotNull { message ->
                     when {

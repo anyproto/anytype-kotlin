@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.feature_chats.presentation
 
+import com.anytypeio.anytype.domain.chats.ChatReadSnapshot
+import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
@@ -13,13 +15,16 @@ import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 
+@Immutable
 sealed interface ChatView {
 
+    @Immutable
     data class DateSection(
         val formattedDate: String,
         val timeInMillis: Long
     ) : ChatView
 
+    @Immutable
     data class Message(
         val id: String,
         val order: Id = "",
@@ -31,6 +36,11 @@ sealed interface ChatView {
         val attachments: List<Attachment> = emptyList(),
         val reactions: List<Reaction> = emptyList(),
         val isUserAuthor: Boolean = false,
+        /**
+         * Whether the current user may delete this message: the author always can,
+         * and Owners/Admins can delete any message (DROID-4250, chat moderation).
+         */
+        val canDelete: Boolean = false,
         val shouldHideUsername: Boolean = false,
         val isEdited: Boolean = false,
         val isSynced: Boolean,
@@ -43,6 +53,7 @@ sealed interface ChatView {
             reactions.size >= ChatConfig.MAX_REACTION_COUNT ||
             reactions.count { it.isSelected } >= ChatConfig.MAX_USER_REACTION_COUNT
 
+        @Immutable
         data class Content(val msg: String, val parts: List<Part>) {
             /**
              * Returns the plain text content including emoji characters.
@@ -59,6 +70,7 @@ sealed interface ChatView {
                 }
             }
 
+            @Immutable
             data class Part(
                 val part: String,
                 val styles: List<Block.Content.Text.Mark> = emptyList()
@@ -75,12 +87,14 @@ sealed interface ChatView {
             }
         }
 
+        @Immutable
         data class Reply(
             val msg: Id,
             val text: String,
             val author: String
         )
 
+        @Immutable
         sealed class Attachment {
 
             sealed class SyncStatus {
@@ -171,6 +185,7 @@ sealed interface ChatView {
             ) : Attachment()
         }
 
+        @Immutable
         sealed class ChatBoxAttachment {
 
             data class Media(
@@ -230,11 +245,13 @@ sealed interface ChatView {
             }
         }
 
+        @Immutable
         data class Reaction(
             val emoji: String,
             val count: Int,
             val isSelected: Boolean = false
         )
+        @Immutable
         sealed class Avatar {
             data class Initials(val initial: String = ""): Avatar()
             data class Image(val hash: Hash): Avatar()
@@ -242,12 +259,15 @@ sealed interface ChatView {
     }
 }
 
+@Immutable
 data class ChatViewState(
     val messages: List<ChatView> = emptyList(),
     val intent: ChatContainer.Intent = ChatContainer.Intent.None,
     val counter: Counter = Counter(),
     val isLoading: Boolean = false,
+    val readSnapshot: ChatReadSnapshot? = null,
 ) {
+    @Immutable
     data class Counter(
         val messages: Int = 0,
         val mentions: Int = 0

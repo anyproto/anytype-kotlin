@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.extensions.light
+import com.anytypeio.anytype.core_ui.widgets.ListViewRelationTagValueView
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
@@ -274,48 +275,24 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                     }
                 }
                 is DefaultObjectRelationValueView.Tag -> {
-                    val group = LinearLayout(context).apply {
-                        id = generateViewId()
-                        orientation = HORIZONTAL
-                    }
-                    relation.tags.forEachIndexed { idx, tag ->
-                        val color = ThemeColor.entries.find { v -> v.code == tag.color }
-                        val defaultTextColor = resources.getColor(R.color.text_primary, null)
-                        val defaultBackground = resources.getColor(R.color.shape_primary, null)
-                        val view = TextView(themeWrapper).apply {
+                    // Match the List view: render only the first tag chip + a "+N" overflow badge
+                    // (see ListViewRelationTagValueView), instead of laying out every tag.
+                    val firstTag = relation.tags.firstOrNull()
+                    if (firstTag != null) {
+                        val view = ListViewRelationTagValueView(themeWrapper).apply {
                             id = generateViewId()
-                            isSingleLine = true
-                            maxLines = 1
-                            ellipsize = TextUtils.TruncateAt.END
-                            text = tag.tag
-                            if (color != null) {
-                                setTextColor(resources.dark(color, defaultTextColor))
-                                setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
-                                background.setDrawableColor(
-                                    resources.light(
-                                        color,
-                                        defaultBackground
-                                    )
-                                )
-                            } else {
-                                setTextColor(defaultTextColor)
-                                setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
-                                background.setDrawableColor(defaultBackground)
-                            }
+                            setup(
+                                name = firstTag.tag,
+                                tagColor = firstTag.color,
+                                size = relation.tags.size
+                            )
                         }
-                        group.addView(view)
+                        addView(view)
                         view.updateLayoutParams<LayoutParams> {
-                            marginStart = if (idx == 0) {
-                                firstItemMargin
-                            } else {
-                                intervalItemMargin
-                            }
+                            marginStart = firstItemMargin
+                            marginEnd = firstItemMargin
+                            bottomMargin = if (index == size - 1) 0 else defaultBottomMargin
                         }
-                    }
-                    addView(group)
-                    group.updateLayoutParams<LayoutParams> {
-                        bottomMargin = if (index == size - 1) 0 else defaultBottomMargin
-                        marginEnd = firstItemMargin
                     }
                 }
                 is DefaultObjectRelationValueView.File -> {

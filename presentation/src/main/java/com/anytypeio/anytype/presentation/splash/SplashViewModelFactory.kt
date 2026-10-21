@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
+import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -16,6 +17,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
+import com.anytypeio.anytype.domain.vault.SetVaultSearchHighlightSeen
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.auth.account.MigrationHelperDelegate
@@ -43,7 +45,9 @@ class SplashViewModelFactory @Inject constructor(
     private val migration: MigrationHelperDelegate,
     private val deepLinkResolver: DeepLinkResolver,
     private val pendingIntentStore: PendingIntentStore,
-    private val searchObjects: SearchObjects
+    private val searchObjects: SearchObjects,
+    private val preferredSpaceIdHolder: PreferredSpaceIdHolder,
+    private val setVaultSearchHighlightSeen: SetVaultSearchHighlightSeen
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -65,6 +69,8 @@ class SplashViewModelFactory @Inject constructor(
             migration = migration,
             deepLinkResolver = deepLinkResolver,
             pendingIntentStore = pendingIntentStore,
-            searchObjects = searchObjects
+            searchObjects = searchObjects,
+            preferredSpaceIdHolder = preferredSpaceIdHolder,
+            setVaultSearchHighlightSeen = setVaultSearchHighlightSeen
         ) as T
 }

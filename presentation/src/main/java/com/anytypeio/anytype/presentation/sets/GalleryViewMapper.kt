@@ -17,8 +17,10 @@ import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.objects.setTypeRelationIconsAsNone
+import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.objects.values
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.CoverContainer
@@ -52,6 +54,15 @@ suspend fun DVViewer.buildGalleryViews(
 
     val hasCover = !coverRelationKey.isNullOrEmpty()
 
+    // Cover lookup for non-page-cover relations resolves file objects against the
+    // store — snapshot it once per render instead of copying the whole store for
+    // every single card.
+    val dependedObjects = if (hasCover && coverRelationKey != Relations.PAGE_COVER) {
+        objectStore.getAll()
+    } else {
+        emptyList()
+    }
+
     val orderMap = objectOrderIds.mapIndexed { index, id -> id to index }.toMap()
 
     return objectIds
@@ -64,6 +75,7 @@ suspend fun DVViewer.buildGalleryViews(
                     coverImageHashProvider = coverImageHashProvider,
                     urlBuilder = urlBuilder,
                     store = objectStore,
+                    dependedObjects = dependedObjects,
                     filteredRelations = filteredRelations,
                     isLargeSize = true,
                     storeOfRelations = storeOfRelations,
@@ -97,9 +109,49 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
     storeOfObjectTypes: StoreOfObjectTypes,
     hideName: Boolean
 ): Viewer.GalleryView.Item {
-    val obj = this
+    val content = buildCardContent(
+        urlBuilder = urlBuilder,
+        viewerRelations = viewerRelations,
+        store = store,
+        filteredRelations = filteredRelations,
+        fieldParser = fieldParser,
+        storeOfObjectTypes = storeOfObjectTypes
+    )
     return Viewer.GalleryView.Item.Default(
-        objectId = obj.id,
+        objectId = id,
+        relations = content.relations,
+        hideIcon = hideIcon,
+        hideName = hideName,
+        name = content.name,
+        icon = content.icon
+    )
+}
+
+/**
+ * The visual content shared by gallery/list/board cards built from a single object:
+ * its display [name], [icon] and the resolved [relations] to show on the card.
+ */
+internal data class ObjectCardContent(
+    val name: String,
+    val icon: ObjectIcon,
+    val relations: List<DefaultObjectRelationValueView>
+)
+
+internal suspend fun ObjectWrapper.Basic.buildCardContent(
+    urlBuilder: UrlBuilder,
+    viewerRelations: List<DVViewerRelation>,
+    store: ObjectStore,
+    filteredRelations: List<ObjectWrapper.Relation>,
+    fieldParser: FieldParser,
+    storeOfObjectTypes: StoreOfObjectTypes
+): ObjectCardContent {
+    val obj = this
+    return ObjectCardContent(
+        name = fieldParser.getObjectName(obj),
+        icon = obj.objectIcon(
+            builder = urlBuilder,
+            objType = storeOfObjectTypes.getTypeOfObject(obj)
+        ),
         relations = obj.values(
             relations = filteredRelations,
             urlBuilder = urlBuilder,
@@ -107,14 +159,7 @@ private suspend fun ObjectWrapper.Basic.mapToDefaultItem(
             storeOfObjects = store,
             fieldParser = fieldParser,
             storeOfObjectTypes = storeOfObjectTypes
-        ).setTypeRelationIconsAsNone(),
-        hideIcon = hideIcon,
-        hideName = hideName,
-        name = fieldParser.getObjectName(obj),
-        icon = obj.objectIcon(
-            builder = urlBuilder,
-            objType = storeOfObjectTypes.getTypeOfObject(obj)
-        )
+        ).setTypeRelationIconsAsNone()
     )
 }
 
@@ -123,6 +168,7 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
     coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
     store: ObjectStore,
+    dependedObjects: List<ObjectWrapper.Basic>,
     filteredRelations: List<ObjectWrapper.Relation>,
     isLargeSize: Boolean,
     storeOfRelations: StoreOfRelations,
@@ -137,7 +183,7 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
         dvViewer = dvViewer,
         coverImageHashProvider = coverImageHashProvider,
         urlBuilder = urlBuilder,
-        store = store,
+        dependedObjects = dependedObjects,
         storeOfRelations = storeOfRelations,
         isLargeSize = isLargeSize
     )
@@ -171,7 +217,7 @@ private suspend fun getCoverContainer(
     dvViewer: DVViewer,
     coverImageHashProvider: CoverImageHashProvider,
     urlBuilder: UrlBuilder,
-    store: ObjectStore,
+    dependedObjects: List<ObjectWrapper.Basic>,
     storeOfRelations: StoreOfRelations,
     isLargeSize: Boolean
 ): CoverContainer {
@@ -192,7 +238,7 @@ private suspend fun getCoverContainer(
                 obj = obj,
                 dvViewer = dvViewer,
                 urlBuilder = urlBuilder,
-                dependedObjects = store.getAll(),
+                dependedObjects = dependedObjects,
                 storeOfRelations = storeOfRelations,
                 isLargeSize = isLargeSize
             )

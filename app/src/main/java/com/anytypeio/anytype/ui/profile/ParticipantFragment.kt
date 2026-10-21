@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.profile.ParticipantViewModel
+import com.anytypeio.anytype.ui.multiplayer.RemoveMemberWarning
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -28,6 +29,8 @@ class ParticipantFragment: BaseBottomSheetComposeFragment() {
     lateinit var factory: ParticipantViewModel.Factory
 
     private val vm by viewModels<ParticipantViewModel> { factory }
+
+    private var removeMemberWarning: RemoveMemberWarning? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,6 +75,19 @@ class ParticipantFragment: BaseBottomSheetComposeFragment() {
                 }.onFailure {
                     Timber.e(it, "Error while opening space")
                 }
+            }
+
+            is ParticipantViewModel.Command.ShowRemoveMemberWarning -> {
+                val dialog = RemoveMemberWarning.new(name = command.name)
+                dialog.onAccepted = {
+                    vm.onRemoveMemberConfirmed(command.identity)
+                }
+                removeMemberWarning = dialog
+                dialog.show(childFragmentManager, null)
+            }
+            ParticipantViewModel.Command.DismissRemoveMemberWarning -> {
+                removeMemberWarning?.dismiss()
+                removeMemberWarning = null
             }
         }
     }

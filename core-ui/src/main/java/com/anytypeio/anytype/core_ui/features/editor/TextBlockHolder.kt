@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_ui.tools.SlashTextWatcher
 import com.anytypeio.anytype.core_ui.tools.SlashTextWatcherState
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.core_utils.clipboard.parseUrlFromClipboard
+import com.anytypeio.anytype.core_utils.ext.isCaretAt
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -65,7 +66,19 @@ interface TextBlockHolder : TextHolder {
     ) {
         content.applyMovementMethod(markup)
         when (markup.marks.isEmpty()) {
-            true -> content.setText(text)
+            // Re-setting identical text tears down the widget's composing region, which
+            // resets the IME's automaton and breaks Hangul/Kana/Pinyin composition
+            // mid-syllable. Skip when the widget already shows exactly this content and
+            // carries no leftover markup that this (mark-free) update has to clear.
+            true -> {
+                val editable = content.editableText
+                if (editable == null || editable.toString() != text || editable.marks().isNotEmpty()) {
+                    content.setText(text)
+                }
+            }
+            // The spannable path is deliberately left unguarded: [Editable.marks] cannot
+            // round-trip [Markup.Mark] faithfully — every mention subtype collapses to
+            // Mention.Base — so a marks-equality guard here would strand stale markup.
             false -> setBlockSpannableText(markup, clicked, textColor)
         }
     }
@@ -355,12 +368,23 @@ interface TextBlockHolder : TextHolder {
         }
 
         try {
-            if (payload.isCursorChanged) {
+            // Apply the cursor when the diff reports one, and also when the block just gained
+            // focus. A view rebuild — a rotation, for example — re-renders the focused block
+            // with the cursor already correct, so the diff reports FOCUS_CHANGED alone, the
+            // branch below never runs, and the caret falls to 0. Ordinary editing is not
+            // affected: onBlockFocusChanged stores a null cursor, so item.cursor is null on a
+            // normal tap and this block does nothing.
+            if (payload.isCursorChanged || (payload.focusChanged() && item.isFocused)) {
                 item.cursor?.let { cursor ->
                     val textLength = content.text?.length ?: 0
                     val validCursor = cursor.coerceIn(0, textLength)
                     if (textLength > 0 && validCursor <= textLength) {
-                        content.setSelection(validCursor)
+                        // Moving the caret to where it already is would needlessly notify
+                        // the IME about a selection change while a composition is in
+                        // progress. See [TextHolder.setCursor].
+                        if (!content.isCaretAt(validCursor)) {
+                            content.setSelection(validCursor)
+                        }
                     } else {
                         Timber.w("Invalid cursor position: cursor=$cursor, textLength=$textLength")
                     }

@@ -24,15 +24,17 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -50,9 +52,13 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.domain.chats.ChatReadSnapshot
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -70,7 +76,6 @@ import com.anytypeio.anytype.core_utils.ext.isVideo
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.feature_chats.R
-import com.anytypeio.anytype.feature_chats.presentation.ChatSearchState
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
@@ -84,7 +89,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -99,12 +103,7 @@ fun ChatScreenWrapper(
     onRequestOpenFullScreenImageGallery: (List<Id>, Int) -> Unit,
     onSelectChatReaction: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
-    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
-    chatSearchState: ChatSearchState = ChatSearchState.Idle,
-    onSearchDismissed: () -> Unit = {},
-    onSearchBarTapped: () -> Unit = {},
-    onSearchNextResult: () -> Unit = {},
-    onSearchPreviousResult: () -> Unit = {}
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
 ) {
     val quickCreateTypes by vm.quickCreateTypes.collectAsStateWithLifecycle()
     val handleAttachmentAction: (AttachmentMenuAction) -> Unit = { action ->
@@ -132,17 +131,10 @@ fun ChatScreenWrapper(
         val clipboard = LocalClipboardManager.current
         val lazyListState = rememberLazyListState()
 
-        val messages by vm.uiState
-            .map { it.messages }
-            .collectAsStateWithLifecycle(emptyList())
+        // Messages and their read watermark must come from the same emission.
+        val chatState by vm.uiState.collectAsStateWithLifecycle()
 
-        val counter by vm.uiState
-            .map { it.counter }
-            .collectAsStateWithLifecycle(ChatViewState.Counter())
-
-        val intent by vm.uiState
-            .map { it.intent }
-            .collectAsStateWithLifecycle(ChatContainer.Intent.None)
+        val chatBoxMode by vm.chatBoxMode.collectAsStateWithLifecycle()
 
         val mentionPanelState by vm.mentionPanelState.collectAsStateWithLifecycle()
 
@@ -151,12 +143,13 @@ fun ChatScreenWrapper(
         val spaceUxType by vm.currentSpaceUxType.collectAsStateWithLifecycle()
 
         ChatScreen(
-            isLoading = vm.uiState.collectAsStateWithLifecycle().value.isLoading,
+            isLoading = chatState.isLoading,
             isSyncing = vm.isSyncing.collectAsStateWithLifecycle().value,
-            chatBoxMode = vm.chatBoxMode.collectAsState().value,
-            messages = messages,
-            counter = counter,
-            intent = intent,
+            chatBoxMode = chatBoxMode,
+            messages = chatState.messages,
+            counter = chatState.counter,
+            intent = chatState.intent,
+            readSnapshot = chatState.readSnapshot,
             attachments = vm.chatBoxAttachments.collectAsState().value,
             inviteLinkAccessLevel = inviteLinkAccessLevel,
             onMessageSent = { text, spans ->
@@ -273,9 +266,7 @@ fun ChatScreenWrapper(
             onGoToMentionClicked = vm::onGoToMentionClicked,
             onAddMembersClick = vm::onEmptyStateAction,
             onShowQRCodeClick = vm::onShowQRCode,
-            isReadOnly = vm.chatBoxMode
-                .collectAsStateWithLifecycle()
-                .value is ChatBoxMode.ReadOnly,
+            isReadOnly = chatBoxMode is ChatBoxMode.ReadOnly,
             spaceUxType = spaceUxType,
             onImageCaptured = {
                 vm.onChatBoxMediaPicked(
@@ -306,12 +297,7 @@ fun ChatScreenWrapper(
             onCameraPermissionDenied = vm::onCameraPermissionDenied,
             onOpenAttachmentInBrowser = vm::onOpenAttachmentInBrowser,
             onOpenAttachmentFile = vm::onOpenAttachmentFile,
-            onOpenAttachmentAsObject = vm::onOpenAttachmentAsObject,
-            chatSearchState = chatSearchState,
-            onSearchDismissed = onSearchDismissed,
-            onSearchBarTapped = onSearchBarTapped,
-            onSearchNextResult = onSearchNextResult,
-            onSearchPreviousResult = onSearchPreviousResult
+            onOpenAttachmentAsObject = vm::onOpenAttachmentAsObject
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->
@@ -404,6 +390,38 @@ private fun LazyListState.OnBottomReachedSafely(
 }
 
 /**
+ * Whether the chat should follow its tail — scroll to the newest message — after the item
+ * count changed.
+ *
+ * [wasAtBottom] is deliberately the value captured before the layout pass: the effect that
+ * consumes this runs in the frame callback, before measure, and once an item has been added
+ * at index 0 the live "is at bottom" reading is already false. Following the tail therefore
+ * has to be decided from the pre-change position.
+ *
+ * The item count alone cannot tell an arriving message from a page load: the list is
+ * reversed, so both land at index 0. It is the *size of the change* that distinguishes them
+ * — if fewer items arrived than fit on screen, following the tail keeps the user's context;
+ * if more arrived, following it would teleport the user past everything that just loaded.
+ * That is DROID-4556: a forward page fetched because the user scrolled down to read new
+ * messages must not immediately scroll them past those messages.
+ */
+internal fun shouldFollowChatTail(
+    wasAtBottom: Boolean,
+    isPerformingScrollIntent: Boolean,
+    previousItemCount: Int,
+    newItemCount: Int,
+    viewportItemCount: Int
+): Boolean {
+    if (!wasAtBottom || isPerformingScrollIntent) return false
+    // First population of the list.
+    if (previousItemCount == 0) return true
+    val appended = newItemCount - previousItemCount
+    // Deletion, or a window trim: not a new-message arrival.
+    if (appended <= 0) return true
+    return appended <= maxOf(viewportItemCount, 1)
+}
+
+/**
  * TODO: do date formating before rendering?
  */
 @Composable
@@ -445,7 +463,7 @@ fun ChatScreen(
     onScrollToReplyClicked: (Id) -> Unit,
     onClearIntent: () -> Unit,
     onScrollToBottomClicked: (Id?) -> Unit,
-    onVisibleRangeChanged: (Id, Id) -> Unit,
+    onVisibleRangeChanged: (Id?, Id?, ChatReadSnapshot?) -> Unit,
     onUrlInserted: (Url) -> Unit,
     onGoToMentionClicked: () -> Unit,
     onAddMembersClick: () -> Unit,
@@ -461,20 +479,12 @@ fun ChatScreen(
     onOpenAttachmentInBrowser: (ChatView.Message) -> Unit = {},
     onOpenAttachmentFile: (ChatView.Message) -> Unit = {},
     onOpenAttachmentAsObject: (ChatView.Message) -> Unit = {},
-    chatSearchState: ChatSearchState = ChatSearchState.Idle,
-    onSearchDismissed: () -> Unit = {},
-    onSearchBarTapped: () -> Unit = {},
-    onSearchNextResult: () -> Unit = {},
-    onSearchPreviousResult: () -> Unit = {}
+    readSnapshot: ChatReadSnapshot? = null
 ) {
-
-    Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
 
     val scope = rememberCoroutineScope()
 
-    var text by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue())
-    }
+    val chatBoxInputState = rememberChatBoxInputState()
 
     var highlightedMessageId by remember { mutableStateOf<Id?>(null) }
 
@@ -512,86 +522,153 @@ fun ChatScreen(
             }
     }
 
-    var spans by remember { mutableStateOf<List<ChatBoxSpan>>(emptyList()) }
-
     val chatBoxFocusRequester = remember { FocusRequester() }
 
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val isPerformingScrollIntent = remember { mutableStateOf(false) }
+    var visibilityGeneration by remember { mutableIntStateOf(0) }
 
     val offsetPx = with(LocalDensity.current) { 50.dp.toPx().toInt() }
 
     // Applying view model intents
     LaunchedEffect(intent) {
         Timber.d("DROID-2966 New intent: $intent")
-        when (intent) {
-            is ChatContainer.Intent.ScrollToMessage -> {
-                isPerformingScrollIntent.value = true
-                val index = messages.indexOfFirst {
-                    it is ChatView.Message && it.id == intent.id
-                }
-                if (index >= 0) {
-                    snapshotFlow { lazyListState.layoutInfo.totalItemsCount }
-                        .first { it > index }
-                    if (intent.smooth) {
-                        lazyListState.animateScrollToItem(index)
-                    } else {
-                        if (intent.startOfUnreadMessageSection) {
-                            lazyListState.scrollToItem(index, scrollOffset = -offsetPx)
+        if (intent == ChatContainer.Intent.None) return@LaunchedEffect
+        isPerformingScrollIntent.value = true
+        onVisibleRangeChanged(null, null, null)
+        try {
+            when (intent) {
+                is ChatContainer.Intent.ScrollToMessage -> {
+                    val index = messages.indexOfFirst {
+                        it is ChatView.Message && it.id == intent.id
+                    }
+                    if (index >= 0) {
+                        snapshotFlow { lazyListState.layoutInfo.totalItemsCount }
+                            .first { it > index }
+                        if (intent.smooth) {
+                            lazyListState.animateScrollToItem(index)
                         } else {
-                            lazyListState.scrollToItem(index)
+                            if (intent.startOfUnreadMessageSection) {
+                                lazyListState.scrollToItem(index, scrollOffset = -offsetPx)
+                            } else {
+                                lazyListState.scrollToItem(index)
+                            }
                         }
-                    }
-                    awaitFrame()
+                        awaitFrame()
 
-                    if (intent.highlight) {
-                        highlightedMessageId = intent.id
-                        delay(500)
-                        highlightedMessageId = null
+                        if (intent.highlight) {
+                            highlightedMessageId = intent.id
+                            delay(500)
+                            highlightedMessageId = null
+                        }
+                    } else {
+                        Timber.d("DROID-2966 COMPOSE Could not find the scrolling target for the intent")
                     }
-                } else {
-                    Timber.d("DROID-2966 COMPOSE Could not find the scrolling target for the intent")
                 }
-                onClearIntent()
-                isPerformingScrollIntent.value = false
+                is ChatContainer.Intent.ScrollToBottom -> {
+                    Timber.d("DROID-2966 COMPOSE scroll to bottom")
+                    smoothScrollToBottom(lazyListState)
+                    awaitFrame()
+                }
+                ChatContainer.Intent.None -> Unit
             }
-            is ChatContainer.Intent.ScrollToBottom -> {
-                Timber.d("DROID-2966 COMPOSE scroll to bottom")
-                isPerformingScrollIntent.value = true
-                smoothScrollToBottom(lazyListState)
-                awaitFrame()
-                isPerformingScrollIntent.value = false
-                onClearIntent()
-            }
-            ChatContainer.Intent.None -> Unit
+        } finally {
+            isPerformingScrollIntent.value = false
+            highlightedMessageId = null
+            // A missing target/no-op scroll can finish before snapshotFlow observes true.
+            // Force it to restore the range even when the visible ids have not changed.
+            visibilityGeneration++
         }
+        onClearIntent()
     }
 
     // Tracking visible range
-    LaunchedEffect(lazyListState, messages, isPerformingScrollIntent.value) {
-        snapshotFlow { lazyListState.layoutInfo }
-            .mapNotNull { layoutInfo ->
-                if (layoutInfo.totalItemsCount == 0) return@mapNotNull null
-
-                val viewportHeight = layoutInfo.viewportSize.height
-                val visibleMessages = layoutInfo.visibleItemsInfo
-                    .filter { item ->
-                        val itemBottom = item.offset + item.size
-                        val isFullyVisible = item.offset >= 0 && itemBottom <= viewportHeight
-                        isFullyVisible
-                    }
-                    .sortedBy { it.index } // still necessary
-                    .mapNotNull { item -> messages.getOrNull(item.index) }
-                    .filterIsInstance<ChatView.Message>()
-
-                if (visibleMessages.isNotEmpty() && !isPerformingScrollIntent.value) {
-                    visibleMessages.first().id to visibleMessages.last().id
-                } else null
+    val messagesById = remember(messages) {
+        messages.filterIsInstance<ChatView.Message>().associateBy { it.id }
+    }
+    val currentMessagesById by rememberUpdatedState(messagesById)
+    val messageKeys = remember(messages) {
+        messages.map { msg ->
+            when (msg) {
+                is ChatView.Message -> msg.id
+                is ChatView.DateSection -> "$DATE_KEY_PREFIX${msg.timeInMillis}"
             }
+        }
+    }
+    val currentMessageKeys by rememberUpdatedState(messageKeys)
+    val currentReadSnapshot by rememberUpdatedState(readSnapshot)
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val reportVisibleRange by rememberUpdatedState(onVisibleRangeChanged)
+    DisposableEffect(lifecycle) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                visibilityGeneration++
+            } else if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)) {
+                reportVisibleRange(null, null, null)
+                visibilityGeneration++
+            }
+        }
+        lifecycle.addObserver(observer)
+        onDispose {
+            lifecycle.removeObserver(observer)
+            reportVisibleRange(null, null, null)
+        }
+    }
+    LaunchedEffect(lazyListState, lifecycle) {
+        snapshotFlow {
+            val layoutInfo = lazyListState.layoutInfo
+            var from: ChatView.Message? = null
+            var to: ChatView.Message? = null
+            if (layoutInfo.totalItemsCount > 0 && !isPerformingScrollIntent.value &&
+                lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) &&
+                isChatReadLayoutCurrent(
+                    currentMessageKeys,
+                    layoutInfo.totalItemsCount,
+                    layoutInfo.visibleItemsInfo.map { it.index to it.key }
+                )
+            ) {
+                val msgs = currentMessagesById
+                var fromIndex = Int.MAX_VALUE
+                var toIndex = Int.MIN_VALUE
+                layoutInfo.visibleItemsInfo.forEach { item ->
+                    if (isMessageVisibleForReading(
+                            offset = item.offset,
+                            size = item.size,
+                            viewportStart = layoutInfo.viewportStartOffset,
+                            viewportEnd = layoutInfo.viewportEndOffset
+                        )
+                    ) {
+                        // The message list can update before LazyColumn has remeasured.
+                        // Its stable key, unlike the old layout index, still identifies
+                        // the message whose geometry was actually measured.
+                        val msg = msgs[item.key]
+                        if (msg != null) {
+                            if (item.index < fromIndex) {
+                                fromIndex = item.index
+                                from = msg
+                            }
+                            if (item.index > toIndex) {
+                                toIndex = item.index
+                                to = msg
+                            }
+                        }
+                    }
+                }
+            }
+            val first = from
+            val last = to
+            ChatReadVisibility(
+                range = if (first != null && last != null) first.id to last.id else null,
+                snapshot = currentReadSnapshot,
+                generation = visibilityGeneration
+            )
+        }
             .distinctUntilChanged()
-            .collect { (from, to) ->
-                onVisibleRangeChanged(from, to)
+            .collect { visible ->
+                // ON_PAUSE may invalidate visibility while a snapshot is already queued.
+                val range = visible.range.takeIf { lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) }
+                reportVisibleRange(range?.first, range?.second, visible.snapshot)
             }
     }
 
@@ -632,12 +709,25 @@ fun ChatScreen(
             }
     }
 
+    // Item count of the previous emission — used to tell a live tail append (follow it)
+    // from a page that landed below the viewport (stay put — DROID-4556).
+    var previousItemCount by remember { mutableIntStateOf(0) }
+
     // Scrolling to bottom when list size changes and we are at the bottom of the list
     LaunchedEffect(messages.size) {
-        if (wasAtBottom && !isPerformingScrollIntent.value) {
+        val previous = previousItemCount
+        previousItemCount = messages.size
+        val shouldFollow = shouldFollowChatTail(
+            wasAtBottom = wasAtBottom,
+            isPerformingScrollIntent = isPerformingScrollIntent.value,
+            previousItemCount = previous,
+            newItemCount = messages.size,
+            viewportItemCount = lazyListState.layoutInfo.visibleItemsInfo.size
+        )
+        if (shouldFollow) {
             lazyListState.animateScrollToItem(0)
         } else {
-            Timber.d("DROID-2966 Skipping auto-scroll")
+            Timber.d("DROID-2966 Skipping auto-scroll: $previous -> ${messages.size}")
         }
     }
 
@@ -674,7 +764,7 @@ fun ChatScreen(
                 onAttachmentClicked = onAttachmentClicked,
                 onEditMessage = { msg ->
                     onEditMessage(msg).also {
-                        text = TextFieldValue(
+                        chatBoxInputState.text = TextFieldValue(
                             msg.content.msg,
                             selection = TextRange(msg.content.msg.length)
                         )
@@ -715,98 +805,93 @@ fun ChatScreen(
                 onOpenAttachmentAsObject = onOpenAttachmentAsObject
             )
 
-            val isInlineSearchActive = chatSearchState is ChatSearchState.Active
-                && !chatSearchState.isResultsListVisible
+            val hasMentionsInGroupChat = counter.mentions > 0
+                && spaceUxType != null
+                && spaceUxType != SpaceUxType.ONE_TO_ONE
 
-            if (!isInlineSearchActive) {
-                val hasMentionsInGroupChat = counter.mentions > 0
-                    && spaceUxType != null
-                    && spaceUxType != SpaceUxType.ONE_TO_ONE
+            GoToMentionButton(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(
+                        end = 12.dp,
+                        bottom = if (jumpToBottomButtonEnabled) 60.dp else 0.dp
+                    ),
+                onClick = onGoToMentionClicked,
+                enabled = hasMentionsInGroupChat
+            )
 
-                GoToMentionButton(
+            if (hasMentionsInGroupChat) {
+                Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
+                        .defaultMinSize(minWidth = 20.dp, minHeight = 20.dp)
                         .padding(
-                            end = 12.dp,
-                            bottom = if (jumpToBottomButtonEnabled) 60.dp else 0.dp
-                        ),
-                    onClick = onGoToMentionClicked,
-                    enabled = hasMentionsInGroupChat
-                )
-
-                if (hasMentionsInGroupChat) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .defaultMinSize(minWidth = 20.dp, minHeight = 20.dp)
-                            .padding(
-                                bottom = if (jumpToBottomButtonEnabled) 106.dp else 46.dp,
-                                end = 2.dp
-                            )
-                            .background(
-                                color = colorResource(R.color.transparent_active),
-                                shape = CircleShape
-                            )
-                    ) {
-                        Text(
-                            text = counter.mentions.toString(),
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(
-                                    horizontal = 5.dp,
-                                    vertical = 2.dp
-                                ),
-                            color = colorResource(R.color.glyph_white),
-                            style = Caption1Regular
+                            bottom = if (jumpToBottomButtonEnabled) 106.dp else 46.dp,
+                            end = 2.dp
                         )
-                    }
+                        .background(
+                            color = colorResource(R.color.transparent_active),
+                            shape = CircleShape
+                        )
+                ) {
+                    Text(
+                        text = counter.mentions.toString(),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(
+                                horizontal = 5.dp,
+                                vertical = 2.dp
+                            ),
+                        color = colorResource(R.color.glyph_white),
+                        style = Caption1Regular
+                    )
                 }
+            }
 
-                GoToBottomButton(
+            GoToBottomButton(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 12.dp),
+                onGoToBottomClicked = {
+                    val lastVisibleIndex = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                    val lastVisibleView = if (lastVisibleIndex != null) {
+                        messages.getOrNull(lastVisibleIndex)
+                    } else {
+                        null
+                    }
+                    if (lastVisibleView is ChatView.Message) {
+                        onScrollToBottomClicked(
+                            lastVisibleView.id
+                        )
+                    } else {
+                        onScrollToBottomClicked(null)
+                    }
+                },
+                enabled = jumpToBottomButtonEnabled
+            )
+
+            if (counter.messages > 0) {
+                Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)
-                        .padding(end = 12.dp),
-                    onGoToBottomClicked = {
-                        val lastVisibleIndex = lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                        val lastVisibleView = if (lastVisibleIndex != null) {
-                            messages.getOrNull(lastVisibleIndex)
-                        } else {
-                            null
-                        }
-                        if (lastVisibleView is ChatView.Message) {
-                            onScrollToBottomClicked(
-                                lastVisibleView.id
-                            )
-                        } else {
-                            onScrollToBottomClicked(null)
-                        }
-                    },
-                    enabled = jumpToBottomButtonEnabled
-                )
-
-                if (counter.messages > 0) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomEnd)
-                            .defaultMinSize(minWidth = 20.dp, minHeight = 20.dp)
-                            .padding(bottom = 46.dp, end = 2.dp)
-                            .background(
-                                color = colorResource(R.color.transparent_active),
-                                shape = CircleShape
-                            )
-                    ) {
-                        Text(
-                            text = counter.messages.toString(),
-                            modifier = Modifier
-                                .align(Alignment.Center)
-                                .padding(
-                                    horizontal = 5.dp,
-                                    vertical = 2.dp
-                                ),
-                            color = colorResource(R.color.glyph_white),
-                            style = Caption1Regular
+                        .defaultMinSize(minWidth = 20.dp, minHeight = 20.dp)
+                        .padding(bottom = 46.dp, end = 2.dp)
+                        .background(
+                            color = colorResource(R.color.transparent_active),
+                            shape = CircleShape
                         )
-                    }
+                ) {
+                    Text(
+                        text = counter.messages.toString(),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(
+                                horizontal = 5.dp,
+                                vertical = 2.dp
+                            ),
+                        color = colorResource(R.color.glyph_white),
+                        style = Caption1Regular
+                    )
                 }
             }
 
@@ -839,7 +924,7 @@ fun ChatScreen(
                                     .noRippleClickable {
 
                                         val query = mentionPanelState.query
-                                        val input = text.text
+                                        val input = chatBoxInputState.text.text
 
                                         val replacementText = member.name + " "
 
@@ -853,7 +938,7 @@ fun ChatScreen(
 
                                         // After inserting a mention, all existing spans after the insertion point are shifted based on the text length difference.
 
-                                        val updatedSpans = spans.map { span ->
+                                        val updatedSpans = chatBoxInputState.spans.map { span ->
                                             if (span.start > query.range.last) {
                                                 when (span) {
                                                     is ChatBoxSpan.Mention -> {
@@ -875,7 +960,7 @@ fun ChatScreen(
                                             }
                                         }
 
-                                        text = text.copy(
+                                        chatBoxInputState.text = chatBoxInputState.text.copy(
                                             text = updatedText,
                                             selection = TextRange(
                                                 index = (query.range.start + replacementText.length)
@@ -891,27 +976,15 @@ fun ChatScreen(
                                             param = member.id
                                         )
 
-                                        spans = updatedSpans + mentionSpan
+                                        chatBoxInputState.spans = updatedSpans + mentionSpan
 
-                                        onTextChanged(text)
+                                        onTextChanged(chatBoxInputState.text)
                                     }
                             )
                             Divider()
                         }
                     }
                 }
-            }
-
-            if (chatSearchState is ChatSearchState.Active && !chatSearchState.isResultsListVisible) {
-                SearchNavigationButtons(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 12.dp, bottom = 12.dp),
-                    canNavigateUp = chatSearchState.currentIndex < chatSearchState.results.size - 1,
-                    canNavigateDown = chatSearchState.currentIndex > 0,
-                    onNavigateUp = onSearchNextResult,
-                    onNavigateDown = onSearchPreviousResult
-                )
             }
 
             if (isFloatingDateVisible.value && floatingDateState.value != null) {
@@ -929,19 +1002,7 @@ fun ChatScreen(
             )
         }
 
-        if (chatSearchState is ChatSearchState.Active && !chatSearchState.isResultsListVisible) {
-            ChatSearchBar(
-                query = chatSearchState.query,
-                onQueryChanged = {},
-                onDismiss = onSearchDismissed,
-                onClick = onSearchBarTapped,
-                backgroundColorRes = R.color.background_primary,
-                closeIconTintColorRes = R.color.glyph_selected,
-                modifier = Modifier
-                    .imePadding()
-                    .navigationBarsPadding()
-            )
-        } else if (isReadOnly) {
+        if (isReadOnly) {
             ReaderChatBox(
                 modifier = Modifier
                     .padding(start = 20.dp, end = 20.dp, bottom = 12.dp)
@@ -973,8 +1034,8 @@ fun ChatScreen(
                 },
                 attachments = attachments,
                 clearText = {
-                    text = TextFieldValue()
-                    spans = emptyList()
+                    chatBoxInputState.text = TextFieldValue()
+                    chatBoxInputState.spans = emptyList()
                 },
                 quickCreateTypes = quickCreateTypes,
                 onAttachmentAction = onAttachmentAction,
@@ -985,17 +1046,16 @@ fun ChatScreen(
                 onChatBoxFilePicked = onChatBoxFilePicked,
                 onExitEditMessageMode = {
                     onExitEditMessageMode().also {
-                        text = TextFieldValue()
-                        spans = emptyList()
+                        chatBoxInputState.text = TextFieldValue()
+                        chatBoxInputState.spans = emptyList()
                     }
                 },
                 onValueChange = { t, s ->
-                    text = t
-                    spans = s
+                    chatBoxInputState.text = t
+                    chatBoxInputState.spans = s
                     onTextChanged(t)
                 },
-                text = text,
-                spans = spans,
+                inputState = chatBoxInputState,
                 onUrlInserted = onUrlInserted,
                 onImageCaptured = onImageCaptured,
                 onVideoCaptured = onVideoCaptured,

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_quick_capture"
+    app:startDestination="@id/quickCaptureScreen">
+
+    <!--
+        Quick capture sheet (spec: docs/quick-capture-android-spec.md).
+        The editor's own sub-screens are re-declared here — same as nav_editor_modal —
+        so the embedded editor's safeNavigate calls resolve while the sheet is showing.
+    -->
+
+    <dialog
+        android:id="@+id/quickCaptureScreen"
+        android:name="com.anytypeio.anytype.ui.quickcapture.QuickCaptureFragment"
+        android:label="QuickCaptureFragment" />
+
+    <dialog
+        android:id="@+id/objectRelationListScreen"
+        android:name="com.anytypeio.anytype.ui.primitives.ObjectFieldsFragment"
+        android:label="Object-Relation-List-Screen" />
+    <dialog
+        android:id="@+id/objectIconPickerScreen"
+        android:name="com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerFragment"
+        android:label="Object-Icon-Picker-Screen" />
+    <dialog
+        android:id="@+id/objectMenuScreen"
+        android:name="com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment"
+        android:label="Object-Menu-Screen" />
+    <dialog
+        android:id="@+id/objectCoverScreen"
+        android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment"
+        android:label="Object-Cover-Screen" />
+    <dialog
+        android:id="@+id/objectCoverUnsplashScreen"
+        android:name="com.anytypeio.anytype.ui.editor.cover.ObjectUnsplashFragment"
+        android:label="Object-Cover-Unsplash-Screen" />
+    <dialog
+        android:id="@+id/relationAddToObjectBlockFragment"
+        android:name="com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment"
+        android:label="RelationAddToObjectBlockFragment">
+        <action
+            android:id="@+id/action_relationAddToObjectBlockFragment_to_relationCreateFromScratchForObjectBlockFragment"
+            app:destination="@id/relationCreateFromScratchForObjectBlockFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </dialog>
+    <dialog
+        android:id="@+id/relationCreateFromScratchForObjectBlockFragment"
+        android:name="com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectBlockFragment"
+        android:label="RelationCreateFromScratchForObjectBlockFragment" />
+
+    <dialog
+        android:id="@+id/objectValueScreen"
+        android:name="com.anytypeio.anytype.ui.relations.value.ObjectValueFragment"
+        android:label="Relation-Object-Value-Screen" />
+
+    <include app:graph="@navigation/nav_relations" />
+</navigation>

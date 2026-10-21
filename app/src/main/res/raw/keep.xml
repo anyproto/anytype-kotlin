@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    A safety net for the custom icon set.
+
+    The release build runs `shrinkResources true`, and R8 deletes a resource that no code names
+    statically. `CustomIconDrawables` is the primary defence: it names every `ci_*` drawable
+    statically, so R8 keeps the whole set. The rule below repeats that guarantee, in case a new
+    screen resolves an icon by name again, with `resources.getIdentifier("ci_" + iconName, ...)`.
+    Such a name is invisible to R8, and the production APK once held 8 of the 389 icons.
+
+    Add a rule here for any new resource that the app resolves by name.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@drawable/ci_*" />

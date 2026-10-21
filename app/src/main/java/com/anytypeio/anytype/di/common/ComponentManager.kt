@@ -63,7 +63,6 @@ import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.membership.DaggerMembershipComponent
-import com.anytypeio.anytype.di.feature.membership.DaggerMembershipUpdateComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerRequestJoinSpaceComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerShareSpaceComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerSpaceJoinRequestComponent
@@ -84,10 +83,13 @@ import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForDa
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectBlockModule
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromScratchForObjectModule
 import com.anytypeio.anytype.di.feature.search.DaggerGlobalSearchComponent
+import com.anytypeio.anytype.di.feature.search.DaggerSearchV2Component
+import com.anytypeio.anytype.feature_search.presentation.SearchViewModel
 import com.anytypeio.anytype.di.feature.sets.CreateFilterModule
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterModule
 import com.anytypeio.anytype.di.feature.sets.PickConditionModule
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationModule
+import com.anytypeio.anytype.di.feature.quickcapture.DaggerQuickCaptureComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerAboutAppComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerDebugComponent
@@ -177,6 +179,12 @@ class ComponentManager(
 
     val experimentalFeaturesComponent = Component {
         DaggerExperimentalFeaturesComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val quickCaptureComponent = Component {
+        DaggerQuickCaptureComponent
             .factory()
             .create(findComponentDependencies())
     }
@@ -373,6 +381,12 @@ class ComponentManager(
 
     val globalSearchComponent = ComponentWithParams { params: GlobalSearchViewModel.VmParams ->
         DaggerGlobalSearchComponent
+            .factory()
+            .create(params, findComponentDependencies())
+    }
+
+    val searchV2Component = ComponentWithParams { params: SearchViewModel.VmParams ->
+        DaggerSearchV2Component
             .factory()
             .create(params, findComponentDependencies())
     }
@@ -1083,10 +1097,6 @@ class ComponentManager(
 
     val membershipComponent = Component {
         DaggerMembershipComponent.factory().create(findComponentDependencies())
-    }
-
-    val membershipUpgradeComponent = Component {
-        DaggerMembershipUpdateComponent.factory().create(findComponentDependencies())
     }
 
     val galleryInstallationsComponent =

@@ -11,8 +11,16 @@ data class ChatMessageSearchResult(
     val score: Long,
     val highlight: String,
     val highlightRanges: List<IntRange>,
-    val message: Chat.Message
+    val message: Chat.Message,
+    val spaceId: Id = ""
 )
+
+data class ChatMessageSort(
+    val key: Key,
+    val descending: Boolean = true
+) {
+    enum class Key { ORDER_ID, SCORE, CREATED_AT, MODIFIED_AT }
+}
 
 sealed class Chat {
 

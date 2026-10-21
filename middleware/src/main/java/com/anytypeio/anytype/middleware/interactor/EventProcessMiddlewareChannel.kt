@@ -1,4 +1,5 @@
 package com.anytypeio.anytype.middleware.interactor
+import com.anytypeio.anytype.middleware.EventGroup
 
 import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.data.auth.event.EventProcessDropFilesRemoteChannel
@@ -15,7 +16,7 @@ class EventProcessDropFilesMiddlewareChannel(
 ) : EventProcessDropFilesRemoteChannel {
 
     override fun observe(): Flow<List<Process.Event.DropFiles>> {
-        return events.flow()
+        return events.flow(EventGroup.PROCESS)
             .mapNotNull { emission ->
                 emission.messages.mapNotNull { message ->
                     val eventProcessNew = message.processNew
@@ -71,7 +72,7 @@ class EventProcessImportMiddlewareChannel(
 ) : EventProcessImportRemoteChannel {
 
     override fun observe(): Flow<List<Process.Event.Import>> {
-        return events.flow()
+        return events.flow(EventGroup.PROCESS)
             .mapNotNull { emission ->
                 emission.messages.mapNotNull { message ->
                     val eventProcessNew = message.processNew
@@ -127,7 +128,7 @@ class EventProcessMigrationMiddlewareChannel @Inject constructor(
 ) : EventProcessMigrationRemoteChannel {
 
     override fun observe(): Flow<List<Process.Event.Migration>> {
-        return events.flow()
+        return events.flow(EventGroup.PROCESS)
             .mapNotNull { emission ->
                 emission.messages.mapNotNull { message ->
                     val eventProcessNew = message.processNew

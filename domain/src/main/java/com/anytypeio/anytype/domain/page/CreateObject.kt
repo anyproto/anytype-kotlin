@@ -31,7 +31,7 @@ class CreateObject @Inject constructor(
                 typeKey = defType.type,
                 template = defType.defaultTemplate,
                 internalFlags = params.internalFlags,
-                prefilled = emptyMap()
+                prefilled = params.prefilled
             )
         } else {
             return createObject(

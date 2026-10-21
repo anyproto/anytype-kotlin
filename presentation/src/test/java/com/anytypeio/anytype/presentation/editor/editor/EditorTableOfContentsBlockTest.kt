@@ -450,7 +450,9 @@ class EditorTableOfContentsBlockTest : EditorPresentationTestSetup() {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields(emptyMap()),
             content = Block.Content.Text(
-                text = "",
+                // Non-empty: filling an empty block forks its identity via
+                // BlockReplace; this test covers the regular text-change flow.
+                text = MockDataFactory.randomString(),
                 marks = emptyList(),
                 style = Block.Content.Text.Style.H2
             ),

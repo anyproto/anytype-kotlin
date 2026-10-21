@@ -107,7 +107,9 @@ fun vaultCardBackgroundModifier(
     fixedHeight: Boolean
 ): Modifier {
     val sizeModifier = if (fixedHeight) {
-        modifier.fillMaxWidth().height(96.dp)
+        // Min height instead of a fixed one: at large system font scales the card content
+        // is taller than 96dp and would otherwise be clipped (DROID-4563).
+        modifier.fillMaxWidth().heightIn(min = 96.dp)
     } else {
         modifier.fillMaxWidth().heightIn(min = 56.dp)
     }

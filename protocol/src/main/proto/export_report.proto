@@ -1,0 +1,39 @@
+syntax = "proto3";
+package anytype.model;
+option go_package = "pkg/lib/pb/model";
+
+// Diagnostics shared by all export formats. A completed export can contain
+// issues without failing the RPC; clients should inspect status and issues.
+message ExportReport {
+    enum Status {
+        SUCCESS = 0;
+        // Output was produced, but errors were reported. Warnings alone remain successful.
+        PARTIAL = 1;
+        FAILED = 2;
+        CANCELED = 3;
+    }
+    Status status = 1;
+    // Objects accounted for, including objects represented in bundle metadata.
+    int32 succeed = 2;
+    int32 objectErrors = 3;
+    // File contents that could not be exported; their objects may still succeed.
+    int32 fileErrors = 4;
+    repeated Issue issues = 5;
+
+    message Issue {
+        enum Severity {
+            WARNING = 0;
+            ERROR = 1;
+            // Non-blocking format notes; do not make the export partial.
+            INFO = 2;
+        }
+        // Empty for an issue affecting the export as a whole.
+        string objectId = 1;
+        Severity severity = 2;
+        // Stable diagnostic code, supplied by the exporter when available.
+        string code = 3;
+        // Field path for validation issues, or relative path of an export file.
+        string path = 4;
+        string message = 5;
+    }
+}

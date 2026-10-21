@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemViewerGridRowBinding
+import com.anytypeio.anytype.core_ui.extensions.horizontalViewportWidth
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -28,6 +29,10 @@ class ViewerGridAdapter(
 
     var recordNamePositionX = 0f
 
+    // Shared across all row cell recyclers, so cell view holders scrolled out with
+    // one row can be reused by any other row instead of being re-inflated.
+    private val sharedCellViewPool = RecyclerView.RecycledViewPool()
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -39,17 +44,19 @@ class ViewerGridAdapter(
             inflater, parent, false
         )
 
-        with(parent.context.resources) {
-            val headerMargin = getDimensionPixelSize(R.dimen.dv_grid_name_margin_end)
-            binding.headerContainer.updateLayoutParams<LinearLayout.LayoutParams> {
-                width = displayMetrics.widthPixels - headerMargin * 2
-            }
+        // The header is pinned to the visible area with translationX, so it must be as wide as
+        // that area. The row list sits inside a HorizontalScrollView and reports the width of the
+        // whole grid, so read the scroll container rather than the list.
+        val headerMargin = parent.resources.getDimensionPixelSize(R.dimen.dv_grid_name_margin_end)
+        binding.headerContainer.updateLayoutParams<LinearLayout.LayoutParams> {
+            width = parent.horizontalViewportWidth() - headerMargin * 2
         }
 
         val horizontalDivider = binding.root.context.drawable(R.drawable.divider_dv_horizontal_2)
 
         binding.rowCellRecycler.apply {
             itemAnimator = null // Disable animations to prevent "view is not a child" crash during recycling
+            setRecycledViewPool(sharedCellViewPool)
             adapter = ViewerGridCellsAdapter(
                 onCellClicked = onCellClicked
             )
@@ -102,7 +109,9 @@ class ViewerGridAdapter(
                 if (payload.contains(GridDiffUtil.OBJECT_HEADER_CHANGED)) {
                     holder.bindObjectHeader(item)
                 }
-                holder.bindObjectCells(item)
+                if (payload.contains(GridDiffUtil.CELLS_CHANGED)) {
+                    holder.bindObjectCells(item)
+                }
             }
         }
     }
@@ -163,6 +172,7 @@ class ViewerGridAdapter(
         ): List<Int>? {
             val payload = mutableListOf<Int>()
             if (isHeaderChanged(oldItem, newItem)) payload.add(OBJECT_HEADER_CHANGED)
+            if (oldItem.cells != newItem.cells) payload.add(CELLS_CHANGED)
             return if (payload.isEmpty()) {
                 null
             } else payload
@@ -176,8 +186,10 @@ class ViewerGridAdapter(
                 || oldItem.name != newItem.name
                 || oldItem.isChecked != newItem.isChecked
                 || oldItem.layout != newItem.layout
-                || oldItem.showIcon != newItem.showIcon)
+                || oldItem.showIcon != newItem.showIcon
+                || oldItem.objectIcon != newItem.objectIcon)
 
         const val OBJECT_HEADER_CHANGED = 0
+        const val CELLS_CHANGED = 1
     }
 }

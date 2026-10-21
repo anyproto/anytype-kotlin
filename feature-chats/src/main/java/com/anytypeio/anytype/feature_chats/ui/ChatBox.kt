@@ -44,6 +44,8 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -94,11 +96,28 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 
+@Stable
+class ChatBoxInputState internal constructor(
+    textState: MutableState<TextFieldValue>,
+    spansState: MutableState<List<ChatBoxSpan>>
+) {
+    var text: TextFieldValue by textState
+    var spans: List<ChatBoxSpan> by spansState
+}
+
+@Composable
+fun rememberChatBoxInputState(): ChatBoxInputState {
+    val textState = rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue())
+    }
+    val spansState = remember { mutableStateOf<List<ChatBoxSpan>>(emptyList()) }
+    return remember { ChatBoxInputState(textState, spansState) }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatBox(
-    text: TextFieldValue,
-    spans: List<ChatBoxSpan>,
+    inputState: ChatBoxInputState,
     mode: ChatBoxMode = ChatBoxMode.Default(),
     modifier: Modifier = Modifier,
     chatBoxFocusRequester: FocusRequester,
@@ -122,6 +141,9 @@ fun ChatBox(
     onAttachmentMenuTriggered: () -> Unit,
     spaceUxType: SpaceUxType? = null
     ) {
+
+    val text = inputState.text
+    val spans = inputState.spans
 
     val context = LocalContext.current
 
@@ -659,10 +681,12 @@ private fun ChatBoxUserInput(
             val oldText = text.text // Keep a reference to the current text before updating
             val textLengthDifference = newText.length - oldText.length
 
+            // Detect the common prefix length
+            val commonPrefixLength = newText.commonPrefixWith(oldText).length
+
             // URL insert detection
             if (textLengthDifference > 0) {
-                val prefixLen = newText.commonPrefixWith(oldText).length
-                val inserted = newText.substring(prefixLen, prefixLen + textLengthDifference)
+                val inserted = newText.substring(commonPrefixLength, commonPrefixLength + textLengthDifference)
                 val urlMatcher = Patterns.WEB_URL.matcher(inserted)
                 if (urlMatcher.find()) {
                     val url = urlMatcher.group()
@@ -675,9 +699,6 @@ private fun ChatBoxUserInput(
 
             // SPANS normalization
             val updatedSpans = spans.mapNotNull { span ->
-                // Detect the common prefix length
-                val commonPrefixLength = newText.commonPrefixWith(oldText).length
-
                 // Adjust span ranges based on text changes
                 val newStart = when {
                     // Insertion shifts spans after the insertion point
@@ -694,9 +715,6 @@ private fun ChatBoxUserInput(
                     textLengthDifference < 0 && commonPrefixLength < span.end -> span.end + textLengthDifference
                     else -> span.end
                 }.coerceAtLeast(newStart).coerceAtMost(newText.length) // Ensure bounds are valid
-
-                // Log changes for debugging
-                Timber.d("Text length: ${newText.length}, Old interval: ${span.start}, ${span.end}, New interval: $newStart, $newEnd")
 
                 // Remove span if the entire range is deleted or invalid
                 if (newStart < newEnd && newText.substring(newStart, newEnd).isNotBlank()) {
@@ -736,7 +754,7 @@ private fun ChatBoxUserInput(
                 textStyle = ContentMiscChat.copy(color = colorResource(R.color.text_tertiary))
             )
         },
-        visualTransformation = AnnotatedTextTransformation(spans),
+        visualTransformation = remember(spans) { AnnotatedTextTransformation(spans) },
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.Sentences
         )

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="dataview_expand_header">Expand object header</string>
+    <string name="dataview_collapse_header">Collapse object header</string>
 
     <string name="app_name" translatable="false">Anytype</string>
 
@@ -20,6 +22,28 @@
     <string name="experimental_features">Experimental Features</string>
     <string name="experimental_features_compact_vault">Compact vault mode</string>
     <string name="experimental_features_compact_vault_description">Hides message previews for read channels in the vault</string>
+    <string name="experimental_features_kanban">Kanban board</string>
+    <string name="experimental_features_kanban_description">Enables the Kanban (board) layout for sets and collections</string>
+    <string name="experimental_features_quick_capture">Quick capture</string>
+    <string name="experimental_features_quick_capture_description">Pencil button on the vault for capturing a thought into any space</string>
+    <string name="experimental_features_quick_capture_ai">Quick capture type suggestions</string>
+    <string name="experimental_features_quick_capture_ai_description">On-device AI suggests the object type while you write. Requires a supported device</string>
+    <string name="quick_capture">Quick capture</string>
+    <string name="quick_capture_created_in">%1$s created in %2$s</string>
+    <string name="quick_capture_clear_draft">Clear draft</string>
+    <string name="quick_capture_clear_draft_confirmation">Clear this draft? This cannot be undone.</string>
+    <string name="quick_capture_choose_space">Choose space</string>
+    <string name="quick_capture_draft_conflict_title">%1$s already has a draft</string>
+    <string name="quick_capture_draft_conflict_message">A draft can\'t move into a space that already has one. Keep both, or discard yours — this can\'t be undone.</string>
+    <string name="quick_capture_draft_conflict_keep">Keep both</string>
+    <string name="quick_capture_draft_conflict_discard">Discard my draft</string>
+    <string name="quick_capture_space_has_draft">Has an unsent draft</string>
+    <string name="quick_capture_drafts_elsewhere">You have drafts in other spaces</string>
+    <string name="quick_capture_move_or_new_title">Take your draft to %1$s?</string>
+    <string name="quick_capture_move_or_new_message">You haven\'t edited this draft since opening it. Move it, or start a new one in %1$s.</string>
+    <string name="quick_capture_move_or_new_move">Move draft</string>
+    <string name="quick_capture_move_or_new_start">Start new draft</string>
+    <string name="quick_capture_send">Send</string>
     <string name="account">Vault</string>
     <string name="reset_account">Reset vault</string>
     <string name="delete_account">Delete vault</string>
@@ -234,6 +258,7 @@
 
 
     <string name="untitled">Untitled</string>
+    <string name="back_history_channels">Channels</string>
     <string name="untitled_set">Untitled query</string>
     <string name="untitled_collection">Untitled collection</string>
     <string name="archived">Archived</string>
@@ -629,6 +654,9 @@
     <string name="type_templates_widget_title">Create object</string>
     <string name="view_layout_widget_title">Layout</string>
     <string name="view_layout_cover_widget_title">Cover</string>
+    <string name="view_layout_group_by_widget_title">Group by</string>
+    <string name="group_by">Group by</string>
+    <string name="color_columns">Color columns</string>
     <string name="blank">Blank</string>
 
     <string name="templates_menu_default_for_view">Default for this view</string>
@@ -647,6 +675,13 @@
     <string name="view_grid">Grid</string>
     <string name="view_gallery">Gallery</string>
     <string name="view_kanban">Kanban</string>
+    <string name="dataview_board_no_objects">No objects</string>
+    <string name="dataview_board_no_value">No value</string>
+    <string name="dataview_board_checked">Checked</string>
+    <string name="dataview_board_unchecked">Unchecked</string>
+    <string name="dataview_board_new_object">New</string>
+    <string name="dataview_board_no_group_title">No grouping property</string>
+    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
     <string name="page_cover">Page cover</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Unpin</string>
@@ -1451,8 +1486,11 @@
     <string name="options_empty_not_editable">The property is empty</string>
     <string name="options_delete_title">Are you sure?</string>
     <string name="options_delete_description">The option will be permanently removed from your space</string>
+    <string name="tag_status_section_selected">Selected</string>
+    <string name="tag_status_section_all_values">All values</string>
 
     <string name="object_values_empty_description">Objects not found</string>
+    <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
     <string name="object_values_empty_title">No values</string>
     <string name="object_values_empty_not_editable">The property is empty</string>
     <string name="object_values_delete_title">Are you sure?</string>
@@ -1518,6 +1556,20 @@
     <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
     <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <!-- Invite sharing (GO-7222): owner-held invites, share-within-space toggle, link reset -->
+    <string name="multiplayer_invite_share_toggle_title">Everyone in the space can share this invite</string>
+    <string name="multiplayer_invite_share_toggle_locked_hint">To make this invite private again, reset the link.</string>
+    <string name="multiplayer_invite_share_disabled_reason">Anyone with this link joins as an editor, without approval. Only you can share it.</string>
+    <string name="multiplayer_invite_share_confirm_title">Share invite with all members?</string>
+    <string name="multiplayer_invite_share_confirm_description">All space members will be able to see this invite link and share it with anyone. To make it private again, you\'ll need to reset the link.</string>
+    <string name="multiplayer_invite_auto_approval_warning">Anyone who gains access to this invitation link will be able to join this space at any time, until you reset the link.</string>
+    <string name="multiplayer_invite_editor_upgrade_note">Any existing Viewer who gains access to this invitation link can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_legacy_unsafe_warning">Every member of this space can see and share this invite link, and anyone who has it joins as an editor without approval. Any existing Viewer can use it to upgrade themselves to Editor.</string>
+    <string name="multiplayer_invite_held_by_owner">The invite link is held by the space owner. Ask them to share it.</string>
+    <string name="multiplayer_invite_reset_link">Reset link</string>
+    <string name="multiplayer_invite_reset_confirm_title">Reset invite link?</string>
+    <string name="multiplayer_invite_reset_confirm_description">The current link stops working for everyone who has it, including the people you meant to invite. A new link is created in its place.</string>
+    <string name="multiplayer_editor_access_disabled_shared">Unavailable while everyone in the space can share this invite. Reset the link first.</string>
     <string name="link_copied">Link copied to clipboard</string>
     <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Copy link</string>
@@ -1553,6 +1605,10 @@
     <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">View request</string>
     <string name="multiplayer_owner">Owner</string>
+    <string name="multiplayer_admin">Admin</string>
+    <string name="multiplayer_make_admin_title">Make the member an admin?</string>
+    <string name="multiplayer_make_admin_description">Admins can delete messages, remove members, and permanently delete objects from Bin.</string>
+    <string name="multiplayer_make_admin_button">Make Admin</string>
     <string name="multiplayer_no_permissions">No permissions</string>
     <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">Can edit</string>
@@ -1565,6 +1621,9 @@
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_remove_member_warning_text">%1$s will be removed from space</string>
+    <string name="multiplayer_remove_member_title">Remove the member from this channel?</string>
+    <string name="multiplayer_remove_member_description">They\'ll lose access immediately. Depending on your invite settings, they may be able to rejoin or request to rejoin.</string>
+    <string name="multiplayer_remove_member_button">Remove Member</string>
     <string name="multiplayer_request_sent_toast">Request sent</string>
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
     <string name="multiplayer_space_stop_sharing_space">Stop sharing the space</string>
@@ -1702,8 +1761,6 @@
     <string name="payments_member_link">Membership levels details</string>
     <string name="payments_privacy_link">Privacy policy</string>
     <string name="payments_terms_link">Terms and conditions</string>
-    <string name="payments_let_us_link_start">Would you like to use Anytype for business, education, etc.?</string>
-    <string name="payments_let_us_link_end">Please let us know here.</string>
     <string name="payments_current_label">Current</string>
 
     <!-- Tier details -->
@@ -1771,6 +1828,24 @@
     <string name="payments_code_resend">Resend</string>
     <string name="payments_code_resend_in">Resend in %1$d sec</string>
 
+    <!-- Membership Activate Code -->
+    <string name="payments_activate_code_entry">Have a code?</string>
+    <string name="payments_activate_code_title">Activate Your Code</string>
+    <string name="payments_activate_code_subtitle">Enter the code you received after purchase or from an invitation. Your membership will be activated instantly.</string>
+    <string name="payments_activate_code_hint">Paste activation code…</string>
+    <string name="payments_activate_code_button">Activate</string>
+    <!-- Membership Activate Code — success -->
+    <string name="payments_activate_code_success_title">You\'re all set</string>
+    <string name="payments_activate_code_success_subtitle">Your %1$s membership is now active</string>
+    <string name="payments_activate_code_success_subtitle_generic">Your membership is now active</string>
+    <!-- Membership Activate Code — errors (CodeGetInfo) -->
+    <string name="membership_code_error_unknown">Unknown error occured</string>
+    <string name="membership_code_error_bad_input">Bad input</string>
+    <string name="membership_code_error_not_logged_in">Not logged in</string>
+    <string name="membership_code_error_payment_node">No connection to payment node. Please try again.</string>
+    <string name="membership_code_error_code_invalid">The code is not valid. Please check and try again.</string>
+    <string name="membership_code_error_already_member">Membership already exists for the current identity</string>
+
 
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
@@ -1799,14 +1874,6 @@
         Best regards,       \n
     </string>
 
-    <string name="payments_email_to">membership-upgrade@anytype.io</string>
-    <string name="payments_email_subject">Upgrade %1$s</string>
-    <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
-- Extra remote storage\n
-- More space editors\n
-- Additional shared spaces\n
-Specifically,
-Please provide specific details of your needs here.</string>
 
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Something wrong with input, try again</string>
@@ -1888,9 +1955,6 @@ Please provide specific details of your needs here.</string>
     <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
     <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
 
-    <string name="membership_upgrade_title">Membership upgrade</string>
-    <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
-    <string name="membership_upgrade_button">Contact Anytype Team</string>
     <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
     <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
 
@@ -1972,6 +2036,7 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">New object</string>
     <string name="vault_my_spaces">My Channels</string>
+    <string name="vault_search_hint">Search everything</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">All</string>
     <string name="vault_pinned_section_title">Pinned</string>
@@ -2411,6 +2476,8 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_make_private_failed">
         Failed to make the space private. Please try again later.
     </string>
+    <string name="share_space_error_invite_already_shared">This invite is already shared with all space members and cannot be made private. Reset the link to create a new private invite.</string>
+    <string name="share_space_error_invite_not_shareable">Anyone with this link joins as an editor, without approval. Switch the link to Viewer access before sharing it.</string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="private_channel">Direct channel</string>
     <string name="space_header_private_channel">Private channel</string>
@@ -2527,7 +2594,6 @@ Please provide specific details of your needs here.</string>
     <string name="select_view">Select view</string>
     <string name="os_widget_data_view_title">Data View</string>
     <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
-    <string name="chats_search_close_content_description">Close search</string>
 
     <!-- DROID-4358 Offline Downloads settings -->
     <string name="offline_downloads_section_title">Offline access</string>
@@ -2542,5 +2608,41 @@ Please provide specific details of your needs here.</string>
     <string name="offline_downloads_value_unlimited">Unlimited</string>
     <string name="device_storage_used">Device storage used</string>
 
+    <!-- Search v2 (unified cross-space search) -->
+    <string name="search_v2_hint">Search</string>
+    <string name="search_v2_chip_in_space">In %1$s</string>
+    <string name="search_v2_chip_channels">Channels</string>
+    <string name="search_v2_chip_messages">Messages</string>
+    <string name="search_v2_chip_by_me">By me</string>
+    <string name="search_v2_chip_by_name">By %1$s</string>
+    <string name="search_v2_chip_media">Media</string>
+    <string name="search_v2_chip_pages">Pages</string>
+    <string name="search_v2_chip_bookmarks">Bookmarks</string>
+    <string name="search_v2_chip_collections">Collections</string>
+    <string name="search_v2_chip_queries">Sets</string>
+    <string name="search_v2_chip_chats">Chats</string>
+    <string name="search_v2_chip_types">Types</string>
+    <string name="search_v2_chip_people">People</string>
+    <string name="search_v2_section_recent_messages">Recent Messages</string>
+    <string name="search_v2_section_objects">Objects</string>
+    <string name="search_v2_person_member_in_one">member in 1 Channel</string>
+    <string name="search_v2_person_member_in">member in %1$d Channels</string>
+    <string name="search_v2_sort_name">Name</string>
+    <string name="search_v2_today">Today</string>
+    <string name="search_v2_yesterday">Yesterday</string>
+    <string name="search_v2_in_space_caption">in %1$s</string>
+    <string name="search_v2_type_agg_caption">in %1$d Channels</string>
+    <string name="search_v2_no_results">Nothing found</string>
+    <string name="search_v2_focus_search_type_everywhere">Search %1$s in all Channels</string>
+    <string name="search_v2_focus_search_by_everywhere">Search by %1$s in all Channels</string>
+    <string name="search_v2_focus_person_header">Search objects created in Channels</string>
+    <string name="search_v2_one_to_one_caption">1-1 Channel</string>
+    <string name="search_v2_messages_tutorial_hint">Looking for a message?</string>
+    <string name="search_v2_messages_tutorial_button">Search messages</string>
+    <string name="search_v2_create_channel">Create Channel</string>
+    <string name="search_v2_could_not_open_object">Could not open object</string>
+    <string name="search_v2_recently_edited">Recently edited</string>
+    <string name="search_v2_recently_created">Recently created</string>
+    <string name="search_v2_filter_by">Filter by %1$s</string>
 
 </resources>

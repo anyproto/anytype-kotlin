@@ -9,20 +9,24 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.AppShutdown
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
+import com.anytypeio.anytype.domain.auth.interactor.HasAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
+import com.anytypeio.anytype.domain.launch.RemainingSpacesPreloader
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugRunProfiler
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
+import com.anytypeio.anytype.domain.launch.PreferredSpaceIdHolder
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.CrossSpaceObjectTypesContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
@@ -79,6 +83,7 @@ object MainEntryModule {
         interceptAccountStatus: InterceptAccountStatus,
         logout: Logout,
         checkAuthorizationStatus: CheckAuthorizationStatus,
+        hasAccount: HasAccount,
         configStorage: ConfigStorage,
         localeProvider: LocaleProvider,
         notificationsProvider: NotificationsProvider,
@@ -102,15 +107,19 @@ object MainEntryModule {
         chatPreviewContainer: ChatPreviewContainer,
         chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer,
         participantSubscriptionContainer: ParticipantSubscriptionContainer,
+        crossSpaceObjectTypesContainer: CrossSpaceObjectTypesContainer,
         userSettingsRepository: UserSettingsRepository,
         resolveSpaceHomepage: ResolveSpaceHomepage,
-        debugRunProfiler: DebugRunProfiler
+        debugRunProfiler: DebugRunProfiler,
+        preferredSpaceIdHolder: PreferredSpaceIdHolder,
+        remainingSpacesPreloader: RemainingSpacesPreloader
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
         interceptAccountStatus = interceptAccountStatus,
         logout = logout,
         checkAuthorizationStatus = checkAuthorizationStatus,
+        hasAccount = hasAccount,
         configStorage = configStorage,
         localeProvider = localeProvider,
         notificationsProvider = notificationsProvider,
@@ -134,9 +143,12 @@ object MainEntryModule {
         chatPreviewContainer = chatPreviewContainer,
         chatsDetailsSubscriptionContainer = chatsDetailsSubscriptionContainer,
         participantSubscriptionContainer = participantSubscriptionContainer,
+        crossSpaceObjectTypesContainer = crossSpaceObjectTypesContainer,
         userSettingsRepository = userSettingsRepository,
         resolveSpaceHomepage = resolveSpaceHomepage,
-        debugRunProfiler = debugRunProfiler
+        debugRunProfiler = debugRunProfiler,
+        preferredSpaceIdHolder = preferredSpaceIdHolder,
+        remainingSpacesPreloader = remainingSpacesPreloader
     )
 
     @JvmStatic
@@ -192,14 +204,18 @@ object MainEntryModule {
         user: UserSettingsRepository,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
-        awaitAccountStartManager: AwaitAccountStartManager
+        awaitAccountStartManager: AwaitAccountStartManager,
+        remainingSpacesPreloader: RemainingSpacesPreloader,
+        preferredSpaceIdHolder: PreferredSpaceIdHolder
     ): Logout = Logout(
         repo = repo,
         user = user,
         config = provider,
         dispatchers = dispatchers,
         spaceManager = spaceManager,
-        awaitAccountStartManager = awaitAccountStartManager
+        awaitAccountStartManager = awaitAccountStartManager,
+        remainingSpacesPreloader = remainingSpacesPreloader,
+        preferredSpaceIdHolder = preferredSpaceIdHolder
     )
 
     @JvmStatic
@@ -209,6 +225,14 @@ object MainEntryModule {
         repo: AuthRepository,
         dispatchers: AppCoroutineDispatchers
     ): CheckAuthorizationStatus = CheckAuthorizationStatus(repo, dispatchers)
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideHasAccount(
+        repo: AuthRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): HasAccount = HasAccount(repo, dispatchers)
 
     @JvmStatic
     @PerScreen

@@ -133,6 +133,7 @@ import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.core_utils.text.OnNewLineActionListener
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
+import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType.LongClick
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
@@ -243,6 +244,11 @@ class BlockAdapter(
     private val onSlashEvent: (SlashEvent) -> Unit = {},
     private val onBackPressedCallback: () -> Boolean,
     private val onKeyPressedEvent: (KeyPressedEvent) -> Unit = {},
+    /**
+     * True when Tab and Shift+Tab from a hardware keyboard move the block.
+     * When false, Tab keeps the default behavior: it moves the focus to the next view.
+     */
+    private val isTabKeyEnabled: Boolean = false,
     private val onDragAndDropTrigger: (RecyclerView.ViewHolder, event: MotionEvent?) -> Boolean = { _, _ -> true},
     private val onDragListener: View.OnDragListener,
     private val lifecycle: Lifecycle,
@@ -264,6 +270,26 @@ class BlockAdapter(
     override fun unSelectDraggedViewHolder() {
         dragAndDropSelector.unSelectDraggedViewHolder()
         isInDragAndDropMode = false
+    }
+
+    /**
+     * While a block-list update is being applied, RecyclerView can transiently hand
+     * focus to a neighboring row when the focused row is removed or rebound (e.g. the
+     * trailing-placeholder/identity-fork swaps replace the focused row wholesale).
+     * That is a system focus transfer, not a user caret move — reporting it to the
+     * ViewModel would be recorded as deliberate user focus (see userFocus in
+     * EditorViewModel) and hijack the caret, e.g. into the end of the previous block.
+     * Set to true before dispatching a list update and back to false after the
+     * resulting layout pass.
+     */
+    var suppressFocusCallbacks: Boolean = false
+
+    private fun dispatchFocusChanged(id: Id, hasFocus: Boolean) {
+        if (suppressFocusCallbacks) {
+            Timber.d("Focus change for $id suppressed while a list update is being applied")
+        } else {
+            onFocusChanged(id, hasFocus)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockViewHolder {
@@ -599,7 +625,7 @@ class BlockAdapter(
                         setOnFocusChangeListener { _, hasFocus ->
                             val pos = bindingAdapterPosition
                             if (pos != RecyclerView.NO_POSITION) {
-                                onFocusChanged(blocks[pos].id, hasFocus)
+                                dispatchFocusChanged(blocks[pos].id, hasFocus)
                             }
                         }
                         setOnEditorActionListener(
@@ -933,7 +959,7 @@ class BlockAdapter(
                 onTextBlockTextChanged = onTextBlockTextChanged,
                 onMentionEvent = onMentionEvent,
                 onCellSelectionChanged = onCellSelectionChanged,
-                onFocusChanged = onFocusChanged,
+                onFocusChanged = ::dispatchFocusChanged,
                 clipboardInterceptor = clipboardInterceptor,
                 onDragAndDropTrigger = onDragAndDropTrigger
             )
@@ -975,6 +1001,20 @@ class BlockAdapter(
                 val pos = holder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
                     onTextInputClicked(blocks[pos].id)
+                }
+            }
+            if (isTabKeyEnabled) {
+                holder.content.tabKeyWatcher = { isShift ->
+                    holder.withBlock<BlockView.Text> { item ->
+                        onKeyPressedEvent(
+                            KeyPressedEvent.OnTabKeyEvent(
+                                target = item.id,
+                                text = item.text,
+                                marks = item.marks.map { it.mark() },
+                                isShift = isShift
+                            )
+                        )
+                    }
                 }
             }
             holder.content.selectionWatcher = { selection ->
@@ -1035,7 +1075,7 @@ class BlockAdapter(
                         holder.setupViewHolder(
                             onTextChanged = onTextChanged,
                             onSelectionChanged = onSelectionChanged,
-                            onFocusChanged = onFocusChanged
+                            onFocusChanged = ::dispatchFocusChanged
                         )
                     }
                     is Title -> {}
@@ -1066,13 +1106,18 @@ class BlockAdapter(
         if (holder is TextHolder) {
             holder.content.onFocusChangeListener = LockableFocusChangeListener { hasFocus ->
                 holder.content.isCursorVisible = hasFocus
-                val pos = holder.bindingAdapterPosition
-                if (pos != RecyclerView.NO_POSITION) {
-                    val item = views[pos]
-                    if (item is Focusable) {
-                        item.isFocused = hasFocus
+                // Suppressed focus changes must not touch the view model either:
+                // a transient system focus transfer during a list update would
+                // otherwise stamp isFocused onto the wrong block.
+                if (!suppressFocusCallbacks) {
+                    val pos = holder.bindingAdapterPosition
+                    if (pos != RecyclerView.NO_POSITION) {
+                        val item = views[pos]
+                        if (item is Focusable) {
+                            item.isFocused = hasFocus
+                        }
+                        onFocusChanged(item.id, hasFocus)
                     }
-                    onFocusChanged(item.id, hasFocus)
                 }
             }
         }
@@ -1863,7 +1908,12 @@ class BlockAdapter(
     // https://code.google.com/p/android/issues/detail?id=208169
     override fun onViewAttachedToWindow(holder: BlockViewHolder) {
         super.onViewAttachedToWindow(holder)
-        if (holder is TextHolder) {
+        // Never toggle a focused widget: setEnabled(false) hides the soft input while it
+        // is active, and setEnabled(true) calls InputMethodManager.restartInput(), which
+        // terminates any in-progress IME composition. A holder coming back from the
+        // recycled-view pool has already had its focus cleared, so the workaround still
+        // applies wherever it was actually needed.
+        if (holder is TextHolder && !holder.content.hasFocus()) {
             holder.content.isEnabled = false
             holder.content.isEnabled = true
         }
@@ -1881,6 +1931,19 @@ class BlockAdapter(
             Timber.d("----------Blocks dispatched to adapter---------------------")
         }
         val result = DiffUtil.calculateDiff(BlockViewDiffUtil(old = blocks, new = items))
+        blocks = items
+        result.dispatchUpdatesTo(this)
+    }
+
+    /**
+     * Applies a diff result calculated in advance (e.g. on a background thread).
+     * Must be called on the main thread with a [result] calculated
+     * for old = current [views] and new = [items].
+     */
+    fun applyDiffResult(items: List<BlockView>, result: DiffUtil.DiffResult) {
+        if (BuildConfig.DEBUG) {
+            Timber.d("----------Blocks dispatched to adapter---------------------")
+        }
         blocks = items
         result.dispatchUpdatesTo(this)
     }

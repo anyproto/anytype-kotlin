@@ -464,4 +464,107 @@ class FilterSubscriptionSupportTest {
     }
 
     // endregion
+
+    // region updateFormatForSubscription — STATUS/TAG filters (DROID-4545)
+
+    @Test
+    fun `updateFormatForSubscription stamps STATUS format so a status filter is not sent as longtext`() = runBlocking {
+        val statusRelationKey = "status"
+
+        val storeOfRelations = DefaultStoreOfRelations()
+        storeOfRelations.merge(
+            listOf(
+                StubRelationObject(
+                    key = statusRelationKey,
+                    format = com.anytypeio.anytype.core_models.Relation.Format.STATUS
+                )
+            )
+        )
+
+        // Arrives mislabeled as LONG_TEXT (e.g. created on Desktop / format not set by MW).
+        val statusFilter = StubFilter(
+            relationKey = statusRelationKey,
+            relationFormat = RelationFormat.LONG_TEXT,
+            condition = DVFilterCondition.IN,
+            value = listOf("optionId")
+        )
+
+        val result = listOf(statusFilter).updateFormatForSubscription(storeOfRelations)
+
+        assertEquals(1, result.size)
+        assertEquals(
+            RelationFormat.STATUS,
+            result.first().relationFormat,
+            "Status filter must be re-stamped as STATUS, otherwise it is serialized as longtext and matches nothing"
+        )
+    }
+
+    @Test
+    fun `updateFormatForSubscription stamps TAG format so a tag filter is not sent as longtext`() = runBlocking {
+        val tagRelationKey = "tag"
+
+        val storeOfRelations = DefaultStoreOfRelations()
+        storeOfRelations.merge(
+            listOf(
+                StubRelationObject(
+                    key = tagRelationKey,
+                    format = com.anytypeio.anytype.core_models.Relation.Format.TAG
+                )
+            )
+        )
+
+        val tagFilter = StubFilter(
+            relationKey = tagRelationKey,
+            relationFormat = RelationFormat.LONG_TEXT,
+            condition = DVFilterCondition.IN,
+            value = listOf("optionId")
+        )
+
+        val result = listOf(tagFilter).updateFormatForSubscription(storeOfRelations)
+
+        assertEquals(1, result.size)
+        assertEquals(
+            RelationFormat.TAG,
+            result.first().relationFormat,
+            "Tag filter must be re-stamped as TAG, otherwise it is serialized as longtext and matches nothing"
+        )
+    }
+
+    @Test
+    fun `updateFormatForSubscription stamps STATUS format on a nested status filter inside a group`() = runBlocking {
+        val statusRelationKey = "status"
+
+        val storeOfRelations = DefaultStoreOfRelations()
+        storeOfRelations.merge(
+            listOf(
+                StubRelationObject(
+                    key = statusRelationKey,
+                    format = com.anytypeio.anytype.core_models.Relation.Format.STATUS
+                )
+            )
+        )
+
+        val nestedStatusFilter = StubFilter(
+            relationKey = statusRelationKey,
+            relationFormat = RelationFormat.LONG_TEXT,
+            condition = DVFilterCondition.IN,
+            value = listOf("optionId")
+        )
+        val advancedGroup = StubFilter(
+            operator = DVFilterOperator.AND,
+            condition = DVFilterCondition.EQUAL,
+            nestedFilters = listOf(nestedStatusFilter)
+        )
+
+        val result = listOf(advancedGroup).updateFormatForSubscription(storeOfRelations)
+
+        assertEquals(1, result.size)
+        assertEquals(
+            RelationFormat.STATUS,
+            result.first().nestedFilters.first().relationFormat,
+            "Nested status filter should also be re-stamped as STATUS"
+        )
+    }
+
+    // endregion
 }

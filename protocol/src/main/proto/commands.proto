@@ -4,6 +4,7 @@ option go_package = "pb";
 
 import "models.proto";
 import "localstore.proto";
+import "export_report.proto";
 
 import "events.proto";
 import "google/protobuf/struct.proto";
@@ -164,6 +165,9 @@ message Rpc {
                         SPACE_IS_DELETED = 102;
                         REQUEST_FAILED = 103;
                         INCORRECT_PERMISSIONS = 105;
+                        // the invite is shared within the space and these permissions are above read access:
+                        // whoever holds such a link is in the space, and every member holds it
+                        INVITE_NOT_SHAREABLE = 107;
                     }
                 }
             }
@@ -174,6 +178,9 @@ message Rpc {
                 string spaceId = 1;
                 model.InviteType inviteType = 2;
                 model.ParticipantPermissions permissions = 3;
+                // shareWithinSpace stores the invite in the space itself, so that every member can share it.
+                // Otherwise the invite is kept in the owner's account and only the owner can share it.
+                bool shareWithinSpace = 4;
             }
 
             message Response {
@@ -197,6 +204,12 @@ message Rpc {
                         REQUEST_FAILED = 103;
                         LIMIT_REACHED = 104;
                         NOT_SHAREABLE = 105;
+                        // the current invite is already shared within the space and cannot be taken back into the
+                        // owner's account: revoke it and generate a new one
+                        INVITE_ALREADY_SHARED = 106;
+                        // an invite anyone can join with cannot be shared within the space: whoever holds such a
+                        // link is in, so it stays in the owner's account and is theirs alone to hand out
+                        INVITE_NOT_SHAREABLE = 107;
                     }
                 }
             }
@@ -239,6 +252,9 @@ message Rpc {
                 string inviteFileKey = 3;
                 model.InviteType inviteType = 4;
                 model.ParticipantPermissions permissions = 5;
+                // heldByOwner is set when the invite is kept in the owner's account. Members get it with an
+                // empty inviteCid and inviteFileKey: only the owner can share the link.
+                bool heldByOwner = 6;
 
                 message Error {
                     Code code = 1;
@@ -775,6 +791,12 @@ message Rpc {
                 string token = 2;
                 string appToken = 3; // in case of mnemonic auth, need to be persisted by client
                 string accountId = 4; // temp, should be replaced with AccountInfo message
+                model.Account.Auth.LocalApiScope accountScope = 5; // scope of the session; for appKey auth it is the app link's scope
+                string appName = 6; // for appKey auth, the app name recorded when the app link was created
+                int64 appExpireAt = 7; // for appKey auth, the app link's expiration unix timestamp; 0 means the key never expires
+                model.Account.Auth.AppGrant grant = 8; // for appKey auth, the app link's grant; unset means an unscoped key
+                string appHash = 9; // for appKey auth, the app link's identity (the hash ListApps and RevokeApp use)
+                int64 appCreatedAt = 10; // for appKey auth, the app link's creation unix timestamp; 0 means unknown (pre-hash-era link)
 
                 message Error {
                     Code code = 1;
@@ -786,6 +808,7 @@ message Rpc {
                         BAD_INPUT = 2;
 
                         APP_TOKEN_NOT_FOUND_IN_THE_CURRENT_ACCOUNT = 101; // means the client logged into another account or the account directory has been cleaned
+                        APP_TOKEN_EXPIRED = 102; // the app link's expireAt has passed; the key must be re-issued
                     }
                 }
             }
@@ -865,6 +888,7 @@ message Rpc {
                         FAILED_TO_WRITE_CONFIG = 105;
                         FAILED_TO_CREATE_LOCAL_REPO = 106;
                         ACCOUNT_CREATION_IS_CANCELED = 107;
+                        ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
 
                         CONFIG_FILE_NOT_FOUND = 200;
                         CONFIG_FILE_INVALID = 201;
@@ -950,6 +974,56 @@ message Rpc {
             }
         }
 
+        message PreloadRemainingSpaces {
+            message Request {
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0; // No error
+                        UNKNOWN_ERROR = 1; // Any other errors
+                        BAD_INPUT = 2;
+                        ACCOUNT_IS_NOT_RUNNING = 101;
+                    }
+                }
+            }
+        }
+
+        // RecoveryState serves the folded account start-up status
+        // (Event.Account.Recovery.Snapshot) from the same state the
+        // Event.Account.Recovery.Update stream is emitted from. Lock-free with
+        // respect to AccountSelect, so it can be called while that RPC blocks,
+        // and total: call it whenever you like. Before any run it returns the
+        // idle snapshot (runId empty, phase NotStarted); ACCOUNT_IS_NOT_RUNNING
+        // is kept for wire compatibility and is never returned.
+        message RecoveryState {
+            message Request {
+            }
+
+            message Response {
+                Error error = 1;
+                anytype.Event.Account.Recovery.Snapshot snapshot = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0; // No error
+                        UNKNOWN_ERROR = 1; // Any other errors
+                        BAD_INPUT = 2;
+                        ACCOUNT_IS_NOT_RUNNING = 101;
+                    }
+                }
+            }
+        }
+
         message Migrate {
             message Request {
                 string id = 1; // Id of a selected account
@@ -971,8 +1045,8 @@ message Rpc {
 
                         ACCOUNT_NOT_FOUND = 101;
                         CANCELED = 102;
-                        NOT_ENOUGH_FREE_SPACE = 103;
-                        // TODO: [storage] Add specific error codes for migration problems
+                        NOT_ENOUGH_FREE_SPACE = 103; // TODO: [storage] Add specific error codes for migration problems
+                        ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
                     }
                 }
             }
@@ -1016,6 +1090,7 @@ message Rpc {
                 // if true - will run membership v2 polling loop, v2 methods will be available
                 // if false - will run membership v1 polling loop, v2 methods will return error
                 bool enableMembershipV2 = 10; // optional, default is false
+                string preferredSpaceId = 11; // optional. If set and resolvable, only this space + tech space load eagerly at start; the rest are deferred until AccountPreloadRemainingSpaces, a 10s timer, or this space fails. Empty = today's eager behavior.
             }
 
             /**
@@ -1200,6 +1275,7 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         DIFFERENT_ACCOUNT = 3;
+                        ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
                     }
                 }
             }
@@ -1284,10 +1360,26 @@ message Rpc {
         }
 
         message LocalLink {
+            // deprecated: pairing a gRPC session via the local-link challenge
+            // is being removed; authenticate through the JSON API instead.
             message NewChallenge {
                 message Request {
                     string appName = 1; // just for info, not secure to rely on
                     model.Account.Auth.LocalApiScope scope = 2;
+                    // requestedGrant (3) is gone: an app cannot know space ids
+                    // before pairing, so a space-listed request was
+                    // unimplementable by the clients the field existed for.
+                    // The grant is the USER's decision now, collected by the
+                    // approval prompt — see ApproveChallenge.grant.
+                    reserved 3;
+                    reserved "requestedGrant";
+                    // the permission the app declares it needs. It pre-fills
+                    // the approval prompt's permission control and is never a
+                    // ceiling — the human approving decides. Read is the zero
+                    // value, so "asked for read" and "asked for nothing" are
+                    // indistinguishable by design (both render the safe
+                    // default).
+                    model.Account.Auth.AppGrant.Perm requestedPerm = 4;
                 }
 
                 message Response {
@@ -1318,6 +1410,7 @@ message Rpc {
                     Error error = 1;
                     string sessionToken = 2; // ephemeral token for the session
                     string appKey = 3;  // persistent key, that can be used to restore session via CreateSession
+                    model.Account.Auth.AppGrant grant = 4; // the user's approved grant persisted with the app key; unset for an unscoped key
 
                     message Error {
                         Code code = 1;
@@ -1332,6 +1425,57 @@ message Rpc {
                             INVALID_CHALLENGE_ID = 102;
                             CHALLENGE_ATTEMPTS_EXCEEDED = 103;
                             INCORRECT_ANSWER = 104;
+                            // the user has not approved this challenge yet, so
+                            // no code exists to compare against
+                            CHALLENGE_NOT_APPROVED = 105;
+                        }
+                    }
+                }
+            }
+            // ApproveChallenge is the user's decision on a pending challenge.
+            // It is the only call that mints the code, and it answers the
+            // caller rather than broadcasting, so the code never reaches
+            // sessions other than the one that approved.
+            //
+            // The pending challenge is addressed by the caller it came from,
+            // which is what the prompt showed the user. Only one challenge can
+            // be pending per caller, so the pair is unambiguous, and it is the
+            // durable identity a future "always allow" would key on.
+            //
+            // Desktop UI only: it must never be listed in noAuthMethods or
+            // limitedScopeMethods, so authorization admits full scope alone.
+            message ApproveChallenge {
+                message Request {
+                    // both taken verbatim from the ClientInfo of the
+                    // LinkApprovalRequest event being answered; either may be empty
+                    string processPath = 1;
+                    string origin = 2;
+                    bool allow = 3;
+                    // the user's grant decision, persisted verbatim into the
+                    // app link on solve. Required when allow is true and the
+                    // challenge scope is JsonAPI, forbidden otherwise —
+                    // BAD_INPUT either way around. Ignored when allow is
+                    // false.
+                    model.Account.Auth.AppGrant grant = 4;
+                }
+
+                message Response {
+                    Error error = 1;
+                    string challenge = 2; // the 4-digit code; empty when allow is false
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+
+                            ACCOUNT_IS_NOT_RUNNING = 101;
+                            // nothing pending for this caller: never requested,
+                            // already decided, or expired
+                            NO_PENDING_CHALLENGE = 102;
                         }
                     }
                 }
@@ -1375,6 +1519,30 @@ message Rpc {
                             NULL = 0;
                             UNKNOWN_ERROR = 1;
                             BAD_INPUT = 2;
+
+                            ACCOUNT_IS_NOT_RUNNING = 101;
+                        }
+                    }
+                }
+            }
+            message UpdateApp {
+                message Request {
+                    string appHash = 1;
+                    model.Account.Auth.AppGrant grant = 2; // the new grant; unset clears the scoping (widen-requires-re-consent is the caller's contract)
+                }
+
+                message Response {
+                    Error error = 1;
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+                            NOT_FOUND = 3;
 
                             ACCOUNT_IS_NOT_RUNNING = 101;
                         }
@@ -2285,11 +2453,15 @@ message Rpc {
                 repeated string objectTypeFilter = 6; // DEPRECATED, GO-1926
                 // needed keys in details for return, when empty - will return all
                 repeated string keys = 7;
+                // when true, response.total is filled with the count of all objects matching the filters, ignoring limit/offset
+                bool needTotal = 9;
             }
 
             message Response {
                 Error error = 1;
                 repeated google.protobuf.Struct records = 2;
+                // total number of objects matching the filters, ignoring limit/offset; filled only when request.needTotal is true
+                int64 total = 3;
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -2421,6 +2593,57 @@ message Rpc {
                 string subId = 4;
 
                 Event.Object.Subscription.Counters counters = 5;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        // one-shot cross-space search, no subscription overhead. Queries the
+        // spaces whose object stores are loaded at the moment of the call —
+        // stores load sequentially on app start, so early calls can see a
+        // partial space set; the response reports it via allStoresLoaded.
+        // Tech-space and marketplace objects are excluded. No total is
+        // returned. fullText uses the detailed matching of
+        // ObjectSearchWithMeta (not ObjectSearch's name-prefix mode).
+        message CrossSpaceSearch {
+            message Request {
+                repeated anytype.model.Block.Content.Dataview.Filter filters = 1;
+                // empty sorts: fullText queries default to relevance order,
+                // browse queries (empty fullText) to lastModifiedDate desc
+                repeated anytype.model.Block.Content.Dataview.Sort sorts = 2;
+                string fullText = 3;
+                // offset and limit apply to the merged cross-space result.
+                // Always set a limit: an unlimited request materializes every
+                // space in full
+                int32 offset = 4;
+                int32 limit = 5;
+                // keys to return in records; empty = all
+                repeated string keys = 6;
+                // Optional allowlist applied before querying stores. Empty
+                // means all user spaces; callers with no access must not query.
+                repeated string spaceIds = 7;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated google.protobuf.Struct records = 2;
+                // false = records are a partial view: the sequential
+                // per-space store warm-up had not finished when the query
+                // ran, or a space's store failed and was skipped. Retry
+                // later for the complete view, or use
+                // ObjectCrossSpaceSearchSubscribe, which streams
+                // later-loading spaces as they open.
+                bool allStoresLoaded = 3;
 
                 message Error {
                     Code code = 1;
@@ -2644,6 +2867,10 @@ message Rpc {
             message Request {
                 string contextId = 1;
                 bool isArchived = 2;
+                // when true, skip the orphan cascade entirely (no file auto-archive, no
+                // CleanupSuggestion event). Used by the client when archiving objects the user
+                // confirmed in the popup, to avoid re-prompting.
+                bool skipCascade = 3;
             }
 
             message Response {
@@ -2910,6 +3137,8 @@ message Rpc {
             message Request {
                 repeated string objectIds = 1;
                 bool isArchived = 2;
+                // when true, skip the orphan cascade entirely (see SetIsArchived.Request).
+                bool skipCascade = 3;
             }
             message Response {
                 Error error = 1;
@@ -2924,6 +3153,105 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         // ...
+                    }
+                }
+            }
+        }
+
+        message CleanupSuggestions {
+            message Request {
+                string spaceId = 1;
+                // relation keys to return; empty => a default set.
+                // id, createdInContext and resolvedLayout are always included.
+                repeated string keys = 2;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated Item items = 2;
+
+                message Item {
+                    google.protobuf.Struct details = 1;
+                    // true for forest roots (createdInContext parent is outside the orphan set)
+                    bool isRoot = 2;
+                    // set on roots only; none for descendants
+                    Reason reason = 3;
+
+                    enum Reason {
+                        none = 0;
+                        contextArchived = 1;
+                        contextDeleted = 2;
+                        contextUnlinked = 3;
+                    }
+                }
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
+        // DeletionAudit lists what was removed from a space, newest first, with who created and who
+        // removed each one.
+        //
+        // Records come in two kinds, told apart by isUninstalled:
+        //  - absent: an object destroyed outright. Its tree is gone, so it has no name, and
+        //    creation-side keys are present only if it was deleted by a build that preserves them.
+        //  - true: a type, property, relation option or template that was uninstalled. Reversible,
+        //    tree intact, name and sourceObject still readable.
+        message DeletionAudit {
+            message Request {
+                string spaceId = 1;
+                // relation keys to return; empty => a default audit set.
+                // id, deletedBy, deletedDate and isUninstalled are always included.
+                repeated string keys = 2;
+                int32 offset = 3;
+                int32 limit = 4;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated google.protobuf.Struct records = 2;
+                // total number of deleted objects in the space, ignoring limit/offset
+                int64 total = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
+        message CleanupSuggestionIgnore {
+            message Request {
+                repeated string objectIds = 1;
+                bool ignored = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
                     }
                 }
             }
@@ -3091,6 +3419,7 @@ message Rpc {
                 string path = 2;
                 int32 succeed = 4;
                 ResponseEvent event = 3;
+                anytype.model.ExportReport report = 5;
 
                 message Error {
                     Code code = 1;
@@ -3120,6 +3449,7 @@ message Rpc {
                 Error error = 1;
                 string result = 2;
                 ResponseEvent event = 3;
+                anytype.model.ExportReport report = 4;
 
                 message Error {
                     Code code = 1;
@@ -3155,6 +3485,16 @@ message Rpc {
                 bool noProgress = 12;
                 bool isMigration = 13;
                 bool isNewSpace = 15;
+                // optional BYOK LLM enrichment of the imported structure (importv2);
+                // absent = feature off, import runs with built-in rules only
+                AIParams aiParams = 16;
+
+                message AIParams {
+                    // OpenAI-compatible provider; feature is off when endpoint and model are empty
+                    AI.ProviderConfig config = 1;
+                    // allow sample property values and page titles in the analysis prompt (default: schema only)
+                    bool includeContentSamples = 2;
+                }
 
                 message NotionParams {
                     string apiKey = 1;
@@ -3293,6 +3633,72 @@ message Rpc {
                     Html = 2;
                     Txt = 3;
                 };
+            }
+        }
+
+        // ImportRunStatus reports one importv2 run by its durable importId
+        // (returned nowhere yet client-side; discover via ImportRunList).
+        // Live runs are served from the running engine's surface; dormant
+        // runs — a crashed process's dir awaiting the sweep, a suspended
+        // run — are served from the manifest and the ledger alone, which is
+        // what makes the poll restart-proof (a server-side
+        // operator polls job state instead of holding a session stream open
+        // across sidecar restarts).
+        message ImportRunStatus {
+            message Request {
+                string importId = 1;
+            }
+
+            // Run pairs the statistic payload with the durable lifecycle
+            // state and liveness.
+            message Run {
+                anytype.Event.Import.Statistic status = 1;
+                // the manifest lifecycle state (running | fetched |
+                // materializing | suspended | compensating | completed |
+                // failed)
+                string manifestState = 2;
+                // an engine in this process is running it right now
+                bool live = 3;
+            }
+
+            message Response {
+                Error error = 1;
+                Run run = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        NOT_FOUND = 3;
+                    }
+                }
+            }
+        }
+
+        // ImportRunList enumerates every known importv2 run — live ones and
+        // dormant run dirs. A sibling RPC rather than an empty-id overload
+        // of ImportRunStatus by design.
+        message ImportRunList {
+            message Request {}
+
+            message Response {
+                Error error = 1;
+                repeated Rpc.Object.ImportRunStatus.Run runs = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
             }
         }
 
@@ -3567,16 +3973,43 @@ message Rpc {
     }
 
     message ObjectType {
-        message Relation {
+        // Property keeps a type's property lists, its dataview relationLinks and
+        // its views consistent in one apply, so the client no longer has to do
+        // it lazily in three calls.
+        message Property {
             message Add {
                 message Request {
-                    string objectTypeUrl = 1;
-                    repeated string relationKeys = 2;
+                    // Which of the type's recommended lists the property joins.
+                    // The fourth list, recommendedFileRelations, is absent by
+                    // design: it is derived from a fixed set of file-metadata
+                    // keys on the four file types, and a value written there is
+                    // overwritten the next time those types are revised.
+                    enum Section {
+                        Recommended = 0;
+                        Featured = 1;
+                        Hidden = 2;
+                        reserved 3; // was File
+                    }
+                    string objectTypeId = 1;
+                    // an existing property key; empty means "mint one" from name + format
+                    string key = 2;
+                    // required when key is empty
+                    string name = 3;
+                    // required when key is empty
+                    anytype.model.RelationFormat format = 4;
+                    Section section = 5;
+                    // the isVisible the new column gets in every view
+                    bool enableInViews = 6;
                 }
 
                 message Response {
                     Error error = 1;
-                    repeated anytype.model.Relation relations = 2;
+                    // the resolved-or-minted property key
+                    string key = 2;
+                    // the relation object's id
+                    string propertyId = 3;
+                    // the views that gained a column
+                    repeated string viewIds = 4;
 
                     message Error {
                         Code code = 1;
@@ -3594,12 +4027,14 @@ message Rpc {
             }
             message Remove {
                 message Request {
-                    string objectTypeUrl = 1;
-                    repeated string relationKeys = 2;
+                    string objectTypeId = 1;
+                    string key = 2;
                 }
 
                 message Response {
                     Error error = 1;
+                    // the views left untouched because they group, sort or filter by the property
+                    repeated string inUseViewIds = 2;
 
                     message Error {
                         Code code = 1;
@@ -3618,7 +4053,12 @@ message Rpc {
         }
 
         message Recommended {
+            // Deprecated: replaces the whole list and touches neither the
+            // dataview relationLinks nor the views, so a caller must do its own
+            // read-modify-write and the type is left half-consistent. Use
+            // ObjectTypePropertyAdd / ObjectTypePropertyRemove instead.
             message RelationsSet {
+                option deprecated = true;
                 message Request {
                     string typeObjectId = 1;
                     repeated string relationObjectIds = 2;
@@ -3642,7 +4082,12 @@ message Rpc {
                 }
             }
 
+            // Deprecated: replaces the whole list and touches neither the
+            // dataview relationLinks nor the views, so a caller must do its own
+            // read-modify-write and the type is left half-consistent. Use
+            // ObjectTypePropertyAdd / ObjectTypePropertyRemove instead.
             message FeaturedRelationsSet {
+                option deprecated = true;
                 message Request {
                     string typeObjectId = 1;
                     repeated string relationObjectIds = 2;
@@ -4754,6 +5199,59 @@ message Rpc {
             }
         }
 
+        // ListModels validates a provider config (base URL + token) and
+        // returns the models it offers. A successful response already proves
+        // the endpoint is reachable and the token works, so there is no
+        // separate "validate" RPC: the model list IS the validation result,
+        // and the Error codes below (ENDPOINT_NOT_REACHABLE, AUTH_REQUIRED,
+        // ...) tell the caller what to fix.
+        //
+        // config.model is ignored: at this point the caller does not know
+        // which model to use yet.
+        message ListModels {
+            message Request {
+                ProviderConfig config = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated Model models = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        RATE_LIMIT_EXCEEDED = 100;
+                        ENDPOINT_NOT_REACHABLE = 101;
+                        MODEL_NOT_FOUND = 102;
+                        AUTH_REQUIRED = 103;
+                        // ...
+                    }
+                }
+            }
+
+            // Model is one catalog entry, trimmed to what a client-side model
+            // picker needs: an id to send back as ProviderConfig.model, plus
+            // whatever attribution the provider gives alongside it.
+            //
+            // For OPENAI the list is pre-filtered to models usable for chat
+            // completions (see FilterChatModels in core/ai/llmclient). For
+            // every other provider it is returned as-is: OLLAMA, LMSTUDIO and
+            // LLAMACPP only ever list what the user chose to pull/load onto
+            // that server, so there is nothing irrelevant to filter out, and
+            // no capability field to filter by even if there were (see
+            // FilterChatModels' doc comment for the evidence).
+            message Model {
+                string id = 1;
+                string ownedBy = 2;
+            }
+        }
+
         message ProviderConfig {
             Provider provider = 1;
             string endpoint = 2;
@@ -4922,6 +5420,8 @@ message Rpc {
                 string contextId = 1;
                 repeated anytype.model.Block blocks = 2;
                 anytype.model.Range selectedTextRange = 3;
+                // optional. when set and the request contains multiple blocks, selectedTextRange is applied to the first block and selectedTextRangeLastBlock to the last block. {0,0} range means the whole block
+                anytype.model.Range selectedTextRangeLastBlock = 4;
             }
 
             message Response {
@@ -4991,6 +5491,8 @@ message Rpc {
                 string contextId = 1;
                 repeated anytype.model.Block blocks = 2;
                 anytype.model.Range selectedTextRange = 3;
+                // optional. when set and the request contains multiple blocks, selectedTextRange is applied to the first block and selectedTextRangeLastBlock to the last block. {0,0} range means the whole block
+                anytype.model.Range selectedTextRangeLastBlock = 4;
             }
 
             message Response {
@@ -7544,11 +8046,13 @@ message Rpc {
 
         message RunProfiler {
             message Request {
-                // 0 = save heap snapshot only; >0 = run full profiler (CPU, heap, trace, goroutines) for this many seconds
+                // 0 = save heap snapshot only; >0 = run timed profiler (CPU, heap, goroutines) for this many seconds. Set includeTrace to also capture the runtime execution trace.
                 int32 durationInSeconds = 1;
                 Reason reason = 2;
                 // Optional free-form description to attach to the profile
                 string reasonDesc = 3;
+                // Also capture the runtime execution trace (runtime/trace). Off by default: it is the heaviest artifact in both archive size and runtime overhead. Only applies when durationInSeconds > 0.
+                bool includeTrace = 4;
 
                 enum Reason {
                     UNKNOWN = 0;
@@ -8892,6 +9396,12 @@ message Rpc {
             message Set {
                 message Request {
                     anytype.model.DeviceNetworkType deviceNetworkType = 1;
+                    // opaque identity of the current network path as reported by the OS
+                    // (iOS: NWPath interfaces/gateway digest; Android: Network#getNetworkHandle()).
+                    // When it changes while the type stays the same (Wi-Fi to Wi-Fi switch,
+                    // cellular re-attach) the middleware still resets connections and re-syncs.
+                    // Optional: empty means unknown, only type transitions are used then.
+                    string networkId = 2;
                 }
                 message Response {
                     Error error = 2;
@@ -9069,6 +9579,7 @@ message Rpc {
                 repeated model.ChatMessage messages = 2;
                 model.ChatState chatState = 3;
                 int32 messageCount = 4;  // Total number of non-deleted messages in the chat
+                int32 lifetimeMessageCount = 5;  // Total number of messages added since the chat was created, including deleted messages
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -9316,12 +9827,19 @@ message Rpc {
 
         message Search {
             message Request {
+                // empty spaceId means all spaces (usually combined with empty chatId)
                 string spaceId = 1;
+                // empty chatId means all chats in spaceId; results carry chatId/spaceId per message
                 string chatId = 2;
+                // Note: ORDER_ID sort is only meaningful within a single chat
                 repeated anytype.model.Search.Message.Sort sorts = 3;
+                // empty fullText browses the latest messages in scope (default sort CREATED_AT desc);
+                // non-empty fullText is a relevance search (default sort SCORE desc)
                 string fullText = 4;
                 int32 offset = 5;
                 int32 limit = 6;
+                // (optional) restrict to messages authored by these identities; empty = all authors
+                repeated string creators = 7;
             }
 
             message Response {

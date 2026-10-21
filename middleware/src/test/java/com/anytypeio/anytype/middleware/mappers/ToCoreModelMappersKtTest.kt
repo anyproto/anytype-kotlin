@@ -5,6 +5,7 @@ import anytype.model.ChatMessage.MessageBlockText
 import anytype.model.ChatMessage.MessageBlockLink
 import anytype.model.ChatMessage.MessageBlockEmbed
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DataViewGroup
 import com.anytypeio.anytype.core_models.chats.Chat
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -204,6 +205,42 @@ class ToCoreModelMappersKtTest {
         assertEquals("First paragraph", (result[0] as Chat.Message.MessageBlock.Text).text)
         assertEquals("Second paragraph", (result[1] as Chat.Message.MessageBlock.Text).text)
         assertEquals("obj-1", (result[2] as Chat.Message.MessageBlock.Link).targetObjectId)
+    }
+
+    // endregion
+
+    // region DataView group normalization
+
+    @Test
+    fun `should map a status group to Value_Status`() {
+        val group = MDVGroup(id = "g-a", status = MDVGroupStatus(id = "opt-a"))
+        assertEquals(DataViewGroup.Value.Status("opt-a"), group.toCoreModelsGroup().value)
+    }
+
+    @Test
+    fun `should normalize an empty-id status group to Value_Empty`() {
+        // The backend encodes the "No value" group as an empty-id Status; it must collapse to
+        // Value.Empty so downstream board logic can trust the value instead of the magic group id.
+        val group = MDVGroup(id = "empty", status = MDVGroupStatus(id = ""))
+        assertEquals(DataViewGroup.Value.Empty, group.toCoreModelsGroup().value)
+    }
+
+    @Test
+    fun `should map a tag group to Value_Tag`() {
+        val group = MDVGroup(id = "g-combo", tag = MDVGroupTag(ids = listOf("x", "y")))
+        assertEquals(DataViewGroup.Value.Tag(listOf("x", "y")), group.toCoreModelsGroup().value)
+    }
+
+    @Test
+    fun `should normalize a blank-ids tag group to Value_Empty`() {
+        val group = MDVGroup(id = "empty", tag = MDVGroupTag(ids = listOf("")))
+        assertEquals(DataViewGroup.Value.Empty, group.toCoreModelsGroup().value)
+    }
+
+    @Test
+    fun `should normalize an empty tag group to Value_Empty`() {
+        val group = MDVGroup(id = "empty", tag = MDVGroupTag(ids = emptyList()))
+        assertEquals(DataViewGroup.Value.Empty, group.toCoreModelsGroup().value)
     }
 
     // endregion

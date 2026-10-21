@@ -17,9 +17,21 @@ class ExperimentalFeaturesViewModel(
     private val _isCompactModeEnabled = MutableStateFlow(true)
     val isCompactModeEnabled: StateFlow<Boolean> = _isCompactModeEnabled.asStateFlow()
 
+    private val _isKanbanEnabled = MutableStateFlow(true)
+    val isKanbanEnabled: StateFlow<Boolean> = _isKanbanEnabled.asStateFlow()
+
+    private val _isQuickCaptureEnabled = MutableStateFlow(true)
+    val isQuickCaptureEnabled: StateFlow<Boolean> = _isQuickCaptureEnabled.asStateFlow()
+
+    private val _isQuickCaptureAiEnabled = MutableStateFlow(false)
+    val isQuickCaptureAiEnabled: StateFlow<Boolean> = _isQuickCaptureAiEnabled.asStateFlow()
+
     init {
         viewModelScope.launch {
             _isCompactModeEnabled.value = userSettingsRepository.getCompactModeEnabled()
+            _isKanbanEnabled.value = userSettingsRepository.getKanbanEnabled()
+            _isQuickCaptureEnabled.value = userSettingsRepository.getQuickCaptureEnabled()
+            _isQuickCaptureAiEnabled.value = userSettingsRepository.getQuickCaptureAiEnabled()
         }
     }
 
@@ -27,6 +39,27 @@ class ExperimentalFeaturesViewModel(
         viewModelScope.launch {
             userSettingsRepository.setCompactModeEnabled(enabled)
             _isCompactModeEnabled.value = enabled
+        }
+    }
+
+    fun onKanbanToggled(enabled: Boolean) {
+        viewModelScope.launch {
+            userSettingsRepository.setKanbanEnabled(enabled)
+            _isKanbanEnabled.value = enabled
+        }
+    }
+
+    fun onQuickCaptureToggled(enabled: Boolean) {
+        viewModelScope.launch {
+            userSettingsRepository.setQuickCaptureEnabled(enabled)
+            _isQuickCaptureEnabled.value = enabled
+        }
+    }
+
+    fun onQuickCaptureAiToggled(enabled: Boolean) {
+        viewModelScope.launch {
+            userSettingsRepository.setQuickCaptureAiEnabled(enabled)
+            _isQuickCaptureAiEnabled.value = enabled
         }
     }
 

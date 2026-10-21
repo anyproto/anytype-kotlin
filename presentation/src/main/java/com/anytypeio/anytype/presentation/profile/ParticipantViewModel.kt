@@ -9,11 +9,13 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceCreationUseCase
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.ProfileIconView
@@ -23,6 +25,7 @@ import com.anytypeio.anytype.domain.base.suspendFold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -33,6 +36,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -47,7 +51,8 @@ class ParticipantViewModel(
     private val configStorage: ConfigStorage,
     private val createSpace: CreateSpace,
     private val searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val removeSpaceMembers: RemoveSpaceMembers
 ) : ViewModel() {
 
     val uiState = MutableStateFlow<UiParticipantScreenState>(UiParticipantScreenState.EMPTY)
@@ -79,24 +84,35 @@ class ParticipantViewModel(
                 targets = listOf(vmParams.objectId),
                 keys = ObjectSearchConstants.spaceMemberKeys
             )
-            subscriptionContainer.subscribe(params)
-                .collect { participant ->
-                    if (participant.isNotEmpty()) {
-                        val obj = participant.first()
-                        val identityProfileLink = obj.getSingleValue<String>(Relations.IDENTITY_PROFILE_LINK)
-                        uiState.value = UiParticipantScreenState(
-                            name = fieldsParser.getObjectName(obj),
-                            icon = obj.profileIcon(urlBuilder),
-                            isOwner = configStorage.getOrNull()?.profile == identityProfileLink,
-                            identity = obj.getSingleValue<String>(Relations.IDENTITY),
-                            description = if (obj.description?.isBlank() == true) {
-                                null
-                            } else {
-                                obj.description
-                            }
+            combine(
+                subscriptionContainer.subscribe(params),
+                permission
+            ) { participant, currentUserPermission ->
+                participant to currentUserPermission
+            }.collect { (participant, currentUserPermission) ->
+                if (participant.isNotEmpty()) {
+                    val obj = participant.first()
+                    val identityProfileLink = obj.getSingleValue<String>(Relations.IDENTITY_PROFILE_LINK)
+                    val isOwnProfile = configStorage.getOrNull()?.profile == identityProfileLink
+                    val targetPermissions = ObjectWrapper.SpaceMember(obj.map).permissions
+                    uiState.value = UiParticipantScreenState(
+                        name = fieldsParser.getObjectName(obj),
+                        icon = obj.profileIcon(urlBuilder),
+                        isOwner = isOwnProfile,
+                        identity = obj.getSingleValue<String>(Relations.IDENTITY),
+                        description = if (obj.description?.isBlank() == true) {
+                            null
+                        } else {
+                            obj.description
+                        },
+                        canRemoveMember = canRemoveMember(
+                            isOwnProfile = isOwnProfile,
+                            currentUserPermissions = currentUserPermission,
+                            targetPermissions = targetPermissions
                         )
-                    }
+                    )
                 }
+            }
         }
     }
 
@@ -139,6 +155,61 @@ class ParticipantViewModel(
                 }
                 proceedWithCreatingOneToOneSpace()
             }
+
+            ParticipantEvent.OnRemoveMemberClicked -> {
+                val state = uiState.value
+                val identity = state.identity
+                if (!identity.isNullOrBlank()) {
+                    viewModelScope.launch {
+                        commands.emit(
+                            Command.ShowRemoveMemberWarning(
+                                identity = identity,
+                                name = state.name
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Owner can remove any non-owner; Admin can remove Editors/Viewers only.
+     * The current user can never remove their own profile.
+     */
+    private fun canRemoveMember(
+        isOwnProfile: Boolean,
+        currentUserPermissions: SpaceMemberPermissions?,
+        targetPermissions: SpaceMemberPermissions?
+    ): Boolean = when {
+        isOwnProfile -> false
+        targetPermissions == SpaceMemberPermissions.OWNER -> false
+        currentUserPermissions == SpaceMemberPermissions.OWNER -> true
+        currentUserPermissions == SpaceMemberPermissions.ADMIN ->
+            targetPermissions == SpaceMemberPermissions.READER ||
+                    targetPermissions == SpaceMemberPermissions.WRITER
+        else -> false
+    }
+
+    fun onRemoveMemberConfirmed(identity: Id) {
+        viewModelScope.launch {
+            removeSpaceMembers.async(
+                RemoveSpaceMembers.Params(
+                    space = vmParams.space,
+                    identities = listOf(identity)
+                )
+            ).fold(
+                onFailure = { e ->
+                    Timber.e(e, "Error while removing space member from participant screen")
+                    commands.emit(Command.DismissRemoveMemberWarning)
+                    commands.emit(Command.Toast.Error("Failed to remove member. Please try again."))
+                },
+                onSuccess = {
+                    analytics.sendEvent(eventName = EventsDictionary.removeSpaceMember)
+                    // Closing the profile (popBackStack) also removes the loading confirmation sheet.
+                    commands.emit(Command.Dismiss)
+                }
+            )
         }
     }
 
@@ -257,7 +328,8 @@ class ParticipantViewModel(
         val description: String? = null,
         val identity: String? = null,
         val isOwner: Boolean,
-        val isConnecting: Boolean = false
+        val isConnecting: Boolean = false,
+        val canRemoveMember: Boolean = false
     ) {
        companion object {
            val EMPTY = UiParticipantScreenState(
@@ -282,6 +354,8 @@ class ParticipantViewModel(
         data object Dismiss : Command()
         data object OpenSettingsProfile : Command()
         data class SwitchToVault(val spaceId: Id) : Command()
+        data class ShowRemoveMemberWarning(val identity: Id, val name: String) : Command()
+        data object DismissRemoveMemberWarning : Command()
     }
 
     companion object {
@@ -299,7 +373,8 @@ class ParticipantViewModel(
         private val configStorage: ConfigStorage,
         private val createSpace: CreateSpace,
         private val searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val removeSpaceMembers: RemoveSpaceMembers
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -314,7 +389,8 @@ class ParticipantViewModel(
                 configStorage = configStorage,
                 createSpace = createSpace,
                 searchOneToOneChatByIdentity = searchOneToOneChatByIdentity,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                removeSpaceMembers = removeSpaceMembers
             ) as T
         }
     }

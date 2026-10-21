@@ -78,18 +78,15 @@ object Emojifier {
 
         if (cached != null) return cached
 
-        var result: Pair<Int, Int>? = null
-
         Emoji.DATA.forEachIndexed { categoryIndex, emojis ->
             val emojiIndex = emojis.indexOfFirst { emoji -> emoji == unicode }
             if (emojiIndex != -1) {
                 val pair = Pair(categoryIndex, emojiIndex)
-                result = pair
                 cache[unicode] = pair
-                return@forEachIndexed
+                return pair
             }
         }
-        return result
+        return null
     }
 
     object Config {

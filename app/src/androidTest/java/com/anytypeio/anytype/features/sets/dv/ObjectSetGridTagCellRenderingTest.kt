@@ -20,7 +20,6 @@ import com.anytypeio.anytype.test_utils.utils.onItemView
 import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
-import org.hamcrest.CoreMatchers.not
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -145,36 +144,28 @@ class ObjectSetGridTagCellRenderingTest : TestObjectSetSetup() {
 
         with(R.id.rvRows.rVMatcher()) {
             checkIsRecyclerSize(2)
+            // Grid tag cells now render like the List view: the first tag chip + a "+N" badge.
+            // Each object here has 2 tags, so the overflow badge reads "+1".
             onItemView(0, R.id.tvTitle).checkHasText("The Face on the Bar Room Floor")
-            onItemView(0, R.id.tag0).check(
+            onItemView(0, R.id.tvName).check(
                 ViewAssertions.matches(
                     ViewMatchers.withText("Silent film")
                 )
             )
-            onItemView(0, R.id.tag1).check(
+            onItemView(0, R.id.tvCount).check(
                 ViewAssertions.matches(
-                    ViewMatchers.withText("Director")
-                )
-            )
-            onItemView(0, R.id.tag2).check(
-                ViewAssertions.matches(
-                    not(ViewMatchers.isDisplayed())
+                    ViewMatchers.withText("+1")
                 )
             )
             onItemView(1, R.id.tvTitle).checkHasText("The Great Dictator")
-            onItemView(1, R.id.tag0).check(
+            onItemView(1, R.id.tvName).check(
                 ViewAssertions.matches(
                     ViewMatchers.withText("Sound film")
                 )
             )
-            onItemView(1, R.id.tag1).check(
+            onItemView(1, R.id.tvCount).check(
                 ViewAssertions.matches(
-                    ViewMatchers.withText("Director")
-                )
-            )
-            onItemView(1, R.id.tag2).check(
-                ViewAssertions.matches(
-                    not(ViewMatchers.isDisplayed())
+                    ViewMatchers.withText("+1")
                 )
             )
         }

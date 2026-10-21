@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.extensions.contentWidthDp
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
@@ -65,7 +66,7 @@ fun SpacesIntroductionScreen(
     }
 
     ModalBottomSheet(
-        modifier = Modifier.fillMaxWidth(),
+        sheetMaxWidth = contentWidthDp(),
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = Color.Transparent,

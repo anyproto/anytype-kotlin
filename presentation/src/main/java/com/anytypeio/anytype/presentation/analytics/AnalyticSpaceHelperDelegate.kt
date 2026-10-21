@@ -43,6 +43,7 @@ class DefaultAnalyticsParamsProvider @Inject constructor(
                 SpaceMemberPermissions.WRITER -> "Writer"
                 SpaceMemberPermissions.OWNER -> "Owner"
                 SpaceMemberPermissions.NO_PERMISSIONS -> "NoPermissions"
+                SpaceMemberPermissions.ADMIN -> "Admin"
                 null -> EMPTY_STRING_VALUE
             },
             spaceType = when (spaceType) {

@@ -25,6 +25,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @ExperimentalCoroutinesApi
@@ -252,6 +253,34 @@ class NewCreateObjectViewModelTest {
             assertFalse(state.isLoading)
             assertTrue(state.objectTypes.isEmpty())
             assertTrue(state.filteredObjectTypes.isEmpty())
+        }
+    }
+
+    @Test
+    fun `retry should not surface a cancellation error from the cancelled observe job`() = runTest {
+        // Arrange
+        val pageType = StubObjectType(
+            uniqueKey = "ot-page",
+            name = "Page",
+            recommendedLayout = ObjectType.Layout.BASIC.code.toDouble()
+        )
+        storeOfObjectTypes.merge(listOf(pageType))
+        spaceViewContainer.setSpaceUxType(SpaceUxType.DATA)
+
+        val vm = createViewModel()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Act - Retry cancels the existing observe job (JobCancellationException)
+        // and starts a fresh one. The cancellation must not land in state.error.
+        vm.onAction(CreateObjectAction.Retry)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        // Assert
+        vm.state.test {
+            val state = awaitItem()
+            assertNull(state.error)
+            assertFalse(state.isLoading)
+            assertEquals(1, state.objectTypes.size)
         }
     }
 

@@ -251,7 +251,7 @@ class UnreadChatListWidgetContainer(
                                     objType = storeOfObjectTypes.getTypeOfObject(obj)
                                 ),
                                 name = WidgetView.Name.Default(
-                                    prettyPrintName = fieldParser.getObjectPluralName(obj, false)
+                                    prettyPrintName = fieldParser.getObjectNameOrPluralsForTypes(obj, false)
                                 ),
                                 cover = null,
                                 counter = WidgetView.ChatCounter(
@@ -276,7 +276,7 @@ class UnreadChatListWidgetContainer(
                                     objType = storeOfObjectTypes.getTypeOfObject(obj)
                                 ),
                                 name = WidgetView.Name.Default(
-                                    prettyPrintName = fieldParser.getObjectPluralName(obj, false)
+                                    prettyPrintName = fieldParser.getObjectNameOrPluralsForTypes(obj, false)
                                 )
                             )
                         }

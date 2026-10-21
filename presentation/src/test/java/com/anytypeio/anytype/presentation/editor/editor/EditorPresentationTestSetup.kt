@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.domain.ai.TypeSuggestionEngine
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -139,6 +140,7 @@ import kotlinx.coroutines.runBlocking
 import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
@@ -552,7 +554,10 @@ open class EditorPresentationTestSetup {
             spaceViews = spacedViews,
             urlHelper = mock(),
             addDiscussion = mock(),
-            getChatMessages = mock()
+            getChatMessages = mock(),
+            backHistoryDelegate = mock(),
+            exitToVaultDelegate = mock(),
+            typeSuggestionEngine = TypeSuggestionEngine.NoOp
         )
     }
 
@@ -764,6 +769,81 @@ open class EditorPresentationTestSetup {
                     Payload(context = root, events = emptyList())
                 )
             )
+        }
+    }
+
+    /**
+     * Stubs [replaceBlock] with the full identity-fork swap payload: [forked]
+     * is added, [empty] is deleted, and the root's children become [children].
+     */
+    fun stubReplaceBlockWithSwap(empty: Block, forked: Block, children: List<Id>) {
+        replaceBlock.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(
+                Pair(
+                    forked.id,
+                    Payload(
+                        context = root,
+                        events = listOf(
+                            Event.Command.UpdateStructure(
+                                context = root,
+                                id = root,
+                                children = children
+                            ),
+                            Event.Command.AddBlock(
+                                context = root,
+                                blocks = listOf(forked)
+                            ),
+                            Event.Command.DeleteBlock(
+                                context = root,
+                                targets = listOf(empty.id)
+                            )
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    /**
+     * Stubs [createBlock] with the trailing-placeholder swap payload: [created]
+     * is added and the root's children become [children].
+     */
+    fun stubCreateBlockWithSwap(created: Block, children: List<Id>) {
+        createBlock.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(
+                Pair(
+                    created.id,
+                    Payload(
+                        context = root,
+                        events = listOf(
+                            Event.Command.AddBlock(
+                                context = root,
+                                blocks = listOf(created)
+                            ),
+                            Event.Command.UpdateStructure(
+                                context = root,
+                                id = root,
+                                children = children
+                            )
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    /**
+     * Stubs [updateLinkMark] to append the new mark to the given marks — the
+     * real use case's merge for a mark that overlaps nothing.
+     */
+    fun stubUpdateLinkMarksToAppend() {
+        updateLinkMark.stub {
+            on { invoke(any(), any(), any()) } doAnswer { invocation ->
+                val params = invocation.getArgument<UpdateLinkMarks.Params>(1)
+                val onResult = invocation
+                    .getArgument<(Either<Throwable, List<Block.Content.Text.Mark>>) -> Unit>(2)
+                onResult(Either.Right(params.marks + params.newMark))
+            }
         }
     }
 

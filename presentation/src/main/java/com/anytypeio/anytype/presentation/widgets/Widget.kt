@@ -848,7 +848,7 @@ fun buildWidgetName(
     obj: ObjectWrapper.Basic,
     fieldParser: FieldParser
 ): Name {
-    val prettyPrintName = fieldParser.getObjectPluralName(obj, false)
+    val prettyPrintName = fieldParser.getObjectNameOrPluralsForTypes(obj, false)
     return Name.Default(prettyPrintName = prettyPrintName)
 }
 

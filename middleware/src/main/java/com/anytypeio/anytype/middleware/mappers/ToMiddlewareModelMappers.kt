@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.BlockSplitMode
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVSortEmptyType
+import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.DeviceNetworkType
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.NetworkMode
@@ -18,6 +19,7 @@ import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SpaceCreationUseCase
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.ChatMessageSort
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
@@ -347,7 +349,15 @@ fun Block.Content.DataView.Viewer.toMiddlewareModel(): MDVView =
         },
         defaultTemplateId = defaultTemplate.orEmpty(),
         defaultObjectTypeId = defaultObjectType.orEmpty(),
+        groupRelationKey = groupRelationKey.orEmpty(),
+        groupBackgroundColors = groupBackgroundColors,
     )
+
+fun ObjectOrder.toMiddlewareModel(): MDVObjectOrder = MDVObjectOrder(
+    viewId = view,
+    groupId = group,
+    objectIds = ids
+)
 
 fun Block.Content.DataView.Viewer.Type.toMiddlewareModel(): MDVViewType = when (this) {
     Block.Content.DataView.Viewer.Type.GRID -> MDVViewType.Table
@@ -387,6 +397,20 @@ fun DVSortEmptyType.toMiddlewareModel(): MDVSortEmptyType = when (this) {
     DVSortEmptyType.START -> MDVSortEmptyType.Start
     DVSortEmptyType.END -> MDVSortEmptyType.End
 }
+
+fun ChatMessageSort.toMiddlewareModel(): anytype.model.Search.Message.Sort =
+    anytype.model.Search.Message.Sort(
+        key = when (key) {
+            ChatMessageSort.Key.ORDER_ID -> anytype.model.Search.Message.Sort.Key.ORDER_ID
+            ChatMessageSort.Key.SCORE -> anytype.model.Search.Message.Sort.Key.SCORE
+            ChatMessageSort.Key.CREATED_AT -> anytype.model.Search.Message.Sort.Key.CREATED_AT
+            ChatMessageSort.Key.MODIFIED_AT -> anytype.model.Search.Message.Sort.Key.MODIFIED_AT
+        },
+        type = if (descending)
+            anytype.model.Search.Message.Sort.Type.Desc
+        else
+            anytype.model.Search.Message.Sort.Type.Asc
+    )
 
 fun Block.Content.DataView.Sort.Type.toMiddlewareModel(): MDVSortType = when (this) {
     Block.Content.DataView.Sort.Type.ASC -> MDVSortType.Asc
@@ -563,6 +587,7 @@ fun SpaceMemberPermissions.toMw() : MParticipantPermission = when(this) {
     SpaceMemberPermissions.WRITER -> MParticipantPermission.Writer
     SpaceMemberPermissions.OWNER -> MParticipantPermission.Owner
     SpaceMemberPermissions.NO_PERMISSIONS -> MParticipantPermission.NoPermissions
+    SpaceMemberPermissions.ADMIN -> MParticipantPermission.Admin
 }
 
 fun NameServiceNameType.toMw(): MNameServiceNameType = when (this) {

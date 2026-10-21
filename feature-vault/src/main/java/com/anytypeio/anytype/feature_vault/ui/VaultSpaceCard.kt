@@ -36,7 +36,7 @@ fun DataSpaceCard(
     isPinned: Boolean = false,
     spaceBackground: SpaceBackground,
     spaceView: VaultSpaceView.DataSpace,
-    expandedSpaceId: String? = null,
+    isMenuExpanded: Boolean = false,
     isCompactMode: Boolean = false,
     onDismissMenu: () -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
@@ -69,7 +69,7 @@ fun DataSpaceCard(
 
         // Include dropdown menu inside the card
         SpaceActionsDropdownMenu(
-            expanded = expandedSpaceId == spaceView.space.id,
+            expanded = isMenuExpanded,
             onDismiss = onDismissMenu,
             isPinned = spaceView.isPinned,
             isOwner = spaceView.isOwner,

@@ -14,7 +14,6 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_models.membership.MembershipConstants
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.ACTIVE_TIERS_WITH_BANNERS
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.CO_CREATOR_ID
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.MEMBERSHIP_CONTACT_EMAIL
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.MEMBERSHIP_LEVEL_DETAILS
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.PRIVACY_POLICY
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.TERMS_OF_SERVICE
@@ -52,7 +51,6 @@ fun MembershipStatus.toMainView(
         membershipLevelDetails = MEMBERSHIP_LEVEL_DETAILS,
         privacyPolicy = PRIVACY_POLICY,
         termsOfService = TERMS_OF_SERVICE,
-        contactEmail = MEMBERSHIP_CONTACT_EMAIL,
         showBanner = showBanner,
         tiers = tiers.map {
             it.toView(

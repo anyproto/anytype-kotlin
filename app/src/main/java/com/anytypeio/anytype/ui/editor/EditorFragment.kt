@@ -26,6 +26,7 @@ import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
@@ -36,6 +37,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
@@ -45,8 +48,13 @@ import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsAnimationCompat.Callback.DISPATCH_MODE_STOP
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnLayout
+import androidx.core.view.doOnPreDraw
+import androidx.core.view.isInvisible
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
+import androidx.core.view.updatePadding
+import com.anytypeio.anytype.core_utils.ext.applyBottomEdgeToEdgeInsets
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -55,6 +63,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.ChangeBounds
@@ -77,12 +86,15 @@ import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
 import com.anytypeio.anytype.core_ui.features.editor.AttachToChatToolbar
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
+import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
+import com.anytypeio.anytype.core_ui.features.editor.diffSnapshot
 import com.anytypeio.anytype.core_ui.features.editor.EditorDatePicker
 import com.anytypeio.anytype.core_ui.features.editor.modal.SelectLanguageBottomSheet
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveStateListener
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveTargetHighlighter
+import com.anytypeio.anytype.core_ui.menu.BackHistoryMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.longClicks
@@ -95,6 +107,7 @@ import com.anytypeio.anytype.core_ui.tools.NoteHeaderItemDecorator
 import com.anytypeio.anytype.core_ui.tools.OutsideClickDetector
 import com.anytypeio.anytype.core_ui.tools.SlashWidgetFooterItemDecorator
 import com.anytypeio.anytype.core_ui.tools.StyleToolbarItemDecorator
+import com.anytypeio.anytype.core_ui.widgets.CircularFabButton
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.BlockToolbarWidget
@@ -193,17 +206,21 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
 import kotlin.math.abs
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.fragment_editor),
@@ -235,6 +252,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
      * Override in subclasses that use different navigation graphs.
      */
     protected open val navigationDestinationId: Int = R.id.pageScreen
+
+    /**
+     * Whether this editor shows its bottom action buttons (create / search-on-page FABs and
+     * the discussion button). Quick capture embeds the editor inside a sheet that owns its
+     * own chrome, and those buttons would float over the type-selection bar.
+     */
+    protected open val showsBottomActionButtons: Boolean = true
+
+    /**
+     * Whether this editor shows the object top toolbar (the back arrow, the title and the `[...]`
+     * menu). Select mode hides that toolbar and restores it on exit, so a host that hides it for
+     * good must say so here. Quick capture and the multiple-template screen own their own header.
+     */
+    protected open val showsTopToolbar: Boolean = true
 
     private val sideEffect: OpenObjectNavigation.SideEffect
         get() {
@@ -335,6 +366,23 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     protected val vm by viewModels<EditorViewModel> { factory }
 
+    /**
+     * Pending block list updates: diffs are calculated off the main thread,
+     * one at a time, and stale intermediate lists are conflated. Each update is
+     * paired with a monotonic epoch so position-based commands can wait until
+     * the list they were computed against has been applied to the adapter.
+     */
+    private val pendingBlockListUpdates =
+        Channel<Pair<Long, List<BlockView>>>(capacity = Channel.CONFLATED)
+
+    /**
+     * Epoch of the last list submitted to [pendingBlockListUpdates] (main thread only)
+     * and of the last list actually applied to the adapter.
+     * @see runAfterBlockListUpdates
+     */
+    private var submittedBlockListEpoch = 0L
+    private val appliedBlockListEpoch = MutableStateFlow(0L)
+
     private val blockAdapter by lazy {
         BlockAdapter(
             restore = vm.restore,
@@ -388,6 +436,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             onSlashEvent = vm::onSlashTextWatcherEvent,
             onBackPressedCallback = { vm.onBackPressedCallback() },
             onKeyPressedEvent = vm::onKeyPressedEvent,
+            isTabKeyEnabled = true,
             onDragAndDropTrigger = { vh: RecyclerView.ViewHolder, event: MotionEvent? ->
                 dndDelegate.handleDragAndDropTrigger(vh, event)
             },
@@ -453,20 +502,27 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
      * on the old bottom toolbar, so this manual listener is the
      * replacement.
      *
+     * Uses instant isVisible toggles (not FAB show()/hide()) so all three
+     * bottom-bar buttons — Search/Create FABs and the Compose Discussion
+     * button — hide/show identically with no scale+fade mismatch.
+     *
      * Guarded by navigationToolbar.isVisible so an upward scroll during
      * multi-select / markup / other modes (where render() has set the FABs
-     * invisible) does not reveal them via show().
+     * invisible) does not reveal them.
      */
     private val fabScrollListener = object : RecyclerView.OnScrollListener() {
         override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
             if (dy > 4) {
-                binding.fabCreate.hide()
+                binding.fabCreate.isVisible = false
+                binding.fabSearchOnPage.isVisible = false
                 binding.discussionButton.isVisible = false
             } else if (dy < -4) {
                 val navToolbarVisible =
                     vm.controlPanelViewState.value?.navigationToolbar?.isVisible == true
                 if (!navToolbarVisible) return
-                binding.fabCreate.show()
+                if (!showsBottomActionButtons) return
+                binding.fabCreate.isVisible = true
+                binding.fabSearchOnPage.isVisible = true
                 if (vm.discussionButtonState.value !is
                     EditorViewModel.DiscussionButtonState.Hidden
                 ) {
@@ -497,11 +553,42 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     @Inject
     lateinit var factory: EditorViewModelFactory
 
+    /**
+     * Whether the document may be opened before the view is inflated.
+     *
+     * Off by default: this fragment's one-shot collectors (toasts, snacks, navigation) attach
+     * in [onStart], so a screen that opens ahead of them can miss an event from a fast
+     * failure. Screens where the open dominates the time to first content opt in — inflating
+     * this layout costs about as much as the round trip does, and there is no reason for the
+     * two to run one after the other.
+     */
+    protected open val opensDocumentEagerly: Boolean = false
+
+    private var openedDocumentEagerly = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         pickerDelegate.initPicker(ctx)
         setupOnBackPressedDispatcher()
         getEditorSettings()
+        onConfigureViewModel()
+        // A non-null savedInstanceState is a recreation: the view model survived it, and
+        // onStart's own call is the one that belongs there.
+        if (opensDocumentEagerly && savedInstanceState == null) {
+            openDocument()
+            openedDocumentEagerly = true
+        }
+    }
+
+    /**
+     * Runs after injection and before any document open, so a subclass can configure the view
+     * model while that ordering still means something — [EditorViewModel.onStart]'s success
+     * path reads that configuration.
+     */
+    protected open fun onConfigureViewModel() = Unit
+
+    private fun openDocument() {
+        vm.onStart(id = extractDocumentId(), space = space, saveAsLastOpened = saveAsLastOpened())
     }
 
     override fun onStart() {
@@ -565,7 +652,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             }
         }
-        vm.onStart(id = extractDocumentId(), space = space, saveAsLastOpened = saveAsLastOpened())
+        // Skipped exactly once, when onCreate already opened the document. Every later start
+        // — returning from background, where onStop closed it — opens again as before.
+        if (openedDocumentEagerly) openedDocumentEagerly = false else openDocument()
         super.onStart()
     }
 
@@ -580,8 +669,23 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         outState.putParcelable(CURRENT_MEDIA_UPLOAD_KEY, vm.currentMediaUploadDescription)
     }
 
+    /** The toolbar sheets of the editor, in declaration order. */
+    private fun editorSheets(): List<View> = listOf(
+        binding.styleToolbarMain,
+        binding.styleToolbarOther,
+        binding.styleToolbarColors,
+        binding.blockActionToolbar,
+        binding.undoRedoToolbar,
+        binding.styleToolbarBackground,
+        binding.simpleTableWidget
+    )
+
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
         super.onViewStateRestored(savedInstanceState)
+        // DROID-4592. The hierarchy restore has just written the saved sheet state back into every
+        // BottomSheetBehavior, after onViewCreated hid them. Drop it here, before the first render,
+        // so that ControlPanelState stays the only source of truth for the editor chrome.
+        editorSheets().resetRestoredSheetState()
         if (savedInstanceState != null) {
             vm.onRestoreSavedState(savedInstanceState.getParcelable(CURRENT_MEDIA_UPLOAD_KEY))
         }
@@ -606,12 +710,62 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         observeSelectingTemplate()
 
+        // The object re-opens on every view creation (onStart -> vm.onStart), and the blocks
+        // arrive asynchronously through pendingBlockListUpdates. The adapter is therefore empty
+        // during the first layout pass. Under the default ALLOW policy the RecyclerView applies
+        // the restored scroll anchor against 0 items, then drops it, so a rotation sends the
+        // reader back to the top of the object. PREVENT_WHEN_EMPTY holds the anchor until the
+        // first blocks arrive. The command-driven scroll paths stay correct, because they run
+        // inside runAfterBlockListUpdates and set an explicit position.
+        blockAdapter.stateRestorationPolicy =
+            RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
             itemAnimator = null
             adapter = blockAdapter
             addItemDecoration(defaultBottomOffsetDecorator)
+        }
+
+        viewLifecycleOwner.lifecycleScope.launch {
+            for ((epoch, update) in pendingBlockListUpdates) {
+                // Snapshot both lists on the main thread before diffing off it:
+                // text/focus/cursor of text-bearing blocks are mutated in place on
+                // the main thread (TextWatchers, focus clearing) while DiffUtil
+                // would otherwise read the live instances concurrently.
+                val old = blockAdapter.views.diffSnapshot()
+                val new = update.diffSnapshot()
+                // Read on the main thread, like the snapshots above: a block whose id
+                // changed under the caret (trailing placeholder, identity fork) must diff
+                // as a change of the same row, not remove + insert — removing the focused
+                // row clears its focus and kills IME composition (DROID-4557).
+                val aliases = vm.blockIdAliases
+                val result = withContext(Dispatchers.Default) {
+                    DiffUtil.calculateDiff(
+                        BlockViewDiffUtil(old = old, new = new, aliases = aliases),
+                        false
+                    )
+                }
+                // Suppress focus-change callbacks while the update is applied (through
+                // the layout pass): removing or rebinding the focused row makes the
+                // system transiently hand focus to a neighboring row, which the
+                // ViewModel would otherwise record as a deliberate user caret move —
+                // hijacking focus during trailing-placeholder/identity-fork swaps.
+                blockAdapter.suppressFocusCallbacks = true
+                // The adapter keeps the original (store-shared) instances: the typing
+                // path relies on their identity (see EditorViewModel.onTextBlockTextChanged).
+                blockAdapter.applyDiffResult(items = update, result = result)
+                appliedBlockListEpoch.value = epoch
+                binding.recycler.invalidateItemDecorations()
+                if (binding.recycler.isLayoutRequested) {
+                    binding.recycler.doOnPreDraw { blockAdapter.suppressFocusCallbacks = false }
+                } else {
+                    // Nothing to lay out (e.g. an empty diff): release immediately so
+                    // real focus changes are not swallowed.
+                    blockAdapter.suppressFocusCallbacks = false
+                }
+            }
         }
 
         binding.toolbar.apply {
@@ -664,14 +818,52 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .launchIn(lifecycleScope)
 
 
-        // DROID-4318: Editor bottom navigation replaced with two scroll-aware
-        // floating action buttons (fabCreate / discussionButton). Share / home
-        // / chat entry points moved to the home overlay (Task 4) — no editor
-        // wiring.
-        binding.fabCreate
-            .clicks()
-            .onEach { showCreateObjectSheet() }
-            .launchIn(lifecycleScope)
+        // DROID-4318 / DROID-4508: Editor bottom navigation is three Compose
+        // buttons (fabSearchOnPage / discussionButton / fabCreate) sharing the
+        // same circular look — background_secondary, subtle shadow, no border —
+        // so they hide/show and render identically. Share / home / chat entry
+        // points moved to the home overlay (Task 4) — no editor wiring.
+        binding.fabSearchOnPage.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                Box(modifier = Modifier.padding(8.dp)) {
+                    CircularFabButton(
+                        iconRes = R.drawable.ic_doc_search,
+                        contentDescription = stringResource(id = R.string.content_desc_search_button),
+                        backgroundColor = colorResource(id = R.color.background_secondary),
+                        elevation = 2.dp,
+                        showBorder = false,
+                        iconSize = 24.dp,
+                        onClick = { vm.onGlobalSearchClicked() }
+                    )
+                }
+            }
+        }
+
+        binding.fabCreate.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val navState by vm.navPanelState.collectAsStateWithLifecycle(
+                    initialValue = NavPanelState.Init
+                )
+                val isCreateEnabled =
+                    (navState as? NavPanelState.Default)?.isCreateEnabled == true
+                Box(modifier = Modifier.padding(8.dp)) {
+                    CircularFabButton(
+                        iconRes = R.drawable.ic_create_obj_32,
+                        contentDescription = stringResource(
+                            id = R.string.main_navigation_content_desc_create_button
+                        ),
+                        backgroundColor = colorResource(id = R.color.background_secondary),
+                        elevation = 2.dp,
+                        showBorder = false,
+                        iconSize = 24.dp,
+                        isEnabled = isCreateEnabled,
+                        onClick = { showCreateObjectSheet() }
+                    )
+                }
+            }
+        }
 
         binding.recycler.addOnScrollListener(fabScrollListener)
 
@@ -687,6 +879,25 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onBackButtonPressed() }
             .launchIn(lifecycleScope)
 
+        binding.topToolbar.back.setOnLongClickListener {
+            vm.onBackButtonLongClicked()
+            true
+        }
+
+        binding.backHistoryMenu.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val state by vm.backHistoryMenu.collectAsStateWithLifecycle()
+                BackHistoryMenu(
+                    state = state,
+                    onChannelsClicked = { vm.onBackHistoryChannelsClicked() },
+                    onHomeClicked = { vm.onBackHistoryHomeClicked() },
+                    onItemClicked = { vm.onBackHistoryItemClicked(it) },
+                    onDismiss = { vm.onBackHistoryMenuDismissed() }
+                )
+            }
+        }
+
         binding.topToolbar.container.setOnClickListener {
             WidgetOverlayFragment.show(parentFragmentManager, space)
         }
@@ -695,27 +906,29 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val state by vm.discussionButtonState.collectAsStateWithLifecycle()
-                when (val s = state) {
-                    is EditorViewModel.DiscussionButtonState.Comments -> {
-                        DiscussionButton(
-                            commentCount = s.count,
-                            onClick = { vm.onDiscussionButtonClicked() }
-                        )
+                Box(modifier = Modifier.padding(8.dp)) {
+                    when (val s = state) {
+                        is EditorViewModel.DiscussionButtonState.Comments -> {
+                            DiscussionButton(
+                                commentCount = s.count,
+                                onClick = { vm.onDiscussionButtonClicked() }
+                            )
+                        }
+                        is EditorViewModel.DiscussionButtonState.Empty -> {
+                            DiscussionButton(
+                                commentCount = 0,
+                                onClick = { vm.onDiscussionButtonClicked() }
+                            )
+                        }
+                        is EditorViewModel.DiscussionButtonState.Hidden -> { /* nothing */ }
                     }
-                    is EditorViewModel.DiscussionButtonState.Empty -> {
-                        DiscussionButton(
-                            commentCount = 0,
-                            onClick = { vm.onDiscussionButtonClicked() }
-                        )
-                    }
-                    is EditorViewModel.DiscussionButtonState.Hidden -> { /* nothing */ }
                 }
             }
         }
 
         vm.discussionButtonState
             .onEach { state ->
-                binding.discussionButton.isVisible =
+                binding.discussionButton.isVisible = showsBottomActionButtons &&
                     state !is EditorViewModel.DiscussionButtonState.Hidden
             }
             .launchIn(lifecycleScope)
@@ -889,17 +1102,32 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         sideEffectHandler()
 
-        BottomSheetBehavior.from(binding.styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.styleToolbarOther).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.styleToolbarColors).state =
-            BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.blockActionToolbar).state =
-            BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.undoRedoToolbar).state = BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.styleToolbarBackground).state =
-            BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.simpleTableWidget).state =
-            BottomSheetBehavior.STATE_HIDDEN
+        // These editor toolbars are wrap_content MaterialCardView bottom sheets.
+        // BottomSheetBehavior's STATE_HIDDEN translation does not fully clear
+        // them, so a thin rounded top edge keeps peeking at the bottom of the
+        // screen. They start invisible (see layout) and a single state callback
+        // toggles draw-visibility: a sheet is drawn only while it is not hidden,
+        // so a hidden sheet can never peek regardless of its resting offset.
+        editorSheets().forEach { sheet ->
+            val behavior = BottomSheetBehavior.from(sheet)
+            behavior.state = BottomSheetBehavior.STATE_HIDDEN
+            behavior.addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+                override fun onStateChanged(bottomSheet: View, newState: Int) {
+                    bottomSheet.isInvisible = newState == BottomSheetBehavior.STATE_HIDDEN
+                }
+
+                override fun onSlide(bottomSheet: View, slideOffset: Float) {}
+            })
+            // DROID-4592. A state set before the first layout pass reaches no callback:
+            // BottomSheetBehavior writes the field directly while it holds no view, and
+            // onLayoutChild then places the sheet without a state change. render() runs at
+            // onStart, before that pass, so a sheet that the control panel state opens right
+            // after a rotation would sit at its expanded position and stay invisible. Sync the
+            // draw-visibility once, as soon as the sheet is laid out.
+            sheet.doOnLayout {
+                it.isInvisible = behavior.state == BottomSheetBehavior.STATE_HIDDEN
+            }
+        }
 
     }
 
@@ -937,6 +1165,24 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 visible()
             }
+        }
+    }
+
+    override fun onApplyWindowRootInsets() {
+        val bottomControls = listOf(binding.toolbar, binding.markupToolbar,
+            binding.mentionSuggesterToolbar, binding.scrollAndMoveBottomAction, binding.slashWidget,
+            binding.fabSearchOnPage, binding.fabCreate, binding.panels, binding.btnSelectTemplate,
+            binding.chooseTypeWidget, binding.syncStatusWidget, binding.editorDatePicker,
+            binding.discussionButton, binding.attachToChatPanel)
+            .map { it to (it.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin }
+        val contentBottomPadding = binding.recycler.paddingBottom
+        val viewBinding = binding
+        viewBinding.root.applyBottomEdgeToEdgeInsets { bottom ->
+            bottomControls.forEach { (view, margin) ->
+                view.updateLayoutParams<ViewGroup.MarginLayoutParams> { bottomMargin = margin + bottom }
+            }
+            viewBinding.recycler.updatePadding(bottom = contentBottomPadding + bottom)
+            viewBinding.bottomSystemBarProtection.updateLayoutParams { height = bottom }
         }
     }
 
@@ -982,10 +1228,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.commands.observe(viewLifecycleOwner) { execute(it) }
         vm.searchResultScrollPosition
             .filter { it != EditorViewModel.NO_SEARCH_RESULT_POSITION }
-            .onEach {
+            .onEach { pos ->
                 if (hasBinding) {
-                    (binding.recycler.layoutManager as? LinearLayoutManager)
-                        ?.scrollToPositionWithOffset(it, dimen(R.dimen.default_toolbar_height))
+                    runAfterBlockListUpdates {
+                        if (hasBinding) {
+                            val count = blockAdapter.itemCount
+                            if (count > 0) {
+                                (binding.recycler.layoutManager as? LinearLayoutManager)
+                                    ?.scrollToPositionWithOffset(
+                                        pos.coerceIn(0, count - 1),
+                                        dimen(R.dimen.default_toolbar_height)
+                                    )
+                            }
+                        }
+                    }
                 }
             }
             .launchIn(lifecycleScope)
@@ -999,19 +1255,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             // TODO
         }.launchIn(lifecycleScope)
 
-        vm.navPanelState.onEach { state ->
-            if (hasBinding) {
-                // Mirror NavPanelState.Default.isCreateEnabled into the new
-                // fabCreate so disabled states (e.g. inside locked / template
-                // contexts) still apply. Visibility is driven by the
-                // navigationToolbar control-panel flag in render() and by
-                // the scroll listener.
-                val isCreateEnabled =
-                    (state as? NavPanelState.Default)?.isCreateEnabled == true
-                binding.fabCreate.isEnabled = isCreateEnabled
-                binding.fabCreate.alpha = if (isCreateEnabled) 1f else 0.5f
-            }
-        }.launchIn(lifecycleScope)
+        // NavPanelState.Default.isCreateEnabled is consumed directly inside the
+        // fabCreate ComposeView (see setupViews) to gate its click + dim it when
+        // disabled. Visibility is driven by the navigationToolbar control-panel
+        // flag in render() and by the scroll listener.
 
         with(lifecycleScope) {
             launch {
@@ -1209,7 +1456,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             isLocked = command.isLocked,
                             isReadOnly = command.isReadOnly,
                             fromName = getFrom(),
-                            isTemplate = command.isTemplate
+                            isTemplate = command.isTemplate,
+                            isQuickCapture = vm.isQuickCapture
                         ),
                         errorMessage = "Error while opening document menu"
                     )
@@ -1437,10 +1685,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.ScrollToPosition -> {
                     if (hasBinding) {
-                        val lm = binding.recycler.layoutManager as LinearLayoutManager
-                        val margin =
-                            resources.getDimensionPixelSize(R.dimen.default_editor_item_offset)
-                        lm.scrollToPositionWithOffset(command.pos, margin)
+                        runAfterBlockListUpdates {
+                            if (hasBinding) {
+                                val lm = binding.recycler.layoutManager as LinearLayoutManager
+                                val margin =
+                                    resources.getDimensionPixelSize(R.dimen.default_editor_item_offset)
+                                val count = blockAdapter.itemCount
+                                if (count > 0) {
+                                    lm.scrollToPositionWithOffset(
+                                        command.pos.coerceIn(0, count - 1),
+                                        margin
+                                    )
+                                }
+                            }
+                        }
                     } else {
                         Timber.w("Missing binding for command")
                     }
@@ -1577,12 +1835,33 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
+    /**
+     * Runs [action] once every block list update submitted so far has been applied
+     * to the adapter; runs immediately when nothing is pending. Position-based
+     * commands (scrolls) must go through this: the adapter list is updated
+     * asynchronously (diff calculated off the main thread), so a position computed
+     * against the view model's views may not be valid for the adapter yet.
+     * Note: a position that arrives before the corresponding list is submitted
+     * cannot be detected here and is only clamped at execution time.
+     */
+    private fun runAfterBlockListUpdates(action: () -> Unit) {
+        val target = submittedBlockListEpoch
+        if (appliedBlockListEpoch.value >= target) {
+            action()
+        } else {
+            viewLifecycleOwner.lifecycleScope.launch {
+                appliedBlockListEpoch.first { it >= target }
+                action()
+            }
+        }
+    }
+
     private fun render(state: ViewState) {
         when (state) {
             is ViewState.Success -> {
-                blockAdapter.updateWithDiffUtil(state.blocks)
+                submittedBlockListEpoch += 1
+                pendingBlockListUpdates.trySend(submittedBlockListEpoch to state.blocks)
                 binding.recycler.visible()
-                binding.recycler.invalidateItemDecorations()
                 val isLocked = vm.mode is Editor.Mode.Locked
                 binding.topToolbar.setIsLocked(isLocked)
                 resetDocumentTitle(state)
@@ -1673,13 +1952,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             // DROID-4318: use instant visibility toggles instead of
             // FloatingActionButton.show()/hide(), which animate scale+fade
             // over ~200ms and leave a touch-through window on the hiding
-            // FAB. The scroll-aware listener still uses show()/hide() —
-            // that's the canonical Material FAB use case.
-            binding.fabCreate.isVisible = true
-            binding.discussionButton.isVisible =
+            // FAB. The scroll-aware listener also uses instant isVisible
+            // toggles so all three bottom-bar buttons (Search/Create FABs
+            // and the Compose Discussion button) hide/show identically.
+            binding.fabCreate.isVisible = showsBottomActionButtons
+            binding.fabSearchOnPage.isVisible = showsBottomActionButtons
+            binding.discussionButton.isVisible = showsBottomActionButtons &&
                 vm.discussionButtonState.value !is EditorViewModel.DiscussionButtonState.Hidden
         } else {
             binding.fabCreate.isVisible = false
+            binding.fabSearchOnPage.isVisible = false
             binding.discussionButton.isVisible = false
         }
 
@@ -2193,10 +2475,22 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             ).apply {
                 duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
                 interpolator = DecelerateInterpolator()
-                doOnEnd { if (hasBinding) binding.topToolbar.visible() }
+                doOnEnd { if (hasBinding) restoreTopToolbar() }
                 start()
             }
+        } else {
+            // DROID-4592. The select toolbar is already off screen, so no animation runs. The title
+            // toolbar has exactly one other restore point, the doOnEnd callback above, so it never
+            // comes back without this branch. A configuration change reaches this path: it inflates
+            // the select toolbar at its resting translation while the view model still reports
+            // select mode.
+            restoreTopToolbar()
         }
+    }
+
+    /** Shows the top toolbar again after select mode, unless the host hides it for good. */
+    private fun restoreTopToolbar() {
+        if (showsTopToolbar) binding.topToolbar.visible()
     }
 
     private fun showSelectButton() {

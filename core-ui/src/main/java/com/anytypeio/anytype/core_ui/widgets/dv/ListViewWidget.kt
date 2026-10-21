@@ -39,7 +39,9 @@ class ListViewWidget @JvmOverloads constructor(
         }
     }
 
-    fun setViews(views: List<Viewer.ListView.Item>) {
-        listViewAdapter.submitList(views)
+    val currentItems: List<Viewer.ListView.Item> get() = listViewAdapter.currentList
+
+    fun setViews(views: List<Viewer.ListView.Item>, onCommitted: (() -> Unit)? = null) {
+        listViewAdapter.submitList(views) { onCommitted?.invoke() }
     }
 }

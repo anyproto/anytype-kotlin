@@ -37,6 +37,11 @@ class EditorTemplateFragment : EditorFragment() {
             else -> R.id.editorModalScreen
         }
 
+    // initializeBinding hides topToolbar for good on the multiple-template screen. Select mode
+    // must not bring it back (DROID-4592).
+    override val showsTopToolbar: Boolean
+        get() = fragmentType != TYPE_TEMPLATE_MULTIPLE
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeBinding()

@@ -21,9 +21,12 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -203,6 +206,92 @@ class PushKeyProviderImplTest {
         // Ensure no other keys were affected
         assertEquals(1, storedKeys2.size) // Still only one key should be present
     }
+
+    @Test
+    fun `should skip redundant prefs write when the same key-value is emitted repeatedly`() =
+        runTest(dispatcher) {
+            val keyId = "dup_key_id"
+            val keyValue = "dup_key_value"
+
+            val spyPrefs = Mockito.spy(sharedPreferences)
+            val channelFlow = MutableSharedFlow<PushKeyUpdate>(replay = 0)
+            mockChannel.stub {
+                on { observe() } doReturn channelFlow
+            }
+
+            val provider = PushKeyProviderImpl(
+                sharedPreferences = spyPrefs,
+                channel = mockChannel,
+                dispatchers = AppCoroutineDispatchers(
+                    io = dispatcher,
+                    main = dispatcher,
+                    computation = dispatcher
+                ),
+                scope = testScope,
+                json = json
+            )
+            provider.start()
+            dispatcher.scheduler.advanceUntilIdle()
+
+            // The same push key arrives three times (as happens on every space-view amend)
+            repeat(3) {
+                channelFlow.emit(PushKeyUpdate(encryptionKey = keyValue, encryptionKeyId = keyId))
+                dispatcher.scheduler.advanceUntilIdle()
+            }
+
+            // Only the first emission should hit disk; the identical repeats are skipped
+            verify(spyPrefs, times(1)).edit()
+
+            // ...and the value is still correctly persisted
+            val storedKeys: Map<String, PushKey> = json.decodeFromString(
+                spyPrefs.getString(PushKeyProviderImpl.PREF_PUSH_KEYS, "{}") ?: "{}"
+            )
+            assertEquals(keyValue, storedKeys[keyId]?.value)
+        }
+
+    @Test
+    fun `writes again when the value changes after a run of redundant duplicates`() =
+        runTest(dispatcher) {
+            val keyId = "id"
+            val v1 = "v1"
+            val v2 = "v2"
+
+            val spyPrefs = Mockito.spy(sharedPreferences)
+            val channelFlow = MutableSharedFlow<PushKeyUpdate>(replay = 0)
+            mockChannel.stub {
+                on { observe() } doReturn channelFlow
+            }
+
+            val provider = PushKeyProviderImpl(
+                sharedPreferences = spyPrefs,
+                channel = mockChannel,
+                dispatchers = AppCoroutineDispatchers(
+                    io = dispatcher,
+                    main = dispatcher,
+                    computation = dispatcher
+                ),
+                scope = testScope,
+                json = json
+            )
+            provider.start()
+            dispatcher.scheduler.advanceUntilIdle()
+
+            // Same value three times, then a real change.
+            repeat(3) {
+                channelFlow.emit(PushKeyUpdate(encryptionKey = v1, encryptionKeyId = keyId))
+                dispatcher.scheduler.advanceUntilIdle()
+            }
+            channelFlow.emit(PushKeyUpdate(encryptionKey = v2, encryptionKeyId = keyId))
+            dispatcher.scheduler.advanceUntilIdle()
+
+            // One write for v1, two duplicates skipped, one write for the real change to v2.
+            verify(spyPrefs, times(2)).edit()
+
+            val storedKeys: Map<String, PushKey> = json.decodeFromString(
+                spyPrefs.getString(PushKeyProviderImpl.PREF_PUSH_KEYS, "{}") ?: "{}"
+            )
+            assertEquals(v2, storedKeys[keyId]?.value)
+        }
 
     private fun createPushKeyProvider(): PushKeyProviderImpl {
         return PushKeyProviderImpl(

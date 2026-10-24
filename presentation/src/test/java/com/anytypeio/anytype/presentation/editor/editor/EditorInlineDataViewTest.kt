@@ -49,12 +49,13 @@ class EditorInlineDataViewTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should open type screen when inline query targets a type`() = runTest {
+    fun `should open inline block of page when inline query targets a type`() = runTest {
         val target = MockDataFactory.randomUuid()
         val dv = stubPageWithInlineDataView(
             target = target,
             targetLayout = ObjectType.Layout.OBJECT_TYPE
         )
+        stubClosePage()
 
         val vm = buildViewModel()
         vm.onStart(id = root, space = defaultSpace)
@@ -66,15 +67,16 @@ class EditorInlineDataViewTest : EditorPresentationTestSetup() {
         advanceUntilIdle()
 
         observer.assertValue { value ->
-            value is EventWrapper && value.peekContent() == AppNavigation.Command.OpenTypeObject(
-                target = target,
+            value is EventWrapper && value.peekContent() == AppNavigation.Command.OpenDataViewBlock(
+                ctx = root,
+                blockId = dv.id,
                 space = defaultSpace
             )
         }
     }
 
     @Test
-    fun `should open set screen when inline query targets a set`() = runTest {
+    fun `should open inline block of page when inline query targets a set`() = runTest {
         val target = MockDataFactory.randomUuid()
         val dv = stubPageWithInlineDataView(
             target = target,
@@ -92,8 +94,9 @@ class EditorInlineDataViewTest : EditorPresentationTestSetup() {
         advanceUntilIdle()
 
         observer.assertValue { value ->
-            value is EventWrapper && value.peekContent() == AppNavigation.Command.OpenSetOrCollection(
-                target = target,
+            value is EventWrapper && value.peekContent() == AppNavigation.Command.OpenDataViewBlock(
+                ctx = root,
+                blockId = dv.id,
                 space = defaultSpace
             )
         }

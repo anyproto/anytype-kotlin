@@ -34,6 +34,11 @@ class NavigationRouter(
                     space = command.space,
                     isPopUpToDashboard = command.isPopUpToDashboard
                 )
+                is AppNavigation.Command.OpenDataViewBlock -> navigation.openObjectSet(
+                    target = command.ctx,
+                    space = command.space,
+                    blockId = command.blockId
+                )
                 is AppNavigation.Command.OpenChat -> navigation.openChat(
                     target = command.target,
                     space = command.space,

@@ -54,6 +54,7 @@ import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
+import com.anytypeio.anytype.domain.multiplayer.GetCurrentParticipantId
 import com.anytypeio.anytype.domain.search.BoardGroupSubscriptionContainer
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -248,6 +249,7 @@ class ObjectSetViewModel(
     private val userSettingsRepository: UserSettingsRepository,
     private val backHistoryDelegate: BackHistoryDelegate,
     private val exitToVaultDelegate: ExitToVaultDelegate,
+    private val getCurrentParticipantId: GetCurrentParticipantId,
     private val viewStateDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
@@ -466,6 +468,37 @@ class ObjectSetViewModel(
                     state to permission
                 }
                 .collectLatest { (state, permission) ->
+                    if (state.isInline) {
+                        // The context is the page. The header shows the source of the inline
+                        // query and stays read-only: an edit must never reach the page.
+                        featured.value = null
+                        val header = state.header(
+                            ctx = state.sourceObjectId,
+                            urlBuilder = urlBuilder,
+                            coverImageHashProvider = coverImageHashProvider,
+                            storeOfObjectTypes = storeOfObjectTypes,
+                            isReadOnlyMode = true
+                        )
+                        val source = state.details.getObject(state.sourceObjectId)
+                        // A type shows its plural name, like the card of the query in the page.
+                        _header.value = if (
+                            header is SetOrCollectionHeaderState.Default &&
+                            source?.layout == ObjectType.Layout.OBJECT_TYPE
+                        ) {
+                            header.copy(
+                                title = header.title.copy(
+                                    text = fieldParser.getObjectNameOrPluralsForTypes(
+                                        source,
+                                        useUntitled = false
+                                    )
+                                )
+                            )
+                        } else {
+                            header
+                        }
+                        _discussionButtonState.value = DiscussionButtonState.Hidden
+                        return@collectLatest
+                    }
                     val featuredBlock = toFeaturedPropertiesViews(
                         objectId = vmParams.ctx,
                         urlBuilder = urlBuilder,
@@ -845,11 +878,12 @@ class ObjectSetViewModel(
                             dataViewSubscription.startObjectCollectionSubscription(
                                 space = vmParams.space.id,
                                 context = vmParams.ctx,
-                                collection = vmParams.ctx,
+                                collection = query.state.sourceObjectId,
                                 state = query.state,
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
-                                storeOfRelations = storeOfRelations
+                                storeOfRelations = storeOfRelations,
+                                templates = filterValueTemplates()
                             )
                         } else {
                             emptyFlow()
@@ -865,7 +899,8 @@ class ObjectSetViewModel(
                                 state = query.state,
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
-                                storeOfRelations = storeOfRelations
+                                storeOfRelations = storeOfRelations,
+                                templates = filterValueTemplates()
                             )
                         } else {
                             emptyFlow()
@@ -881,7 +916,8 @@ class ObjectSetViewModel(
                                 state = query.state,
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
-                                storeOfRelations = storeOfRelations
+                                storeOfRelations = storeOfRelations,
+                                templates = filterValueTemplates()
                             )
                         } else {
                             emptyFlow()
@@ -1013,6 +1049,25 @@ class ObjectSetViewModel(
         }
     }
 
+    /**
+     * The screen shows an inline query block of the page [Params.ctx]. The menu, the icon, the
+     * cover, the title, and the query of the header belong to the page: they do nothing here.
+     */
+    private val isInlineMode: Boolean get() = vmParams.blockId != null
+
+    private var currentParticipantId: Id? = null
+
+    /**
+     * The values for the placeholders of a filter value. "This object" is the context: the page
+     * of an inline query, else the set itself, as on desktop.
+     */
+    private suspend fun filterValueTemplates(): FilterValueTemplates {
+        val participant = currentParticipantId
+            ?: getCurrentParticipantId.async(vmParams.space).getOrNull()
+                .also { currentParticipantId = it }
+        return FilterValueTemplates(objectId = vmParams.ctx, participantId = participant)
+    }
+
     private suspend fun buildBoardGroupParams(
         state: ObjectState.DataView,
         viewer: DVViewer
@@ -1023,7 +1078,7 @@ class ObjectSetViewModel(
         // property" hint instead (see [isBoardMissingUsableGroupRelation]).
         if (isGroupRelationUnsupported(relationKey)) return null
         val filters = buildList {
-            addAll(viewer.filters.updateFormatForSubscription(storeOfRelations).removeUnsupportedFilters())
+            addAll(viewer.filters.updateFormatForSubscription(storeOfRelations, filterValueTemplates()).removeUnsupportedFilters())
             addAll(defaultDataViewFilters())
         }
         val sources: List<String>
@@ -1031,7 +1086,7 @@ class ObjectSetViewModel(
         when (state) {
             is ObjectState.DataView.Collection -> {
                 sources = emptyList()
-                collection = vmParams.ctx
+                collection = state.sourceObjectId
             }
             is ObjectState.DataView.Set -> {
                 sources = state.filterOutDeletedAndMissingObjects(state.getSetOfValue(vmParams.ctx))
@@ -1109,7 +1164,7 @@ class ObjectSetViewModel(
         val columnQueries = boardColumnQueries(groups, relationKey)
         if (columnQueries.isEmpty()) return null
         val baseFilters = buildList {
-            addAll(viewer.filters.updateFormatForSubscription(storeOfRelations).removeUnsupportedFilters())
+            addAll(viewer.filters.updateFormatForSubscription(storeOfRelations, filterValueTemplates()).removeUnsupportedFilters())
             addAll(defaultDataViewFilters())
         }
         val keys = defaultDataViewKeys + state.dataViewContent.relationLinks.map { it.key }
@@ -1128,7 +1183,7 @@ class ObjectSetViewModel(
         when (state) {
             is ObjectState.DataView.Collection -> {
                 sources = emptyList()
-                collection = vmParams.ctx
+                collection = state.sourceObjectId
             }
             is ObjectState.DataView.Set -> {
                 sources = state.filterOutDeletedAndMissingObjects(state.getSetOfValue(vmParams.ctx))
@@ -1815,6 +1870,7 @@ class ObjectSetViewModel(
 
     fun onTitleChanged(txt: String) {
         Timber.d("onTitleChanged, txt:[$txt]")
+        if (isInlineMode) return
 
         val target = (header.value as? SetOrCollectionHeaderState.Default)?.title?.id
         if (target != null) {
@@ -1854,6 +1910,7 @@ class ObjectSetViewModel(
     }
 
     fun onDescriptionChanged(text: String) {
+        if (isInlineMode) return
         viewModelScope.launch {
             setObjectDetails(
                 UpdateDetail.Params(
@@ -2117,8 +2174,9 @@ class ObjectSetViewModel(
     fun onRemoveFromCollection(targetId: Id) {
         Timber.d("onRemoveFromCollection, id:[$targetId]")
         viewModelScope.launch {
+            val collection = stateReducer.state.value.dataViewState()?.sourceObjectId ?: vmParams.ctx
             val params = RemoveObjectFromCollection.Params(
-                collectionId = vmParams.ctx,
+                collectionId = collection,
                 objectIdsToRemove = listOf(targetId)
             )
             removeObjectFromCollection.async(params).fold(
@@ -2457,7 +2515,6 @@ class ObjectSetViewModel(
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
             toast(NOT_ALLOWED)
         } else {
-            val setObject = currentState.details.getObject(vmParams.ctx)
             val viewer = currentState.viewerByIdOrFirst(session.currentViewerId.value)
             if (viewer == null) {
                 Timber.e("onCreateNewDataViewObject, Viewer is empty")
@@ -2496,7 +2553,11 @@ class ObjectSetViewModel(
 
             val objectTypeUniqueKey = defaultObjectType.uniqueKey
 
-            val sourceId = setObject?.setOf?.singleOrNull()
+            val sourceId = when (currentState) {
+                is ObjectState.DataView.Set -> currentState.getSetOfValue(vmParams.ctx)
+                is ObjectState.DataView.TypeSet -> currentState.getSetOfValue(vmParams.ctx)
+                is ObjectState.DataView.Collection -> emptyList()
+            }.singleOrNull()
             if (sourceId == null) {
                 toast("Unable to define a source for a new object.")
             } else {
@@ -2521,7 +2582,8 @@ class ObjectSetViewModel(
                                 val validTemplateId = resolvedTemplate
                                 val prefilled = viewer.prefillNewObjectDetails(
                                     storeOfRelations = storeOfRelations,
-                                    dateProvider = dateProvider
+                                    dateProvider = dateProvider,
+                                    templates = filterValueTemplates()
                                 ) + extraPrefilled
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
@@ -2546,7 +2608,8 @@ class ObjectSetViewModel(
                                 val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
                                     storeOfRelations = storeOfRelations,
                                     dateProvider = dateProvider,
-                                    objSetByRelation = ObjectWrapper.Relation(wrapper.map)
+                                    objSetByRelation = ObjectWrapper.Relation(wrapper.map),
+                                    templates = filterValueTemplates()
                                 ) + extraPrefilled
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByRelation(
@@ -2588,7 +2651,8 @@ class ObjectSetViewModel(
             val viewer = currentState.viewerByIdOrFirst(session.currentViewerId.value) ?: return
             val prefilled = viewer.prefillNewObjectDetails(
                 storeOfRelations = storeOfRelations,
-                dateProvider = dateProvider
+                dateProvider = dateProvider,
+                templates = filterValueTemplates()
             ) + extraPrefilled
             proceedWithCreatingDataViewObject(
                 CreateDataViewObject.Params.SetByType(
@@ -2649,7 +2713,8 @@ class ObjectSetViewModel(
         val validTemplateId = resolvedTemplate
         val prefilled = viewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
-            dateProvider = dateProvider
+            dateProvider = dateProvider,
+            templates = filterValueTemplates()
         ) + extraPrefilled
         val type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!
         val createObjectParams = CreateDataViewObject.Params.Collection(
@@ -2669,7 +2734,7 @@ class ObjectSetViewModel(
         } else {
             proceedWithCreatingDataViewObject(createObjectParams) { result ->
                 val params = AddObjectToCollection.Params(
-                    ctx = vmParams.ctx,
+                    ctx = state.sourceObjectId,
                     after = "",
                     targets = listOf(result.objectId)
                 )
@@ -2764,6 +2829,7 @@ class ObjectSetViewModel(
 
     fun onMenuClicked() {
         Timber.d("onMenuClicked, ")
+        if (isInlineMode) return
         val state = stateReducer.state.value.dataViewState() ?: return
         val wrapper = state.details.getObject(vmParams.ctx) ?: return
         Timber.d("Wrapper: $wrapper")
@@ -2787,6 +2853,7 @@ class ObjectSetViewModel(
 
     fun onObjectIconClicked() {
         Timber.d("onIconClicked, ")
+        if (isInlineMode) return
         val state = stateReducer.state.value.dataViewState() ?: return
         val wrapper = state.details.getObject(vmParams.ctx)
         val space = wrapper?.spaceId
@@ -2806,6 +2873,7 @@ class ObjectSetViewModel(
 
     fun onCoverClicked() {
         Timber.d("onCoverClicked, ")
+        if (isInlineMode) return
         dispatch(
             ObjectSetCommand.Modal.OpenCoverActionMenu(
                 ctx = vmParams.ctx,
@@ -3562,6 +3630,7 @@ class ObjectSetViewModel(
 
     fun onObjectSetQueryPicked(query: Id) {
         Timber.d("onObjectSetQueryPicked, query:[$query]")
+        if (isInlineMode) return
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = SetQueryToObjectSet.Params(
@@ -3586,6 +3655,7 @@ class ObjectSetViewModel(
     }
 
     fun proceedWithConvertingToCollection() {
+        if (isInlineMode) return
         val startTime = System.currentTimeMillis()
         val params = ConvertObjectToCollection.Params(ctx = vmParams.ctx)
         viewModelScope.launch {
@@ -5099,9 +5169,14 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
         const val BOARD_SUBSCRIPTION_ERROR_MSG = "Couldn't load the board. Please reopen the object."
     }
 
+    /**
+     * @property blockId the id of an inline query block of the page [ctx]. When set, the
+     * screen shows that block: its views, and the records of its target.
+     */
     data class Params(
         val ctx: Id,
-        val space: SpaceId
+        val space: SpaceId,
+        val blockId: Id? = null
     )
 
     data class Query(

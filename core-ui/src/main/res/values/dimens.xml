@@ -17,6 +17,9 @@
     <dimen name="nav_top_toolbar_height">44dp</dimen>
     <dimen name="nav_fab_button_size">44dp</dimen>
     <dimen name="nav_fab_margin">16dp</dimen>
+    <!-- Room a pagination bar leaves for a floating button at each end:
+         8dp margin + 8dp padding + 44dp button + 8dp padding. -->
+    <dimen name="data_view_paginator_fab_clearance">68dp</dimen>
 
     <dimen name="main_bottom_toolbar_icon_width">72dp</dimen>
     <dimen name="main_bottom_toolbar_icon_height">52dp</dimen>

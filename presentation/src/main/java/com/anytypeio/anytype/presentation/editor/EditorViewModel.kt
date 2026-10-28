@@ -5931,7 +5931,8 @@ class EditorViewModel(
                     objectId = targetObjectId,
                     name = fileName,
                     type = content.type,
-                    onDownloaded = onDownloaded
+                    onDownloaded = onDownloaded,
+                    onError = { sendToast("Couldn't open the file") }
                 )
             )
         }

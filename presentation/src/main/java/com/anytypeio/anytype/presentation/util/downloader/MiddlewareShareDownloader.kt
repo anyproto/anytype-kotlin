@@ -44,6 +44,9 @@ abstract class MiddlewareShareDownloader(
         val resultFilePath = "${cacheDir.path}/${params.objectId}/${params.name}"
         val resultFile = File(resultFilePath)
 
+        // An empty file is left over from a failed download, not a cached result.
+        if (resultFile.isFile && resultFile.length() == 0L) resultFile.delete()
+
         if (!resultFile.exists()) {
             val tempFileFolderPath = "${downloadFolder.absolutePath}/tmp"
             val tempDir = File(tempFileFolderPath)
@@ -57,8 +60,18 @@ abstract class MiddlewareShareDownloader(
                 )
             )
 
-            tempResult.renameTo(resultFile)
+            check(tempResult.exists()) {
+                "Middleware returned a path to a missing file: ${tempResult.path}"
+            }
+
+            if (!tempResult.renameTo(resultFile) && tempResult.isFile) {
+                tempResult.copyTo(resultFile, overwrite = true)
+                tempResult.delete()
+            }
         }
+
+        check(resultFile.exists()) { "File is not available: $resultFilePath" }
+
         return Response(
             uri = uriFileProvider.getUriForFile(resultFile),
             path = resultFilePath

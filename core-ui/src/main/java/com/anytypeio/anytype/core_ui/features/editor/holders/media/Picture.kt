@@ -30,19 +30,44 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
         clickContainer.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
     }
 
+    private var pendingRetry: Runnable? = null
+
     fun bind(item: BlockView.Media.Picture, clicked: (ListenerType) -> Unit) {
         super.bind(item, clicked)
+        pendingRetry?.let { image.removeCallbacks(it) }
+        pendingRetry = null
         loading.visible()
-        image.load(item.url) {
+        error.invisible()
+        load(url = item.url, attempt = 1)
+    }
+
+    /**
+     * The middleware may not serve a file right after it is uploaded,
+     * so a failed load is retried a few times before the error is shown.
+     */
+    private fun load(url: String, attempt: Int) {
+        image.load(url) {
             listener(
                 onSuccess = { _, _ ->
                     loading.gone()
                     error.invisible()
                 },
-                onError = { _, throwable ->
-                    loading.gone()
-                    error.visible()
-                    Timber.w("Error while loading picture with url: ${item.url}")
+                onError = { _, result ->
+                    Timber.w(
+                        result.throwable,
+                        "Error while loading picture with url: $url, attempt: $attempt"
+                    )
+                    if (attempt < MAX_LOAD_ATTEMPTS) {
+                        val retry = Runnable {
+                            pendingRetry = null
+                            load(url = url, attempt = attempt + 1)
+                        }
+                        pendingRetry = retry
+                        image.postDelayed(retry, RETRY_DELAY_IN_MILLIS)
+                    } else {
+                        loading.gone()
+                        error.visible()
+                    }
                 }
             )
         }
@@ -76,5 +101,7 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
 
     companion object {
         const val LOADING_TIMEOUT_IN_MILLIS = 30000
+        private const val MAX_LOAD_ATTEMPTS = 3
+        private const val RETRY_DELAY_IN_MILLIS = 1000L
     }
 }

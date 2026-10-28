@@ -23,6 +23,7 @@ import coil3.request.transformations
 import coil3.target.Target
 import coil3.video.VideoFrameDecoder
 import coil3.video.videoFrameMillis
+import com.anytypeio.anytype.core_ui.common.LocalGatewayFetcherFactory
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -771,6 +772,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     val imageLoader = ImageLoader.Builder(itemView.context)
                         .components {
                             add(VideoFrameDecoder.Factory())
+                            add(LocalGatewayFetcherFactory.shared)
                         }
                         .build()
                     videoThumbnail.load(url, imageLoader) {

@@ -33,6 +33,7 @@ class RelationDateValueViewModel(
 
     private val jobs = mutableListOf<Job>()
     private var isEditableRelation = false
+    private var includeTime = false
 
     fun onStart(
         ctx: Id,
@@ -49,6 +50,7 @@ class RelationDateValueViewModel(
                 val relation = storeOfRelations.getByKey(key = relationKey)
                 setupIsRelationNotEditable(isLocked, relation)
                 setName(relation?.name)
+                setIncludeTime(relation?.includeTime == true)
                 setDate(timeInSeconds = DateParser.parse(value[relationKey]))
             }
             pipeline.collect()
@@ -60,11 +62,12 @@ class RelationDateValueViewModel(
     }
 
     fun onTodayClicked() {
-        setDate(timeInSeconds = dateProvider.getTimestampForTodayAtStartOfDay())
+        val timeInSeconds = withSelectedTime(dateProvider.getTimestampForTodayAtStartOfDay())
+        setDate(timeInSeconds = timeInSeconds)
         viewModelScope.launch {
             commands.emit(
                 DateValueCommand.DispatchResult(
-                    timeInSeconds = dateProvider.getTimestampForTodayAtStartOfDay().toDouble(),
+                    timeInSeconds = timeInSeconds.toDouble(),
                     dismiss = true
                 )
             )
@@ -72,10 +75,11 @@ class RelationDateValueViewModel(
     }
 
     fun onTomorrowClicked() {
+        val timeInSeconds = withSelectedTime(dateProvider.getTimestampForTomorrowAtStartOfDay())
         viewModelScope.launch {
             commands.emit(
                 DateValueCommand.DispatchResult(
-                    timeInSeconds = dateProvider.getTimestampForTomorrowAtStartOfDay().toDouble(),
+                    timeInSeconds = timeInSeconds.toDouble(),
                     dismiss = true
                 )
             )
@@ -96,9 +100,18 @@ class RelationDateValueViewModel(
 
     fun onDateSelected(selectedDate: TimeInMillis?) {
         if (selectedDate != null) {
-            val properDate = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(
-                timeInMillis = selectedDate
-            )
+            val view = views.value
+            val properDate = if (includeTime) {
+                dateProvider.combineDateAndTimeInUserTimeZone(
+                    pickerDateMillis = selectedDate,
+                    hour = view.hour ?: 0,
+                    minute = view.minute ?: 0
+                )
+            } else {
+                dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(
+                    timeInMillis = selectedDate
+                )
+            }
             viewModelScope.launch {
                 commands.emit(
                     DateValueCommand.DispatchResult(timeInSeconds = properDate.toDouble())
@@ -112,6 +125,24 @@ class RelationDateValueViewModel(
                     )
                 )
             }
+        }
+    }
+
+    fun onTimeSelected(hour: Int, minute: Int) {
+        val date = views.value.timeInMillis
+            ?: dateProvider.adjustToStartOfDayInUserTimeZone(
+                dateProvider.getTimestampForTodayAtStartOfDay()
+            )
+        val timeInSeconds = dateProvider.combineDateAndTimeInUserTimeZone(
+            pickerDateMillis = date,
+            hour = hour,
+            minute = minute
+        )
+        setDate(timeInSeconds = timeInSeconds)
+        viewModelScope.launch {
+            commands.emit(
+                DateValueCommand.DispatchResult(timeInSeconds = timeInSeconds.toDouble())
+            )
         }
     }
 
@@ -133,16 +164,46 @@ class RelationDateValueViewModel(
         )
     }
 
+    private fun setIncludeTime(includeTime: Boolean) {
+        this.includeTime = includeTime
+        _views.value = views.value.copy(includeTime = includeTime)
+    }
+
     private fun setDate(timeInSeconds: Long?) {
         if (timeInSeconds != null) {
+            val (hour, minute) = if (includeTime) {
+                dateProvider.getLocalHourAndMinute(timeInSeconds)
+            } else {
+                null to null
+            }
             _views.value = _views.value.copy(
-                timeInMillis = dateProvider.adjustToStartOfDayInUserTimeZone(timeInSeconds)
+                timeInMillis = dateProvider.adjustToStartOfDayInUserTimeZone(timeInSeconds),
+                hour = hour,
+                minute = minute
             )
         } else {
             _views.value = _views.value.copy(
-                timeInMillis = null
+                timeInMillis = null,
+                hour = null,
+                minute = null
             )
         }
+    }
+
+    /**
+     * Moves the time of day already set to the day of [startOfDay], when the relation includes
+     * time. Otherwise returns [startOfDay] unchanged.
+     */
+    private fun withSelectedTime(startOfDay: Long): Long {
+        val view = views.value
+        val hour = view.hour
+        val minute = view.minute
+        if (!includeTime || hour == null || minute == null) return startOfDay
+        return dateProvider.combineDateAndTimeInUserTimeZone(
+            pickerDateMillis = dateProvider.adjustToStartOfDayInUserTimeZone(startOfDay),
+            hour = hour,
+            minute = minute
+        )
     }
 
     private fun setupIsRelationNotEditable(isLocked: Boolean, relation: ObjectWrapper.Relation?) {
@@ -188,5 +249,8 @@ sealed class DateValueCommand {
 data class DateValueView(
     val title: String? = null,
     val timeInMillis: TimeInMillis? = null,
-    val isEditable: Boolean = true
+    val isEditable: Boolean = true,
+    val includeTime: Boolean = false,
+    val hour: Int? = null,
+    val minute: Int? = null
 )

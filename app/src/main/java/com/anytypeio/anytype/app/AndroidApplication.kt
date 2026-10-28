@@ -21,6 +21,7 @@ import coil3.svg.SvgDecoder
 import coil3.video.VideoFrameDecoder
 import com.amplitude.api.Amplitude
 import com.amplitude.api.TrackingOptions
+import com.anytypeio.anytype.core_ui.common.LocalGatewayFetcherFactory
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.tracker.AmplitudeTracker
@@ -160,6 +161,8 @@ class AndroidApplication : Application(), HasComponentDependencies, SingletonIma
             //.logger(DebugLogger(Logger.Level.Verbose))  //only for debug builds!
             .components {
                 add(VideoFrameDecoder.Factory())
+                // Must come before the default network fetcher: it takes the gateway urls.
+                add(LocalGatewayFetcherFactory(cacheStrategy = { CacheControlCacheStrategy() }))
                 add(
                     OkHttpNetworkFetcherFactory(
                         cacheStrategy = { CacheControlCacheStrategy() }

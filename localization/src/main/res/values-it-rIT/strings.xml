@@ -37,9 +37,9 @@
     <string name="quick_capture_space_has_draft">Ha una bozza non inviata</string>
     <string name="quick_capture_drafts_elsewhere">Hai bozze in altri spazi</string>
     <string name="quick_capture_move_or_new_title">Sposta la tua bozza in %1$s?</string>
-    <string name="quick_capture_move_or_new_message">You haven\'t edited this draft since opening it. Move it, or start a new one in %1$s.</string>
-    <string name="quick_capture_move_or_new_move">Move draft</string>
-    <string name="quick_capture_move_or_new_start">Start new draft</string>
+    <string name="quick_capture_move_or_new_message">Non hai modificato questa bozza dalla sua apertura. Spostala, o avviane una nuova in %1$s.</string>
+    <string name="quick_capture_move_or_new_move">Sposta la bozza</string>
+    <string name="quick_capture_move_or_new_start">Inizia una nuova bozza</string>
     <string name="quick_capture_send">Invia</string>
     <string name="account">Cassaforte</string>
     <string name="reset_account">Reimposta cassaforte</string>
@@ -48,8 +48,8 @@
     <string name="data">Dati</string>
     <string name="mode">Modalità</string>
     <string name="log_out">Disconnetti</string>
-    <string name="resume_account_failed_title">Couldn\'t restore session</string>
-    <string name="resume_account_failed_message">Your session can\'t be resumed. Logging out will clear local app state; you\'ll need your recovery phrase to sign back in. Do you want to log out?</string>
+    <string name="resume_account_failed_title">Impossibile ripristinare la sessione</string>
+    <string name="resume_account_failed_message">La tua sessione non può essere ripresa. La disconnessione cancellerà lo stato dell\'app locale; avrai bisogno della tua frase di recupero per accedere. Vuoi disconnetterti?</string>
     <string name="pin_code">Codice PIN</string>
     <string name="access">Accesso</string>
     <string name="wallpaper">Sfondo</string>
@@ -86,7 +86,7 @@
     <string name="remove_image">Rimuovi immagine</string>
     <string name="delete_space">Elimina spazio</string>
     <string name="you_can_store">Puoi archiviare gratuitamente fino a %1$s di file personali sul nostro nodo di backup crittografato. Se raggiungi il limite, i file verranno archiviati solo localmente.</string>
-    <string name="in_order_to_save">Free up space by offloading files to encrypted backup. They’ll load when you open them.</string>
+    <string name="in_order_to_save">Libera spazio scaricando i file nel backup crittografato. Si caricheranno quando li aprirai.</string>
     <string name="manage_files">Gestione file</string>
     <string name="local_storage">Archiviazione locale</string>
     <string name="offload_files">Libera file</string>
@@ -103,7 +103,7 @@
     <string name="space_settings_error_icon">Impossibile aggiornare l\'icona dello spazio. Riprova.</string>
     <string name="manage_sections_title">Gestisci le sezioni</string>
     <string name="section_unread">Non letto</string>
-    <string name="section_my_favorites">My Favorites</string>
+    <string name="section_my_favorites">Miei preferiti</string>
     <string name="section_pinned">Fissato</string>
     <string name="section_objects">Oggetti</string>
     <string name="section_recently_edited">Modificati di recente</string>
@@ -617,8 +617,8 @@
     <string name="dataview_board_checked">Spuntato</string>
     <string name="dataview_board_unchecked">Non spuntato</string>
     <string name="dataview_board_new_object">Nuovo</string>
-    <string name="dataview_board_no_group_title">No grouping property</string>
-    <string name="dataview_board_no_group_description">Choose a property to group cards by in view settings</string>
+    <string name="dataview_board_no_group_title">Nessuna proprietà di raggruppamento</string>
+    <string name="dataview_board_no_group_description">Scegliere una proprietà per raggruppare le carte secondo le impostazioni di visualizzazione</string>
     <string name="page_cover">Copertina della pagina</string>
     <string name="object_action_pin">Pin</string>
     <string name="object_action_unpin">Togli</string>
@@ -2186,7 +2186,7 @@
     <string name="web_publishing_copy_web_link">Copia Collegamento Web</string>
     <string name="widgets_section_pinned">Fissato</string>
     <string name="widgets_section_unread">Non letto</string>
-    <string name="widgets_section_my_favorites">My Favorites</string>
+    <string name="widgets_section_my_favorites">Miei preferiti</string>
     <string name="widgets_section_object_types">Types</string>
     <string name="widgets_section_recently_edited">Modificato di recente</string>
     <string name="widgets_menu_new_object_type">Nuovo</string>

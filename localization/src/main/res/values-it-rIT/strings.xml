@@ -1207,27 +1207,27 @@
     <string name="sharing_menu_btn_add">Aggiungi</string>
     <string name="sharing_menu_btn_open">Apri</string>
     <!-- Snackbar messages for content added to chat -->
-    <string name="sharing_snackbar_image_added">Image added to \'%1$s\'</string>
-    <string name="sharing_snackbar_images_added">Images added to \'%1$s\'</string>
-    <string name="sharing_snackbar_video_added">Video added to \'%1$s\'</string>
-    <string name="sharing_snackbar_audio_added">Audio added to \'%1$s\'</string>
-    <string name="sharing_snackbar_pdf_added">PDF added to \'%1$s\'</string>
-    <string name="sharing_snackbar_file_added">File added to \'%1$s\'</string>
-    <string name="sharing_snackbar_files_added">Files added to \'%1$s\'</string>
-    <string name="sharing_snackbar_text_added">Text added to \'%1$s\'</string>
+    <string name="sharing_snackbar_image_added">Immagine aggiunta a \'%1$s\'</string>
+    <string name="sharing_snackbar_images_added">Immagini aggiunte a \'%1$s\'</string>
+    <string name="sharing_snackbar_video_added">Video aggiunto a \'%1$s\'</string>
+    <string name="sharing_snackbar_audio_added">Audio aggiunto a \'%1$s\'</string>
+    <string name="sharing_snackbar_pdf_added">PDF aggiunto a \'%1$s\'</string>
+    <string name="sharing_snackbar_file_added">File aggiunto a \'%1$s\'</string>
+    <string name="sharing_snackbar_files_added">File aggiunti a \'%1$s\'</string>
+    <string name="sharing_snackbar_text_added">Testo aggiunto a \'%1$s\'</string>
     <string name="sharing_snackbar_link_added">Link added to \'%1$s\'</string>
-    <string name="sharing_snackbar_content_added">Content added to \'%1$s\'</string>
+    <string name="sharing_snackbar_content_added">Contenuto aggiunto a \'%1$s\'</string>
     <!-- Snackbar messages for content linked to an object in a space -->
-    <string name="sharing_snackbar_image_linked">Image linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_images_linked">Images linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_video_linked">Video linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_audio_linked">Audio linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_pdf_linked">PDF linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_file_linked">File linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_files_linked">Files linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_text_linked">Text linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_image_linked">Immagine collegata a \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_images_linked">Immagini collegate a \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_video_linked">Video collegato a \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_audio_linked">Audio collegato a \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_pdf_linked">PDF collegato a \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_file_linked">File collegato a \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_files_linked">File collegati a \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_text_linked">Testo collegato a \'%1$s\' in \'%2$s\'</string>
     <string name="sharing_snackbar_link_linked">Link linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_content_linked">Content linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_content_linked">Contenuto collegato a \'%1$s\' in \'%2$s\'</string>
     <!--endregion-->
     <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Nessuno</string>

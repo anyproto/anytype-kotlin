@@ -245,7 +245,7 @@
     <string name="menu_item_italic">Corsivo</string>
     <string name="menu_item_strike">Barrato</string>
     <string name="menu_item_code">Codice</string>
-    <string name="menu_item_link">Collegamento</string>
+    <string name="menu_item_link">Link</string>
     <string name="menu_item_color">Colore</string>
     <string name="menu_item_background">Sfondo</string>
     <string name="menu_item_copy">Copia</string>
@@ -299,7 +299,7 @@
     <string name="link_to">Collega a</string>
     <string name="make_template">Crea modello</string>
     <string name="linked_to">Collegato a</string>
-    <string name="remove_link">Rimuovi collegamento</string>
+    <string name="remove_link">Rimuovi link</string>
     <string name="mention_suggester_new_page">Crea un nuovo oggetto</string>
     <string name="mention_section_dates">Date</string>
     <string name="mention_section_objects">Oggetti</string>
@@ -433,7 +433,7 @@
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Blocco non supportato</string>
     <string name="new_relation">Nuova proprietà</string>
-    <string name="copy_link">Copia collegamento</string>
+    <string name="copy_link">Copia link</string>
     <string name="edit_link">Modifica collegamento</string>
     <string name="unlink">Scollega</string>
     <string name="choose_layout_type">Scegli il tipo di layout</string>
@@ -457,7 +457,7 @@
     <string name="no_source">Nessuna fonte</string>
     <string name="deleted_object">Oggetto eliminato</string>
     <string name="deleted">Eliminato</string>
-    <string name="paste_link_or_search">Incolla collegamento o cerca oggetti</string>
+    <string name="paste_link_or_search">Incolla link o cerca oggetti</string>
     <string name="paste_from_clipboard">Incolla dagli appunti</string>
     <string name="create_object_with_name">Create object \"%1$s\"</string>
     <string name="layout_basic_name">Base</string>
@@ -495,7 +495,7 @@
     <string name="unknown_error">Errore sconosciuto</string>
     <string name="bookmark">Segnalibro</string>
     <string name="paste_text">Testo</string>
-    <string name="paste_link">Collegamento</string>
+    <string name="paste_link">Link</string>
     <string name="next">Avanti</string>
     <string name="limit_object_types">Limita tipi di oggetto</string>
     <string name="deleted_account_msg">Ci dispiace vederti andare. Una volta richiesta l\'eliminazione della tua cassaforte, hai 30 giorni di tempo per annullare la richiesta. Dopo 30 giorni, i dati crittografati della tua cassaforte verranno eliminati definitivamente dal nodo di backup.</string>
@@ -524,7 +524,7 @@
     <string name="open_object">Apri oggetto</string>
     <string name="open_source">Apri fonte</string>
     <string name="reload_object_content">Ricarica contenuto dell\'oggetto</string>
-    <string name="open_link">Apri collegamento</string>
+    <string name="open_link">Apri link</string>
     <string name="open_file">Apri file</string>
     <string name="open_in_browser">Apri nel Browser</string>
     <string name="copy_email">Copia email</string>
@@ -677,7 +677,7 @@
     <string name="content_description_back_button_icon">Back button icon</string>
     <string name="hint_link">Incolla o digita un URL</string>
     <string name="button_unlink">Scollega</string>
-    <string name="button_link">Collegamento</string>
+    <string name="button_link">Link</string>
     <string name="permission_read_rationale">Read permission is needed to load file to media block.</string>
     <string name="permission_read_denied">User denied permission. Please, approve this permission in \"Permissions\" in the app settings on your device.</string>
     <string name="permission_read_never_ask_again">Read permission was denied with never ask again.\n You must approve this permission in \"Permissions\" in the app settings on your device.</string>
@@ -708,7 +708,7 @@
     <string name="search_no_results_try">Prova a crearne uno nuovo o cerca qualcos\'altro</string>
     <string name="search_empty_pages">You have no pages to search for.</string>
     <string name="link_to_this_page">Collega a questa pagina</string>
-    <string name="link">Collegamento</string>
+    <string name="link">Link</string>
     <string name="move_into_this_page">Sposta in questa pagina</string>
     <string name="move_into">Sposta in</string>
     <string name="fetching_your_account">Recupero della cassaforte…</string>
@@ -869,7 +869,7 @@
     <string name="type_editing_title">Type settings</string>
     <string name="relation_editing_title">Impostazioni della proprietà</string>
     <string name="type_editing_uninstall">Rimuovi</string>
-    <string name="empty_tree_widget_reader_access">Questo oggetto non ha collegamenti con altri oggetti.</string>
+    <string name="empty_tree_widget_reader_access">Questo oggetto non ha link con altri oggetti.</string>
     <string name="empty_list_widget_no_objects">Non ci sono oggetti qui</string>
     <string name="empty_list_widget_no_view">This data view has no objects.\nTry to create a new one.</string>
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
@@ -991,7 +991,7 @@
     <string name="slash_widget_style_italic">Corsivo</string>
     <string name="slash_widget_style_strikethrough">Barrato</string>
     <string name="slash_widget_style_code">Codice</string>
-    <string name="slash_widget_style_link">Collegamento</string>
+    <string name="slash_widget_style_link">Link</string>
     <string name="slash_widget_style_underline">Underline</string>
     <string name="slash_widget_media_file">File</string>
     <string name="slash_widget_media_file_subtitle">Salva file nello stato originale</string>
@@ -1015,7 +1015,7 @@
     <string name="slash_widget_actions_copy">Copia</string>
     <string name="slash_widget_actions_paste">Incolla</string>
     <string name="slash_widget_actions_link_to">Aggiungi link</string>
-    <string name="slash_widget_actions_link_to_subtitle">Crea collegamento a un altro oggetto</string>
+    <string name="slash_widget_actions_link_to_subtitle">Crea link a un altro oggetto</string>
     <string name="slash_widget_actions_move">Sposta</string>
     <string name="slash_widget_actions_moveto">Sposta in</string>
     <string name="slash_widget_actions_clean_style">Clean style</string>
@@ -1072,7 +1072,7 @@
     <string name="widget_add_below">Aggiungi sotto</string>
     <string name="widget_type_tree">Albero</string>
     <string name="widget_type_tree_description">Widget con una struttura gerarchica</string>
-    <string name="widget_type_link">Collegamento</string>
+    <string name="widget_type_link">Link</string>
     <string name="widget_type_link_description">Vista widget compatta</string>
     <string name="widget_type_list_description">Widget con una vista a elenco</string>
     <string name="widget_type_compact_list_description">Widget con una vista a elenco compatta</string>
@@ -1215,7 +1215,7 @@
     <string name="sharing_snackbar_file_added">File aggiunto a \'%1$s\'</string>
     <string name="sharing_snackbar_files_added">File aggiunti a \'%1$s\'</string>
     <string name="sharing_snackbar_text_added">Testo aggiunto a \'%1$s\'</string>
-    <string name="sharing_snackbar_link_added">Link added to \'%1$s\'</string>
+    <string name="sharing_snackbar_link_added">Link aggiunto a \'%1$s\'</string>
     <string name="sharing_snackbar_content_added">Contenuto aggiunto a \'%1$s\'</string>
     <!-- Snackbar messages for content linked to an object in a space -->
     <string name="sharing_snackbar_image_linked">Immagine collegata a \'%1$s\' in \'%2$s\'</string>
@@ -1226,7 +1226,7 @@
     <string name="sharing_snackbar_file_linked">File collegato a \'%1$s\' in \'%2$s\'</string>
     <string name="sharing_snackbar_files_linked">File collegati a \'%1$s\' in \'%2$s\'</string>
     <string name="sharing_snackbar_text_linked">Testo collegato a \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_link_linked">Link linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_link_linked">Link collegato a \'%1$s\' in \'%2$s\'</string>
     <string name="sharing_snackbar_content_linked">Contenuto collegato a \'%1$s\' in \'%2$s\'</string>
     <!--endregion-->
     <!--region ORIGIN PROPERTIES VALUES -->
@@ -1242,11 +1242,11 @@
     <!--endregion-->
     <plurals name="backlinks_count">
         <item quantity="one">%d backlink</item>
-        <item quantity="other">%d backlinks</item>
+        <item quantity="other">%d backlink</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="one">%d collegamento</item>
-        <item quantity="other">%d collegamenti</item>
+        <item quantity="one">%d link</item>
+        <item quantity="other">%d link</item>
     </plurals>
     <!--region ORIGIN PROPERTIES VALUES -->
     <string name="date_type_tomorrow">Domani</string>
@@ -1291,15 +1291,15 @@
     <string name="option_widget_edit">Modifica opzione</string>
     <string name="options_empty_description">Nessun risultato. Crea la prima opzione per iniziare.</string>
     <string name="options_empty_title">Nessuna opzione</string>
-    <string name="options_empty_not_editable">The property is empty</string>
+    <string name="options_empty_not_editable">La proprietà è vuota</string>
     <string name="options_delete_title">Sei sicuro/a?</string>
     <string name="options_delete_description">L\'opzione verrà rimossa definitivamente dal tuo spazio</string>
-    <string name="tag_status_section_selected">Selected</string>
-    <string name="tag_status_section_all_values">All values</string>
+    <string name="tag_status_section_selected">Selezionati</string>
+    <string name="tag_status_section_all_values">Tutti i valori</string>
     <string name="object_values_empty_description">Oggetti non trovati</string>
     <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
     <string name="object_values_empty_title">Nessun valore</string>
-    <string name="object_values_empty_not_editable">The property is empty</string>
+    <string name="object_values_empty_not_editable">La proprietà è vuota</string>
     <string name="object_values_delete_title">Sei sicuro/a?</string>
     <string name="object_values_delete_description">L\'oggetto verrà spostato nel Cestino.</string>
     <string name="hint_enter_name">Inserisci nome...</string>
@@ -1328,7 +1328,7 @@
     <string name="multiplayer_qr_invite_link_menu">Mostra codice QR</string>
     <string name="multiplayer_share_invite_link_description">Condividi questo link di invito in modo che altri possano unirsi al tuo Spazio. Una volta che cliccano sul tuo link e richiedono l\'accesso, puoi impostare i loro diritti di accesso.</string>
     <string name="multiplayer_invite_link">Link di invito</string>
-    <string name="multiplayer_invite_link_access">Indirizzo d\'invito per l\'accesso</string>
+    <string name="multiplayer_invite_link_access">Accesso con link d\'invito</string>
     <string name="multiplayer_link_disabled">Link disabilitato</string>
     <string name="multiplayer_link_disabled_desc">Solo i membri già invitati hanno accesso</string>
     <string name="multiplayer_editor_access">Accesso editor</string>
@@ -1370,7 +1370,7 @@
     <string name="multiplayer_editor_access_disabled_shared">Unavailable while everyone in the space can share this invite. Reset the link first.</string>
     <string name="link_copied">Link copiato negli appunti</string>
     <string name="remove_from_collection">Unlink from Collection</string>
-    <string name="multiplayer_copy_link">Copia collegamento</string>
+    <string name="multiplayer_copy_link">Copia link</string>
     <string name="multiplayer_make_private">Rendi Privato</string>
     <string name="multiplayer_join_a_space">Unisciti a uno spazio</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Commento privato per il proprietario dello spazio</string>
@@ -1976,7 +1976,7 @@
     <string name="space_settings_section_misc">Varie</string>
     <string name="space_settings_invite">Invita</string>
     <string name="space_settings_share_link">Condividi link</string>
-    <string name="space_settings_copy_link">Copia collegamento</string>
+    <string name="space_settings_copy_link">Copia link</string>
     <string name="space_settings_invite_members">Invita membri</string>
     <string name="space_settings_qrcode">Codice QR</string>
     <string name="space_settings_members_button_members">Membri</string>
@@ -1994,7 +1994,7 @@
     <string name="profile_qr_code_title_with_name">Connect with %1$s</string>
     <string name="profile_qr_code_button">My QR code</string>
     <string name="profile_qr_share_button">Condividi</string>
-    <string name="profile_qr_copy_button">Copia collegamento</string>
+    <string name="profile_qr_copy_button">Copia link</string>
     <string name="profile_qr_circular_text">CONNECT ME AT ANYTYPE </string>
     <string name="profile_qr_link_copied">Link copiato negli appunti</string>
     <string name="object_type_add_property_screen_title">Aggiungi proprietà</string>

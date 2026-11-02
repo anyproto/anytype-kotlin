@@ -1297,7 +1297,7 @@
     <string name="tag_status_section_selected">Selezionati</string>
     <string name="tag_status_section_all_values">Tutti i valori</string>
     <string name="object_values_empty_description">Oggetti non trovati</string>
-    <string name="object_values_empty_description_limited">Objects not found. This property only accepts: %1$s</string>
+    <string name="object_values_empty_description_limited">Oggetti non trovati. Questa proprietà accetta soltanto: %1$s</string>
     <string name="object_values_empty_title">Nessun valore</string>
     <string name="object_values_empty_not_editable">La proprietà è vuota</string>
     <string name="object_values_delete_title">Sei sicuro/a?</string>
@@ -1339,14 +1339,14 @@
     <string name="multiplayer_viewer_access_desc">Le persone con link possono visualizzare e leggere la chat</string>
     <string name="multiplayer_request_access">Richiesta di accesso</string>
     <string name="multiplayer_request_access_desc">Il proprietario deve approvare ogni richiesta di adesione</string>
-    <string name="channel_members_subtitle">%1$d/%2$d editors, %3$d/%4$d viewers</string>
+    <string name="channel_members_subtitle">%1$d/%2$d editori, %3$d/%4$d visualizzatori</string>
     <string name="multiplayer_qr_code">Codice QR</string>
     <string name="multiplayer_mute">Silenzia</string>
     <string name="multiplayer_unmute">Riattiva</string>
-    <string name="multiplayer_space_muted">Space muted</string>
-    <string name="multiplayer_space_unmuted">Space unmuted</string>
-    <string name="multiplayer_unable_to_change_notification_settings">Unable to change notification settings</string>
-    <string name="multiplayer_failed_to_change_notification_settings">Failed to change notification settings</string>
+    <string name="multiplayer_space_muted">Spazio silenziato</string>
+    <string name="multiplayer_space_unmuted">Spazio non silenziato</string>
+    <string name="multiplayer_unable_to_change_notification_settings">Impossibile modificare le impostazioni di notifica</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Modifica delle impostazioni di notifica non riuscita</string>
     <string name="multiplayer_change_access_title">Modificare l\'accesso al link di invito?</string>
     <string name="multiplayer_link_will_be_invalidated">Il link attuale smetterà di funzionare.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">Se si disattiva la condivisione o si passa all\'approvazione manuale, il link esistente viene disattivato. Se lo si riattiva, ne verrà creato uno nuovo.</string>
@@ -1355,11 +1355,11 @@
     <string name="multiplayer_change_to_request_confirmation">Chiunque abbia il link dovrà richiedere l\'accesso allo spazio.</string>
     <string name="multiplayer_invite_link_copied">Link d\'invito copiato negli appunti</string>
     <!-- Invite sharing (GO-7222): owner-held invites, share-within-space toggle, link reset -->
-    <string name="multiplayer_invite_share_toggle_title">Everyone in the space can share this invite</string>
-    <string name="multiplayer_invite_share_toggle_locked_hint">To make this invite private again, reset the link.</string>
-    <string name="multiplayer_invite_share_disabled_reason">Anyone with this link joins as an editor, without approval. Only you can share it.</string>
-    <string name="multiplayer_invite_share_confirm_title">Share invite with all members?</string>
-    <string name="multiplayer_invite_share_confirm_description">All space members will be able to see this invite link and share it with anyone. To make it private again, you\'ll need to reset the link.</string>
+    <string name="multiplayer_invite_share_toggle_title">Chiunque nello spazio può condividere questo invito</string>
+    <string name="multiplayer_invite_share_toggle_locked_hint">Per rendere nuovamente privato questo invito, ripristina il link.</string>
+    <string name="multiplayer_invite_share_disabled_reason">Chiunque abbia questo link si unisce come editor, senza approvazione. Solo tu puoi condividerlo.</string>
+    <string name="multiplayer_invite_share_confirm_title">Condividere l\'invito con tutti i membri?</string>
+    <string name="multiplayer_invite_share_confirm_description">Tutti i membri dello spazio saranno in grado di vedere questo link di invito e condividerlo con chiunque. Per renderlo di nuovo privato, dovrai reimpostare il link.</string>
     <string name="multiplayer_invite_auto_approval_warning">Anyone who gains access to this invitation link will be able to join this space at any time, until you reset the link.</string>
     <string name="multiplayer_invite_editor_upgrade_note">Any existing Viewer who gains access to this invitation link can use it to upgrade themselves to Editor.</string>
     <string name="multiplayer_invite_legacy_unsafe_warning">Every member of this space can see and share this invite link, and anyone who has it joins as an editor without approval. Any existing Viewer can use it to upgrade themselves to Editor.</string>

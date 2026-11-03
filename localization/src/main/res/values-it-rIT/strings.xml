@@ -1360,16 +1360,16 @@
     <string name="multiplayer_invite_share_disabled_reason">Chiunque abbia questo link si unisce come editor, senza approvazione. Solo tu puoi condividerlo.</string>
     <string name="multiplayer_invite_share_confirm_title">Condividere l\'invito con tutti i membri?</string>
     <string name="multiplayer_invite_share_confirm_description">Tutti i membri dello spazio saranno in grado di vedere questo link di invito e condividerlo con chiunque. Per renderlo di nuovo privato, dovrai reimpostare il link.</string>
-    <string name="multiplayer_invite_auto_approval_warning">Anyone who gains access to this invitation link will be able to join this space at any time, until you reset the link.</string>
-    <string name="multiplayer_invite_editor_upgrade_note">Any existing Viewer who gains access to this invitation link can use it to upgrade themselves to Editor.</string>
-    <string name="multiplayer_invite_legacy_unsafe_warning">Every member of this space can see and share this invite link, and anyone who has it joins as an editor without approval. Any existing Viewer can use it to upgrade themselves to Editor.</string>
-    <string name="multiplayer_invite_held_by_owner">The invite link is held by the space owner. Ask them to share it.</string>
-    <string name="multiplayer_invite_reset_link">Reset link</string>
-    <string name="multiplayer_invite_reset_confirm_title">Reset invite link?</string>
-    <string name="multiplayer_invite_reset_confirm_description">The current link stops working for everyone who has it, including the people you meant to invite. A new link is created in its place.</string>
-    <string name="multiplayer_editor_access_disabled_shared">Unavailable while everyone in the space can share this invite. Reset the link first.</string>
+    <string name="multiplayer_invite_auto_approval_warning">Chiunque ottenga l\'accesso a questo link di invito sarà in grado di entrare in questo spazio in qualsiasi momento, fino a quando non reimposterai il link.</string>
+    <string name="multiplayer_invite_editor_upgrade_note">Qualsiasi Visualizzatore esistente che ottenga l\'accesso a questo link di invito può usarlo per aggiornarsi a Editor.</string>
+    <string name="multiplayer_invite_legacy_unsafe_warning">Ogni membro di questo spazio può vedere e condividere questo link di invito, e chiunque lo abbia accede come Editore senza bisogno di approvazione. Qualsiasi Visualizzatore esistente può usarlo per aggiornarsi a Editore.</string>
+    <string name="multiplayer_invite_held_by_owner">Il link di invito è detenuto dal proprietario dello spazio. Chiedigli di condividerlo.</string>
+    <string name="multiplayer_invite_reset_link">Reimposta il link</string>
+    <string name="multiplayer_invite_reset_confirm_title">Reimposta il link di invito?</string>
+    <string name="multiplayer_invite_reset_confirm_description">Il link attuale smette di funzionare per tutti coloro che lo hanno, comprese le persone che intendevi invitare. Un nuovo link viene creato al suo posto.</string>
+    <string name="multiplayer_editor_access_disabled_shared">Non disponibile mentre tutti nello spazio possono condividere questo invito. Ripristina prima il link.</string>
     <string name="link_copied">Link copiato negli appunti</string>
-    <string name="remove_from_collection">Unlink from Collection</string>
+    <string name="remove_from_collection">Scollega dalla collezione</string>
     <string name="multiplayer_copy_link">Copia link</string>
     <string name="multiplayer_make_private">Rendi Privato</string>
     <string name="multiplayer_join_a_space">Unisciti a uno spazio</string>
@@ -1418,7 +1418,7 @@
     <string name="multiplayer_remove_member_warning_text">%1$s sarà rimosso/a dallo spazio</string>
     <string name="multiplayer_remove_member_title">Remove the member from this channel?</string>
     <string name="multiplayer_remove_member_description">%@ will be removed from the space.</string>
-    <string name="multiplayer_remove_member_button">Remove Member</string>
+    <string name="multiplayer_remove_member_button">Rimuovi membro</string>
     <string name="multiplayer_request_sent_toast">Richiesta inviata</string>
     <string name="multiplayer_space_stop_sharing">Interrompi condivisione</string>
     <string name="multiplayer_space_stop_sharing_space">Smetti di condividere lo spazio</string>
@@ -1518,7 +1518,7 @@
     <string name="payments_card_description_3">Il tuo contributo sostiene il nostro team e avvalora la nostra visione di una rete digitale di proprietà degli utenti, sicura e collaborativa.</string>
     <string name="payments_card_text_4">Investi nella connettività</string>
     <string name="payments_card_description_4">Il valore della nostra rete supera la somma delle sue parti. La tua iscrizione sostiene l\'infrastruttura per la sua crescita, che è alla base di questa rete.</string>
-    <string name="payments_tier_explorer">Explorer</string>
+    <string name="payments_tier_explorer">Esploratore</string>
     <string name="payments_tier_explorer_description">Immergiti nella rete e goditi l\'emozione della collaborazione uno-a-uno</string>
     <string name="payments_tier_builder">Builder</string>
     <string name="payments_tier_builder_description">Sblocca la magia della collaborazione multi-parte e goditi un supporto di prim\'ordine
@@ -1594,9 +1594,9 @@
     <string name="payments_code_resend">Invia di nuovo</string>
     <string name="payments_code_resend_in">Invia nuovamente tra %1$d secondi</string>
     <!-- Membership Activate Code -->
-    <string name="payments_activate_code_entry">Have a code?</string>
-    <string name="payments_activate_code_title">Activate Your Code</string>
-    <string name="payments_activate_code_subtitle">Enter the code you received after purchase or from an invitation. Your membership will be activated instantly.</string>
+    <string name="payments_activate_code_entry">Hai un codice?</string>
+    <string name="payments_activate_code_title">Attiva il tuo codice</string>
+    <string name="payments_activate_code_subtitle">Inserisci il codice che hai ricevuto dopo l\'acquisto o da invito. Il tuo abbonamento verrà attivato immediatamente.</string>
     <string name="payments_activate_code_hint">Paste activation code…</string>
     <string name="payments_activate_code_button">Activate</string>
     <!-- Membership Activate Code — success -->

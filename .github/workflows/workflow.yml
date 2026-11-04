@@ -1,6 +1,9 @@
 on:
   push:
     branches: [main]
+  # Lets this workflow be started by hand, so a change to it can be tried on a
+  # branch instead of only after it lands on main.
+  workflow_dispatch:
 name: CI
 jobs:
   setup-android:
@@ -21,6 +24,20 @@ jobs:
           amplitude_secret_debug: ${{ secrets.ANYTYPE_AMPLITUDE_DEBUG_SECRET }}
           sentry_dsn_secret: ${{ secrets.ANYTYPE_SENTRY_DSN_SECRET }}
         run: ./middleware2.sh $token_secret $user_secret $amplitude_secret $amplitude_secret_debug $sentry_dsn_secret
+
+      # The runner has 16 GB. The project file asks for a 3 GB daemon, which suits a
+      # laptop but not `build test` over every module and both variants: lint analysis
+      # runs inside the daemon, and the generated protocol classes grow with each
+      # middleware release. A file here wins over the project one, so CI gets its own
+      # figures without changing what a developer's machine uses.
+      - name: Give Gradle and Kotlin enough heap for a full build
+        run: |
+          mkdir -p ~/.gradle
+          cat >> ~/.gradle/gradle.properties <<'PROPS'
+          org.gradle.jvmargs=-Xmx6g -XX:MaxMetaspaceSize=1g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
+          kotlin.daemon.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g
+          org.gradle.workers.max=2
+          PROPS
 
       - name: Run unit tests. Full mode.
         run: ./gradlew build test -Dpre-dex=false -q

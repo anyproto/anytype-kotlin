@@ -1,7 +1,12 @@
 android {
     lint {
         abortOnError false
-        disable 'InvalidPackage', 'OldTargetApi', 'IconDensities', 'IconMissingDensityFolder', 'NullSafeMutableLiveData'
+        // UseRequireInsteadOfGet resolves every call it visits through UAST and has
+        // exhausted the heap on CI more than once, taking the whole build with it.
+        // Its advice is a style preference and this config ignores lint's findings
+        // anyway, so the check costs more than it returns.
+        disable 'InvalidPackage', 'OldTargetApi', 'IconDensities', 'IconMissingDensityFolder',
+                'NullSafeMutableLiveData', 'UseRequireInsteadOfGet'
         ignoreWarnings true
         quiet true
         checkReleaseBuilds false

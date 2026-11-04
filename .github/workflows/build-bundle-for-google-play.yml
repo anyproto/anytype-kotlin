@@ -54,11 +54,13 @@ jobs:
       - name: List built files
         run: ls -lh app/build/outputs/bundle/release/
 
-      - name: Upload bundle as artifact
+      - name: Upload bundle and R8 mapping file as artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-bundle
-          path: app/build/outputs/bundle/release/app-release.aab
+          path: |
+            app/build/outputs/bundle/release/app-release.aab
+            app/build/outputs/mapping/release/mapping.txt
 
       - name: Clean secrets
         if: always()

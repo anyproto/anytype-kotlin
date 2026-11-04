@@ -71,6 +71,13 @@ jobs:
           track: internal
           status: completed
 
+      - name: Upload R8 mapping file as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: r8-mapping-${{ github.run_number }}
+          path: app/build/outputs/mapping/release/mapping.txt
+          if-no-files-found: error
+
       - name: Clean secrets
         if: always()
         run: ./scripts/release/clean-secrets.sh

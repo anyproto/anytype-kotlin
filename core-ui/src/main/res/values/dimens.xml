@@ -195,7 +195,6 @@
     <dimen name="selection_left_right_offset">12dp</dimen>
     <dimen name="divider_extra_space_bottom">2dp</dimen>
 
-    <dimen name="item_block_table_cell_width">140dp</dimen>
     <dimen name="item_block_table_cell_height">63dp</dimen>
     <dimen name="item_block_table_margin_top">10dp</dimen>
     <dimen name="item_block_table_margin_bottom">10dp</dimen>

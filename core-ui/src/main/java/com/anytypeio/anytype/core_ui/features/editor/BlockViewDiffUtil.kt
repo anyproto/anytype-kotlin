@@ -457,6 +457,7 @@ class BlockViewDiffUtil(
 
         const val TABLE_CELLS_SELECTION_CHANGED = 340
         const val TABLE_CELLS_CHANGED = 341
+        const val TABLE_CELL_WIDTH_CHANGED = 342
 
         const val DATA_VIEW_TITLE_CHANGED = 350
         const val DATA_VIEW_ICON_CHANGED = 351

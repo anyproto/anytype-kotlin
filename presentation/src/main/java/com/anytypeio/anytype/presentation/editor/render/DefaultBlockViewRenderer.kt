@@ -2013,7 +2013,11 @@ class DefaultBlockViewRenderer @Inject constructor(
                 columns = blocks.getValue(container.id).mapIndexed { index, column ->
                     BlockView.Table.Column(
                         id = BlockView.Table.ColumnId(column.id),
-                        index = BlockView.Table.ColumnIndex(index)
+                        index = BlockView.Table.ColumnIndex(index),
+                        width = column.fields.width?.toInt()?.coerceIn(
+                            BlockView.Table.MIN_COLUMN_WIDTH,
+                            BlockView.Table.MAX_COLUMN_WIDTH
+                        ) ?: BlockView.Table.DEFAULT_COLUMN_WIDTH
                     )
                 }
             }

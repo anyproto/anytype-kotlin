@@ -126,6 +126,7 @@ class TableEditableCellsAdapter(
     }
 
     override fun onBindViewHolder(holder: EditableCellHolder, position: Int) {
+        holder.applyWidth(items[position].column.width)
         val block = items[position].block
         if (block != null) {
             holder.bind(block)
@@ -143,6 +144,7 @@ class TableEditableCellsAdapter(
         if (payloads.isEmpty()) {
             super.onBindViewHolder(holder, position, payloads)
         } else {
+            holder.applyWidth(items[position].column.width)
             val block = items[position].block
             if (block != null) {
                 holder.processChangePayload(

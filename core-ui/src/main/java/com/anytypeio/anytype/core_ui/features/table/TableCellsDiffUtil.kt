@@ -22,7 +22,9 @@ class TableCellsDiffUtil(
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return old[oldItemPosition].block == new[newItemPosition].block
+        val oldItem = old[oldItemPosition]
+        val newItem = new[newItemPosition]
+        return oldItem.block == newItem.block && oldItem.column.width == newItem.column.width
     }
 
     override fun getChangePayload(oldItemPosition: Int, newItemPosition: Int): Any? {
@@ -32,8 +34,15 @@ class TableCellsDiffUtil(
 
         val changes = mutableListOf<Int>()
 
+        if (old[oldItemPosition].column.width != new[newItemPosition].column.width) {
+            changes.add(BlockViewDiffUtil.TABLE_CELL_WIDTH_CHANGED)
+        }
+
         if (oldBlock == null && newBlock == null) {
-            return super.getChangePayload(oldItemPosition, newItemPosition)
+            return if (changes.isNotEmpty())
+                BlockViewDiffUtil.Payload(changes)
+            else
+                super.getChangePayload(oldItemPosition, newItemPosition)
         }
 
         if (oldBlock == null && newBlock != null) {

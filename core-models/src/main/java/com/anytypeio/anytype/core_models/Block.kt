@@ -64,10 +64,22 @@ data class Block(
                 else -> null
             }
 
+        /**
+         * Width set by the desktop client in CSS pixels. Its meaning depends on the block:
+         * a table column's width, or the page width on an object's root block.
+         */
+        val width: Double?
+            get() = when (val value = map[WIDTH_KEY]) {
+                is Double -> value
+                is Int -> value.toDouble()
+                else -> null
+            }
+
         companion object {
             fun empty(): Fields = Fields(emptyMap())
             const val NAME_KEY = "name"
             const val TYPE_KEY = "type"
+            const val WIDTH_KEY = "width"
             const val IS_LOCKED_KEY = "isLocked"
         }
     }

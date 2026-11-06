@@ -620,7 +620,7 @@
     <string name="dataview_board_no_group_title">Nessuna proprietà di raggruppamento</string>
     <string name="dataview_board_no_group_description">Scegliere una proprietà per raggruppare le carte secondo le impostazioni di visualizzazione</string>
     <string name="page_cover">Copertina della pagina</string>
-    <string name="object_action_pin">Pin</string>
+    <string name="object_action_pin">Fissa</string>
     <string name="object_action_unpin">Togli</string>
     <string name="editor_toolbar">pulsante</string>
     <string name="wait_a_bit_message">Per favore, concedici un momento. Ci siamo quasi…</string>
@@ -1159,7 +1159,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Duplica</string>
-    <string name="object_action_to_widgets">Pin</string>
+    <string name="object_action_to_widgets">Fissa</string>
     <string name="object_action_download">Scarica</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1534,7 +1534,7 @@
     <string name="payments_button_submit">Invia</string>
     <string name="payments_button_pay">Paga con carta</string>
     <string name="payments_button_change_email">Cambia email</string>
-    <string name="payments_member_link">Dettagli dei livelli di membership</string>
+    <string name="payments_member_link">Dettagli dei livelli di iscrizione</string>
     <string name="payments_privacy_link">Informativa sulla privacy</string>
     <string name="payments_terms_link">Termini e condizioni</string>
     <string name="payments_current_label">Attuale</string>
@@ -1596,27 +1596,27 @@
     <!-- Membership Activate Code -->
     <string name="payments_activate_code_entry">Hai un codice?</string>
     <string name="payments_activate_code_title">Attiva il tuo codice</string>
-    <string name="payments_activate_code_subtitle">Inserisci il codice che hai ricevuto dopo l\'acquisto o da invito. Il tuo abbonamento verrà attivato immediatamente.</string>
-    <string name="payments_activate_code_hint">Paste activation code…</string>
-    <string name="payments_activate_code_button">Activate</string>
+    <string name="payments_activate_code_subtitle">Inserisci il codice che hai ricevuto dopo l\'acquisto o da invito. La tua iscrizione verrà attivata immediatamente.</string>
+    <string name="payments_activate_code_hint">Incolla il codice di attivazione…</string>
+    <string name="payments_activate_code_button">Attiva</string>
     <!-- Membership Activate Code — success -->
-    <string name="payments_activate_code_success_title">You\'re all set</string>
-    <string name="payments_activate_code_success_subtitle">Your %1$s membership is now active</string>
-    <string name="payments_activate_code_success_subtitle_generic">Your membership is now active</string>
+    <string name="payments_activate_code_success_title">Tutto fatto</string>
+    <string name="payments_activate_code_success_subtitle">La tua iscrizione a %1$s è ora attiva</string>
+    <string name="payments_activate_code_success_subtitle_generic">La tua iscrizione è ora attiva</string>
     <!-- Membership Activate Code — errors (CodeGetInfo) -->
-    <string name="membership_code_error_unknown">Unknown error occured</string>
-    <string name="membership_code_error_bad_input">Bad input</string>
-    <string name="membership_code_error_not_logged_in">Not logged in</string>
-    <string name="membership_code_error_payment_node">No connection to payment node. Please try again.</string>
-    <string name="membership_code_error_code_invalid">The code is not valid. Please check and try again.</string>
-    <string name="membership_code_error_already_member">Membership already exists for the current identity</string>
+    <string name="membership_code_error_unknown">Si è verificato un errore sconosciuto</string>
+    <string name="membership_code_error_bad_input">Inserimento errato</string>
+    <string name="membership_code_error_not_logged_in">Accesso non effettuato</string>
+    <string name="membership_code_error_payment_node">Nessuna connessione al nodo di pagamento. Riprova.</string>
+    <string name="membership_code_error_code_invalid">Il codice non è valido. Controllalo e riprova.</string>
+    <string name="membership_code_error_already_member">L\'iscrizione esiste già per l\'identità corrente</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">Benvenuto/a nella rete, %1$s</string>
     <string name="payments_welcome_subtitle">Un grande applauso per la tua curiosità!</string>
     <string name="payments_welcome_button">Continua</string>
     <!-- Membership Email -->
     <string name="membership_support_email">support@anytype.io</string>
-    <string name="membership_support_subject">Membership Screen Error Report - %1$s</string>
+    <string name="membership_support_subject">Rapporto di errore della schermata di iscrizione - %1$s</string>
     <string name="membership_support_body">        Hi Anytype Support Team,\n\n
 
         I encountered an error on the Membership Screen in the app. Below are the details:\n
@@ -1635,7 +1635,7 @@
         Best regards,       \n
     </string>
     <!-- Membership name errors -->
-    <string name="membership_name_bad_input">Qualcosa non va nell\'input, prova di nuovo</string>
+    <string name="membership_name_bad_input">Qualcosa non va nell\'inserimento, prova di nuovo</string>
     <string name="membership_name_cache_error">Errore da parte nostra, riprova più tardi</string>
     <string name="membership_name_cant_connect">Impossibile connettersi, controlla la tua connessione internet</string>
     <string name="membership_name_invalid_chars">Il nome contiene caratteri non validi</string>
@@ -1652,19 +1652,19 @@
     <string name="membership_email_already_verified">Indirizzo email già verificato</string>
     <string name="membership_email_already_sent">Email già inviata, riprova dopo 1 minuto</string>
     <string name="membership_email_failed_to_send">Invio e-mail non riuscito</string>
-    <string name="membership_email_membership_already_exists">Membership already exists</string>
+    <string name="membership_email_membership_already_exists">L\'iscrizione esiste già</string>
     <string name="membership_email_code_expired">Codice scaduto</string>
     <string name="membership_email_code_wrong">Il codice è errato</string>
     <string name="membership_email_code_success">Il codice è valido</string>
-    <string name="membership_email_membership_not_found">Membership non trovata</string>
-    <string name="membership_email_membership_already_active">Abbonamento già attivo</string>
+    <string name="membership_email_membership_not_found">Iscrizione non trovata</string>
+    <string name="membership_email_membership_already_active">Iscrizione già attiva</string>
     <!-- Notifications -->
     <string name="notifications_alert_error_unknown">Si è verificato un errore sconosciuto. Ti preghiamo di riprovare più tardi.</string>
     <string name="notifications_alert_error_bad_input">Rilevato un inserimento non valido. Per favore controlla i tuoi dati e riprova.</string>
     <string name="notifications_alert_error_internal">Si è verificato un errore interno. Il nostro team è stato notificato.</string>
     <string name="notifications_alert_error_no_objects_to_import">Non è stato trovato nessun elemento da importare. Per favore seleziona oggetti validi per l\'importazione.</string>
     <string name="notifications_alert_error_import_canceled">Il processo di importazione è stato annullato dall\'utente.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_limit_exceeded">Il limite di importazione per righe o proprietà è stato superato. Riduci la quantità e riprova.</string>
     <string name="notifications_alert_error_file_load">Si è verificato un errore durante il caricamento del file. Controlla il file e riprova.</string>
     <string name="notifications_alert_error_insufficient_permissions">Non hai i permessi necessari per eseguire questa azione. Controlla le tue autorizzazioni e riprova.</string>
     <!-- Gallery Experience -->
@@ -1772,16 +1772,16 @@
     <string name="version_history_error_get_members">Errore nell\'ottenere i membri</string>
     <string name="new_object">Nuovo oggetto</string>
     <string name="vault_my_spaces">I miei Canali</string>
-    <string name="vault_search_hint">Search everything</string>
+    <string name="vault_search_hint">Cerca tutto</string>
     <string name="vault_unread_section_title">Non letto</string>
     <string name="vault_all_section_title">Tutto</string>
     <string name="vault_pinned_section_title">Fissato</string>
-    <string name="vault_pin_space">Pin</string>
+    <string name="vault_pin_space">Fissa</string>
     <string name="vault_unpin_space">Togli</string>
     <string name="vault_max_pinned_limit_reached">È stato raggiunto il limite di %1$d spazi appuntati</string>
     <string name="all_content_title_all_content">Tutti gli Oggetti</string>
     <string name="all_content_title_only_unlinked">Solo non collegati</string>
-    <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
+    <string name="all_content_title_only_unlinked_description">Oggetti scollegati che non hanno un link o un backlink con altri oggetti nel grafo.</string>
     <string name="all_content_view_bin">Vedi Cestino</string>
     <string name="all_content_title_tab_pages">Pagine</string>
     <string name="all_content_title_tab_lists">Liste</string>
@@ -1817,14 +1817,14 @@
     <string name="all_content_error_title">Qualcosa è andato storto.</string>
     <string name="onboarding_my_first_space">Il Mio Primo Spazio</string>
     <string name="all_content_error_unexpected_layout">Errore: layout inaspettato</string>
-    <string name="all_content_toast_relation_added">Property added</string>
-    <string name="all_content_toast_relation_removed">Property removed</string>
+    <string name="all_content_toast_relation_added">Proprietà aggiunta</string>
+    <string name="all_content_toast_relation_removed">Proprietà rimossa</string>
     <string name="all_content_toast_type_added">Tipo di oggetto aggiunto</string>
     <string name="all_content_toast_type_removed">Tipo di oggetto rimosso</string>
     <string name="all_content_toast_archived">Oggetto archiviato</string>
     <string name="all_content_new_relation">Nuova proprietà</string>
     <string name="all_content_new_type">New type</string>
-    <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
+    <string name="all_content_unlinked_description">Oggetti scollegati che non hanno un link o un backlink con altri oggetti nel grafo.</string>
     <string name="all_content_snackbar_title">spostato nel cestino</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Condividi e il pulsante membri</string>
@@ -1833,9 +1833,9 @@
     <string name="main_navigation_content_desc_search_button">Pulsante cerca oggetti</string>
     <string name="main_navigation_content_desc_create_button">Pulsante crea oggetti</string>
     <string name="chat">Chat</string>
-    <string name="discussion_comments">comments</string>
-    <string name="discussion_no_comments">No comments yet</string>
-    <string name="discussion_leave_comment">Leave a comment…</string>
+    <string name="discussion_comments">commenti</string>
+    <string name="discussion_no_comments">Ancora nessun commento</string>
+    <string name="discussion_leave_comment">Lascia un commento…</string>
     <string name="copy">Copia</string>
     <string name="copy_text">Copia Testo</string>
     <string name="copy_plain_text">Copia Testo Semplice</string>
@@ -1861,11 +1861,11 @@
     <string name="chat_attachment_media">Carica i media</string>
     <string name="chat_attachment_upload">Carica</string>
     <string name="chat_attach">Allega</string>
-    <string name="upload_success_snackbar_image">New image added</string>
-    <string name="upload_success_snackbar_video">New video added</string>
-    <string name="upload_success_snackbar_file">New file added</string>
-    <string name="upload_success_snackbar_mixed">New files added</string>
-    <string name="upload_success_snackbar_action_open">Open %1$s</string>
+    <string name="upload_success_snackbar_image">Nuova immagine aggiunta</string>
+    <string name="upload_success_snackbar_video">Nuovo video aggiunto</string>
+    <string name="upload_success_snackbar_file">Nuovo file aggiunto</string>
+    <string name="upload_success_snackbar_mixed">Nuovi file aggiunti</string>
+    <string name="upload_success_snackbar_action_open">Apri %1$s</string>
     <string name="chats_reply">Rispondi</string>
     <string name="chats_add_reaction">Aggiungi una Reazione</string>
     <string name="chat_send_message_rate_limit_title">Aspettate! Rilevata digitazione turbo!</string>
@@ -1900,7 +1900,7 @@
     <string name="object_type_fields_local_info_description">Queste proprietà esistono in alcuni oggetti, ma non fanno parte del Tipo. Aggiungerle per farle apparire in tutti gli oggetti di questo Tipo.</string>
     <string name="object_type_fields_local_info_button">Capito</string>
     <string name="object_type_templates_empty">Questo Tipo non ha modelli</string>
-    <string name="object_properties_section_local">Local</string>
+    <string name="object_properties_section_local">Locale</string>
     <string name="object_properties_section_hidden">Nascosto</string>
     <string name="object_properties_local_info_title">Proprietà Locali</string>
     <string name="object_properties_local_info_description">Queste proprietà esistono solo in questo oggetto e non fanno parte del suo Tipo. Aggiungere al tipo per utilizzarlo in tutti gli oggetti, oppure rimuovere.</string>
@@ -1990,7 +1990,7 @@
     <string name="space_settings_icon_title">Modifica foto</string>
     <string name="space_settings_save_button">Salva</string>
     <string name="space_settings_join_space_by_qr_title">Unisciti</string>
-    <string name="profile_qr_code_title">Connect with me</string>
+    <string name="profile_qr_code_title">Connettiti con me</string>
     <string name="profile_qr_code_title_with_name">Connect with %1$s</string>
     <string name="profile_qr_code_button">My QR code</string>
     <string name="profile_qr_share_button">Condividi</string>
@@ -2139,7 +2139,7 @@
     <string name="attachment_image">Immagine allegata</string>
     <!-- Shared Space Limit (DROID-4388) -->
     <string name="vault_shared_space_limit_title">Shared space limit reached</string>
-    <string name="vault_shared_space_limit_description">Your plan allows %1$d shared spaces. Upgrade your membership to create more.</string>
+    <string name="vault_shared_space_limit_description">Il tuo piano consente %1$d spazi condivisi. Aggiorna la tua iscrizione per crearne di più.</string>
     <string name="vault_manage_channels">Manage Channels</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Foto</string>

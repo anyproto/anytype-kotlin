@@ -1995,7 +1995,7 @@
     <string name="profile_qr_code_button">Il mio codice QR</string>
     <string name="profile_qr_share_button">Condividi</string>
     <string name="profile_qr_copy_button">Copia link</string>
-    <string name="profile_qr_circular_text">CONNECT ME AT ANYTYPE </string>
+    <string name="profile_qr_circular_text">CONNETTITI CON ME SU ANYTYPE</string>
     <string name="profile_qr_link_copied">Link copiato negli appunti</string>
     <string name="object_type_add_property_screen_title">Aggiungi proprietà</string>
     <string name="object_type_add_property_screen_create">Crea proprietà \'%1$s\'</string>
@@ -2119,11 +2119,11 @@
     <string name="notification_settings_state_disabled">Disattivato</string>
     <string name="notification_settings_state_enabled">Abilitato</string>
     <string name="content_desc_muted">Silenziato</string>
-    <string name="content_desc_pending_sync">Pending sync</string>
+    <string name="content_desc_pending_sync">Sincronizzazione in sospeso</string>
     <string name="failed_to_load_image">Impossibile caricare l\'immagine</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Unisciti tramite QR Code</string>
-    <string name="channel_select_members_title">Select members</string>
+    <string name="channel_select_members_title">Seleziona membri</string>
     <string name="channel_next">Avanti</string>
     <string name="vault_qr_scan_error_title">Impossibile scansionare il codice QR</string>
     <string name="vault_qr_scan_error_description">Assicurati che sia ben visibile e riprova.</string>
@@ -2131,27 +2131,27 @@
     <string name="vault_qr_invalid_description">Il codice QR scansionato non corrisponde a un invito valido. Si prega di controllare e riprovare.</string>
     <string name="vault_qr_try_again">Riprova</string>
     <string name="camera_permission_required_title">È necessaria l\'autorizzazione della fotocamera</string>
-    <string name="barcode_scanner_unavailable">QR scanner is not available on this device</string>
+    <string name="barcode_scanner_unavailable">Lo scanner QR non è disponibile su questo dispositivo</string>
     <string name="camera_permission_rationale_message">Per scansionare i codici QR, Anytype deve avere accesso alla fotocamera. Questa autorizzazione viene utilizzata solo per la scansione dei codici QR.</string>
     <string name="camera_permission_settings_message">Per scansionare i codici QR, è necessario consentire l\'accesso alla fotocamera nelle impostazioni del dispositivo.</string>
     <string name="open_settings">Apri Impostazioni</string>
     <string name="allow">Allow</string>
     <string name="attachment_image">Immagine allegata</string>
     <!-- Shared Space Limit (DROID-4388) -->
-    <string name="vault_shared_space_limit_title">Shared space limit reached</string>
+    <string name="vault_shared_space_limit_title">Raggiunto il limite di spazio condiviso</string>
     <string name="vault_shared_space_limit_description">Il tuo piano consente %1$d spazi condivisi. Aggiorna la tua iscrizione per crearne di più.</string>
-    <string name="vault_manage_channels">Manage Channels</string>
+    <string name="vault_manage_channels">Gestisci i canali</string>
     <!-- Attachment Menu (DROID-4201) -->
     <string name="attachment_menu_photos">Foto</string>
     <string name="attachment_menu_camera">Fotocamera</string>
     <string name="attachment_menu_files">File</string>
-    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_attach_object">Allega oggetto</string>
     <string name="attachment_menu_see_all">Mostra tutto</string>
     <string name="attachment_menu_search_placeholder">Cerca</string>
-    <string name="create_object_empty_state">No object types available</string>
-    <string name="create_object_no_results">No types found</string>
-    <string name="create_object_search_types">Search object types</string>
-    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_empty_state">Nessun tipo di oggetto disponibile</string>
+    <string name="create_object_no_results">Nessun tipo trovato</string>
+    <string name="create_object_search_types">Cerca tipi di oggetto</string>
+    <string name="create_object_error">Impossibile caricare i tipi di oggetto</string>
     <string name="create_object_retry">Retry</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Limite raggiunto per questo spazio. Aggiorna il tuo abbonamento o contatta il supporto per assistenza.</string>
@@ -2164,8 +2164,8 @@
     </string>
     <string name="share_space_error_make_private_failed">        Impossibile rendere privato lo spazio. Riprova più tardi.
     </string>
-    <string name="share_space_error_invite_already_shared">This invite is already shared with all space members and cannot be made private. Reset the link to create a new private invite.</string>
-    <string name="share_space_error_invite_not_shareable">Anyone with this link joins as an editor, without approval. Switch the link to Viewer access before sharing it.</string>
+    <string name="share_space_error_invite_already_shared">Questo invito è già condiviso con tutti i membri dello spazio e non può essere reso privato. Reimposta il link per creare un nuovo invito privato.</string>
+    <string name="share_space_error_invite_not_shareable">Chiunque con questo link accede come editore, senza approvazione. Cambia il link per accedere come visualizzatore prima di condividerlo.</string>
     <string name="private_local_yours_forever">privato, locale, tuo per sempre</string>
     <string name="private_channel">Direct channel</string>
     <string name="space_header_private_channel">Private channel</string>

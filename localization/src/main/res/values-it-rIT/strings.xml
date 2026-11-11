@@ -2270,11 +2270,11 @@
     <string name="os_widget_data_view_title">Visualizzazione dati</string>
     <string name="os_widget_data_view_description">Visualizza gli elementi di un Insieme o di una Collezione</string>
     <!-- DROID-4358 Offline Downloads settings -->
-    <string name="offline_downloads_section_title">Offline access</string>
-    <string name="offline_downloads_title">Offline Downloads</string>
-    <string name="offline_downloads_subtitle">Auto sync files up to a selected size</string>
-    <string name="offline_downloads_use_cellular">Use Cellular Data</string>
-    <string name="offline_downloads_value_off">Off</string>
+    <string name="offline_downloads_section_title">Accesso offline</string>
+    <string name="offline_downloads_title">Download Offline</string>
+    <string name="offline_downloads_subtitle">Sincronizza automaticamente i file fino a una dimensione selezionata</string>
+    <string name="offline_downloads_use_cellular">Usa dati cellulare</string>
+    <string name="offline_downloads_value_off">Disattivato</string>
     <string name="offline_downloads_value_20mb">20 MB</string>
     <string name="offline_downloads_value_100mb">100 MB</string>
     <string name="offline_downloads_value_250mb">250 MB</string>

@@ -1517,7 +1517,20 @@ sealed class BlockView : ViewType {
         @JvmInline
         value class ColumnIndex(val value: Int)
 
-        data class Column(val id: ColumnId, val index: ColumnIndex)
+        /**
+         * @property [width] column width in dp. Desktop stores it in CSS pixels, which map to dp.
+         */
+        data class Column(
+            val id: ColumnId,
+            val index: ColumnIndex,
+            val width: Int = DEFAULT_COLUMN_WIDTH
+        )
+
+        companion object {
+            const val DEFAULT_COLUMN_WIDTH = 140
+            const val MIN_COLUMN_WIDTH = 50
+            const val MAX_COLUMN_WIDTH = 2000
+        }
 
         enum class Tab { CELL, COLUMN, ROW }
     }

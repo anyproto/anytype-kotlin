@@ -298,12 +298,13 @@ fun StubTableRow(
 fun StubTableColumn(
     id: Id = MockDataFactory.randomUuid(),
     children: List<Id> = emptyList(),
-    background: String? = null
+    background: String? = null,
+    fields: Block.Fields = Block.Fields.empty()
 ): Block = Block(
     id = id,
     content = Block.Content.TableColumn,
     children = children,
-    fields = Block.Fields.empty(),
+    fields = fields,
     backgroundColor = background
 )
 

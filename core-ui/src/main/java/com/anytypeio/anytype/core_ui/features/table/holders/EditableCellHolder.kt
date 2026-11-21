@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Text
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+import com.anytypeio.anytype.core_utils.ext.dp
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
@@ -52,6 +53,18 @@ class EditableCellHolder(
         if (root.background != null) root.background = null
         if (content.text != null) content.text = null
         if (content.isTextSelectable) content.enableReadMode()
+    }
+
+    /**
+     * @param [width] column width in dp
+     */
+    fun applyWidth(width: Int) {
+        val px = itemView.context.dp(width.toFloat()).toInt()
+        val lp = root.layoutParams
+        if (lp.width != px) {
+            lp.width = px
+            root.layoutParams = lp
+        }
     }
 
     fun cellSelection(isSelected: Boolean) {

@@ -786,4 +786,66 @@ class TableBlockRendererTest {
 
         assertEquals(expected = expected, actual = result)
     }
+
+    @Test
+    fun `should render column widths from column fields`() {
+
+        val columns = listOf(
+            StubTableColumn(
+                id = "columnWide",
+                fields = Block.Fields(mapOf(Block.Fields.WIDTH_KEY to 300.0))
+            ),
+            StubTableColumn(
+                id = "columnNarrow",
+                fields = Block.Fields(mapOf(Block.Fields.WIDTH_KEY to 10.0))
+            ),
+            StubTableColumn(
+                id = "columnHuge",
+                fields = Block.Fields(mapOf(Block.Fields.WIDTH_KEY to 5000.0))
+            ),
+            StubTableColumn(id = "columnDefault")
+        )
+        val layoutColumn = StubLayoutColumns(children = columns.map { it.id })
+
+        val cells = columns.map { StubParagraph(id = "rowId-${it.id}") }
+        val row = StubTableRow(id = "rowId", children = cells.map { it.id })
+        val layoutRow = StubLayoutRows(children = listOf(row.id))
+
+        val table = StubTable(children = listOf(layoutColumn.id, layoutRow.id))
+
+        val page = Block(
+            id = "page",
+            children = listOf(table.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Smart
+        )
+
+        val blocks = listOf(page, table, layoutColumn, layoutRow, row) + columns + cells
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = blocks.asMap(),
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = ObjectViewDetails.EMPTY
+            )
+        }
+
+        val tableView = result.filterIsInstance<BlockView.Table>().single()
+
+        assertEquals(
+            expected = listOf(300, 50, 2000, 140),
+            actual = tableView.columns.map { it.width }
+        )
+        assertEquals(
+            expected = listOf(300, 50, 2000, 140),
+            actual = tableView.cells.map { it.column.width }
+        )
+    }
 }

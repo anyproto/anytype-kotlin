@@ -105,6 +105,23 @@ class MarkupExtractTest {
     }
 
     @Test
+    fun `should extract underline span`() {
+        val mark = Markup.Mark.Underline(from = 2, to = 7)
+        stubMarkup("Synthetic text", mark)
+
+        val editable = markup.toSpannable(
+            textColor = 11,
+            context = context,
+            underlineHeight = 1f
+        )
+
+        assertEquals(
+            expected = listOf(Mark(range = mark.from..mark.to, type = Mark.Type.UNDERLINE)),
+            actual = editable.extractMarks()
+        )
+    }
+
+    @Test
     fun `should extract strikethrough span`() {
 
         // SETUP

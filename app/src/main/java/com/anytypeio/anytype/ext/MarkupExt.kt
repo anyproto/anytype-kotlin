@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
 import com.anytypeio.anytype.core_models.ext.overlap
 import com.anytypeio.anytype.core_models.misc.Overlap
 import com.anytypeio.anytype.core_ui.common.Span
+import com.anytypeio.anytype.core_ui.common.Underline
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 
 fun Editable.extractMarks(): List<Mark> = getSpans(0, length, Span::class.java).mapNotNull { span ->
@@ -33,6 +34,10 @@ fun Editable.extractMarks(): List<Mark> = getSpans(0, length, Span::class.java).
         is Span.Bold -> Mark(
             range = getSpanStart(span)..getSpanEnd(span),
             type = Mark.Type.BOLD
+        )
+        is Underline -> Mark(
+            range = getSpanStart(span)..getSpanEnd(span),
+            type = Mark.Type.UNDERLINE
         )
         is Span.Keyboard -> Mark(
             range = getSpanStart(span)..getSpanEnd(span),

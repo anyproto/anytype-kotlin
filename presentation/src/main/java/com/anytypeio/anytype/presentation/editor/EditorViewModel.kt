@@ -142,6 +142,7 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.clearSearchHighlight
 import com.anytypeio.anytype.presentation.editor.editor.ext.cutPartOfText
 import com.anytypeio.anytype.presentation.editor.editor.ext.enterSAM
 import com.anytypeio.anytype.presentation.editor.editor.ext.fillTableOfContents
+import com.anytypeio.anytype.presentation.editor.editor.ext.headerLevel
 import com.anytypeio.anytype.presentation.editor.editor.ext.findSearchResultPosition
 import com.anytypeio.anytype.presentation.editor.editor.ext.findTableCellView
 import com.anytypeio.anytype.presentation.editor.editor.ext.getOnFocusChangedEvent
@@ -183,6 +184,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.convertToMarkType
 import com.anytypeio.anytype.presentation.editor.editor.slash.convertToUiBlock
 import com.anytypeio.anytype.presentation.editor.editor.slash.toSlashItemView
 import com.anytypeio.anytype.presentation.editor.editor.styling.StylingEvent
+import com.anytypeio.anytype.presentation.editor.editor.styling.combineWith
 import com.anytypeio.anytype.presentation.editor.editor.styling.getIds
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleBackgroundToolbarState
 import com.anytypeio.anytype.presentation.editor.editor.styling.getStyleColorBackgroundToolbarState
@@ -1829,6 +1831,8 @@ class EditorViewModel(
             return
         }
 
+        if (proceedWithStyleShortcutBeforeText(view)) return
+
         val consumedByFork = proceedWithIdentityForkTextChange(
             id = view.id,
             text = view.text,
@@ -1859,7 +1863,7 @@ class EditorViewModel(
         }
 
         viewModelScope.launch {
-            if (view is BlockView.Text.Header && new.any { it is BlockView.TableOfContents }) {
+            if (view.headerLevel() != null && new.any { it is BlockView.TableOfContents }) {
                 store.update(new.updateTableOfContentsViews(view))
                 renderCommand.send(Unit)
             } else {
@@ -1869,6 +1873,51 @@ class EditorViewModel(
 
         sendTextChange(update)
         sendHideTypesWidgetEvent()
+    }
+
+    /**
+     * A style shortcut typed before the text of a block changes the style of the
+     * block and keeps the text. The pattern matcher handles a shortcut in an empty block.
+     * @return true if the shortcut is applied and the text change needs no other handling.
+     */
+    private fun proceedWithStyleShortcutBeforeText(view: BlockView.Text): Boolean {
+        if (identityFork != null) return false
+        val block = blocks.find { it.id == view.id } ?: return false
+        val content = block.content as? Content.Text ?: return false
+        // The first input into an empty block belongs to the identity fork.
+        if (content.text.isEmpty()) return false
+        val (prefix, requested) = STYLE_SHORTCUTS.firstOrNull { (prefix, _) ->
+            view.text.startsWith(prefix)
+        } ?: return false
+        if (view.text.length == prefix.length) return false
+        // The text had the shortcut before this change: the user edits another part of it.
+        if (content.text.startsWith(prefix)) return false
+        when (content.style) {
+            Content.Text.Style.TITLE,
+            Content.Text.Style.DESCRIPTION,
+            Content.Text.Style.CODE_SNIPPET -> return false
+            else -> {}
+        }
+        val parent = blocks.find { it.children.contains(block.id) }
+        if (parent?.content is Content.TableRow) return false
+        val style = if (requested == Content.Text.Style.TOGGLE && content.isToggleHeader())
+            content.style
+        else
+            content.style.combineWith(requested)
+        if (style == content.style) return false
+
+        val cut = view.cutPartOfText(from = 0, partLength = prefix.length)
+        if (unappliedTextChange?.target == view.id) unappliedTextChange = null
+        setPendingCursorToPosition(targetId = view.id, position = 0)
+        val update = views.update(cut)
+        viewModelScope.launch { orchestrator.stores.views.update(update) }
+        cutSlashFilterFromBlocksAndSendUpdate(
+            targetId = view.id,
+            text = cut.text,
+            marks = cut.marks.map { it.mark() }
+        )
+        proceedWithTurnIntoStyle(targets = listOf(view.id), style = style)
+        return true
     }
 
     fun onSelectionChanged(id: String, selection: IntRange) {
@@ -3566,7 +3615,14 @@ class EditorViewModel(
             UiBlock.TOGGLE, UiBlock.CODE,
             UiBlock.CALLOUT -> {
                 action?.invoke()
-                proceedWithTurnIntoStyle(targets, uiBlock.style(), route)
+                // A header and a toggle combine into a toggle header.
+                val requested = uiBlock.style()
+                targets.groupBy { target ->
+                    val current = blocks.find { it.id == target }?.content as? Content.Text
+                    current?.style?.combineWith(requested) ?: requested
+                }.forEach { (style, ids) ->
+                    proceedWithTurnIntoStyle(ids, style, route)
+                }
             }
             UiBlock.PAGE -> {
                 action?.invoke()
@@ -4260,6 +4316,8 @@ class EditorViewModel(
 
     private class IdentityForkState(
         val oldId: Id,
+        /** Style of the old block: the replacement block keeps it. */
+        val style: Content.Text.Style,
         var text: String,
         var marks: List<Content.Text.Mark>,
         var forked: Id? = null,
@@ -4321,7 +4379,12 @@ class EditorViewModel(
         marks: List<Content.Text.Mark>
     ) {
         val content = target.content<Content.Text>()
-        val state = IdentityForkState(oldId = target.id, text = text, marks = marks)
+        val state = IdentityForkState(
+            oldId = target.id,
+            style = content.style,
+            text = text,
+            marks = marks
+        )
         identityFork = state
         viewModelScope.launch {
             orchestrator.proxies.intents.send(
@@ -4387,7 +4450,12 @@ class EditorViewModel(
         val marks = state.marks
         state.syncedText = text
         state.syncedMarks = marks
-        flushBufferedTextDivergence(target = target, text = text, marks = marks)
+        flushBufferedTextDivergence(
+            target = target,
+            text = text,
+            marks = marks,
+            style = state.style
+        )
     }
 
     /**
@@ -4400,11 +4468,13 @@ class EditorViewModel(
     private fun flushBufferedTextDivergence(
         target: Id,
         text: String,
-        marks: List<Content.Text.Mark>
+        marks: List<Content.Text.Mark>,
+        style: Content.Text.Style? = null
     ) {
         if (forkPatternMatcher.match(text).isNotEmpty()) {
+            // The document may not hold the target yet, so the style goes with the update.
             sendTextChange(
-                TextUpdate.Pattern(target = target, text = text, markup = marks)
+                TextUpdate.Pattern(target = target, text = text, markup = marks, style = style)
             )
         } else {
             viewModelScope.launch {
@@ -6420,6 +6490,28 @@ class EditorViewModel(
 
     companion object {
         const val NO_SEARCH_RESULT_POSITION = -1
+
+        /**
+         * Shortcuts that change the style of a block when the user types them before its text.
+         * A longer shortcut comes first: every header shortcut starts with the same character.
+         */
+        private val STYLE_SHORTCUTS = listOf(
+            "### " to Content.Text.Style.H3,
+            "## " to Content.Text.Style.H2,
+            "# " to Content.Text.Style.H1,
+            "> " to Content.Text.Style.TOGGLE,
+            "* " to Content.Text.Style.BULLET,
+            "+ " to Content.Text.Style.BULLET,
+            "- " to Content.Text.Style.BULLET,
+            "1. " to Content.Text.Style.NUMBERED,
+            "[] " to Content.Text.Style.CHECKBOX,
+            "\" " to Content.Text.Style.QUOTE,
+            "« " to Content.Text.Style.QUOTE,
+            "“ " to Content.Text.Style.QUOTE,
+            "' " to Content.Text.Style.QUOTE,
+            "‘ " to Content.Text.Style.QUOTE,
+            "``` " to Content.Text.Style.CODE_SNIPPET
+        )
         const val NO_SCROLL_POSITION = -1
         const val EMPTY_TEXT = ""
         const val EMPTY_CONTEXT = ""
@@ -7600,6 +7692,9 @@ class EditorViewModel(
             Content.Text.Style.NUMBERED,
             Content.Text.Style.CHECKBOX,
             Content.Text.Style.TOGGLE,
+            Content.Text.Style.TOGGLE_H1,
+            Content.Text.Style.TOGGLE_H2,
+            Content.Text.Style.TOGGLE_H3,
             Content.Text.Style.QUOTE,
             Content.Text.Style.CALLOUT -> true
             else -> false

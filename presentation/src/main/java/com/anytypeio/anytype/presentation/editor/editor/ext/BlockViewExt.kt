@@ -1273,7 +1273,7 @@ fun Document.getLinkAppearanceMenu(
     }
 }
 
-fun List<BlockView>.updateTableOfContentsViews(header: BlockView.Text.Header): List<BlockView> {
+fun List<BlockView>.updateTableOfContentsViews(header: BlockView.Text): List<BlockView> {
     val updated = this.map { view ->
         if (view is BlockView.TableOfContents) {
             val items = view.items.map { item ->
@@ -1291,23 +1291,34 @@ fun List<BlockView>.updateTableOfContentsViews(header: BlockView.Text.Header): L
     return updated
 }
 
+/**
+ * @return the header level (1..3) of a header or of a toggle header, null for any other view.
+ */
+fun BlockView.Text.headerLevel(): Int? = when (this) {
+    is BlockView.Text.Header.One -> 1
+    is BlockView.Text.Header.Two -> 2
+    is BlockView.Text.Header.Three -> 3
+    is BlockView.Text.Toggle -> headerLevel
+    else -> null
+}
+
 fun List<BlockView>.fillTableOfContents(): List<BlockView> {
-    val headers = this.filterIsInstance<BlockView.Text.Header>()
+    val headers = this.filterIsInstance<BlockView.Text>().filter { it.headerLevel() != null }
     var isH1Present = false
     var isH2Present = false
     val items = mutableListOf<BlockView.TableOfContentsItem>()
     headers.forEachIndexed { index, b ->
         var depth = 0
-        when (b) {
-            is BlockView.Text.Header.One -> {
+        when (b.headerLevel()) {
+            1 -> {
                 isH1Present = true
                 isH2Present = false
             }
-            is BlockView.Text.Header.Two -> {
+            2 -> {
                 isH2Present = true
                 if (isH1Present) depth += 1
             }
-            is BlockView.Text.Header.Three -> {
+            3 -> {
                 if (isH1Present) depth += 1
                 if (isH2Present) depth += 1
             }

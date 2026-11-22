@@ -159,6 +159,9 @@ private fun Block.Content.Text.isSupportBold(): Boolean = when (this.style) {
     Block.Content.Text.Style.H2,
     Block.Content.Text.Style.H3,
     Block.Content.Text.Style.H4,
+    Block.Content.Text.Style.TOGGLE_H1,
+    Block.Content.Text.Style.TOGGLE_H2,
+    Block.Content.Text.Style.TOGGLE_H3,
     Block.Content.Text.Style.TITLE,
     Block.Content.Text.Style.CODE_SNIPPET -> false
     else -> true
@@ -190,7 +193,9 @@ fun Block.Content.Text.getSupportedMarkupTypes(): List<Markup.Type> = when (styl
         )
     }
     Block.Content.Text.Style.H1, Block.Content.Text.Style.H2,
-    Block.Content.Text.Style.H3, Block.Content.Text.Style.H4 -> {
+    Block.Content.Text.Style.H3, Block.Content.Text.Style.H4,
+    Block.Content.Text.Style.TOGGLE_H1, Block.Content.Text.Style.TOGGLE_H2,
+    Block.Content.Text.Style.TOGGLE_H3 -> {
         listOf(
             Markup.Type.ITALIC,
             Markup.Type.STRIKETHROUGH,
@@ -228,4 +233,52 @@ fun Block.Content.Text.isAlignEnd(): Boolean = this.align == Block.Align.AlignRi
 
 fun Block.Content.Text.isUnderline(): Boolean = marks.any { mark ->
     mark.type == Block.Content.Text.Mark.Type.UNDERLINE && mark.range.first == 0 && mark.range.last == text.length
+}
+/**
+ * @return the header level (1..3) of a header or of a toggle header, null for any other style.
+ */
+fun Block.Content.Text.Style.headerLevel(): Int? = when (this) {
+    Block.Content.Text.Style.H1, Block.Content.Text.Style.TOGGLE_H1 -> 1
+    Block.Content.Text.Style.H2, Block.Content.Text.Style.TOGGLE_H2 -> 2
+    Block.Content.Text.Style.H3, Block.Content.Text.Style.H4,
+    Block.Content.Text.Style.TOGGLE_H3 -> 3
+    else -> null
+}
+
+private fun header(level: Int, isToggle: Boolean): Block.Content.Text.Style = when (level) {
+    1 -> if (isToggle) Block.Content.Text.Style.TOGGLE_H1 else Block.Content.Text.Style.H1
+    2 -> if (isToggle) Block.Content.Text.Style.TOGGLE_H2 else Block.Content.Text.Style.H2
+    else -> if (isToggle) Block.Content.Text.Style.TOGGLE_H3 else Block.Content.Text.Style.H3
+}
+
+/**
+ * Resolves the style that a block with this style gets when the user picks the [requested] style.
+ * A header and a toggle combine into a toggle header instead of replacing each other:
+ * - a toggle on a header gives a toggle header,
+ * - a header on a toggle (or on a toggle header) gives a toggle header of the new level,
+ * - a toggle on a toggle header removes the toggle and keeps the header.
+ */
+fun Block.Content.Text.Style.combineWith(
+    requested: Block.Content.Text.Style
+): Block.Content.Text.Style {
+    val isToggle = this == Block.Content.Text.Style.TOGGLE
+    val isToggleHeader = this == Block.Content.Text.Style.TOGGLE_H1
+            || this == Block.Content.Text.Style.TOGGLE_H2
+            || this == Block.Content.Text.Style.TOGGLE_H3
+    val level = headerLevel()
+    return when (requested) {
+        Block.Content.Text.Style.TOGGLE -> when {
+            level == null -> requested
+            else -> header(level = level, isToggle = !isToggleHeader)
+        }
+        Block.Content.Text.Style.H1,
+        Block.Content.Text.Style.H2,
+        Block.Content.Text.Style.H3 -> {
+            if (isToggle || isToggleHeader)
+                header(level = requested.headerLevel() ?: 3, isToggle = true)
+            else
+                requested
+        }
+        else -> requested
+    }
 }

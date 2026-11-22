@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 class Toggle(
     val binding: ItemBlockToggleBinding,
     clicked: (ListenerType) -> Unit,
+    headerLevel: Int? = null
 ) : Text<BlockView.Text.Toggle>(binding.root, clicked), SupportNesting, DecoratableViewHolder {
 
     private var mode = BlockView.Mode.EDIT
@@ -46,16 +47,61 @@ class Toggle(
 
     override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
+    private val contentTopMargin: Int = when (headerLevel) {
+        null -> 0
+        1 -> dimen(R.dimen.dp_24)
+        else -> dimen(R.dimen.dp_16)
+    }
+
     init {
         setup()
         with(itemView.context) {
-            mentionIconSize =
-                resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default)
-            mentionIconPadding =
-                resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_default)
-            mentionUncheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_0_text_16)
-            mentionCheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_1_text_16)
-            mentionInitialsSize = resources.getDimension(R.dimen.mention_span_initials_size_default)
+            when (headerLevel) {
+                null -> {
+                    mentionIconSize =
+                        resources.getDimensionPixelSize(R.dimen.mention_span_image_size_default)
+                    mentionIconPadding =
+                        resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_default)
+                    mentionUncheckedIcon =
+                        ContextCompat.getDrawable(this, R.drawable.ic_task_0_text_16)
+                    mentionCheckedIcon =
+                        ContextCompat.getDrawable(this, R.drawable.ic_task_1_text_16)
+                    mentionInitialsSize =
+                        resources.getDimension(R.dimen.mention_span_initials_size_default)
+                }
+                1 -> {
+                    mentionIconSize =
+                        resources.getDimensionPixelSize(R.dimen.mention_span_image_size_header_one)
+                    mentionIconPadding =
+                        resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_header_one)
+                    mentionUncheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_0_h1)
+                    mentionCheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_1_h1)
+                    mentionInitialsSize =
+                        resources.getDimension(R.dimen.mention_span_initials_size_header_one)
+                }
+                2 -> {
+                    mentionIconSize =
+                        resources.getDimensionPixelSize(R.dimen.mention_span_image_size_header_two)
+                    mentionIconPadding =
+                        resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_header_two)
+                    mentionUncheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_0_h2)
+                    mentionCheckedIcon = ContextCompat.getDrawable(this, R.drawable.ic_task_1_h2)
+                    mentionInitialsSize =
+                        resources.getDimension(R.dimen.mention_span_initials_size_header_two)
+                }
+                else -> {
+                    mentionIconSize =
+                        resources.getDimensionPixelSize(R.dimen.mention_span_image_size_header_three)
+                    mentionIconPadding =
+                        resources.getDimensionPixelSize(R.dimen.mention_span_image_padding_header_three)
+                    mentionUncheckedIcon =
+                        ContextCompat.getDrawable(this, R.drawable.ic_task_0_text_17)
+                    mentionCheckedIcon =
+                        ContextCompat.getDrawable(this, R.drawable.ic_task_1_text_17)
+                    mentionInitialsSize =
+                        resources.getDimension(R.dimen.mention_span_initials_size_header_three)
+                }
+            }
         }
     }
 
@@ -141,6 +187,7 @@ class Toggle(
             binding.graphicPlusTextContainer.updateLayoutParams<FrameLayout.LayoutParams> {
                 marginStart = dimen(R.dimen.default_indent) + rect.left
                 marginEnd = dimen(R.dimen.dp_8) + rect.right
+                topMargin = contentTopMargin
                 bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
             }
             selectionView.updateLayoutParams<FrameLayout.LayoutParams> {

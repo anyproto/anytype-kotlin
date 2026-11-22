@@ -1340,9 +1340,9 @@ fun RichTextContent(
 ) {
     val resources = LocalContext.current.resources
     val textStyle = when (style) {
-        Block.Content.Text.Style.H1 -> HeadlineTitle
-        Block.Content.Text.Style.H2 -> HeadlineHeading
-        Block.Content.Text.Style.H3 -> HeadlineSubheading
+        Block.Content.Text.Style.H1, Block.Content.Text.Style.TOGGLE_H1 -> HeadlineTitle
+        Block.Content.Text.Style.H2, Block.Content.Text.Style.TOGGLE_H2 -> HeadlineHeading
+        Block.Content.Text.Style.H3, Block.Content.Text.Style.TOGGLE_H3 -> HeadlineSubheading
         Block.Content.Text.Style.CODE_SNIPPET -> CodeBlock
         else -> null
     }

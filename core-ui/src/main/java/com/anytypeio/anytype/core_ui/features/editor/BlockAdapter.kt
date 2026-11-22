@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.BuildConfig
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBulletedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCalloutBinding
@@ -198,6 +199,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOC
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TODO_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE_HEADER_ONE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE_HEADER_THREE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE_HEADER_TWO
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_UNSUPPORTED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_ERROR
@@ -602,6 +606,25 @@ class BlockAdapter(
                         inflater, parent, false
                     ),
                     clicked = onClickListener
+                ).apply {
+                    setupToggle(onToggleClicked, onTogglePlaceholderClicked)
+                }
+            }
+            HOLDER_TOGGLE_HEADER_ONE,
+            HOLDER_TOGGLE_HEADER_TWO,
+            HOLDER_TOGGLE_HEADER_THREE -> {
+                // The toggle header layouts have the same views as the toggle layout.
+                val (layout, level) = when (viewType) {
+                    HOLDER_TOGGLE_HEADER_ONE -> R.layout.item_block_toggle_header_one to 1
+                    HOLDER_TOGGLE_HEADER_TWO -> R.layout.item_block_toggle_header_two to 2
+                    else -> R.layout.item_block_toggle_header_three to 3
+                }
+                Toggle(
+                    binding = ItemBlockToggleBinding.bind(
+                        inflater.inflate(layout, parent, false)
+                    ),
+                    clicked = onClickListener,
+                    headerLevel = level
                 ).apply {
                     setupToggle(onToggleClicked, onTogglePlaceholderClicked)
                 }

@@ -17,6 +17,9 @@ object Types {
     const val HOLDER_BULLET = 8
     const val HOLDER_NUMBERED = 9
     const val HOLDER_TOGGLE = 10
+    const val HOLDER_TOGGLE_HEADER_ONE = 161
+    const val HOLDER_TOGGLE_HEADER_TWO = 162
+    const val HOLDER_TOGGLE_HEADER_THREE = 163
 
     const val HOLDER_OBJECT_LINK_DEFAULT = 501
     const val HOLDER_OBJECT_LINK_ARCHIVE = 502

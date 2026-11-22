@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+        android:id="@+id/decorationContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/graphicPlusTextContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:addStatesFromChildren="true">
+
+        <ImageView
+            android:id="@+id/toggle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/ic_block_toggle"
+            android:contentDescription="@string/content_description_toggle_icon"
+            app:layout_constraintStart_toEndOf="@id/guideline"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+            android:id="@+id/toggleContent"
+            style="@style/ToggleHeaderTwoContentStyle"
+            android:layout_width="0dp"
+            android:layout_marginStart="4dp"
+            android:hint="@string/hint_header_two"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/toggle"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/default_text_placeholder" />
+
+        <TextView
+            android:id="@+id/togglePlaceholder"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:paddingBottom="3dp"
+            android:text="@string/empty_tap_to_create_new_block"
+            android:textColor="@color/text_tertiary"
+            style="@style/TextView.ContentStyle.Body.Regular"
+            app:layout_constraintEnd_toEndOf="@+id/toggleContent"
+            app:layout_constraintStart_toStartOf="@+id/toggleContent"
+            app:layout_constraintTop_toBottomOf="@+id/toggleContent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_begin="0dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/selectionView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
+
+</FrameLayout>

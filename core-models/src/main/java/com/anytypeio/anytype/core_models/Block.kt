@@ -121,7 +121,13 @@ data class Block(
             /**
              * @return true if this is a toggle block.
              */
-            fun isToggle() = style == Style.TOGGLE
+            fun isToggle() = style == Style.TOGGLE || isToggleHeader()
+
+            /**
+             * @return true if this is a header block, which is also a toggle.
+             */
+            fun isToggleHeader() =
+                style == Style.TOGGLE_H1 || style == Style.TOGGLE_H2 || style == Style.TOGGLE_H3
 
             /**
              * @return true if this text block is a list item.
@@ -132,6 +138,7 @@ data class Block(
 
             fun isHeader(): Boolean {
                 return style == Style.H1 || style == Style.H2 || style == Style.H3 || style == Style.H4
+                        || isToggleHeader()
             }
 
             /**
@@ -167,7 +174,8 @@ data class Block(
              * Style H4 is deprecated
              */
             enum class Style {
-                P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE, CHECKBOX, DESCRIPTION, CALLOUT
+                P, H1, H2, H3, H4, TITLE, QUOTE, CODE_SNIPPET, BULLET, NUMBERED, TOGGLE, CHECKBOX, DESCRIPTION, CALLOUT,
+                TOGGLE_H1, TOGGLE_H2, TOGGLE_H3
             }
         }
 

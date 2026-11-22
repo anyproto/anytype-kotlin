@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.isTextNeededOnMobile
 import com.anytypeio.anytype.presentation.editor.editor.ext.toDisplayName
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
+import com.anytypeio.anytype.presentation.editor.editor.styling.headerLevel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Mode
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
@@ -188,14 +189,34 @@ class DefaultBlockViewRenderer @Inject constructor(
                                 )
                             }
                         }
-                        Content.Text.Style.TOGGLE -> {
+                        Content.Text.Style.TOGGLE,
+                        Content.Text.Style.TOGGLE_H1,
+                        Content.Text.Style.TOGGLE_H2,
+                        Content.Text.Style.TOGGLE_H3 -> {
                             mCounter = 0
-                            val blockDecorationScheme = buildNestedDecorationData(
-                                block = block,
-                                parentScheme = parentScheme
-                            )
+                            val headerLevel = content.style.headerLevel()
+                            val blockDecorationScheme = if (headerLevel == null) {
+                                buildNestedDecorationData(
+                                    block = block,
+                                    parentScheme = parentScheme
+                                )
+                            } else {
+                                buildNestedDecorationData(
+                                    block = block,
+                                    parentScheme = parentScheme,
+                                    currentDecoration = DecorationData(
+                                        style = when (headerLevel) {
+                                            1 -> DecorationData.Style.Header.H1
+                                            2 -> DecorationData.Style.Header.H2
+                                            else -> DecorationData.Style.Header.H3
+                                        },
+                                        background = block.parseThemeBackgroundColor()
+                                    )
+                                )
+                            }
                             result.add(
                                 toggle(
+                                    headerLevel = headerLevel,
                                     mode = mode,
                                     block = block,
                                     content = content,
@@ -1203,7 +1224,8 @@ class DefaultBlockViewRenderer @Inject constructor(
         isEmpty: Boolean,
         details: ObjectViewDetails,
         selection: Set<Id>,
-        scheme: NestedDecorationData
+        scheme: NestedDecorationData,
+        headerLevel: Int? = null
     ): BlockView.Text.Toggle {
         val marks = content.marks(details = details, urlBuilder = urlBuilder)
         val (normalizedText, normalizedMarks) = content.getTextAndMarks(
@@ -1223,6 +1245,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             isFocused = resolveIsFocused(focus, block),
             toggled = toggleStateHolder.isToggled(block.id),
             isEmpty = isEmpty,
+            headerLevel = headerLevel,
             cursor = if (resolveIsFocused(focus, block)) setCursor(focus, content) else null,
             isSelected = checkIfSelected(
                 mode = mode,

@@ -234,6 +234,9 @@ fun Block.supportNesting(): Boolean {
         Content.Text.Style.CHECKBOX,
         Content.Text.Style.NUMBERED,
         Content.Text.Style.TOGGLE,
+        Content.Text.Style.TOGGLE_H1,
+        Content.Text.Style.TOGGLE_H2,
+        Content.Text.Style.TOGGLE_H3,
         Content.Text.Style.CHECKBOX,
         Content.Text.Style.BULLET
     )

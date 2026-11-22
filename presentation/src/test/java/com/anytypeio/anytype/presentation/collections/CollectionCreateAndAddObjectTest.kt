@@ -118,7 +118,8 @@ class CollectionCreateAndAddObjectTest : ObjectSetViewModelTestSetup() {
             addDiscussion = mock(),
             userSettingsRepository = userSettingsRepository,
             backHistoryDelegate = mock(),
-            exitToVaultDelegate = mock()
+            exitToVaultDelegate = mock(),
+            getCurrentParticipantId = givenGetCurrentParticipantId()
         )
     }
 

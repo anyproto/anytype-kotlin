@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
+import com.anytypeio.anytype.domain.multiplayer.GetCurrentParticipantId
 import com.anytypeio.anytype.domain.search.BoardGroupSubscriptionContainer
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.search.BoardRecordsSubscriptionContainer
@@ -111,7 +112,8 @@ class ObjectSetViewModelFactory(
     private val addDiscussion: AddDiscussion,
     private val userSettingsRepository: UserSettingsRepository,
     private val backHistoryDelegate: BackHistoryDelegate,
-    private val exitToVaultDelegate: ExitToVaultDelegate
+    private val exitToVaultDelegate: ExitToVaultDelegate,
+    private val getCurrentParticipantId: GetCurrentParticipantId
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -170,7 +172,8 @@ class ObjectSetViewModelFactory(
             addDiscussion = addDiscussion,
             userSettingsRepository = userSettingsRepository,
             backHistoryDelegate = backHistoryDelegate,
-            exitToVaultDelegate = exitToVaultDelegate
+            exitToVaultDelegate = exitToVaultDelegate,
+            getCurrentParticipantId = getCurrentParticipantId
         ) as T
     }
 }

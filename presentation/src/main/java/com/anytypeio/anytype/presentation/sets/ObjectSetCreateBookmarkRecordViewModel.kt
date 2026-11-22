@@ -7,10 +7,12 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.multiplayer.GetCurrentParticipantId
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -29,7 +31,8 @@ class ObjectSetCreateBookmarkRecordViewModel(
     private val addObjectToCollection: AddObjectToCollection,
     private val session: ObjectSetSession,
     private val storeOfRelations: StoreOfRelations,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val getCurrentParticipantId: GetCurrentParticipantId
 ) : SetDataViewObjectNameViewModelBase() {
 
     override fun onActionDone(input: String) {
@@ -52,7 +55,8 @@ class ObjectSetCreateBookmarkRecordViewModel(
                     val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                     val prefilled = viewer.prefillNewObjectDetails(
                         dateProvider = dateProvider,
-                        storeOfRelations = storeOfRelations
+                        storeOfRelations = storeOfRelations,
+                        templates = filterValueTemplates(state)
                     )
                     createBookmark(
                         input = input,
@@ -71,7 +75,8 @@ class ObjectSetCreateBookmarkRecordViewModel(
                             val details = viewer.resolveSetByRelationPrefilledObjectData(
                                 objSetByRelation = sourceObject,
                                 dateProvider = dateProvider,
-                                storeOfRelations = storeOfRelations
+                                storeOfRelations = storeOfRelations,
+                                templates = filterValueTemplates(state)
                             )
                             createBookmark(
                                 input = input,
@@ -82,7 +87,8 @@ class ObjectSetCreateBookmarkRecordViewModel(
                         val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                         val prefilled = viewer.prefillNewObjectDetails(
                             dateProvider = dateProvider,
-                            storeOfRelations = storeOfRelations
+                            storeOfRelations = storeOfRelations,
+                            templates = filterValueTemplates(state)
                         )
                         createBookmark(
                             input = input,
@@ -95,7 +101,8 @@ class ObjectSetCreateBookmarkRecordViewModel(
                     val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                     val prefilled = viewer.prefillNewObjectDetails(
                         dateProvider = dateProvider,
-                        storeOfRelations = storeOfRelations
+                        storeOfRelations = storeOfRelations,
+                        templates = filterValueTemplates(state)
                     )
                     createBookmark(
                         input = input,
@@ -110,8 +117,9 @@ class ObjectSetCreateBookmarkRecordViewModel(
 
     private suspend fun addBookmarkToCollection(bookmarkObj: Id) {
         val state = objectState.value.dataViewState() ?: return
+        // For an inline query, the root is the page: the collection is the target of the block.
         val params = AddObjectToCollection.Params(
-            ctx = state.root,
+            ctx = state.sourceObjectId,
             after = "",
             targets = listOf(bookmarkObj)
         )
@@ -125,6 +133,14 @@ class ObjectSetCreateBookmarkRecordViewModel(
             }
         )
     }
+
+    /**
+     * "This object" is the root: the page of an inline query, else the set itself.
+     */
+    private suspend fun filterValueTemplates(state: ObjectState.DataView) = FilterValueTemplates(
+        objectId = state.root,
+        participantId = getCurrentParticipantId.async(SpaceId(spaceManager.get())).getOrNull()
+    )
 
     private suspend fun createBookmark(
         input: String,
@@ -167,7 +183,8 @@ class ObjectSetCreateBookmarkRecordViewModel(
         private val addObjectToCollection: AddObjectToCollection,
         private val session: ObjectSetSession,
         private val storeOfRelations: StoreOfRelations,
-        private val dateProvider: DateProvider
+        private val dateProvider: DateProvider,
+        private val getCurrentParticipantId: GetCurrentParticipantId
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -180,7 +197,8 @@ class ObjectSetCreateBookmarkRecordViewModel(
                 addObjectToCollection = addObjectToCollection,
                 session = session,
                 storeOfRelations = storeOfRelations,
-                dateProvider = dateProvider
+                dateProvider = dateProvider,
+                getCurrentParticipantId = getCurrentParticipantId
             ) as T
         }
     }

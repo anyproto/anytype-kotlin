@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -42,6 +43,7 @@ import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewObjectOrder
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.GetCurrentParticipantId
 import com.anytypeio.anytype.domain.search.BoardGroupSubscriptionContainer
 import com.anytypeio.anytype.domain.search.BoardRecordsSubscriptionContainer
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -276,6 +278,18 @@ open class ObjectSetViewModelTestSetup {
 
     var stateReducer = DefaultObjectStateReducer()
 
+    /** The inline query block of the page [root], for a screen in inline mode. */
+    var blockId: Id? = null
+
+    val accountId = "test-account"
+
+    fun givenGetCurrentParticipantId() = GetCurrentParticipantId(
+        auth = mock<AuthRepository> {
+            onBlocking { getCurrentAccountId() } doReturn accountId
+        },
+        dispatchers = dispatchers
+    )
+
     lateinit var dataViewSubscriptionContainer: DataViewSubscriptionContainer
     lateinit var dataViewSubscription: DataViewSubscription
 
@@ -388,7 +402,8 @@ open class ObjectSetViewModelTestSetup {
             dateProvider = dateProvider,
             vmParams = ObjectSetViewModel.Params(
                 ctx = root,
-                space = SpaceId(defaultSpace)
+                space = SpaceId(defaultSpace),
+                blockId = blockId
             ),
             permissions = permissions,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
@@ -411,6 +426,7 @@ open class ObjectSetViewModelTestSetup {
             userSettingsRepository = userSettingsRepository,
             backHistoryDelegate = mock(),
             exitToVaultDelegate = mock(),
+            getCurrentParticipantId = givenGetCurrentParticipantId(),
             viewStateDispatcher = rule.dispatcher
         )
     }

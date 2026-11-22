@@ -244,7 +244,8 @@ class Navigator : AppNavigation {
         target: Id,
         space: Id,
         view: Id?,
-        isPopUpToDashboard: Boolean
+        isPopUpToDashboard: Boolean,
+        blockId: Id?
     ) {
         if (isPopUpToDashboard) {
             navController?.navigate(
@@ -252,7 +253,8 @@ class Navigator : AppNavigation {
                 ObjectSetFragment.args(
                     ctx = target,
                     space = space,
-                    view = view
+                    view = view,
+                    blockId = blockId
                 ),
                 navOptions {
                     popUpTo(R.id.homeScreen) {
@@ -266,7 +268,8 @@ class Navigator : AppNavigation {
                 ObjectSetFragment.args(
                     ctx = target,
                     space = space,
-                    view = view
+                    view = view,
+                    blockId = blockId
                 )
             )
         }

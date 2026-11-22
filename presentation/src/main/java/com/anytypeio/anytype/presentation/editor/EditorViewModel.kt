@@ -74,6 +74,7 @@ import com.anytypeio.anytype.domain.ai.TypeSuggestionEngine
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.SetObjectType
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
@@ -4613,7 +4614,7 @@ class EditorViewModel(
                 }
             }
             is Content.DataView -> {
-                proceedWithOpeningDataViewBlock(dv = content)
+                proceedWithOpeningDataViewBlock(blockId = block.id, dv = content)
             }
             else -> {
                 sendToast("Couldn't find the target of the link")
@@ -4621,26 +4622,28 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithOpeningDataViewBlock(dv: Content.DataView) {
+    /**
+     * The block, not its target, holds the views and the filters of an inline query. A filter
+     * such as "This object" also needs the page. The set screen therefore opens this block of
+     * the page, and takes only the records from the target: a set, a collection, or a type.
+     */
+    private fun proceedWithOpeningDataViewBlock(blockId: Id, dv: Content.DataView) {
         if (dv.targetObjectId.isNotEmpty()) {
-            val target = orchestrator.stores.details.current().getObject(dv.targetObjectId)
-            val targetSpace = target?.spaceId ?: vmParams.space.id
-            if (target?.layout == ObjectType.Layout.OBJECT_TYPE) {
-                // An inline query with a type as its source targets the type object.
-                // Only the type screen shows the header of a type.
-                navigate(
-                    EventWrapper(
-                        OpenTypeObject(
-                            target = dv.targetObjectId,
-                            space = targetSpace
-                        )
+            val command = AppNavigation.Command.OpenDataViewBlock(
+                ctx = vmParams.ctx,
+                blockId = blockId,
+                space = vmParams.space.id
+            )
+            viewModelScope.launch {
+                closePage.async(
+                    CloseObject.Params(
+                        vmParams.ctx,
+                        vmParams.space
                     )
-                )
-            } else {
-                proceedWithOpeningDataViewObject(
-                    target = dv.targetObjectId,
-                    space = SpaceId(targetSpace)
-                )
+                ).onFailure {
+                    Timber.e(it, "Error while closing object")
+                }
+                navigate(EventWrapper(command))
             }
             viewModelScope.sendAnalyticsOpenAsObject(
                 analytics = analytics,

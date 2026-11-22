@@ -56,21 +56,21 @@ class ToCoreModelMappersKtTest {
     // region DROID-4327: Toggle Headers Display Support
 
     @Test
-    fun `should map ToggleHeader1 to H1 for backward compatibility`() {
+    fun `should map ToggleHeader1 to toggle H1`() {
         val result = MBTextStyle.ToggleHeader1.toCoreModels()
-        assertEquals(Block.Content.Text.Style.H1, result)
+        assertEquals(Block.Content.Text.Style.TOGGLE_H1, result)
     }
 
     @Test
-    fun `should map ToggleHeader2 to H2 for backward compatibility`() {
+    fun `should map ToggleHeader2 to toggle H2`() {
         val result = MBTextStyle.ToggleHeader2.toCoreModels()
-        assertEquals(Block.Content.Text.Style.H2, result)
+        assertEquals(Block.Content.Text.Style.TOGGLE_H2, result)
     }
 
     @Test
-    fun `should map ToggleHeader3 to H3 for backward compatibility`() {
+    fun `should map ToggleHeader3 to toggle H3`() {
         val result = MBTextStyle.ToggleHeader3.toCoreModels()
-        assertEquals(Block.Content.Text.Style.H3, result)
+        assertEquals(Block.Content.Text.Style.TOGGLE_H3, result)
     }
 
     // endregion

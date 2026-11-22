@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
+import com.anytypeio.anytype.domain.block.interactor.TurnIntoStyle
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.clipboard.Paste
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -21,6 +22,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
@@ -273,6 +275,285 @@ class EditorIdentityForkTest : EditorPresentationTestSetup() {
                 )
             )
         }
+    }
+
+    @Test
+    fun `should make a toggle header when the toggle shortcut completes in a header while the fork is in flight`() = runTest {
+
+        // SETUP
+
+        val block = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = "",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.H2
+            )
+        )
+
+        stubInterceptEvents()
+        stubOpenDocument(givenDocument(block))
+        stubReplaceBlock()
+
+        val vm = buildViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
+        // TESTING
+
+        // The first character starts the identity fork...
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Header.Two(
+                id = block.id,
+                text = ">"
+            )
+        )
+
+        // ...and the shortcut completes while the replace is still in flight.
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Header.Two(
+                id = block.id,
+                text = "> "
+            )
+        )
+
+        advanceUntilIdle()
+
+        // The document does not hold the forked block yet: its style comes from the fork.
+        verifyBlocking(replaceBlock, times(1)) {
+            invoke(
+                params = argThat {
+                    prototype == Block.Prototype.Text(
+                        style = Block.Content.Text.Style.TOGGLE_H2
+                    )
+                }
+            )
+        }
+    }
+
+    @Test
+    fun `should make a toggle header and keep the text when a header shortcut is typed before the text of a toggle`() = runTest {
+
+        // SETUP
+
+        val child = StubParagraph(text = "Child")
+        val toggle = Block(
+            id = MockDataFactory.randomUuid(),
+            fields = Block.Fields.empty(),
+            children = listOf(child.id),
+            content = Block.Content.Text(
+                text = "Hello",
+                marks = emptyList(),
+                style = Block.Content.Text.Style.TOGGLE
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart,
+            children = listOf(header.id, toggle.id)
+        )
+
+        stubInterceptEvents()
+        stubOpenDocument(listOf(page, header, title, toggle, child))
+        stubUpdateText()
+        stubTurnIntoStyle()
+
+        val vm = buildViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
+        // TESTING
+
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Toggle(
+                id = toggle.id,
+                text = "## Hello"
+            )
+        )
+
+        advanceUntilIdle()
+
+        verifyBlocking(turnIntoStyle, times(1)) {
+            invoke(
+                params = eq(
+                    TurnIntoStyle.Params(
+                        context = root,
+                        targets = listOf(toggle.id),
+                        style = Block.Content.Text.Style.TOGGLE_H2
+                    )
+                )
+            )
+        }
+        verifyBlocking(updateText, times(1)) {
+            invoke(
+                params = eq(
+                    UpdateText.Params(
+                        context = root,
+                        target = toggle.id,
+                        text = "Hello",
+                        marks = emptyList()
+                    )
+                )
+            )
+        }
+        // The block keeps its children: nothing replaces it.
+        verifyNoInteractions(replaceBlock)
+    }
+
+    @Test
+    fun `should make a header and a toggle when the shortcut is typed before the text of a paragraph`() = runTest {
+
+        // SETUP
+
+        val first = StubParagraph(text = "Hello")
+        val second = StubParagraph(text = "World")
+
+        stubInterceptEvents()
+        stubOpenDocument(givenDocument(first, second))
+        stubUpdateText()
+        stubTurnIntoStyle()
+
+        val vm = buildViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
+        // TESTING
+
+        vm.onTextBlockTextChanged(BlockView.Text.Paragraph(id = first.id, text = "## Hello"))
+        vm.onTextBlockTextChanged(BlockView.Text.Paragraph(id = second.id, text = "> World"))
+
+        advanceUntilIdle()
+
+        verifyBlocking(turnIntoStyle, times(1)) {
+            invoke(
+                params = eq(
+                    TurnIntoStyle.Params(
+                        context = root,
+                        targets = listOf(first.id),
+                        style = Block.Content.Text.Style.H2
+                    )
+                )
+            )
+        }
+        verifyBlocking(turnIntoStyle, times(1)) {
+            invoke(
+                params = eq(
+                    TurnIntoStyle.Params(
+                        context = root,
+                        targets = listOf(second.id),
+                        style = Block.Content.Text.Style.TOGGLE
+                    )
+                )
+            )
+        }
+        verifyNoInteractions(replaceBlock)
+    }
+
+    @Test
+    fun `should apply list, quote and code shortcuts typed before the text of a paragraph`() = runTest {
+
+        // SETUP
+
+        val shortcuts = listOf(
+            "- " to Block.Content.Text.Style.BULLET,
+            "* " to Block.Content.Text.Style.BULLET,
+            "+ " to Block.Content.Text.Style.BULLET,
+            "1. " to Block.Content.Text.Style.NUMBERED,
+            "[] " to Block.Content.Text.Style.CHECKBOX,
+            "\" " to Block.Content.Text.Style.QUOTE,
+            "``` " to Block.Content.Text.Style.CODE_SNIPPET
+        )
+        val blocks = shortcuts.map { StubParagraph(text = "Hello") }
+
+        stubInterceptEvents()
+        stubOpenDocument(givenDocument(*blocks.toTypedArray()))
+        stubUpdateText()
+        stubTurnIntoStyle()
+
+        val vm = buildViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
+        // TESTING
+
+        shortcuts.forEachIndexed { index, (shortcut, _) ->
+            vm.onTextBlockTextChanged(
+                BlockView.Text.Paragraph(id = blocks[index].id, text = shortcut + "Hello")
+            )
+        }
+
+        advanceUntilIdle()
+
+        shortcuts.forEachIndexed { index, (_, style) ->
+            verifyBlocking(turnIntoStyle, times(1)) {
+                invoke(
+                    params = eq(
+                        TurnIntoStyle.Params(
+                            context = root,
+                            targets = listOf(blocks[index].id),
+                            style = style
+                        )
+                    )
+                )
+            }
+            verifyBlocking(updateText, times(1)) {
+                invoke(
+                    params = eq(
+                        UpdateText.Params(
+                            context = root,
+                            target = blocks[index].id,
+                            text = "Hello",
+                            marks = emptyList()
+                        )
+                    )
+                )
+            }
+        }
+        verifyNoInteractions(replaceBlock)
+    }
+
+    @Test
+    fun `should not apply a header shortcut when the text had the shortcut before the change`() = runTest {
+
+        // SETUP
+
+        val block = StubParagraph(text = "## Hello")
+
+        stubInterceptEvents()
+        stubOpenDocument(givenDocument(block))
+        stubUpdateText()
+        stubTurnIntoStyle()
+
+        val vm = buildViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        advanceUntilIdle()
+
+        // TESTING
+
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Paragraph(
+                id = block.id,
+                text = "## Hello!"
+            )
+        )
+
+        advanceUntilIdle()
+
+        verifyNoInteractions(turnIntoStyle)
     }
 
     @Test

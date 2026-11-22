@@ -310,6 +310,9 @@ fun Block.Content.Text.Style.toMiddlewareModel(): MBTextStyle = when (this) {
     Block.Content.Text.Style.CHECKBOX -> MBTextStyle.Checkbox
     Block.Content.Text.Style.DESCRIPTION -> MBTextStyle.Description
     Block.Content.Text.Style.CALLOUT -> MBTextStyle.Callout
+    Block.Content.Text.Style.TOGGLE_H1 -> MBTextStyle.ToggleHeader1
+    Block.Content.Text.Style.TOGGLE_H2 -> MBTextStyle.ToggleHeader2
+    Block.Content.Text.Style.TOGGLE_H3 -> MBTextStyle.ToggleHeader3
 }
 
 fun Position.toMiddlewareModel(): MBPosition = when (this) {

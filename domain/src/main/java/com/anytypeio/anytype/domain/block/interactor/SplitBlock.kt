@@ -42,7 +42,9 @@ class SplitBlock(
                 style = Block.Content.Text.Style.P
                 mode = BlockSplitMode.INNER
             } else {
-                style = Block.Content.Text.Style.TOGGLE
+                if (!params.block.content<Block.Content.Text>().isToggleHeader()) {
+                    style = Block.Content.Text.Style.TOGGLE
+                }
                 mode = BlockSplitMode.BOTTOM
             }
         }

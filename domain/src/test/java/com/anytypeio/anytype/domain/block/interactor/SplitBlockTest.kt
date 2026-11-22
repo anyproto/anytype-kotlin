@@ -342,4 +342,66 @@ class SplitBlockTest {
             )
         }
     }
+
+    @Test
+    fun `open toggle header should return paragraph style and inner`() {
+        runBlocking {
+            val context = MockDataFactory.randomUuid()
+            val block = Block(
+                id = MockDataFactory.randomUuid(),
+                children = listOf(MockDataFactory.randomString()),
+                content = Block.Content.Text(
+                    text = "FooBar",
+                    style = Block.Content.Text.Style.TOGGLE_H1,
+                    marks = emptyList()
+                ),
+                fields = Block.Fields.empty()
+            )
+
+            val range = 6..6
+
+            splitBlock.run(SplitBlock.Params(context, block, range, true))
+
+            verify(repository, times(1)).split(
+                Command.Split(
+                    context = context,
+                    target = block.id,
+                    style = Block.Content.Text.Style.P,
+                    range = range,
+                    mode = BlockSplitMode.INNER
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `closed toggle header with children should return paragraph style and bottom`() {
+        runBlocking {
+            val context = MockDataFactory.randomUuid()
+            val block = Block(
+                id = MockDataFactory.randomUuid(),
+                children = listOf(MockDataFactory.randomString()),
+                content = Block.Content.Text(
+                    text = "FooBar",
+                    style = Block.Content.Text.Style.TOGGLE_H1,
+                    marks = emptyList()
+                ),
+                fields = Block.Fields.empty()
+            )
+
+            val range = 6..6
+
+            splitBlock.run(SplitBlock.Params(context, block, range, false))
+
+            verify(repository, times(1)).split(
+                Command.Split(
+                    context = context,
+                    target = block.id,
+                    style = Block.Content.Text.Style.P,
+                    range = range,
+                    mode = BlockSplitMode.BOTTOM
+                )
+            )
+        }
+    }
 }

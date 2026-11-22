@@ -69,6 +69,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOC
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TODO_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE_HEADER_ONE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE_HEADER_THREE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE_HEADER_TWO
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_UNSUPPORTED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_EMBED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO
@@ -591,6 +594,7 @@ sealed class BlockView : ViewType {
          * @property text toggle block's content
          * @property indent indentation value
          * @property toggled toggle state (whether this toggle is expanded or not)
+         * @property headerLevel header level (1..3) of a toggle header, null for a plain toggle
          */
         data class Toggle(
             override val id: String,
@@ -609,9 +613,15 @@ sealed class BlockView : ViewType {
             override val ghostEditorSelection: IntRange? = null,
             val toggled: Boolean = false,
             val isEmpty: Boolean = false,
-            override var inputAction: InputAction = InputAction.NewLine
+            override var inputAction: InputAction = InputAction.NewLine,
+            val headerLevel: Int? = null
         ) : Text() {
-            override fun getViewType() = HOLDER_TOGGLE
+            override fun getViewType() = when (headerLevel) {
+                null -> HOLDER_TOGGLE
+                1 -> HOLDER_TOGGLE_HEADER_ONE
+                2 -> HOLDER_TOGGLE_HEADER_TWO
+                else -> HOLDER_TOGGLE_HEADER_THREE
+            }
             override val body: String get() = text
             val isCreateBlockButtonVisible: Boolean
                 get() {

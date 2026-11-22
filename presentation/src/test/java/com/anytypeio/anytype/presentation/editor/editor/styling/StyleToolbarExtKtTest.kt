@@ -685,4 +685,41 @@ class StyleToolbarExtKtTest {
 
         Assert.assertEquals(expected, result)
     }
+
+    @Test
+    fun `toggle on a header should give a toggle header`() {
+        Assert.assertEquals(TextStyle.TOGGLE_H1, TextStyle.H1.combineWith(TextStyle.TOGGLE))
+        Assert.assertEquals(TextStyle.TOGGLE_H2, TextStyle.H2.combineWith(TextStyle.TOGGLE))
+        Assert.assertEquals(TextStyle.TOGGLE_H3, TextStyle.H3.combineWith(TextStyle.TOGGLE))
+    }
+
+    @Test
+    fun `header on a toggle should give a toggle header`() {
+        Assert.assertEquals(TextStyle.TOGGLE_H1, TextStyle.TOGGLE.combineWith(TextStyle.H1))
+        Assert.assertEquals(TextStyle.TOGGLE_H2, TextStyle.TOGGLE.combineWith(TextStyle.H2))
+        Assert.assertEquals(TextStyle.TOGGLE_H3, TextStyle.TOGGLE.combineWith(TextStyle.H3))
+    }
+
+    @Test
+    fun `header on a toggle header should change the level and keep the toggle`() {
+        Assert.assertEquals(TextStyle.TOGGLE_H2, TextStyle.TOGGLE_H1.combineWith(TextStyle.H2))
+        Assert.assertEquals(TextStyle.TOGGLE_H1, TextStyle.TOGGLE_H3.combineWith(TextStyle.H1))
+    }
+
+    @Test
+    fun `toggle on a toggle header should remove the toggle and keep the header`() {
+        Assert.assertEquals(TextStyle.H1, TextStyle.TOGGLE_H1.combineWith(TextStyle.TOGGLE))
+        Assert.assertEquals(TextStyle.H2, TextStyle.TOGGLE_H2.combineWith(TextStyle.TOGGLE))
+        Assert.assertEquals(TextStyle.H3, TextStyle.TOGGLE_H3.combineWith(TextStyle.TOGGLE))
+    }
+
+    @Test
+    fun `other styles should replace the current style`() {
+        Assert.assertEquals(TextStyle.TOGGLE, TextStyle.P.combineWith(TextStyle.TOGGLE))
+        Assert.assertEquals(TextStyle.TOGGLE, TextStyle.TOGGLE.combineWith(TextStyle.TOGGLE))
+        Assert.assertEquals(TextStyle.H1, TextStyle.P.combineWith(TextStyle.H1))
+        Assert.assertEquals(TextStyle.H2, TextStyle.H1.combineWith(TextStyle.H2))
+        Assert.assertEquals(TextStyle.P, TextStyle.TOGGLE_H1.combineWith(TextStyle.P))
+        Assert.assertEquals(TextStyle.BULLET, TextStyle.TOGGLE_H1.combineWith(TextStyle.BULLET))
+    }
 }

@@ -55,17 +55,20 @@ class StyleToolbarMainWidget @JvmOverloads constructor(
             TextStyle.BULLET -> select(binding.bulleted.id)
             TextStyle.NUMBERED -> select(binding.numbered.id)
             TextStyle.TOGGLE -> select(binding.toggle.id)
+            TextStyle.TOGGLE_H1 -> select(binding.tvStyleTitle.id, binding.toggle.id)
+            TextStyle.TOGGLE_H2 -> select(binding.tvStyleHeading.id, binding.toggle.id)
+            TextStyle.TOGGLE_H3 -> select(binding.tvStyleSubheading.id, binding.toggle.id)
             TextStyle.CHECKBOX -> select(binding.checkbox.id)
             TextStyle.CALLOUT -> select(binding.callout.id)
             else -> select(View.NO_ID)
         }
     }
 
-    private fun select(selectedViewId: Int) = with(binding/**/) {
+    private fun select(vararg selectedViewIds: Int) = with(binding/**/) {
 
         // Selecting views in scrollable parent
 
-        tvStyleText.apply { isSelected = id == selectedViewId }
+        tvStyleText.apply { isSelected = id in selectedViewIds }
 
         if (tvStyleText.isSelected) {
             val delta = (textStyles.right) - tvStyleText.left
@@ -77,22 +80,22 @@ class StyleToolbarMainWidget @JvmOverloads constructor(
             }
         }
 
-        tvStyleTitle.apply { isSelected = id == selectedViewId }
+        tvStyleTitle.apply { isSelected = id in selectedViewIds }
 
         if (tvStyleTitle.isSelected) {
             textStyles.smoothScrollTo(0, 0)
         }
 
-        tvStyleHeading.apply { isSelected = id == selectedViewId }
-        tvStyleSubheading.apply { isSelected = id == selectedViewId }
+        tvStyleHeading.apply { isSelected = id in selectedViewIds }
+        tvStyleSubheading.apply { isSelected = id in selectedViewIds }
 
         // Selecting views in non-scrolling parent
 
-        checkbox.apply { isSelected = id == selectedViewId }
-        bulleted.apply { isSelected = id == selectedViewId }
-        numbered.apply { isSelected = id == selectedViewId }
-        toggle.apply { isSelected = id == selectedViewId }
-        highlight.apply { isSelected = id == selectedViewId }
-        callout.apply { isSelected = id == selectedViewId }
+        checkbox.apply { isSelected = id in selectedViewIds }
+        bulleted.apply { isSelected = id in selectedViewIds }
+        numbered.apply { isSelected = id in selectedViewIds }
+        toggle.apply { isSelected = id in selectedViewIds }
+        highlight.apply { isSelected = id in selectedViewIds }
+        callout.apply { isSelected = id in selectedViewIds }
     }
 }

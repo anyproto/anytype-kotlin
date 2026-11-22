@@ -75,7 +75,10 @@ object SlashExtensions {
         when (viewType) {
             Types.HOLDER_HEADER_ONE,
             Types.HOLDER_HEADER_TWO,
-            Types.HOLDER_HEADER_THREE -> listOf(
+            Types.HOLDER_HEADER_THREE,
+            Types.HOLDER_TOGGLE_HEADER_ONE,
+            Types.HOLDER_TOGGLE_HEADER_TWO,
+            Types.HOLDER_TOGGLE_HEADER_THREE -> listOf(
                 SlashItem.Style.Markup.Strikethrough,
                 SlashItem.Style.Markup.Code
             )
@@ -118,7 +121,10 @@ object SlashExtensions {
             Types.HOLDER_CHECKBOX,
             Types.HOLDER_BULLET,
             Types.HOLDER_NUMBERED,
-            Types.HOLDER_TOGGLE -> listOf()
+            Types.HOLDER_TOGGLE,
+            Types.HOLDER_TOGGLE_HEADER_ONE,
+            Types.HOLDER_TOGGLE_HEADER_TWO,
+            Types.HOLDER_TOGGLE_HEADER_THREE -> listOf()
             Types.HOLDER_HIGHLIGHT -> listOf(
                 SlashItem.Alignment.Left,
                 SlashItem.Alignment.Right

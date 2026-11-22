@@ -32,10 +32,12 @@ sealed class TextUpdate {
      * @property target id of the text block, in which this change occurs
      * @property text new text for this [target]
      * @property markup markup, associated with this [text]
+     * @property style style of the [target], for a target that the document does not hold yet
      */
     data class Pattern(
         override val target: Id,
         override val text: String,
-        override val markup: List<Block.Content.Text.Mark>
+        override val markup: List<Block.Content.Text.Mark>,
+        val style: Block.Content.Text.Style? = null
     ) : TextUpdate()
 }

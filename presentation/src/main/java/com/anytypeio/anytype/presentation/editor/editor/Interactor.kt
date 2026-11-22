@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.pattern.Matcher
 import com.anytypeio.anytype.presentation.editor.editor.pattern.Pattern
+import com.anytypeio.anytype.presentation.editor.editor.styling.combineWith
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 
 interface Interactor {
@@ -47,21 +48,30 @@ interface Interactor {
                         context = context,
                         target = update.target,
                         prototype = Block.Prototype.Text(
-                            style = Block.Content.Text.Style.H1
+                            style = combinedStyle(
+                                update = update,
+                                requested = Block.Content.Text.Style.H1
+                            )
                         )
                     )
                     patterns.contains(Pattern.H2) -> replaceBy(
                         context = context,
                         target = update.target,
                         prototype = Block.Prototype.Text(
-                            style = Block.Content.Text.Style.H2
+                            style = combinedStyle(
+                                update = update,
+                                requested = Block.Content.Text.Style.H2
+                            )
                         )
                     )
                     patterns.contains(Pattern.H3) -> replaceBy(
                         context = context,
                         target = update.target,
                         prototype = Block.Prototype.Text(
-                            style = Block.Content.Text.Style.H3
+                            style = combinedStyle(
+                                update = update,
+                                requested = Block.Content.Text.Style.H3
+                            )
                         )
                     )
                     patterns.contains(Pattern.QUOTE) -> replaceBy(
@@ -75,7 +85,10 @@ interface Interactor {
                         context = context,
                         target = update.target,
                         prototype = Block.Prototype.Text(
-                            style = Block.Content.Text.Style.TOGGLE
+                            style = combinedStyle(
+                                update = update,
+                                requested = Block.Content.Text.Style.TOGGLE
+                            )
                         )
                     )
                     patterns.contains(Pattern.DIVIDER_LINE) -> replaceBy(
@@ -98,6 +111,27 @@ interface Interactor {
                     else -> proxies.saves.send(update)
                 }
             }
+        }
+
+        /**
+         * A header shortcut in a toggle, or a toggle shortcut in a header, gives a toggle header.
+         * A toggle shortcut in a toggle header keeps the toggle header.
+         */
+        private fun combinedStyle(
+            update: TextUpdate.Pattern,
+            requested: Block.Content.Text.Style
+        ): Block.Content.Text.Style {
+            val block = stores.document.get().find { it.id == update.target }
+            val current = (block?.content as? Block.Content.Text)?.style
+                ?: update.style
+                ?: return requested
+            val isToggleHeader = current == Block.Content.Text.Style.TOGGLE_H1
+                    || current == Block.Content.Text.Style.TOGGLE_H2
+                    || current == Block.Content.Text.Style.TOGGLE_H3
+            return if (requested == Block.Content.Text.Style.TOGGLE && isToggleHeader)
+                current
+            else
+                current.combineWith(requested)
         }
 
         private suspend fun replaceBy(

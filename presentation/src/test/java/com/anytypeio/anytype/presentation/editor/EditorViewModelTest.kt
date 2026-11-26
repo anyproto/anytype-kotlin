@@ -14,11 +14,13 @@ import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubCheckbox
 import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.StubNumbered
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.core_models.StubParagraph
+import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
@@ -3027,6 +3029,168 @@ open class EditorViewModelTest {
         assertEquals(seeded, focus.cursor)
 
         coroutineTestRule.advanceTime(200)
+    }
+
+    @Test
+    fun `should clear a seeded focus cursor when the text of the focused title changes`() {
+
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+        val title = StubTitle(text = "test test")
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Smart,
+                children = listOf(title.id)
+            ),
+            title
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(listOf(showObjectEvent((page))))
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        stubUpdateText()
+        givenViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        coroutineTestRule.advanceTime(100)
+
+        // A new task opens with the caret at the end of its title. If this seed survives
+        // the first keystroke, every later render moves the caret back to the end (#3327).
+        orchestrator.stores.focus.update(
+            DomainEditor.Focus(
+                target = DomainEditor.Focus.Target.Block(title.id),
+                cursor = DomainEditor.Cursor.End,
+                isPending = false
+            )
+        )
+
+        // TESTING
+
+        vm.onTitleBlockTextChanged(id = title.id, text = "test ntest")
+
+        val focus = orchestrator.stores.focus.current()
+        assertEquals(title.id, focus.requireTarget())
+        assertNull(focus.cursor)
+
+        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+
+    @Test
+    fun `should clear a seeded focus cursor when the text of the focused checkbox changes`() {
+
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+        val checkbox = StubCheckbox(text = "test test", isChecked = false)
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Smart,
+                children = listOf(checkbox.id)
+            ),
+            checkbox
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(listOf(showObjectEvent((page))))
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        stubUpdateText()
+        givenViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        coroutineTestRule.advanceTime(100)
+
+        orchestrator.stores.focus.update(
+            DomainEditor.Focus(
+                target = DomainEditor.Focus.Target.Block(checkbox.id),
+                cursor = DomainEditor.Cursor.End,
+                isPending = false
+            )
+        )
+
+        // TESTING
+
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Checkbox(id = checkbox.id, text = "test ntest")
+        )
+
+        val focus = orchestrator.stores.focus.current()
+        assertEquals(checkbox.id, focus.requireTarget())
+        assertNull(focus.cursor)
+
+        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
+    }
+
+    @Test
+    fun `should keep a seeded focus cursor when the text changes in another block`() {
+
+        // SETUP
+
+        val root = MockDataFactory.randomUuid()
+        val checkbox = StubCheckbox(isChecked = false)
+        val paragraph = MockBlockFactory.paragraph()
+
+        val page = listOf(
+            Block(
+                id = root,
+                fields = Block.Fields.empty(),
+                content = Block.Content.Smart,
+                children = listOf(checkbox.id, paragraph.id)
+            ),
+            checkbox,
+            paragraph
+        )
+
+        val flow: Flow<List<Event.Command>> = flow {
+            delay(100)
+            emit(listOf(showObjectEvent((page))))
+        }
+
+        stubObserveEvents(flow)
+        stubOpenPage()
+        stubUpdateText()
+        givenViewModel()
+
+        vm.onStart(id = root, space = defaultSpace)
+
+        coroutineTestRule.advanceTime(100)
+
+        val seeded = DomainEditor.Cursor.Range(3..3)
+        orchestrator.stores.focus.update(
+            DomainEditor.Focus(
+                target = DomainEditor.Focus.Target.Block(paragraph.id),
+                cursor = seeded,
+                isPending = false
+            )
+        )
+
+        // TESTING
+
+        vm.onTextBlockTextChanged(
+            BlockView.Text.Checkbox(id = checkbox.id, text = MockDataFactory.randomString())
+        )
+
+        val focus = orchestrator.stores.focus.current()
+        assertEquals(paragraph.id, focus.requireTarget())
+        assertEquals(seeded, focus.cursor)
+
+        coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
     fun stubDuplicateBlock(newBlockId: String, root: String) {

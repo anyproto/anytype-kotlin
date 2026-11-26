@@ -1801,6 +1801,7 @@ class EditorViewModel(
             text = text,
             markup = emptyList()
         )
+        clearSeededCursor(id)
         viewModelScope.launch { orchestrator.stores.views.update(new) }
         sendTextChange(update)
         sendHideTypesWidgetEvent()
@@ -1810,6 +1811,7 @@ class EditorViewModel(
 
         Timber.d("onDescriptionBlockTextChanged, view:[$view]")
 
+        clearSeededCursor(view.id)
         val new = views.map { if (it.id == view.id) view else it }
         val update = TextUpdate.Default(
             target = view.id,
@@ -1842,6 +1844,8 @@ class EditorViewModel(
             }
         )
         if (consumedByFork) return
+
+        clearSeededCursor(view.id)
 
         val update = TextUpdate.Pattern(
             target = view.id,
@@ -1925,6 +1929,11 @@ class EditorViewModel(
      * one render. The caret has now moved, so the seed is obsolete. Clear it here, where the
      * divergence would otherwise begin. The write is skipped on the normal path, where the
      * cursor is already null.
+     *
+     * The text-change paths clear it too: a typed character means the user owns the caret.
+     * They can't rely on the selection callback, which the widget skips while it is blocked
+     * or unfocused. A seed left behind there moved the caret to the end of a task title on
+     * every refresh (#3327).
      */
     private fun clearSeededCursor(id: Id) {
         val focus = orchestrator.stores.focus.current()

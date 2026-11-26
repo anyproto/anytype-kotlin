@@ -47,6 +47,7 @@
             android:id="@+id/topToolbar"
             android:layout_width="0dp"
             android:layout_height="44dp"
+            android:layout_marginTop="8dp"
             android:clickable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"

@@ -461,6 +461,7 @@ private fun VideoPlayer(
     val videoViewRef = remember { mutableStateOf<VideoView?>(null) }
     var isPlaying by remember { mutableStateOf(false) }
     var isBuffering by remember { mutableStateOf(true) }
+    var hasError by remember { mutableStateOf(false) }
     var videoDuration by remember { mutableStateOf(0) }
     var currentPosition by remember { mutableStateOf(0) }
     var userSeeking by remember { mutableStateOf(false) }
@@ -515,6 +516,13 @@ private fun VideoPlayer(
                         start()
                         isPlaying = true
                     }
+                    setOnErrorListener { _, what, extra ->
+                        Timber.w("Error while playing media, what: $what, extra: $extra")
+                        isBuffering = false
+                        isPlaying = false
+                        hasError = true
+                        true
+                    }
                     setOnInfoListener { _, what, _ ->
                         when (what) {
                             MEDIA_INFO_BUFFERING_START -> isBuffering = true
@@ -536,7 +544,14 @@ private fun VideoPlayer(
         )
 
         // Loading indicator
-        if (isBuffering) {
+        if (hasError) {
+            Text(
+                text = stringResource(R.string.error_while_loading),
+                color = colorResource(R.color.palette_system_red),
+                modifier = Modifier.align(Alignment.Center),
+                style = Caption1Medium
+            )
+        } else if (isBuffering) {
             CircularProgressIndicator(
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -677,6 +692,7 @@ private fun AudioPlayer(
     val videoViewRef = remember { mutableStateOf<VideoView?>(null) }
     var isPlaying by remember { mutableStateOf(false) }
     var isBuffering by remember { mutableStateOf(true) }
+    var hasError by remember { mutableStateOf(false) }
     var videoDuration by remember { mutableStateOf(0) }
     var currentPosition by remember { mutableStateOf(0) }
     var userSeeking by remember { mutableStateOf(false) }
@@ -731,6 +747,13 @@ private fun AudioPlayer(
                         start()
                         isPlaying = true
                     }
+                    setOnErrorListener { _, what, extra ->
+                        Timber.w("Error while playing media, what: $what, extra: $extra")
+                        isBuffering = false
+                        isPlaying = false
+                        hasError = true
+                        true
+                    }
                     setOnInfoListener { _, what, _ ->
                         when (what) {
                             MEDIA_INFO_BUFFERING_START -> isBuffering = true
@@ -752,7 +775,14 @@ private fun AudioPlayer(
         )
 
         // Loading indicator
-        if (isBuffering) {
+        if (hasError) {
+            Text(
+                text = stringResource(R.string.error_while_loading),
+                color = colorResource(R.color.palette_system_red),
+                modifier = Modifier.align(Alignment.Center),
+                style = Caption1Medium
+            )
+        } else if (isBuffering) {
             CircularProgressIndicator(
                 modifier = Modifier
                     .align(Alignment.Center)

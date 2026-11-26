@@ -10,6 +10,7 @@ import coil3.load
 import coil3.request.crossfade
 import coil3.video.VideoFrameDecoder
 import coil3.video.videoFrameMillis
+import com.anytypeio.anytype.core_ui.common.LocalGatewayFetcherFactory
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoBinding
@@ -66,6 +67,7 @@ class Video(val binding: ItemBlockVideoBinding) : Media(binding.root) {
                 val imageLoader = ImageLoader.Builder(itemView.context)
                     .components {
                         add(VideoFrameDecoder.Factory())
+                        add(LocalGatewayFetcherFactory.shared)
                     }
                     .build()
 

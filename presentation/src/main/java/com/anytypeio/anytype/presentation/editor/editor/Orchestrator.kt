@@ -503,7 +503,10 @@ class Orchestrator(
                             intent.onDownloaded(result.uri)
                             analytics.sendAnalyticsDownloadMediaEvent(intent.type)
                         },
-                        onFailure = { e -> Timber.e(e, "Error while sharing a file") }
+                        onFailure = { e ->
+                            Timber.e(e, "Error while sharing a file")
+                            intent.onError(e)
+                        }
                     )
                 }
                 is Intent.Media.Upload -> {

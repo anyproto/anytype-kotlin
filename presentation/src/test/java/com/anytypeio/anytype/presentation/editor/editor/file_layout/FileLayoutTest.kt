@@ -25,7 +25,9 @@ import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloa
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
@@ -268,6 +270,62 @@ class FileLayoutTest : EditorPresentationTestSetup() {
                 )
             )
         )
+    }
+
+    @Test
+    fun `should show error toast and not open file when sharing fails`() = runTest {
+
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+        val fileBlock = StubFile(
+            id = "fileBlockId-${MockDataFactory.randomUuid()}",
+            targetObjectId = root,
+            state = Block.Content.File.State.DONE,
+            type = Block.Content.File.Type.FILE
+        )
+        val page = StubSmartBlock(id = root, children = listOf(header.id, fileBlock.id))
+        val document = listOf(page, header, title, fileBlock)
+
+        val fileObject = StubObject(
+            id = root,
+            space = defaultSpace,
+            name = "fileObjectName-${RandomString.make(5)}",
+            layout = ObjectType.Layout.FILE.code.toDouble(),
+            fileExt = "pdf"
+        )
+
+        stubOpenDocument(
+            document = document,
+            details = ObjectViewDetails(details = mapOf(fileObject.id to fileObject.map))
+        )
+
+        val downloadParams = MiddlewareShareDownloader.Params(
+            objectId = root,
+            name = fieldParser.getObjectName(fileObject)
+        )
+
+        documentFileShareDownloader.stub {
+            onBlocking { async(downloadParams) } doReturn Resultat.failure(
+                IllegalStateException("File is not available")
+            )
+        }
+
+        val vm = buildViewModel()
+        advanceUntilIdle()
+        vm.onStart(id = fileObject.id, space = defaultSpace)
+        advanceUntilIdle()
+
+        val toasts = mutableListOf<String>()
+        val toastSubscription = launch { vm.toasts.collect { toasts.add(it) } }
+        val opened = mutableListOf<Uri>()
+
+        vm.startSharingFile(id = fileBlock.id) { uri -> opened.add(uri) }
+        advanceUntilIdle()
+
+        assertTrue(opened.isEmpty())
+        assertTrue(toasts.contains("Couldn't open the file"))
+
+        toastSubscription.cancel()
     }
 
     //region Open file click test

@@ -194,7 +194,8 @@ sealed class Intent {
             val objectId: Id,
             val name: String,
             val type: Block.Content.File.Type?,
-            val onDownloaded: (Uri) -> Unit
+            val onDownloaded: (Uri) -> Unit,
+            val onError: (Throwable) -> Unit = {}
         ) : Media()
 
         class Upload(

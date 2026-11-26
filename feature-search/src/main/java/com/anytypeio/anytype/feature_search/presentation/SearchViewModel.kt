@@ -113,6 +113,9 @@ class SearchViewModel(
 
     private val isPicker get() = vmParams.purpose == SearchPurpose.ATTACH_TO_CHAT
 
+    /** A picker never navigates, so its rows have no long-press menu. */
+    val showsObjectMenu: Boolean get() = !isPicker
+
     private val tokens = MutableStateFlow(initialTokens())
     private val rawInput = MutableStateFlow("")
     private val browseSort = MutableStateFlow(BrowseSort.EDITED)
@@ -1884,6 +1887,28 @@ class SearchViewModel(
                 )
             }
             is SearchResultView.SectionHeader -> Unit
+        }
+    }
+
+    /**
+     * A tap on a bookmark opens its URL; the long-press menu opens the
+     * bookmark itself in the editor (#3364).
+     */
+    fun onOpenAsObject(row: SearchResultView.ObjectRow) {
+        if (isPicker) return
+        openObject(
+            navigation = OpenObjectNavigation.OpenEditor(target = row.id, space = row.space),
+            space = row.space,
+            obj = row.id
+        )
+    }
+
+    /** Only a URL leaves the app, so no space switch is needed. */
+    fun onOpenInBrowser(row: SearchResultView.ObjectRow) {
+        if (isPicker) return
+        val navigation = row.navigation as? OpenObjectNavigation.OpenBookmarkUrl ?: return
+        viewModelScope.launch {
+            commandsChannel.send(SearchNavigation.OpenObject(navigation))
         }
     }
 

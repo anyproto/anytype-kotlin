@@ -44,6 +44,15 @@ class ObjectWrapperBasicNavigationTest {
     }
 
     @Test
+    fun `bookmark with url opened as object navigates to OpenEditor`() {
+        val obj = basicObj(layout = ObjectType.Layout.BOOKMARK, source = "https://anytype.io")
+        val nav = obj.navigation(openBookmarkAsObject = true)
+        assertTrue(nav is OpenObjectNavigation.OpenEditor)
+        assertEquals("id1", nav.target)
+        assertEquals("space1", nav.space)
+    }
+
+    @Test
     fun `basic layout navigates to OpenEditor`() {
         val obj = basicObj(layout = ObjectType.Layout.BASIC)
         val nav = obj.navigation()

@@ -116,6 +116,8 @@
         android:id="@+id/paginatorToolbar"
         android:layout_width="0dp"
         android:layout_height="@dimen/default_toolbar_height"
+        android:paddingStart="@dimen/data_view_paginator_fab_clearance"
+        android:paddingEnd="@dimen/data_view_paginator_fab_clearance"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

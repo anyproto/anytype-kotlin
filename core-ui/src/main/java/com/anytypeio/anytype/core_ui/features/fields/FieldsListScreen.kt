@@ -135,6 +135,7 @@ fun FieldListScreen(
                                         modifier = Modifier,
                                         title = field.name,
                                         relativeDate = relativeDate,
+                                        isTimeIncluded = field.isTimeIncluded,
                                         isLocal = item.isLocal,
                                         onFieldClick = { onRelationClicked(item) },
                                         onAddToCurrentTypeClick = { onAddToTypeClicked(item) },

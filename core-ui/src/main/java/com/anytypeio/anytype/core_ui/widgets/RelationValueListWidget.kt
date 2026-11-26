@@ -92,6 +92,7 @@ class RelationValueListWidget @JvmOverloads constructor(
         val relativeDate = relation.relativeDate
         if (relativeDate != null) {
             val formattedDate = relativeDate.getPrettyName(
+                isTimeIncluded = relation.isTimeIncluded,
                 resources = resources
             )
             setupSingleTextItem(

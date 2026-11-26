@@ -75,6 +75,7 @@ sealed class ListRelationViewHolder(
             val relativeDate = item.relativeDate
             if (relativeDate != null) {
                 tvValue.text = relativeDate.getPrettyName(
+                    isTimeIncluded = item.isTimeIncluded,
                     resources = itemView.resources
                 )
             } else {

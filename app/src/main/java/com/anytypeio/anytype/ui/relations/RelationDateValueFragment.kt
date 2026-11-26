@@ -61,7 +61,8 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
                     onClear = vm::onClearClicked,
                     onTodayClicked = vm::onTodayClicked,
                     onTomorrowClicked = vm::onTomorrowClicked,
-                    openSelectedDate = vm::openSelectedDateClicked
+                    openSelectedDate = vm::openSelectedDateClicked,
+                    onTimeSelected = vm::onTimeSelected
                 )
             }
         }

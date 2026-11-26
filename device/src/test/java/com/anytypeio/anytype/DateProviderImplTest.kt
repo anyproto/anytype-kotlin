@@ -522,4 +522,102 @@ class DateProviderImplTest {
         // Then: Should return date in dd/MM/yy format (e.g., "25/12/90")
         assertTrue("Result should be in dd/MM/yy format", result.matches(Regex("\\d{2}/\\d{2}/\\d{2}")))
     }
+
+    @Test
+    fun combineDateAndTimeInUserTimeZone_appliesTimeInUserTimeZone() = runTest(dispatcher) {
+        val pickerDate = 1720828800000L // Saturday, 13 July 2024 00:00:00 UTC
+
+        val tests = listOf(
+            // zone, hour, minute, expected epoch seconds
+            listOf(ZoneId.of("UTC"), 14, 30, 1720881000L), // 13 July 14:30 UTC
+            listOf(ZoneId.of("GMT+3"), 14, 30, 1720870200L), // 13 July 11:30 UTC
+            listOf(ZoneId.of("GMT-5"), 23, 15, 1720930500L), // 14 July 04:15 UTC
+            listOf(ZoneId.of("GMT+12"), 0, 0, 1720785600L) // 12 July 12:00 UTC
+        )
+
+        tests.forEach { (zoneId, hour, minute, expected) ->
+            dateProviderImpl = DateProviderImpl(
+                defaultZoneId = zoneId as ZoneId,
+                localeProvider = localeProvider,
+                appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+                stringResourceProvider = stringResourceProvider
+            )
+            val result = dateProviderImpl.combineDateAndTimeInUserTimeZone(
+                pickerDateMillis = pickerDate,
+                hour = hour as Int,
+                minute = minute as Int
+            )
+            assertEquals("Failed for zone $zoneId", expected, result)
+        }
+    }
+
+    @Test
+    fun combineDateAndTimeInUserTimeZone_onDaylightSavingDay() = runTest(dispatcher) {
+        dateProviderImpl = DateProviderImpl(
+            defaultZoneId = ZoneId.of("Europe/Berlin"),
+            localeProvider = localeProvider,
+            appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+            stringResourceProvider = stringResourceProvider
+        )
+        // Sunday, 31 March 2024 00:00:00 UTC: Berlin moves from UTC+1 to UTC+2 at 02:00.
+        val pickerDate = 1711843200000L
+
+        val morning = dateProviderImpl.combineDateAndTimeInUserTimeZone(
+            pickerDateMillis = pickerDate,
+            hour = 1,
+            minute = 0
+        )
+        val noon = dateProviderImpl.combineDateAndTimeInUserTimeZone(
+            pickerDateMillis = pickerDate,
+            hour = 12,
+            minute = 0
+        )
+
+        assertEquals(1711843200L, morning) // 01:00 UTC+1 = 00:00 UTC
+        assertEquals(1711879200L, noon) // 12:00 UTC+2 = 10:00 UTC
+    }
+
+    @Test
+    fun getLocalHourAndMinute_returnsTimeInUserTimeZone() = runTest(dispatcher) {
+        val timestamp = 1720870200L // Saturday, 13 July 2024 11:30:00 UTC
+
+        val tests = listOf(
+            Triple(ZoneId.of("UTC"), 11, 30),
+            Triple(ZoneId.of("GMT+3"), 14, 30),
+            Triple(ZoneId.of("Asia/Kolkata"), 17, 0),
+            Triple(ZoneId.of("GMT-12"), 23, 30)
+        )
+
+        tests.forEach { (zoneId, hour, minute) ->
+            dateProviderImpl = DateProviderImpl(
+                defaultZoneId = zoneId,
+                localeProvider = localeProvider,
+                appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+                stringResourceProvider = stringResourceProvider
+            )
+            val result = dateProviderImpl.getLocalHourAndMinute(timestamp)
+            assertEquals("Failed for zone $zoneId", hour to minute, result)
+        }
+    }
+
+    @Test
+    fun combineDateAndTime_roundTripsWithGetLocalHourAndMinute() = runTest(dispatcher) {
+        dateProviderImpl = DateProviderImpl(
+            defaultZoneId = ZoneId.of("America/New_York"),
+            localeProvider = localeProvider,
+            appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+            stringResourceProvider = stringResourceProvider
+        )
+        val timestamp = dateProviderImpl.combineDateAndTimeInUserTimeZone(
+            pickerDateMillis = 1720828800000L,
+            hour = 21,
+            minute = 45
+        )
+
+        assertEquals(21 to 45, dateProviderImpl.getLocalHourAndMinute(timestamp))
+        assertEquals(
+            1720828800000L,
+            dateProviderImpl.adjustToStartOfDayInUserTimeZone(timestamp)
+        )
+    }
 }

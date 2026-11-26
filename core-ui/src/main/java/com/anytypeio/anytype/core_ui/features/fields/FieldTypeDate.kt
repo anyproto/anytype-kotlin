@@ -35,6 +35,7 @@ fun FieldTypeDate(
     modifier: Modifier = Modifier,
     title: String,
     relativeDate: RelativeDate,
+    isTimeIncluded: Boolean = false,
     isLocal: Boolean,
     onFieldClick: () -> Unit,
     onAddToCurrentTypeClick: () -> Unit,
@@ -80,7 +81,7 @@ fun FieldTypeDate(
             modifier = Modifier.halfRowWidth()
         ) {
             Text(
-                text = relativeDate.getPrettyName(),
+                text = relativeDate.getPrettyName(isTimeIncluded = isTimeIncluded),
                 style = BodyCallout.copy(
                     color = colorResource(id = R.color.text_primary)
                 ),

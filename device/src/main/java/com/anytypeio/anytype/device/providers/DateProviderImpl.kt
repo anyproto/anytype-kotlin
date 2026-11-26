@@ -20,7 +20,6 @@ import java.time.temporal.ChronoUnit
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -181,6 +180,20 @@ class DateProviderImpl @Inject constructor(
         }
     }
 
+    override fun getLocalHourAndMinute(timestamp: TimeInSeconds): Pair<Int, Int> {
+        val localDateTime = Instant.ofEpochSecond(timestamp).atZone(defaultZoneId)
+        return localDateTime.hour to localDateTime.minute
+    }
+
+    override fun combineDateAndTimeInUserTimeZone(
+        pickerDateMillis: TimeInMillis,
+        hour: Int,
+        minute: Int
+    ): TimeInSeconds {
+        val date = Instant.ofEpochMilli(pickerDateMillis).atZone(ZoneOffset.UTC).toLocalDate()
+        return date.atTime(hour, minute).atZone(defaultZoneId).toEpochSecond()
+    }
+
     override fun formatToDateString(timestamp: Long, pattern: String): String {
         try {
             val formatter = cachedFormatter(pattern, localeProvider.locale())
@@ -244,30 +257,36 @@ class DateProviderImpl @Inject constructor(
             java.time.DayOfWeek.SUNDAY -> DayOfWeekCustom.SUNDAY
         }
 
+        // Short style: hours and minutes, without seconds.
+        val (formattedDate, formattedTime) = formatTimestampToDateAndTime(
+            timestamp = initialTimeInMillis,
+            timeStyle = DateFormat.SHORT
+        )
+
         return when (daysDifference) {
             0L -> RelativeDate.Today(
                 initialTimeInMillis = initialTimeInMillis,
-                dayOfWeek = dayOfWeekCustom
+                dayOfWeek = dayOfWeekCustom,
+                formattedTime = formattedTime
             )
 
             1L -> RelativeDate.Tomorrow(
                 initialTimeInMillis = initialTimeInMillis,
-                dayOfWeek = dayOfWeekCustom
+                dayOfWeek = dayOfWeekCustom,
+                formattedTime = formattedTime
             )
 
             -1L -> RelativeDate.Yesterday(
                 initialTimeInMillis = initialTimeInMillis,
-                dayOfWeek = dayOfWeekCustom
+                dayOfWeek = dayOfWeekCustom,
+                formattedTime = formattedTime
             )
 
             else -> {
-                val timestampMillis = TimeUnit.SECONDS.toMillis(dateInSeconds)
-
-                val (dateString, timeString) = formatTimestampToDateAndTime(timestampMillis)
                 RelativeDate.Other(
                     initialTimeInMillis = initialTimeInMillis,
-                    formattedDate = dateString,
-                    formattedTime = timeString,
+                    formattedDate = formattedDate,
+                    formattedTime = formattedTime,
                     dayOfWeek = dayOfWeekCustom
                 )
             }

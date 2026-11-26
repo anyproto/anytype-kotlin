@@ -63,6 +63,7 @@ object Relations {
     const val RELATION_READ_ONLY_VALUE = "relationReadonlyValue"
     const val RELATION_DEFAULT_VALUE = "relationDefaultValue"
     const val RELATION_FORMAT_OBJECT_TYPES = "relationFormatObjectTypes"
+    const val RELATION_FORMAT_INCLUDE_TIME = "relationFormatIncludeTime"
     const val SOURCE_OBJECT = "sourceObject"
     const val INTERNAL_FLAGS = "internalFlags"
     const val SIZE_IN_BYTES = "sizeInBytes"
